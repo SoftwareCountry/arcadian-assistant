@@ -37,6 +37,7 @@ npm-debug.log
 yarn-error.log
 
 artifacts/
+.coverage/
 
 # BUCK
 buck-out/
