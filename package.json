@@ -8,7 +8,8 @@
 		"tsc": "tsc",
 		"clean": "rimraf artifacts",
 		"build": "npm run clean && npm run tsc --",
-		"watch": "npm run build -- -w"
+		"watch": "npm run build -- -w",
+		"prepublish": "npm run build"
 	},
 	"dependencies": {
 		"react": "16.0.0-beta.5",
