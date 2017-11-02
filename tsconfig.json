@@ -11,9 +11,7 @@
       "preserveConstEnums": true,
       "allowJs": false,
       "sourceMap": true,
-      "noImplicitReturns": true,
-      "noUnusedParameters": true,
-      "noUnusedLocals": true
+      "noImplicitReturns": true
     },
     "include": [
       "src/**/*.ts",
