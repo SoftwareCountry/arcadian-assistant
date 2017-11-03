@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
 import { NavigationTabScreenOptions } from 'react-navigation';
 import { View, Text } from 'react-native';
-import { Ionicons } from 'react-native-vector-icons';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const navigationOptions: NavigationTabScreenOptions =
 {
     tabBarLabel: 'Home',
-    tabBarIcon: ({ tintColor, focused }) => 
-        <Ionicons
+    tabBarIcon: ({ tintColor, focused }) =>
+        <Icon
             name={focused ? 'ios-home' : 'ios-home-outline'}
             size={20}
             style={{ color: tintColor }}
         >
-        </Ionicons>
+        </Icon>
 }
 
 export class HomeScreen extends Component {

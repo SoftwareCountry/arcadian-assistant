@@ -10,7 +10,7 @@ export const RootNavigator = TabNavigator({
     Home: {
         screen: HomeScreen
     },
-    Feed: {
+/*     Feed: {
         screen: FeedScreen
     },
     Organization: {
@@ -18,5 +18,5 @@ export const RootNavigator = TabNavigator({
     },
     Management: {
         screen: ManagementScreen
-    }
+    } */
 })
