@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { RootNavigator } from './root-navigator';
+import { RootNavigator } from './layout/root-navigator';
 
 export default class App extends Component {
   render() {

@@ -1,23 +1,14 @@
 import React, { Component } from 'react';
 import { NavigationTabScreenOptions } from 'react-navigation';
 import { View, Text } from 'react-native';
-import { Ionicons } from 'react-native-vector-icons';
+import { TabNavigationOptionsFactory } from '../layout/tab-navigation-options-factory';
 
-const navigationOptions: NavigationTabScreenOptions =
-{
-    tabBarLabel: 'Feeds',
-    tabBarIcon: ({ tintColor, focused }) =>
-        <Ionicons
-            name={focused ? 'ios-pulse' : 'ios-pulse-outline'}
-            size={20}
-            style={{ color: tintColor }}
-        >
-        </Ionicons>
-}
+const navOptionsFactory = new TabNavigationOptionsFactory();
 
 export class FeedScreen extends Component {
 
-    static navigationOptions: NavigationTabScreenOptions = navigationOptions;
+    static navigationOptions: NavigationTabScreenOptions = 
+        navOptionsFactory.create('Feeds', 'ios-pulse', 'ios-pulse-outline');
 
     render() {
         return <View><Text>Feed</Text></View>;

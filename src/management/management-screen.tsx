@@ -1,23 +1,14 @@
 import React, { Component } from 'react';
 import { NavigationTabScreenOptions } from 'react-navigation';
 import { View, Text } from 'react-native';
-import { Ionicons } from 'react-native-vector-icons';
+import { TabNavigationOptionsFactory } from '../layout/tab-navigation-options-factory';
 
-const navigationOptions: NavigationTabScreenOptions =
-{
-    tabBarLabel: 'Management',
-    tabBarIcon: ({ tintColor, focused }) =>
-        <Ionicons
-            name={focused ? 'ios-laptop' : 'ios-laptop-outline'}
-            size={20}
-            style={{ color: tintColor }}
-        >
-        </Ionicons>
-}
+const navOptionsFactory = new TabNavigationOptionsFactory();
 
 export class ManagementScreen extends Component {
 
-    static navigationOptions: NavigationTabScreenOptions = navigationOptions;
+    static navigationOptions: NavigationTabScreenOptions = 
+        navOptionsFactory.create('Management', 'ios-laptop', 'ios-laptop-outline');
 
     render() {
         return <View><Text>Management</Text></View>;
