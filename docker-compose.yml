@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  arcadia.assistant.web:
+    image: arcadia.assistant.web
+    build:
+      context: ./Arcadia.Assistant.Web
+      dockerfile: Dockerfile
