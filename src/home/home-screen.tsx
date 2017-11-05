@@ -10,6 +10,9 @@ export class HomeScreen extends Component<NavigationScreenProps<{}>> {
 
         return <View style={styles.container}>
             <Button title='Sicklist' onPress={() =>  this.props.navigation.navigate('Sicklist')} />
+            <Button title='Actions' onPress={() =>  this.props.navigation.navigate('Actions')} />
+            <Button title='Daysoff' onPress={() =>  this.props.navigation.navigate('Daysoff')} />
+            <Button title='Vacations' onPress={() =>  this.props.navigation.navigate('Vacations')} />
         </View>;
     }
 }
