@@ -43,7 +43,6 @@
     "no-string-literal": false,
     "no-unsafe-finally": true,
     "no-unused-expression": false,
-    "no-unused-new": true,
     "no-use-before-declare": true,
     "no-var-keyword": false,
     "radix": true,
