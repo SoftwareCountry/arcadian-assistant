@@ -7,9 +7,10 @@
 		"test": "jest --coverage",
 		"tsc": "tsc",
 		"clean": "rimraf artifacts",
-		"build": "npm run clean && npm run tsc --",
+		"build": "npm run clean && npm run lint && npm run tsc --",
 		"watch": "npm run build -- -w",
-		"prepublish": "npm run build"
+		"prepublish": "npm run build",
+		"lint": "tslint src/**/*.ts*"
 	},
 	"dependencies": {
 		"@types/react-native-vector-icons": "^4.4.2",

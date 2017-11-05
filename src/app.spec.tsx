@@ -10,5 +10,5 @@ it('renders correctly', () => {
     <App />
   );
 
-  expect(tree).toBeDefined()
+  expect(tree).toBeDefined();
 });

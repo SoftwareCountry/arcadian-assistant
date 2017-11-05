@@ -3,9 +3,8 @@ import { NavigationTabScreenOptions } from 'react-navigation';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 
-
 export class TabNavigationOptionsFactory {
-    create(label: string, icon: string, unfocusedIcon: string): NavigationTabScreenOptions {
+    public create(label: string, icon: string, unfocusedIcon: string): NavigationTabScreenOptions {
         return {
             tabBarLabel: label,
             tabBarIcon: ({ tintColor, focused }) =>
@@ -15,6 +14,6 @@ export class TabNavigationOptionsFactory {
                     style={{ color: tintColor }}
                 >
                 </Icon>
-        }
+        };
     }
 }

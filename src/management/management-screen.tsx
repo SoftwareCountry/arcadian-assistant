@@ -8,10 +8,10 @@ const navOptionsFactory = new TabNavigationOptionsFactory();
 
 export class ManagementScreen extends Component {
 
-    static navigationOptions: NavigationTabScreenOptions =
+    public static navigationOptions: NavigationTabScreenOptions =
     navOptionsFactory.create('Management', 'ios-laptop', 'ios-laptop-outline');
 
-    render() {
+    public render() {
         return <View style={styles.container}>
             <Text>Management</Text>
         </View>;

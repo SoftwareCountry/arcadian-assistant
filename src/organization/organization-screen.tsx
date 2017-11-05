@@ -8,10 +8,10 @@ const navOptionsFactory = new TabNavigationOptionsFactory();
 
 export class OrganizationScreen extends Component {
 
-    static navigationOptions: NavigationTabScreenOptions =
-    navOptionsFactory.create('Organization', 'ios-people', 'ios-people-outline');;
+    public static navigationOptions: NavigationTabScreenOptions =
+    navOptionsFactory.create('Organization', 'ios-people', 'ios-people-outline');
 
-    render() {
+    public render() {
         return <View style={styles.container}>
             <Text>Organization</Text>
         </View>;

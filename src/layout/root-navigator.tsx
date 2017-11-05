@@ -19,4 +19,4 @@ export const RootNavigator = TabNavigator({
     Management: {
         screen: ManagementScreen
     }
-})
+});

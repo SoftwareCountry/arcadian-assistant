@@ -8,10 +8,10 @@ const navOptionsFactory = new TabNavigationOptionsFactory();
 
 export class FeedScreen extends Component {
 
-    static navigationOptions: NavigationTabScreenOptions =
+    public static navigationOptions: NavigationTabScreenOptions =
     navOptionsFactory.create('Feeds', 'ios-pulse', 'ios-pulse-outline');
 
-    render() {
+    public render() {
         return <View style={styles.container}>
             <Text>Feed</Text>
         </View>;

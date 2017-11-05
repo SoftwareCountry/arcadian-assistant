@@ -9,10 +9,10 @@ const navOptionsFactory = new TabNavigationOptionsFactory();
 
 export class HomeScreen extends Component {
 
-    static navigationOptions: NavigationTabScreenOptions =
+    public static navigationOptions: NavigationTabScreenOptions =
     navOptionsFactory.create('Home', 'ios-home', 'ios-home-outline');
 
-    render() {
+    public render() {
         return <View style={styles.container}>
             <Text>Home</Text>
         </View>;
