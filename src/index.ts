@@ -1,4 +1,4 @@
 import { AppRegistry } from 'react-native';
-import App from './app';
+import { Root } from './app';
 
-AppRegistry.registerComponent('ArcadiaAssistant', () => App);
+AppRegistry.registerComponent('ArcadiaAssistant', () => Root);
