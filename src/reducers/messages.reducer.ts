@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 import { List } from 'immutable';
-import { Types } from './messages.actions';
+import { MessageActions } from './messages.actions';
 
 export class MessageTemplate {
     public id: string;
@@ -24,19 +24,20 @@ tempMessage.id = 'internet-is-dead';
 tempMessage.title = 'Internet died';
 tempMessage.text = 'again...';
 
-export const messagesReducer: Reducer<List<MessageTemplateViewModel>> = (state = List.of(), action) => {
+export const messagesReducer: Reducer<List<MessageTemplateViewModel>> = (state = List.of(), action: MessageActions) => {
     switch (action.type) {
-        case Types.LOADLIST:
+        case 'LOAD-TICKET-TEMPLATES':
             return List.of(
                 { message: tempMessage, isExpanded: false },
                 { message: tempMessage2, isExpanded: false }
              );
-        case Types.COLLAPSE:
+/*         case Types.COLLAPSE:
              return state.map(x => x.message.id === action.id ? { message: tempMessage, isExpanded: false } : x ).toList();
         case Types.EXPAND:
-             return state.map(x => x.message.id === action.id ? { message: tempMessage, isExpanded: true } : x ).toList();
+             return state.map(x => x.message.id === action.id ? { message: tempMessage, isExpanded: true } : x ).toList(); */
 
-        case Types.SEND:
+        case 'SUBMIT-TICKET':
+            return state;
         default:
             return state;
     }

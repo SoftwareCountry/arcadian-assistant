@@ -1,27 +1,13 @@
-import { ActionCreatorsMapObject } from 'redux';
+import { Action } from 'redux';
 
-export const Types = {
-    EXPAND: 'EXPAND',
-    COLLAPSE: 'COLLAPSE',
-    SEND: 'SEND',
-    LOADLIST: 'LOAD-LIST'
-};
+interface LoadTicketTemplates extends Action {
+    type: 'LOAD-TICKET-TEMPLATES';
+}
 
-export const Actions: ActionCreatorsMapObject = {
-    loadList: () => ({
-        type: Types.LOADLIST,
-    }),
-    expand: (id: string) => ({
-        type: Types.EXPAND,
-        id
-    }),
-    collapse: (id: string) => ({
-        type: Types.COLLAPSE,
-        id
-    }),
-    send: (id: string, payload: string) => ({
-        type: Types.SEND,
-        id,
-        payload
-    })
-};
+interface SubmitTicket extends Action {
+    type: 'SUBMIT-TICKET';
+    templateId: string;
+    payload: string;
+}
+
+export type MessageActions = LoadTicketTemplates | SubmitTicket;

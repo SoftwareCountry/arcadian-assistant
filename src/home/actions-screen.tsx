@@ -1,24 +1,35 @@
 import React, { Component } from 'react';
 import { View, Text, ScrollView, Button } from 'react-native';
-import { NavigationScreenProps } from 'react-navigation';
+import { NavigationScreenProps, NavigationActions } from 'react-navigation';
 import { AppState } from '../reducers/app.reducer';
-import { connect } from 'react-redux';
+import { connect, Dispatch, MapStateToProps, MapDispatchToPropsFunction } from 'react-redux';
 
-const mapStateToProps = (state: AppState, ownProps: NavigationScreenProps<{}>) => ({
+interface HelpdeskScreenProps {
+    messageTemplates: {}[];
+    onBackPress: () => void;
+}
+
+const mapStateToProps = (state: AppState, ownProps: any) => ({
     ...ownProps,
-    messages: state.messages
+    messageTemplates: state.helpdesk.messageTemplates
 });
 
-class ActionsScreenImpl extends Component<NavigationScreenProps<{messages: any}>> {
+const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
+    onBackPress: () => dispatch(NavigationActions.back())
+});
+
+class ActionsScreenImpl extends Component<HelpdeskScreenProps> {
     public render() {
 
         console.log(this.props);
 
         return <ScrollView>
                 <Text>Si!</Text>
-                <Button title='Back' onPress={ () => this.props.navigation.goBack() } ></Button>
+                <Button title='Back' onPress={ () => this.props.onBackPress() } ></Button>
             </ScrollView>;
     }
 }
 
-export const ActionsScreen = connect(mapStateToProps)(ActionsScreenImpl as any);
+//export const ActionsScreen = ActionsScreenImpl;
+
+export const ActionsScreen = connect(mapStateToProps, mapDispatchToProps)(ActionsScreenImpl);

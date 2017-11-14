@@ -1,13 +1,19 @@
 import { createStore, combineReducers, Reducer } from 'redux';
 import { messagesReducer, MessageTemplateViewModel } from './messages.reducer';
 import { List } from 'immutable';
+import { AppState } from './app.reducer';
+import { HelpdeskState } from './helpdesk.reducer';
+import { navigationReducer } from './navigation.reducer';
+import { NavigationState } from 'react-navigation';
 
 export interface AppState {
-    messages: List<MessageTemplateViewModel>;
+    helpdesk: HelpdeskState;
+    nav: NavigationState;
 }
 
-const reducers = combineReducers({
-    messages: messagesReducer,
+const reducers = combineReducers<AppState>({
+    helpdesk: messagesReducer,
+    nav: navigationReducer,
 });
 
-export const store = createStore(reducers);
+export const storeFactory = () => createStore(reducers);
