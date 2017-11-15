@@ -8,14 +8,14 @@ import { AppState } from '../reducers/app.reducer';
 
 interface HomeScreenDispatchProps {
     onSicklistClick(): void;
-    onActionsClick(): void;
+    onHelpdeskClick(): void;
     onDaysoffClick(): void;
     onVacationsClick(): void;
 }
 
 const mapDispatchToProps = (dispatch: Dispatch<any>): HomeScreenDispatchProps => ({
     onSicklistClick: () => dispatch(NavigationActions.navigate( { routeName: 'Sicklist'} )),
-    onActionsClick: () => dispatch(NavigationActions.navigate( { routeName: 'Actions'} )),
+    onHelpdeskClick: () => dispatch(NavigationActions.navigate( { routeName: 'Helpdesk'} )),
     onVacationsClick: () => dispatch(NavigationActions.navigate( { routeName: 'Vacations'} )),
     onDaysoffClick: () => dispatch(NavigationActions.navigate( { routeName: 'Daysoff'} )),
 });
@@ -26,7 +26,7 @@ class HomeScreenImpl extends Component<HomeScreenDispatchProps> {
 
         return <View style={styles.container}>
             <Button title='Sicklist' onPress={this.props.onSicklistClick} />
-            <Button title='Actions' onPress={this.props.onActionsClick} />
+            <Button title='Helpdesk' onPress={this.props.onHelpdeskClick} />
             <Button title='Daysoff' onPress={this.props.onDaysoffClick} />
             <Button title='Vacations' onPress={this.props.onVacationsClick} />
         </View>;

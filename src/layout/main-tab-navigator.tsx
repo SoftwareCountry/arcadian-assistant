@@ -21,11 +21,11 @@ export const MainTabNavigator = StackNavigator({
             title: 'Sicklist'
         }
     },
-    Actions: {
+    Helpdesk: {
         screen: HelpdeskScreen,
-        path: '/actions',
+        path: '/helpdesk',
         navigationOptions: {
-            title: 'Actions'
+            title: 'Helpdesk'
         }
     },
     Daysoff: {

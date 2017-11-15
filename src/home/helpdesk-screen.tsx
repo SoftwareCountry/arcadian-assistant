@@ -18,6 +18,7 @@ const mapDispatchToProps: MapDispatchToPropsFunction<WithBackButtonProps, any> =
 });
 
 class HelpdeskScreenImpl extends Component<HelpdeskScreenProps & WithBackButtonProps> {
+
     public render() {
 
         console.log(this.props);
