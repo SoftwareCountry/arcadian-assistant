@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
 import { View, Text, ScrollView, Button } from 'react-native';
 import { NavigationScreenProps, NavigationActions } from 'react-navigation';
-import { AppState } from '../reducers/app.reducer';
+import { AppState } from '../../reducers/app.reducer';
 import { connect, Dispatch, MapStateToProps, MapDispatchToPropsFunction } from 'react-redux';
-import { WithBackButtonProps, mapBackButtonDispatchToProps } from '../layout/back-button-dispatcher';
+import { WithBackButtonProps, mapBackButtonDispatchToProps } from '../../layout/back-button-dispatcher';
+import { TicketTemplate } from '../../reducers/helpdesk/ticket-template.model';
 
 interface HelpdeskScreenProps {
-    messageTemplates: {}[];
+    ticketTemplates: TicketTemplate[];
 }
 
 const mapStateToProps: MapStateToProps<HelpdeskScreenProps, any> = (state: AppState) => ({
-    messageTemplates: state.helpdesk.messageTemplates
+    ticketTemplates: state.helpdesk.ticketTemplates
 });
 
 const mapDispatchToProps: MapDispatchToPropsFunction<WithBackButtonProps, any> = (dispatch: Dispatch<any>) => ({
