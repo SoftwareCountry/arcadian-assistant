@@ -2,7 +2,7 @@ import { StackNavigator } from 'react-navigation';
 import React from 'react';
 import { HomeScreen } from '../home/home-screen';
 import { SicklistScreen } from '../home/sicklist-screen';
-import { ActionsScreen } from '../home/actions-screen';
+import { HelpdeskScreen } from '../home/helpdesk-screen';
 import { DaysoffScreen } from '../home/daysoff-screen';
 import { VacationsScreen } from '../home/vacations-screen';
 
@@ -22,7 +22,7 @@ export const MainTabNavigator = StackNavigator({
         }
     },
     Actions: {
-        screen: ActionsScreen,
+        screen: HelpdeskScreen,
         path: '/actions',
         navigationOptions: {
             title: 'Actions'
