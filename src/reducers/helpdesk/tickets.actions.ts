@@ -1,19 +1,25 @@
 import { Action } from 'redux';
 import { TicketTemplate } from './ticket-template.model';
+import { LoadTicketTemplates } from './tickets.actions';
 
-interface LoadTicketTemplates extends Action {
+export interface LoadTicketTemplates extends Action {
     type: 'LOAD-TICKET-TEMPLATES';
 }
 
-interface LoadTicketTemplatesFinished extends Action {
+export const loadTicketTemplates = (): LoadTicketTemplates => ({ type: 'LOAD-TICKET-TEMPLATES' });
+
+export interface LoadTicketTemplatesFinished extends Action {
     type: 'LOAD-TICKET-TEMPLATES-FINISHED';
     templates: TicketTemplate[];
 }
 
-interface SubmitTicket extends Action {
+export const loadTicketTemplatesFinished = (templates: TicketTemplate[]): LoadTicketTemplatesFinished =>
+    ({ type: 'LOAD-TICKET-TEMPLATES-FINISHED', templates });
+
+export interface SubmitTicket extends Action {
     type: 'SUBMIT-TICKET';
     templateId: string;
     payload: string;
 }
 
-export type TicketActions = LoadTicketTemplates | LoadTicketTemplatesFinished | SubmitTicket;
+export type TicketAction = LoadTicketTemplates | LoadTicketTemplatesFinished | SubmitTicket;
