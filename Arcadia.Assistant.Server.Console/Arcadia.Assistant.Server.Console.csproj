@@ -6,6 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Arcadia.Assistant.Organization\Arcadia.Assistant.Organization.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.Server\Arcadia.Assistant.Server.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update=".dockerignore">
       <DependentUpon>Dockerfile</DependentUpon>
     </None>

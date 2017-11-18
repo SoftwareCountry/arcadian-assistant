@@ -7,14 +7,27 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Arcadia.Assistant.Web.Controllers
 {
+    using Akka.Actor;
+
     [Authorize]
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
+        private IActorRefFactory actorSystem;
+
+        public ValuesController(IActorRefFactory actorSystem)
+        {
+            this.actorSystem = actorSystem;
+        }
+
         // GET api/values
         [HttpGet]
         public IEnumerable<string> Get()
         {
+            //this.actorSystem.
+            //this.actorSystem.ActorSelection("")
+
+            //this.actorSystem.ActorOf(Props.Create())
             return new string[] { "value1", "value2" };
         }
 
