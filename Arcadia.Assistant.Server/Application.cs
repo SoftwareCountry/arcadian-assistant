@@ -6,6 +6,8 @@
     using Akka.Actor;
     using Akka.Configuration;
 
+    using Arcadia.Assistant.Organization;
+
     public class Application : IDisposable
     {
         public ActorSystem ActorSystem { get; private set; }
@@ -27,6 +29,7 @@
             ");
 
             this.ActorSystem = ActorSystem.Create("arcadia-assistant", config);
+            this.ActorSystem.ActorOf(Props.Create(() => new EmployeesActor()), "employees");
         }
 
         public async Task Stop()

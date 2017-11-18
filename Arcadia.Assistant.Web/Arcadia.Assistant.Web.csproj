@@ -19,4 +19,9 @@
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Arcadia.Assistant.Server.Interop\Arcadia.Assistant.Server.Interop.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.Organization\Arcadia.Assistant.Organization.csproj" />
+  </ItemGroup>
+
 </Project>
