@@ -12,6 +12,8 @@
     {
         public ActorSystem ActorSystem { get; private set; }
 
+        public ServerActorsCollection ServerActors { get; private set; }
+
         public void Start()
         {
             var config = ConfigurationFactory.ParseString(
@@ -29,7 +31,8 @@
             ");
 
             this.ActorSystem = ActorSystem.Create("arcadia-assistant", config);
-            this.ActorSystem.ActorOf(Props.Create(() => new EmployeesActor()), "employees");
+            var builder = new ActorSystemBuilder(this.ActorSystem);
+            this.ServerActors = builder.AddRootActors();
         }
 
         public async Task Stop()
@@ -39,6 +42,7 @@
                 await this.ActorSystem.Terminate();
                 this.ActorSystem.Dispose();
                 this.ActorSystem = null;
+                this.ServerActors = null;
             }
         }
 
@@ -46,6 +50,7 @@
         {
             this.ActorSystem?.Dispose();
             this.ActorSystem = null;
+            this.ServerActors = null;
         }
     }
 }

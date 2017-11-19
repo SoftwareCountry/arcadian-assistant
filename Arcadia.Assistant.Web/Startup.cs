@@ -7,6 +7,7 @@ namespace Arcadia.Assistant.Web
 {
     using Akka.Actor;
     using Akka.Configuration;
+    using Arcadia.Assistant.Server;
     using Arcadia.Assistant.Server.Interop;
 
     public class Startup
@@ -40,9 +41,12 @@ namespace Arcadia.Assistant.Web
             var systemName = "arcadia-assistant";
 
             var actorSystem = ActorSystem.Create(systemName, config);
+            var builder = new ActorSystemBuilder(actorSystem);
+            builder.AddRootActors();
 
             services.AddSingleton<IActorRefFactory>(actorSystem);
-            services.AddSingleton(new ActorPathsBuilder(systemName, "0.0.0.0", 63301));
+            services.AddSingleton(new ActorPathsBuilder());
+            //services.AddSingleton(new ActorPathsBuilder(systemName, "0.0.0.0", 63301));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
