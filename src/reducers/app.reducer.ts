@@ -5,6 +5,8 @@ import { HelpdeskState, helpdeskReducer, helpdeskEpics } from './helpdesk/helpde
 import { navigationReducer } from './navigation.reducer';
 import { NavigationState } from 'react-navigation';
 import { combineEpics, createEpicMiddleware } from 'redux-observable';
+//import { createLogger } from 'redux-logger';
+import logger from 'redux-logger';
 
 import 'rxjs/Rx';
 
@@ -15,13 +17,14 @@ export interface AppState {
 
 const rootEpic = combineEpics( helpdeskEpics );
 
-const epicMiddleware = createEpicMiddleware( rootEpic );
-
 const reducers = combineReducers<AppState>({
     helpdesk: helpdeskReducer,
     nav: navigationReducer,
 });
 
 export const storeFactory = () => {
-    return createStore(reducers, applyMiddleware( epicMiddleware ));
+    const epicMiddleware = createEpicMiddleware( rootEpic );
+    //const loggerMiddleware = createLogger();
+
+    return createStore(reducers, applyMiddleware( epicMiddleware, logger ));
 };

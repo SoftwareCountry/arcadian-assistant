@@ -27,21 +27,13 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): HelpdeskScreenDispatchProp
 });
 
 class HelpdeskScreenImpl extends Component<HelpdeskScreenProps & HelpdeskScreenDispatchProps> {
-
-    constructor(props: HelpdeskScreenDispatchProps) {
-        super();
-        this.props.requestTicketTemplates();
-    }
-
     public componentDidMount() {
-        console.log('component did mount');
         this.props.requestTicketTemplates();
     }
 
     public render() {
-        console.log('render?');
 
-        const progressBar = this.props.ticketTemplatesAreLoaded ? undefined : <ActivityIndicator/>
+        const progressBar = this.props.ticketTemplatesAreLoaded ? undefined : <ActivityIndicator/>;
 
         return <ScrollView>
                 <Text>Si!</Text>
@@ -50,7 +42,5 @@ class HelpdeskScreenImpl extends Component<HelpdeskScreenProps & HelpdeskScreenD
             </ScrollView>;
     }
 }
-
-//export const ActionsScreen = ActionsScreenImpl;
 
 export const HelpdeskScreen = connect(mapStateToProps, mapDispatchToProps)(HelpdeskScreenImpl);

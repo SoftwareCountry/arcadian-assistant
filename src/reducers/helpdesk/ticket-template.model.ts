@@ -1,9 +1,9 @@
 export class TicketTemplate {
-    templateId: string;
+    public templateId: string;
     
-    recipients: string[] = [];
+    public recipients: string[] = [];
 
-    title: string;
+    public title: string;
 
-    description: string;
+    public description: string;
 }

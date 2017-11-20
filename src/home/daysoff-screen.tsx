@@ -15,7 +15,7 @@ export class DaysoffScreenImpl extends Component<DaysoffScreenDispatchProps> {
     public render() {
         return <ScrollView>
                 <Text>This is not the screen you're looking for</Text>
-                <Button title='Back' onPress={ () => this.props.onBackClick } ></Button>
+                <Button title='Back' onPress={ this.props.onBackClick } ></Button>
             </ScrollView>;
     }
 }
