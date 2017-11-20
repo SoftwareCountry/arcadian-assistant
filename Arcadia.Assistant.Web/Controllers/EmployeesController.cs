@@ -27,7 +27,7 @@
         public async Task<IActionResult> Index()
         {
             var employees = this.actorSystem.ActorSelection(this.pathsBuilder.Get("employees"));
-            var response = await employees.Ask<EmployeeDemographics>(new RequestDemographics("1"));
+            var response = await employees.Ask<EmployeeDemographics>(new RequestDemographics(this.User.Identity.Name));
             return this.Ok(response);
             //return response;
         }
