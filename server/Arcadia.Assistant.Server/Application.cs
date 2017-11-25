@@ -25,6 +25,7 @@
 
                 remote {
                     dot-netty.tcp {
+                        hostname: arcadia.assistant.server.console
                         port: 63301
                     }
                 }

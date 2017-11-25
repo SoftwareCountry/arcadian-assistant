@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Server.In
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Helpdesk", "Arcadia.Assistant.Helpdesk\Arcadia.Assistant.Helpdesk.csproj", "{CEA721B5-8455-4065-A095-DD6FF430CF33}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.DI", "Arcadia.Assistant.DI\Arcadia.Assistant.DI.csproj", "{248E0C4E-046C-452F-A1D2-77C6B0DBC71A}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Configuration", "Arcadia.Assistant.Configuration\Arcadia.Assistant.Configuration.csproj", "{BBB83DA5-42E3-44A7-AC16-3DDBD71ECED6}"
 EndProject
 Global
@@ -53,6 +55,10 @@ Global
 		{CEA721B5-8455-4065-A095-DD6FF430CF33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CEA721B5-8455-4065-A095-DD6FF430CF33}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CEA721B5-8455-4065-A095-DD6FF430CF33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{248E0C4E-046C-452F-A1D2-77C6B0DBC71A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{248E0C4E-046C-452F-A1D2-77C6B0DBC71A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{248E0C4E-046C-452F-A1D2-77C6B0DBC71A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{248E0C4E-046C-452F-A1D2-77C6B0DBC71A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BBB83DA5-42E3-44A7-AC16-3DDBD71ECED6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BBB83DA5-42E3-44A7-AC16-3DDBD71ECED6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BBB83DA5-42E3-44A7-AC16-3DDBD71ECED6}.Release|Any CPU.ActiveCfg = Release|Any CPU

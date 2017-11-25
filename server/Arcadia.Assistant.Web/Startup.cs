@@ -12,15 +12,26 @@ namespace Arcadia.Assistant.Web
     using Arcadia.Assistant.Server;
     using Arcadia.Assistant.Server.Interop;
 
+    using Autofac;
+
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        private readonly IHostingEnvironment environment;
+
+        public Startup(IHostingEnvironment environment)
         {
+            this.environment = environment;
             var configBuilder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
+                .SetBasePath(environment.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional:false, reloadOnChange:true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional:true)
-                .AddHoconContent("akka.conf", "akka", optional: false, reloadOnChange: true);
+                .AddJsonFile($"appsettings.{environment.EnvironmentName}.json", optional:true)
+                .AddHoconContent("akka.conf", "akka", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables();
+
+            if (environment.IsDevelopment())
+            {
+                configBuilder.AddUserSecrets<Startup>();
+            }
 
             this.Configuration = configBuilder.Build();
         }
@@ -32,17 +43,25 @@ namespace Arcadia.Assistant.Web
         {
             services.AddMvc();
 
-            var systemName = "arcadia-assistant";
+            var serverConfig = this.Configuration.GetSection("Server");
+
+            var systemName = serverConfig["ActorSystemName"];
+            var host = serverConfig["Host"];
+            var port = serverConfig.GetValue<int>("Port");
 
             var config = ConfigurationFactory.ParseString(this.Configuration["akka"]);
 
             var actorSystem = ActorSystem.Create(systemName, config);
-            var builder = new ActorSystemBuilder(actorSystem);
-            builder.AddRootActors();
+
+            var pathsBuilder = new ActorPathsBuilder(systemName, host, port);
 
             services.AddSingleton<IActorRefFactory>(actorSystem);
-            services.AddSingleton(new ActorPathsBuilder());
-            //services.AddSingleton(new ActorPathsBuilder(systemName, "0.0.0.0", 63301));
+            services.AddSingleton(pathsBuilder);
+        }
+
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
