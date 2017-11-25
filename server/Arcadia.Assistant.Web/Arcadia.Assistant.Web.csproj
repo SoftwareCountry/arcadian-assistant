@@ -27,7 +27,6 @@
     <ProjectReference Include="..\Arcadia.Assistant.DI\Arcadia.Assistant.DI.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Organization\Arcadia.Assistant.Organization.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Server.Interop\Arcadia.Assistant.Server.Interop.csproj" />
-    <ProjectReference Include="..\Arcadia.Assistant.Server\Arcadia.Assistant.Server.csproj" />
   </ItemGroup>
 
 </Project>
