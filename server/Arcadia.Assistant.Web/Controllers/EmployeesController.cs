@@ -29,7 +29,7 @@
         public async Task<IActionResult> Index(CancellationToken token)
         {
             var employees = this.actorSystem.ActorSelection(this.pathsBuilder.Get("employees"));
-            var response = await employees.Ask<EmployeeDemographics>(new RequestDemographics(this.User.Identity.Name), TimeSpan.FromSeconds(30), token);
+            var response = await employees.Ask<EmployeeDemographics>(new RequestDemographics("alexander.shevnin"), TimeSpan.FromSeconds(30), token);
             return this.Ok(response);
             //return response;
         }
