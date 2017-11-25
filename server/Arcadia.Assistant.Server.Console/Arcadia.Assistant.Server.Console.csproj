@@ -6,6 +6,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Arcadia.Assistant.Configuration\Arcadia.Assistant.Configuration.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Organization\Arcadia.Assistant.Organization.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Server\Arcadia.Assistant.Server.csproj" />
   </ItemGroup>
