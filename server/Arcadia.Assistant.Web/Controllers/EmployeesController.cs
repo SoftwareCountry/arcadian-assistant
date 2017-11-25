@@ -9,6 +9,7 @@
     using Microsoft.AspNetCore.Mvc;
 
     using Arcadia.Assistant.Organization;
+    using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Server.Interop;
 
     [Route("api/employees")]

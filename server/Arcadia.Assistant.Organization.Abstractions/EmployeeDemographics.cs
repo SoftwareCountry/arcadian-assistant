@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.Organization
+﻿namespace Arcadia.Assistant.Organization.Abstractions
 {
     using System;
 
@@ -23,16 +23,21 @@
 
         public DateTime HireDate { get; set; }
 
-        public DateTime BirthDate { get; set; }
+        public DateTime? BirthDate { get; set; }
 
-        public int Age => CalculateYearsFromDate(this.BirthDate);
+        public int? Age => CalculateYearsFromDate(this.BirthDate);
 
-        public int YearsServed => CalculateYearsFromDate(this.HireDate);
+        public int? YearsServed => CalculateYearsFromDate(this.HireDate);
 
-        private static int CalculateYearsFromDate(DateTime date)
+        private static int? CalculateYearsFromDate(DateTime? date)
         {
-            var years = DateTime.Now.Year - date.Year;
-            if (DateTime.Now.DayOfYear < date.DayOfYear)
+            if (date == null)
+            {
+                return null;
+            }
+
+            var years = DateTime.Now.Year - date.Value.Year;
+            if (DateTime.Now.DayOfYear < date.Value.DayOfYear)
             {
                 years = years - 1;
             }

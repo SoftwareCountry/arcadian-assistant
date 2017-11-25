@@ -1,6 +1,7 @@
 ﻿namespace Arcadia.Assistant.Organization
 {
     using Akka.Actor;
+    using Akka.DI.Core;
 
     public class EmployeeActor : UntypedActor
     {

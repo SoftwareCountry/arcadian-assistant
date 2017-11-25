@@ -4,6 +4,8 @@
 
     using Akka.Actor;
 
+    using Arcadia.Assistant.Organization.Abstractions;
+
     public class DemographicsLoaderActor : UntypedActor
     {
         private readonly string employeeId;

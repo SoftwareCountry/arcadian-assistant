@@ -7,7 +7,10 @@
 
     using Arcadia.Assistant.Configuration;
 
+    using Autofac;
+
     using Microsoft.Extensions.Configuration;
+    using Arcadia.Assistant.DI;
 
     internal class Program
     {
@@ -24,7 +27,12 @@
                 .AddCommandLine(args)
                 .Build();
 
-            using (var app = new Application(config))
+            var container = new ContainerBuilder();
+
+            container.RegisterModule(new DatabaseModule(config.GetConnectionString("ArcadiaCSP")));
+            container.RegisterModule<OrganizationModule>();
+
+            using (var app = new Application(config, container))
             {
                 app.Start();
                 Console.CancelKeyPress += OnExit;

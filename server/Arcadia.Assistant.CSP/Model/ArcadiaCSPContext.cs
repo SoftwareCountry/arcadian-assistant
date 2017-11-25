@@ -6,6 +6,11 @@ namespace Arcadia.Assistant.CSP.Model
 {
     public partial class ArcadiaCspContext : DbContext
     {
+        public ArcadiaCspContext(DbContextOptions options)
+            : base(options)
+        {
+        }
+
         public virtual DbSet<Company> Company { get; set; }
         public virtual DbSet<CompanyHistory> CompanyHistory { get; set; }
         public virtual DbSet<Cspalert> Cspalert { get; set; }
