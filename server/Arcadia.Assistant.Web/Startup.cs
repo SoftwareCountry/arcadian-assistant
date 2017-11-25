@@ -7,14 +7,22 @@ namespace Arcadia.Assistant.Web
 {
     using Akka.Actor;
     using Akka.Configuration;
+
+    using Arcadia.Assistant.Configuration;
     using Arcadia.Assistant.Server;
     using Arcadia.Assistant.Server.Interop;
 
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IHostingEnvironment env)
         {
-            this.Configuration = configuration;
+            var configBuilder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional:false, reloadOnChange:true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional:true)
+                .AddHoconContent("akka.conf", "akka", optional: false, reloadOnChange: true);
+
+            this.Configuration = configBuilder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -24,21 +32,9 @@ namespace Arcadia.Assistant.Web
         {
             services.AddMvc();
 
-            var config = ConfigurationFactory.ParseString(
-                @"
-                akka {
-                    actor {
-                        provider: remote
-                    }
-
-                remote {
-                    dot-netty.tcp {
-                        port: 0
-                    }
-                }
-            ");
-
             var systemName = "arcadia-assistant";
+
+            var config = ConfigurationFactory.ParseString(this.Configuration["akka"]);
 
             var actorSystem = ActorSystem.Create(systemName, config);
             var builder = new ActorSystemBuilder(actorSystem);

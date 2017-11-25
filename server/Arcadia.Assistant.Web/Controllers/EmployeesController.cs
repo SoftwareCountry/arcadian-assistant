@@ -1,5 +1,7 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
+    using System;
+    using System.Threading;
     using System.Threading.Tasks;
 
     using Akka.Actor;
@@ -24,10 +26,10 @@
 
         [Route("demographics")]
         // GET
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(CancellationToken token)
         {
             var employees = this.actorSystem.ActorSelection(this.pathsBuilder.Get("employees"));
-            var response = await employees.Ask<EmployeeDemographics>(new RequestDemographics(this.User.Identity.Name));
+            var response = await employees.Ask<EmployeeDemographics>(new RequestDemographics(this.User.Identity.Name), TimeSpan.FromSeconds(30), token);
             return this.Ok(response);
             //return response;
         }
