@@ -9,13 +9,13 @@
 
     public class EmployeesActor : UntypedActor
     {
-        private readonly IAllEmployeesQuery allEmployeesQuery;
+        private readonly IActorRef allEmployeesQuery;
 
         private Dictionary<string, IActorRef> EmployeesById { get; } = new Dictionary<string, IActorRef>();
 
-        public EmployeesActor(IAllEmployeesQuery allEmployeesQuery)
+        public EmployeesActor()
         {
-            this.allEmployeesQuery = allEmployeesQuery;
+            this.allEmployeesQuery = Context.ActorOf(Context.DI().Props<AllEmployeesQuery>());
             this.Self.Tell("LOAD_ALL");
         }
 
@@ -25,10 +25,10 @@
             {
                 case "LOAD_ALL":
                     {
-                        this.allEmployeesQuery.GetAllEmployeeIds().PipeTo(this.Self);
+                        this.allEmployeesQuery.Tell(AllEmployeesQuery.RequestAllEmployeeIds.Instance);
                         break;
                     }
-                case string[] employeeIds:
+                case AllEmployeesQuery.RequestAllEmployeeIds.Response allEmployees:
                     {
                         break;
                     }

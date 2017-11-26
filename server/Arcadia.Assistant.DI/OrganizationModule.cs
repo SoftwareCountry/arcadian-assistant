@@ -6,6 +6,8 @@
 
     using Autofac;
 
+    using AllEmployeesQuery = Arcadia.Assistant.Organization.Abstractions.AllEmployeesQuery;
+
     public class OrganizationModule : Module
     {
         protected override void Load(ContainerBuilder builder)
@@ -13,7 +15,7 @@
             builder.RegisterType<EmployeesActor>().AsSelf();
             builder.RegisterType<DemographicsLoaderActor>().AsSelf();
 
-            builder.RegisterType<AllEmployeesQuery>().As<IAllEmployeesQuery>();
+            builder.RegisterType<CSP.AllEmployeesQueryImp>().As<AllEmployeesQuery>();
         }
     }
 }
