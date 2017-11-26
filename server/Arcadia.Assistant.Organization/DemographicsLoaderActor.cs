@@ -19,10 +19,10 @@
         {
             switch (message)
             {
-                case RequestDemographics request when request.EmployeeId == this.employeeId:
+                case OrganizationRequests.RequestEmployeeInfo request when request.EmployeeId == this.employeeId:
 
                     this.Sender.Tell(
-                        new EmployeeDemographics(this.employeeId)
+                        new EmployeeInfo(this.employeeId)
                         {
                             BirthDate = new DateTime(1980, 6, 1),
                             HireDate = new DateTime(2012, 10, 1),
@@ -31,6 +31,10 @@
                             PhotoBase64 = null,
                             Sex = Sex.Male
                         });
+                    break;
+
+                default:
+                    this.Unhandled(message);
                     break;
             }
         }

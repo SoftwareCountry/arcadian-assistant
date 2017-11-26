@@ -3,14 +3,17 @@
     using Akka.Actor;
     using Akka.DI.Core;
 
+    using Arcadia.Assistant.Organization.Abstractions;
+
     public class EmployeeActor : UntypedActor
     {
-        private readonly IActorRef demographicsLoader;
+        private readonly IActorRef infoLoader;
 
         public EmployeeActor(string employeeId)
         {
             this.EmployeeId = employeeId;
-            this.demographicsLoader = Context.ActorOf(Props.Create(() => new DemographicsLoaderActor(employeeId)), "demographics-loader");
+
+            this.infoLoader = Context.ActorOf(EmployeeInfoQuery.Props, "info-loader");
         }
 
         private string EmployeeId { get; }
@@ -19,8 +22,12 @@
         {
             switch (message)
             {
-                case RequestDemographics request when this.EmployeeId == request.EmployeeId:
-                    this.demographicsLoader.Forward(request);
+                case OrganizationRequests.RequestEmployeeInfo request when this.EmployeeId == request.EmployeeId:
+                    this.infoLoader.Forward(request);
+                    break;
+
+                default:
+                    this.Unhandled(message);
                     break;
             }
         }

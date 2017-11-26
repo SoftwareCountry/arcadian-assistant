@@ -9,23 +9,25 @@
 
     using Microsoft.EntityFrameworkCore;
 
-    public class EmployeeInfoQuery : IEmployeeInfoQuery
+    public class EmployeeInfoQueryImpl : EmployeeInfoQuery
     {
         private readonly Func<ArcadiaCspContext> contextFactory;
 
-        public EmployeeInfoQuery(Func<ArcadiaCspContext> contextFactory)
+        public EmployeeInfoQueryImpl(Func<ArcadiaCspContext> contextFactory)
         {
             this.contextFactory = contextFactory;
         }
 
-        public async Task<EmployeeDemographics> GetEmployeeDemographics(string employeeId)
+        protected override async Task<OrganizationRequests.RequestEmployeeInfo.Success> GetEmployeeDemographics(string employeeId)
         {
+            var dbId = long.Parse(employeeId);
+
             using (var context = this.contextFactory())
             {
-                return await context
+                var employeeInfo = await context
                     .Employee
-                    .Where(x => x.Sid.GetValueOrDefault().ToString() == employeeId)
-                    .Select(x => new EmployeeDemographics(employeeId)
+                    .Where(x => x.Id == dbId)
+                    .Select(x => new EmployeeInfo(employeeId)
                         {
                             BirthDate = x.Birthday,
                             Email = x.Email,
@@ -40,6 +42,8 @@
                         })
                     .FirstOrDefaultAsync()
                     .ConfigureAwait(false);
+
+                return new OrganizationRequests.RequestEmployeeInfo.Success(employeeInfo);
             }
         }
     }

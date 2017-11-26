@@ -3,12 +3,13 @@
     using System.Threading.Tasks;
 
     using Akka.Actor;
+    using Akka.DI.Core;
 
     public abstract class AllEmployeesQuery : UntypedActor
     {
         public class RequestAllEmployeeIds
         {
-            public static RequestAllEmployeeIds Instance = new RequestAllEmployeeIds();
+            public static readonly RequestAllEmployeeIds Instance = new RequestAllEmployeeIds();
 
             public class Response
             {
@@ -36,5 +37,7 @@
         }
 
         protected abstract Task<RequestAllEmployeeIds.Response> GetAllEmployeeIds();
+
+        public static Props Props => Context.DI().Props<AllEmployeesQuery>();
     }
 }

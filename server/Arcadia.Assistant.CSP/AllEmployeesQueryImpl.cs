@@ -9,11 +9,11 @@
 
     using Microsoft.EntityFrameworkCore;
 
-    public class AllEmployeesQueryImp : AllEmployeesQuery
+    public class AllEmployeesQueryImpl : AllEmployeesQuery
     {
         private readonly Func<ArcadiaCspContext> contextFactory;
 
-        public AllEmployeesQueryImp(Func<ArcadiaCspContext> contextFactory)
+        public AllEmployeesQueryImpl(Func<ArcadiaCspContext> contextFactory)
         {
             this.contextFactory = contextFactory;
         }
@@ -25,7 +25,7 @@
                 var ids = await context
                 .Employee
                 .Where(x => x.IsWorking && (x.Sid != null))
-                .Select(x => x.Sid.Value.ToString())
+                .Select(x => x.Id.ToString())
                 .ToArrayAsync()
                 .ConfigureAwait(false);
 

@@ -4,9 +4,9 @@
 
     public enum Sex { Male, Female, Undefined }
 
-    public class EmployeeDemographics
+    public class EmployeeInfo
     {
-        public EmployeeDemographics(string employeeId)
+        public EmployeeInfo(string employeeId)
         {
             this.EmployeeId = employeeId;
         }

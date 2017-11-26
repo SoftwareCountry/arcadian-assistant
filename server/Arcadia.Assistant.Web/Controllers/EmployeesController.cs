@@ -25,14 +25,30 @@
             this.pathsBuilder = pathsBuilder;
         }
 
-        [Route("demographics")]
-        // GET
-        public async Task<IActionResult> Index(CancellationToken token)
+        [Route("all")]
+        [ProducesResponseType(typeof(EmployeeInfo[]), 200)]
+        public async Task<IActionResult> All(CancellationToken token)
+        {
+            return this.Ok();
+        }
+
+        [Route("{id}")]
+        [ProducesResponseType(typeof(EmployeeInfo), 200)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetById(string id, CancellationToken token)
         {
             var employees = this.actorSystem.ActorSelection(this.pathsBuilder.Get("employees"));
-            var response = await employees.Ask<EmployeeDemographics>(new RequestDemographics("alexander.shevnin"), TimeSpan.FromSeconds(30), token);
-            return this.Ok(response);
-            //return response;
+            var response = await employees.Ask(new OrganizationRequests.RequestEmployeeInfo(id), TimeSpan.FromSeconds(30), token);
+
+            switch (response)
+            {
+                case OrganizationRequests.RequestEmployeeInfo.Success value:
+                    return this.Ok(value.EmployeeInfo);
+                case OrganizationRequests.RequestEmployeeInfo.EmployeeNotFound _:
+                    return this.NotFound();
+                default:
+                    return this.StatusCode(500);
+            }
         }
     }
 }

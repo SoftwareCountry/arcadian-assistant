@@ -1,6 +1,9 @@
 ﻿namespace Arcadia.Assistant.Organization
 {
+    using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
+    using System.Linq;
 
     using Akka.Actor;
     using Akka.DI.Core;
@@ -15,34 +18,59 @@
 
         public EmployeesActor()
         {
-            this.allEmployeesQuery = Context.ActorOf(Context.DI().Props<AllEmployeesQuery>());
-            this.Self.Tell("LOAD_ALL");
+            this.allEmployeesQuery = Context.ActorOf(AllEmployeesQuery.Props);
+
+            //Start loading
+            this.Self.Tell(AllEmployeesQuery.RequestAllEmployeeIds.Instance);
         }
 
         protected override void OnReceive(object message)
         {
             switch (message)
             {
-                case "LOAD_ALL":
+                case AllEmployeesQuery.RequestAllEmployeeIds _:
                     {
                         this.allEmployeesQuery.Tell(AllEmployeesQuery.RequestAllEmployeeIds.Instance);
                         break;
                     }
                 case AllEmployeesQuery.RequestAllEmployeeIds.Response allEmployees:
                     {
+                        this.RecreateEmployeeAgents(allEmployees.Ids);
                         break;
                     }
 
-                case RequestDemographics request:
-
+                case OrganizationRequests.RequestEmployeeInfo request:
                     if (!this.EmployeesById.TryGetValue(request.EmployeeId, out var employee))
                     {
-                        employee = Context.ActorOf(Props.Create(() => new EmployeeActor(request.EmployeeId)));
-                        this.EmployeesById.Add(request.EmployeeId, employee);
+                        this.Sender.Tell(new OrganizationRequests.RequestEmployeeInfo.EmployeeNotFound(request.EmployeeId));
                     }
-
-                    employee.Forward(request);
+                    else
+                    {
+                        employee.Forward(request);
+                    }
                     break;
+
+                default:
+                    this.Unhandled(message);
+                    break;
+            }
+        }
+
+        private void RecreateEmployeeAgents(string[] allEmployees)
+        {
+            var removedIds = this.EmployeesById.Keys.Except(allEmployees).ToImmutableList();
+            var addedIds = allEmployees.Except(this.EmployeesById.Keys).ToImmutableList();
+
+            foreach (var removedId in removedIds)
+            {
+                this.EmployeesById[removedId].Tell(PoisonPill.Instance);
+                this.EmployeesById.Remove(removedId);
+            }
+
+            foreach (var addedId in addedIds)
+            {
+                var employee = Context.ActorOf(Props.Create(() => new EmployeeActor(addedId)), Uri.EscapeDataString(addedId));
+                this.EmployeesById[addedId] = employee;
             }
         }
     }
