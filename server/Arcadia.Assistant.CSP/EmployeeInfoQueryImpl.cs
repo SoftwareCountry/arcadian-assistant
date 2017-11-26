@@ -40,8 +40,7 @@
                                     ? Sex.Female
                                     : Sex.Undefined
                         })
-                    .FirstOrDefaultAsync()
-                    .ConfigureAwait(false);
+                    .FirstOrDefaultAsync();
 
                 return new OrganizationRequests.RequestEmployeeInfo.Success(employeeInfo);
             }

@@ -26,8 +26,7 @@
                 .Employee
                 .Where(x => x.IsWorking && (x.Sid != null))
                 .Select(x => x.Id.ToString())
-                .ToArrayAsync()
-                .ConfigureAwait(false);
+                .ToArrayAsync();
 
                 return new RequestAllEmployeeIds.Response(ids);
             }

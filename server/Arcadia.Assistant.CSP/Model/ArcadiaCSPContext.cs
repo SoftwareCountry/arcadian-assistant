@@ -29,14 +29,6 @@ namespace Arcadia.Assistant.CSP.Model
         public virtual DbSet<Team> Team { get; set; }
         public virtual DbSet<TeamHistory> TeamHistory { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer(@"Server=.\;Database=ArcadiaCSP;Trusted_Connection=True;");
-            }
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Company>(entity =>

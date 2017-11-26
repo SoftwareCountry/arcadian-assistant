@@ -7,6 +7,7 @@
 
     using Akka.Actor;
     using Akka.DI.Core;
+    using Akka.Event;
 
     using Arcadia.Assistant.Organization.Abstractions;
 
@@ -16,9 +17,19 @@
 
         private Dictionary<string, IActorRef> EmployeesById { get; } = new Dictionary<string, IActorRef>();
 
+        private readonly ILoggingAdapter logger = Context.GetLogger();
+
         public EmployeesActor()
         {
             this.allEmployeesQuery = Context.ActorOf(AllEmployeesQuery.Props);
+
+            //TODO: make interval configurable
+            Context.System.Scheduler.ScheduleTellRepeatedly(
+                TimeSpan.Zero,
+                TimeSpan.FromMinutes(10),
+                this.allEmployeesQuery,
+                AllEmployeesQuery.RequestAllEmployeeIds.Instance,
+                this.Self);
 
             //Start loading
             this.Self.Tell(AllEmployeesQuery.RequestAllEmployeeIds.Instance);
@@ -28,26 +39,21 @@
         {
             switch (message)
             {
-                case AllEmployeesQuery.RequestAllEmployeeIds _:
-                    {
-                        this.allEmployeesQuery.Tell(AllEmployeesQuery.RequestAllEmployeeIds.Instance);
-                        break;
-                    }
+                case AllEmployeesQuery.RequestAllEmployeeIds msg:
+                    this.logger.Debug("Requesting employees list update...");
+                    this.allEmployeesQuery.Tell(msg);
+                    break;
+
                 case AllEmployeesQuery.RequestAllEmployeeIds.Response allEmployees:
-                    {
-                        this.RecreateEmployeeAgents(allEmployees.Ids);
-                        break;
-                    }
+                    this.RecreateEmployeeAgents(allEmployees.Ids);
+                    break;
+
+                case OrganizationRequests.RequestEmployeeInfo request when this.EmployeesById.ContainsKey(request.EmployeeId):
+                    this.EmployeesById[request.EmployeeId].Forward(request);
+                    break;
 
                 case OrganizationRequests.RequestEmployeeInfo request:
-                    if (!this.EmployeesById.TryGetValue(request.EmployeeId, out var employee))
-                    {
-                        this.Sender.Tell(new OrganizationRequests.RequestEmployeeInfo.EmployeeNotFound(request.EmployeeId));
-                    }
-                    else
-                    {
-                        employee.Forward(request);
-                    }
+                    this.Sender.Tell(new OrganizationRequests.RequestEmployeeInfo.EmployeeNotFound(request.EmployeeId));
                     break;
 
                 default:
@@ -72,6 +78,8 @@
                 var employee = Context.ActorOf(Props.Create(() => new EmployeeActor(addedId)), Uri.EscapeDataString(addedId));
                 this.EmployeesById[addedId] = employee;
             }
+
+            this.logger.Debug("Employees list is updated");
         }
     }
 }
