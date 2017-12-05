@@ -5,7 +5,7 @@
     using Akka.Actor;
     using Akka.DI.Core;
 
-    public abstract class AllEmployeesQuery : UntypedActor
+    public abstract class EmployeeIdsQuery : UntypedActor
     {
         public class RequestAllEmployeeIds
         {
@@ -38,6 +38,6 @@
 
         protected abstract Task<RequestAllEmployeeIds.Response> GetAllEmployeeIds();
 
-        public static Props Props => Context.DI().Props<AllEmployeesQuery>();
+        public static Props Props => Context.DI().Props<EmployeeIdsQuery>();
     }
 }

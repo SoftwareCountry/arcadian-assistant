@@ -19,33 +19,50 @@
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
+        public class GetEmployeeActor
+        {
+            public string EmployeeId { get; }
+
+            public GetEmployeeActor(string employeeId)
+            {
+                this.EmployeeId = employeeId;
+            }
+        }
+
         public EmployeesActor()
         {
-            this.allEmployeesQuery = Context.ActorOf(AllEmployeesQuery.Props);
+            this.allEmployeesQuery = Context.ActorOf(EmployeeIdsQuery.Props);
 
             //TODO: make interval configurable
             Context.System.Scheduler.ScheduleTellRepeatedly(
                 TimeSpan.Zero,
                 TimeSpan.FromMinutes(10),
                 this.allEmployeesQuery,
-                AllEmployeesQuery.RequestAllEmployeeIds.Instance,
+                EmployeeIdsQuery.RequestAllEmployeeIds.Instance,
                 this.Self);
 
             //Start loading
-            this.Self.Tell(AllEmployeesQuery.RequestAllEmployeeIds.Instance);
+            this.Self.Tell(EmployeeIdsQuery.RequestAllEmployeeIds.Instance);
         }
 
         protected override void OnReceive(object message)
         {
             switch (message)
             {
-                case AllEmployeesQuery.RequestAllEmployeeIds msg:
+                case EmployeeIdsQuery.RequestAllEmployeeIds msg:
                     this.logger.Debug("Requesting employees list update...");
                     this.allEmployeesQuery.Tell(msg);
                     break;
 
-                case AllEmployeesQuery.RequestAllEmployeeIds.Response allEmployees:
+                case EmployeeIdsQuery.RequestAllEmployeeIds.Response allEmployees:
                     this.RecreateEmployeeAgents(allEmployees.Ids);
+                    break;
+
+                case GetEmployeeActor request when this.EmployeesById.ContainsKey(request.EmployeeId):
+                    this.Sender.Tell(this.EmployeesById[request.EmployeeId]);
+                    break;
+                case GetEmployeeActor request:
+                    this.Sender.Tell(Nobody.Instance);
                     break;
 
                 case OrganizationRequests.RequestEmployeeInfo request when this.EmployeesById.ContainsKey(request.EmployeeId):

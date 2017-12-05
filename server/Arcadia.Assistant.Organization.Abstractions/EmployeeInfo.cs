@@ -17,6 +17,10 @@
 
         public Sex Sex { get; set; } = Sex.Undefined;
 
+        public string PhotoBase64Min { get; set; }
+
+        public string DepartmentId { get; set; }
+
         public string PhotoBase64 { get; set; }
 
         public string Email { get; set; }

@@ -9,11 +9,11 @@
 
     using Microsoft.EntityFrameworkCore;
 
-    public class EmployeeInfoQueryImpl : EmployeeInfoQuery
+    public class CspEmployeeInfoQuery : EmployeeInfoQuery
     {
         private readonly Func<ArcadiaCspContext> contextFactory;
 
-        public EmployeeInfoQueryImpl(Func<ArcadiaCspContext> contextFactory)
+        public CspEmployeeInfoQuery(Func<ArcadiaCspContext> contextFactory)
         {
             this.contextFactory = contextFactory;
         }
