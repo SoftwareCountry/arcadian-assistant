@@ -14,7 +14,7 @@
 
     internal class Program
     {
-        private static readonly AutoResetEvent closing = new AutoResetEvent(false);
+        private static readonly AutoResetEvent Closing = new AutoResetEvent(false);
 
         public static void Main(string[] args)
         {
@@ -36,14 +36,14 @@
             {
                 app.Start();
                 Console.CancelKeyPress += OnExit;
-                closing.WaitOne();
+                Closing.WaitOne();
             }
         }
 
         private static void OnExit(object sender, ConsoleCancelEventArgs args)
         {
             Console.WriteLine("Exiting...");
-            closing.Set();
+            Closing.Set();
         }
     }
 }

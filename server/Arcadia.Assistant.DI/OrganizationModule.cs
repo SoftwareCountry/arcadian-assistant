@@ -11,6 +11,8 @@
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<EmployeesActor>().AsSelf();
+            builder.RegisterType<DepartmentsActor>().AsSelf();
+
             builder.RegisterType<DepartmentsQuery>().AsSelf();
 
             builder.RegisterType<CspDepartmentsQuery>().As<DepartmentsQuery>();
