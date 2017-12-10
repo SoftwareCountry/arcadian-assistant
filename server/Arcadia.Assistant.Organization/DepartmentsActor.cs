@@ -6,12 +6,31 @@
     using System.Linq;
 
     using Akka.Actor;
-    using Akka.DI.Core;
 
     using Arcadia.Assistant.Organization.Abstractions;
 
     public class DepartmentsActor : UntypedActor
     {
+        public class FindDepartment
+        {
+            public string DepartmentId { get; }
+
+            public FindDepartment(string departmentId)
+            {
+                this.DepartmentId = departmentId;
+            }
+
+            public class Result
+            {
+                public IActorRef Department { get; }
+
+                public Result(IActorRef department)
+                {
+                    this.Department = department;
+                }
+            }
+        }
+
         private readonly IActorRef departmentsQuery;
 
         private Dictionary<string, IActorRef> DepartmentsById { get; } = new Dictionary<string, IActorRef>();
@@ -37,8 +56,21 @@
                 case DepartmentsQuery.RequestAllDepartments request:
                     this.departmentsQuery.Tell(request);
                     break;
+
                 case DepartmentsQuery.RequestAllDepartments.Response response:
                     this.RecreateAgents(response.Departments);
+                    break;
+
+                case FindDepartment request when this.DepartmentsById.ContainsKey(request.DepartmentId):
+                    this.Sender.Tell(new FindDepartment.Result(this.DepartmentsById[request.DepartmentId]));
+                    break;
+
+                case FindDepartment _:
+                    this.Sender.Tell(new FindDepartment.Result(Nobody.Instance));
+                    break;
+
+                default:
+                    this.Unhandled(message);
                     break;
             }
         }
