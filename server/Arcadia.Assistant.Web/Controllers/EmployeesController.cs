@@ -25,7 +25,7 @@
             this.pathsBuilder = pathsBuilder;
         }
 
-        [Route("all")]
+        [Route("")]
         [ProducesResponseType(typeof(EmployeeInfo[]), 200)]
         public async Task<IActionResult> All(CancellationToken token)
         {
@@ -37,7 +37,7 @@
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetById(string id, CancellationToken token)
         {
-            var employees = this.actorSystem.ActorSelection(this.pathsBuilder.Get("employees"));
+            var employees = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
             var response = await employees.Ask(new OrganizationRequests.RequestEmployeeInfo(id), TimeSpan.FromSeconds(30), token);
 
             switch (response)

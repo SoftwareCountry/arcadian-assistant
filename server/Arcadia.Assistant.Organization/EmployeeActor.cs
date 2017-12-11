@@ -7,23 +7,19 @@
 
     public class EmployeeActor : UntypedActor
     {
-        private readonly IActorRef infoLoader;
+        private readonly EmployeeInfo employeeInfo;
 
-        public EmployeeActor(string employeeId)
+        public EmployeeActor(EmployeeInfo info)
         {
-            this.EmployeeId = employeeId;
-
-            this.infoLoader = Context.ActorOf(EmployeeInfoQuery.Props, "info-loader");
+            this.employeeInfo = info;
         }
-
-        private string EmployeeId { get; }
 
         protected override void OnReceive(object message)
         {
             switch (message)
             {
-                case OrganizationRequests.RequestEmployeeInfo request when this.EmployeeId == request.EmployeeId:
-                    this.infoLoader.Forward(request);
+                case OrganizationRequests.RequestEmployeeInfo request when this.employeeInfo.EmployeeId == request.EmployeeId:
+                    this.Sender.Tell(new OrganizationRequests.RequestEmployeeInfo.Success(this.employeeInfo));
                     break;
 
                 default:
@@ -31,5 +27,7 @@
                     break;
             }
         }
+
+        public static Props Props(EmployeeInfo employeeInfo) => Akka.Actor.Props.Create(() => new EmployeeActor(employeeInfo));
     }
 }

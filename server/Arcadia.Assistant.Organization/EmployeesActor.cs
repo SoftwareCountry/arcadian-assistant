@@ -6,62 +6,36 @@
     using System.Linq;
 
     using Akka.Actor;
-    using Akka.DI.Core;
     using Akka.Event;
 
     using Arcadia.Assistant.Organization.Abstractions;
 
     public class EmployeesActor : UntypedActor, IWithUnboundedStash
     {
-        private readonly IActorRef allEmployeesQuery;
+        private readonly string departmentId;
+
+        private readonly IActorRef employeesInfoStorage;
 
         private Dictionary<string, IActorRef> EmployeesById { get; } = new Dictionary<string, IActorRef>();
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
-        public class FindEmployee
+        public IStash Stash { get; set; }
+
+        public EmployeesActor(string departmentId)
         {
-            public string EmployeeId { get; }
+            this.departmentId = departmentId;
 
-            public FindEmployee(string employeeId)
-            {
-                this.EmployeeId = employeeId;
-            }
-
-            public class Response
-            {
-                public string EmployeeId { get; }
-
-                public IActorRef Employee { get; }
-
-                public Response(string employeeId, IActorRef employee)
-                {
-                    this.EmployeeId = employeeId;
-                    this.Employee = employee;
-                }
-            }
-        }
-
-        public EmployeesActor()
-        {
-            this.allEmployeesQuery = Context.ActorOf(EmployeeIdsQuery.Props);
-
-            //TODO: make interval configurable
-            Context.System.Scheduler.ScheduleTellRepeatedly(
-                TimeSpan.Zero,
-                TimeSpan.FromMinutes(10),
-                this.allEmployeesQuery,
-                EmployeeIdsQuery.RequestAllEmployeeIds.Instance,
-                this.Self);
+            this.employeesInfoStorage = Context.ActorOf(EmployeesInfoStorage.Props, "employees-storage");
         }
 
         protected override void OnReceive(object message)
         {
             switch (message)
             {
-                case EmployeeIdsQuery.RequestAllEmployeeIds msg:
+                case RefreshEmployees _:
                     this.logger.Debug("Requesting employees list update...");
-                    this.allEmployeesQuery.Tell(msg);
+                    this.employeesInfoStorage.Tell(new EmployeesInfoStorage.LoadDepartmentsEmployees(this.departmentId));
                     this.BecomeStacked(this.LoadingEmployees);
                     break;
 
@@ -90,17 +64,17 @@
         {
             switch (message)
             {
-                case EmployeeIdsQuery.RequestAllEmployeeIds _:
+                case RefreshEmployees _:
                     this.logger.Debug("Employees loading is requested while loading is still in progress, ignoring");
                     break;
 
-                case EmployeeIdsQuery.RequestAllEmployeeIds.Error _:
+                case EmployeesInfoStorage.LoadDepartmentsEmployees.Error _:
                     this.Stash.UnstashAll();
                     this.UnbecomeStacked();
                     break;
 
-                case EmployeeIdsQuery.RequestAllEmployeeIds.Response allEmployees:
-                    this.RecreateEmployeeAgents(allEmployees.Ids);
+                case EmployeesInfoStorage.LoadDepartmentsEmployees.Response allEmployees:
+                    this.RecreateEmployeeAgents(allEmployees.Employees);
                     this.Stash.UnstashAll();
                     this.UnbecomeStacked();
                     break;
@@ -111,10 +85,10 @@
             }
         }
 
-        private void RecreateEmployeeAgents(string[] allEmployees)
+        private void RecreateEmployeeAgents(IReadOnlyCollection<EmployeeInfo> allEmployees)
         {
-            var removedIds = this.EmployeesById.Keys.Except(allEmployees).ToImmutableList();
-            var addedIds = allEmployees.Except(this.EmployeesById.Keys).ToImmutableList();
+            var removedIds = this.EmployeesById.Keys.Except(allEmployees.Select(x => x.EmployeeId)).ToImmutableList();
+            var addedEmployees = allEmployees.Where(x => !this.EmployeesById.ContainsKey(x.EmployeeId)).ToImmutableList();
 
             foreach (var removedId in removedIds)
             {
@@ -122,15 +96,43 @@
                 this.EmployeesById.Remove(removedId);
             }
 
-            foreach (var addedId in addedIds)
+            foreach (var addedEmployee in addedEmployees)
             {
-                var employee = Context.ActorOf(Props.Create(() => new EmployeeActor(addedId)), Uri.EscapeDataString(addedId));
-                this.EmployeesById[addedId] = employee;
+                var employee = Context.ActorOf(EmployeeActor.Props(addedEmployee), Uri.EscapeDataString(addedEmployee.EmployeeId));
+                this.EmployeesById[addedEmployee.EmployeeId] = employee;
             }
 
-            this.logger.Debug("Employees list is updated");
+            this.logger.Debug($"Employees list is updated for {this.departmentId} department");
         }
 
-        public IStash Stash { get; set; }
+        public class FindEmployee
+        {
+            public string EmployeeId { get; }
+
+            public FindEmployee(string employeeId)
+            {
+                this.EmployeeId = employeeId;
+            }
+
+            public class Response
+            {
+                public string EmployeeId { get; }
+
+                public IActorRef Employee { get; }
+
+                public Response(string employeeId, IActorRef employee)
+                {
+                    this.EmployeeId = employeeId;
+                    this.Employee = employee;
+                }
+            }
+        }
+
+        public sealed class RefreshEmployees
+        {
+            public static readonly RefreshEmployees Instance = new RefreshEmployees();
+        }
+
+        public static Props Props(string departmentId) => Akka.Actor.Props.Create(() => new EmployeesActor(departmentId));
     }
 }

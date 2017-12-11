@@ -18,11 +18,10 @@
 
         public ServerActorsCollection AddRootActors()
         {
-            var employees =this.actorSystem.ActorOf(this.actorSystem.DI().Props<EmployeesActor>(), "employees");
-            var departments = this.actorSystem.ActorOf(this.actorSystem.DI().Props<DepartmentsActor>(), "departments");
+            var departments = this.actorSystem.ActorOf(this.actorSystem.DI().Props<OrganizationActor>(), "organization");
             var helpdesk = this.actorSystem.ActorOf(Props.Create(() => new HelpdeskActor()), "helpdesk");
 
-            return new ServerActorsCollection(employees, helpdesk);
+            return new ServerActorsCollection(departments, helpdesk);
         }
     }
 }

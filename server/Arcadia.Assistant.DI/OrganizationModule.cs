@@ -11,13 +11,12 @@
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<EmployeesActor>().AsSelf();
-            builder.RegisterType<DepartmentsActor>().AsSelf();
+            builder.RegisterType<OrganizationActor>().AsSelf();
 
-            builder.RegisterType<DepartmentsQuery>().AsSelf();
+            builder.RegisterType<DepartmentsStorage>().AsSelf();
 
-            builder.RegisterType<CspDepartmentsQuery>().As<DepartmentsQuery>();
-            builder.RegisterType<CspEmployeeIdsQuery>().As<EmployeeIdsQuery>();
-            builder.RegisterType<CspEmployeeInfoQuery>().As<EmployeeInfoQuery>();
+            builder.RegisterType<CspDepartmentsStorage>().As<DepartmentsStorage>();
+            builder.RegisterType<CspEmployeesInfoStorage>().As<EmployeesInfoStorage>();
         }
     }
 }

@@ -4,14 +4,14 @@
 
     public class ServerActorsCollection
     {
-        public ServerActorsCollection(IActorRef helpdesk, IActorRef employees)
+        public ServerActorsCollection(IActorRef helpdesk, IActorRef departments)
         {
             this.Helpdesk = helpdesk;
-            this.Employees = employees;
+            this.Departments = departments;
         }
 
         public IActorRef Helpdesk { get; }
 
-        public IActorRef Employees { get; }
+        public IActorRef Departments { get; }
     }
 }
