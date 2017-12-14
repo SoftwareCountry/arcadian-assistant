@@ -1,4 +1,4 @@
-import { RootNavigator } from '../layout/root-navigator';
+import { RootNavigator } from '../tabbar/tab-navigator';
 import { NavigationAction, NavigationState } from 'react-navigation';
 
 export const navigationReducer = (state: NavigationState, action: NavigationAction) => {
