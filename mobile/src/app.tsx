@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, BackHandler } from 'react-native';
 
-import { RootNavigator } from './layout/root-navigator';
+import { RootNavigator } from './tabbar/tab-navigator';
 import { AppState, storeFactory } from './reducers/app.reducer';
 import { connect, Provider, Dispatch } from 'react-redux';
 import { addNavigationHelpers, NavigationState, NavigationActions } from 'react-navigation';
