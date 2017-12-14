@@ -34,7 +34,7 @@
             switch (message)
             {
                 case RefreshEmployees _:
-                    this.logger.Debug("Requesting employees list update...");
+                    this.logger.Debug($"Requesting employees list update for ${this.departmentId}...");
                     this.employeesInfoStorage.Tell(new EmployeesInfoStorage.LoadDepartmentsEmployees(this.departmentId));
                     this.BecomeStacked(this.LoadingEmployees);
                     break;

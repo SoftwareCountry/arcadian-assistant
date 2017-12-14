@@ -1,6 +1,7 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
     using System;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -25,12 +26,12 @@
         }
 
         [Route("")]
-        //[ProducesResponseType(typeof(Department[]), 200)]
+        [ProducesResponseType(typeof(Department[]), 200)]
         public async Task<IActionResult> All(CancellationToken token)
         {
             var employees = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
             var response = await employees.Ask<OrganizationRequests.RequestDepartments.Response>(new OrganizationRequests.RequestDepartments(), TimeSpan.FromSeconds(30), token);
-            return this.Ok(response.Departments);
+            return this.Ok(response.Departments.Select(x => x.Department).ToArray());
         }
     }
 }

@@ -45,11 +45,13 @@
 
         protected override async Task<LoadChildDepartments.Response> GetChildDepartments(string departmentId)
         {
+            var id = long.Parse(departmentId);
+
             using (var context = this.contextFactory())
             {
                 var departments = await context
                     .Department
-                    .Where(x => x.ParentDepartmentId.ToString() == departmentId) //TODO: fix hard code
+                    .Where(x => (x.ParentDepartmentId == id) && (x.Id != id)) //TODO: fix hard code
                     .Select(this.MapDepartment)
                     .ToListAsync();
 

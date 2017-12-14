@@ -25,31 +25,24 @@
 
             using (var context = this.contextFactory())
             {
-                try
-                {
-                    var employees = await context
-                        .Employee
-                        .Where(x => x.DepartmentId == dbId)
-                        .Select(x => new EmployeeInfo(x.Id.ToString())
-                        {
-                            BirthDate = x.Birthday,
-                            Email = x.Email,
-                            HireDate = x.HiringDate,
-                            Name = $"{x.LastName}, {x.FirstName} {x.MiddleName}".Trim(),
-                            PhotoBase64 = x.Image == null ? null : Convert.ToBase64String(x.Image),
-                            Sex = x.Gender == "M"
-                                    ? Sex.Male
-                                    : x.Gender == "F"
-                                        ? Sex.Female
-                                        : Sex.Undefined
-                        })
-                        .ToListAsync();
-                    return new LoadDepartmentsEmployees.Response(employees);
-                }
-                catch (Exception e)
-                {  }
-
-                return new LoadDepartmentsEmployees.Response(new List<EmployeeInfo>());
+                var employees = await context
+                    .Employee
+                    .Where(x => x.DepartmentId == dbId)
+                    .Select(x => new EmployeeInfo(x.Id.ToString())
+                    {
+                        BirthDate = x.Birthday,
+                        Email = x.Email,
+                        HireDate = x.HiringDate,
+                        Name = $"{x.LastName}, {x.FirstName} {x.MiddleName}".Trim(),
+                        PhotoBase64 = x.Image == null ? null : Convert.ToBase64String(x.Image),
+                        Sex = x.Gender == "M"
+                                ? Sex.Male
+                                : x.Gender == "F"
+                                    ? Sex.Female
+                                    : Sex.Undefined
+                    })
+                    .ToListAsync();
+                return new LoadDepartmentsEmployees.Response(employees);
             }
         }
     }

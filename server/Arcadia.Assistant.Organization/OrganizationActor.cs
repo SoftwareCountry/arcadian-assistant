@@ -51,7 +51,7 @@
                     //TODO: null reference exception possible
                     var search = Context.ActorOf(Props.Create(() => new DepartmentsSearch(this.headDepartment.actor, null)));
                     search.Forward(DepartmentsSearch.GetResults.Instance);
-                    search.Tell(PoisonPill.Instance);
+                    //search.Tell(PoisonPill.Instance);
                     break;
 
                 default:
