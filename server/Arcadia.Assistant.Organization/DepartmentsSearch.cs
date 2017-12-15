@@ -6,11 +6,18 @@
 
     using Arcadia.Assistant.Organization.Abstractions;
 
+    /// <summary>
+    /// Makes a search across root and all child departments, 
+    /// then sends <c>OrganizationRequests.RequestDepartments.Response</c> message to all <c>requesters</c>, 
+    /// then kills itself.
+    /// </summary>
     public class DepartmentsSearch : UntypedActor, IWithUnboundedStash
     {
         private readonly IActorRef searchRootDepartment;
 
         private readonly string pattern;
+
+        private readonly HashSet<IActorRef> requesters;
 
         private readonly HashSet<IActorRef> actorsToReply = new HashSet<IActorRef>();
 
@@ -18,10 +25,22 @@
 
         public IStash Stash { get; set; }
 
-        public DepartmentsSearch(IActorRef searchRootDepartment, string pattern = null)
+        public DepartmentsSearch(IActorRef searchRootDepartment, IEnumerable<IActorRef> requesters, string pattern = null)
         {
             this.searchRootDepartment = searchRootDepartment;
+            this.requesters = new HashSet<IActorRef>(requesters);
+
             this.pattern = pattern;
+
+            if (this.actorsToReply.Count == 0)
+            {
+                this.Self.Tell(PoisonPill.Instance);
+            }
+
+            foreach (var requester in this.requesters)
+            {
+                this.Self.Tell(GetResults.Instance, requester);
+            }
         }
 
         protected override void OnReceive(object message)
@@ -78,7 +97,16 @@
             switch (message)
             {
                 case GetResults msg:
+                    //reply back to requester
                     this.Sender.Tell(msg.Response(this.findings));
+
+                    //if no requesters left, kill itself
+                    this.requesters.Remove(this.Sender);
+                    if (this.requesters.Count == 0)
+                    {
+                        this.Self.Tell(PoisonPill.Instance);
+                    }
+
                     break;
 
                 default:
@@ -87,7 +115,7 @@
             }
         }
 
-        public class GetResults
+        private class GetResults
         {
             public static readonly GetResults Instance = new GetResults();
 
