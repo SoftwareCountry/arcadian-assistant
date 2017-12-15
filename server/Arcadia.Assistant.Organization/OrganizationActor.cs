@@ -9,6 +9,7 @@
     using Akka.Event;
 
     using Arcadia.Assistant.Organization.Abstractions;
+    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public class OrganizationActor : UntypedActor
     {
@@ -46,7 +47,7 @@
                     this.RecreateHeadDepartment(response.Department);
                     break;
 
-                case OrganizationRequests.RequestDepartments _:
+                case RequestDepartments _:
                     var requesters = new[] { this.Sender };
                     //TODO: null reference exception possible
                     Context.ActorOf(Props.Create(() => new DepartmentsSearch(this.headDepartment.actor, requesters, null)));

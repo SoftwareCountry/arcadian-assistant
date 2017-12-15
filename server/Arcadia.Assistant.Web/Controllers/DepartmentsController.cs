@@ -8,6 +8,7 @@
     using Akka.Actor;
 
     using Arcadia.Assistant.Organization.Abstractions;
+    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.Server.Interop;
 
     using Microsoft.AspNetCore.Mvc;
@@ -30,7 +31,7 @@
         public async Task<IActionResult> All(CancellationToken token)
         {
             var employees = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
-            var response = await employees.Ask<OrganizationRequests.RequestDepartments.Response>(new OrganizationRequests.RequestDepartments(), TimeSpan.FromSeconds(30), token);
+            var response = await employees.Ask<RequestDepartments.Response>(new RequestDepartments(), TimeSpan.FromSeconds(30), token);
             return this.Ok(response.Departments.Select(x => x.Department).ToArray());
         }
     }

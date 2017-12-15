@@ -4,6 +4,7 @@
     using Akka.DI.Core;
 
     using Arcadia.Assistant.Organization.Abstractions;
+    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public class EmployeeActor : UntypedActor
     {
@@ -18,8 +19,8 @@
         {
             switch (message)
             {
-                case OrganizationRequests.RequestEmployeeInfo request when this.employeeInfo.EmployeeId == request.EmployeeId:
-                    this.Sender.Tell(new OrganizationRequests.RequestEmployeeInfo.Success(this.employeeInfo));
+                case RequestEmployeeInfo request when this.employeeInfo.EmployeeId == request.EmployeeId:
+                    this.Sender.Tell(new RequestEmployeeInfo.Success(this.employeeInfo));
                     break;
 
                 default:

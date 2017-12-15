@@ -5,6 +5,7 @@
     using Akka.Actor;
 
     using Arcadia.Assistant.Organization.Abstractions;
+    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     /// <summary>
     /// Makes a search across root and all child departments, 
@@ -21,7 +22,7 @@
 
         private readonly HashSet<IActorRef> actorsToReply = new HashSet<IActorRef>();
 
-        private readonly HashSet<OrganizationRequests.RequestDepartments.DepartmentFinding> findings = new HashSet<OrganizationRequests.RequestDepartments.DepartmentFinding>();
+        private readonly HashSet<RequestDepartments.DepartmentFinding> findings = new HashSet<RequestDepartments.DepartmentFinding>();
 
         public IStash Stash { get; set; }
 
@@ -68,7 +69,7 @@
             {
                 case DepartmentActor.GetDepartmentInfo.Result result:
 
-                    this.findings.Add(new OrganizationRequests.RequestDepartments.DepartmentFinding(result.Department, result.DepartmentActor, result.Employees));
+                    this.findings.Add(new RequestDepartments.DepartmentFinding(result.Department, result.DepartmentActor, result.Employees));
 
                     foreach (var actor in result.Children)
                     {
@@ -119,9 +120,9 @@
         {
             public static readonly GetResults Instance = new GetResults();
 
-            public OrganizationRequests.RequestDepartments.Response Response(IReadOnlyCollection<OrganizationRequests.RequestDepartments.DepartmentFinding> findings)
+            public RequestDepartments.Response Response(IReadOnlyCollection<RequestDepartments.DepartmentFinding> findings)
             {
-                return new OrganizationRequests.RequestDepartments.Response(findings);
+                return new RequestDepartments.Response(findings);
             }
         }
     }

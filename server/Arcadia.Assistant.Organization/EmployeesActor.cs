@@ -9,6 +9,7 @@
     using Akka.Event;
 
     using Arcadia.Assistant.Organization.Abstractions;
+    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public class EmployeesActor : UntypedActor, IWithUnboundedStash
     {
@@ -46,12 +47,12 @@
                     this.Sender.Tell(new FindEmployee.Response(request.EmployeeId, Nobody.Instance));
                     break;
 
-                case OrganizationRequests.RequestEmployeeInfo request when this.EmployeesById.ContainsKey(request.EmployeeId):
+                case RequestEmployeeInfo request when this.EmployeesById.ContainsKey(request.EmployeeId):
                     this.EmployeesById[request.EmployeeId].Forward(request);
                     break;
 
-                case OrganizationRequests.RequestEmployeeInfo request:
-                    this.Sender.Tell(new OrganizationRequests.RequestEmployeeInfo.EmployeeNotFound(request.EmployeeId));
+                case RequestEmployeeInfo request:
+                    this.Sender.Tell(new RequestEmployeeInfo.EmployeeNotFound(request.EmployeeId));
                     break;
 
                 default:
