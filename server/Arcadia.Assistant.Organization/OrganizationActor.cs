@@ -47,7 +47,7 @@
                     this.RecreateHeadDepartment(response.Department);
                     break;
 
-                case RequestDepartments _:
+                case FindDepartments _:
                     var requesters = new[] { this.Sender };
                     //TODO: null reference exception possible
                     Context.ActorOf(Props.Create(() => new DepartmentsSearch(this.headDepartment.actor, requesters, null)));

@@ -4,10 +4,8 @@
 
     using Akka.Actor;
 
-    public sealed class RequestDepartments
+    public sealed class FindDepartments
     {
-        public static readonly RequestDepartments Instance = new RequestDepartments();
-
         public sealed class Response
         {
             public IReadOnlyCollection<DepartmentFinding> Departments { get; }

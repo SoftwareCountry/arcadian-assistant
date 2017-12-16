@@ -52,6 +52,7 @@
                 var departments = await context
                     .Department
                     .Where(x => (x.ParentDepartmentId == id) && (x.Id != id)) //TODO: fix hard code
+                    .Where(x => (x.IsDelete != true) && (x.Employee.Count > 0))
                     .Select(this.MapDepartment)
                     .ToListAsync();
 

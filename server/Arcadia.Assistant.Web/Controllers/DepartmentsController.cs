@@ -31,7 +31,7 @@
         public async Task<IActionResult> All(CancellationToken token)
         {
             var employees = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
-            var response = await employees.Ask<RequestDepartments.Response>(new RequestDepartments(), TimeSpan.FromSeconds(30), token);
+            var response = await employees.Ask<FindDepartments.Response>(new FindDepartments(), TimeSpan.FromSeconds(30), token);
             return this.Ok(response.Departments.Select(x => x.Department).ToArray());
         }
     }
