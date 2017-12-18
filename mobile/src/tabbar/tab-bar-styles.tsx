@@ -16,6 +16,10 @@ const tabBarStyles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 5,
     },
+    tabImages: {
+        width: 30, 
+        height: 26 
+    }
 });
 
 
