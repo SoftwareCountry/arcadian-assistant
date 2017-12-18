@@ -10,6 +10,7 @@
 
     using Arcadia.Assistant.Organization;
     using Arcadia.Assistant.Organization.Abstractions;
+    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.Server.Interop;
 
     [Route("api/employees")]
@@ -38,13 +39,13 @@
         public async Task<IActionResult> GetById(string id, CancellationToken token)
         {
             var employees = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
-            var response = await employees.Ask(new OrganizationRequests.RequestEmployeeInfo(id), TimeSpan.FromSeconds(30), token);
+            var response = await employees.Ask(new RequestEmployeeInfo(id), TimeSpan.FromSeconds(30), token);
 
             switch (response)
             {
-                case OrganizationRequests.RequestEmployeeInfo.Success value:
+                case RequestEmployeeInfo.Success value:
                     return this.Ok(value.EmployeeInfo);
-                case OrganizationRequests.RequestEmployeeInfo.EmployeeNotFound _:
+                case RequestEmployeeInfo.EmployeeNotFound _:
                     return this.NotFound();
                 default:
                     return this.StatusCode(500);

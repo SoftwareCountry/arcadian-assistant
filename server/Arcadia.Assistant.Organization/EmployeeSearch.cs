@@ -4,7 +4,7 @@
 
     using Arcadia.Assistant.Organization.Abstractions;
 
-    public class EmployeeSearch : UntypedActor
+    public class EmployeeSearch : UntypedActor, IWithUnboundedStash
     {
         private IActorRef department;
 
@@ -15,17 +15,6 @@
             
         }
 
-        public class EmployeeFinding
-        {
-            public EmployeeInfo EmployeeInfo { get; }
-
-            public IActorRef Actor { get; }
-
-            public EmployeeFinding(EmployeeInfo employeeInfo, IActorRef actor)
-            {
-                this.EmployeeInfo = employeeInfo;
-                this.Actor = actor;
-            }
-        }
+        public IStash Stash { get; set; }
     }
 }
