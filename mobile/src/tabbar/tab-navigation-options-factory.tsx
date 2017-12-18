@@ -3,6 +3,7 @@ import { NavigationTabScreenOptions } from 'react-navigation';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Image } from 'react-native';
 import { ImageURISource } from 'react-native';
+import tabBarStyles from './tab-bar-styles';
 
 
 export class TabNavigationOptionsFactory {
@@ -12,7 +13,7 @@ export class TabNavigationOptionsFactory {
             tabBarIcon: ({ tintColor, focused }) =>
                 <Image
                     source={focused ? focusedPath : unfocusedPath}
-                    style={{ width: 30, height: 26 }}
+                    style={tabBarStyles.tabImages}
                 />
         };
     }
