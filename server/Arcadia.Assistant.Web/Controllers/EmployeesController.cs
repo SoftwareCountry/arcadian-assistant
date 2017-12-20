@@ -27,6 +27,7 @@
         }
 
         [Route("{employeeId}")]
+        [HttpGet]
         [ProducesResponseType(typeof(EmployeeInfo), 200)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetById(string employeeId, CancellationToken token)

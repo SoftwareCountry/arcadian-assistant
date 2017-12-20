@@ -27,6 +27,7 @@
         }
 
         [Route("")]
+        [HttpGet]
         [ProducesResponseType(typeof(DepartmentInfo[]), 200)]
         public async Task<IActionResult> All(CancellationToken token)
         {
@@ -36,6 +37,7 @@
         }
 
         [Route("{departmentId}")]
+        [HttpGet]
         [ProducesResponseType(typeof(DepartmentInfo), 200)]
         public async Task<IActionResult> Get(string departmentId, CancellationToken token)
         {
@@ -45,6 +47,7 @@
         }
 
         [Route("{departmentId}/employees")]
+        [HttpGet]
         [ProducesResponseType(typeof(EmployeeInfo), 200)]
         public async Task<IActionResult> GetEmployees(string departmentId, CancellationToken token)
         {
