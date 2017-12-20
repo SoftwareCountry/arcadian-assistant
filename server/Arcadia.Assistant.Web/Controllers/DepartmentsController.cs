@@ -27,12 +27,30 @@
         }
 
         [Route("")]
-        [ProducesResponseType(typeof(Department[]), 200)]
+        [ProducesResponseType(typeof(DepartmentInfo[]), 200)]
         public async Task<IActionResult> All(CancellationToken token)
         {
-            var employees = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
-            var response = await employees.Ask<FindDepartments.Response>(new FindDepartments(), TimeSpan.FromSeconds(30), token);
-            return this.Ok(response.Departments.Select(x => x.Department).ToArray());
+            var departments = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
+            var response = await departments.Ask<DepartmentsQuery.Response>(new DepartmentsQuery(), TimeSpan.FromSeconds(10), token);
+            return this.Ok(response.Departments.Select(x => x.Department).OrderBy(x => x.DepartmentId).ToArray());
+        }
+
+        [Route("{departmentId}")]
+        [ProducesResponseType(typeof(DepartmentInfo), 200)]
+        public async Task<IActionResult> Get(string departmentId, CancellationToken token)
+        {
+            var organization = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
+            var response = await organization.Ask<DepartmentsQuery.Response>(new DepartmentsQuery().WithId(departmentId).WithEmployees(), TimeSpan.FromSeconds(10), token);
+            return this.Ok(response.Departments.Select(x => x.Department).FirstOrDefault());
+        }
+
+        [Route("{departmentId}/employees")]
+        [ProducesResponseType(typeof(EmployeeInfo), 200)]
+        public async Task<IActionResult> GetEmployees(string departmentId, CancellationToken token)
+        {
+            var organization = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
+            var response = await organization.Ask<EmployeesQuery.Response>(new EmployeesQuery().ForDepartment(departmentId), TimeSpan.FromSeconds(10), token);
+            return this.Ok(response.Employees.Select(x => x.EmployeeInfo));
         }
     }
 }

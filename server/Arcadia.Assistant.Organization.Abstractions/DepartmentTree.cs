@@ -5,9 +5,9 @@
 
     public class DepartmentTree : Dictionary<string, DepartmentTree>
     {
-        public Department Department { get; private set; }
+        public DepartmentInfo Department { get; private set; }
 
-        public DepartmentTree(Department department, Department[] allDepartments)
+        public DepartmentTree(DepartmentInfo department, DepartmentInfo[] allDepartments)
         {
             this.Department = department;
 

@@ -19,13 +19,30 @@
         {
             switch (message)
             {
-                case RequestEmployeeInfo request when this.employeeInfo.EmployeeId == request.EmployeeId:
-                    this.Sender.Tell(new RequestEmployeeInfo.Success(this.employeeInfo));
+                case GetEmployeeInfo _:
+                    this.Sender.Tell(new GetEmployeeInfo.Response(new EmployeeContainer(this.employeeInfo, this.Self)));
                     break;
 
                 default:
                     this.Unhandled(message);
                     break;
+            }
+        }
+
+        public class GetEmployeeInfo
+        {
+            public static readonly GetEmployeeInfo Instance = new GetEmployeeInfo();
+
+            private GetEmployeeInfo() { }
+
+            public class Response
+            {
+                public Response(EmployeeContainer employee)
+                {
+                    this.Employee = employee;
+                }
+
+                public EmployeeContainer Employee { get; }
             }
         }
 

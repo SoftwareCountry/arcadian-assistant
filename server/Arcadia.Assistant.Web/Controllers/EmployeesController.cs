@@ -1,6 +1,7 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
     using System;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -8,7 +9,6 @@
 
     using Microsoft.AspNetCore.Mvc;
 
-    using Arcadia.Assistant.Organization;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.Server.Interop;
@@ -33,23 +33,20 @@
             return this.Ok();
         }
 
-        [Route("{id}")]
+        [Route("{employeeId}")]
         [ProducesResponseType(typeof(EmployeeInfo), 200)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetById(string id, CancellationToken token)
+        public async Task<IActionResult> GetById(string employeeId, CancellationToken token)
         {
-            var employees = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
-            var response = await employees.Ask(new RequestEmployeeInfo(id), TimeSpan.FromSeconds(30), token);
+            var organization = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
+            var response = await organization.Ask<EmployeesQuery.Response>(new EmployeesQuery().WithId(employeeId), TimeSpan.FromSeconds(30), token);
 
-            switch (response)
+            if (response.Employees.Count == 0)
             {
-                case RequestEmployeeInfo.Success value:
-                    return this.Ok(value.EmployeeInfo);
-                case RequestEmployeeInfo.EmployeeNotFound _:
-                    return this.NotFound();
-                default:
-                    return this.StatusCode(500);
+                return this.NotFound();
             }
+
+            return this.Ok(response.Employees.Select(x => x.EmployeeInfo).Single());
         }
     }
 }

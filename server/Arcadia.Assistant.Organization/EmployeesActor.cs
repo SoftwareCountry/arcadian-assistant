@@ -11,22 +11,21 @@
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
-    public class EmployeesActor : UntypedActor, IWithUnboundedStash
+    public class EmployeesActor : UntypedActor, IWithUnboundedStash, ILogReceive
     {
-        private readonly string departmentId;
-
         private readonly IActorRef employeesInfoStorage;
 
         private Dictionary<string, IActorRef> EmployeesById { get; } = new Dictionary<string, IActorRef>();
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
+        private readonly IActorRef organizationRegistry;
+
         public IStash Stash { get; set; }
 
-        public EmployeesActor(string departmentId)
+        public EmployeesActor(IActorRef organizationRegistry)
         {
-            this.departmentId = departmentId;
-
+            this.organizationRegistry = organizationRegistry;
             this.employeesInfoStorage = Context.ActorOf(EmployeesInfoStorage.Props, "employees-storage");
         }
 
@@ -35,24 +34,14 @@
             switch (message)
             {
                 case RefreshEmployees _:
-                    this.logger.Debug($"Requesting employees list update for ${this.departmentId}...");
-                    this.employeesInfoStorage.Tell(new EmployeesInfoStorage.LoadDepartmentsEmployees(this.departmentId));
+                    this.logger.Debug($"Requesting employees list update...");
+                    this.employeesInfoStorage.Tell(EmployeesInfoStorage.LoadAllEmployees.Instance);
                     this.BecomeStacked(this.LoadingEmployees);
                     break;
 
-                case FindEmployee request when this.EmployeesById.ContainsKey(request.EmployeeId):
-                    this.Sender.Tell(new FindEmployee.Response(request.EmployeeId, this.EmployeesById[request.EmployeeId]));
-                    break;
-                case FindEmployee request:
-                    this.Sender.Tell(new FindEmployee.Response(request.EmployeeId, Nobody.Instance));
-                    break;
-
-                case RequestEmployeeInfo request when this.EmployeesById.ContainsKey(request.EmployeeId):
-                    this.EmployeesById[request.EmployeeId].Forward(request);
-                    break;
-
-                case RequestEmployeeInfo request:
-                    this.Sender.Tell(new RequestEmployeeInfo.EmployeeNotFound(request.EmployeeId));
+                case EmployeesQuery query:
+                    var requesters = new[] { this.Sender };
+                    Context.ActorOf(Akka.Actor.Props.Create(() => new EmployeeSearch(this.EmployeesById.Values, requesters, query)));
                     break;
 
                 default:
@@ -69,12 +58,12 @@
                     this.logger.Debug("Employees loading is requested while loading is still in progress, ignoring");
                     break;
 
-                case EmployeesInfoStorage.LoadDepartmentsEmployees.Error _:
+                case EmployeesInfoStorage.LoadAllEmployees.Error _:
                     this.Stash.UnstashAll();
                     this.UnbecomeStacked();
                     break;
 
-                case EmployeesInfoStorage.LoadDepartmentsEmployees.Response allEmployees:
+                case EmployeesInfoStorage.LoadAllEmployees.Response allEmployees:
                     this.RecreateEmployeeAgents(allEmployees.Employees);
                     this.Stash.UnstashAll();
                     this.UnbecomeStacked();
@@ -103,7 +92,12 @@
                 this.EmployeesById[addedEmployee.EmployeeId] = employee;
             }
 
-            this.logger.Debug($"Employees list is updated for {this.departmentId} department");
+            foreach (var employeeInfo in allEmployees)
+            {
+                this.organizationRegistry.Tell(new OrganizationRegistry.EmployeeAddedOrChanged(employeeInfo, this.EmployeesById[employeeInfo.EmployeeId]));
+            }
+
+            this.logger.Debug($"Employees list is updated. There are {allEmployees.Count} at all, {removedIds.Count} got removed, {addedEmployees.Count} were added");
         }
 
         public class FindEmployee
@@ -134,6 +128,6 @@
             public static readonly RefreshEmployees Instance = new RefreshEmployees();
         }
 
-        public static Props Props(string departmentId) => Akka.Actor.Props.Create(() => new EmployeesActor(departmentId));
+        public static Props Props(IActorRef organizationRegistry) => Akka.Actor.Props.Create(() => new EmployeesActor(organizationRegistry));
     }
 }
