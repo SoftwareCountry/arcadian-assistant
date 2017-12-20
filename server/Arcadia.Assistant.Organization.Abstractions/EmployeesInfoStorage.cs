@@ -13,8 +13,8 @@
         {
             switch (message)
             {
-                case LoadDepartmentsEmployees request:
-                    this.GetDepartmentEmployees(request.DepartmentId).PipeTo(this.Sender);
+                case LoadAllEmployees request:
+                    this.GetAllEmployees().PipeTo(this.Sender);
                     break;
 
                 default:
@@ -23,17 +23,16 @@
             }
         }
 
-        protected abstract Task<LoadDepartmentsEmployees.Response> GetDepartmentEmployees(string departmentId);
+        protected abstract Task<LoadAllEmployees.Response> GetAllEmployees();
 
         public static Props Props => Context.DI().Props<EmployeesInfoStorage>();
 
-        public sealed class LoadDepartmentsEmployees
+        public sealed class LoadAllEmployees
         {
-            public string DepartmentId { get; }
+            public static readonly LoadAllEmployees Instance = new LoadAllEmployees();
 
-            public LoadDepartmentsEmployees(string departmentId)
+            private LoadAllEmployees()
             {
-                this.DepartmentId = departmentId;
             }
 
             public sealed class Response

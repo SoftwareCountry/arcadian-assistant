@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+// ReSharper disable UnusedMember.Global
 
 namespace Arcadia.Assistant.Web
 {
@@ -13,6 +14,8 @@ namespace Arcadia.Assistant.Web
     using Arcadia.Assistant.Server.Interop;
 
     using Autofac;
+
+    using Swashbuckle.AspNetCore.Swagger;
 
     public class Startup
     {
@@ -57,6 +60,8 @@ namespace Arcadia.Assistant.Web
 
             services.AddSingleton<IActorRefFactory>(actorSystem);
             services.AddSingleton(pathsBuilder);
+
+            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new Info() { Title = "Arcadian-Assistant API", Version = "v1" }); });
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
@@ -71,6 +76,9 @@ namespace Arcadia.Assistant.Web
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Arcadian-Assistant API"); });
 
             app.UseMvc();
         }

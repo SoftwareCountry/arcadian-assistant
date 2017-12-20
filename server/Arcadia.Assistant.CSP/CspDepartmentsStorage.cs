@@ -10,8 +10,6 @@
 
     using Microsoft.EntityFrameworkCore;
 
-    using Department = Arcadia.Assistant.Organization.Abstractions.Department;
-
     public class CspDepartmentsStorage : DepartmentsStorage
     {
         private readonly Func<ArcadiaCspContext> contextFactory;
@@ -21,11 +19,12 @@
             this.contextFactory = contextFactory;
         }
 
-        private Expression<Func<Model.Department, Department>> MapDepartment =
+        private readonly Expression<Func<Department, DepartmentInfo>> mapDepartment =
             x =>
-                new Department(
+                new DepartmentInfo(
                     x.Id.ToString(),
                     x.Name,
+                    x.Abbreviation,
                     x.ParentDepartmentId == null ? null : x.ParentDepartmentId.ToString())
                     { ChiefId = x.ChiefId == null ? null : x.ChiefId.ToString() };
 
@@ -36,7 +35,7 @@
                 var department = await context
                     .Department
                     .Where(x => (x.CompanyId == 154) && (x.Abbreviation == "CEO")) //TODO: fix hard code
-                    .Select(this.MapDepartment)
+                    .Select(this.mapDepartment)
                     .FirstOrDefaultAsync();
 
                 return new LoadHeadDepartment.Response(department);
@@ -51,9 +50,9 @@
             {
                 var departments = await context
                     .Department
-                    .Where(x => (x.ParentDepartmentId == id) && (x.Id != id)) //TODO: fix hard code
+                    .Where(x => (x.ParentDepartmentId == id) && (x.Id != id))
                     .Where(x => (x.IsDelete != true) && (x.Employee.Count > 0))
-                    .Select(this.MapDepartment)
+                    .Select(this.mapDepartment)
                     .ToListAsync();
 
                 return new LoadChildDepartments.Response(departments);

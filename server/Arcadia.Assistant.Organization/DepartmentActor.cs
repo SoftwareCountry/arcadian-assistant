@@ -11,7 +11,7 @@
 
     public class DepartmentActor : UntypedActor
     {
-        private Department departmentInfo;
+        private DepartmentInfo departmentInfo;
 
         private readonly IActorRef departmentsStorage;
 
@@ -21,11 +21,11 @@
 
         private IActorRef headEmployee;
 
-        public DepartmentActor(Department departmentInfo, IActorRef departmentsStorage)
+        public DepartmentActor(DepartmentInfo departmentInfo, IActorRef departmentsStorage, IActorRef employees)
         {
             this.departmentInfo = departmentInfo;
             this.departmentsStorage = departmentsStorage;
-            this.employees = Context.ActorOf(EmployeesActor.Props(departmentInfo.DepartmentId));
+            this.employees = employees;
         }
 
         protected override void OnReceive(object message)
@@ -36,18 +36,14 @@
 
                     if (this.departmentInfo.ChiefId != newInfo.Department.ChiefId)
                     {
+                        //TODO record head change
                         this.headEmployee = null;
-                        this.employees.Tell(new EmployeesActor.FindEmployee(newInfo.Department.ChiefId));
+                        //this.employees.Tell(new EmployeesActor.FindEmployee(newInfo.Department.ChiefId));
                     }
 
                     this.departmentInfo = newInfo.Department;
                     this.departmentsStorage.Tell(new DepartmentsStorage.LoadChildDepartments(this.departmentInfo.DepartmentId));
                     
-                    this.employees.Tell(EmployeesActor.RefreshEmployees.Instance);
-                    break;
-
-                case EmployeesActor.FindEmployee.Response response:
-                    this.headEmployee = response.Employee;
                     break;
 
                 case DepartmentsStorage.LoadChildDepartments.Response response:
@@ -55,7 +51,7 @@
                     break;
 
                 case GetDepartmentInfo _:
-                    this.Sender.Tell(new GetDepartmentInfo.Result(this.departmentInfo, this.Self, this.departmentsById.Values.ToList(), this.employees));
+                    this.Sender.Tell(new GetDepartmentInfo.Result(this.departmentInfo, this.Self, this.departmentsById.Values.ToList()));
                     break;
 
                 default:
@@ -64,7 +60,7 @@
             }
         }
 
-        private void RefreshChildDepartments(IReadOnlyCollection<Department> responseDepartments)
+        private void RefreshChildDepartments(IReadOnlyCollection<DepartmentInfo> responseDepartments)
         {
             var allDepartmentIds = responseDepartments.Select(x => x.DepartmentId).ToImmutableHashSet();
 
@@ -79,7 +75,7 @@
 
             foreach (var addedDepartment in addedDepartments)
             {
-                var department = Context.ActorOf(Props(addedDepartment, this.departmentsStorage), Uri.EscapeDataString(addedDepartment.DepartmentId));
+                var department = Context.ActorOf(Props(addedDepartment, this.departmentsStorage, this.employees), Uri.EscapeDataString(addedDepartment.DepartmentId));
                 this.departmentsById[addedDepartment.DepartmentId] = department;
             }
 
@@ -89,14 +85,14 @@
             }
         }
 
-        public static Props Props(Department department, IActorRef departmentsStorage) =>
-            Akka.Actor.Props.Create(() => new DepartmentActor(department, departmentsStorage));
+        public static Props Props(DepartmentInfo department, IActorRef departmentsStorage, IActorRef employees) =>
+            Akka.Actor.Props.Create(() => new DepartmentActor(department, departmentsStorage, employees));
 
         public sealed class RefreshDepartmentInfo
         {
-            public Department Department { get; }
+            public DepartmentInfo Department { get; }
 
-            public RefreshDepartmentInfo(Department department)
+            public RefreshDepartmentInfo(DepartmentInfo department)
             {
                 this.Department = department;
             }
@@ -108,19 +104,16 @@
 
             public sealed class Result
             {
-                public Department Department { get; }
+                public DepartmentInfo Department { get; }
 
                 public IActorRef DepartmentActor { get; }
 
                 public IReadOnlyCollection<IActorRef> Children { get; }
 
-                public IActorRef Employees { get; }
-
-                public Result(Department department, IActorRef departmentActor, IReadOnlyCollection<IActorRef> children, IActorRef employees)
+                public Result(DepartmentInfo department, IActorRef departmentActor, IReadOnlyCollection<IActorRef> children)
                 {
                     this.Department = department;
                     this.Children = children;
-                    this.Employees = employees;
                     this.DepartmentActor = departmentActor;
                 }
             }

@@ -19,22 +19,20 @@
             this.contextFactory = contextFactory;
         }
 
-        protected override async Task<LoadDepartmentsEmployees.Response> GetDepartmentEmployees(string departmentId)
+        protected override async Task<LoadAllEmployees.Response> GetAllEmployees()
         {
-            var dbId = long.Parse(departmentId);
-
             using (var context = this.contextFactory())
             {
                 var employees = await context
                     .Employee
-                    .Where(x => x.DepartmentId == dbId)
                     .Select(x => new EmployeeInfo(x.Id.ToString())
                     {
                         BirthDate = x.Birthday,
                         Email = x.Email,
                         HireDate = x.HiringDate,
+                        DepartmentId = x.DepartmentId.HasValue ? x.DepartmentId.Value.ToString() : null,
                         Name = $"{x.LastName}, {x.FirstName} {x.MiddleName}".Trim(),
-                        PhotoBase64 = x.Image == null ? null : Convert.ToBase64String(x.Image),
+                        //PhotoBase64 = x.Image == null ? null : Convert.ToBase64String(x.Image),
                         Sex = x.Gender == "M"
                                 ? Sex.Male
                                 : x.Gender == "F"
@@ -42,7 +40,7 @@
                                     : Sex.Undefined
                     })
                     .ToListAsync();
-                return new LoadDepartmentsEmployees.Response(employees);
+                return new LoadAllEmployees.Response(employees);
             }
         }
     }

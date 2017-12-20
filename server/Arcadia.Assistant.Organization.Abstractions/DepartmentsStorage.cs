@@ -38,9 +38,9 @@
 
             public class Response
             {
-                public Department Department { get; }
+                public DepartmentInfo Department { get; }
 
-                public Response(Department department)
+                public Response(DepartmentInfo department)
                 {
                     this.Department = department;
                 }
@@ -58,9 +58,9 @@
 
             public class Response
             {
-                public IReadOnlyCollection<Department> Departments { get; }
+                public IReadOnlyCollection<DepartmentInfo> Departments { get; }
 
-                public Response(IReadOnlyCollection<Department> departments)
+                public Response(IReadOnlyCollection<DepartmentInfo> departments)
                 {
                     this.Departments = departments;
                 }

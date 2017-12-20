@@ -11,34 +11,39 @@
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
-    public class OrganizationActor : UntypedActor
+    public class OrganizationActor : UntypedActor, ILogReceive
     {
         private readonly IActorRef departmentsStorage;
+
+        private readonly IActorRef employees;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
         private (string departmentId, IActorRef actor) headDepartment;
 
-        private Dictionary<string, IActorRef> DepartmentsById { get; } = new Dictionary<string, IActorRef>();
-
         public OrganizationActor()
         {
             this.departmentsStorage = Context.ActorOf(DepartmentsStorage.Props, "departments-storage");
+            this.employees = Context.ActorOf(EmployeesActor.Props());
 
             //TODO: make interval configurable
             Context.System.Scheduler.ScheduleTellRepeatedly(
                 TimeSpan.Zero,
                 TimeSpan.FromMinutes(10),
                 this.Self,
-                DepartmentsStorage.LoadHeadDepartment.Instance,
+                RefreshOrganizationInformation.Instance,
                 this.Self);
-
         }
 
         protected override void OnReceive(object message)
         {
             switch (message)
             {
+                case RefreshOrganizationInformation _:
+                    this.departmentsStorage.Tell(DepartmentsStorage.LoadHeadDepartment.Instance);
+                    this.employees.Tell(EmployeesActor.RefreshEmployees.Instance);
+                    break;
+
                 case DepartmentsStorage.LoadHeadDepartment request:
                     this.departmentsStorage.Tell(request);
                     break;
@@ -47,10 +52,14 @@
                     this.RecreateHeadDepartment(response.Department);
                     break;
 
-                case FindDepartments _:
+                case DepartmentsQuery query:
                     var requesters = new[] { this.Sender };
                     //TODO: null reference exception possible
-                    Context.ActorOf(Props.Create(() => new DepartmentsSearch(this.headDepartment.actor, requesters, null)));
+                    Context.ActorOf(Props.Create(() => new DepartmentsSearch(this.headDepartment.actor, requesters, query)));
+                    break;
+
+                case EmployeesQuery query:
+                    this.employees.Forward(query);
                     break;
 
                 default:
@@ -59,7 +68,7 @@
             }
         }
 
-        private void RecreateHeadDepartment(Department department)
+        private void RecreateHeadDepartment(DepartmentInfo department)
         {
             if ((this.headDepartment.actor != null) && (this.headDepartment.departmentId != department.DepartmentId))
             {
@@ -69,7 +78,7 @@
                 this.headDepartment.actor = null;
             }
 
-            IActorRef CreateDepartment() => Context.ActorOf(DepartmentActor.Props(department, this.departmentsStorage), Uri.EscapeDataString(department.DepartmentId));
+            IActorRef CreateDepartment() => Context.ActorOf(DepartmentActor.Props(department, this.departmentsStorage, this.employees), Uri.EscapeDataString(department.DepartmentId));
 
             if ((this.headDepartment.actor == null))
             {
@@ -77,6 +86,11 @@
             }
 
             this.headDepartment.actor.Tell(new DepartmentActor.RefreshDepartmentInfo(department));
+        }
+
+        private class RefreshOrganizationInformation
+        {
+            public static readonly RefreshOrganizationInformation Instance = new RefreshOrganizationInformation();
         }
     }
 }
