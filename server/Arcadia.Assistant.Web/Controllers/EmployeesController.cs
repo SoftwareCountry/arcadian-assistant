@@ -26,13 +26,6 @@
             this.pathsBuilder = pathsBuilder;
         }
 
-        [Route("")]
-        [ProducesResponseType(typeof(EmployeeInfo[]), 200)]
-        public async Task<IActionResult> All(CancellationToken token)
-        {
-            return this.Ok();
-        }
-
         [Route("{employeeId}")]
         [ProducesResponseType(typeof(EmployeeInfo), 200)]
         [ProducesResponseType(404)]

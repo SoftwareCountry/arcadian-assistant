@@ -19,13 +19,10 @@
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
-        private readonly IActorRef organizationRegistry;
-
         public IStash Stash { get; set; }
 
-        public EmployeesActor(IActorRef organizationRegistry)
+        public EmployeesActor()
         {
-            this.organizationRegistry = organizationRegistry;
             this.employeesInfoStorage = Context.ActorOf(EmployeesInfoStorage.Props, "employees-storage");
         }
 
@@ -92,35 +89,7 @@
                 this.EmployeesById[addedEmployee.EmployeeId] = employee;
             }
 
-            foreach (var employeeInfo in allEmployees)
-            {
-                this.organizationRegistry.Tell(new OrganizationRegistry.EmployeeAddedOrChanged(employeeInfo, this.EmployeesById[employeeInfo.EmployeeId]));
-            }
-
             this.logger.Debug($"Employees list is updated. There are {allEmployees.Count} at all, {removedIds.Count} got removed, {addedEmployees.Count} were added");
-        }
-
-        public class FindEmployee
-        {
-            public string EmployeeId { get; }
-
-            public FindEmployee(string employeeId)
-            {
-                this.EmployeeId = employeeId;
-            }
-
-            public class Response
-            {
-                public string EmployeeId { get; }
-
-                public IActorRef Employee { get; }
-
-                public Response(string employeeId, IActorRef employee)
-                {
-                    this.EmployeeId = employeeId;
-                    this.Employee = employee;
-                }
-            }
         }
 
         public sealed class RefreshEmployees
@@ -128,6 +97,6 @@
             public static readonly RefreshEmployees Instance = new RefreshEmployees();
         }
 
-        public static Props Props(IActorRef organizationRegistry) => Akka.Actor.Props.Create(() => new EmployeesActor(organizationRegistry));
+        public static Props Props() => Akka.Actor.Props.Create(() => new EmployeesActor());
     }
 }

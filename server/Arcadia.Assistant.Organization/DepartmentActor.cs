@@ -38,16 +38,12 @@
                     {
                         //TODO record head change
                         this.headEmployee = null;
-                        this.employees.Tell(new EmployeesActor.FindEmployee(newInfo.Department.ChiefId));
+                        //this.employees.Tell(new EmployeesActor.FindEmployee(newInfo.Department.ChiefId));
                     }
 
                     this.departmentInfo = newInfo.Department;
                     this.departmentsStorage.Tell(new DepartmentsStorage.LoadChildDepartments(this.departmentInfo.DepartmentId));
                     
-                    break;
-
-                case EmployeesActor.FindEmployee.Response response:
-                    this.headEmployee = response.Employee;
                     break;
 
                 case DepartmentsStorage.LoadChildDepartments.Response response:

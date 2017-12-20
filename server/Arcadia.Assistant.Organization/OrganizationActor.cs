@@ -15,8 +15,6 @@
     {
         private readonly IActorRef departmentsStorage;
 
-        private readonly IActorRef organizationRegistry;
-
         private readonly IActorRef employees;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
@@ -25,9 +23,8 @@
 
         public OrganizationActor()
         {
-            this.organizationRegistry = Context.ActorOf(Props.Create(() => new OrganizationRegistry()), "registry");
             this.departmentsStorage = Context.ActorOf(DepartmentsStorage.Props, "departments-storage");
-            this.employees = Context.ActorOf(EmployeesActor.Props(this.organizationRegistry));
+            this.employees = Context.ActorOf(EmployeesActor.Props());
 
             //TODO: make interval configurable
             Context.System.Scheduler.ScheduleTellRepeatedly(
@@ -81,7 +78,7 @@
                 this.headDepartment.actor = null;
             }
 
-            IActorRef CreateDepartment() => Context.ActorOf(DepartmentActor.Props(department, this.departmentsStorage, this.organizationRegistry), Uri.EscapeDataString(department.DepartmentId));
+            IActorRef CreateDepartment() => Context.ActorOf(DepartmentActor.Props(department, this.departmentsStorage, this.employees), Uri.EscapeDataString(department.DepartmentId));
 
             if ((this.headDepartment.actor == null))
             {
