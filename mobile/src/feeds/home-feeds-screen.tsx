@@ -2,19 +2,20 @@ import React from 'react';
 import { FlatList, Text, View} from 'react-native';
 import { TopNavBar } from '../topNavBar/top-nav-bar';
 
-const navBar =  new TopNavBar('News');
+const navBar =  new TopNavBar('Feeds');
 const dataList = [
-{name: 'First news'},
-{name: 'Second news'},
-{name: 'Third news'},
-{name: 'Fourth news'},
-{name: 'Fifth news'},
-{name: 'Sixth news'},
-{name: 'Seventh news'},
+{name: 'First Feed'},
+{name: 'Second Feed'},
+{name: 'Third Feed'},
+{name: 'Fourth Feed'},
+{name: 'Fifth Feed'},
+{name: 'Sixth Feed'},
+{name: 'Seventh Feed'},
 {name: 'Ten'}
 ];
 
-export class HomeNewsScreen extends React.Component {
+
+export class HomeFeedsScreen extends React.Component {
     public static navigationOptions = navBar.configurate();
 
     public render() {

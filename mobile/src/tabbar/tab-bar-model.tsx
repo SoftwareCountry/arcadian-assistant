@@ -1,6 +1,6 @@
 import { TabNavigatorConfig, NavigationRouteConfigMap } from 'react-navigation';
 import React from 'react';
-import { NewsScreen } from '../news/news-screen';
+import { FeedsScreen } from '../feeds/feeds-screen';
 import { PeopleScreen } from '../people/people-screen';
 import { HelpdeskScreen } from '../helpdesk/helpdesk-screen';
 import { CalendarScreen } from '../calendar/calendar-screen';
@@ -12,9 +12,9 @@ const navOptionsFactory = new TabNavigationOptionsFactory();
 const tabbarModel: NavigationRouteConfigMap = {
 
     News: {
-        screen: NewsScreen,
+        screen: FeedsScreen,
         path: '/',
-        navigationOptions: navOptionsFactory.create('News', require('../../src/tabbar/News.png'), require('../../src/tabbar/News.png'))
+        navigationOptions: navOptionsFactory.create('Feeds', require('../../src/tabbar/News.png'), require('../../src/tabbar/News.png'))
     },
     People: {
         screen: PeopleScreen,
