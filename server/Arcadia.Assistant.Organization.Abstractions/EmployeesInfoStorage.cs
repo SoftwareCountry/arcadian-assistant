@@ -13,7 +13,7 @@
         {
             switch (message)
             {
-                case LoadAllEmployees request:
+                case LoadAllEmployees _:
                     this.GetAllEmployees().PipeTo(this.Sender);
                     break;
 

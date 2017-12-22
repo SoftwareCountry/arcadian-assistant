@@ -20,10 +20,13 @@
 
         private readonly ActorPathsBuilder pathsBuilder;
 
-        public DepartmentsController(IActorRefFactory actorSystem, ActorPathsBuilder pathsBuilder)
+        private readonly Client client;
+
+        public DepartmentsController(IActorRefFactory actorSystem, ActorPathsBuilder pathsBuilder, Client client)
         {
             this.actorSystem = actorSystem;
             this.pathsBuilder = pathsBuilder;
+            this.client = client;
         }
 
         [Route("")]
@@ -31,8 +34,8 @@
         [ProducesResponseType(typeof(DepartmentInfo[]), 200)]
         public async Task<IActionResult> All(CancellationToken token)
         {
-            var departments = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
-            var response = await departments.Ask<DepartmentsQuery.Response>(new DepartmentsQuery(), TimeSpan.FromSeconds(10), token);
+            var organization = await this.client.GetOrganizationActor();
+            var response = await organization.Ask<DepartmentsQuery.Response>(new DepartmentsQuery(), TimeSpan.FromSeconds(10), token);
             return this.Ok(response.Departments.Select(x => x.Department).OrderBy(x => x.DepartmentId).ToArray());
         }
 
@@ -41,7 +44,10 @@
         [ProducesResponseType(typeof(DepartmentInfo), 200)]
         public async Task<IActionResult> Get(string departmentId, CancellationToken token)
         {
-            var organization = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
+            //var organization = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
+
+            var organization = await this.client.GetOrganizationActor();
+
             var response = await organization.Ask<DepartmentsQuery.Response>(new DepartmentsQuery().WithId(departmentId).WithEmployees(), TimeSpan.FromSeconds(10), token);
             return this.Ok(response.Departments.Select(x => x.Department).FirstOrDefault());
         }

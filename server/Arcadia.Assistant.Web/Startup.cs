@@ -60,6 +60,8 @@ namespace Arcadia.Assistant.Web
 
             services.AddSingleton<IActorRefFactory>(actorSystem);
             services.AddSingleton(pathsBuilder);
+            services.AddSingleton<DispatcherPath>();
+            services.AddSingleton<Client>();
 
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new Info() { Title = "Arcadian-Assistant API", Version = "v1" }); });
         }

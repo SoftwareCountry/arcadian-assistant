@@ -6,6 +6,7 @@
 
     using Arcadia.Assistant.Helpdesk;
     using Arcadia.Assistant.Organization;
+    using Arcadia.Assistant.Server.Interop;
 
     public class ActorSystemBuilder
     {
@@ -18,10 +19,14 @@
 
         public ServerActorsCollection AddRootActors()
         {
-            var departments = this.actorSystem.ActorOf(this.actorSystem.DI().Props<OrganizationActor>(), "organization");
+            var organization = this.actorSystem.ActorOf(this.actorSystem.DI().Props<OrganizationActor>(), "organization");
             var helpdesk = this.actorSystem.ActorOf(Props.Create(() => new HelpdeskActor()), "helpdesk");
 
-            return new ServerActorsCollection(departments, helpdesk);
+            var serverActors = new ServerActorsCollection(helpdesk, organization);
+
+            var dispatcher = this.actorSystem.ActorOf(Props.Create(() => new DispatcherActor(serverActors)), DispatcherPath.DispatcherAgentName);
+
+            return serverActors;
         }
     }
 }

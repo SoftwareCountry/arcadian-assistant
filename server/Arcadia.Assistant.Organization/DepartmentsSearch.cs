@@ -30,7 +30,7 @@
 
             this.actorsToReply.Add(searchRootDepartment);
 
-            if (this.requesters.Count == 0)
+            if ((this.requesters.Count == 0) || (searchRootDepartment == null))
             {
                 Context.Stop(this.Self);
             }

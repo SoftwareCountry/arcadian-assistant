@@ -8,6 +8,8 @@
     using Akka.DI.AutoFac;
     using Akka.DI.Core;
 
+    using Arcadia.Assistant.Server.Interop;
+
     using Autofac;
 
     using Microsoft.Extensions.Configuration;
