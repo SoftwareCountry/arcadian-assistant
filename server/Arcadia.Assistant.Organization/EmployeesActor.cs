@@ -74,8 +74,8 @@
 
         private void RecreateEmployeeAgents(IReadOnlyCollection<EmployeeStoredInformation> allEmployees)
         {
-            var removedIds = this.EmployeesById.Keys.Except(allEmployees.Select(x => x.EmployeeId)).ToImmutableList();
-            var addedEmployees = allEmployees.Where(x => !this.EmployeesById.ContainsKey(x.EmployeeId)).ToImmutableList();
+            var removedIds = this.EmployeesById.Keys.Except(allEmployees.Select(x => x.Metadata.EmployeeId)).ToImmutableList();
+            var addedEmployees = allEmployees.Where(x => !this.EmployeesById.ContainsKey(x.Metadata.EmployeeId)).ToImmutableList();
 
             foreach (var removedId in removedIds)
             {
@@ -85,8 +85,8 @@
 
             foreach (var addedEmployee in addedEmployees)
             {
-                var employee = Context.ActorOf(EmployeeActor.Props(addedEmployee), Uri.EscapeDataString(addedEmployee.EmployeeId));
-                this.EmployeesById[addedEmployee.EmployeeId] = employee;
+                var employee = Context.ActorOf(EmployeeActor.Props(addedEmployee), Uri.EscapeDataString(addedEmployee.Metadata.EmployeeId));
+                this.EmployeesById[addedEmployee.Metadata.EmployeeId] = employee;
             }
 
             this.logger.Debug($"Employees list is updated. There are {allEmployees.Count} at all, {removedIds.Count} got removed, {addedEmployees.Count} were added");

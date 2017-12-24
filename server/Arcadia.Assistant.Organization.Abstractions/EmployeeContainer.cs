@@ -4,13 +4,13 @@
 
     public class EmployeeContainer
     {
-        public EmployeeStoredInformation EmployeeStoredInformation { get; }
+        public EmployeeMetadata Metadata { get; }
 
         public IActorRef Actor { get; }
 
-        public EmployeeContainer(EmployeeStoredInformation employeeStoredInformation, IActorRef actor)
+        public EmployeeContainer(EmployeeMetadata metadata, IActorRef actor)
         {
-            this.EmployeeStoredInformation = employeeStoredInformation;
+            this.Metadata = metadata;
             this.Actor = actor;
         }
     }

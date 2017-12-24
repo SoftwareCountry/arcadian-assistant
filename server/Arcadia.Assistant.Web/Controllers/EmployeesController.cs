@@ -28,7 +28,7 @@
 
         [Route("{employeeId}")]
         [HttpGet]
-        [ProducesResponseType(typeof(EmployeeStoredInformation), 200)]
+        [ProducesResponseType(typeof(EmployeeMetadata), 200)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetById(string employeeId, CancellationToken token)
         {
@@ -40,7 +40,7 @@
                 return this.NotFound();
             }
 
-            return this.Ok(response.Employees.Select(x => x.EmployeeStoredInformation).Single());
+            return this.Ok(response.Employees.Select(x => x.Metadata).Single());
         }
     }
 }

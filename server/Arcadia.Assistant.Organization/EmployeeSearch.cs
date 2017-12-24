@@ -49,7 +49,7 @@
 
                 case EmployeeActor.GetEmployeeInfo.Response response:
 
-                    if (this.CheckFilter(response.Employee.EmployeeStoredInformation))
+                    if (this.CheckFilter(response.Employee.Metadata))
                     {
                         this.results.Add(response.Employee);
                     }
@@ -79,7 +79,7 @@
             }
         }
 
-        private bool CheckFilter(EmployeeStoredInformation employee)
+        private bool CheckFilter(EmployeeMetadata employee)
         {
             if ((this.query.DepartmentId != null) && (employee.DepartmentId != this.query.DepartmentId))
             {

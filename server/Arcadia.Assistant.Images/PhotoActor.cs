@@ -6,8 +6,10 @@
     using Akka.Actor;
     using Akka.Event;
 
+    using Arcadia.Assistant.Organization.Abstractions;
+    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
+
     using SixLabors.ImageSharp;
-    using SixLabors.ImageSharp.Formats.Jpeg;
 
     public class PhotoActor : UntypedActor
     {
@@ -75,21 +77,6 @@
             }
 
             public byte[] Bytes { get; }
-        }
-
-        public sealed class GetPhoto
-        {
-            private static readonly GetPhoto Instance = new GetPhoto();
-
-            public sealed class Response
-            {
-                public Photo Photo { get; }
-
-                public Response(Photo photo)
-                {
-                    this.Photo = photo;
-                }
-            }
         }
     }
 }

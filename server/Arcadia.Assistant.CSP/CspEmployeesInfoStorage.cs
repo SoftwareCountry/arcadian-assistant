@@ -28,24 +28,24 @@
                 var employees = await context
                     .Employee
                     .FromSql("SELECT * FROM dbo.ArcadianEmployee")
-                    .Select(x => new EmployeeStoredInformation(x.Id.ToString())
+                    .Select(x => new EmployeeStoredInformation(
+                        new EmployeeMetadata(x.Id.ToString(), $"{x.LastName}, {x.FirstName} {x.MiddleName}".Trim(), x.Email)
+                        {
+                            BirthDate = x.Birthday,
+                            HireDate = x.HiringDate,
+                            FireDate = x.FiringDate,
+                            Phone = x.MobilePhone,
+                            RoomNumber = x.RoomNumber,
+                            Position = x.Position.Title,
+                            DepartmentId = x.DepartmentId.HasValue ? x.DepartmentId.Value.ToString() : null,
+                            Sex = x.Gender == "M"
+                                    ? Sex.Male
+                                    : x.Gender == "F"
+                                        ? Sex.Female
+                                        : Sex.Undefined
+                        })
                     {
-                        BirthDate = x.Birthday,
-                        Email = x.Email,
-                        HireDate = x.HiringDate,
-                        FireDate = x.FiringDate,
                         Photo = x.Image,
-                        Phone = x.MobilePhone,
-                        RoomNumber = x.RoomNumber,
-                        Position = x.Position.Title,
-                        DepartmentId = x.DepartmentId.HasValue ? x.DepartmentId.Value.ToString() : null,
-                        Name = $"{x.LastName}, {x.FirstName} {x.MiddleName}".Trim(),
-                        //PhotoBase64 = x.Image == null ? null : Convert.ToBase64String(x.Image),
-                        Sex = x.Gender == "M"
-                                ? Sex.Male
-                                : x.Gender == "F"
-                                    ? Sex.Female
-                                    : Sex.Undefined
                     })
                     .ToListAsync();
                 return new LoadAllEmployees.Response(employees);

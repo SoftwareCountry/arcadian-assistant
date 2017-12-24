@@ -4,17 +4,20 @@
 
     using Arcadia.Assistant.Images;
     using Arcadia.Assistant.Organization.Abstractions;
+    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public class EmployeeActor : UntypedActor
     {
-        private readonly EmployeeStoredInformation employeeStoredInformation;
+        private readonly EmployeeMetadata employeeMetadata;
+
+        private readonly IActorRef photo;
 
         public EmployeeActor(EmployeeStoredInformation storedInformation)
         {
-            this.employeeStoredInformation = storedInformation;
+            this.employeeMetadata = storedInformation.Metadata;
 
-            var photo = Context.ActorOf(Akka.Actor.Props.Create(() => new PhotoActor()), "photo");
-            photo.Tell(new PhotoActor.SetSource(storedInformation.Photo));
+            this.photo = Context.ActorOf(Akka.Actor.Props.Create(() => new PhotoActor()), "photo");
+            this.photo.Tell(new PhotoActor.SetSource(storedInformation.Photo));
         }
 
         protected override void OnReceive(object message)
@@ -22,7 +25,11 @@
             switch (message)
             {
                 case GetEmployeeInfo _:
-                    this.Sender.Tell(new GetEmployeeInfo.Response(new EmployeeContainer(this.employeeStoredInformation, this.Self)));
+                    this.Sender.Tell(new GetEmployeeInfo.Response(new EmployeeContainer(this.employeeMetadata, this.Self)));
+                    break;
+
+                case GetPhoto _:
+                    this.photo.Forward(message);
                     break;
 
                 default:

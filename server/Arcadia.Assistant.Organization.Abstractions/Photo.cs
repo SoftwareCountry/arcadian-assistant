@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.Images
+﻿namespace Arcadia.Assistant.Organization.Abstractions
 {
     public class Photo
     {
