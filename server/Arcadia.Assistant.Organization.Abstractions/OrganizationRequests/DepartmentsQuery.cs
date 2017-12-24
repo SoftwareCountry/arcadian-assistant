@@ -18,13 +18,6 @@
             return newObject;
         }
 
-        public DepartmentsQuery WithEmployees()
-        {
-            var newObject = this.CloneTypewise();
-
-            return newObject;
-        }
-
         private DepartmentsQuery CloneTypewise()
         {
             var copy = new DepartmentsQuery();
