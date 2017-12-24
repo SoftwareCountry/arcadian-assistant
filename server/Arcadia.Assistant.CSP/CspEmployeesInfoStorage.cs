@@ -14,6 +14,8 @@
     {
         private readonly Func<ArcadiaCspContext> contextFactory;
 
+        public const string ArcadianEmployeeQuery = "SELECT * FROM dbo.ArcadianEmployee";
+
         public CspEmployeesInfoStorage(Func<ArcadiaCspContext> contextFactory)
         {
             this.contextFactory = contextFactory;
@@ -25,11 +27,17 @@
             {
                 var employees = await context
                     .Employee
-                    .Select(x => new EmployeeInfo(x.Id.ToString())
+                    .FromSql("SELECT * FROM dbo.ArcadianEmployee")
+                    .Select(x => new EmployeeStoredInformation(x.Id.ToString())
                     {
                         BirthDate = x.Birthday,
                         Email = x.Email,
                         HireDate = x.HiringDate,
+                        FireDate = x.FiringDate,
+                        Photo = x.Image,
+                        Phone = x.MobilePhone,
+                        RoomNumber = x.RoomNumber,
+                        Position = x.Position.Title,
                         DepartmentId = x.DepartmentId.HasValue ? x.DepartmentId.Value.ToString() : null,
                         Name = $"{x.LastName}, {x.FirstName} {x.MiddleName}".Trim(),
                         //PhotoBase64 = x.Image == null ? null : Convert.ToBase64String(x.Image),

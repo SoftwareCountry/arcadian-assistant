@@ -72,7 +72,7 @@
             }
         }
 
-        private void RecreateEmployeeAgents(IReadOnlyCollection<EmployeeInfo> allEmployees)
+        private void RecreateEmployeeAgents(IReadOnlyCollection<EmployeeStoredInformation> allEmployees)
         {
             var removedIds = this.EmployeesById.Keys.Except(allEmployees.Select(x => x.EmployeeId)).ToImmutableList();
             var addedEmployees = allEmployees.Where(x => !this.EmployeesById.ContainsKey(x.EmployeeId)).ToImmutableList();

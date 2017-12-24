@@ -4,13 +4,13 @@
 
     public class EmployeeContainer
     {
-        public EmployeeInfo EmployeeInfo { get; }
+        public EmployeeStoredInformation EmployeeStoredInformation { get; }
 
         public IActorRef Actor { get; }
 
-        public EmployeeContainer(EmployeeInfo employeeInfo, IActorRef actor)
+        public EmployeeContainer(EmployeeStoredInformation employeeStoredInformation, IActorRef actor)
         {
-            this.EmployeeInfo = employeeInfo;
+            this.EmployeeStoredInformation = employeeStoredInformation;
             this.Actor = actor;
         }
     }

@@ -8,11 +8,11 @@
 
     public class EmployeeActor : UntypedActor
     {
-        private readonly EmployeeInfo employeeInfo;
+        private readonly EmployeeStoredInformation employeeStoredInformation;
 
-        public EmployeeActor(EmployeeInfo info)
+        public EmployeeActor(EmployeeStoredInformation storedInformation)
         {
-            this.employeeInfo = info;
+            this.employeeStoredInformation = storedInformation;
         }
 
         protected override void OnReceive(object message)
@@ -20,7 +20,7 @@
             switch (message)
             {
                 case GetEmployeeInfo _:
-                    this.Sender.Tell(new GetEmployeeInfo.Response(new EmployeeContainer(this.employeeInfo, this.Self)));
+                    this.Sender.Tell(new GetEmployeeInfo.Response(new EmployeeContainer(this.employeeStoredInformation, this.Self)));
                     break;
 
                 default:
@@ -46,6 +46,6 @@
             }
         }
 
-        public static Props Props(EmployeeInfo employeeInfo) => Akka.Actor.Props.Create(() => new EmployeeActor(employeeInfo));
+        public static Props Props(EmployeeStoredInformation employeeStoredInformation) => Akka.Actor.Props.Create(() => new EmployeeActor(employeeStoredInformation));
     }
 }

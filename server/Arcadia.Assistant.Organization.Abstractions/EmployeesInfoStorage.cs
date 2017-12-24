@@ -37,9 +37,9 @@
 
             public sealed class Response
             {
-                public IReadOnlyCollection<EmployeeInfo> Employees { get; }
+                public IReadOnlyCollection<EmployeeStoredInformation> Employees { get; }
 
-                public Response(IReadOnlyCollection<EmployeeInfo> employees)
+                public Response(IReadOnlyCollection<EmployeeStoredInformation> employees)
                 {
                     this.Employees = employees;
                 }

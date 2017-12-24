@@ -4,9 +4,9 @@
 
     public enum Sex { Male, Female, Undefined }
 
-    public class EmployeeInfo
+    public class EmployeeStoredInformation
     {
-        public EmployeeInfo(string employeeId)
+        public EmployeeStoredInformation(string employeeId)
         {
             this.EmployeeId = employeeId;
         }
@@ -17,21 +17,29 @@
 
         public Sex Sex { get; set; } = Sex.Undefined;
 
-        public string PhotoBase64Min { get; set; }
-
         public string DepartmentId { get; set; }
 
-        public string PhotoBase64 { get; set; }
+        public byte[] Photo { get; set; }
 
         public string Email { get; set; }
 
         public DateTime HireDate { get; set; }
 
+        public DateTime? FireDate { get; set; }
+
         public DateTime? BirthDate { get; set; }
+
+        public bool IsWorking { get; set; }
+
+        public string RoomNumber { get; set; }
+
+        public string Position { get; set; }
+
+        public string Phone { get; set; }
 
         public int? Age => CalculateYearsFromDate(this.BirthDate);
 
-        public int? YearsServed => CalculateYearsFromDate(this.HireDate);
+        public int? YearsServed => CalculateYearsFromDate(this.HireDate); //TODO: make note of FireData
 
         private static int? CalculateYearsFromDate(DateTime? date)
         {
