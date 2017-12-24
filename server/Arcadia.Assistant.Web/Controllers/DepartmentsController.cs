@@ -42,7 +42,7 @@
         public async Task<IActionResult> Get(string departmentId, CancellationToken token)
         {
             var organization = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
-            var response = await organization.Ask<DepartmentsQuery.Response>(new DepartmentsQuery().WithId(departmentId).WithEmployees(), TimeSpan.FromSeconds(10), token);
+            var response = await organization.Ask<DepartmentsQuery.Response>(new DepartmentsQuery().WithId(departmentId), TimeSpan.FromSeconds(10), token);
             return this.Ok(response.Departments.Select(x => x.Department).FirstOrDefault());
         }
 

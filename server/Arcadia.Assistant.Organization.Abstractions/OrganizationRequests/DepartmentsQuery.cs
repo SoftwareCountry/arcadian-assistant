@@ -9,8 +9,6 @@
     {
         public bool ShouldLoadAllDepartments => this.DepartmentId == null;
 
-        public bool ShouldLoadEmployees { get; private set; }
-
         public string DepartmentId { get; private set; }
 
         public DepartmentsQuery WithId(string departmentId)
@@ -23,7 +21,6 @@
         public DepartmentsQuery WithEmployees()
         {
             var newObject = this.CloneTypewise();
-            newObject.ShouldLoadEmployees = true;
 
             return newObject;
         }
@@ -32,7 +29,6 @@
         {
             var copy = new DepartmentsQuery();
             copy.DepartmentId = this.DepartmentId;
-            copy.ShouldLoadEmployees = this.ShouldLoadEmployees;
             return copy;
         }
 
