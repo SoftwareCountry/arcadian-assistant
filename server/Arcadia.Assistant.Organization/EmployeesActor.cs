@@ -55,7 +55,7 @@
                     this.logger.Debug("Employees loading is requested while loading is still in progress, ignoring");
                     break;
 
-                case EmployeesInfoStorage.LoadAllEmployees.Error _:
+                case Status.Failure _:
                     this.Stash.UnstashAll();
                     this.UnbecomeStacked();
                     break;

@@ -28,14 +28,16 @@
 
             this.requesters = new HashSet<IActorRef>(requesters);
 
-            this.actorsToReply.Add(searchRootDepartment);
-
-            if (this.requesters.Count == 0)
+            if ((this.requesters.Count == 0) || (searchRootDepartment == null))
             {
-                Context.Stop(this.Self);
+                this.Become(this.SearchCompleted);
+                this.Self.Tell(SearchFinished.Instance);
             }
-
-            this.Self.Tell(StartSearch.Instance);
+            else
+            {
+                this.actorsToReply.Add(searchRootDepartment);
+                this.Self.Tell(StartSearch.Instance);
+            }
         }
 
         protected override void OnReceive(object message)

@@ -6,10 +6,11 @@
     using System.Linq;
 
     using Akka.Actor;
+    using Akka.Event;
 
     using Arcadia.Assistant.Organization.Abstractions;
 
-    public class DepartmentActor : UntypedActor
+    public class DepartmentActor : UntypedActor, ILogReceive, IWithUnboundedStash
     {
         private DepartmentInfo departmentInfo;
 
@@ -19,7 +20,11 @@
 
         private readonly IDictionary<string, IActorRef> departmentsById = new Dictionary<string, IActorRef>();
 
-        private IActorRef headEmployee;
+        private readonly ILoggingAdapter logger = Context.GetLogger();
+
+//        private EmployeeContainer headEmployee;
+
+        public IStash Stash { get; set; }
 
         public DepartmentActor(DepartmentInfo departmentInfo, IActorRef departmentsStorage, IActorRef employees)
         {
@@ -37,17 +42,16 @@
                     if (this.departmentInfo.ChiefId != newInfo.Department.ChiefId)
                     {
                         //TODO record head change
-                        this.headEmployee = null;
+                        //this.headEmployee = null;
                         //this.employees.Tell(new EmployeesActor.FindEmployee(newInfo.Department.ChiefId));
                     }
 
                     this.departmentInfo = newInfo.Department;
                     this.departmentsStorage.Tell(new DepartmentsStorage.LoadChildDepartments(this.departmentInfo.DepartmentId));
-                    
-                    break;
+                    this.BecomeStacked(this.Refreshing);
 
-                case DepartmentsStorage.LoadChildDepartments.Response response:
-                    this.RefreshChildDepartments(response.Departments);
+                    //this.Self.Forward(ReportFinish.Instance);
+
                     break;
 
                 case GetDepartmentInfo _:
@@ -56,6 +60,29 @@
 
                 default:
                     this.Unhandled(message);
+                    break;
+            }
+        }
+
+        private void Refreshing(object message)
+        {
+            switch (message)
+            {
+                case DepartmentsStorage.LoadChildDepartments.Response children:
+                    this.logger.Debug($"Child departments are loaded for <{this.departmentInfo.DepartmentId}> : {this.departmentInfo.Name}");
+                    this.RefreshChildDepartments(children.Departments);
+                    this.Stash.UnstashAll();
+                    this.UnbecomeStacked();
+                    break;
+
+                case Status.Failure error:
+                    this.logger.Error(error.Cause, $"Error occurred while refreshing child departments");
+                    this.Stash.UnstashAll();
+                    this.UnbecomeStacked();
+                    break;
+                
+                default:
+                    this.Stash.Stash();
                     break;
             }
         }

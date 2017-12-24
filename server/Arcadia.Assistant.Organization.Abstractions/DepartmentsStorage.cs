@@ -1,12 +1,13 @@
 ﻿namespace Arcadia.Assistant.Organization.Abstractions
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
     using Akka.Actor;
     using Akka.DI.Core;
 
-    public abstract class DepartmentsStorage : UntypedActor
+    public abstract class DepartmentsStorage : UntypedActor, ILogReceive
     {
         protected override void OnReceive(object message)
         {

@@ -7,7 +7,7 @@
     using Akka.Actor;
     using Akka.DI.Core;
 
-    public abstract class EmployeesInfoStorage : UntypedActor
+    public abstract class EmployeesInfoStorage : UntypedActor, ILogReceive
     {
         protected override void OnReceive(object message)
         {
@@ -42,16 +42,6 @@
                 public Response(IReadOnlyCollection<EmployeeInfo> employees)
                 {
                     this.Employees = employees;
-                }
-            }
-
-            public sealed class Error
-            {
-                public Exception Exception { get; }
-
-                public Error(Exception exception)
-                {
-                    this.Exception = exception;
                 }
             }
         }
