@@ -34,7 +34,7 @@
                             BirthDate = x.Birthday,
                             HireDate = x.HiringDate,
                             FireDate = x.FiringDate,
-                            Phone = x.MobilePhone,
+                            MobilePhone = x.MobilePhone,
                             RoomNumber = x.RoomNumber,
                             Position = x.Position.Title,
                             DepartmentId = x.DepartmentId.HasValue ? x.DepartmentId.Value.ToString() : null,

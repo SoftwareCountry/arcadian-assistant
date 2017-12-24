@@ -40,7 +40,11 @@
                     break;
 
                 case GetPhoto _:
-                    this.Sender.Tell(new GetPhoto.Response(new Photo(Mime, Width, Height, Convert.ToBase64String(this.imageBytes))));
+                    var photo = this.imageBytes != null
+                        ? new Photo(Mime, Width, Height, Convert.ToBase64String(this.imageBytes))
+                        : null;
+
+                    this.Sender.Tell(new GetPhoto.Response(photo));
                     break;
 
                 default:

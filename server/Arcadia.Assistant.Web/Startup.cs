@@ -10,7 +10,6 @@ namespace Arcadia.Assistant.Web
     using Akka.Configuration;
 
     using Arcadia.Assistant.Configuration;
-    using Arcadia.Assistant.Server;
     using Arcadia.Assistant.Server.Interop;
 
     using Autofac;

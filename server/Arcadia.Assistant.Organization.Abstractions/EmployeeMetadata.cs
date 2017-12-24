@@ -22,7 +22,7 @@
 
         public string Position { get; set; }
 
-        public string Phone { get; set; }
+        public string MobilePhone { get; set; }
 
         public string DepartmentId { get; set; }
 

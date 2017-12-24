@@ -45,15 +45,5 @@
             var response = await organization.Ask<DepartmentsQuery.Response>(new DepartmentsQuery().WithId(departmentId), TimeSpan.FromSeconds(10), token);
             return this.Ok(response.Departments.Select(x => x.Department).FirstOrDefault());
         }
-
-        [Route("{departmentId}/employees")]
-        [HttpGet]
-        [ProducesResponseType(typeof(EmployeeMetadata), 200)]
-        public async Task<IActionResult> GetEmployees(string departmentId, CancellationToken token)
-        {
-            var organization = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
-            var response = await organization.Ask<EmployeesQuery.Response>(new EmployeesQuery().ForDepartment(departmentId), TimeSpan.FromSeconds(10), token);
-            return this.Ok(response.Employees.Select(x => x.Metadata));
-        }
     }
 }
