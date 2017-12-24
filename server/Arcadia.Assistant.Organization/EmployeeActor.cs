@@ -1,10 +1,9 @@
 ﻿namespace Arcadia.Assistant.Organization
 {
     using Akka.Actor;
-    using Akka.DI.Core;
 
+    using Arcadia.Assistant.Images;
     using Arcadia.Assistant.Organization.Abstractions;
-    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public class EmployeeActor : UntypedActor
     {
@@ -13,6 +12,9 @@
         public EmployeeActor(EmployeeStoredInformation storedInformation)
         {
             this.employeeStoredInformation = storedInformation;
+
+            var photo = Context.ActorOf(Akka.Actor.Props.Create(() => new PhotoActor()), "photo");
+            photo.Tell(new PhotoActor.SetSource(storedInformation.Photo));
         }
 
         protected override void OnReceive(object message)
