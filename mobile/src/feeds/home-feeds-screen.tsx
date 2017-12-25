@@ -4,14 +4,14 @@ import { TopNavBar } from '../topNavBar/top-nav-bar';
 
 const navBar =  new TopNavBar('Feeds');
 const dataList = [
-{name: 'First Feed'},
-{name: 'Second Feed'},
-{name: 'Third Feed'},
-{name: 'Fourth Feed'},
-{name: 'Fifth Feed'},
-{name: 'Sixth Feed'},
-{name: 'Seventh Feed'},
-{name: 'Ten'}
+{key: 'First Feed'},
+{key: 'Second Feed'},
+{key: 'Third Feed'},
+{key: 'Fourth Feed'},
+{key: 'Fifth Feed'},
+{key: 'Sixth Feed'},
+{key: 'Seventh Feed'},
+{key: 'Ten'}
 ];
 
 
@@ -21,7 +21,7 @@ export class HomeFeedsScreen extends React.Component {
     public render() {
         return (
             <View>
-                <FlatList data = {dataList} renderItem ={({item}) => <Text style={{padding: 10, fontSize: 18, height: 81, textAlign: 'center'}}>{item.name}</Text>} />
+                <FlatList data = {dataList} renderItem ={({item}) => <Text style={{padding: 10, fontSize: 18, height: 81, textAlign: 'center'}}>{item.key}</Text>} />
             </View>
         );
     }

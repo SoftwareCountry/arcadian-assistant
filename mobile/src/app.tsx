@@ -5,11 +5,20 @@ import { RootNavigator } from './tabbar/tab-navigator';
 import { AppState, storeFactory } from './reducers/app.reducer';
 import { connect, Provider, Dispatch } from 'react-redux';
 import { addNavigationHelpers, NavigationState, NavigationActions } from 'react-navigation';
+import { loadDepartments } from './reducers/organization/departments.action';
 
-export class App extends Component<{ dispatch: any, nav: NavigationState }> {
+interface AppProps {
+  dispatch: Dispatch<any>,
+  nav: NavigationState
+}
+
+export class App extends Component<AppProps> {
 
   public componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', this.onBackPress );
+    
+    //initial state
+    this.props.dispatch(loadDepartments());
   }
 
   public componentWillUnmount() {
@@ -18,7 +27,7 @@ export class App extends Component<{ dispatch: any, nav: NavigationState }> {
 
   public render() {
     return <RootNavigator navigation={addNavigationHelpers({
-      dispatch: this.props.dispatch,
+      dispatch: this.props.dispatch as any,
       state: this.props.nav
     })} />;
   }
