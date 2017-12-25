@@ -8,15 +8,15 @@ import { addNavigationHelpers, NavigationState, NavigationActions } from 'react-
 import { loadDepartments } from './reducers/organization/departments.action';
 
 interface AppProps {
-  dispatch: Dispatch<any>,
-  nav: NavigationState
+  dispatch: Dispatch<any>;
+  nav: NavigationState;
 }
 
 export class App extends Component<AppProps> {
 
   public componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', this.onBackPress );
-    
+
     //initial state
     this.props.dispatch(loadDepartments());
   }
