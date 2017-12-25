@@ -23,7 +23,7 @@ export class App extends Component<{ dispatch: any, nav: NavigationState }> {
     })} />;
   }
 
-  private onBackPress() {
+  private onBackPress = () => {
     const { dispatch, nav } = this.props;
     if (nav.index === 0) {
       return false;
