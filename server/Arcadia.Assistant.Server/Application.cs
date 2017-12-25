@@ -5,32 +5,40 @@
 
     using Akka.Actor;
     using Akka.Configuration;
+    using Akka.DI.AutoFac;
+    using Akka.DI.Core;
 
-    using Arcadia.Assistant.Organization;
+    using Autofac;
+
+    using Microsoft.Extensions.Configuration;
 
     public class Application : IDisposable
     {
+        private readonly IConfigurationRoot config;
+
+        private readonly ContainerBuilder containerBuilder;
+
+        private IContainer container;
+
+        public Application(IConfigurationRoot config, ContainerBuilder containerBuilder)
+        {
+            this.config = config;
+            this.containerBuilder = containerBuilder;
+        }
+
         public ActorSystem ActorSystem { get; private set; }
 
         public ServerActorsCollection ServerActors { get; private set; }
 
         public void Start()
         {
-            var config = ConfigurationFactory.ParseString(
-                @"
-                akka {
-                    actor {
-                        provider: remote
-                    }
+            var akkaConfig = ConfigurationFactory.ParseString(this.config["akka"]);
 
-                remote {
-                    dot-netty.tcp {
-                        port: 63301
-                    }
-                }
-            ");
+            this.ActorSystem = ActorSystem.Create("arcadia-assistant", akkaConfig);
+            this.container = this.containerBuilder.Build();
 
-            this.ActorSystem = ActorSystem.Create("arcadia-assistant", config);
+            new AutoFacDependencyResolver(this.container, this.ActorSystem);
+
             var builder = new ActorSystemBuilder(this.ActorSystem);
             this.ServerActors = builder.AddRootActors();
         }
@@ -40,17 +48,17 @@
             if (this.ActorSystem != null)
             {
                 await this.ActorSystem.Terminate();
-                this.ActorSystem.Dispose();
-                this.ActorSystem = null;
-                this.ServerActors = null;
+                this.Dispose();
             }
         }
 
         public void Dispose()
         {
             this.ActorSystem?.Dispose();
+            this.container.Dispose();
             this.ActorSystem = null;
             this.ServerActors = null;
+            this.container = null;
         }
     }
 }

@@ -6,6 +6,12 @@
 
   <ItemGroup>
     <PackageReference Include="Akka" Version="1.3.2" />
+    <PackageReference Include="Akka.DI.Core" Version="1.3.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Arcadia.Assistant.Images\Arcadia.Assistant.Images.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.Organization.Abstractions\Arcadia.Assistant.Organization.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

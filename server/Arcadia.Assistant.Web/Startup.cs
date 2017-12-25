@@ -2,19 +2,40 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+// ReSharper disable UnusedMember.Global
 
 namespace Arcadia.Assistant.Web
 {
     using Akka.Actor;
     using Akka.Configuration;
-    using Arcadia.Assistant.Server;
+
+    using Arcadia.Assistant.Configuration;
     using Arcadia.Assistant.Server.Interop;
+
+    using Autofac;
+
+    using Swashbuckle.AspNetCore.Swagger;
 
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IHostingEnvironment environment;
+
+        public Startup(IHostingEnvironment environment)
         {
-            this.Configuration = configuration;
+            this.environment = environment;
+            var configBuilder = new ConfigurationBuilder()
+                .SetBasePath(environment.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional:false, reloadOnChange:true)
+                .AddJsonFile($"appsettings.{environment.EnvironmentName}.json", optional:true)
+                .AddHoconContent("akka.conf", "akka", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables();
+
+            if (environment.IsDevelopment())
+            {
+                configBuilder.AddUserSecrets<Startup>();
+            }
+
+            this.Configuration = configBuilder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -24,29 +45,27 @@ namespace Arcadia.Assistant.Web
         {
             services.AddMvc();
 
-            var config = ConfigurationFactory.ParseString(
-                @"
-                akka {
-                    actor {
-                        provider: remote
-                    }
+            var serverConfig = this.Configuration.GetSection("Server");
 
-                remote {
-                    dot-netty.tcp {
-                        port: 0
-                    }
-                }
-            ");
+            var systemName = serverConfig["ActorSystemName"];
+            var host = serverConfig["Host"];
+            var port = serverConfig.GetValue<int>("Port");
 
-            var systemName = "arcadia-assistant";
+            var config = ConfigurationFactory.ParseString(this.Configuration["akka"]);
 
             var actorSystem = ActorSystem.Create(systemName, config);
-            var builder = new ActorSystemBuilder(actorSystem);
-            builder.AddRootActors();
+
+            var pathsBuilder = new ActorPathsBuilder(systemName, host, port);
 
             services.AddSingleton<IActorRefFactory>(actorSystem);
-            services.AddSingleton(new ActorPathsBuilder());
-            //services.AddSingleton(new ActorPathsBuilder(systemName, "0.0.0.0", 63301));
+            services.AddSingleton(pathsBuilder);
+
+            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new Info() { Title = "Arcadian-Assistant API", Version = "v1" }); });
+        }
+
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,6 +75,9 @@ namespace Arcadia.Assistant.Web
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Arcadian-Assistant API"); });
 
             app.UseMvc();
         }

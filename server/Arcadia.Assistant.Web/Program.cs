@@ -1,5 +1,7 @@
 ﻿namespace Arcadia.Assistant.Web
 {
+    using Autofac.Extensions.DependencyInjection;
+
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
 
@@ -12,6 +14,7 @@
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .ConfigureServices(services => services.AddAutofac())
                 .UseStartup<Startup>()
                 .Build();
     }

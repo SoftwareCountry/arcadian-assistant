@@ -1,13 +1,17 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
+    using System;
+    using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
 
     using Akka.Actor;
 
     using Microsoft.AspNetCore.Mvc;
 
-    using Arcadia.Assistant.Organization;
     using Arcadia.Assistant.Server.Interop;
+    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
+    using Arcadia.Assistant.Web.Models;
 
     [Route("api/employees")]
     public class EmployeesController : Controller
@@ -22,14 +26,59 @@
             this.pathsBuilder = pathsBuilder;
         }
 
-        [Route("demographics")]
-        // GET
-        public async Task<IActionResult> Index()
+        [Route("{employeeId}")]
+        [HttpGet]
+        [ProducesResponseType(typeof(EmployeeModel), 200)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetById(string employeeId, CancellationToken token)
         {
-            var employees = this.actorSystem.ActorSelection(this.pathsBuilder.Get("employees"));
-            var response = await employees.Ask<EmployeeDemographics>(new RequestDemographics(this.User.Identity.Name));
-            return this.Ok(response);
-            //return response;
+            var employees = await this.LoadEmployeesAsync(new EmployeesQuery().WithId(employeeId), token);
+            if (employees.Length == 0)
+            {
+                return this.NotFound();
+            }
+
+            return this.Ok(employees.Single());
+        }
+
+        [Route("")]
+        [HttpGet]
+        [ProducesResponseType(typeof(EmployeeModel), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        public async Task<IActionResult> ForDepartment([FromQuery] string departmentId, CancellationToken token)
+        {
+            if (this.Request.Query.Count == 0)
+            {
+                return this.BadRequest("At least one query parameter must be specified");
+            }
+
+            var query = new EmployeesQuery();
+            if (!string.IsNullOrWhiteSpace(departmentId))
+            {
+                query = query.ForDepartment(departmentId);
+            }
+
+            var employees = await this.LoadEmployeesAsync(query, token);
+
+            return this.Ok(employees);
+        }
+
+        private async Task<EmployeeModel[]> LoadEmployeesAsync(EmployeesQuery query, CancellationToken token)
+        {
+            var timeout = TimeSpan.FromSeconds(30);
+            var organization = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
+            var response = await organization.Ask<EmployeesQuery.Response>(query, timeout, token);
+
+            var tasks = response.Employees.Select(
+                async x =>
+                    {
+                        var employee = EmployeeModel.FromMetadata(x.Metadata);
+                        var photo = await x.Actor.Ask<GetPhoto.Response>(GetPhoto.Instance, timeout, token);
+                        employee.Photo = photo.Photo;
+                        return employee;
+                    });
+
+            return await Task.WhenAll(tasks);
         }
     }
 }

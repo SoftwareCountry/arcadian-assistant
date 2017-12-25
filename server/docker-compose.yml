@@ -6,9 +6,18 @@ services:
     build:
       context: ./Arcadia.Assistant.Web
       dockerfile: Dockerfile
+    ports:
+      - "8100:80"
+      - "63302:63302"
+
+    environment:
+      - SERVER.HOST=arcadia.assistant.server.console
+      - SERVER.PORT=63301
 
   arcadia.assistant.server.console:
     image: arcadia.assistant.server.console
     build:
       context: ./Arcadia.Assistant.Server.Console
       dockerfile: Dockerfile
+    ports:
+      - "63301:63301"

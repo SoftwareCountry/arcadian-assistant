@@ -2,26 +2,59 @@
 {
     using Akka.Actor;
 
+    using Arcadia.Assistant.Images;
+    using Arcadia.Assistant.Organization.Abstractions;
+    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
+
     public class EmployeeActor : UntypedActor
     {
-        private readonly IActorRef demographicsLoader;
+        private readonly EmployeeMetadata employeeMetadata;
 
-        public EmployeeActor(string employeeId)
+        private readonly IActorRef photo;
+
+        public EmployeeActor(EmployeeStoredInformation storedInformation)
         {
-            this.EmployeeId = employeeId;
-            this.demographicsLoader = Context.ActorOf(Props.Create(() => new DemographicsLoaderActor(employeeId)), "demographics-loader");
-        }
+            this.employeeMetadata = storedInformation.Metadata;
 
-        private string EmployeeId { get; }
+            this.photo = Context.ActorOf(Akka.Actor.Props.Create(() => new PhotoActor()), "photo");
+            this.photo.Tell(new PhotoActor.SetSource(storedInformation.Photo));
+        }
 
         protected override void OnReceive(object message)
         {
             switch (message)
             {
-                case RequestDemographics request when this.EmployeeId == request.EmployeeId:
-                    this.demographicsLoader.Forward(request);
+                case GetEmployeeInfo _:
+                    this.Sender.Tell(new GetEmployeeInfo.Response(new EmployeeContainer(this.employeeMetadata, this.Self)));
+                    break;
+
+                case GetPhoto _:
+                    this.photo.Forward(message);
+                    break;
+
+                default:
+                    this.Unhandled(message);
                     break;
             }
         }
+
+        public class GetEmployeeInfo
+        {
+            public static readonly GetEmployeeInfo Instance = new GetEmployeeInfo();
+
+            private GetEmployeeInfo() { }
+
+            public class Response
+            {
+                public Response(EmployeeContainer employee)
+                {
+                    this.Employee = employee;
+                }
+
+                public EmployeeContainer Employee { get; }
+            }
+        }
+
+        public static Props Props(EmployeeStoredInformation employeeStoredInformation) => Akka.Actor.Props.Create(() => new EmployeeActor(employeeStoredInformation));
     }
 }
