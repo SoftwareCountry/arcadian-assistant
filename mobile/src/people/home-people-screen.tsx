@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 
 interface PeopleScreenProps {
-    departments: Department[]
+    departments: Department[];
 }
 
 const mapStateToProps = (state: AppState): PeopleScreenProps => ({
