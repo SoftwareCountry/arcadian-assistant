@@ -35,7 +35,7 @@ export interface LoadEmployeesForDepartment extends Action {
     departmentId: string;
 }
 
-export const loadEmployeesForDepartment = (departmentId: string): LoadEmployeesForDepartment => ({ type: 'LOAD_EMPLOYEES_FOR_DEPARTMENT', departmentId })
+export const loadEmployeesForDepartment = (departmentId: string): LoadEmployeesForDepartment => ({ type: 'LOAD_EMPLOYEES_FOR_DEPARTMENT', departmentId });
 
 export type OrganizationActions =
     LoadDepartments | LoadDepartmentsFinished |
