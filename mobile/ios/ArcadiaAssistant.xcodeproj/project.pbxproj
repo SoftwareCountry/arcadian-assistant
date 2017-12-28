@@ -137,6 +137,20 @@
 			remoteGlobalIDString = 83CBBA2E1A601D0E00E9B192;
 			remoteInfo = React;
 		};
+		1E121D0A1FF2AA9800E8DD05 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 146833FF1AC3E56700842450 /* React.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9936F3131F5F2E4B0010BF04;
+			remoteInfo = privatedata;
+		};
+		1E121D0C1FF2AA9800E8DD05 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 146833FF1AC3E56700842450 /* React.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9936F32F1F5F2E5B0010BF04;
+			remoteInfo = "privatedata-tvOS";
+		};
 		2D02E4911E0B4A5D006451C7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
@@ -543,6 +557,8 @@
 				7D16B1B91FAC70E000B0892E /* libthird-party.a */,
 				7D16B1BB1FAC70E000B0892E /* libdouble-conversion.a */,
 				7D16B1BD1FAC70E000B0892E /* libdouble-conversion.a */,
+				1E121D0B1FF2AA9800E8DD05 /* libprivatedata.a */,
+				1E121D0D1FF2AA9800E8DD05 /* libprivatedata-tvOS.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -912,6 +928,20 @@
 			fileType = archive.ar;
 			path = libReact.a;
 			remoteRef = 146834031AC3E56700842450 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		1E121D0B1FF2AA9800E8DD05 /* libprivatedata.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libprivatedata.a;
+			remoteRef = 1E121D0A1FF2AA9800E8DD05 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		1E121D0D1FF2AA9800E8DD05 /* libprivatedata-tvOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libprivatedata-tvOS.a";
+			remoteRef = 1E121D0C1FF2AA9800E8DD05 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		3DAD3E841DF850E9000B6D8A /* libRCTImage-tvOS.a */ = {
@@ -1329,6 +1359,7 @@
 					"-ObjC",
 					"-lc++",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = ru.spb.arcadia.product.assistant.ios;
 				PRODUCT_NAME = ArcadiaAssistant;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -1350,6 +1381,7 @@
 					"-ObjC",
 					"-lc++",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = ru.spb.arcadia.product.assistant.ios;
 				PRODUCT_NAME = ArcadiaAssistant;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
