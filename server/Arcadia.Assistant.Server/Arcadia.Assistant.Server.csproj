@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Arcadia.Assistant.Feeds\Arcadia.Assistant.Feeds.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Helpdesk\Arcadia.Assistant.Helpdesk.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Organization\Arcadia.Assistant.Organization.csproj" />
   </ItemGroup>
