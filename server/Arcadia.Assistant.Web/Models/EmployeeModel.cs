@@ -16,7 +16,7 @@
 
         public Photo Photo { get; set; }
 
-        public string Posistion { get; set; }
+        public string Position { get; set; }
 
         public string DepartmentId { get; set; }
 
@@ -37,7 +37,7 @@
                     HireDate = metadata.HireDate,
                     MobilePhone = metadata.MobilePhone,
                     Name = metadata.Name,
-                    Posistion = metadata.Position,
+                    Position = metadata.Position,
                     Sex = metadata.Sex
                 };
         }
