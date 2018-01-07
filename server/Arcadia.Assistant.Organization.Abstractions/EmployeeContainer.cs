@@ -8,10 +8,13 @@
 
         public IActorRef Actor { get; }
 
-        public EmployeeContainer(EmployeeMetadata metadata, IActorRef actor)
+        public IActorRef Feed { get; }
+
+        public EmployeeContainer(EmployeeMetadata metadata, IActorRef actor, IActorRef feed)
         {
             this.Metadata = metadata;
             this.Actor = actor;
+            this.Feed = feed;
         }
     }
 }

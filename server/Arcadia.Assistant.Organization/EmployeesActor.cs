@@ -74,8 +74,8 @@
 
         private void RecreateEmployeeAgents(IReadOnlyCollection<EmployeeStoredInformation> allEmployees)
         {
-            var removedIds = this.EmployeesById.Keys.Except(allEmployees.Select(x => x.Metadata.EmployeeId)).ToImmutableList();
-            var addedEmployees = allEmployees.Where(x => !this.EmployeesById.ContainsKey(x.Metadata.EmployeeId)).ToImmutableList();
+            var removedIds = this.EmployeesById.Keys.Except(allEmployees.Select(x => x.Metadata.EmployeeId)).ToList();
+            
 
             foreach (var removedId in removedIds)
             {
@@ -83,13 +83,22 @@
                 this.EmployeesById.Remove(removedId);
             }
 
-            foreach (var addedEmployee in addedEmployees)
+            var newEmployeesCount = 0;
+            foreach (var employeeNewInfo in allEmployees)
             {
-                var employee = Context.ActorOf(EmployeeActor.Props(addedEmployee), Uri.EscapeDataString(addedEmployee.Metadata.EmployeeId));
-                this.EmployeesById[addedEmployee.Metadata.EmployeeId] = employee;
+                if (this.EmployeesById.TryGetValue(employeeNewInfo.Metadata.EmployeeId, out var employee))
+                {
+                    employee.Tell(new EmployeeActor.UpdateEmployeeInformation(employeeNewInfo));
+                }
+                else
+                {
+                    employee = Context.ActorOf(EmployeeActor.Props(employeeNewInfo), Uri.EscapeDataString(employeeNewInfo.Metadata.EmployeeId));
+                    this.EmployeesById[employeeNewInfo.Metadata.EmployeeId] = employee;
+                    newEmployeesCount++;
+                }
             }
 
-            this.logger.Debug($"Employees list is updated. There are {allEmployees.Count} at all, {removedIds.Count} got removed, {addedEmployees.Count} were added");
+            this.logger.Debug($"Employees list is updated. There are {allEmployees.Count} at all, {removedIds.Count} got removed, {newEmployeesCount} were added");
         }
 
         public sealed class RefreshEmployees

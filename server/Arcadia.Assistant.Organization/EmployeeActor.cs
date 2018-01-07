@@ -1,5 +1,7 @@
 ﻿namespace Arcadia.Assistant.Organization
 {
+    using System;
+
     using Akka.Actor;
 
     using Arcadia.Assistant.Feeds;
@@ -9,7 +11,7 @@
 
     public class EmployeeActor : UntypedActor
     {
-        private readonly EmployeeMetadata employeeMetadata;
+        private EmployeeMetadata employeeMetadata;
 
         private readonly IActorRef photo;
 
@@ -22,7 +24,8 @@
             this.photo = Context.ActorOf(Akka.Actor.Props.Create(() => new PhotoActor()), "photo");
             this.photo.Tell(new PhotoActor.SetSource(storedInformation.Photo));
 
-            this.employeeFeed = Context.ActorOf(FeedActor.CreateProps(this.employeeMetadata.EmployeeId), "feed");
+            var employeeFeedId = $"employee-feed-{this.employeeMetadata.EmployeeId}";
+            this.employeeFeed = Context.ActorOf(FeedActor.CreateProps(employeeFeedId), "feed");
         }
 
         protected override void OnReceive(object message)
@@ -30,17 +33,41 @@
             switch (message)
             {
                 case GetEmployeeInfo _:
-                    this.Sender.Tell(new GetEmployeeInfo.Response(new EmployeeContainer(this.employeeMetadata, this.Self)));
+                    this.Sender.Tell(new GetEmployeeInfo.Response(new EmployeeContainer(this.employeeMetadata, this.Self, this.employeeFeed)));
                     break;
 
                 case GetPhoto _:
                     this.photo.Forward(message);
                     break;
 
+                case UpdateEmployeeInformation newInfo when newInfo.Information.Metadata.EmployeeId == this.employeeMetadata.EmployeeId:
+                    this.photo.Tell(new PhotoActor.SetSource(newInfo.Information.Photo));
+                    this.UpdateEmployeeMetadata(newInfo.Information.Metadata);
+                    break;
+                    
                 default:
                     this.Unhandled(message);
                     break;
             }
+        }
+
+        private void UpdateEmployeeMetadata(EmployeeMetadata informationMetadata)
+        {
+            if (informationMetadata.Position != this.employeeMetadata.Position)
+            {
+                var text = $"{informationMetadata.Name} is now {informationMetadata.Position}";
+                this.employeeFeed.Tell(new FeedActor.PostMessage(new Message(Guid.NewGuid(), "Employee position has changed", text, DateTime.UtcNow)));
+            }
+
+            if (informationMetadata.Name != this.employeeMetadata.Name)
+            {
+                var text = $"From now and on, {this.employeeMetadata.Name} is to be known as {informationMetadata.Name}";
+                this.employeeFeed.Tell(new FeedActor.PostMessage(new Message(Guid.NewGuid(), "Employee name has changed", text, DateTime.UtcNow)));
+            }
+
+            //TODO: department id change handler
+
+            this.employeeMetadata = informationMetadata;
         }
 
         public class GetEmployeeInfo
@@ -57,6 +84,16 @@
                 }
 
                 public EmployeeContainer Employee { get; }
+            }
+        }
+
+        public sealed class UpdateEmployeeInformation
+        {
+            public EmployeeStoredInformation Information { get; }
+
+            public UpdateEmployeeInformation(EmployeeStoredInformation information)
+            {
+                this.Information = information;
             }
         }
 
