@@ -2,6 +2,7 @@
 {
     using Akka.Actor;
 
+    using Arcadia.Assistant.Feeds;
     using Arcadia.Assistant.Images;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
@@ -12,12 +13,16 @@
 
         private readonly IActorRef photo;
 
+        private readonly IActorRef employeeFeed;
+
         public EmployeeActor(EmployeeStoredInformation storedInformation)
         {
             this.employeeMetadata = storedInformation.Metadata;
 
             this.photo = Context.ActorOf(Akka.Actor.Props.Create(() => new PhotoActor()), "photo");
             this.photo.Tell(new PhotoActor.SetSource(storedInformation.Photo));
+
+            this.employeeFeed = Context.ActorOf(FeedActor.CreateProps(this.employeeMetadata.EmployeeId), "feed");
         }
 
         protected override void OnReceive(object message)

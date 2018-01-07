@@ -1,7 +1,9 @@
 ﻿namespace Arcadia.Assistant.Feeds
 {
     using System.Collections.Generic;
+    using System.Linq;
 
+    using Akka.Actor;
     using Akka.Persistence;
     public class FeedActor : UntypedPersistentActor
     {
@@ -19,6 +21,8 @@
             switch (cmd)
             {
                 case PostMessage postMessage:
+
+                    //TODO: Broadcast new message information to hubs/etc
                     var newEvent = new MessageIsPostedToFeedEvent()
                         {
                             MessageId = postMessage.Message.MessageId,
@@ -28,6 +32,11 @@
                         };
 
                     this.Persist(newEvent, this.MessagePosted);
+                    break;
+
+                case GetMessages _:
+                    this.Sender.Tell(new GetMessages.Response(this.messagesList));
+
                     break;
             }
         }
@@ -56,5 +65,20 @@
                 this.Message = message;
             }
         }
+
+        public sealed class GetMessages
+        {
+            public sealed class Response
+            {
+                public Response(IEnumerable<Message> messages)
+                {
+                    this.Messages = messages.ToList();
+                }
+
+                public IReadOnlyCollection<Message> Messages { get; }
+            }
+        }
+
+        public static Props CreateProps(string feedId) => Props.Create(() => new FeedActor(feedId));
     }
 }

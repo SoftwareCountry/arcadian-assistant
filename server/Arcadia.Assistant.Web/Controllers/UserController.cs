@@ -4,6 +4,7 @@
 
     using Microsoft.AspNetCore.Mvc;
 
+    [Route("api/user")]
     public class UserController : Controller
     {
         [HttpGet]
