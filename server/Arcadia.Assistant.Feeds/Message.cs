@@ -10,6 +10,7 @@
 
         public string Text { get; }
 
+        //TODO: use DateTimeOffset instead
         public DateTime DatePosted { get; }
 
         public Message(Guid messageId, string title, string text, DateTime datePosted)

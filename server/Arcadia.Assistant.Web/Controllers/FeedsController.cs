@@ -33,7 +33,6 @@
             var feedsActor = this.actorFactory.ActorSelection(this.pathsBuilder.Get("shared-feeds"));
             var sharedFeeds = await feedsActor.Ask<SharedFeedsActor.GetFeeds.Response>(SharedFeedsActor.GetFeeds.Instance, TimeSpan.FromSeconds(30), token);
 
-
             //we should display information from common feeds
             var feeds = new[] { sharedFeeds.System, sharedFeeds.News };
 

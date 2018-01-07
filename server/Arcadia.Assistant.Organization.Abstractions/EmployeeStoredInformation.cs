@@ -8,9 +8,9 @@
     {
         public EmployeeMetadata Metadata { get; }
 
-        public EmployeeStoredInformation(EmployeeMetadata Metadata)
+        public EmployeeStoredInformation(EmployeeMetadata metadata)
         {
-            this.Metadata = Metadata;
+            this.Metadata = metadata;
         }
 
         public byte[] Photo { get; set; }
