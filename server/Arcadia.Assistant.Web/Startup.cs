@@ -77,7 +77,13 @@ namespace Arcadia.Assistant.Web
             }
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Arcadian-Assistant API"); });
+            app.UseSwaggerUI(
+                c =>
+                    {
+                        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Arcadian-Assistant API");
+                        c.ShowJsonEditor();
+                        c.ShowRequestHeaders();
+                    });
 
             app.UseMvc();
         }
