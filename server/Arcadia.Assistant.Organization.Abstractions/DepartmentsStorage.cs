@@ -31,7 +31,7 @@
 
         protected abstract Task<LoadChildDepartments.Response> GetChildDepartments(string departmentId);
 
-        public static Props Props => Context.DI().Props<DepartmentsStorage>();
+        public static Props GetProps => Context.DI().Props<DepartmentsStorage>();
 
         public class LoadHeadDepartment
         {

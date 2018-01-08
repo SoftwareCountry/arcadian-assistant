@@ -6,6 +6,7 @@
     using System.Linq;
 
     using Akka.Actor;
+    using Akka.DI.Core;
     using Akka.Event;
 
     using Arcadia.Assistant.Organization.Abstractions;
@@ -92,7 +93,7 @@
                 }
                 else
                 {
-                    employee = Context.ActorOf(EmployeeActor.Props(employeeNewInfo), Uri.EscapeDataString(employeeNewInfo.Metadata.EmployeeId));
+                    employee = Context.ActorOf(EmployeeActor.GetProps(employeeNewInfo), Uri.EscapeDataString(employeeNewInfo.Metadata.EmployeeId));
                     this.EmployeesById[employeeNewInfo.Metadata.EmployeeId] = employee;
                     newEmployeesCount++;
                 }
@@ -106,6 +107,6 @@
             public static readonly RefreshEmployees Instance = new RefreshEmployees();
         }
 
-        public static Props Props() => Akka.Actor.Props.Create(() => new EmployeesActor());
+        public static Props GetProps() => Context.DI().Props<EmployeesActor>();
     }
 }

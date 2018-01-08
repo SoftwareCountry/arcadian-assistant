@@ -102,7 +102,7 @@
 
             foreach (var addedDepartment in addedDepartments)
             {
-                var department = Context.ActorOf(Props(addedDepartment, this.departmentsStorage, this.employees), Uri.EscapeDataString(addedDepartment.DepartmentId));
+                var department = Context.ActorOf(GetProps(addedDepartment, this.departmentsStorage, this.employees), Uri.EscapeDataString(addedDepartment.DepartmentId));
                 this.departmentsById[addedDepartment.DepartmentId] = department;
             }
 
@@ -112,8 +112,8 @@
             }
         }
 
-        public static Props Props(DepartmentInfo department, IActorRef departmentsStorage, IActorRef employees) =>
-            Akka.Actor.Props.Create(() => new DepartmentActor(department, departmentsStorage, employees));
+        public static Props GetProps(DepartmentInfo department, IActorRef departmentsStorage, IActorRef employees) =>
+            Props.Create(() => new DepartmentActor(department, departmentsStorage, employees));
 
         public sealed class RefreshDepartmentInfo
         {

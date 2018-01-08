@@ -61,7 +61,7 @@
 
             if (informationMetadata.Name != this.employeeMetadata.Name)
             {
-                var text = $"From now and on, {this.employeeMetadata.Name} is to be known as {informationMetadata.Name}";
+                var text = $"From now on, {this.employeeMetadata.Name} is to be known as {informationMetadata.Name}";
                 this.employeeFeed.Tell(new FeedActor.PostMessage(new Message(Guid.NewGuid(), "Employee name has changed", text, DateTime.UtcNow)));
             }
 
@@ -97,6 +97,6 @@
             }
         }
 
-        public static Props Props(EmployeeStoredInformation employeeStoredInformation) => Akka.Actor.Props.Create(() => new EmployeeActor(employeeStoredInformation));
+        public static Props GetProps(EmployeeStoredInformation employeeStoredInformation) => Props.Create(() => new EmployeeActor(employeeStoredInformation));
     }
 }
