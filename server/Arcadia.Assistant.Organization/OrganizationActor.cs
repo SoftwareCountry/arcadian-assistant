@@ -25,8 +25,8 @@
 
         public OrganizationActor()
         {
-            this.departmentsStorage = Context.ActorOf(DepartmentsStorage.Props, "departments-storage");
-            this.employees = Context.ActorOf(EmployeesActor.Props(), "employees");
+            this.departmentsStorage = Context.ActorOf(DepartmentsStorage.GetProps, "departments-storage");
+            this.employees = Context.ActorOf(EmployeesActor.GetProps(), "employees");
 
             //TODO: make interval configurable
             Context.System.Scheduler.ScheduleTellRepeatedly(
@@ -94,7 +94,7 @@
                 this.headDepartment.actor = null;
             }
 
-            IActorRef CreateDepartment() => Context.ActorOf(DepartmentActor.Props(department, this.departmentsStorage, this.employees), Uri.EscapeDataString(department.DepartmentId));
+            IActorRef CreateDepartment() => Context.ActorOf(DepartmentActor.GetProps(department, this.departmentsStorage, this.employees), Uri.EscapeDataString(department.DepartmentId));
 
             if ((this.headDepartment.actor == null))
             {

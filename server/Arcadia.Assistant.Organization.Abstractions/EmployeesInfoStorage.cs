@@ -25,7 +25,7 @@
 
         protected abstract Task<LoadAllEmployees.Response> GetAllEmployees();
 
-        public static Props Props => Context.DI().Props<EmployeesInfoStorage>();
+        public static Props GetProps => Context.DI().Props<EmployeesInfoStorage>();
 
         public sealed class LoadAllEmployees
         {
