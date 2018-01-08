@@ -27,7 +27,7 @@
             {
                 var employees = await context
                     .Employee
-                    .FromSql("SELECT * FROM dbo.ArcadianEmployee")
+                    .FromSql(ArcadianEmployeeQuery)
                     .Select(x => new EmployeeStoredInformation(
                         new EmployeeMetadata(x.Id.ToString(), $"{x.LastName}, {x.FirstName} {x.MiddleName}".Trim(), x.Email)
                         {
