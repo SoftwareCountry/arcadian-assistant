@@ -42,9 +42,9 @@
             switch (message)
             {
                 case RefreshOrganizationInformation _:
-                    this.departmentsStorage.Tell(DepartmentsStorage.LoadHeadDepartment.Instance);
+                    
                     this.employees.Tell(EmployeesActor.RefreshEmployees.Instance);
-                    this.BecomeStacked(this.RefreshingDepartments);
+                    this.Become(this.RefreshingEmployees);
                     break;
 
                 case DepartmentsQuery query:
@@ -63,21 +63,42 @@
             }
         }
 
+        private void RefreshingEmployees(object message)
+        {
+            switch (message)
+            {
+                case EmployeesActor.RefreshEmployees.Finished _:
+                    this.logger.Info("Employees info is refreshed, refreshing departments...");
+                    this.departmentsStorage.Tell(DepartmentsStorage.LoadHeadDepartment.Instance);
+                    this.Become(this.RefreshingDepartments);
+                    break;
+                case RefreshOrganizationInformation _:
+                    break; //ignore, it's already in progress
+                default:
+                    this.Stash.Stash();
+                    break;
+            }
+        }
+
         private void RefreshingDepartments(object message)
         {
             switch (message)
             {
                 case DepartmentsStorage.LoadHeadDepartment.Response response:
-                    this.logger.Debug("Head department loaded");
                     this.RecreateHeadDepartment(response.Department);
+                    this.logger.Info("Departments structure refresh finished");
                     this.Stash.UnstashAll();
-                    this.UnbecomeStacked();
+                    this.Become(this.OnReceive);
                     break;
                 case Status.Failure error:
                     this.logger.Error(error.Cause, "Error occurred while loading departments information");
                     this.Stash.UnstashAll();
-                    this.UnbecomeStacked();
+                    this.Become(this.OnReceive);
                     break;
+
+                case RefreshOrganizationInformation _:
+                    break; //ignore, it's already in progress
+
                 default:
                     this.Stash.Stash();
                     break;
