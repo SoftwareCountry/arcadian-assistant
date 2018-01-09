@@ -15,7 +15,7 @@ const topTabNavigatorConfig: TabNavigatorConfig = {
     animationEnabled: true,
 };
 
-export const  topTabBarNavigator = TabNavigator(
+export const  TopTabBarNavigator = TabNavigator(
     topTabBarModel,
     topTabNavigatorConfig,
 );
