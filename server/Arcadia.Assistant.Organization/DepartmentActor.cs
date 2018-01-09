@@ -104,6 +104,7 @@
             return ProcessMessages;
         }
 
+        //TODO: Consider using Ask<> and Task.WhenAll instead
         private UntypedReceive WaitingForChildrenResponses(HashSet<IActorRef> refreshRequesters)
         {
             var childrenToAnswer = new HashSet<IActorRef>(this.departmentsById.Values);
