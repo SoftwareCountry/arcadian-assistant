@@ -115,11 +115,11 @@
                 this.headDepartment.actor = null;
             }
 
-            IActorRef CreateDepartment() => Context.ActorOf(DepartmentActor.GetProps(department, this.departmentsStorage, this.employees), Uri.EscapeDataString(department.DepartmentId));
-
             if ((this.headDepartment.actor == null))
             {
-                this.headDepartment = (department.DepartmentId, CreateDepartment());
+                var props = DepartmentActor.GetProps(department, this.departmentsStorage, this.employees);
+                var departmentActor = Context.ActorOf(props, Uri.EscapeDataString(department.DepartmentId));
+                this.headDepartment = (department.DepartmentId, departmentActor);
             }
 
             this.headDepartment.actor.Tell(new DepartmentActor.RefreshDepartmentInfo(department));
