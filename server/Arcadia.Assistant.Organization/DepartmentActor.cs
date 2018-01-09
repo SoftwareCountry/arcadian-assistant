@@ -69,7 +69,6 @@
             switch (message)
             {
                 case DepartmentsStorage.LoadChildDepartments.Response children:
-                    this.logger.Debug($"Child departments are loaded for <{this.departmentInfo.DepartmentId}> : {this.departmentInfo.Name}");
                     this.RefreshChildDepartments(children.Departments);
                     this.Stash.UnstashAll();
                     this.UnbecomeStacked();
@@ -89,9 +88,9 @@
 
         private void RefreshChildDepartments(IReadOnlyCollection<DepartmentInfo> responseDepartments)
         {
-            var allDepartmentIds = responseDepartments.Select(x => x.DepartmentId).ToImmutableHashSet();
+            var allDepartmentIds = new HashSet<string>(responseDepartments.Select(x => x.DepartmentId));
 
-            var removedIds = this.departmentsById.Keys.Except(allDepartmentIds).ToImmutableList();
+            var removedIds = this.departmentsById.Keys.Except(allDepartmentIds).ToList();
             var addedDepartments = responseDepartments.Where(x => !this.departmentsById.ContainsKey(x.DepartmentId)).ToImmutableList();
 
             foreach (var removedId in removedIds)
@@ -100,16 +99,19 @@
                 this.departmentsById.Remove(removedId);
             }
 
-            foreach (var addedDepartment in addedDepartments)
-            {
-                var department = Context.ActorOf(GetProps(addedDepartment, this.departmentsStorage, this.employees), Uri.EscapeDataString(addedDepartment.DepartmentId));
-                this.departmentsById[addedDepartment.DepartmentId] = department;
-            }
-
             foreach (var department in responseDepartments)
             {
-                this.departmentsById[department.DepartmentId].Tell(new RefreshDepartmentInfo(department));
+                if (!this.departmentsById.TryGetValue(department.DepartmentId, out var departmentAgent))
+                {
+                    departmentAgent = Context.ActorOf(GetProps(department, this.departmentsStorage, this.employees), Uri.EscapeDataString(department.DepartmentId));
+                    this.departmentsById[department.DepartmentId] = departmentAgent;
+                }
+
+                departmentAgent.Tell(new RefreshDepartmentInfo(department));
             }
+
+            this.logger.Info($"Child departments are loaded for <{this.departmentInfo.DepartmentId}> : {this.departmentInfo.Name}." 
+                + $"There are {this.departmentsById.Count} child departments. Removed {removedIds.Count}, added {addedDepartments.Count}");
         }
 
         public static Props GetProps(DepartmentInfo department, IActorRef departmentsStorage, IActorRef employees) =>
