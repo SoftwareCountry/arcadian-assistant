@@ -34,8 +34,8 @@ export class Employee {
     @required({nullable: true})
     public photo: Photo;
 
-    @dataMember({ fieldName: 'posistion' })
-    public position: string; //TODO: fix typo on server
+    @dataMember()
+    public position: string;
 
     @dataMember()
     public departmentId: string;

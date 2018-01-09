@@ -63,6 +63,12 @@
             }
         }
 
+        private UntypedReceive DefaultState()
+        {
+            this.Stash.UnstashAll();
+            return this.OnReceive;
+        }
+
         private void RefreshingEmployees(object message)
         {
             switch (message)
@@ -72,8 +78,15 @@
                     this.departmentsStorage.Tell(DepartmentsStorage.LoadHeadDepartment.Instance);
                     this.Become(this.RefreshingDepartments);
                     break;
+
+                case Status.Failure error:
+                    this.logger.Error(error.Cause, "Error occurred while loading employees information");
+                    this.Become(this.DefaultState());
+                    break;
+
                 case RefreshOrganizationInformation _:
                     break; //ignore, it's already in progress
+
                 default:
                     this.Stash.Stash();
                     break;
@@ -86,14 +99,17 @@
             {
                 case DepartmentsStorage.LoadHeadDepartment.Response response:
                     this.RecreateHeadDepartment(response.Department);
-                    this.logger.Info("Departments structure refresh finished");
-                    this.Stash.UnstashAll();
-                    this.Become(this.OnReceive);
+                    this.headDepartment.actor.Tell(new DepartmentActor.RefreshDepartmentInfo(response.Department));
                     break;
+
+                case DepartmentActor.RefreshDepartmentInfo.Finished _:
+                    this.logger.Info("Organization structure is loaded");
+                    this.Become(this.DefaultState());
+                    break;
+
                 case Status.Failure error:
                     this.logger.Error(error.Cause, "Error occurred while loading departments information");
-                    this.Stash.UnstashAll();
-                    this.Become(this.OnReceive);
+                    this.Become(this.DefaultState());
                     break;
 
                 case RefreshOrganizationInformation _:
@@ -121,8 +137,6 @@
                 var departmentActor = Context.ActorOf(props, Uri.EscapeDataString(department.DepartmentId));
                 this.headDepartment = (department.DepartmentId, departmentActor);
             }
-
-            this.headDepartment.actor.Tell(new DepartmentActor.RefreshDepartmentInfo(department));
         }
 
         private class RefreshOrganizationInformation

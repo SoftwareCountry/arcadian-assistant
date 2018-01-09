@@ -63,13 +63,13 @@
                     actorsToRespondAboutRefreshing.Add(this.Sender);
                     break;
 
-                case Status.Failure _:
-                    OnRefreshFinish();
+                case Status.Failure e:
+                    OnRefreshFinish(e);
                     break;
 
                 case EmployeesInfoStorage.LoadAllEmployees.Response allEmployees:
                     this.RecreateEmployeeAgents(allEmployees.Employees);
-                    OnRefreshFinish();
+                    OnRefreshFinish(RefreshEmployees.Finished.Instance);
                     break;
 
                 default:
@@ -77,9 +77,9 @@
                     break;
             }
 
-            void OnRefreshFinish()
+            void OnRefreshFinish(object onFinishMessage)
             {
-                actorsToRespondAboutRefreshing.ForEach(x => x.Tell(RefreshEmployees.Finished.Instance));
+                actorsToRespondAboutRefreshing.ForEach(x => x.Tell(onFinishMessage));
                 this.Stash.UnstashAll();
                 this.UnbecomeStacked();
             }
