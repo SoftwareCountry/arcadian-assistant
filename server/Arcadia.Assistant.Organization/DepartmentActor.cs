@@ -7,6 +7,7 @@
 
     using Akka.Actor;
     using Akka.Event;
+    using Akka.Util.Internal;
 
     using Arcadia.Assistant.Organization.Abstractions;
 
@@ -47,8 +48,7 @@
                     }
 
                     this.departmentInfo = newInfo.Department;
-                    this.departmentsStorage.Tell(new DepartmentsStorage.LoadChildDepartments(this.departmentInfo.DepartmentId));
-                    this.BecomeStacked(this.Refreshing);
+                    this.Become(this.Refreshing());
 
                     //this.Self.Forward(ReportFinish.Instance);
 
@@ -64,26 +64,82 @@
             }
         }
 
-        private void Refreshing(object message)
+        private UntypedReceive RefreshFinished(IEnumerable<IActorRef> refreshRequesters)
         {
-            switch (message)
-            {
-                case DepartmentsStorage.LoadChildDepartments.Response children:
-                    this.RefreshChildDepartments(children.Departments);
-                    this.Stash.UnstashAll();
-                    this.UnbecomeStacked();
-                    break;
+            refreshRequesters.ForEach(x => x.Tell(RefreshDepartmentInfo.Finished.Instance));
 
-                case Status.Failure error:
-                    this.logger.Error(error.Cause, $"Error occurred while refreshing child departments");
-                    this.Stash.UnstashAll();
-                    this.UnbecomeStacked();
-                    break;
-                
-                default:
-                    this.Stash.Stash();
-                    break;
+            this.Stash.UnstashAll();
+            return this.OnReceive;
+        }
+
+        private UntypedReceive Refreshing()
+        {
+            var refreshRequesters = new HashSet<IActorRef>() { this.Sender };
+            this.departmentsStorage.Tell(new DepartmentsStorage.LoadChildDepartments(this.departmentInfo.DepartmentId));
+
+            void ProcessMessages(object message)
+            {
+                switch (message)
+                {
+                    case RefreshDepartmentInfo _: //already requested
+                        refreshRequesters.Add(this.Sender);
+                        break;
+
+                    case DepartmentsStorage.LoadChildDepartments.Response children:
+                        this.RefreshChildDepartments(children.Departments);
+                        this.Become(this.WaitingForChildrenResponses(refreshRequesters));
+                        break;
+
+                    case Status.Failure error:
+                        this.logger.Error(error.Cause, $"Error occurred while refreshing child departments");
+                        this.Become(this.RefreshFinished(refreshRequesters));
+                        break;
+
+                    default:
+                        this.Stash.Stash();
+                        break;
+                }
             }
+
+            return ProcessMessages;
+        }
+
+        private UntypedReceive WaitingForChildrenResponses(HashSet<IActorRef> refreshRequesters)
+        {
+            var childrenToAnswer = new HashSet<IActorRef>(this.departmentsById.Values);
+
+            void ProcessChildrenResponses(object message)
+            {
+                switch (message)
+                {
+                    case RefreshDepartmentInfo _: //already requested
+                        refreshRequesters.Add(this.Sender);
+                        break;
+
+                    case Status.Failure e:
+                        this.logger.Error(e.Cause, "Error occured while refreshing child department");
+                        childrenToAnswer.Remove(this.Sender);
+                        break;
+                    case RefreshDepartmentInfo.Finished _:
+                        childrenToAnswer.Remove(this.Sender);
+                        break;
+                    default:
+                        this.Stash.Stash();
+                        break;
+                }
+
+                if (childrenToAnswer.Count == 0)
+                {
+                    this.Become(this.RefreshFinished(refreshRequesters));
+                }
+            }
+
+            if (childrenToAnswer.Count == 0)
+            {
+                return this.RefreshFinished(refreshRequesters);
+            }
+
+            return ProcessChildrenResponses;
         }
 
         private void RefreshChildDepartments(IReadOnlyCollection<DepartmentInfo> responseDepartments)
@@ -124,6 +180,11 @@
             public RefreshDepartmentInfo(DepartmentInfo department)
             {
                 this.Department = department;
+            }
+
+            public sealed class Finished
+            {
+                public static readonly Finished Instance = new Finished();
             }
         }
 
