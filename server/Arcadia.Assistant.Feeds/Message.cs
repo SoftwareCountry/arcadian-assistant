@@ -11,9 +11,9 @@
         public string Text { get; }
 
         //TODO: use DateTimeOffset instead
-        public DateTime DatePosted { get; }
+        public DateTimeOffset DatePosted { get; }
 
-        public Message(Guid messageId, string title, string text, DateTime datePosted)
+        public Message(Guid messageId, string title, string text, DateTimeOffset datePosted)
         {
             this.Title = title;
             this.Text = text;

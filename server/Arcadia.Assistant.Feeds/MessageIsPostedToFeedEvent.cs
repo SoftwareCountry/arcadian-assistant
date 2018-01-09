@@ -16,6 +16,6 @@
         public string Text { get; set; }
 
         [DataMember]
-        public DateTime PostedDate { get; set; }
+        public DateTimeOffset PostedDate { get; set; }
     }
 }

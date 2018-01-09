@@ -19,7 +19,7 @@
             this.newsFeed = Context.ActorOf(Props.Create(() => new FeedActor(NewsFeedId)), NewsFeedId);
             this.systemFeed = Context.ActorOf(Props.Create(() => new FeedActor(SystemFeedId)), SystemFeedId);
 
-            this.systemFeed.Tell(new FeedActor.PostMessage(new Message(Guid.NewGuid(), "System is up", "system is up", DateTime.UtcNow)));
+            this.systemFeed.Tell(new FeedActor.PostMessage(new Message(Guid.NewGuid(), "System is up", "system is up", DateTimeOffset.Now)));
         }
 
         protected override void OnReceive(object message)
