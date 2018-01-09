@@ -24,7 +24,7 @@
 
         public EmployeesActor()
         {
-            this.employeesInfoStorage = Context.ActorOf(EmployeesInfoStorage.Props, "employees-storage");
+            this.employeesInfoStorage = Context.ActorOf(EmployeesInfoStorage.GetProps, "employees-storage");
         }
 
         protected override void OnReceive(object message)
@@ -34,12 +34,12 @@
                 case RefreshEmployees _:
                     this.logger.Debug($"Requesting employees list update...");
                     this.employeesInfoStorage.Tell(EmployeesInfoStorage.LoadAllEmployees.Instance);
-                    this.BecomeStacked(this.LoadingEmployees);
+                    this.BecomeStacked(this.EmployeesLoadRequested(this.Sender));
                     break;
 
                 case EmployeesQuery query:
                     var requesters = new[] { this.Sender };
-                    Context.ActorOf(Akka.Actor.Props.Create(() => new EmployeeSearch(this.EmployeesById.Values, requesters, query)));
+                    Context.ActorOf(Props.Create(() => new EmployeeSearch(this.EmployeesById.Values, requesters, query)));
                     break;
 
                 default:
@@ -48,28 +48,40 @@
             }
         }
 
-        private void LoadingEmployees(object message)
+        private UntypedReceive EmployeesLoadRequested(IActorRef initiator)
+        {
+            var agentsToRespondAboutRefreshing = new List<IActorRef> { initiator };
+            return message => this.LoadingEmployees(message, agentsToRespondAboutRefreshing );
+        }
+
+        private void LoadingEmployees(object message, List<IActorRef> actorsToRespondAboutRefreshing)
         {
             switch (message)
             {
                 case RefreshEmployees _:
                     this.logger.Debug("Employees loading is requested while loading is still in progress, ignoring");
+                    actorsToRespondAboutRefreshing.Add(this.Sender);
                     break;
 
                 case Status.Failure _:
-                    this.Stash.UnstashAll();
-                    this.UnbecomeStacked();
+                    OnRefreshFinish();
                     break;
 
                 case EmployeesInfoStorage.LoadAllEmployees.Response allEmployees:
                     this.RecreateEmployeeAgents(allEmployees.Employees);
-                    this.Stash.UnstashAll();
-                    this.UnbecomeStacked();
+                    OnRefreshFinish();
                     break;
 
                 default:
                     this.Stash.Stash();
                     break;
+            }
+
+            void OnRefreshFinish()
+            {
+                actorsToRespondAboutRefreshing.ForEach(x => x.Tell(RefreshEmployees.Finished.Instance));
+                this.Stash.UnstashAll();
+                this.UnbecomeStacked();
             }
         }
 
@@ -105,6 +117,11 @@
         public sealed class RefreshEmployees
         {
             public static readonly RefreshEmployees Instance = new RefreshEmployees();
+
+            public sealed class Finished
+            {
+                public static readonly Finished Instance = new Finished();
+            }
         }
 
         public static Props GetProps() => Context.DI().Props<EmployeesActor>();
