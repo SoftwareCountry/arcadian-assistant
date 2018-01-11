@@ -3,8 +3,8 @@ import { StyleSheet, Platform } from 'react-native';
 
 const topTabBarStyles = StyleSheet.create({
     tabBar: {
-        height: Platform.OS === 'ios' ? 20 : 50,
-        backgroundColor: '#2FAF00',
+        height: Platform.OS === 'ios' ? 50 : 50,
+        backgroundColor: '#2FAFCC',
     },
     tabBarIndicator: {
         backgroundColor: 'transparent',
