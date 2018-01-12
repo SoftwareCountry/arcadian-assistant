@@ -6,6 +6,7 @@
     using System.Linq;
 
     using Akka.Actor;
+    using Akka.DI.Core;
     using Akka.Event;
 
     using Arcadia.Assistant.Organization.Abstractions;
@@ -23,7 +24,7 @@
 
         public EmployeesActor()
         {
-            this.employeesInfoStorage = Context.ActorOf(EmployeesInfoStorage.Props, "employees-storage");
+            this.employeesInfoStorage = Context.ActorOf(EmployeesInfoStorage.GetProps, "employees-storage");
         }
 
         protected override void OnReceive(object message)
@@ -33,12 +34,12 @@
                 case RefreshEmployees _:
                     this.logger.Debug($"Requesting employees list update...");
                     this.employeesInfoStorage.Tell(EmployeesInfoStorage.LoadAllEmployees.Instance);
-                    this.BecomeStacked(this.LoadingEmployees);
+                    this.BecomeStacked(this.EmployeesLoadRequested(this.Sender));
                     break;
 
                 case EmployeesQuery query:
                     var requesters = new[] { this.Sender };
-                    Context.ActorOf(Akka.Actor.Props.Create(() => new EmployeeSearch(this.EmployeesById.Values, requesters, query)));
+                    Context.ActorOf(Props.Create(() => new EmployeeSearch(this.EmployeesById.Values, requesters, query)));
                     break;
 
                 default:
@@ -47,35 +48,47 @@
             }
         }
 
-        private void LoadingEmployees(object message)
+        private UntypedReceive EmployeesLoadRequested(IActorRef initiator)
+        {
+            var agentsToRespondAboutRefreshing = new List<IActorRef> { initiator };
+            return message => this.LoadingEmployees(message, agentsToRespondAboutRefreshing );
+        }
+
+        private void LoadingEmployees(object message, List<IActorRef> actorsToRespondAboutRefreshing)
         {
             switch (message)
             {
                 case RefreshEmployees _:
                     this.logger.Debug("Employees loading is requested while loading is still in progress, ignoring");
+                    actorsToRespondAboutRefreshing.Add(this.Sender);
                     break;
 
-                case Status.Failure _:
-                    this.Stash.UnstashAll();
-                    this.UnbecomeStacked();
+                case Status.Failure e:
+                    OnRefreshFinish(e);
                     break;
 
                 case EmployeesInfoStorage.LoadAllEmployees.Response allEmployees:
                     this.RecreateEmployeeAgents(allEmployees.Employees);
-                    this.Stash.UnstashAll();
-                    this.UnbecomeStacked();
+                    OnRefreshFinish(RefreshEmployees.Finished.Instance);
                     break;
 
                 default:
                     this.Stash.Stash();
                     break;
             }
+
+            void OnRefreshFinish(object onFinishMessage)
+            {
+                actorsToRespondAboutRefreshing.ForEach(x => x.Tell(onFinishMessage));
+                this.Stash.UnstashAll();
+                this.UnbecomeStacked();
+            }
         }
 
         private void RecreateEmployeeAgents(IReadOnlyCollection<EmployeeStoredInformation> allEmployees)
         {
-            var removedIds = this.EmployeesById.Keys.Except(allEmployees.Select(x => x.Metadata.EmployeeId)).ToImmutableList();
-            var addedEmployees = allEmployees.Where(x => !this.EmployeesById.ContainsKey(x.Metadata.EmployeeId)).ToImmutableList();
+            var removedIds = this.EmployeesById.Keys.Except(allEmployees.Select(x => x.Metadata.EmployeeId)).ToList();
+            
 
             foreach (var removedId in removedIds)
             {
@@ -83,20 +96,34 @@
                 this.EmployeesById.Remove(removedId);
             }
 
-            foreach (var addedEmployee in addedEmployees)
+            var newEmployeesCount = 0;
+            foreach (var employeeNewInfo in allEmployees)
             {
-                var employee = Context.ActorOf(EmployeeActor.Props(addedEmployee), Uri.EscapeDataString(addedEmployee.Metadata.EmployeeId));
-                this.EmployeesById[addedEmployee.Metadata.EmployeeId] = employee;
+                if (this.EmployeesById.TryGetValue(employeeNewInfo.Metadata.EmployeeId, out var employee))
+                {
+                    employee.Tell(new EmployeeActor.UpdateEmployeeInformation(employeeNewInfo));
+                }
+                else
+                {
+                    employee = Context.ActorOf(EmployeeActor.GetProps(employeeNewInfo), Uri.EscapeDataString(employeeNewInfo.Metadata.EmployeeId));
+                    this.EmployeesById[employeeNewInfo.Metadata.EmployeeId] = employee;
+                    newEmployeesCount++;
+                }
             }
 
-            this.logger.Debug($"Employees list is updated. There are {allEmployees.Count} at all, {removedIds.Count} got removed, {addedEmployees.Count} were added");
+            this.logger.Debug($"Employees list is updated. There are {allEmployees.Count} at all, {removedIds.Count} got removed, {newEmployeesCount} were added");
         }
 
         public sealed class RefreshEmployees
         {
             public static readonly RefreshEmployees Instance = new RefreshEmployees();
+
+            public sealed class Finished
+            {
+                public static readonly Finished Instance = new Finished();
+            }
         }
 
-        public static Props Props() => Akka.Actor.Props.Create(() => new EmployeesActor());
+        public static Props GetProps() => Context.DI().Props<EmployeesActor>();
     }
 }

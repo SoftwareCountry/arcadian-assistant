@@ -1,5 +1,6 @@
-import { StackNavigator } from 'react-navigation';
 import React from 'react';
+
+import { StackNavigator } from 'react-navigation';
 import { HomeFeedsScreen } from './home-feeds-screen';
 import { SicklistScreen } from '../home/sicklist-screen';
 import { HelpdeskScreen } from '../home/helpdesk/helpdesk-screen';

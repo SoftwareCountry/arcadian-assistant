@@ -35,6 +35,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Arcadia.Assistant.Configuration\Arcadia.Assistant.Configuration.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.Feeds\Arcadia.Assistant.Feeds.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Organization.Abstractions\Arcadia.Assistant.Organization.Abstractions.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Server.Interop\Arcadia.Assistant.Server.Interop.csproj" />
   </ItemGroup>

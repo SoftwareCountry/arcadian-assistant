@@ -4,14 +4,17 @@
 
     public class ServerActorsCollection
     {
-        public ServerActorsCollection(IActorRef helpdesk, IActorRef departments)
+        public ServerActorsCollection(IActorRef helpdesk, IActorRef departments, IActorRef sharedFeedsActor)
         {
             this.Helpdesk = helpdesk;
             this.Departments = departments;
+            this.SharedFeedsActor = sharedFeedsActor;
         }
 
         public IActorRef Helpdesk { get; }
 
         public IActorRef Departments { get; }
+
+        public IActorRef SharedFeedsActor { get; }
     }
 }

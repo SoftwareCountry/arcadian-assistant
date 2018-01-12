@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Security.Cryptography;
 
     using Akka.Actor;
     using Akka.Event;
@@ -20,6 +21,8 @@
         private const int Height = 200;
 
         private const string Mime = "image/jpeg";
+
+        private string lastImageHash = null;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
@@ -58,6 +61,17 @@
             if (bytes == null)
             {
                 return;
+            }
+
+            using (var sha512 = SHA512.Create())
+            {
+                var newHash = Convert.ToBase64String(sha512.ComputeHash(bytes));
+                if (newHash == this.lastImageHash)
+                {
+                    return;
+                }
+
+                this.lastImageHash = newHash;
             }
 
             using (var image = Image.Load(bytes))

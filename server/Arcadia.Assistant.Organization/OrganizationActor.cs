@@ -25,8 +25,8 @@
 
         public OrganizationActor()
         {
-            this.departmentsStorage = Context.ActorOf(DepartmentsStorage.Props, "departments-storage");
-            this.employees = Context.ActorOf(EmployeesActor.Props(), "employees");
+            this.departmentsStorage = Context.ActorOf(DepartmentsStorage.GetProps, "departments-storage");
+            this.employees = Context.ActorOf(EmployeesActor.GetProps(), "employees");
 
             //TODO: make interval configurable
             Context.System.Scheduler.ScheduleTellRepeatedly(
@@ -42,9 +42,9 @@
             switch (message)
             {
                 case RefreshOrganizationInformation _:
-                    this.departmentsStorage.Tell(DepartmentsStorage.LoadHeadDepartment.Instance);
+                    
                     this.employees.Tell(EmployeesActor.RefreshEmployees.Instance);
-                    this.BecomeStacked(this.RefreshingDepartments);
+                    this.Become(this.RefreshingEmployees);
                     break;
 
                 case DepartmentsQuery query:
@@ -63,21 +63,58 @@
             }
         }
 
+        private UntypedReceive DefaultState()
+        {
+            this.Stash.UnstashAll();
+            return this.OnReceive;
+        }
+
+        private void RefreshingEmployees(object message)
+        {
+            switch (message)
+            {
+                case EmployeesActor.RefreshEmployees.Finished _:
+                    this.logger.Info("Employees info is refreshed, refreshing departments...");
+                    this.departmentsStorage.Tell(DepartmentsStorage.LoadHeadDepartment.Instance);
+                    this.Become(this.RefreshingDepartments);
+                    break;
+
+                case Status.Failure error:
+                    this.logger.Error(error.Cause, "Error occurred while loading employees information");
+                    this.Become(this.DefaultState());
+                    break;
+
+                case RefreshOrganizationInformation _:
+                    break; //ignore, it's already in progress
+
+                default:
+                    this.Stash.Stash();
+                    break;
+            }
+        }
+
         private void RefreshingDepartments(object message)
         {
             switch (message)
             {
                 case DepartmentsStorage.LoadHeadDepartment.Response response:
-                    this.logger.Debug("Head department loaded");
                     this.RecreateHeadDepartment(response.Department);
-                    this.Stash.UnstashAll();
-                    this.UnbecomeStacked();
+                    this.headDepartment.actor.Tell(new DepartmentActor.RefreshDepartmentInfo(response.Department));
                     break;
+
+                case DepartmentActor.RefreshDepartmentInfo.Finished _:
+                    this.logger.Info("Organization structure is loaded");
+                    this.Become(this.DefaultState());
+                    break;
+
                 case Status.Failure error:
                     this.logger.Error(error.Cause, "Error occurred while loading departments information");
-                    this.Stash.UnstashAll();
-                    this.UnbecomeStacked();
+                    this.Become(this.DefaultState());
                     break;
+
+                case RefreshOrganizationInformation _:
+                    break; //ignore, it's already in progress
+
                 default:
                     this.Stash.Stash();
                     break;
@@ -94,14 +131,12 @@
                 this.headDepartment.actor = null;
             }
 
-            IActorRef CreateDepartment() => Context.ActorOf(DepartmentActor.Props(department, this.departmentsStorage, this.employees), Uri.EscapeDataString(department.DepartmentId));
-
             if ((this.headDepartment.actor == null))
             {
-                this.headDepartment = (department.DepartmentId, CreateDepartment());
+                var props = DepartmentActor.GetProps(department, this.departmentsStorage, this.employees);
+                var departmentActor = Context.ActorOf(props, Uri.EscapeDataString(department.DepartmentId));
+                this.headDepartment = (department.DepartmentId, departmentActor);
             }
-
-            this.headDepartment.actor.Tell(new DepartmentActor.RefreshDepartmentInfo(department));
         }
 
         private class RefreshOrganizationInformation

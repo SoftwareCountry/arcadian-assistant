@@ -1,4 +1,4 @@
-package com.arcadiaassistant;
+package ru.spb.arcadia.product.assistant.android;
 
 import com.facebook.react.ReactActivity;
 
