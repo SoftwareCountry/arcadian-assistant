@@ -1,6 +1,6 @@
 import React from 'react';
 import { FlatList, Text, View} from 'react-native';
-import { TopNavBar } from '../topNavBar/top-nav-bar';
+import { TopNavBar } from '../navigation/top-nav-bar';
 
 const navBar =  new TopNavBar('Feeds');
 const dataList = [

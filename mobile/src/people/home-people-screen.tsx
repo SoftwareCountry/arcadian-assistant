@@ -1,7 +1,7 @@
 import { StackNavigator } from 'react-navigation';
 import React from 'react';
 import { Text, View, Platform, StatusBar } from 'react-native';
-import { TopNavBar } from '../topNavBar/top-nav-bar';
+import { TopNavBar } from '../navigation/top-nav-bar';
 import { Department } from '../reducers/organization/department.model';
 import { connect } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
