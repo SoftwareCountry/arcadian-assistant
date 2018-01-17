@@ -10,24 +10,27 @@ import logger from 'redux-logger';
 
 import 'rxjs/Rx';
 import { OrganizationState, organizationReducer, organizationEpics } from './organization/organization.reducer';
+import { ErrorAlertState, errorReducer } from './errorHandling/error.reducer';
 
 export interface AppState {
     helpdesk: HelpdeskState;
     organization: OrganizationState;
     nav: NavigationState;
+    error: ErrorAlertState;
 }
 
-const rootEpic = combineEpics( helpdeskEpics as any, organizationEpics as any );
+const rootEpic = combineEpics(helpdeskEpics as any, organizationEpics as any);
 
 const reducers = combineReducers<AppState>({
     helpdesk: helpdeskReducer,
     organization: organizationReducer,
     nav: navigationReducer,
+    error: errorReducer,
 });
 
 export const storeFactory = () => {
-    const epicMiddleware = createEpicMiddleware( rootEpic );
+    const epicMiddleware = createEpicMiddleware(rootEpic);
     //const loggerMiddleware = createLogger();
 
-    return createStore(reducers, applyMiddleware( epicMiddleware, logger ));
+    return createStore(reducers, applyMiddleware(epicMiddleware, logger));
 };
