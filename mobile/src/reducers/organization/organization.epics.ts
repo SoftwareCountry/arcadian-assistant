@@ -6,6 +6,7 @@ import { ajaxGetJSON } from 'rxjs/observable/dom/AjaxObservable';
 import { AppState } from '../app.reducer';
 import { Employee } from './employee.model';
 import { Observable } from 'rxjs/Observable';
+import { Alert } from 'react-native';
 
 const url = 'http://localhost:5000/api'; //TODO: fix hardcode
 
@@ -15,7 +16,7 @@ export const loadDepartmentsEpic$ = (action$: ActionsObservable<LoadDepartments>
         .map(x => deserializeArray(x as any, Department))
         .map(x => loadDepartmentsFinished(x))
         .catch(e => { 
-            console.log('error is catched');
+            Alert.alert('Error', 'Server is not available')
             return Observable.of({type: 'ERROR-LOAD-FAILED', error: e});    
         });
 
@@ -27,7 +28,7 @@ export const loadChiefsEpic$ = (action$: ActionsObservable<LoadDepartmentsFinish
         .mergeAll()
         .map(x => loadEmployeeFinished(x))
         .catch(e => { 
-            console.log('error is catched');
+            Alert.alert('Error', 'Server is not available')
             return Observable.of({type: 'ERROR-LOAD-FAILED', error: e});    
         });
 
@@ -48,6 +49,6 @@ export const loadEmployeesForDepartmentEpic$ = (action$: ActionsObservable<LoadE
         .mergeAll()
         .flatMap(x => x.map(loadEmployeeFinished))
         .catch(e => { 
-            console.log('error is catched');
+            Alert.alert('Error', 'Server is not available')
             return Observable.of({type: 'ERROR-LOAD-FAILED', error: e});    
         });

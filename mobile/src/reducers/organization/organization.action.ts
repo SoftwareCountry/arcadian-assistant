@@ -37,14 +37,7 @@ export interface LoadEmployeesForDepartment extends Action {
 
 export const loadEmployeesForDepartment = (departmentId: string): LoadEmployeesForDepartment => ({ type: 'LOAD_EMPLOYEES_FOR_DEPARTMENT', departmentId });
 
-export interface ErrorLoadFailed extends Action {
-    type: 'ERROR-LOAD-FAILED';
-    error: string;
-}
-
-export const errorLoadFailed = (error: string): ErrorLoadFailed => ({ type: 'ERROR-LOAD-FAILED', error });
-
 export type OrganizationActions =
     LoadDepartments | LoadDepartmentsFinished |
-    LoadEmployee | LoadEmployeesForDepartment | LoadEmployeeFinished | ErrorLoadFailed;
+    LoadEmployee | LoadEmployeesForDepartment | LoadEmployeeFinished;
 
