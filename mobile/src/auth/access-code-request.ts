@@ -1,0 +1,81 @@
+import { dataMember, required } from 'santee-dcts';
+import { ajaxPost } from 'rxjs/observable/dom/AjaxObservable';
+import { deserialize } from 'santee-dcts/src/deserializer';
+
+interface AccessCodeRequestParamsBase {
+    'client_id': string;
+    'redirect_uri': string;
+    'resource': string;
+}
+
+interface AccessCodeRequestWithAuthCodeParams extends AccessCodeRequestParamsBase {
+    'grant_type': 'authorization_code';
+    'code': string;
+}
+
+interface AccessCodeRequestWithRefreshTokenParams extends AccessCodeRequestParamsBase {
+    'grant_type': 'refresh_token';
+    'refresh_token': string;
+}
+
+type AccessCodeRequestParams = AccessCodeRequestWithAuthCodeParams | AccessCodeRequestWithRefreshTokenParams;
+
+export class TokenResponse {
+    @dataMember({ fieldName: 'access_token' })
+    @required()
+    accessToken: string;
+
+    @dataMember({ fieldName: 'token_type' })
+    tokenType: string;
+
+    @dataMember({ fieldName: 'expires_in' })
+    expiresIn: string;
+
+    @dataMember({ fieldName: 'expires_on' })
+    expiresOn: string;
+
+    @dataMember()
+    resource: string;
+
+    @dataMember({ fieldName: 'refresh_token' })
+    @required()
+    refreshToken: string;
+
+    @dataMember()
+    scope: string;
+
+    @dataMember({ fieldName: 'id_token' })
+    idToken: string;
+}
+
+export class AccessCodeRequest {
+    constructor(
+        private readonly clientId: string,
+        private readonly redirectUri: string,
+        private readonly tokenUrl: string
+        ) {
+    }
+
+    public fetchNew(code: string) {
+        const params: AccessCodeRequestParams = { ...this.getDefaultParams(), code, 'grant_type': 'authorization_code' };
+        return this.performRequest(params);
+    }
+
+    public refresh(refreshToken: string) {
+        const params: AccessCodeRequestParams = { ...this.getDefaultParams(), refresh_token: refreshToken, 'grant_type': 'refresh_token' };
+        return this.performRequest(params);
+    }
+
+    private performRequest(params: AccessCodeRequestParams) {
+        return ajaxPost(this.tokenUrl, params)
+            .map(x => deserialize(x.response, TokenResponse));
+    }
+
+    private getDefaultParams(): AccessCodeRequestParamsBase {
+        return {
+            'client_id': this.clientId,
+            'resource': this.clientId,
+            'redirect_uri': this.redirectUri
+        };
+    }
+}

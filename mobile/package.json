@@ -4,7 +4,8 @@
 	"private": true,
 	"scripts": {
 		"start": "node node_modules/react-native/local-cli/cli.js start",
-		"test": "jest --coverage",
+		"test": "jest",
+		"test-coverage": "jest --coverage",
 		"tsc": "tsc",
 		"clean": "rimraf artifacts",
 		"build": "npm run clean && npm run lint && npm run tsc --",
