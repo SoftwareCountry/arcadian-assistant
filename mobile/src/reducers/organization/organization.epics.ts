@@ -1,26 +1,21 @@
 import { ActionsObservable } from 'redux-observable';
 import { LoadDepartments, loadDepartmentsFinished, LoadDepartmentsFinished, loadEmployeeFinished, LoadEmployeesForDepartment, loadEmployeesForDepartment } from './organization.action';
-import { ErrorLoadFailed } from '../error/error.action';
 import { deserializeArray, deserialize } from 'santee-dcts/src/deserializer';
 import { Department } from './department.model';
 import { ajaxGetJSON } from 'rxjs/observable/dom/AjaxObservable';
 import { AppState } from '../app.reducer';
 import { Employee } from './employee.model';
 import { Observable } from 'rxjs/Observable';
-import { Alert } from 'react-native';
+import { errorLoadFailed } from '../errors/errors.action';
 
 const url = 'http://localhost:5000/api'; //TODO: fix hardcode
-export const errorEpic$ = (action$: ActionsObservable<ErrorLoadFailed>) =>
-    action$.ofType('ERROR-LOAD-FAILED')
-        .do(({ errorMessage }) => Alert.alert('Error', `error occurred: ${errorMessage}`))
-        .ignoreElements();
 
 export const loadDepartmentsEpic$ = (action$: ActionsObservable<LoadDepartments>) =>
     action$.ofType('LOAD-DEPARTMENTS')
         .switchMap(x => ajaxGetJSON(`${url}/departments`))
         .map(x => deserializeArray(x as any, Department))
         .map(x => loadDepartmentsFinished(x))
-        .catch(e => Observable.of({ type: 'ERROR-LOAD-FAILED', errorMessage: e.message || 'something wrong' }));
+        .catch(e => Observable.of(errorLoadFailed(e.message || 'something wrong')));
 
 export const loadChiefsEpic$ = (action$: ActionsObservable<LoadDepartmentsFinished>) =>
     action$.ofType('LOAD-DEPARTMENTS-FINISHED')
@@ -29,7 +24,7 @@ export const loadChiefsEpic$ = (action$: ActionsObservable<LoadDepartmentsFinish
                 ajaxGetJSON(`${url}/employees/${dep.chiefId}`).map(obj => deserialize(obj, Employee))))
         .mergeAll()
         .map(x => loadEmployeeFinished(x))
-        .catch(e => Observable.of({ type: 'ERROR-LOAD-FAILED', error: e }));
+        .catch(e => Observable.of(errorLoadFailed(e.message || 'something wrong')));
 
 
 //TODO: this thing loads all employees for all departments. It needs to be changed to load only requested ones
@@ -47,4 +42,4 @@ export const loadEmployeesForDepartmentEpic$ = (action$: ActionsObservable<LoadE
                 ajaxGetJSON(`${url}/employees?departmentId=${x.key}`).map(obj => deserializeArray(obj as any, Employee))))
         .mergeAll()
         .flatMap(x => x.map(loadEmployeeFinished))
-        .catch(e => Observable.of({ type: 'ERROR-LOAD-FAILED', errorMessage: e.message || 'something wrong' }));
+        .catch(e => Observable.of(errorLoadFailed(e.message || 'something wrong')));

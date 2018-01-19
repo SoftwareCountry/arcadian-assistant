@@ -4,7 +4,8 @@ import { combineReducers } from 'redux';
 import { OrganizationState } from './organization.reducer';
 import { departmentsReducer } from './departments.reducer';
 import { employeesReducer, EmployeesStore } from './employees.reducer';
-import { errorEpic$, loadDepartmentsEpic$, loadChiefsEpic$, loadDepartmentsFinishedEpic$, loadEmployeesForDepartmentEpic$ } from './organization.epics';
+import { loadDepartmentsEpic$, loadChiefsEpic$, loadDepartmentsFinishedEpic$, loadEmployeesForDepartmentEpic$ } from './organization.epics';
+import { errorLoadFailedEpic$ } from '../errors/errors.epics';
 
 export interface OrganizationState {
     departments: Department[];
@@ -16,7 +17,7 @@ export const organizationEpics = combineEpics(
     loadChiefsEpic$ as any,
     loadDepartmentsFinishedEpic$ as any,
     loadEmployeesForDepartmentEpic$ as any,
-    errorEpic$ as any);
+    errorLoadFailedEpic$ as any);
 
 export const organizationReducer = combineReducers<OrganizationState>({
     departments: departmentsReducer,
