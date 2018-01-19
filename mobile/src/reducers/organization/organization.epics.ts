@@ -1,5 +1,6 @@
 import { ActionsObservable } from 'redux-observable';
-import { LoadDepartments, loadDepartmentsFinished, LoadDepartmentsFinished, loadEmployeeFinished, LoadEmployeesForDepartment, loadEmployeesForDepartment, ErrorLoadFailed } from './organization.action';
+import { LoadDepartments, loadDepartmentsFinished, LoadDepartmentsFinished, loadEmployeeFinished, LoadEmployeesForDepartment, loadEmployeesForDepartment } from './organization.action';
+import { ErrorLoadFailed } from '../error/error.action';
 import { deserializeArray, deserialize } from 'santee-dcts/src/deserializer';
 import { Department } from './department.model';
 import { ajaxGetJSON } from 'rxjs/observable/dom/AjaxObservable';
