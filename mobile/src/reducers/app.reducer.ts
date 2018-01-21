@@ -10,19 +10,22 @@ import logger from 'redux-logger';
 
 import 'rxjs/Rx';
 import { OrganizationState, organizationReducer, organizationEpics } from './organization/organization.reducer';
+import { calendarReducer, CalendarState, calendarEpics } from './calendar/calendar.reducer';
 
 export interface AppState {
     helpdesk: HelpdeskState;
     organization: OrganizationState;
     nav: NavigationState;
+    calendar: CalendarState;
 }
 
-const rootEpic = combineEpics( helpdeskEpics as any, organizationEpics as any );
+const rootEpic = combineEpics( helpdeskEpics as any, organizationEpics as any, calendarEpics );
 
 const reducers = combineReducers<AppState>({
     helpdesk: helpdeskReducer,
     organization: organizationReducer,
     nav: navigationReducer,
+    calendar: calendarReducer
 });
 
 export const storeFactory = () => {

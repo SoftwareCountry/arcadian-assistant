@@ -6,7 +6,7 @@ import { ajaxGetJSON } from 'rxjs/observable/dom/AjaxObservable';
 import { AppState } from '../app.reducer';
 import { Employee } from './employee.model';
 
-const url = 'http://localhost:5000/api'; //TODO: fix hardcode
+const url = 'http://10.0.2.2:5000/api'; //TODO: fix hardcode
 
 export const loadDepartmentsEpic$ = (action$: ActionsObservable<LoadDepartments>) =>
     action$.ofType('LOAD-DEPARTMENTS')
