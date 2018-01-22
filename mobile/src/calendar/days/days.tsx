@@ -13,13 +13,13 @@ interface DaysProps {
     days: DaysModel;
 }
 
-interface ConnectedDaysProps extends DaysProps {
-    dispatch: Dispatch<CalendarActions>;
+interface DaysDispatchProps {
+    loadDays: () => void;
 }
 
-class DaysImpl extends Component<ConnectedDaysProps, {}> {
+class DaysImpl extends Component<DaysProps & DaysDispatchProps, {}> {
     public componentDidMount() {
-        this.props.dispatch(loadDays());
+        this.props.loadDays();
     }
 
     public render() {
@@ -51,4 +51,8 @@ const mapStateToProps = (state: AppState): DaysProps => ({
     days: state.calendar.days
 });
 
-export const Days = connect(mapStateToProps)(DaysImpl);
+const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>): DaysDispatchProps => ({
+    loadDays: () => dispatch(loadDays())
+});
+
+export const Days = connect(mapStateToProps, mapDispatchToProps)(DaysImpl);
