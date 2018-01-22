@@ -32,15 +32,6 @@ class HelpdeskScreenImpl extends Component<HelpdeskScreenProps & HelpdeskScreenD
     }
 
     public render() {
-<<<<<<< HEAD
-        return <View>
-            <Animated.ScrollView horizontal >
-            <PersonCardWithAvatar personName='Ivan' />
-            <PersonCardWithAvatar personName='Petr' />
-            <PersonCardWithAvatar personName='Sergey' />
-            </Animated.ScrollView>
-        </View>;
-=======
 
         const progressBar = this.props.ticketTemplatesAreLoaded ? undefined : <ActivityIndicator/>;
 
@@ -48,7 +39,6 @@ class HelpdeskScreenImpl extends Component<HelpdeskScreenProps & HelpdeskScreenD
                 {progressBar}
                 <Button title='Back' onPress={ () => this.props.onBackClick() } ></Button>
             </ScrollView>;
->>>>>>> master
     }
 }
 
