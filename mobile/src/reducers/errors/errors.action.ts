@@ -5,4 +5,4 @@ export interface ErrorLoadFailed extends Action {
     errorMessage: string;
 }
 
-export const errorLoadFailed = (errorMessage: string): ErrorLoadFailed => ({ type: 'ERROR-LOAD-FAILED', errorMessage });
+export const errorLoadFailed = (errorMessage: string): ErrorLoadFailed => ({ type: 'ERROR-LOAD-FAILED', errorMessage: errorMessage || 'something wrong' });

@@ -15,7 +15,7 @@ export const loadDepartmentsEpic$ = (action$: ActionsObservable<LoadDepartments>
         .switchMap(x => ajaxGetJSON(`${url}/departments`))
         .map(x => deserializeArray(x as any, Department))
         .map(x => loadDepartmentsFinished(x))
-        .catch(e => Observable.of(errorLoadFailed(e.message || 'something wrong')));
+        .catch(e => Observable.of(errorLoadFailed(e.message)));
 
 export const loadChiefsEpic$ = (action$: ActionsObservable<LoadDepartmentsFinished>) =>
     action$.ofType('LOAD-DEPARTMENTS-FINISHED')
@@ -24,7 +24,7 @@ export const loadChiefsEpic$ = (action$: ActionsObservable<LoadDepartmentsFinish
                 ajaxGetJSON(`${url}/employees/${dep.chiefId}`).map(obj => deserialize(obj, Employee))))
         .mergeAll()
         .map(x => loadEmployeeFinished(x))
-        .catch(e => Observable.of(errorLoadFailed(e.message || 'something wrong')));
+        .catch(e => Observable.of(errorLoadFailed(e.message)));
 
 
 //TODO: this thing loads all employees for all departments. It needs to be changed to load only requested ones
@@ -42,4 +42,4 @@ export const loadEmployeesForDepartmentEpic$ = (action$: ActionsObservable<LoadE
                 ajaxGetJSON(`${url}/employees?departmentId=${x.key}`).map(obj => deserializeArray(obj as any, Employee))))
         .mergeAll()
         .flatMap(x => x.map(loadEmployeeFinished))
-        .catch(e => Observable.of(errorLoadFailed(e.message || 'something wrong')));
+        .catch(e => Observable.of(errorLoadFailed(e.message)));
