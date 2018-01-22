@@ -1,8 +1,8 @@
 import { Action } from 'redux';
 
-export interface ErrorLoadFailed extends Action {
-    type: 'ERROR-LOAD-FAILED';
+export interface LoadFailedError extends Action {
+    type: 'LOAD-FAILED-ERROR';
     errorMessage: string;
 }
 
-export const errorLoadFailed = (errorMessage: string): ErrorLoadFailed => ({ type: 'ERROR-LOAD-FAILED', errorMessage: errorMessage || 'something wrong' });
+export const loadFailedError = (errorMessage: string): LoadFailedError => ({ type: 'LOAD-FAILED-ERROR', errorMessage: errorMessage || 'something wrong' });
