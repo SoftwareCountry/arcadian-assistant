@@ -4,6 +4,8 @@ import { View, Image } from 'react-native';
 export interface Props {
     photoBase64: string;
     outerBorderColor: string;
+    // Inner border color could be same as superview's background color 
+    // or some other color - refer to design.
     innerBorderColor: string;
     avatarSize: number;
     outerBorderWidth: number;
