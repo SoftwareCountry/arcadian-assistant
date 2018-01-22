@@ -1,8 +1,8 @@
 import { StyleSheet } from 'react-native';
 
-const tileHeight = 90;
-const tileIndicatorHeight = 4;
-const tileFontColor = '#18515E';
+const daysCounterHeight = 90;
+const daysCounterIndicatorHeight = 4;
+const daysCounterFontColor = '#18515E';
 
 export const colors = {
     days: {
@@ -19,16 +19,16 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         padding: 10
     },
-    tileSeparator: {
+    daysCounterSeparator: {
         marginRight: 1
     },
-    tile: {
+    daysCounter: {
         backgroundColor: 'rgba(47, 175, 204, 0.33)',
-        height: tileHeight,
+        height: daysCounterHeight,
         flexDirection: 'column',
         flexGrow: 1
     },
-    tileContent: {
+    daysCounterContent: {
         paddingTop: 6,
         paddingBottom: 15,
         paddingLeft: 10,
@@ -36,22 +36,22 @@ export const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        height: tileHeight - tileIndicatorHeight
+        height: daysCounterHeight - daysCounterIndicatorHeight
     },
-    tileLeftDays: {
+    daysCounterLeftDays: {
         fontSize: 50,
-        color: tileFontColor
+        color: daysCounterFontColor
     },
-    tileAllDays: {
+    daysCounterAllDays: {
         fontSize: 20,
-        color: tileFontColor
+        color: daysCounterFontColor
     },
-    tileTitle: {
+    daysCounterTitle: {
         fontSize: 12,
-        color: tileFontColor
+        color: daysCounterFontColor
     },
-    tileIndicator: {
+    daysCounterIndicator: {
         flexDirection: 'row',
-        height: tileIndicatorHeight
+        height: daysCounterIndicatorHeight
     }
 });

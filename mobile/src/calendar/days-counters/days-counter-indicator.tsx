@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { styles, colors } from '../../styles';
+import { styles, colors } from '../styles';
 
 type RegisteredStyles =  { [propName: string]: any };
 
@@ -15,7 +15,7 @@ interface TileIndicatorProps {
     allColor: string;
 }
 
-export class TileIndicator extends Component<TileIndicatorProps> {
+export class DaysCounterIndicator extends Component<TileIndicatorProps> {
     private styles: TileIndicatorStyles;
     private readonly allDays = 100;
 
@@ -23,7 +23,7 @@ export class TileIndicator extends Component<TileIndicatorProps> {
         this.calculateStyles();
 
         return (
-            <View style={styles.tileIndicator}>
+            <View style={styles.daysCounterIndicator}>
                 <View style={this.styles.left} />
                 <View style={this.styles.all} />
             </View>

@@ -1,12 +1,12 @@
-import { loadDays, LoadDays, loadDaysFinished } from './calendar.action';
+import { loadDaysCounters, LoadDaysCounters, loadDaysFinished } from './calendar.action';
 import { ActionsObservable } from 'redux-observable';
 import { Observable } from 'rxjs/Observable';
 import { ajaxGetJSON } from 'rxjs/observable/dom/AjaxObservable';
 import { deserializeArray, deserialize } from 'santee-dcts/src/deserializer';
-import { DaysItem, Days } from './days.model';
+import { DaysCounterItem, DaysCountersModel } from './days-counters.model';
 
 // TODO: load mock
-const loadMockDays = (): Observable<Days> => {
+const loadMockDays = (): Observable<DaysCountersModel> => {
     return Observable.of(
         {
             vacation: { leftDays: 4, allDays: 28, title: 'days of vacation left' },
@@ -16,8 +16,8 @@ const loadMockDays = (): Observable<Days> => {
     );
 };
 
-export const loadDaysEpic$ = (action$: ActionsObservable<LoadDays>) =>
-    action$.ofType('LOAD-DAYS')
+export const loadDaysCountersEpic$ = (action$: ActionsObservable<LoadDaysCounters>) =>
+    action$.ofType('LOAD-DAYS-COUNTERS')
         .switchMap(x => loadMockDays())
-        .map(x => deserialize(x, Days))
+        .map(x => deserialize(x, DaysCountersModel))
         .map(x => loadDaysFinished(x));

@@ -1,17 +1,17 @@
 import { Action } from 'redux';
-import { DaysItem, Days } from './days.model';
+import { DaysCounterItem, DaysCountersModel } from './days-counters.model';
 
-export interface LoadDays extends Action {
-    type: 'LOAD-DAYS';
+export interface LoadDaysCounters extends Action {
+    type: 'LOAD-DAYS-COUNTERS';
 }
 
-export const loadDays = (): LoadDays => ({ type: 'LOAD-DAYS' });
+export const loadDaysCounters = (): LoadDaysCounters => ({ type: 'LOAD-DAYS-COUNTERS' });
 
-export interface LoadDaysFinished extends Action {
-    type: 'LOAD-DAYS-FINISHED';
-    days: Days;
+export interface LoadDaysCountersFinished extends Action {
+    type: 'LOAD-DAYS-COUNTERS-FINISHED';
+    daysCounters: DaysCountersModel;
 }
 
-export const loadDaysFinished = (days: Days): LoadDaysFinished => ({ type: 'LOAD-DAYS-FINISHED', days });
+export const loadDaysFinished = (daysCounters: DaysCountersModel): LoadDaysCountersFinished => ({ type: 'LOAD-DAYS-COUNTERS-FINISHED', daysCounters });
 
-export type CalendarActions = LoadDays | LoadDaysFinished;
+export type CalendarActions = LoadDaysCounters | LoadDaysCountersFinished;

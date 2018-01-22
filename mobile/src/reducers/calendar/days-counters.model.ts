@@ -2,7 +2,7 @@ import { dataMember, required } from 'santee-dcts';
 
 // TODO: mock models
 
-export class DaysItem {
+export class DaysCounterItem {
     @dataMember()
     @required()
     public leftDays: number;
@@ -16,16 +16,16 @@ export class DaysItem {
     public title: string;
 }
 
-export class Days {
+export class DaysCountersModel {
     @dataMember()
     @required()    
-    public vacation: DaysItem;
+    public vacation: DaysCounterItem;
 
     @dataMember()
     @required()    
-    public off: DaysItem;
+    public off: DaysCounterItem;
 
     @dataMember()
     @required()    
-    public sick: DaysItem;
+    public sick: DaysCounterItem;
 }
