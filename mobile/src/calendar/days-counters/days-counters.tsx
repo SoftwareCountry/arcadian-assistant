@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { styles, colors } from '../styles';
 import { DaysCounter, EmptyDaysCounter } from './days-counter';
 import { DaysCounterSeparator } from './days-counter-separator';
@@ -7,7 +7,6 @@ import { DaysCountersModel } from '../../reducers/calendar/days-counters.model';
 import { AppState } from '../../reducers/app.reducer';
 import { Dispatch, connect } from 'react-redux';
 import { CalendarActions, loadDaysCounters, LoadDaysCounters } from '../../reducers/calendar/calendar.action';
-import { bindActionCreators } from 'redux';
 
 interface DaysCountersProps {
     daysCounters: DaysCountersModel;
