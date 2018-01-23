@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
-import { styles, colors } from '../styles';
+import { styles, calendarScreenColors } from '../styles';
 import { DaysCounter, EmptyDaysCounter } from './days-counter';
 import { DaysCounterSeparator } from './days-counter-separator';
 import { DaysCountersModel } from '../../reducers/calendar/days-counters.model';
@@ -22,26 +22,24 @@ class DyasCountersImpl extends Component<DaysCountersProps & DaysCountersDispatc
     }
 
     public render() {
-        const { vacation, off, sick } = this.props.daysCounters;
+        const { allVacationDays, daysOff } = this.props.daysCounters;
 
-        const vacationTile = vacation
-            ? <DaysCounter leftDays={vacation.leftDays} allDays={vacation.allDays} title={vacation.title} leftColor={colors.days.left} allColor={colors.days.all} />
+        const vacationCounter = allVacationDays
+            ? <DaysCounter  value={allVacationDays.timestamp.toString()}
+                            title={allVacationDays.title}
+                            showIndicator={false} />
             : <EmptyDaysCounter />;
 
-        const offTile = off
-            ? <DaysCounter leftDays={off.leftDays} allDays={0} title={sick.title} leftColor={colors.days.left} allColor={colors.days.all} showAllDays={false} />
+        const daysoffCounter = daysOff
+            ? <DaysCounter  value={daysOff.timestamp.toString() + '½'}
+                            title={daysOff.title}
+                            indicatorColor={calendarScreenColors.return} />
             : <EmptyDaysCounter />;
 
-        const sickTile = sick
-            ? <DaysCounter leftDays={off.leftDays} allDays={sick.allDays} title={sick.title} leftColor={colors.days.sick} allColor={colors.days.all} />
-            : <EmptyDaysCounter />;
-
-        return <View style={styles.container}>
-            { vacationTile }
+        return <View style={styles.daysCounters}>
+            { vacationCounter }
             <DaysCounterSeparator />
-            { offTile }
-            <DaysCounterSeparator />
-            { sickTile }
+            { daysoffCounter }
         </View>;
     }
 }

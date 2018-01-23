@@ -5,11 +5,7 @@ import { dataMember, required } from 'santee-dcts';
 export class DaysCounterItem {
     @dataMember()
     @required()
-    public leftDays: number;
-
-    @dataMember()
-    @required()
-    public allDays: number;
+    public timestamp: number;
 
     @dataMember()
     @required()
@@ -19,13 +15,9 @@ export class DaysCounterItem {
 export class DaysCountersModel {
     @dataMember()
     @required()    
-    public vacation: DaysCounterItem;
+    public allVacationDays: DaysCounterItem;
 
     @dataMember()
     @required()    
-    public off: DaysCounterItem;
-
-    @dataMember()
-    @required()    
-    public sick: DaysCounterItem;
+    public daysOff: DaysCounterItem;
 }

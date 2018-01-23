@@ -1,21 +1,29 @@
 import { StyleSheet } from 'react-native';
 
-const daysCounterHeight = 90;
-const daysCounterIndicatorHeight = 4;
 const daysCounterFontColor = '#18515E';
 
-export const colors = {
-    days: {
-        left: '#27AE60',
-        all: '#56CCF2',
-        return:  '#EB5757',
-        sick: '#F2C94C'
+export const calendarScreenColors = {
+    green: '#27AE60',
+    blue: '#56CCF2',
+    return: '#EB5757',
+    yellow: '#F2C94C'
+};
+
+export const calendarScreenLayout = {
+    daysCounters: {
+        flex: 1.2
+    },
+    calendar: {
+        flex: 4
+    },
+    agenda: {
+        flex: 3
     }
 };
 
 export const styles = StyleSheet.create({
-    container: {
-        flex: 1,
+    daysCounters: {
+        flex: calendarScreenLayout.daysCounters.flex,
         flexDirection: 'row',
         padding: 10
     },
@@ -24,34 +32,23 @@ export const styles = StyleSheet.create({
     },
     daysCounter: {
         backgroundColor: 'rgba(47, 175, 204, 0.33)',
-        height: daysCounterHeight,
         flexDirection: 'column',
         flexGrow: 1
     },
     daysCounterContent: {
-        paddingTop: 6,
-        paddingBottom: 15,
-        paddingLeft: 10,
-        paddingRight: 10,
         flexDirection: 'column',
-        justifyContent: 'center',
         alignItems: 'center',
-        height: daysCounterHeight - daysCounterIndicatorHeight
+        flex: 20
     },
-    daysCounterLeftDays: {
-        fontSize: 50,
+    daysCounterContentValue: {
+        fontSize: 42,
         color: daysCounterFontColor
     },
-    daysCounterAllDays: {
-        fontSize: 20,
-        color: daysCounterFontColor
-    },
-    daysCounterTitle: {
+    daysCounterContentTitle: {
         fontSize: 12,
         color: daysCounterFontColor
     },
     daysCounterIndicator: {
-        flexDirection: 'row',
-        height: daysCounterIndicatorHeight
+        flex: 1
     }
 });

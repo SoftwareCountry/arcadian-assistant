@@ -9,10 +9,9 @@ import { DaysCounterItem, DaysCountersModel } from './days-counters.model';
 const loadMockDays = (): Observable<DaysCountersModel> => {
     return Observable.of(
         {
-            vacation: { leftDays: 4, allDays: 28, title: 'days of vacation left' },
-            off: { leftDays: 3, allDays: 0, title: 'dayoffs to return' },
-            sick: { leftDays: 3, allDays: 7, title: 'days on sick leave' }
-        }
+            allVacationDays: { timestamp: 224, title: 'days of vacation left' },
+            daysOff: { timestamp: 64, title: 'dayoffs to return' },
+        } as DaysCountersModel
     );
 };
 

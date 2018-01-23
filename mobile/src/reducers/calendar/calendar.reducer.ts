@@ -5,13 +5,12 @@ import { DaysCounterItem, DaysCountersModel } from './days-counters.model';
 import { Reducer } from 'redux';
 import { CalendarActions } from './calendar.action';
 
-export const daysCountersReducer: Reducer<DaysCountersModel> = (state = { vacation: null, off: null, sick: null }, action: CalendarActions) => {
+export const daysCountersReducer: Reducer<DaysCountersModel> = (state = { allVacationDays: null, daysOff: null }, action: CalendarActions) => {
     switch (action.type) {
         case 'LOAD-DAYS-COUNTERS-FINISHED':
             return {
-                vacation: action.daysCounters.vacation,
-                off: action.daysCounters.off,
-                sick: action.daysCounters.sick
+                allVacationDays: action.daysCounters.allVacationDays,
+                daysOff: action.daysCounters.daysOff,
             };
 
         default:
