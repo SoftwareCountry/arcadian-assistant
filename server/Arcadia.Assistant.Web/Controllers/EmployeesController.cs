@@ -43,7 +43,7 @@
 
         [Route("")]
         [HttpGet]
-        [ProducesResponseType(typeof(EmployeeModel), 200)]
+        [ProducesResponseType(typeof(EmployeeModel[]), 200)]
         [ProducesResponseType(typeof(string), 400)]
         public async Task<IActionResult> ForDepartment([FromQuery] string departmentId, CancellationToken token)
         {
