@@ -75,6 +75,8 @@
                         var employee = EmployeeModel.FromMetadata(x.Metadata);
                         var photo = await x.Actor.Ask<GetPhoto.Response>(GetPhoto.Instance, timeout, token);
                         employee.Photo = photo.Photo;
+                        employee.HoursCredit = 12;
+                        employee.VacationDaysLeft = 28;
                         return employee;
                     });
 
