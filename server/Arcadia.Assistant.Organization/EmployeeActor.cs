@@ -56,13 +56,13 @@
             if (informationMetadata.Position != this.employeeMetadata.Position)
             {
                 var text = $"{informationMetadata.Name} is now {informationMetadata.Position}";
-                this.employeeFeed.Tell(new FeedActor.PostMessage(new Message(Guid.NewGuid(), "Employee position has changed", text, DateTime.UtcNow)));
+                this.employeeFeed.Tell(new FeedActor.PostMessage(new Message(Guid.NewGuid(), "Employee position has changed", text, DateTimeOffset.Now)));
             }
 
             if (informationMetadata.Name != this.employeeMetadata.Name)
             {
                 var text = $"From now on, {this.employeeMetadata.Name} is to be known as {informationMetadata.Name}";
-                this.employeeFeed.Tell(new FeedActor.PostMessage(new Message(Guid.NewGuid(), "Employee name has changed", text, DateTime.UtcNow)));
+                this.employeeFeed.Tell(new FeedActor.PostMessage(new Message(Guid.NewGuid(), "Employee name has changed", text, DateTimeOffset.Now)));
             }
 
             //TODO: department id change handler
