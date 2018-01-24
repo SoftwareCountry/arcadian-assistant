@@ -43,7 +43,7 @@
 
         [Route("")]
         [HttpGet]
-        [ProducesResponseType(typeof(EmployeeModel), 200)]
+        [ProducesResponseType(typeof(EmployeeModel[]), 200)]
         [ProducesResponseType(typeof(string), 400)]
         public async Task<IActionResult> ForDepartment([FromQuery] string departmentId, CancellationToken token)
         {
@@ -75,6 +75,8 @@
                         var employee = EmployeeModel.FromMetadata(x.Metadata);
                         var photo = await x.Actor.Ask<GetPhoto.Response>(GetPhoto.Instance, timeout, token);
                         employee.Photo = photo.Photo;
+                        employee.HoursCredit = 12;
+                        employee.VacationDaysLeft = 28;
                         return employee;
                     });
 

@@ -27,7 +27,7 @@
 
         [Route("messages")]
         [HttpGet]
-        [ProducesResponseType(typeof(Message), 200)]
+        [ProducesResponseType(typeof(Message[]), 200)]
         public async Task<IActionResult> GetAllMessages(CancellationToken token)
         {
             var feedsActor = this.actorFactory.ActorSelection(this.pathsBuilder.Get("shared-feeds"));
