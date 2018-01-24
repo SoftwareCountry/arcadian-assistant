@@ -6,7 +6,7 @@ import { DaysCounterSeparator } from './days-counter-separator';
 import { DaysCountersModel } from '../../reducers/calendar/days-counters.model';
 import { AppState } from '../../reducers/app.reducer';
 import { Dispatch, connect } from 'react-redux';
-import { CalendarActions, loadDaysCounters, LoadDaysCounters } from '../../reducers/calendar/calendar.action';
+import { CalendarActions, loadDaysCounters, LoadDaysCounters, calculateDaysCounters } from '../../reducers/calendar/calendar.action';
 
 interface DaysCountersProps {
     daysCounters: DaysCountersModel;
@@ -25,15 +25,15 @@ class DyasCountersImpl extends Component<DaysCountersProps & DaysCountersDispatc
         const { allVacationDays, daysOff } = this.props.daysCounters;
 
         const vacationCounter = allVacationDays
-            ? <DaysCounter  value={allVacationDays.timestamp.toString()}
+            ? <DaysCounter  value={allVacationDays.days}
                             title={allVacationDays.title}
                             showIndicator={false} />
             : <EmptyDaysCounter />;
 
         const daysoffCounter = daysOff
-            ? <DaysCounter  value={daysOff.timestamp.toString() + '½'}
+            ? <DaysCounter  value={daysOff.days}
                             title={daysOff.title}
-                            indicatorColor={calendarScreenColors.return} />
+                            indicatorColor={daysOff.return ? calendarScreenColors.return : calendarScreenColors.blue} />
             : <EmptyDaysCounter />;
 
         return <View style={styles.daysCounters}>

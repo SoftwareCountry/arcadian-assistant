@@ -2,7 +2,7 @@ import { dataMember, required } from 'santee-dcts';
 
 // TODO: mock models
 
-export class DaysCounterItem {
+export class DaysCounterItemRaw {
     @dataMember()
     @required()
     public timestamp: number;
@@ -10,14 +10,29 @@ export class DaysCounterItem {
     @dataMember()
     @required()
     public title: string;
+
+    @dataMember()
+    @required()
+    public return: boolean;
+}
+
+export class DaysCounterRaw {
+    @dataMember()
+    @required()
+    public allVacationDays: DaysCounterItemRaw;
+
+    @dataMember()
+    @required()
+    public daysOff: DaysCounterItemRaw;
+}
+
+export class DaysCounterModelItem {
+    public days: string;
+    public title: string;
+    public return: boolean;
 }
 
 export class DaysCountersModel {
-    @dataMember()
-    @required()    
-    public allVacationDays: DaysCounterItem;
-
-    @dataMember()
-    @required()    
-    public daysOff: DaysCounterItem;
+    public allVacationDays: DaysCounterModelItem;
+    public daysOff: DaysCounterModelItem;
 }
