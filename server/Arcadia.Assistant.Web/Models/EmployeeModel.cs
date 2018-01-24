@@ -32,7 +32,7 @@
         /// Positive values means that these days must be worked out.
         /// Negative means that these can be taked as days off
         /// </summary>
-        public int HoursInDebt { get; set; }
+        public int HoursCredit { get; set; }
 
         public static EmployeeModel FromMetadata(EmployeeMetadata metadata)
         {
