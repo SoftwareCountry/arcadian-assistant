@@ -1,22 +1,22 @@
-export class DaysCountersCalculator {
+export class ConvertHoursCreditToDays {
     public static readonly halfDay = 4;
     public static readonly fractionSymbol = '½';
 
-    public calculateAllVacationDays(timestamp: number): string {
-        const days = timestamp / (DaysCountersCalculator.halfDay * 2);
-
-        return days.toString();
-    }
-
-    public calculateDaysOff(timestamp: number): string {
-        if (timestamp === 0) {
-            return '0';
+    public convert(hours: number): ConvertHoursCreditResult {
+        if (hours === 0) {
+            return {
+                days: 0,
+                rest: ''
+            };
         }
-        if (timestamp <= DaysCountersCalculator.halfDay) {
-            return DaysCountersCalculator.fractionSymbol;
+        if (hours <= ConvertHoursCreditToDays.halfDay) {
+            return {
+                days: 0,
+                rest: ConvertHoursCreditToDays.fractionSymbol
+            };
         }
 
-        const halfs = timestamp / DaysCountersCalculator.halfDay;
+        const halfs = hours / ConvertHoursCreditToDays.halfDay;
         const days = halfs / 2;
         let [entireDays, rest] = this.splitDays(days);
 
@@ -25,15 +25,20 @@ export class DaysCountersCalculator {
             if (rest > 0.5) {
                 ++entireDays;
             } else {
-                fraction = DaysCountersCalculator.fractionSymbol;
+                fraction = ConvertHoursCreditToDays.fractionSymbol;
             }
         }
 
-        return (entireDays ? entireDays.toString() : '') + fraction;
+        return { days: entireDays, rest: fraction };
     }
 
     private splitDays(days: number): [number, number] {
-        const [entire, frac] = days.toString().split('.');
-        return [Number(entire), Number(`0.${frac}`)];
+        const [entire, rest] = days.toString().split('.');
+        return [Number(entire), Number(`0.${rest}`)];
     }
+}
+
+interface ConvertHoursCreditResult {
+    days: number;
+    rest: string;
 }

@@ -5,35 +5,26 @@ import { DaysCounter, EmptyDaysCounter } from './days-counter';
 import { DaysCounterSeparator } from './days-counter-separator';
 import { DaysCountersModel } from '../../reducers/calendar/days-counters.model';
 import { AppState } from '../../reducers/app.reducer';
-import { Dispatch, connect } from 'react-redux';
-import { CalendarActions, loadDaysCounters, LoadDaysCounters, calculateDaysCounters } from '../../reducers/calendar/calendar.action';
+import { connect } from 'react-redux';
 
 interface DaysCountersProps {
     daysCounters: DaysCountersModel;
 }
 
-interface DaysCountersDispatchProps {
-    loadDaysCounters: () => void;
-}
-
-class DyasCountersImpl extends Component<DaysCountersProps & DaysCountersDispatchProps, {}> {
-    public componentDidMount() {
-        this.props.loadDaysCounters();
-    }
-
+class DyasCountersImpl extends Component<DaysCountersProps, {}> {
     public render() {
-        const { allVacationDays, daysOff } = this.props.daysCounters;
+        const { allVacationDays, hoursCredit } = this.props.daysCounters;
 
         const vacationCounter = allVacationDays
-            ? <DaysCounter  value={allVacationDays.days}
+            ? <DaysCounter  value={allVacationDays.toString()}
                             title={allVacationDays.title}
                             showIndicator={false} />
             : <EmptyDaysCounter />;
 
-        const daysoffCounter = daysOff
-            ? <DaysCounter  value={daysOff.days}
-                            title={daysOff.title}
-                            indicatorColor={daysOff.return ? calendarScreenColors.return : calendarScreenColors.blue} />
+        const daysoffCounter = hoursCredit
+            ? <DaysCounter  value={hoursCredit.toString()}
+                            title={hoursCredit.title}
+                            indicatorColor={hoursCredit.isWorkOut ? calendarScreenColors.red : calendarScreenColors.blue} />
             : <EmptyDaysCounter />;
 
         return <View style={styles.daysCounters}>
@@ -48,8 +39,4 @@ const mapStateToProps = (state: AppState): DaysCountersProps => ({
     daysCounters: state.calendar.daysCounters
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>): DaysCountersDispatchProps => ({
-    loadDaysCounters: () => dispatch(loadDaysCounters())
-});
-
-export const DaysCounters = connect(mapStateToProps, mapDispatchToProps)(DyasCountersImpl);
+export const DaysCounters = connect(mapStateToProps)(DyasCountersImpl);

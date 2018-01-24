@@ -1,16 +1,16 @@
 import { combineReducers } from 'redux';
 import { combineEpics, ActionsObservable } from 'redux-observable';
-import { loadDaysCountersEpic, loadDaysFinishedEpic } from './calendar.epics';
 import { DaysCountersModel } from './days-counters.model';
 import { Reducer } from 'redux';
-import { CalendarActions, LoadDaysCountersFinished, LoadDaysCounters } from './calendar.action';
+import { CalendarActions } from './calendar.action';
+import { loadEmployeeFinishedEpic } from './calendar.epics';
 
-export const daysCountersReducer: Reducer<DaysCountersModel> = (state = { allVacationDays: null, daysOff: null }, action: CalendarActions) => {
+export const daysCountersReducer: Reducer<DaysCountersModel> = (state = { allVacationDays: null, hoursCredit: null }, action: CalendarActions) => {
     switch (action.type) {
         case 'CALCULATE-DAYS-COUNTERS':
             return {
                 allVacationDays: action.daysCounters.allVacationDays,
-                daysOff: action.daysCounters.daysOff,
+                hoursCredit: action.daysCounters.hoursCredit,
             };
 
         default:
@@ -22,7 +22,7 @@ export interface CalendarState {
     daysCounters: DaysCountersModel;
 }
 
-export const calendarEpics = combineEpics(loadDaysCountersEpic as any, loadDaysFinishedEpic as any);
+export const calendarEpics = combineEpics(loadEmployeeFinishedEpic);
 
 export const calendarReducer = combineReducers<CalendarState>({
     daysCounters: daysCountersReducer

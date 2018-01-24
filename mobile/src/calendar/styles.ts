@@ -5,7 +5,7 @@ const daysCounterFontColor = '#18515E';
 export const calendarScreenColors = {
     green: '#27AE60',
     blue: '#56CCF2',
-    return: '#EB5757',
+    red: '#EB5757',
     yellow: '#F2C94C'
 };
 

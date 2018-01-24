@@ -1,46 +1,28 @@
 import { Action } from 'redux';
-import { DaysCountersModel, DaysCounterRaw, DaysCounterModelItem, DaysCounterItemRaw } from './days-counters.model';
-import { DaysCountersCalculator } from './days-counters-calculator';
-
-export interface LoadDaysCounters extends Action {
-    type: 'LOAD-DAYS-COUNTERS';
-}
-
-export const loadDaysCounters = (): LoadDaysCounters => ({ type: 'LOAD-DAYS-COUNTERS' });
-
-export interface LoadDaysCountersFinished extends Action {
-    type: 'LOAD-DAYS-COUNTERS-FINISHED';
-    daysCounterRaw: DaysCounterRaw;
-}
-
-export const loadDaysFinished = (daysCounterRaw: DaysCounterRaw): LoadDaysCountersFinished => ({ type: 'LOAD-DAYS-COUNTERS-FINISHED', daysCounterRaw });
+import { DaysCountersModel, VacationDaysCounter, HoursCreditCounter } from './days-counters.model';
+import { ConvertHoursCreditToDays } from './days-counters-calculator';
+import { Employee } from '../organization/employee.model';
 
 export interface CalculateDaysCounters {
     type: 'CALCULATE-DAYS-COUNTERS';
     daysCounters: DaysCountersModel;
 }
 
-export const calculateDaysCounters = (daysCounterRaw: DaysCounterRaw): CalculateDaysCounters => {
-    const daysCalculator = new DaysCountersCalculator();
+export const calculateDaysCounters = (employee: Employee): CalculateDaysCounters => {
+    const allVacationDaysCounter = new VacationDaysCounter(employee.vacationDaysLeft);
+    
+    const daysConverter = new ConvertHoursCreditToDays();
+    const calculatedDays = daysConverter.convert(employee.hoursCredit);
 
-    const allVacationDays = daysCalculator.calculateAllVacationDays(daysCounterRaw.allVacationDays.timestamp);
-    const daysOff = daysCalculator.calculateDaysOff(daysCounterRaw.daysOff.timestamp);
+    const hoursCreditCounter = new HoursCreditCounter(employee.hoursCredit, calculatedDays.days, calculatedDays.rest);
 
     return {
         type: 'CALCULATE-DAYS-COUNTERS',
         daysCounters: {
-            allVacationDays: {
-                days: allVacationDays,
-                title: daysCounterRaw.allVacationDays.title,
-                return: daysCounterRaw.allVacationDays.return
-            },
-            daysOff: {
-                days: daysOff,
-                title: daysCounterRaw.daysOff.title,
-                return: daysCounterRaw.daysOff.return
-            }
+            allVacationDays: allVacationDaysCounter,
+            hoursCredit: hoursCreditCounter
         }
     };
 };
 
-export type CalendarActions = LoadDaysCounters | LoadDaysCountersFinished | CalculateDaysCounters;
+export type CalendarActions = CalculateDaysCounters;
