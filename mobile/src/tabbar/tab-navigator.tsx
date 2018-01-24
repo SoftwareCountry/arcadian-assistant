@@ -5,7 +5,6 @@ import tabbarModel from './tab-bar-model';
 
 const tabNavigatorConfig: TabNavigatorConfig = {
     tabBarPosition: 'bottom',
-    initialRouteName: 'Calendar',
     tabBarOptions: {
         style: tabBarStyles.tabBar,
         indicatorStyle: tabBarStyles.tabBarIndicator,
