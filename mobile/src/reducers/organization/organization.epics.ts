@@ -1,5 +1,8 @@
 import { ActionsObservable, ofType } from 'redux-observable';
-import { LoadDepartments, loadDepartmentsFinished, LoadDepartmentsFinished, loadEmployeeFinished, LoadEmployeesForDepartment, loadEmployeesForDepartment, LoadUser, loadUserFinished, LoadUserFinished, loadEmployeeForUserFinished, LoadEmployeeForUser, loadUser, loadEmployeeForUser, loadDepartments, LoadEmployeeForUserFinished } from './organization.action';
+import {
+    LoadDepartments, loadDepartmentsFinished, LoadDepartmentsFinished, loadDepartments,
+    loadEmployeeFinished, LoadEmployeesForDepartment, loadEmployeesForDepartment,
+    LoadUser, loadUserFinished, LoadUserFinished, loadEmployeeForUserFinished, LoadEmployeeForUser, loadEmployeeForUser, LoadEmployeeForUserFinished } from './organization.action';
 import { deserializeArray, deserialize } from 'santee-dcts/src/deserializer';
 import { Department } from './department.model';
 import { ajaxGetJSON } from 'rxjs/observable/dom/AjaxObservable';
