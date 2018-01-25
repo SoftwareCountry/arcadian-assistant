@@ -1,10 +1,11 @@
-import { ActionsObservable } from 'redux-observable';
-import { LoadDepartments, loadDepartmentsFinished, LoadDepartmentsFinished, loadEmployeeFinished, LoadEmployeesForDepartment, loadEmployeesForDepartment } from './organization.action';
+import { ActionsObservable, ofType } from 'redux-observable';
+import { LoadDepartments, loadDepartmentsFinished, LoadDepartmentsFinished, loadEmployeeFinished, LoadEmployeesForDepartment, loadEmployeesForDepartment, LoadUser, loadUserFinished, LoadEmployeeFinished, LoadUserFinished } from './organization.action';
 import { deserializeArray, deserialize } from 'santee-dcts/src/deserializer';
 import { Department } from './department.model';
 import { ajaxGetJSON } from 'rxjs/observable/dom/AjaxObservable';
 import { AppState } from '../app.reducer';
 import { Employee } from './employee.model';
+import { User } from './user.model';
 
 const url = 'http://localhost:5000/api'; //TODO: fix hardcode
 
@@ -38,3 +39,12 @@ export const loadEmployeesForDepartmentEpic$ = (action$: ActionsObservable<LoadE
                 ajaxGetJSON(`${url}/employees?departmentId=${x.key}`).map(obj => deserializeArray(obj as any, Employee))))
         .mergeAll()
         .flatMap(x => x.map(loadEmployeeFinished));
+
+// TODO: Handle error
+export const loadUserEpic$ = (action$: ActionsObservable<LoadUser>) =>
+    action$.ofType('LOAD-USER')
+        .switchMap(x => ajaxGetJSON(`${url}/user`))
+        .map(x => deserialize(x, User))
+        .switchMap(x => ajaxGetJSON(`${url}/employees/${x.employeeId}`))
+        .map(x => deserialize(x, Employee))
+        .map(x => loadUserFinished(x));
