@@ -42,7 +42,7 @@ export const loadEmployeesForDepartmentEpic$ = (action$: ActionsObservable<LoadE
 
 // TODO: Handle error
 export const loadUserEpic$ = (action$: ActionsObservable<LoadUser>) =>
-    action$
+    action$.ofType('LOAD-USER')
         .switchMap(x => ajaxGetJSON(`${url}/user`))
         .map(x => deserialize(x, User))
         .switchMap(x => ajaxGetJSON(`${url}/employees/${x.employeeId}`))
