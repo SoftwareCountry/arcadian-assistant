@@ -1,2 +1,2 @@
-export { RoundedAvatar } from './RoundedAvatar';
-export { PersonCardWithAvatar } from './PersonCardWithAvatar';
+export { RoundedAvatar } from './rounded-avatar';
+export { EmployeeCardWithAvatar } from './employee-card-with-avatar';
