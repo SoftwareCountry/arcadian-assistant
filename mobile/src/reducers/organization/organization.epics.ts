@@ -1,12 +1,35 @@
-import { ActionsObservable } from 'redux-observable';
-import { LoadDepartments, loadDepartmentsFinished, LoadDepartmentsFinished, loadEmployeeFinished, LoadEmployeesForDepartment, loadEmployeesForDepartment } from './organization.action';
+import { ActionsObservable, ofType } from 'redux-observable';
+import { LoadDepartments, loadDepartmentsFinished, LoadDepartmentsFinished, loadEmployeeFinished, LoadEmployeesForDepartment, loadEmployeesForDepartment, LoadUser, loadUserFinished, LoadUserFinished, loadEmployeeForUserFinished, LoadEmployeeForUser, loadUser, loadEmployeeForUser, loadDepartments, LoadEmployeeForUserFinished } from './organization.action';
 import { deserializeArray, deserialize } from 'santee-dcts/src/deserializer';
 import { Department } from './department.model';
 import { ajaxGetJSON } from 'rxjs/observable/dom/AjaxObservable';
 import { AppState } from '../app.reducer';
 import { Employee } from './employee.model';
+import { User } from './user.model';
 
 const url = 'http://localhost:5000/api'; //TODO: fix hardcode
+
+// TODO: Handle error, display some big alert blocking app...
+export const loadUserEpic$ = (action$: ActionsObservable<LoadUser>) =>
+    action$.ofType('LOAD-USER')
+        .switchMap(x => ajaxGetJSON(`${url}/user`))
+        .map(x => deserialize(x, User))
+        .map(x => loadUserFinished(x));
+
+export const loadUserFinishedEpic$ = (action$: ActionsObservable<LoadUserFinished>) =>
+    action$.ofType('LOAD-USER-FINISHED')
+        .map(x => loadEmployeeForUser(x.user));
+
+// TODO: Handle error, display some big alert blocking app...
+export const loadEmployeeForUserEpic$ = (action$: ActionsObservable<LoadEmployeeForUser>) =>
+    action$.ofType('LOAD-EMPLOYEE-FOR-USER')
+        .switchMap(x => ajaxGetJSON(`${url}/employees/${x.user.employeeId}`))
+        .map(x => deserialize(x, Employee))
+        .map(x => loadEmployeeForUserFinished(x));
+
+export const loadEmployeeForUserFinishedEpic$ = (action$: ActionsObservable<LoadEmployeeForUserFinished>) =>
+    action$.ofType('LOAD-EMPLOYEE-FOR-USER-FINISHED')
+        .map(x => loadDepartments());
 
 export const loadDepartmentsEpic$ = (action$: ActionsObservable<LoadDepartments>) =>
     action$.ofType('LOAD-DEPARTMENTS')
