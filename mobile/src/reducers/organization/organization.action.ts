@@ -69,3 +69,4 @@ export type OrganizationActions =
     LoadDepartments | LoadDepartmentsFinished |
     LoadEmployee | LoadEmployeesForDepartment | LoadEmployeeFinished |
     LoadUser | LoadUserFinished | LoadEmployeeForUser | LoadEmployeeForUserFinished;
+
