@@ -21,6 +21,19 @@ export const loadUserEpic$ = (action$: ActionsObservable<LoadUser>) =>
         .map(x => deserialize(x, User))
         .map(x => loadUserFinished(x));
 
+export const loadUserFinishedEpic$ = (action$: ActionsObservable<LoadUserFinished>) =>
+    action$.ofType('LOAD-USER-FINISHED')
+        .map(x => loadEmployee(x.user.employeeId));
+
+export const loadEmployeeEpic$ = (action$: ActionsObservable<LoadEmployee>) =>
+    action$.ofType('LOAD_EMPLOYEE')
+        .groupBy(x => x.employeeId)
+        .map(x =>
+            x.switchMap(y => ajaxGetJSON(`${url}/employees/${y.employeeId}`)).map(obj => deserialize(obj, Employee))
+        )
+        .mergeAll()
+        .map(x => loadEmployeeFinished(x));
+
 export const loadDepartmentsEpic$ = (action$: ActionsObservable<LoadDepartments>) =>
     action$.ofType('LOAD-DEPARTMENTS')
         .switchMap(x => ajaxGetJSON(`${url}/departments`))
