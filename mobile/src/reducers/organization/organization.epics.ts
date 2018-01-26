@@ -2,7 +2,7 @@ import { ActionsObservable, ofType } from 'redux-observable';
 import {
     LoadDepartments, loadDepartmentsFinished, LoadDepartmentsFinished, loadDepartments,
     loadEmployeeFinished, LoadEmployeesForDepartment, loadEmployeesForDepartment,
-    LoadUser, loadUserFinished, LoadUserFinished, loadEmployeeForUserFinished, LoadEmployeeForUser, loadEmployeeForUser, LoadEmployeeForUserFinished } from './organization.action';
+    LoadUser, loadUserFinished, LoadUserFinished, LoadEmployee, loadEmployee, LoadEmployeeFinished } from './organization.action';
 import { deserializeArray, deserialize } from 'santee-dcts/src/deserializer';
 import { Department } from './department.model';
 import { ajaxGetJSON } from 'rxjs/observable/dom/AjaxObservable';
@@ -21,21 +21,6 @@ export const loadUserEpic$ = (action$: ActionsObservable<LoadUser>) =>
         .map(x => deserialize(x, User))
         .map(x => loadUserFinished(x));
 
-export const loadUserFinishedEpic$ = (action$: ActionsObservable<LoadUserFinished>) =>
-    action$.ofType('LOAD-USER-FINISHED')
-        .map(x => loadEmployeeForUser(x.user));
-
-// TODO: Handle error, display some big alert blocking app...
-export const loadEmployeeForUserEpic$ = (action$: ActionsObservable<LoadEmployeeForUser>) =>
-    action$.ofType('LOAD-EMPLOYEE-FOR-USER')
-        .switchMap(x => ajaxGetJSON(`${url}/employees/${x.user.employeeId}`))
-        .map(x => deserialize(x, Employee))
-        .map(x => loadEmployeeForUserFinished(x));
-
-export const loadEmployeeForUserFinishedEpic$ = (action$: ActionsObservable<LoadEmployeeForUserFinished>) =>
-    action$.ofType('LOAD-EMPLOYEE-FOR-USER-FINISHED')
-        .map(x => loadDepartments());
-
 export const loadDepartmentsEpic$ = (action$: ActionsObservable<LoadDepartments>) =>
     action$.ofType('LOAD-DEPARTMENTS')
         .switchMap(x => ajaxGetJSON(`${url}/departments`))
@@ -51,7 +36,6 @@ export const loadChiefsEpic$ = (action$: ActionsObservable<LoadDepartmentsFinish
         .mergeAll()
         .map(x => loadEmployeeFinished(x))
         .catch(e => Observable.of(loadFailedError(e.message)));
-
 
 //TODO: this thing loads all employees for all departments. It needs to be changed to load only requested ones
 export const loadDepartmentsFinishedEpic$ = (action$: ActionsObservable<LoadDepartmentsFinished>) =>

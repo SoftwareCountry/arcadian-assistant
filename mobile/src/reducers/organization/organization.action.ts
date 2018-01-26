@@ -51,22 +51,8 @@ export interface LoadUserFinished {
 
 export const loadUserFinished = (user: User): LoadUserFinished => ({ type: 'LOAD-USER-FINISHED', user });
 
-export interface LoadEmployeeForUser {
-    type: 'LOAD-EMPLOYEE-FOR-USER';
-    user: User;
-}
-
-export const loadEmployeeForUser = (user: User): LoadEmployeeForUser => ({ type: 'LOAD-EMPLOYEE-FOR-USER', user });
-
-export interface LoadEmployeeForUserFinished {
-    type: 'LOAD-EMPLOYEE-FOR-USER-FINISHED';
-    user: Employee;
-}
-
-export const loadEmployeeForUserFinished = (user: Employee): LoadEmployeeForUserFinished => ({ type: 'LOAD-EMPLOYEE-FOR-USER-FINISHED', user });
-
 export type OrganizationActions =
     LoadDepartments | LoadDepartmentsFinished |
     LoadEmployee | LoadEmployeesForDepartment | LoadEmployeeFinished |
-    LoadUser | LoadUserFinished | LoadEmployeeForUser | LoadEmployeeForUserFinished;
+    LoadUser | LoadUserFinished;
 

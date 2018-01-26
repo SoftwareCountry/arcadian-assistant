@@ -11,7 +11,6 @@ import { Employee } from './reducers/organization/employee.model';
 interface AppProps {
   dispatch: Dispatch<any>;
   nav: NavigationState;
-  user: Employee;
 }
 
 export class App extends Component<AppProps> {
@@ -21,6 +20,7 @@ export class App extends Component<AppProps> {
 
     //initial state
     this.props.dispatch(loadUser());
+    this.props.dispatch(loadDepartments());
   }
 
   public componentWillUnmount() {
@@ -46,8 +46,7 @@ export class App extends Component<AppProps> {
 }
 
 const mapStateToProps = (state: AppState) => ({
-  nav: state.nav,
-  user: state.organization.user
+  nav: state.nav
 });
 
 const AppWithNavigationState = connect(mapStateToProps)(App);

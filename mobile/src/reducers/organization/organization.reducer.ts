@@ -6,14 +6,15 @@ import { departmentsReducer } from './departments.reducer';
 import { employeesReducer, EmployeesStore } from './employees.reducer';
 import {
     loadDepartmentsEpic$, loadChiefsEpic$, loadDepartmentsFinishedEpic$, loadEmployeesForDepartmentEpic$,
-    loadUserEpic$, loadUserFinishedEpic$, loadEmployeeForUserEpic$, loadEmployeeForUserFinishedEpic$ } from './organization.epics';
+    loadUserEpic$ } from './organization.epics';
 import { userReducer } from './user.reducer';
 import { Employee } from './employee.model';
+import { User } from './user.model';
 
 export interface OrganizationState {
     departments: Department[];
     employees: EmployeesStore;
-    user: Employee;
+    user: User;
 }
 
 export const organizationEpics = combineEpics(
@@ -21,10 +22,7 @@ export const organizationEpics = combineEpics(
     loadChiefsEpic$ as any,
     loadDepartmentsFinishedEpic$ as any,
     loadEmployeesForDepartmentEpic$ as any,
-    loadUserEpic$ as any,
-    loadUserFinishedEpic$ as any,
-    loadEmployeeForUserEpic$ as any,
-    loadEmployeeForUserFinishedEpic$ as any);
+    loadUserEpic$ as any);
 
 export const organizationReducer = combineReducers<OrganizationState>({
     departments: departmentsReducer,
