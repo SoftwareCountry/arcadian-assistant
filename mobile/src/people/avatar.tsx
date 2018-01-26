@@ -4,11 +4,25 @@ import { View, Image, StyleSheet, ViewStyle, ImageStyle } from 'react-native';
 const styles = StyleSheet.create({
     outerFrame: {
         justifyContent: 'center', 
-        alignItems: 'center'
+        alignItems: 'center',
+        // Following attributes are default and could be changed via component props
+        height: 156,
+        width: 156,
+        borderRadius: 156 * 0.5,
+        borderColor: '#2FAFCC',
+        borderWidth: 2
+    },
+    image:  {
+        // Following attributes are default and could be changed via component props
+        height: 154,
+        width: 154,
+        borderRadius: 154 * 0.5,
+        borderColor: '#fff',
+        borderWidth: 2
     }
 });
 
-export interface RoundedAvatarProps {
+export interface AvatarProps {
     mimeType: string;
     photoBase64: string;
     // These attributes should be passed in following style props:
@@ -22,14 +36,15 @@ export interface RoundedAvatarProps {
     imageStyle: ImageStyle;
 }
 
-export class RoundedAvatar extends Component<RoundedAvatarProps> {
+export class Avatar extends Component<AvatarProps> {
     public render() {
         const { mimeType, photoBase64, outerFrameStyle, imageStyle } = this.props;
         const outerFrameFlattenStyle = StyleSheet.flatten([styles.outerFrame, outerFrameStyle]);
+        const imageFlattenStyle = StyleSheet.flatten([styles.image, imageStyle]);
 
         return (
             <View style={outerFrameFlattenStyle}>
-                <Image source={{uri: mimeType + photoBase64}} style={imageStyle} />
+                <Image source={{uri: mimeType + photoBase64}} style={imageFlattenStyle} />
             </View>
         );
     }
