@@ -3,23 +3,17 @@ import { View, Text } from 'react-native';
 import styles from '../layout/styles';
 import { connect } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
-import { Employee } from '../reducers/organization/employee.model';
-import { User } from '../reducers/organization/user.model';
-import { EmployeesStore } from '../reducers/organization/employees.reducer';
+import { UserState } from '../reducers/organization/user.reducer';
 
 interface CalendarScreenProps {
-    user: User;
-    employees: EmployeesStore;
+    user: UserState;
 }
 
 export class CalendarScreenImpl extends Component<CalendarScreenProps> {
     private username: string;
 
     public componentWillReceiveProps() {
-        if (this.props.user) {
-            const employee = this.props.employees.employeesById.get(this.props.user.employeeId);
-            this.username = employee ? employee.name : '';
-        }
+        this.username = this.props.user.employee ? this.props.user.employee.name : '';
     }
 
     public render() {
@@ -31,8 +25,7 @@ export class CalendarScreenImpl extends Component<CalendarScreenProps> {
 }
 
 const mapStateToProps = (state: AppState): CalendarScreenProps => ({
-    user: state.organization.user,
-    employees: state.organization.employees
+    user: state.organization.user
 });
 
 export const CalendarScreen = connect(mapStateToProps)(CalendarScreenImpl);

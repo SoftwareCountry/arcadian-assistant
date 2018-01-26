@@ -9,14 +9,14 @@ import {
     loadUserEpic$, 
     loadEmployeeEpic$,
     loadUserFinishedEpic$} from './organization.epics';
-import { userReducer } from './user.reducer';
+import { userReducer, UserState } from './user.reducer';
 import { Employee } from './employee.model';
 import { User } from './user.model';
 
 export interface OrganizationState {
     departments: Department[];
     employees: EmployeesStore;
-    user: User;
+    user: UserState;
 }
 
 export const organizationEpics = combineEpics(
