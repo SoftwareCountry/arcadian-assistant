@@ -65,7 +65,7 @@ namespace Arcadia.Assistant.Web
                 x =>
                     {
                         x.DescribeAllEnumsAsStrings();
-                        x.CustomSchemaIds(t => t.FullName);
+                        //x.CustomSchemaIds(t => t.FullName);
                     });
         }
 

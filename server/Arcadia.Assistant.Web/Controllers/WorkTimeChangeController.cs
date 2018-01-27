@@ -13,28 +13,34 @@
     {
         [HttpGet]
         [Route("")]
-        [ProducesResponseType(typeof(IEnumerable<WorktimeChange.WithId>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<WorktimeChangeWithIdModel>), StatusCodes.Status200OK)]
         public IActionResult GetAll(string employeeId)
         {
-            return this.Ok(new[] { new WorktimeChange.WithId() });
+            return this.Ok(new[] { new WorktimeChangeWithIdModel() });
         }
 
 
         [HttpGet]
         [Route("{changeId}")]
-        [ProducesResponseType(typeof(WorktimeChange.WithId), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(WorktimeChangeModel), StatusCodes.Status200OK)]
         public IActionResult GetById(string employeeId, string changeId)
         {
-            return this.Ok(new WorktimeChange.WithId());
+            return this.Ok(new WorktimeChangeModel()
+                {
+                    AdditionalWorkHours = 4,
+                    Date = DateTime.Today.AddDays(2),
+                    StartHour = 4,
+                    Status = CalendarEventStatus.Approved
+                });
         }
 
         [HttpPost]
         [Route("")]
-        [ProducesResponseType(typeof(WorktimeChange), StatusCodes.Status201Created)]
-        public IActionResult Create(string employeeId, [FromBody] WorktimeChange model)
+        [ProducesResponseType(typeof(WorktimeChangeWithIdModel), StatusCodes.Status201Created)]
+        public IActionResult Create(string employeeId, [FromBody] WorktimeChangeModel model)
         {
-            var copy = new WorktimeChange.WithId()
-                {
+            var copy = new WorktimeChangeWithIdModel
+            {
                     AdditionalWorkHours = model.AdditionalWorkHours,
                     Date = model.Date,
                     StartHour = model.StartHour
@@ -47,7 +53,7 @@
         [HttpPut]
         [Route("{changeId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public IActionResult Update(string employeeId, string changeId, [FromBody] WorktimeChange model)
+        public IActionResult Update(string employeeId, string changeId, [FromBody] WorktimeChangeModel model)
         {
             return this.NoContent();
         }

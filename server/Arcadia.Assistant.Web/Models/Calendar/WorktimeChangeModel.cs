@@ -4,7 +4,7 @@
     using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
 
-    public class WorktimeChange
+    public class WorktimeChangeModel
     {
         /// <summary>
         /// Can be either positive or negative
@@ -23,12 +23,5 @@
 
         [DefaultValue(CalendarEventStatus.Requested)]
         public CalendarEventStatus Status { get; set; }
-
-
-        public class WithId : WorktimeChange
-        {
-            [Required]
-            public string WorktimeChangeId { get; set; }
-        }
     }
 }
