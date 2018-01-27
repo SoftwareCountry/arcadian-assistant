@@ -3,6 +3,8 @@
     public enum CalendarEventType
     {
         Vacation = 1,
-        SickLeave = 2
+        SickLeave = 2,
+        Dayoff = 3,
+        AdditionalWork = 4
     }
 }
