@@ -1,8 +1,8 @@
 ﻿namespace Arcadia.Assistant.Web.Models.Calendar
 {
     using System;
+    using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
-    using System.Runtime.Serialization;
 
     public class WorktimeChange
     {
@@ -20,6 +20,10 @@
         /// </summary>
         [Required]
         public int StartHour { get; set; }
+
+        [DefaultValue(CalendarEventStatus.Requested)]
+        public CalendarEventStatus Status { get; set; }
+
 
         public class WithId : WorktimeChange
         {

@@ -61,6 +61,12 @@ namespace Arcadia.Assistant.Web
             services.AddSingleton(pathsBuilder);
 
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new Info() { Title = "Arcadian-Assistant API", Version = "v1" }); });
+            services.ConfigureSwaggerGen(
+                x =>
+                    {
+                        x.DescribeAllEnumsAsStrings();
+                        x.CustomSchemaIds(t => t.FullName);
+                    });
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
