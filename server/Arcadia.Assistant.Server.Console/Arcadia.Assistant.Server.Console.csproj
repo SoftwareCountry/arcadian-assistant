@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <StartupObject>Arcadia.Assistant.Server.Console.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
