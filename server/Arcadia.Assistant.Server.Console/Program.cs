@@ -24,7 +24,7 @@
                 .AddEnvironmentVariables()
                 .AddCommandLine(args)
                 .Build();
-
+            
             using (var app = new Application(config))
             {
                 app.Start();
