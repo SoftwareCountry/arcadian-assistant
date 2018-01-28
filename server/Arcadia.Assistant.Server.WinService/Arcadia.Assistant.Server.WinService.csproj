@@ -5,6 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{84008633-BB43-42CC-BAD2-59579A837688}</ProjectGuid>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Arcadia.Assistant.Server.WinService</RootNamespace>
     <AssemblyName>Arcadia.Assistant.Server.WinService</AssemblyName>
