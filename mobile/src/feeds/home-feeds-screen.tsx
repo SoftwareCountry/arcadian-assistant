@@ -1,28 +1,48 @@
 import React from 'react';
-import { FlatList, Text, View} from 'react-native';
+import { FlatList, Text, View, StyleSheet } from 'react-native';
 import { TopNavBar } from '../topNavBar/top-nav-bar';
 
-const navBar =  new TopNavBar('Feeds');
-const dataList = [
-{key: 'First Feed'},
-{key: 'Second Feed'},
-{key: 'Third Feed'},
-{key: 'Fourth Feed'},
-{key: 'Fifth Feed'},
-{key: 'Sixth Feed'},
-{key: 'Seventh Feed'},
-{key: 'Ten'}
-];
+import { Feed } from '../reducers/organization/feed.model';
+import { connect } from 'react-redux';
+import { AppState } from '../reducers/app.reducer';
 
+import { FeedListItem } from './feed';
 
-export class HomeFeedsScreen extends React.Component {
+const navBar = new TopNavBar('Feeds');
+
+interface FeedsScreenProps {
+    feeds: Feed[];
+}
+
+const mapStateToProps = (state: AppState): FeedsScreenProps => ({
+    feeds: state.organization.feeds
+});
+
+const styles  = StyleSheet.create({
+    view: {
+        backgroundColor: '#dcdcdc'
+    },
+    viewHeaderText: {
+        fontSize: 12
+    }
+});
+
+class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps> {
     public static navigationOptions = navBar.configurate();
+
+    _keyExtractor = (item: Feed) => item.messageId;
 
     public render() {
         return (
-            <View>
-                <FlatList data = {dataList} renderItem ={({item}) => <Text style={{padding: 10, fontSize: 18, height: 81, textAlign: 'center'}}>{item.key}</Text>} />
+            <View style={styles.view}>
+                <Text style={styles.viewHeaderText}>News feed</Text>
+                <FlatList
+                    data = { this.props.feeds }
+                    keyExtractor = {this._keyExtractor}
+                    renderItem = { ({item}) => <FeedListItem id = { item.messageId } message = { item }/> } />
             </View>
         );
     }
 }
+
+export const HomeFeedsScreen = connect(mapStateToProps)(HomeFeedsScreenImpl);

@@ -5,7 +5,7 @@ import { RootNavigator } from './tabbar/tab-navigator';
 import { AppState, storeFactory } from './reducers/app.reducer';
 import { connect, Provider, Dispatch } from 'react-redux';
 import { addNavigationHelpers, NavigationState, NavigationActions } from 'react-navigation';
-import { loadDepartments } from './reducers/organization/organization.action';
+import { loadDepartments, loadFeeds} from './reducers/organization/organization.action';
 
 interface AppProps {
   dispatch: Dispatch<any>;
@@ -19,6 +19,7 @@ export class App extends Component<AppProps> {
 
     //initial state
     this.props.dispatch(loadDepartments());
+    this.props.dispatch(loadFeeds());
   }
 
   public componentWillUnmount() {

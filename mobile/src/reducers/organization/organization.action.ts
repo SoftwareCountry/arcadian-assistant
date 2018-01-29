@@ -1,6 +1,7 @@
 import { Action } from 'redux';
 import { Department } from './department.model';
 import { Employee } from './employee.model';
+import { Feed } from './feed.model';
 
 export interface LoadDepartments extends Action {
     type: 'LOAD-DEPARTMENTS';
@@ -36,7 +37,21 @@ export interface LoadEmployeesForDepartment extends Action {
 }
 
 export const loadEmployeesForDepartment = (departmentId: string): LoadEmployeesForDepartment => ({ type: 'LOAD_EMPLOYEES_FOR_DEPARTMENT', departmentId });
+//----------
+export interface LoadFeeds extends Action {
+    type: 'LOAD_FEEDS';
+}
 
+export const loadFeeds = (): LoadFeeds => ({ type: 'LOAD_FEEDS' });
+
+export interface LoadFeedsFinished extends Action {
+    type: 'LOAD_FEEDS_FINISHED';
+    feeds: Feed[];
+}
+
+export const loadFeedsFinished = (feeds: Feed[]): LoadFeedsFinished => ({ type: 'LOAD_FEEDS_FINISHED', feeds });
+//----------
 export type OrganizationActions =
     LoadDepartments | LoadDepartmentsFinished |
-    LoadEmployee | LoadEmployeesForDepartment | LoadEmployeeFinished ;
+    LoadEmployee | LoadEmployeesForDepartment | LoadEmployeeFinished |
+    LoadFeeds | LoadFeedsFinished;
