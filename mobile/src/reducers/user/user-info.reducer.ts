@@ -1,19 +1,20 @@
-import { Reducer } from 'redux';
-import { OrganizationActions } from './organization.action';
 import { User } from './user.model';
-import { Employee } from './employee.model';
+import { Employee } from '../organization/employee.model';
+import { Reducer } from 'redux';
+import { OrganizationActions } from '../organization/organization.action';
+import { UserActions } from './user.action';
 
-export interface UserState {
+export interface UserInfoState {
     user: User;
     employee: Employee;
 }
 
-const initState: UserState = {
+const initState: UserInfoState = {
     user: null,
     employee: null
 };
 
-export const userReducer: Reducer<UserState> = (state = initState, action: OrganizationActions) => {
+export const userInfoReducer: Reducer<UserInfoState> = (state = initState, action: UserActions | OrganizationActions) => {
     switch (action.type) {
         case 'LOAD-USER-FINISHED':
             return {

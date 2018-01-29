@@ -1,7 +1,6 @@
 import { Action } from 'redux';
 import { Department } from './department.model';
 import { Employee } from './employee.model';
-import { User } from './user.model';
 
 export interface LoadDepartments extends Action {
     type: 'LOAD-DEPARTMENTS';
@@ -38,21 +37,7 @@ export interface LoadEmployeesForDepartment extends Action {
 
 export const loadEmployeesForDepartment = (departmentId: string): LoadEmployeesForDepartment => ({ type: 'LOAD_EMPLOYEES_FOR_DEPARTMENT', departmentId });
 
-export interface LoadUser {
-    type: 'LOAD-USER';
-}
-
-export const loadUser = (): LoadUser => ({ type: 'LOAD-USER' });
-
-export interface LoadUserFinished {
-    type: 'LOAD-USER-FINISHED';
-    user: User;
-}
-
-export const loadUserFinished = (user: User): LoadUserFinished => ({ type: 'LOAD-USER-FINISHED', user });
-
 export type OrganizationActions =
     LoadDepartments | LoadDepartmentsFinished |
-    LoadEmployee | LoadEmployeesForDepartment | LoadEmployeeFinished |
-    LoadUser | LoadUserFinished;
+    LoadEmployee | LoadEmployeesForDepartment | LoadEmployeeFinished;
 

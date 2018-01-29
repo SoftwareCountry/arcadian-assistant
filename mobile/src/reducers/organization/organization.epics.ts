@@ -1,29 +1,17 @@
 import { ActionsObservable, ofType } from 'redux-observable';
 import {
     LoadDepartments, loadDepartmentsFinished, LoadDepartmentsFinished, loadDepartments,
-    loadEmployeeFinished, LoadEmployeesForDepartment, loadEmployeesForDepartment,
-    LoadUser, loadUserFinished, LoadUserFinished, LoadEmployee, loadEmployee, LoadEmployeeFinished } from './organization.action';
+    loadEmployeeFinished, LoadEmployeesForDepartment, loadEmployeesForDepartment, 
+    LoadEmployee, loadEmployee, LoadEmployeeFinished } from './organization.action';
 import { deserializeArray, deserialize } from 'santee-dcts/src/deserializer';
 import { Department } from './department.model';
 import { ajaxGetJSON } from 'rxjs/observable/dom/AjaxObservable';
 import { AppState } from '../app.reducer';
 import { Employee } from './employee.model';
-import { User } from './user.model';
 import { Observable } from 'rxjs/Observable';
 import { loadFailedError } from '../errors/errors.action';
 
-const url = 'http://localhost:5000/api'; //TODO: fix hardcode
-
-// TODO: Handle error, display some big alert blocking app...
-export const loadUserEpic$ = (action$: ActionsObservable<LoadUser>) =>
-    action$.ofType('LOAD-USER')
-        .switchMap(x => ajaxGetJSON(`${url}/user`))
-        .map(x => deserialize(x, User))
-        .map(x => loadUserFinished(x));
-
-export const loadUserFinishedEpic$ = (action$: ActionsObservable<LoadUserFinished>) =>
-    action$.ofType('LOAD-USER-FINISHED')
-        .map(x => loadEmployee(x.user.employeeId));
+export const url = 'http://localhost:5000/api'; //TODO: fix hardcode
 
 export const loadEmployeeEpic$ = (action$: ActionsObservable<LoadEmployee>) =>
     action$.ofType('LOAD_EMPLOYEE')
