@@ -18,13 +18,13 @@ export const userInfoReducer: Reducer<UserInfoState> = (state = initState, actio
     switch (action.type) {
         case 'LOAD-USER-FINISHED':
             return {
-                user: action.user,
-                employee: state.employee
+                ...state,
+                user: action.user
             };
         case 'LOAD_EMPLOYEE_FINISHED':
             if (state.user && state.user.employeeId === action.employee.employeeId) {
                 return {
-                    user: state.user,
+                    ...state,
                     employee: action.employee,
                 };
             }
