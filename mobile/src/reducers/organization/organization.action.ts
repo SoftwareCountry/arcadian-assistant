@@ -49,7 +49,14 @@ export interface LoadFeedsFinished extends Action {
     feeds: Feed[];
 }
 
-export const loadFeedsFinished = (feeds: Feed[]): LoadFeedsFinished => ({ type: 'LOAD_FEEDS_FINISHED', feeds });
+export const loadFeedsFinished = (feeds: Feed[]): LoadFeedsFinished => {
+    if(feeds && feeds.length === 1) {
+        //generate multiple sample feeds
+        const feed = feeds[0];
+        feeds = Array.apply(0, Array(10)).map(function(f:void, i:number){return Object.assign({}, feed, {messageId: i, title: `${feed.title} ${i}`})});
+    }
+    return { type: 'LOAD_FEEDS_FINISHED', feeds };
+};
 //----------
 export type OrganizationActions =
     LoadDepartments | LoadDepartmentsFinished |

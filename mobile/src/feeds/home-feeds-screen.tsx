@@ -20,10 +20,16 @@ const mapStateToProps = (state: AppState): FeedsScreenProps => ({
 
 const styles  = StyleSheet.create({
     view: {
-        backgroundColor: '#dcdcdc'
+        flex: 1,
+        paddingLeft: 19,
+        paddingRight: 19,
+        backgroundColor: '#FFF'
     },
     viewHeaderText: {
         fontSize: 12
+    },
+    feed : {
+        marginBottom: 15
     }
 });
 

@@ -14,39 +14,47 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         paddingTop: 5,
-        paddingBottom: 5,
-        padding: 10,
-        backgroundColor: '#acacac'
+        paddingBottom: 5
     },
     img: {
-        flex: 1,
-        width: 50,
+        width: 55,
+        height: 55,
         marginTop: 40,
-        resizeMode: 'contain'
+        resizeMode: 'stretch'
     },
     info: {
-        flex: 2,
+        flex: 1,
+        flexGrow: 1,
         flexDirection: 'column',
         alignSelf: 'center',
-        padding: 20
+        paddingLeft: 13
     },
     title: {
-        fontSize: 16,
+        fontSize: 19,
         textAlign: 'left',
-        fontWeight: '600'
+        fontWeight: '500',
+        letterSpacing: 2
     },
     text: {
         //marginTop: Platform.OS === 'ios' ? 40 : 20,
-        fontSize: 14,
+        fontSize: 15,
         textAlign: 'left',
+        paddingTop: 5,
+        paddingBottom: 5
     },
     date: {
-        fontSize: 10
+        fontSize: 12
     }
 });
 
+const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
 export class FeedListItem extends React.Component<FeedListItemProps> {
     public render() {
+        let date = new Date(this.props.message.datePosted);
+        let month = months[date.getMonth()];
+        let formattedDate = `${month} ${date.getDate()}, ${date.getFullYear()}`;
+
         return (
             <TouchableHighlight>
                 <View style={styles.layout}>
@@ -54,7 +62,7 @@ export class FeedListItem extends React.Component<FeedListItemProps> {
                     <View style={styles.info}>
                         <Text style={styles.title}>{this.props.message.title}</Text>
                         <Text style={styles.text}>{this.props.message.text}</Text>
-                        <Text style={styles.date}>{this.props.message.datePosted}</Text>
+                        <Text style={styles.date}>{formattedDate}</Text>
                     </View>
                 </View>
             </TouchableHighlight>
