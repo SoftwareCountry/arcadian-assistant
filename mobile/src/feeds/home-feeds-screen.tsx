@@ -30,19 +30,19 @@ const styles  = StyleSheet.create({
 class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps> {
     public static navigationOptions = navBar.configurate();
 
-    _keyExtractor = (item: Feed) => item.messageId;
-
     public render() {
         return (
             <View style={styles.view}>
                 <Text style={styles.viewHeaderText}>News feed</Text>
                 <FlatList
                     data = { this.props.feeds }
-                    keyExtractor = {this._keyExtractor}
+                    keyExtractor = {this.keyExtractor}
                     renderItem = { ({item}) => <FeedListItem id = { item.messageId } message = { item }/> } />
             </View>
         );
     }
+
+    private keyExtractor = (item: Feed) => item.messageId;
 }
 
 export const HomeFeedsScreen = connect(mapStateToProps)(HomeFeedsScreenImpl);
