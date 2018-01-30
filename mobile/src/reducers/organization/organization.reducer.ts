@@ -7,6 +7,7 @@ import { employeesReducer, EmployeesStore } from './employees.reducer';
 import { feedsReducer } from './feeds.reducer';
 import { loadDepartmentsEpic$, loadChiefsEpic$, loadDepartmentsFinishedEpic$, loadEmployeesForDepartmentEpic$, loadFeedsEpic$ } from './organization.epics';
 import { Feed } from './feed.model';
+import { Employee } from './employee.model';
 
 export interface OrganizationState {
     departments: Department[];

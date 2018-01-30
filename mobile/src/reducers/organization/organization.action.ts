@@ -29,7 +29,7 @@ export interface LoadEmployeeFinished extends Action {
     employee: Employee;
 }
 
-export const loadEmployeeFinished = (employee: Employee): LoadEmployeeFinished => ({ type: 'LOAD_EMPLOYEE_FINISHED', employee});
+export const loadEmployeeFinished = (employee: Employee): LoadEmployeeFinished => ({ type: 'LOAD_EMPLOYEE_FINISHED', employee });
 
 export interface LoadEmployeesForDepartment extends Action {
     type: 'LOAD_EMPLOYEES_FOR_DEPARTMENT';
@@ -50,10 +50,10 @@ export interface LoadFeedsFinished extends Action {
 }
 
 export const loadFeedsFinished = (feeds: Feed[]): LoadFeedsFinished => {
-    if(feeds && feeds.length === 1) {
+    if (feeds && feeds.length === 1) {
         //generate multiple sample feeds
         const feed = feeds[0];
-        feeds = Array.apply(0, Array(10)).map(function(f:void, i:number){return Object.assign({}, feed, {messageId: i, title: `${feed.title} ${i}`})});
+        feeds = Array.apply(0, Array(10)).map(function (f: void, i: number) { return Object.assign({}, feed, { messageId: i, title: `${feed.title} ${i}` }); });
     }
     return { type: 'LOAD_FEEDS_FINISHED', feeds };
 };

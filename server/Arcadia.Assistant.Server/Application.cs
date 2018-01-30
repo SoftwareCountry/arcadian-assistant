@@ -16,14 +16,11 @@
     {
         private readonly IConfigurationRoot config;
 
-        private readonly ContainerBuilder containerBuilder;
-
         private IContainer container;
 
-        public Application(IConfigurationRoot config, ContainerBuilder containerBuilder)
+        public Application(IConfigurationRoot config)
         {
             this.config = config;
-            this.containerBuilder = containerBuilder;
         }
 
         public ActorSystem ActorSystem { get; private set; }
@@ -35,8 +32,12 @@
             var akkaConfig = ConfigurationFactory.ParseString(this.config["akka"]);
 
             this.ActorSystem = ActorSystem.Create("arcadia-assistant", akkaConfig);
-            this.container = this.containerBuilder.Build();
 
+            var di = new DependencyInjection();
+
+            this.container = di.GetContainer(this.config);
+
+            // ReSharper disable once ObjectCreationAsStatement
             new AutoFacDependencyResolver(this.container, this.ActorSystem);
 
             var builder = new ActorSystemBuilder(this.ActorSystem);
