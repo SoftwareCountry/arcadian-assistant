@@ -6,6 +6,8 @@ import { AppState, storeFactory } from './reducers/app.reducer';
 import { connect, Provider, Dispatch } from 'react-redux';
 import { addNavigationHelpers, NavigationState, NavigationActions } from 'react-navigation';
 import { loadDepartments } from './reducers/organization/organization.action';
+import { Employee } from './reducers/organization/employee.model';
+import { loadUser } from './reducers/user/user.action';
 import { DeepLinking } from './navigation/deep-linking';
 import { OAuthManager } from './auth/oauth-manager';
 import { OAuthProcess } from './auth/oauth-process';
@@ -31,6 +33,7 @@ export class App extends Component<AppProps> {
     Linking.getInitialURL().then(url => this.onApplicaitonLinkOpened( { url } ))
 
     //initial state
+    this.props.dispatch(loadUser());
     this.props.dispatch(loadDepartments());
 
     const oauthManager = new OAuthManager();

@@ -39,4 +39,5 @@ export const loadEmployeesForDepartment = (departmentId: string): LoadEmployeesF
 
 export type OrganizationActions =
     LoadDepartments | LoadDepartmentsFinished |
-    LoadEmployee | LoadEmployeesForDepartment | LoadEmployeeFinished ;
+    LoadEmployee | LoadEmployeesForDepartment | LoadEmployeeFinished;
+
