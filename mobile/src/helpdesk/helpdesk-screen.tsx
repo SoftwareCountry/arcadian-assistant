@@ -6,6 +6,7 @@ import { connect, Dispatch, MapStateToProps, MapDispatchToPropsFunction } from '
 import { WithBackButtonProps, mapBackButtonDispatchToProps } from '../layout/back-button-dispatcher';
 import { TicketTemplate } from '../reducers/helpdesk/ticket-template.model';
 import { loadTicketTemplates } from '../reducers/helpdesk/tickets.actions';
+import { EmployeeCardWithAvatar } from '../people/employee-card-with-avatar';
 
 interface HelpdeskScreenProps {
     ticketTemplates: TicketTemplate[];
@@ -37,6 +38,7 @@ class HelpdeskScreenImpl extends Component<HelpdeskScreenProps & HelpdeskScreenD
 
         return <ScrollView>
                 {progressBar}
+                <EmployeeCardWithAvatar employeeName='Ivan'  />
                 <Button title='Back' onPress={ () => this.props.onBackClick() } ></Button>
             </ScrollView>;
     }

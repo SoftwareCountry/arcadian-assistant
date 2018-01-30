@@ -5,48 +5,46 @@ const styles = StyleSheet.create({
     outerFrame: {
         justifyContent: 'center', 
         alignItems: 'center',
-        // Following attributes are default and could be changed via component props
-        height: 156,
-        width: 156,
-        borderRadius: 156 * 0.5,
+        // Following attributes are default
         borderColor: '#2FAFCC',
-        borderWidth: 2
+        borderWidth: 2,
+        height: 200,
+        width: 200,
+        borderRadius: 200 * 0.5,
     },
     image:  {
-        // Following attributes are default and could be changed via component props
-        height: 154,
-        width: 154,
-        borderRadius: 154 * 0.5,
+        // Following attributes are default
         borderColor: '#fff',
-        borderWidth: 2
+        borderWidth: 2,
     }
 });
 
 export interface AvatarProps {
     mimeType: string;
     photoBase64: string;
-    // These attributes should be passed in following style props:
-    // height, width, borderRadius, borderColor, borderWidth
-    //
-    // Border radius is used for circle mask effect and should be 50% of width/height
-    //
-    // Image border color could be same as superview's background color 
-    // or some other color - refer to design.
-    outerFrameStyle: ViewStyle;
-    imageStyle: ImageStyle;
+    style: ViewStyle;
 }
 
 export class Avatar extends Component<AvatarProps> {
+    private borderRadius: number;
+    
+    public onLayout = (e: any) => {
+        this.borderRadius = e.nativeEvent.layout.width * 0.5;
+        this.setState({
+          width: e.nativeEvent.layout.width,
+          height: e.nativeEvent.layout.height,
+        });
+    }
+
     public render() {
-        const { mimeType, photoBase64, outerFrameStyle, imageStyle } = this.props;
-        const outerFrameFlattenStyle = StyleSheet.flatten([styles.outerFrame, outerFrameStyle]);
-        const imageFlattenStyle = StyleSheet.flatten([styles.image, imageStyle]);
+        const { mimeType, photoBase64, style } = this.props;
+        const outerFrameFlattenStyle = StyleSheet.flatten([styles.outerFrame, this.props.style, {borderRadius: this.borderRadius}]);
+        const imageFlattenStyle = StyleSheet.flatten([this.props.style, styles.image, {width: (this.borderRadius * 2 - outerFrameFlattenStyle.borderWidth), height: (this.borderRadius * 2 - outerFrameFlattenStyle.borderWidth), borderRadius: (this.borderRadius - outerFrameFlattenStyle.borderWidth)}]);
 
         return (
-            <View style={outerFrameFlattenStyle}>
+            <View style={outerFrameFlattenStyle} onLayout={ this.onLayout }>
                 <Image source={{uri: mimeType + photoBase64}} style={imageFlattenStyle} />
             </View>
         );
     }
 }
-
