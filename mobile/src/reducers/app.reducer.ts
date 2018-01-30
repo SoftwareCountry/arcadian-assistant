@@ -13,12 +13,14 @@ import 'rxjs/Rx';
 import { OrganizationState, organizationReducer, organizationEpics } from './organization/organization.reducer';
 import { UserInfoState, userInfoReducer } from './user/user-info.reducer';
 import { userEpics } from './user/user.reducer';
+import { CalendarState, calendarReducer } from './calendar/calendar.reducer';
 
 export interface AppState {
     helpdesk: HelpdeskState;
     organization: OrganizationState;
     nav: NavigationState;
     userInfo: UserInfoState;
+    calendar: CalendarState;
 }
 
 const rootEpic = combineEpics(helpdeskEpics as any, organizationEpics as any, errorsEpics as any, userEpics as any);
@@ -27,7 +29,8 @@ const reducers = combineReducers<AppState>({
     helpdesk: helpdeskReducer,
     organization: organizationReducer,
     nav: navigationReducer,
-    userInfo: userInfoReducer
+    userInfo: userInfoReducer,
+    calendar: calendarReducer
 });
 
 export const storeFactory = () => {

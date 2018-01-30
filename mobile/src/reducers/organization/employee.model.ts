@@ -48,4 +48,12 @@ export class Employee {
 
     @dataMember()
     public hireDate: string;
+
+    @dataMember()
+    @required()
+    public hoursCredit: number;
+
+    @dataMember()
+    @required()
+    public vacationDaysLeft: number;
 }
