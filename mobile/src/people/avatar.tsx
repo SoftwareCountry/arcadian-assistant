@@ -26,7 +26,6 @@ export interface AvatarProps {
 }
 
 export class Avatar extends Component<AvatarProps> {
-    private bordersWidth: 2;
     private borderRadius: number;
     
     public onLayout = (e: any) => {
@@ -40,7 +39,7 @@ export class Avatar extends Component<AvatarProps> {
     public render() {
         const { mimeType, photoBase64, style } = this.props;
         const outerFrameFlattenStyle = StyleSheet.flatten([styles.outerFrame, this.props.style, {borderRadius: this.borderRadius}]);
-        const imageFlattenStyle = StyleSheet.flatten([this.props.style, styles.image, {width: (this.borderRadius * 2 - 2), height: (this.borderRadius * 2 - 2), borderRadius: (this.borderRadius - 2)}]);
+        const imageFlattenStyle = StyleSheet.flatten([this.props.style, styles.image, {width: (this.borderRadius * 2 - outerFrameFlattenStyle.borderWidth), height: (this.borderRadius * 2 - outerFrameFlattenStyle.borderWidth), borderRadius: (this.borderRadius - outerFrameFlattenStyle.borderWidth)}]);
 
         return (
             <View style={outerFrameFlattenStyle} onLayout={ this.onLayout }>
