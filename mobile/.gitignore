@@ -39,6 +39,7 @@ yarn-error.log
 artifacts/
 .coverage/
 .vscode/.react/
+.vscode/symbols.json
 
 # BUCK
 buck-out/

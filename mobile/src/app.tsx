@@ -6,6 +6,8 @@ import { AppState, storeFactory } from './reducers/app.reducer';
 import { connect, Provider, Dispatch } from 'react-redux';
 import { addNavigationHelpers, NavigationState, NavigationActions } from 'react-navigation';
 import { loadDepartments } from './reducers/organization/organization.action';
+import { Employee } from './reducers/organization/employee.model';
+import { loadUser } from './reducers/user/user.action';
 
 interface AppProps {
   dispatch: Dispatch<any>;
@@ -18,6 +20,7 @@ export class App extends Component<AppProps> {
     BackHandler.addEventListener('hardwareBackPress', this.onBackPress );
 
     //initial state
+    this.props.dispatch(loadUser());
     this.props.dispatch(loadDepartments());
   }
 
