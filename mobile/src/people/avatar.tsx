@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Image, StyleSheet, ViewStyle, ImageStyle } from 'react-native';
+import { View, Image, StyleSheet, ViewStyle, ImageStyle, LayoutChangeEvent } from 'react-native';
 
 const styles = StyleSheet.create({
     outerFrame: {
@@ -28,7 +28,7 @@ export interface AvatarProps {
 export class Avatar extends Component<AvatarProps> {
     private borderRadius: number;
     
-    public onLayout = (e: any) => {
+    public onLayout = (e: LayoutChangeEvent) => {
         this.borderRadius = e.nativeEvent.layout.width * 0.5;
         this.setState({
           width: e.nativeEvent.layout.width,
