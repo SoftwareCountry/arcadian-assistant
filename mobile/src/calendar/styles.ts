@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 
 const daysCounterFontColor = '#18515E';
+export const todayTitleColor = '#18515E';
 
 export const calendarScreenColors = {
     green: '#27AE60',
@@ -10,20 +11,35 @@ export const calendarScreenColors = {
 };
 
 export const calendarScreenLayout = {
-    daysCounters: {
-        flex: 1.2
-    },
     calendar: {
-        flex: 4
+        flex: 1
     },
     agenda: {
-        flex: 3
+        flex: 1
     }
 };
 
+export const calendarStyles = StyleSheet.create({
+    container: {
+        flex: calendarScreenLayout.calendar.flex,
+        marginTop: 20
+    },
+    containerTitle: {
+        fontSize: 15,
+        color: todayTitleColor
+    }
+});
+
+export const agendaStyles = StyleSheet.create({
+    container: {
+        flex: calendarScreenLayout.calendar.flex,
+        alignItems: 'flex-start'
+    }
+});
+
 export const styles = StyleSheet.create({
     daysCounters: {
-        flex: calendarScreenLayout.daysCounters.flex,
+        flex: 1,
         flexDirection: 'row',
         padding: 10
     },
