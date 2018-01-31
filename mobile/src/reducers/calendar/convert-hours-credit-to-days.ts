@@ -3,12 +3,15 @@ export class ConvertHoursCreditToDays {
     public static readonly fractionSymbol = '½';
 
     public convert(hours: number): ConvertHoursCreditResult {
+        hours = Math.abs(hours);
+
         if (hours === 0) {
             return {
                 days: 0,
                 rest: ''
             };
         }
+
         if (hours <= ConvertHoursCreditToDays.halfDay) {
             return {
                 days: 0,
