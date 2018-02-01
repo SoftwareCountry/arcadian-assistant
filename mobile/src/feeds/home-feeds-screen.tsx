@@ -15,7 +15,10 @@ interface FeedsScreenProps {
 }
 
 const mapStateToProps = (state: AppState): FeedsScreenProps => ({
-    feeds: state.organization.feeds
+    feeds: state.organization.feeds.map(feed => {
+        feed.employee = state.organization.employees.employeesById.get(feed.employeeId);
+        return feed;
+    })
 });
 
 const styles  = StyleSheet.create({
@@ -28,8 +31,9 @@ const styles  = StyleSheet.create({
     viewHeaderText: {
         fontSize: 12
     },
-    feed : {
-        marginBottom: 15
+    separator : {
+        //backgroundColor: '#acacac',
+        height: 15
     }
 });
 
@@ -41,6 +45,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps> {
             <View style={styles.view}>
                 <Text style={styles.viewHeaderText}>News feed</Text>
                 <FlatList
+                    ItemSeparatorComponent = {() => <View style={styles.separator}></View>}
                     data = { this.props.feeds }
                     keyExtractor = {this.keyExtractor}
                     renderItem = { ({item}) => <FeedListItem id = { item.messageId } message = { item }/> } />

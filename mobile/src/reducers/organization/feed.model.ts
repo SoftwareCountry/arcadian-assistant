@@ -1,10 +1,15 @@
 import {dataMember, required} from 'santee-dcts';
+import { Employee } from './employee.model';
 
 export class Feed {
 
     @dataMember()
     @required()
     public messageId: string;
+
+    @dataMember()
+    @required()
+    public employeeId: string;
 
     @dataMember()
     @required()
@@ -17,4 +22,6 @@ export class Feed {
     @dataMember()
     @required()
     public datePosted: string;
+
+    public employee: Employee;
 }

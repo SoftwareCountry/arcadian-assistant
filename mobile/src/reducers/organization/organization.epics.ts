@@ -2,7 +2,8 @@ import { ActionsObservable, ofType } from 'redux-observable';
 import {
     LoadDepartments, loadDepartmentsFinished, LoadDepartmentsFinished, loadDepartments,
     loadEmployeeFinished, LoadEmployeesForDepartment, loadEmployeesForDepartment,
-    LoadEmployee, loadEmployee, LoadEmployeeFinished, LoadFeeds, loadFeedsFinished } from './organization.action';
+    LoadEmployee, loadEmployee, LoadEmployeeFinished,
+    LoadFeeds, loadFeedsFinished, LoadFeedsFinished, loadEmployeeForFeed, LoadEmployeeForFeed } from './organization.action';
 import { deserializeArray, deserialize } from 'santee-dcts/src/deserializer';
 import { Department } from './department.model';
 import { ajaxGetJSON } from 'rxjs/observable/dom/AjaxObservable';
@@ -51,9 +52,24 @@ export const loadEmployeesForDepartmentEpic$ = (action$: ActionsObservable<LoadE
         .mergeAll()
         .flatMap(x => x.map(loadEmployeeFinished))
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+
 export const loadFeedsEpic$ = (action$: ActionsObservable<LoadFeeds>) =>
     action$.ofType('LOAD_FEEDS')
         .switchMap(x => ajaxGetJSON(`${url}/feeds/messages`))
         .map(x => deserializeArray(x as any, Feed))
         .map(x => loadFeedsFinished(x))
         .catch(e => Observable.of(loadFailedError(e.message)));
+
+export const loadFeedsFinishedEpic$ = (action$: ActionsObservable<LoadFeedsFinished>) =>
+    action$.ofType('LOAD_FEEDS_FINISHED')
+        .flatMap(x => x.feeds.map(feed => loadEmployeeForFeed(feed.employeeId)));
+
+export const loadEmployeeForFeedEpic$ = (action$: ActionsObservable<LoadEmployeeForFeed>) =>
+    action$.ofType('LOAD_EMPLOYEE_FOR_FEED')
+        .groupBy(x => x.employeeId)
+        .map(x =>
+            ajaxGetJSON<Employee>(`${url}/employees/${x.key}`).map(obj => deserialize(obj as any, Employee))
+        )
+        .mergeAll()
+        .map(x => loadEmployeeFinished(x))
+        .catch((e: Error) => Observable.of(loadFailedError(e.message)));

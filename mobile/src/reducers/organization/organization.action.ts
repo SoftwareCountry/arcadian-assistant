@@ -51,14 +51,20 @@ export interface LoadFeedsFinished extends Action {
 
 export const loadFeedsFinished = (feeds: Feed[]): LoadFeedsFinished => {
     if (feeds && feeds.length === 1) {
-        //generate multiple sample feeds
+        //TODO: remove mock data when there will be multiple messages
         const feed = feeds[0];
-        feeds = Array.apply(0, Array(10)).map(function (f: void, i: number) { return Object.assign({}, feed, { messageId: i, title: `${feed.title} ${i}` }); });
+        feeds = Array.apply(0, Array(5)).map(function (f: void, i: number) { return Object.assign({}, feed, { messageId: i, title: `${feed.title} ${i}` }); });
     }
     return { type: 'LOAD_FEEDS_FINISHED', feeds };
 };
+
+export interface LoadEmployeeForFeed extends Action {
+    type: 'LOAD_EMPLOYEE_FOR_FEED';
+    employeeId: string;
+}
+export const loadEmployeeForFeed = (employeeId: string): LoadEmployeeForFeed => ({ type: 'LOAD_EMPLOYEE_FOR_FEED', employeeId });
 //----------
 export type OrganizationActions =
     LoadDepartments | LoadDepartmentsFinished |
     LoadEmployee | LoadEmployeesForDepartment | LoadEmployeeFinished |
-    LoadFeeds | LoadFeedsFinished;
+    LoadFeeds | LoadFeedsFinished | LoadEmployeeForFeed;
