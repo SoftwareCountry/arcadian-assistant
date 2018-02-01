@@ -11,7 +11,7 @@ import { Employee } from './employee.model';
 import { Observable } from 'rxjs/Observable';
 import { loadFailedError } from '../errors/errors.action';
 
-export const url = 'http://localhost:5000/api'; //TODO: fix hardcode
+export const url = 'https://arcadia-assistant-dev.arcadialab.ru/api'; //TODO: fix hardcode
 
 export const loadEmployeeEpic$ = (action$: ActionsObservable<LoadEmployee>) =>
     action$.ofType('LOAD_EMPLOYEE')
