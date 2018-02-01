@@ -12,8 +12,7 @@ import { Employee } from './employee.model';
 import { Observable } from 'rxjs/Observable';
 import { loadFailedError } from '../errors/errors.action';
 import { Feed } from './feed.model';
-
-export const url = 'http://localhost:5000/api'; //TODO: fix hardcode
+import { apiUrl as url } from '../const';
 
 export const loadEmployeeEpic$ = (action$: ActionsObservable<LoadEmployee>) =>
     action$.ofType('LOAD_EMPLOYEE')

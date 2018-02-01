@@ -3,8 +3,8 @@ import { deserialize } from 'santee-dcts/src/deserializer';
 import { loadEmployee } from '../organization/organization.action';
 import { ActionsObservable } from 'redux-observable';
 import { User } from './user.model';
-import { url } from '../organization/organization.epics';
 import { LoadUser, loadUserFinished, LoadUserFinished } from './user.action';
+import { apiUrl as url } from '../const';
 
 // TODO: Handle error, display some big alert blocking app...
 export const loadUserEpic$ = (action$: ActionsObservable<LoadUser>) =>
