@@ -13,9 +13,11 @@
 		"lint": "tslint -p ."
 	},
 	"dependencies": {
+		"@types/moment": "^2.13.0",
 		"@types/react-test-renderer": "^16.0.0",
 		"@types/redux-logger": "^3.0.5",
 		"immutable": "^3.8.2",
+		"moment": "^2.20.1",
 		"react": "^16.0.0",
 		"react-native": "0.52.2",
 		"react-native-vector-icons": "^4.4.2",
