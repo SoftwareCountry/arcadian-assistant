@@ -26,10 +26,7 @@ export interface AvatarProps {
 }
 
 export class Avatar extends Component<AvatarProps> {
-    private borderRadius: number;
-    
     public onLayout = (e: LayoutChangeEvent) => {
-        this.borderRadius = e.nativeEvent.layout.width * 0.5;
         this.setState({
           width: e.nativeEvent.layout.width,
           height: e.nativeEvent.layout.height,
@@ -38,8 +35,10 @@ export class Avatar extends Component<AvatarProps> {
 
     public render() {
         const { mimeType, photoBase64, style } = this.props;
-        const outerFrameFlattenStyle = StyleSheet.flatten([styles.outerFrame, this.props.style, {borderRadius: this.borderRadius}]);
-        const imageFlattenStyle = StyleSheet.flatten([this.props.style, styles.image, {width: (this.borderRadius * 2 - outerFrameFlattenStyle.borderWidth), height: (this.borderRadius * 2 - outerFrameFlattenStyle.borderWidth), borderRadius: (this.borderRadius - outerFrameFlattenStyle.borderWidth)}]);
+        const outerFrameFlattenStyle = StyleSheet.flatten([styles.outerFrame, this.props.style, {borderRadius: +style.width * 0.5}]);
+        const imageSize = +outerFrameFlattenStyle.width - outerFrameFlattenStyle.borderWidth;
+        const imageBorderRadius = imageSize * 0.5;
+        const imageFlattenStyle = StyleSheet.flatten([this.props.style, styles.image, {width: imageSize, height: imageSize, borderRadius: imageBorderRadius}]);
 
         return (
             <View style={outerFrameFlattenStyle} onLayout={ this.onLayout }>
