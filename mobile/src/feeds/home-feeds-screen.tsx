@@ -21,17 +21,17 @@ const mapStateToProps = (state: AppState): FeedsScreenProps => ({
     })
 });
 
-const styles  = StyleSheet.create({
+const styles = StyleSheet.create({
     view: {
         flex: 1,
+        backgroundColor: '#FFF',
         paddingLeft: 19,
-        paddingRight: 19,
-        backgroundColor: '#FFF'
+        paddingRight: 19
     },
     viewHeaderText: {
         fontSize: 12
     },
-    separator : {
+    separator: {
         //backgroundColor: '#acacac',
         height: 15
     }
@@ -42,14 +42,13 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps> {
 
     public render() {
         return (
-            <View style={styles.view}>
-                <Text style={styles.viewHeaderText}>News feed</Text>
-                <FlatList
-                    ItemSeparatorComponent = {() => <View style={styles.separator}></View>}
-                    data = { this.props.feeds }
-                    keyExtractor = {this.keyExtractor}
-                    renderItem = { ({item}) => <FeedListItem id = { item.messageId } message = { item }/> } />
-            </View>
+            <FlatList
+                style={styles.view}
+                ItemSeparatorComponent={() => <View style={styles.separator}></View>}
+                data={this.props.feeds}
+                keyExtractor={this.keyExtractor}
+                renderItem={({ item }) => <FeedListItem id={item.messageId} message={item} />}
+                ListHeaderComponent={() => <Text style={styles.viewHeaderText}>News feed</Text>} />
         );
     }
 
