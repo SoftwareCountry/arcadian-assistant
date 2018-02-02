@@ -1,6 +1,6 @@
 import { TabNavigatorConfig, NavigationRouteConfigMap } from 'react-navigation';
 import React from 'react';
-import { HelpdeskScreen } from '../helpdesk/helpdesk-screen';
+import { EmployeesList } from '../people/employees-list';
 import { TabNavigationOptionsFactory } from '../tabbar/tab-navigation-options-factory';
 
 const navOptionsFactory = new TabNavigationOptionsFactory();
@@ -8,18 +8,18 @@ const navOptionsFactory = new TabNavigationOptionsFactory();
 const topTabBarModel: NavigationRouteConfigMap = {
 
     Department: {
-        screen: HelpdeskScreen,
-        path: '/helpdesk',
+        screen: EmployeesList,
+        path: '/people',
         navigationOptions: navOptionsFactory.create('Department', null, null)
     },
     Room: {
-        screen: HelpdeskScreen,
-        path: '/helpdesk',
+        screen: EmployeesList,
+        path: '/people',
         navigationOptions: navOptionsFactory.create('Room', null, null)
     },
     Company: {
-        screen: HelpdeskScreen,
-        path: '/helpdesk',
+        screen: EmployeesList,
+        path: '/people',
         navigationOptions: navOptionsFactory.create('Company', null, null)
     }
 };
