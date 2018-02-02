@@ -6,9 +6,11 @@ import moment from 'moment';
 import { Avatar } from '../people/avatar';
 import { Feed } from '../reducers/organization/feed.model';
 import { feedStyles as styles } from './styles';
+import { Employee } from '../reducers/organization/employee.model';
 
 interface FeedListItemProps {
     message: Feed;
+    employee: Employee;
     id: string;
 }
 
@@ -18,9 +20,7 @@ interface IFeedListItemState {
 }
 
 export class FeedListItem extends React.Component<FeedListItemProps, IFeedListItemState> {
-    public state: IFeedListItemState = {
-        imgContainerWidth: 0
-    } as any;
+    public state = {} as IFeedListItemState;
 
     public componentWillReceiveProps(nextProps: Readonly<FeedListItemProps>, nextContent: any) {
         const nextDate = nextProps.message ? nextProps.message.datePosted : null;
@@ -35,15 +35,15 @@ export class FeedListItem extends React.Component<FeedListItemProps, IFeedListIt
 
     public render() {
         const message = this.props.message;
+        const employee = this.props.employee;
 
         const imgStyle = StyleSheet.flatten([{
             width: this.state.imgContainerSize,
             height: this.state.imgContainerSize
         }]);
 
-        const employee = message.employee;
         const employeeName = employee ? employee.name : message.title;
-        const photo = employee ? message.employee.photo : null;
+        const photo = employee ? employee.photo : null;
         const mimeType = photo ? photo.mimeType : null;
         const base64 = photo ? photo.base64 : null;
 

@@ -54,7 +54,7 @@ function validateEncodedImage(data: string) {
 }
 
 export class Avatar extends Component<AvatarProps, AvatarState> {
-    public state: AvatarState = {
+    public state = {
         size: NaN,
         borderRadius: NaN
     };

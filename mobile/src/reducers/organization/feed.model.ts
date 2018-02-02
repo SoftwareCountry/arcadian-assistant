@@ -22,6 +22,4 @@ export class Feed {
     @dataMember()
     @required()
     public datePosted: string;
-
-    public employee: Employee;
 }
