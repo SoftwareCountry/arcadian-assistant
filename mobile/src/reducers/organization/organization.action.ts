@@ -57,14 +57,8 @@ export const loadFeedsFinished = (feeds: Feed[]): LoadFeedsFinished => {
     }
     return { type: 'LOAD_FEEDS_FINISHED', feeds };
 };
-
-export interface LoadEmployeeForFeed extends Action {
-    type: 'LOAD_EMPLOYEE_FOR_FEED';
-    employeeId: string;
-}
-export const loadEmployeeForFeed = (employeeId: string): LoadEmployeeForFeed => ({ type: 'LOAD_EMPLOYEE_FOR_FEED', employeeId });
 //----------
 export type OrganizationActions =
     LoadDepartments | LoadDepartmentsFinished |
     LoadEmployee | LoadEmployeesForDepartment | LoadEmployeeFinished |
-    LoadFeeds | LoadFeedsFinished | LoadEmployeeForFeed;
+    LoadFeeds | LoadFeedsFinished

@@ -3,7 +3,7 @@ import {
     LoadDepartments, loadDepartmentsFinished, LoadDepartmentsFinished, loadDepartments,
     loadEmployeeFinished, LoadEmployeesForDepartment, loadEmployeesForDepartment,
     LoadEmployee, loadEmployee, LoadEmployeeFinished,
-    LoadFeeds, loadFeedsFinished, LoadFeedsFinished, loadEmployeeForFeed, LoadEmployeeForFeed } from './organization.action';
+    LoadFeeds, loadFeedsFinished, LoadFeedsFinished } from './organization.action';
 import { deserializeArray, deserialize } from 'santee-dcts/src/deserializer';
 import { Department } from './department.model';
 import { ajaxGetJSON } from 'rxjs/observable/dom/AjaxObservable';
@@ -61,14 +61,4 @@ export const loadFeedsEpic$ = (action$: ActionsObservable<LoadFeeds>) =>
 
 export const loadFeedsFinishedEpic$ = (action$: ActionsObservable<LoadFeedsFinished>) =>
     action$.ofType('LOAD_FEEDS_FINISHED')
-        .flatMap(x => x.feeds.map(feed => loadEmployeeForFeed(feed.employeeId)));
-
-export const loadEmployeeForFeedEpic$ = (action$: ActionsObservable<LoadEmployeeForFeed>) =>
-    action$.ofType('LOAD_EMPLOYEE_FOR_FEED')
-        .groupBy(x => x.employeeId)
-        .map(x =>
-            ajaxGetJSON<Employee>(`${url}/employees/${x.key}`).map(obj => deserialize(obj as any, Employee))
-        )
-        .mergeAll()
-        .map(x => loadEmployeeFinished(x))
-        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+        .flatMap(x => x.feeds.map(feed => loadEmployee(feed.employeeId)));
