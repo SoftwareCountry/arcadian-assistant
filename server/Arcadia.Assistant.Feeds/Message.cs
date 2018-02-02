@@ -20,7 +20,7 @@
             this.Text = text;
             this.DatePosted = datePosted;
             this.MessageId = messageId;
-            this.EmployeeId = EmployeeId;
+            this.EmployeeId = employeeId;
         }
     }
 }
