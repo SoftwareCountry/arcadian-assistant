@@ -8,6 +8,8 @@ import { AppState } from '../reducers/app.reducer';
 
 import { FeedListItem } from './feed';
 
+import { screenStyles as styles } from './styles'
+
 const navBar = new TopNavBar('Feeds');
 
 interface FeedsScreenProps {
@@ -19,22 +21,6 @@ const mapStateToProps = (state: AppState): FeedsScreenProps => ({
         feed.employee = state.organization.employees.employeesById.get(feed.employeeId);
         return feed;
     })
-});
-
-const styles = StyleSheet.create({
-    view: {
-        flex: 1,
-        backgroundColor: '#FFF',
-        paddingLeft: 19,
-        paddingRight: 19
-    },
-    viewHeaderText: {
-        fontSize: 12
-    },
-    separator: {
-        //backgroundColor: '#acacac',
-        height: 15
-    }
 });
 
 class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps> {

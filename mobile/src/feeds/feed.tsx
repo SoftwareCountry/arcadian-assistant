@@ -6,53 +6,12 @@ import { Avatar } from '../people/avatar';
 import { Feed } from '../reducers/organization/feed.model';
 import { LayoutEvent } from 'react-navigation';
 
+import { feedStyles as styles } from './styles'
+
 interface FeedListItemProps {
     message: Feed;
     id: string;
 }
-
-const styles = StyleSheet.create({
-    layout: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        paddingTop: 0,
-        paddingBottom: 5
-    },
-    imgContainer: {
-        marginTop: 5,
-        flex: 2
-    },
-    img: {
-        flex: 1
-    },
-    info: {
-        flex: 6,
-        flexDirection: 'column',
-        alignSelf: 'flex-start',
-        paddingLeft: 13
-    },
-    title: {
-        fontSize: 19,
-        textAlign: 'left',
-        fontWeight: '400',
-        letterSpacing: 2,
-    },
-    text: {
-        //marginTop: Platform.OS === 'ios' ? 40 : 20,
-        fontSize: 15,
-        textAlign: 'left',
-        paddingTop: 2,
-        paddingBottom: 2
-    },
-    tags: {
-        color: '#2FAFCC',
-        fontSize: 13
-    },
-    date: {
-        fontSize: 12
-    }
-});
 
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -91,8 +50,8 @@ export class FeedListItem extends React.Component<FeedListItemProps, IFeedListIt
         return (
             <TouchableHighlight>
                 <View style={styles.layout}>
-                    <View style={styles.imgContainer} onLayout = {this.onLayout}>
-                        <Avatar mimeType={mimeType} photoBase64={base64} style={imgStyle}/>
+                    <View style={styles.imgContainer} onLayout={this.onLayout}>
+                        <Avatar mimeType={mimeType} photoBase64={base64} style={imgStyle} />
                     </View>
                     <View style={styles.info}>
                         <Text style={styles.title}>{employeeName}</Text>
