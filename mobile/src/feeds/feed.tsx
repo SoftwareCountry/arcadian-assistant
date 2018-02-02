@@ -14,13 +14,16 @@ interface FeedListItemProps {
     id: string;
 }
 
-interface IFeedListItemState {
-    imgContainerSize: number;
-    formattedDate: string;
+interface FeedListItemState {
+    imgContainerSize?: number;
+    formattedDate?: string;
 }
 
-export class FeedListItem extends React.Component<FeedListItemProps, IFeedListItemState> {
-    public state = {} as IFeedListItemState;
+export class FeedListItem extends React.Component<FeedListItemProps, FeedListItemState> {
+    constructor(props: FeedListItemProps, context: any) {
+        super(props, context);
+        this.state = {};
+    }
 
     public componentWillReceiveProps(nextProps: Readonly<FeedListItemProps>, nextContent: any) {
         const nextDate = nextProps.message ? nextProps.message.datePosted : null;

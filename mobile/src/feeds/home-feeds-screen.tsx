@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, Text, View, StyleSheet } from 'react-native';
+import { FlatList, Text, View, StyleSheet, ListRenderItemInfo } from 'react-native';
 import { TopNavBar } from '../topNavBar/top-nav-bar';
 
 import { Employee } from '../reducers/organization/employee.model';
@@ -40,9 +40,14 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps> {
                 style={styles.view}
                 ItemSeparatorComponent={() => <View style={styles.separator}></View>}
                 data={this.props.feeds}
-                renderItem={({ item }) => <FeedListItem id={item.key} message={item.feed} employee={item.employee} />}
+                renderItem={this.renderItem}
                 ListHeaderComponent={() => <Text style={styles.viewHeaderText}>News feed</Text>} />
         );
+    }
+
+    private renderItem( itemInfo: ListRenderItemInfo<FeedListItemInfo> ) {
+        const {item} = itemInfo;
+        return <FeedListItem id={item.key} message={item.feed} employee={item.employee}/>;
     }
 }
 

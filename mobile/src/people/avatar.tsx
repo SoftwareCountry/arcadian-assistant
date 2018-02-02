@@ -33,8 +33,8 @@ export interface AvatarProps {
 }
 
 interface AvatarState {
-    borderRadius: number;
-    size: number;
+    borderRadius?: number;
+    size?: number;
 }
 
 function validateMimeType(mime: string) {
@@ -54,10 +54,10 @@ function validateEncodedImage(data: string) {
 }
 
 export class Avatar extends Component<AvatarProps, AvatarState> {
-    public state = {
-        size: NaN,
-        borderRadius: NaN
-    };
+    constructor(props: AvatarProps, context: any) {
+        super(props, context);
+        this.state = {};
+    }
 
     public onLayout = (e: any) => {
         let size = Math.min(e.nativeEvent.layout.width, e.nativeEvent.layout.height);
