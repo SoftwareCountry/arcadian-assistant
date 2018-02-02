@@ -34,5 +34,5 @@ export const storeFactory = () => {
     const epicMiddleware = createEpicMiddleware(rootEpic);
     //const loggerMiddleware = createLogger();
 
-    return createStore(reducers, applyMiddleware(epicMiddleware, logger));
+    return createStore(reducers, applyMiddleware(epicMiddleware));
 };
