@@ -61,4 +61,4 @@ export const loadFeedsFinished = (feeds: Feed[]): LoadFeedsFinished => {
 export type OrganizationActions =
     LoadDepartments | LoadDepartmentsFinished |
     LoadEmployee | LoadEmployeesForDepartment | LoadEmployeeFinished |
-    LoadFeeds | LoadFeedsFinished
+    LoadFeeds | LoadFeedsFinished;
