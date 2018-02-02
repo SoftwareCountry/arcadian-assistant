@@ -45,12 +45,12 @@ android_library(
 
 android_build_config(
     name = "build_config",
-    package = "com.arcadiaassistant",
+    package = "ru.spb.arcadia.product.assistant.android",
 )
 
 android_resource(
     name = "res",
-    package = "com.arcadiaassistant",
+    package = "ru.spb.arcadia.product.assistant.android",
     res = "src/main/res",
 )
 
