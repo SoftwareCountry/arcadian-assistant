@@ -1,22 +1,20 @@
 import React from 'react';
 import { TouchableHighlight, StyleSheet, Platform, Text, View, Image } from 'react-native';
+import { LayoutEvent } from 'react-navigation';
+import moment from 'moment';
 
 import { Avatar } from '../people/avatar';
-
 import { Feed } from '../reducers/organization/feed.model';
-import { LayoutEvent } from 'react-navigation';
-
-import { feedStyles as styles } from './styles'
+import { feedStyles as styles } from './styles';
 
 interface FeedListItemProps {
     message: Feed;
     id: string;
 }
 
-const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
 interface IFeedListItemState {
     imgContainerSize: number;
+    formattedDate: string;
 }
 
 export class FeedListItem extends React.Component<FeedListItemProps, IFeedListItemState> {
@@ -24,17 +22,19 @@ export class FeedListItem extends React.Component<FeedListItemProps, IFeedListIt
         imgContainerWidth: 0
     } as any;
 
-    public onLayout = (e: LayoutEvent) => {
-        this.setState({
-            imgContainerSize: Math.min(e.nativeEvent.layout.width, e.nativeEvent.layout.height)
-        });
+    public componentWillReceiveProps(nextProps: Readonly<FeedListItemProps>, nextContent: any) {
+        const nextDate = nextProps.message ? nextProps.message.datePosted : null;
+        const datePosted = this.props.message ? this.props.message.datePosted : null;
+
+        if (datePosted !== nextDate || !this.state.formattedDate) {
+            this.setState({
+                formattedDate: moment(nextDate).format('MMMM D, YYYY')
+            });
+        }
     }
 
     public render() {
         const message = this.props.message;
-        let date = new Date(this.props.message.datePosted);
-        let month = months[date.getMonth()];
-        let formattedDate = `${month} ${date.getDate()}, ${date.getFullYear()}`;
 
         const imgStyle = StyleSheet.flatten([{
             width: this.state.imgContainerSize,
@@ -50,14 +50,14 @@ export class FeedListItem extends React.Component<FeedListItemProps, IFeedListIt
         return (
             <TouchableHighlight>
                 <View style={styles.layout}>
-                    <View style={styles.imgContainer} onLayout={this.onLayout}>
-                        <Avatar mimeType={mimeType} photoBase64={base64} style={imgStyle} />
+                    <View style={styles.imgContainer}>
+                        <Avatar mimeType={mimeType} photoBase64={base64} />
                     </View>
                     <View style={styles.info}>
                         <Text style={styles.title}>{employeeName}</Text>
                         <Text style={styles.text}>{this.props.message.text}</Text>
                         <Text style={styles.tags}>#ArcadiaNews</Text>
-                        <Text style={styles.date}>{formattedDate}</Text>
+                        <Text style={styles.date}>{this.state.formattedDate}</Text>
                     </View>
                 </View>
             </TouchableHighlight>

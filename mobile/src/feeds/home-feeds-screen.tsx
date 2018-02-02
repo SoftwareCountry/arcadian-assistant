@@ -8,7 +8,7 @@ import { AppState } from '../reducers/app.reducer';
 
 import { FeedListItem } from './feed';
 
-import { screenStyles as styles } from './styles'
+import { screenStyles as styles } from './styles';
 
 const navBar = new TopNavBar('Feeds');
 

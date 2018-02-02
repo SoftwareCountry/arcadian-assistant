@@ -25,10 +25,10 @@ export const feedStyles = StyleSheet.create({
     },
     imgContainer: {
         marginTop: 5,
-        flex: 2
-    },
-    img: {
-        flex: 1
+        flex: 2,
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+        flexDirection: 'row'
     },
     info: {
         flex: 6,
