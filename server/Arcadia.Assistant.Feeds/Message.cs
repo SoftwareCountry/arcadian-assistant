@@ -14,7 +14,7 @@
 
         public DateTimeOffset DatePosted { get; }
 
-        public Message(Guid messageId, string EmployeeId, string title, string text, DateTimeOffset datePosted)
+        public Message(Guid messageId, string employeeId, string title, string text, DateTimeOffset datePosted)
         {
             this.Title = title;
             this.Text = text;
