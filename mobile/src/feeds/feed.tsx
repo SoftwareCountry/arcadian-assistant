@@ -25,7 +25,7 @@ export class FeedListItem extends React.Component<FeedListItemProps, FeedListIte
         this.state = {};
     }
 
-    public componentWillReceiveProps(nextProps: Readonly<FeedListItemProps>, nextContent: any) {
+    public componentWillReceiveProps(nextProps: Readonly<FeedListItemProps>) {
         const nextDate = nextProps.message ? nextProps.message.datePosted : null;
         const datePosted = this.props.message ? this.props.message.datePosted : null;
 
