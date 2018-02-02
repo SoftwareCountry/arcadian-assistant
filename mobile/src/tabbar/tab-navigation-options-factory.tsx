@@ -9,7 +9,7 @@ import tabBarStyles from './tab-bar-styles';
 export class TabNavigationOptionsFactory {
     public create(label: string, focusedPath: ImageURISource, unfocusedPath: ImageURISource): NavigationTabScreenOptions {
         return {
-            tabBarLabel: () => <Text numberOfLines={1} ellipsizeMode={'tail'} style={tabBarStyles.tabBarLabel}>{ label }</Text>,
+            tabBarLabel: label, //() => <Text numberOfLines={1} ellipsizeMode={'tail'} style={tabBarStyles.tabBarLabel}>{ label }</Text>, //TODO: fix text width issue on narrow screens
             tabBarIcon: ({ tintColor, focused }) =>
                 <Image
                     source={focused ? focusedPath : unfocusedPath}
