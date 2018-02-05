@@ -19,8 +19,8 @@ interface FeedListItemState {
 }
 
 export class FeedListItem extends React.Component<FeedListItemProps, FeedListItemState> {
-    constructor(props: FeedListItemProps, context: any) {
-        super(props, context);
+    constructor(props: FeedListItemProps) {
+        super(props);
         this.state = {};
     }
 

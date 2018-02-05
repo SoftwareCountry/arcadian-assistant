@@ -54,8 +54,8 @@ function validateEncodedImage(data: string) {
 }
 
 export class Avatar extends Component<AvatarProps, AvatarState> {
-    constructor(props: AvatarProps, context: any) {
-        super(props, context);
+    constructor(props: AvatarProps) {
+        super(props);
         this.state = {};
     }
 
