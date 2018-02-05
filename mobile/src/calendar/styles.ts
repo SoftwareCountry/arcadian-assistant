@@ -69,9 +69,6 @@ export const styles = StyleSheet.create({
     daysCounterContentTitle: {
         fontSize: 11,
         color: daysCounterFontColor
-    },
-    daysCounterIndicator: {
-        flex: 1
     }
 });
 

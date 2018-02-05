@@ -44,14 +44,12 @@ class DaysCountersImpl extends Component<DaysCountersProps & DaysCountersDispatc
 
         const vacationCounter = allVacationDays
             ? <DaysCounter  textValue={allVacationDays.toString()}
-                            title={allVacationDays.title}
-                            showIndicator={false} />
+                            title={allVacationDays.title} />
             : <EmptyDaysCounter />;
 
         const daysoffCounter = hoursCredit
             ? <DaysCounter  textValue={hoursCredit.toString()}
-                            title={hoursCredit.title}
-                            indicatorColor={hoursCredit.isAdditionalWork ? calendarScreenColors.red : calendarScreenColors.blue} />
+                            title={hoursCredit.title} />
             : <EmptyDaysCounter />;
 
         return <View style={{ flex: 1 }} onLayout={this.onDaysCountersLayout}>
