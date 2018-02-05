@@ -11,7 +11,6 @@ import { Employee } from '../reducers/organization/employee.model';
 interface FeedListItemProps {
     message: Feed;
     employee: Employee;
-    id: string;
 }
 
 interface FeedListItemState {

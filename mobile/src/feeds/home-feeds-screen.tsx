@@ -13,22 +13,16 @@ import { screenStyles as styles } from './styles';
 
 const navBar = new TopNavBar('Feeds');
 
-interface FeedListItemInfo {
-    feed: Feed;
-    employee: Employee;
-    key: string;
-}
-
 interface FeedsScreenProps {
-    feeds: FeedListItemInfo[];
+    feeds: Feed[];
+    getEmplooyeeForFeed(feed: Feed): Employee;
 }
 
 const mapStateToProps = (state: AppState): FeedsScreenProps => ({
-    feeds: state.organization.feeds.map(feed => ({
-        feed: feed,
-        employee: state.organization.employees.employeesById.get(feed.employeeId),
-        key: feed.employeeId
-    }))
+    feeds: state.organization.feeds,
+    getEmplooyeeForFeed: (feed: Feed) => {
+        return state.organization.employees.employeesById.get(feed.employeeId);
+    }
 });
 
 class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps> {
@@ -38,16 +32,31 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps> {
         return (
             <FlatList
                 style={styles.view}
-                ItemSeparatorComponent={() => <View style={styles.separator}></View>}
+                keyExtractor={this.keyExtractor}
+                ItemSeparatorComponent={this.itemSeparator}
                 data={this.props.feeds}
                 renderItem={this.renderItem}
-                ListHeaderComponent={() => <Text style={styles.viewHeaderText}>News feed</Text>} />
+                ListHeaderComponent={this.headerComponent} />
         );
     }
 
-    private renderItem( itemInfo: ListRenderItemInfo<FeedListItemInfo> ) {
-        const {item} = itemInfo;
-        return <FeedListItem id={item.key} message={item.feed} employee={item.employee}/>;
+    private keyExtractor(item: Feed) {
+        return item ? item.messageId : '';
+    }
+
+    private itemSeparator() {
+        return <View style={styles.separator}></View>;
+    }
+
+    private headerComponent() {
+        return <Text style={styles.viewHeaderText}>News feed</Text>;
+    }
+
+    private renderItem = (itemInfo: ListRenderItemInfo<Feed>) => {
+        const { item } = itemInfo;
+        const employee: Employee = this.props.getEmplooyeeForFeed(item);
+
+        return <FeedListItem message={item} employee={employee} />;
     }
 }
 
