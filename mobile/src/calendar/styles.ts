@@ -51,7 +51,7 @@ export const styles = StyleSheet.create({
         backgroundColor: daysCounterPrimaryColor
     },
     daysCounter: {
-        backgroundColor: '#2FAFCC',
+        backgroundColor: daysCounterPrimaryColor,
         flexDirection: 'column',
         width: '50%',
         flex: 1
