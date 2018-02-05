@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ProgressBarAndroid, Animated, ViewStyle, StyleProp, RegisteredStyle, Button } from 'react-native';
-import { styles } from '../styles';
+import { View, Text } from 'react-native';
+import { daysCounterStyles } from '../styles';
 
 interface DaysCounterProps {
     textValue: string;
@@ -11,12 +11,12 @@ export class DaysCounter extends Component<DaysCounterProps> {
 
     public render() {
         return (
-            <View style={styles.daysCounter}>
-                <View style={styles.daysCounterContent}>
-                    <Text style={styles.daysCounterContentValue}>{this.props.textValue}</Text>
+            <View style={daysCounterStyles.container}>
+                <View style={daysCounterStyles.content}>
+                    <Text style={daysCounterStyles.contentValue}>{this.props.textValue}</Text>
                     {
                         this.props.title
-                            ? this.props.title.map((x, index) => <Text key={index} style={styles.daysCounterContentTitle}>{x}</Text>)
+                            ? this.props.title.map((x, index) => <Text key={index} style={daysCounterStyles.contentTitle}>{x}</Text>)
                             : null
                     }
                 </View>
@@ -25,4 +25,4 @@ export class DaysCounter extends Component<DaysCounterProps> {
     }
 }
 
-export const EmptyDaysCounter = () => (<View style={styles.daysCounter}></View>);
+export const EmptyDaysCounter = () => (<View style={daysCounterStyles.container}></View>);

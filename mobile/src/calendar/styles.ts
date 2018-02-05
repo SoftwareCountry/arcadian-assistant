@@ -4,12 +4,8 @@ const daysCounterFontColor = '#fff';
 const daysCounterTitleColor = '#18515E';
 const daysCounterPrimaryColor = '#2FAFCC';
 
-export const calendarScreenColors = {
-    green: '#27AE60',
-    blue: '#56CCF2',
-    red: '#EB5757',
-    yellow: '#F2C94C'
-};
+const triangleHeight = 50;
+const circleDiameter = 100;
 
 export const calendarScreenLayout = {
     calendar: {
@@ -38,35 +34,41 @@ export const agendaStyles = StyleSheet.create({
     }
 });
 
-const triangleHeight = 50;
-const circleDiameter = 100;
-
-export const styles = StyleSheet.create({
-    daysCounters: {
+export const daysCountersStyles = StyleSheet.create({
+    container: {
+        flex: 1
+    },
+    counters: {
         flex: 1,
         flexDirection: 'row'
-    },
-    daysCounterSeparator: {
+    }
+});
+
+export const daysCounterSeparatorStyles = StyleSheet.create({
+    container: {
         width: circleDiameter,
         backgroundColor: daysCounterPrimaryColor
-    },
-    daysCounter: {
+    }
+});
+
+export const daysCounterStyles = StyleSheet.create({
+    container: {
         backgroundColor: daysCounterPrimaryColor,
         flexDirection: 'column',
         width: '50%',
         flex: 1
     },
-    daysCounterContent: {
+    content: {
         marginTop: triangleHeight,
         flexDirection: 'column',
         alignItems: 'center',
         flex: 20
     },
-    daysCounterContentValue: {
+    contentValue: {
         fontSize: 25,
         color: daysCounterFontColor
     },
-    daysCounterContentTitle: {
+    contentTitle: {
         fontSize: 11,
         color: daysCounterFontColor
     }

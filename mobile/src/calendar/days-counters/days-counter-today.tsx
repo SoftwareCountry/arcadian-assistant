@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, Text, LayoutChangeEvent, ViewStyle, StyleSheet, PixelRatio } from 'react-native';
-import { styles, daysCounterTodayStyles } from '../styles';
+import { View, Text } from 'react-native';
+import { daysCounterTodayStyles } from '../styles';
 
 interface DaysCounterTodayProps {
     day: string;

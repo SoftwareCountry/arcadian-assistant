@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, LayoutChangeEvent, ViewStyle, StyleSheet } from 'react-native';
-import { styles, calendarScreenColors, daysCounterTodayStyles } from '../styles';
+import { daysCountersStyles } from '../styles';
 import { DaysCounter, EmptyDaysCounter } from './days-counter';
 import { DaysCounterSeparator } from './days-counter-separator';
 import { DaysCountersModel, TodayCounter } from '../../reducers/calendar/days-counters.model';
@@ -58,9 +58,10 @@ class DaysCountersImpl extends Component<DaysCountersProps & DaysCountersDispatc
                             title={hoursCredit.title} />
             : <EmptyDaysCounter />;
 
-        return <View style={{ flex: 1 }} onLayout={this.onDaysCountersLayout}>
+        return <View style={daysCountersStyles.container} onLayout={this.onDaysCountersLayout}>
                 <DaysCounterTriangle containerWidth={this.state.daysCountersWidth} />
-                <View style={styles.daysCounters}>
+
+                <View style={daysCountersStyles.counters}>
                     <DaysCounterToday {...today} />
                     { vacationCounter }
                     <DaysCounterSeparator />
