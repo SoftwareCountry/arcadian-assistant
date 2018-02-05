@@ -59,6 +59,7 @@ class DaysCountersImpl extends Component<DaysCountersProps & DaysCountersDispatc
                 <View style={styles.daysCounters}>
                     <DaysCounterToday />
                     { vacationCounter }
+                    <DaysCounterSeparator />
                     { daysoffCounter }
                 </View>
         </View>;

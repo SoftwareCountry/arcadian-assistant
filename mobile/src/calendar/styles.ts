@@ -39,6 +39,7 @@ export const agendaStyles = StyleSheet.create({
 });
 
 const triangleHeight = 50;
+const circleDiameter = 100;
 
 export const styles = StyleSheet.create({
     daysCounters: {
@@ -46,7 +47,8 @@ export const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     daysCounterSeparator: {
-        marginRight: 1
+        width: circleDiameter,
+        backgroundColor: daysCounterPrimaryColor
     },
     daysCounter: {
         backgroundColor: '#2FAFCC',
@@ -58,7 +60,7 @@ export const styles = StyleSheet.create({
         marginTop: triangleHeight,
         flexDirection: 'column',
         alignItems: 'center',
-        flex: 20,
+        flex: 20
     },
     daysCounterContentValue: {
         fontSize: 25,
@@ -77,9 +79,9 @@ const todayShapeZIndex = 2;
 
 export const daysCounterTodayStyles = StyleSheet.create({
     container: {
-        borderRadius: 100 / 2,
-        height: 100,
-        width: 100,
+        borderRadius: circleDiameter / 2,
+        height: circleDiameter,
+        width: circleDiameter,
         zIndex: todayShapeZIndex + 1,
         left: '50%',
         backgroundColor: '#fff',
