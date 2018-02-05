@@ -4,7 +4,7 @@ import { styles } from '../styles';
 
 interface DaysCounterProps {
     textValue: string;
-    title: string;
+    title: string[];
 }
 
 export class DaysCounter extends Component<DaysCounterProps> {
@@ -14,7 +14,11 @@ export class DaysCounter extends Component<DaysCounterProps> {
             <View style={styles.daysCounter}>
                 <View style={styles.daysCounterContent}>
                     <Text style={styles.daysCounterContentValue}>{this.props.textValue}</Text>
-                    <Text style={styles.daysCounterContentTitle}>{this.props.title}</Text>
+                    {
+                        this.props.title
+                            ? this.props.title.map((x, index) => <Text key={index} style={styles.daysCounterContentTitle}>{x}</Text>)
+                            : null
+                    }
                 </View>
             </View>
         );

@@ -19,9 +19,9 @@ describe('calendar action', () => {
                 expect(action.daysCounters.allVacationDays.toString()).toBe('28');
             });
 
-            it('should have title', () => {
+            it('should have title ["days of", "vacation left"]', () => {
                 const action = calculateDaysCounters(28, 0);
-                expect(action.daysCounters.allVacationDays.title).toBe('days of vacation left');
+                expect(action.daysCounters.allVacationDays.title).toEqual(['days', 'of vacation left']);
             });
         });
 
@@ -84,18 +84,18 @@ describe('calendar action', () => {
                 });
             });
 
-            it('should have title "dayoffs to return", if hours > 0', () => {
+            it('should have title ["dayoffs", "return"], if hours > 0', () => {
                 const hours = 4;
                 const action = calculateDaysCounters(0, hours);
 
-                expect(action.daysCounters.hoursCredit.title).toBe('dayoffs to return');
+                expect(action.daysCounters.hoursCredit.title).toEqual(['daysoff', 'return']);
             });
 
-            it('should have title "dayoffs to left", if hours < 0', () => {
+            it('should have title ["dayoffs", "available"], if hours < 0', () => {
                 const hours = -4;
                 const action = calculateDaysCounters(0, hours);
 
-                expect(action.daysCounters.hoursCredit.title).toBe('dayoffs to left');
+                expect(action.daysCounters.hoursCredit.title).toEqual(['daysoff', 'available']);
             });
         });
 

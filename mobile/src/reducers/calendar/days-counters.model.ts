@@ -3,13 +3,13 @@ import { ConvertHoursCreditToDays } from './convert-hours-credit-to-days';
 import moment from 'moment';
 
 interface DaysCounter {
-    title: string;
+    title: [string, string];
     days: number;
     toString(): string;
 }
 
 export class VacationDaysCounter implements DaysCounter  {
-    public readonly title = 'days of vacation left';
+    public readonly title: [string, string] = ['days', 'of vacation left'];
 
     constructor(public readonly days: number) { }
 
@@ -24,6 +24,7 @@ enum HoursCreditType {
 }
 
 export class HoursCreditCounter implements DaysCounter {
+
     constructor(
         public readonly hours: number,
         public readonly days: number,
@@ -42,13 +43,13 @@ export class HoursCreditCounter implements DaysCounter {
         return this.type === HoursCreditType.AdditionalWork;
     }
 
-    public get title(): string {
+    public get title(): [string, string] {
         const phrases = {
             [HoursCreditType.AdditionalWork]: 'return',
-            [HoursCreditType.DaysOff]: 'left'
+            [HoursCreditType.DaysOff]: 'available'
         };
 
-        return `dayoffs to ${phrases[this.type]}`;
+        return ['daysoff', phrases[this.type]];
     }
 
     private get type(): HoursCreditType {
