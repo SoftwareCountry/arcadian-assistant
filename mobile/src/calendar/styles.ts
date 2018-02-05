@@ -54,9 +54,6 @@ export const styles = StyleSheet.create({
         width: '50%',
         flex: 1
     },
-    daysCounterTriangel: {
-
-    },
     daysCounterContent: {
         marginTop: triangleHeight,
         flexDirection: 'column',
@@ -64,11 +61,11 @@ export const styles = StyleSheet.create({
         flex: 20,
     },
     daysCounterContentValue: {
-        fontSize: 18,
+        fontSize: 25,
         color: daysCounterFontColor
     },
     daysCounterContentTitle: {
-        fontSize: 12,
+        fontSize: 11,
         color: daysCounterFontColor
     },
     daysCounterIndicator: {
