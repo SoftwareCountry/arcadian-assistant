@@ -89,14 +89,6 @@ export const daysCounterTodayStyles = StyleSheet.create({
         borderWidth: 2,
         borderColor: daysCounterPrimaryColor,
     },
-    circle: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#fff',
-        color: daysCounterTitleColor,
-        borderWidth: 2,
-        borderColor: daysCounterPrimaryColor,
-    },
     circleCurrentDay: {
         fontSize: 40,
         color: daysCounterTitleColor,
