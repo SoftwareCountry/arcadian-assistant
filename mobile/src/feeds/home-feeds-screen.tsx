@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, Text, View, StyleSheet, ListRenderItemInfo } from 'react-native';
+import { FlatList, Text, View, StyleSheet, ListRenderItemInfo, RefreshControl } from 'react-native';
 import { TopNavBar } from '../topNavBar/top-nav-bar';
 
 import { Employee } from '../reducers/organization/employee.model';
@@ -19,13 +19,37 @@ interface FeedsScreenProps {
     employees: EmployeesStore;
 }
 
+interface FeedsScreenState {
+    employees?: Employee[];
+}
+
 const mapStateToProps = (state: AppState): FeedsScreenProps => ({
     feeds: state.feeds,
     employees: state.organization.employees
 });
 
-class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps> {
+class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps, FeedsScreenState> {
     public static navigationOptions = navBar.configurate();
+
+    constructor(props: FeedsScreenProps) {
+        super(props);
+        this.state = {};
+    }
+
+    public componentWillReceiveProps(nextProps: Readonly<FeedsScreenProps>) {
+        const { feeds } = nextProps;
+        const employees = feeds.map(f => nextProps.employees.employeesById.get(f.employeeId));
+
+        if (employees.length > 0) {
+            this.setState({
+                employees: employees
+            });
+        }
+    }
+
+    public shouldComponentUpdate() {
+        return true;
+    }
 
     public render() {
         return (
@@ -34,6 +58,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps> {
                 keyExtractor={this.keyExtractor}
                 ItemSeparatorComponent={this.itemSeparator}
                 data={this.props.feeds}
+                extraData={this.state.employees}
                 renderItem={this.renderItem}
                 ListHeaderComponent={this.headerComponent} />
         );

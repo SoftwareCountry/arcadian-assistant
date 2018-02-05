@@ -14,7 +14,7 @@ export const feedsReducer: Reducer<Feed[]> = (state = [], action: FeedsActions) 
     }
 };
 
-export interface FeedsState extends Array<Feed>{};
+export interface FeedsState extends Array<Feed> { }
 
 export const feedsEpics = combineEpics(
     loadFeedsEpic$ as any,
