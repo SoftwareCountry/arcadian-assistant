@@ -1,5 +1,6 @@
-import { calculateDaysCounters } from './calendar.action';
+import { calculateDaysCounters, calculateTodayCounter } from './calendar.action';
 import { ConvertHoursCreditToDays } from './convert-hours-credit-to-days';
+import moment from 'moment';
 
 describe('calendar action', () => {
     describe('calculate days counters', () => {
@@ -95,6 +96,19 @@ describe('calendar action', () => {
                 const action = calculateDaysCounters(0, hours);
 
                 expect(action.daysCounters.hoursCredit.title).toBe('dayoffs to left');
+            });
+        });
+
+        describe('today counter', () => {
+            it('should return today', () => {
+                const action = calculateTodayCounter();
+
+                const today = moment();
+                const day = today.format('D');
+                const month = today.format('MMMM');
+
+                expect(action.today.day).toBe(day);
+                expect(action.today.month).toBe(month);
             });
         });
     });
