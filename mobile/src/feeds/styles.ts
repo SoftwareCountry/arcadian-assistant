@@ -1,14 +1,16 @@
 import { StyleSheet } from 'react-native';
 
+const screenPadding = 19;
+
 export const screenStyles = StyleSheet.create({
     view: {
         flex: 1,
-        backgroundColor: '#FFF',
-        paddingLeft: 19,
-        paddingRight: 19
+        backgroundColor: '#FFF'
     },
     viewHeaderText: {
-        fontSize: 12
+        fontSize: 12,
+        paddingLeft: screenPadding,
+        paddingRight: screenPadding
     },
     separator: {
         height: 15
@@ -21,7 +23,9 @@ export const feedStyles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         paddingTop: 0,
-        paddingBottom: 5
+        paddingBottom: 5,
+        paddingLeft: screenPadding,
+        paddingRight: screenPadding
     },
     imgContainer: {
         marginTop: 5,
