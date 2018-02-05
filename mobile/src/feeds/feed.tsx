@@ -4,7 +4,7 @@ import { LayoutEvent } from 'react-navigation';
 import moment from 'moment';
 
 import { Avatar } from '../people/avatar';
-import { Feed } from '../reducers/organization/feed.model';
+import { Feed } from '../reducers/feeds/feed.model';
 import { feedStyles as styles } from './styles';
 import { Employee } from '../reducers/organization/employee.model';
 

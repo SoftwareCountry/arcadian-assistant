@@ -5,7 +5,8 @@ import { RootNavigator } from './tabbar/tab-navigator';
 import { AppState, storeFactory } from './reducers/app.reducer';
 import { connect, Provider, Dispatch } from 'react-redux';
 import { addNavigationHelpers, NavigationState, NavigationActions } from 'react-navigation';
-import { loadDepartments, loadFeeds} from './reducers/organization/organization.action';
+import { loadDepartments } from './reducers/organization/organization.action';
+import { loadFeeds } from './reducers/feeds/feeds.action';
 import { Employee } from './reducers/organization/employee.model';
 import { loadUser } from './reducers/user/user.action';
 

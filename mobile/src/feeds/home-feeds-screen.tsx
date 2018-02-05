@@ -3,7 +3,8 @@ import { FlatList, Text, View, StyleSheet, ListRenderItemInfo } from 'react-nati
 import { TopNavBar } from '../topNavBar/top-nav-bar';
 
 import { Employee } from '../reducers/organization/employee.model';
-import { Feed } from '../reducers/organization/feed.model';
+import { EmployeesStore } from '../reducers/organization/employees.reducer';
+import { Feed } from '../reducers/feeds/feed.model';
 import { connect } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 
@@ -15,14 +16,12 @@ const navBar = new TopNavBar('Feeds');
 
 interface FeedsScreenProps {
     feeds: Feed[];
-    getEmplooyeeForFeed(feed: Feed): Employee;
+    employees: EmployeesStore;
 }
 
 const mapStateToProps = (state: AppState): FeedsScreenProps => ({
-    feeds: state.organization.feeds,
-    getEmplooyeeForFeed: (feed: Feed) => {
-        return state.organization.employees.employeesById.get(feed.employeeId);
-    }
+    feeds: state.feeds,
+    employees: state.organization.employees
 });
 
 class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps> {
@@ -54,7 +53,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps> {
 
     private renderItem = (itemInfo: ListRenderItemInfo<Feed>) => {
         const { item } = itemInfo;
-        const employee: Employee = this.props.getEmplooyeeForFeed(item);
+        const employee: Employee = this.props.employees.employeesById.get(item.employeeId);
 
         return <FeedListItem message={item} employee={employee} />;
     }
