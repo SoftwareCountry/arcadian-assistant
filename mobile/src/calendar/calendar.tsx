@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
-import { calendarScreenLayout, todayTitleColor, calendarStyles } from './styles';
+import { calendarScreenLayout, calendarStyles } from './styles';
 
 export class Calendar extends Component {
     public render() {

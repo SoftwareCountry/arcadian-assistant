@@ -1,7 +1,7 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ViewStyle } from 'react-native';
 
-const daysCounterFontColor = '#18515E';
-export const todayTitleColor = '#18515E';
+const daysCounterFontColor = '#fff';
+const daysCounterTitleColor = '#18515E';
 
 export const calendarScreenColors = {
     green: '#27AE60',
@@ -26,7 +26,7 @@ export const calendarStyles = StyleSheet.create({
     },
     containerTitle: {
         fontSize: 15,
-        color: todayTitleColor
+        color: daysCounterTitleColor
     }
 });
 
@@ -40,24 +40,31 @@ export const agendaStyles = StyleSheet.create({
 export const styles = StyleSheet.create({
     daysCounters: {
         flex: 1,
-        flexDirection: 'row',
-        padding: 10
+        flexDirection: 'row'
     },
     daysCounterSeparator: {
         marginRight: 1
     },
     daysCounter: {
-        backgroundColor: 'rgba(47, 175, 204, 0.33)',
+        backgroundColor: '#2FAFCC',
         flexDirection: 'column',
-        flexGrow: 1
+        width: '50%',
+        flex: 1,
+        // TODO: temp
+        borderWidth: 2,
+        borderColor: '#000',
+    },
+    daysCounterTriangel: {
+
     },
     daysCounterContent: {
+        marginTop: 30, // TODO: temp
         flexDirection: 'column',
         alignItems: 'center',
-        flex: 20
+        flex: 20,
     },
     daysCounterContentValue: {
-        fontSize: 42,
+        fontSize: 18,
         color: daysCounterFontColor
     },
     daysCounterContentTitle: {
@@ -66,5 +73,43 @@ export const styles = StyleSheet.create({
     },
     daysCounterIndicator: {
         flex: 1
+    }
+});
+
+const todayShapeZIndex = 2;
+
+export const daysCounterTodayStyles = StyleSheet.create({
+    container: {
+        borderRadius: 100 / 2,
+        height: 100,
+        width: 100,
+        zIndex: todayShapeZIndex,
+        left: '50%',
+        backgroundColor: '#fff',
+        position: 'absolute',
+        transform: [{ translateX: -50 }],
+        alignItems: 'center',
+        justifyContent: 'center',
+        // TODO: temp
+        borderWidth: 1,
+        borderColor: '#4ea',
+    },
+    circle: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#fff',
+        color: daysCounterTitleColor,
+        borderWidth: 2,
+        borderColor: '#56CCF2',
+    },
+    currentDay: {
+        fontSize: 40,
+        color: daysCounterTitleColor,
+        marginTop: -5
+    },
+    currentMonth: {
+        fontSize: 15,
+        color: daysCounterTitleColor,
+        marginTop: -8
     }
 });

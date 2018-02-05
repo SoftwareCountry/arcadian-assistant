@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
+import { View, Text, LayoutChangeEvent, ViewStyle, StyleSheet } from 'react-native';
 import { styles, calendarScreenColors } from '../styles';
 import { DaysCounter, EmptyDaysCounter } from './days-counter';
 import { DaysCounterSeparator } from './days-counter-separator';
@@ -8,6 +8,7 @@ import { AppState } from '../../reducers/app.reducer';
 import { connect, Dispatch } from 'react-redux';
 import { Employee } from '../../reducers/organization/employee.model';
 import { calculateDaysCounters, CalendarActions } from '../../reducers/calendar/calendar.action';
+import { DaysCounterToday } from './days-counter-today';
 
 interface DaysCountersProps {
     employee: Employee;
@@ -18,7 +19,7 @@ interface DaysCountersDispatchProps {
     calculateDaysCounters: (vacationDaysLeft: number, hoursCredit: number) => void;
 }
 
-class DaysCountersImpl extends Component<DaysCountersProps & DaysCountersDispatchProps, {}> {
+class DaysCountersImpl extends Component<DaysCountersProps & DaysCountersDispatchProps> {
 
     public componentWillReceiveProps(nextProps: Readonly<DaysCountersProps>, nextContext: any) {
         const { employee } = nextProps;
@@ -43,10 +44,20 @@ class DaysCountersImpl extends Component<DaysCountersProps & DaysCountersDispatc
             : <EmptyDaysCounter />;
 
         return <View style={styles.daysCounters}>
-            { vacationCounter }
-            <DaysCounterSeparator />
-            { daysoffCounter }
-        </View>;
+                {/* <View style={{
+                    borderRadius: 100 / 2,
+                    height: 100,
+                    width: 100,
+                    zIndex: 10,
+                    left: '50%',
+                    backgroundColor: '#fff',
+                    position: 'absolute',
+                    transform: [{ translateX: -50 }]
+                }}></View> */}
+                <DaysCounterToday />
+                { vacationCounter }
+                { daysoffCounter }
+            </View>;
     }
 }
 
