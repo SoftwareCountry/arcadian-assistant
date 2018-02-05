@@ -52,16 +52,13 @@ export const styles = StyleSheet.create({
         backgroundColor: '#2FAFCC',
         flexDirection: 'column',
         width: '50%',
-        flex: 1,
-        // TODO: temp
-        borderWidth: 2,
-        borderColor: '#000',
+        flex: 1
     },
     daysCounterTriangel: {
 
     },
     daysCounterContent: {
-        marginTop: triangleHeight, // TODO: temp
+        marginTop: triangleHeight,
         flexDirection: 'column',
         alignItems: 'center',
         flex: 20,
