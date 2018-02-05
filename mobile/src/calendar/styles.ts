@@ -2,6 +2,7 @@ import { StyleSheet, ViewStyle } from 'react-native';
 
 const daysCounterFontColor = '#fff';
 const daysCounterTitleColor = '#18515E';
+const daysCounterPrimaryColor = '#2FAFCC';
 
 export const calendarScreenColors = {
     green: '#27AE60',
@@ -92,9 +93,8 @@ export const daysCounterTodayStyles = StyleSheet.create({
         transform: [{ translateX: -50 }],
         alignItems: 'center',
         justifyContent: 'center',
-        // TODO: temp
-        borderWidth: 1,
-        borderColor: '#4ea',
+        borderWidth: 2,
+        borderColor: daysCounterPrimaryColor,
     },
     circle: {
         alignItems: 'center',
@@ -102,7 +102,7 @@ export const daysCounterTodayStyles = StyleSheet.create({
         backgroundColor: '#fff',
         color: daysCounterTitleColor,
         borderWidth: 2,
-        borderColor: '#56CCF2',
+        borderColor: daysCounterPrimaryColor,
     },
     circleCurrentDay: {
         fontSize: 40,
