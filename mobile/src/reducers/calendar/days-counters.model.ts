@@ -1,5 +1,6 @@
 import { dataMember, required } from 'santee-dcts';
 import { ConvertHoursCreditToDays } from './convert-hours-credit-to-days';
+import moment from 'moment';
 
 interface DaysCounter {
     title: string;
@@ -54,6 +55,18 @@ export class HoursCreditCounter implements DaysCounter {
         return this.hours > 0
             ? HoursCreditType.AdditionalWork
             : HoursCreditType.DaysOff;
+    }
+}
+
+export class TodayCounter {
+    public readonly day: string;
+    public readonly month: string;
+
+    constructor() {
+        const currentDate = moment();
+
+        this.day = currentDate.format('D');
+        this.month = currentDate.format('MMMM');
     }
 }
 
