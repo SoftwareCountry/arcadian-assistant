@@ -13,7 +13,6 @@ export interface LoadFeedsFinished extends Action {
 }
 
 export const loadFeedsFinished = (feeds: Feed[]): LoadFeedsFinished => {
-    console.log(feeds);
     if (feeds && feeds.length === 1) {
         //TODO: remove mock data when there will be multiple messages
         const feed = feeds[0];
