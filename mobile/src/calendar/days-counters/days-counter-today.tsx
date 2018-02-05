@@ -6,8 +6,8 @@ export  class DaysCounterToday extends Component {
     public render() {
         return (
             <View style={daysCounterTodayStyles.container}>
-                <Text style={daysCounterTodayStyles.currentDay}>13</Text>
-                <Text style={daysCounterTodayStyles.currentMonth}>February</Text>
+                <Text style={daysCounterTodayStyles.circleCurrentDay}>13</Text>
+                <Text style={daysCounterTodayStyles.circleCurrentMonth}>February</Text>
             </View>
         );
     }

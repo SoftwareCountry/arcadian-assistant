@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, LayoutChangeEvent, ViewStyle, StyleSheet } from 'react-native';
-import { styles, calendarScreenColors } from '../styles';
+import { styles, calendarScreenColors, daysCounterTodayStyles } from '../styles';
 import { DaysCounter, EmptyDaysCounter } from './days-counter';
 import { DaysCounterSeparator } from './days-counter-separator';
 import { DaysCountersModel } from '../../reducers/calendar/days-counters.model';
@@ -9,6 +9,7 @@ import { connect, Dispatch } from 'react-redux';
 import { Employee } from '../../reducers/organization/employee.model';
 import { calculateDaysCounters, CalendarActions } from '../../reducers/calendar/calendar.action';
 import { DaysCounterToday } from './days-counter-today';
+import { DaysCounterTriangle } from './days-counter-triangle';
 
 interface DaysCountersProps {
     employee: Employee;
@@ -19,7 +20,17 @@ interface DaysCountersDispatchProps {
     calculateDaysCounters: (vacationDaysLeft: number, hoursCredit: number) => void;
 }
 
-class DaysCountersImpl extends Component<DaysCountersProps & DaysCountersDispatchProps> {
+interface DaysCounterState {
+    daysCountersWidth: number;
+}
+
+class DaysCountersImpl extends Component<DaysCountersProps & DaysCountersDispatchProps, DaysCounterState> {
+    constructor(props: DaysCountersProps & DaysCountersDispatchProps) {
+        super(props);
+        this.state = {
+            daysCountersWidth: 0
+        };
+    }
 
     public componentWillReceiveProps(nextProps: Readonly<DaysCountersProps>, nextContext: any) {
         const { employee } = nextProps;
@@ -43,21 +54,20 @@ class DaysCountersImpl extends Component<DaysCountersProps & DaysCountersDispatc
                             indicatorColor={hoursCredit.isAdditionalWork ? calendarScreenColors.red : calendarScreenColors.blue} />
             : <EmptyDaysCounter />;
 
-        return <View style={styles.daysCounters}>
-                {/* <View style={{
-                    borderRadius: 100 / 2,
-                    height: 100,
-                    width: 100,
-                    zIndex: 10,
-                    left: '50%',
-                    backgroundColor: '#fff',
-                    position: 'absolute',
-                    transform: [{ translateX: -50 }]
-                }}></View> */}
-                <DaysCounterToday />
-                { vacationCounter }
-                { daysoffCounter }
-            </View>;
+        return <View style={{ flex: 1 }} onLayout={this.onDaysCountersLayout}>
+                <DaysCounterTriangle containerWidth={this.state.daysCountersWidth} />
+                <View style={styles.daysCounters}>
+                    <DaysCounterToday />
+                    { vacationCounter }
+                    { daysoffCounter }
+                </View>
+        </View>;
+    }
+
+    private onDaysCountersLayout = (e: LayoutChangeEvent) => {
+        this.setState({
+            daysCountersWidth: e.nativeEvent.layout.width
+        });
     }
 }
 

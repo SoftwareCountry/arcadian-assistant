@@ -33,9 +33,11 @@ export const calendarStyles = StyleSheet.create({
 export const agendaStyles = StyleSheet.create({
     container: {
         flex: calendarScreenLayout.calendar.flex,
-        alignItems: 'flex-start'
+        alignSelf: 'stretch'
     }
 });
+
+const triangleHeight = 50;
 
 export const styles = StyleSheet.create({
     daysCounters: {
@@ -58,7 +60,7 @@ export const styles = StyleSheet.create({
 
     },
     daysCounterContent: {
-        marginTop: 30, // TODO: temp
+        marginTop: triangleHeight, // TODO: temp
         flexDirection: 'column',
         alignItems: 'center',
         flex: 20,
@@ -83,7 +85,7 @@ export const daysCounterTodayStyles = StyleSheet.create({
         borderRadius: 100 / 2,
         height: 100,
         width: 100,
-        zIndex: todayShapeZIndex,
+        zIndex: todayShapeZIndex + 1,
         left: '50%',
         backgroundColor: '#fff',
         position: 'absolute',
@@ -102,14 +104,29 @@ export const daysCounterTodayStyles = StyleSheet.create({
         borderWidth: 2,
         borderColor: '#56CCF2',
     },
-    currentDay: {
+    circleCurrentDay: {
         fontSize: 40,
         color: daysCounterTitleColor,
         marginTop: -5
     },
-    currentMonth: {
+    circleCurrentMonth: {
         fontSize: 15,
         color: daysCounterTitleColor,
         marginTop: -8
+    },
+    triangle: {
+        backgroundColor: 'transparent',
+        width: 0,
+        height: 0,
+        zIndex: todayShapeZIndex,
+        borderBottomWidth: triangleHeight,
+        borderStyle: 'solid',
+        borderLeftColor: 'transparent',
+        borderRightColor: 'transparent',
+        borderBottomColor: '#fff',
+        position: 'absolute',
+        transform: [
+            { rotate: '180deg' }
+        ]
     }
 });
