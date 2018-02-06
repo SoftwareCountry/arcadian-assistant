@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { defaultAvatar } from './avatar-default';
-import { View, Image, StyleSheet, ViewStyle, ImageStyle } from 'react-native';
+import { View, Image, StyleSheet, ViewStyle, ImageStyle, LayoutChangeEvent } from 'react-native';
 
 const styles = StyleSheet.create({
     container: {
@@ -59,7 +59,7 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
         this.state = {};
     }
 
-    public onLayout = (e: any) => {
+    public onLayout = (e: LayoutChangeEvent) => {
         let size = Math.min(e.nativeEvent.layout.width, e.nativeEvent.layout.height);
         this.setState({
             size: size,
