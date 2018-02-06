@@ -74,14 +74,14 @@ export const daysCounterStyles = StyleSheet.create({
     }
 });
 
-const selectedDayShapeZIndex = 2;
+const daysCounterShapeZIndex = 2;
 
 export const daysCounterSelectedDayStyles = StyleSheet.create({
     container: {
         borderRadius: circleDiameter / 2,
         height: circleDiameter,
         width: circleDiameter,
-        zIndex: selectedDayShapeZIndex + 1,
+        zIndex: daysCounterShapeZIndex + 1,
         left: '50%',
         backgroundColor: '#fff',
         position: 'absolute',
@@ -100,12 +100,15 @@ export const daysCounterSelectedDayStyles = StyleSheet.create({
         fontSize: 15,
         color: daysCounterTitleColor,
         marginTop: -8
-    },
-    triangle: {
+    }
+});
+
+export const daysCounterTriangle = StyleSheet.create({
+    container: {
         backgroundColor: 'transparent',
         width: 0,
         height: 0,
-        zIndex: selectedDayShapeZIndex,
+        zIndex: daysCounterShapeZIndex,
         borderBottomWidth: triangleHeight,
         borderStyle: 'solid',
         borderLeftColor: 'transparent',

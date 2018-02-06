@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { daysCounterSelectedDayStyles } from '../styles';
+import { daysCounterTriangle } from '../styles';
 
 interface DaysCounterTriangleProps {
     containerWidth: number;
@@ -10,7 +10,7 @@ export class DaysCounterTriangle extends Component<DaysCounterTriangleProps> {
     public render() {
         const borderWidth = this.props.containerWidth / 2;
         const rectangleStyles = StyleSheet.flatten([
-            daysCounterSelectedDayStyles.triangle,
+            daysCounterTriangle.container,
             {
                 borderLeftWidth: borderWidth,
                 borderRightWidth: borderWidth,
