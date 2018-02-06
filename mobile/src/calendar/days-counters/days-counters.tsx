@@ -60,9 +60,8 @@ class DaysCountersImpl extends Component<DaysCountersProps & DaysCountersDispatc
 
         return <View style={daysCountersStyles.container} onLayout={this.onDaysCountersLayout}>
                 <DaysCounterTriangle containerWidth={this.state.daysCountersWidth} />
-
+                <DaysCounterToday {...today} />
                 <View style={daysCountersStyles.counters}>
-                    <DaysCounterToday {...today} />
                     { vacationCounter }
                     <DaysCounterSeparator />
                     { daysoffCounter }
