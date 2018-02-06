@@ -1,5 +1,5 @@
 import { Action } from 'redux';
-import { DaysCountersModel, VacationDaysCounter, HoursCreditCounter, TodayCounter } from './days-counters.model';
+import { DaysCountersModel, VacationDaysCounter, HoursCreditCounter } from './days-counters.model';
 import { ConvertHoursCreditToDays } from './convert-hours-credit-to-days';
 import { Employee } from '../organization/employee.model';
 import moment from 'moment';
@@ -26,18 +26,4 @@ export const calculateDaysCounters = (vacationDaysLeft: number, hoursCredit: num
     };
 };
 
-export interface CalculateTodayCounter {
-    type: 'CALCULATE-TODAY-COUNTER';
-    today: TodayCounter;
-}
-
-export const calculateTodayCounter = (): CalculateTodayCounter => {
-    const today = new TodayCounter();
-
-    return {
-        type: 'CALCULATE-TODAY-COUNTER',
-        today: today
-    };
-};
-
-export type CalendarActions = CalculateDaysCounters | CalculateTodayCounter;
+export type CalendarActions = CalculateDaysCounters;

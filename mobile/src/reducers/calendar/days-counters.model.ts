@@ -59,18 +59,6 @@ export class HoursCreditCounter implements DaysCounter {
     }
 }
 
-export class TodayCounter {
-    public readonly day: string;
-    public readonly month: string;
-
-    constructor() {
-        const currentDate = moment();
-
-        this.day = currentDate.format('D');
-        this.month = currentDate.format('MMMM');
-    }
-}
-
 export class DaysCountersModel {
     public allVacationDays: VacationDaysCounter;
     public hoursCredit: HoursCreditCounter;

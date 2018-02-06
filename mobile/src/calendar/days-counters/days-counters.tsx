@@ -3,23 +3,22 @@ import { View, Text, LayoutChangeEvent, ViewStyle, StyleSheet } from 'react-nati
 import { daysCountersStyles } from '../styles';
 import { DaysCounter, EmptyDaysCounter } from './days-counter';
 import { DaysCounterSeparator } from './days-counter-separator';
-import { DaysCountersModel, TodayCounter } from '../../reducers/calendar/days-counters.model';
+import { DaysCountersModel } from '../../reducers/calendar/days-counters.model';
 import { AppState } from '../../reducers/app.reducer';
 import { connect, Dispatch } from 'react-redux';
 import { Employee } from '../../reducers/organization/employee.model';
-import { calculateDaysCounters, CalendarActions, calculateTodayCounter } from '../../reducers/calendar/calendar.action';
+import { calculateDaysCounters, CalendarActions } from '../../reducers/calendar/calendar.action';
 import { DaysCounterToday } from './days-counter-today';
 import { DaysCounterTriangle } from './days-counter-triangle';
+import moment from 'moment';
 
 interface DaysCountersProps {
     employee: Employee;
     daysCounters: DaysCountersModel;
-    today: TodayCounter;
 }
 
 interface DaysCountersDispatchProps {
     calculateDaysCounters: (vacationDaysLeft: number, hoursCredit: number) => void;
-    calculateTodayCounter: () => void;
 }
 
 interface DaysCounterState {
@@ -34,10 +33,6 @@ class DaysCountersImpl extends Component<DaysCountersProps & DaysCountersDispatc
         };
     }
 
-    public componentDidMount() {
-        this.props.calculateTodayCounter();
-    }
-
     public componentWillReceiveProps(nextProps: Readonly<DaysCountersProps>, nextContext: any) {
         const { employee } = nextProps;
         if (this.props.employee !== employee) {
@@ -46,7 +41,7 @@ class DaysCountersImpl extends Component<DaysCountersProps & DaysCountersDispatc
     }
 
     public render() {
-        const { daysCounters: { allVacationDays, hoursCredit }, today } = this.props;
+        const { daysCounters: { allVacationDays, hoursCredit } } = this.props;
 
         const vacationCounter = allVacationDays
             ? <DaysCounter  textValue={allVacationDays.toString()}
@@ -58,9 +53,13 @@ class DaysCountersImpl extends Component<DaysCountersProps & DaysCountersDispatc
                             title={hoursCredit.title} />
             : <EmptyDaysCounter />;
 
+        // TODO: temp
+        const currentDate = moment();
+        const date = { day: currentDate.format('D'), month: currentDate.format('MMMM') };
+
         return <View style={daysCountersStyles.container} onLayout={this.onDaysCountersLayout}>
                 <DaysCounterTriangle containerWidth={this.state.daysCountersWidth} />
-                <DaysCounterToday {...today} />
+                <DaysCounterToday {...date} />
                 <View style={daysCountersStyles.counters}>
                     { vacationCounter }
                     <DaysCounterSeparator />
@@ -78,13 +77,11 @@ class DaysCountersImpl extends Component<DaysCountersProps & DaysCountersDispatc
 
 const mapStateToProps = (state: AppState): DaysCountersProps => ({
     employee: state.userInfo.employee,
-    daysCounters: state.calendar.daysCounters,
-    today: state.calendar.daysCounters.today
+    daysCounters: state.calendar.daysCounters
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>): DaysCountersDispatchProps => ({
-    calculateDaysCounters: (vacationDaysLeft: number, hoursCredit: number) => dispatch(calculateDaysCounters(vacationDaysLeft, hoursCredit)),
-    calculateTodayCounter: () => dispatch(calculateTodayCounter())
+    calculateDaysCounters: (vacationDaysLeft: number, hoursCredit: number) => dispatch(calculateDaysCounters(vacationDaysLeft, hoursCredit))
 });
 
 export const DaysCounters = connect(mapStateToProps, mapDispatchToProps)(DaysCountersImpl);
