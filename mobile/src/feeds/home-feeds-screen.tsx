@@ -19,37 +19,13 @@ interface FeedsScreenProps {
     employees: EmployeesStore;
 }
 
-interface FeedsScreenState {
-    employees?: Employee[];
-}
-
 const mapStateToProps = (state: AppState): FeedsScreenProps => ({
     feeds: state.feeds,
     employees: state.organization.employees
 });
 
-class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps, FeedsScreenState> {
+class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps> {
     public static navigationOptions = navBar.configurate();
-
-    constructor(props: FeedsScreenProps) {
-        super(props);
-        this.state = {};
-    }
-
-    public componentWillReceiveProps(nextProps: Readonly<FeedsScreenProps>) {
-        const { feeds } = nextProps;
-        const employees = feeds.map(f => nextProps.employees.employeesById.get(f.employeeId));
-
-        if (employees.length > 0) {
-            this.setState({
-                employees: employees
-            });
-        }
-    }
-
-    public shouldComponentUpdate() {
-        return true;
-    }
 
     public render() {
         return (
@@ -58,7 +34,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps, FeedsScreenS
                 keyExtractor={this.keyExtractor}
                 ItemSeparatorComponent={this.itemSeparator}
                 data={this.props.feeds}
-                extraData={this.state.employees}
+                extraData={this.props.employees}
                 renderItem={this.renderItem}
                 ListHeaderComponent={this.headerComponent} />
         );
