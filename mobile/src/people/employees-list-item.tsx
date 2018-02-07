@@ -11,43 +11,31 @@ interface EmployeesListItemProps {
 
 const styles = StyleSheet.create({
     layout: {
+        height: 36,
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'center',
-        paddingTop: 0,
-        paddingBottom: 5
     },
     imgContainer: {
         marginTop: 5,
-        flex: 2
+        marginLeft: 28,
+        flex: 1
     },
     img: {
         flex: 1
     },
     info: {
         flex: 6,
-        flexDirection: 'column',
-        alignSelf: 'flex-start',
-        paddingLeft: 13
+        marginRight: 28,
+        justifyContent: 'center'
     },
-    title: {
-        fontSize: 19,
-        textAlign: 'left',
-        fontWeight: '400',
-        letterSpacing: 2,
+    baseText: {
+        fontFamily: 'Helvetica-Light',
+        fontSize: 12,
+        textAlign: 'left'
     },
-    text: {
-        fontSize: 15,
-        textAlign: 'left',
-        paddingTop: 2,
-        paddingBottom: 2
-    },
-    tags: {
-        color: '#2FAFCC',
-        fontSize: 13
-    },
-    date: {
-        fontSize: 12
+    name: {
+        fontWeight: 'bold'
     }
 });
 
@@ -68,11 +56,12 @@ export class EmployeesListItem extends React.Component<EmployeesListItemProps, E
 
     public render() {
         const imgStyle = StyleSheet.flatten([{
-            width: this.state.imgContainerSize,
-            height: this.state.imgContainerSize
+            width: 25,
+            height: 25
         }]);
 
-        const employeeName = this.props.employee ? this.props.employee.name : 'Unknown';
+        const employeeName = this.props.employee ? this.props.employee.name.replace(',', '') : 'Unknown';
+        const employeePosition = this.props.employee ? this.props.employee.position : 'Unknown';
         const photo = this.props.employee ? this.props.employee.photo : null;
         const mimeType = photo ? photo.mimeType : null;
         const base64 = photo ? photo.base64 : null;
@@ -84,7 +73,7 @@ export class EmployeesListItem extends React.Component<EmployeesListItemProps, E
                         <Avatar mimeType={mimeType} photoBase64={base64} style={imgStyle}/>
                     </View>
                     <View style={styles.info}>
-                        <Text style={styles.title}>{employeeName}</Text>
+                        <Text style={styles.baseText}><Text style={styles.name}>{employeeName}</Text><Text>, {employeePosition}</Text></Text>
                     </View>
                 </View>
             </TouchableHighlight>

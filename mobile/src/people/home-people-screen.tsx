@@ -25,7 +25,6 @@ class HomePeopleScreenImpl extends React.Component<PeopleScreenProps> {
         return (
             <View style={{ height: 500, flex: 1 }}>
             <TopTabBarNavigator />
-            <Text>PeopleScreen 2. There are { this.props.departments.length} departments</Text>
             </View>
         );
     }
