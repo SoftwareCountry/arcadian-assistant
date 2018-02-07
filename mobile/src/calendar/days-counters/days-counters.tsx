@@ -43,7 +43,8 @@ class DaysCountersImpl extends Component<DaysCountersProps, DaysCounterState> {
         const currentDate = moment();
         const date = { day: currentDate.format('D'), month: currentDate.format('MMMM') };
 
-        return <View style={daysCountersStyles.container} onLayout={this.onDaysCountersLayout}>
+        return (
+            <View style={daysCountersStyles.container} onLayout={this.onDaysCountersLayout}>
                 <Triangle containerWidth={this.state.daysCountersWidth} />
                 <SelectedDay {...date} />
                 <View style={daysCountersStyles.counters}>
@@ -51,7 +52,8 @@ class DaysCountersImpl extends Component<DaysCountersProps, DaysCounterState> {
                     <DaysCounterSeparator />
                     { daysoffCounter }
                 </View>
-        </View>;
+            </View>
+        );
     }
 
     private onDaysCountersLayout = (e: LayoutChangeEvent) => {
