@@ -13,6 +13,7 @@ import 'rxjs/Rx';
 import { OrganizationState, organizationReducer, organizationEpics } from './organization/organization.reducer';
 import { UserInfoState, userInfoReducer } from './user/user-info.reducer';
 import { userEpics } from './user/user.reducer';
+import { FeedsState, feedsReducer, feedsEpics } from './feeds/feeds.reducer';
 import { CalendarState, calendarReducer } from './calendar/calendar.reducer';
 
 export interface AppState {
@@ -20,16 +21,18 @@ export interface AppState {
     organization: OrganizationState;
     nav: NavigationState;
     userInfo: UserInfoState;
+    feeds: FeedsState;
     calendar: CalendarState;
 }
 
-const rootEpic = combineEpics(helpdeskEpics as any, organizationEpics as any, errorsEpics as any, userEpics as any);
+const rootEpic = combineEpics(helpdeskEpics as any, organizationEpics as any, errorsEpics as any, userEpics as any, feedsEpics as any);
 
 const reducers = combineReducers<AppState>({
     helpdesk: helpdeskReducer,
     organization: organizationReducer,
     nav: navigationReducer,
     userInfo: userInfoReducer,
+    feeds: feedsReducer,
     calendar: calendarReducer
 });
 
