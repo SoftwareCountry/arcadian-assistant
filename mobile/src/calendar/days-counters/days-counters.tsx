@@ -39,7 +39,7 @@ class DaysCountersImpl extends Component<DaysCountersProps, DaysCounterState> {
                             title={hoursCredit.title} />
             : <EmptyDaysCounter />;
 
-        // TODO: temp
+        // TODO: temp. Use the selected day from calendar
         const currentDate = moment();
         const date = { day: currentDate.format('D'), month: currentDate.format('MMMM') };
 
