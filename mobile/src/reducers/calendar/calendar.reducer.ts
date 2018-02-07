@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
-import { combineEpics, ActionsObservable } from 'redux-observable';
-import { DaysCountersModel, VacationDaysCounter, HoursCreditCounter } from './days-counters.model';
+import { VacationDaysCounter, HoursCreditCounter } from './days-counters.model';
 import { Reducer } from 'redux';
-import { CalendarActions } from './calendar.action';
+import { UserActions } from '../user/user.action';
+import { ConvertHoursCreditToDays } from './convert-hours-credit-to-days';
 
 interface DaysCountersState {
     allVacationDays: VacationDaysCounter;
@@ -14,12 +14,20 @@ const initState: DaysCountersState = {
     hoursCredit: null
 };
 
-export const daysCountersReducer: Reducer<DaysCountersState> = (state = initState, action: CalendarActions) => {
+export const daysCountersReducer: Reducer<DaysCountersState> = (state = initState, action: UserActions) => {
     switch (action.type) {
-        case 'CALCULATE-DAYS-COUNTERS':
+        case 'LOAD-USER-EMPLOYEE-FINISHED':
+
+            const allVacationDaysCounter = new VacationDaysCounter(action.employee.vacationDaysLeft);
+
+            const daysConverter = new ConvertHoursCreditToDays();
+            const calculatedDays = daysConverter.convert(action.employee.hoursCredit);
+
+            const hoursCreditCounter = new HoursCreditCounter(action.employee.hoursCredit, calculatedDays.days, calculatedDays.rest);
+
             return {
-                allVacationDays: action.daysCounters.allVacationDays,
-                hoursCredit: action.daysCounters.hoursCredit,
+                allVacationDays: allVacationDaysCounter,
+                hoursCredit: hoursCreditCounter,
             };
         default:
             return state;
