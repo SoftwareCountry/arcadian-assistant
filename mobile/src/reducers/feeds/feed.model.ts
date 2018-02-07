@@ -1,4 +1,10 @@
 import {dataMember, required} from 'santee-dcts';
+import { DataMemberDecoratorParams } from 'santee-dcts/src/dataMemberDecorator';
+import moment from 'moment';
+
+const datePostedDecoratorParams: DataMemberDecoratorParams  = {
+    customDeserializer: (value: string) => moment(value)
+};
 
 export class Feed {
 
@@ -18,7 +24,7 @@ export class Feed {
     @required()
     public text: string;
 
-    @dataMember()
+    @dataMember(datePostedDecoratorParams)
     @required()
-    public datePosted: string;
+    public datePosted: moment.Moment;
 }

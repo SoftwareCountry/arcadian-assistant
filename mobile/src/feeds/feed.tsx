@@ -1,7 +1,6 @@
 import React from 'react';
 import { TouchableHighlight, StyleSheet, Platform, Text, View, Image } from 'react-native';
 import { LayoutEvent } from 'react-navigation';
-import moment from 'moment';
 
 import { Avatar } from '../people/avatar';
 import { Feed } from '../reducers/feeds/feed.model';
@@ -30,7 +29,7 @@ export class FeedListItem extends React.Component<FeedListItemProps, FeedListIte
 
         if (datePosted !== nextDate || !this.state.formattedDate) {
             this.setState({
-                formattedDate: moment(nextDate).format('MMMM D, YYYY')
+                formattedDate: nextDate.format('MMMM D, YYYY')
             });
         }
     }
