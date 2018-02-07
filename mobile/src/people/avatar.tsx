@@ -3,20 +3,21 @@ import { defaultAvatar } from './avatar-default';
 import { View, Image, StyleSheet, ViewStyle, ImageStyle, LayoutChangeEvent } from 'react-native';
 
 const styles = StyleSheet.create({
-    outerFrame: {
+    container: {
+        flex: 1,
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'center'
+    },
+    outerFrame: {
         // Following attributes are default
         borderColor: '#2FAFCC',
-        borderWidth: 2,
-        height: 200,
-        width: 200,
-        borderRadius: 200 * 0.5,
+        borderWidth: 2
     },
     image: {
         // Following attributes are default
         borderColor: '#fff',
-        borderWidth: 2
+        borderWidth: 2,
+        flex: 1
     },
     default: {
         height: 200,
@@ -32,8 +33,8 @@ export interface AvatarProps {
 }
 
 interface AvatarState {
-    borderRadius: number;
-    size: number;
+    borderRadius?: number;
+    size?: number;
 }
 
 function validateMimeType(mime: string) {
@@ -53,12 +54,12 @@ function validateEncodedImage(data: string) {
 }
 
 export class Avatar extends Component<AvatarProps, AvatarState> {
-    public state: AvatarState = {
-        size: NaN,
-        borderRadius: NaN
-    };
+    constructor(props: AvatarProps) {
+        super(props);
+        this.state = {};
+    }
 
-    public onLayout = (e: any) => {
+    public onLayout = (e: LayoutChangeEvent) => {
         let size = Math.min(e.nativeEvent.layout.width, e.nativeEvent.layout.height);
         this.setState({
             size: size,
@@ -69,25 +70,27 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
     public render() {
         const mimeType = validateMimeType(this.props.mimeType || defaultAvatar.mimeType);
         const photoBase64 = validateEncodedImage(this.props.photoBase64 || defaultAvatar.base64);
-        const style = this.props.style || styles.default;
 
-        const elStyle = { borderRadius: this.state.borderRadius };
-        if (isNaN(this.state.borderRadius)) {
-            elStyle.borderRadius = parseFloat(style.width as any) * .5;
-        }
+        const defaultStyle = StyleSheet.flatten(styles.default);
 
-        const outerFrameFlattenStyle = StyleSheet.flatten([styles.outerFrame, style, elStyle]);
+        const outerFrameFlattenStyle = StyleSheet.flatten([styles.outerFrame, {
+            borderRadius: this.state.borderRadius || defaultStyle.borderRadius,
+            width: this.state.size || defaultStyle.width,
+            height: this.state.size || defaultStyle.height
+        }]);
 
-        const imgSize = this.state.size - outerFrameFlattenStyle.borderWidth * 2;
-        const imageFlattenStyle = StyleSheet.flatten([style, styles.image, {
+        const imgSize = (outerFrameFlattenStyle.width as number) - outerFrameFlattenStyle.borderWidth * 2;
+        const imageFlattenStyle = StyleSheet.flatten([styles.image, {
             width: imgSize,
             height: imgSize,
-            borderRadius: this.state.borderRadius - outerFrameFlattenStyle.borderWidth * .5
+            borderRadius: outerFrameFlattenStyle.borderRadius - outerFrameFlattenStyle.borderWidth * .5
         }]);
 
         return (
-            <View style={outerFrameFlattenStyle} onLayout={this.onLayout}>
-                <Image source={{ uri: mimeType + photoBase64 }} style={imageFlattenStyle} />
+            <View onLayout={this.onLayout} style={styles.container}>
+                <View style={outerFrameFlattenStyle}>
+                    <Image source={{ uri: mimeType + photoBase64 }} style={imageFlattenStyle} />
+                </View>
             </View>
         );
     }
