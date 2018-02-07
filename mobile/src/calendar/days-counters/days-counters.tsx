@@ -8,8 +8,8 @@ import { AppState } from '../../reducers/app.reducer';
 import { connect, Dispatch } from 'react-redux';
 import { Employee } from '../../reducers/organization/employee.model';
 import { calculateDaysCounters, CalendarActions } from '../../reducers/calendar/calendar.action';
-import { DaysCounterSelectedDay } from './days-counter-selected-day';
-import { DaysCounterTriangle } from './days-counter-triangle';
+import { SelectedDay } from './selected-day';
+import { Triangle } from './triangle';
 import moment from 'moment';
 
 interface DaysCountersProps {
@@ -58,8 +58,8 @@ class DaysCountersImpl extends Component<DaysCountersProps & DaysCountersDispatc
         const date = { day: currentDate.format('D'), month: currentDate.format('MMMM') };
 
         return <View style={daysCountersStyles.container} onLayout={this.onDaysCountersLayout}>
-                <DaysCounterTriangle containerWidth={this.state.daysCountersWidth} />
-                <DaysCounterSelectedDay {...date} />
+                <Triangle containerWidth={this.state.daysCountersWidth} />
+                <SelectedDay {...date} />
                 <View style={daysCountersStyles.counters}>
                     { vacationCounter }
                     <DaysCounterSeparator />

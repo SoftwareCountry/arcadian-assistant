@@ -76,7 +76,7 @@ export const daysCounterStyles = StyleSheet.create({
 
 const daysCounterShapeZIndex = 2;
 
-export const daysCounterSelectedDayStyles = StyleSheet.create({
+export const selectedDayStyles = StyleSheet.create({
     container: {
         borderRadius: circleDiameter / 2,
         height: circleDiameter,
@@ -103,7 +103,7 @@ export const daysCounterSelectedDayStyles = StyleSheet.create({
     }
 });
 
-export const daysCounterTriangle = StyleSheet.create({
+export const triangleStyles = StyleSheet.create({
     container: {
         backgroundColor: 'transparent',
         width: 0,
