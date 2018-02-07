@@ -1,11 +1,13 @@
 import React from 'react';
 import { FlatList, Text, View, StyleSheet } from 'react-native';
+import { connect } from 'react-redux';
+
 import { Department } from '../reducers/organization/department.model';
 import { Employee } from '../reducers/organization/employee.model';
 import { EmployeesStore, EmployeeMap, EmployeeIdsGroupMap } from '../reducers/organization/employees.reducer';
-import { connect } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 import { EmployeesListItem } from './employees-list-item';
+import { employeesListStyles as styles } from './styles';
 
 interface EmployeesListProps {
     employees: EmployeeMap;
@@ -21,12 +23,7 @@ const mapStateToProps = (state: AppState): EmployeesListProps => ({
     myDepartmentId: state.userInfo.employee ? state.userInfo.employee.departmentId : 'unknown'
 });
 
-const styles  = StyleSheet.create({
-    view: {
-        flex: 1,
-        backgroundColor: '#FFF'
-    }
-});
+
 
 class EmployeesListImpl extends React.Component<EmployeesListProps> {
     public state: {
