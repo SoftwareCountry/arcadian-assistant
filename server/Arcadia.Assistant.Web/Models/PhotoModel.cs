@@ -19,7 +19,7 @@
             return new PhotoModel()
                 {
                     MimeType = photo.MimeType,
-                    Bytes = Convert.ToBase64String(photo.Bytes.ToArray()), //TODO: wait for .net 2.1 to change on System.Buffers.Text
+                    Bytes = Convert.ToBase64String(photo.Bytes), //TODO: wait for .net 2.1 to change on System.Buffers.Text
                     Height = photo.Height,
                     Width = photo.Width
                 };
