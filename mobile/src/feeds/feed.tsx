@@ -32,7 +32,10 @@ export class FeedListItem extends React.Component<FeedListItemProps> {
                     </View>
                     <View style={styles.info}>
                         <Text style={styles.title}>{employeeName}</Text>
-                        <Text style={styles.text}>{this.props.message.text}</Text>
+                        <Text>
+                            <Text style={styles.to}>@Arcadians</Text>
+                            <Text style={styles.text}>, {this.props.message.text}</Text>
+                        </Text>
                         <Text style={styles.tags}>#ArcadiaNews</Text>
                         <Text style={styles.date}>{formattedDate}</Text>
                     </View>
