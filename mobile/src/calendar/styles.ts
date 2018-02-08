@@ -5,7 +5,7 @@ const daysCounterTitleColor = '#18515E';
 const daysCounterPrimaryColor = '#2FAFCC';
 
 const triangleHeight = 50;
-const circleDiameter = 100;
+const circleDiameter = 120;
 
 export const calendarScreenLayout = {
     calendar: {
@@ -22,7 +22,9 @@ export const calendarStyles = StyleSheet.create({
         marginTop: 20
     },
     containerTitle: {
-        fontSize: 15,
+        fontSize: 14,
+        lineHeight: 16,
+        fontFamily: 'CenturyGothic',
         color: daysCounterTitleColor
     }
 });
@@ -65,11 +67,15 @@ export const daysCounterStyles = StyleSheet.create({
         flex: 20
     },
     contentValue: {
-        fontSize: 25,
+        fontSize: 24,
+        lineHeight: 28,
+        fontFamily: 'CenturyGothic',
         color: daysCounterFontColor
     },
     contentTitle: {
-        fontSize: 11,
+        fontSize: 9,
+        lineHeight: 11,
+        fontFamily: 'CenturyGothic',
         color: daysCounterFontColor
     }
 });
@@ -89,17 +95,21 @@ export const selectedDayStyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 2,
-        borderColor: daysCounterPrimaryColor,
+        borderColor: daysCounterPrimaryColor
     },
     circleCurrentDay: {
-        fontSize: 40,
+        fontSize: 36,
+        lineHeight: 42,
+        fontFamily: 'CenturyGothic',
         color: daysCounterTitleColor,
         marginTop: -5
     },
     circleCurrentMonth: {
-        fontSize: 15,
+        fontSize: 18,
+        lineHeight: 21,
+        fontFamily: 'CenturyGothic',
         color: daysCounterTitleColor,
-        marginTop: -8
+        marginTop: -4
     }
 });
 
