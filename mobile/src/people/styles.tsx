@@ -9,31 +9,35 @@ export const employeesListStyles  = StyleSheet.create({
 
 export const employeesListItemStyles = StyleSheet.create({
     layout: {
-        height: 36,
+        height: 80,
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'center',
     },
     imgContainer: {
+        width: 70,
+        height: 70,
         marginTop: 5,
-        marginLeft: 28,
-        flex: 1
+        marginLeft: 12
     },
     img: {
-        width: 25,
-        height: 25
+        width: 70,
+        height: 70
     },
     info: {
-        flex: 6,
-        marginRight: 28,
+        flex: 1,
+        marginRight: 12,
+        marginLeft: 12,
+        flexDirection: 'column',
         justifyContent: 'center'
     },
     baseText: {
         fontFamily: 'Helvetica-Light',
-        fontSize: 12,
+        fontSize: 9,
         textAlign: 'left'
     },
     name: {
-        fontWeight: 'bold'
+        fontFamily: 'Helvetica-Light',
+        fontSize: 15
     }
 });

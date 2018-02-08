@@ -25,7 +25,8 @@ export class EmployeesListItem extends React.Component<EmployeesListItemProps> {
                         <Avatar mimeType={mimeType} photoBase64={base64} style={styles.img}/>
                     </View>
                     <View style={styles.info}>
-                        <Text style={styles.baseText}><Text style={styles.name}>{employeeName}</Text><Text>, {employeePosition}</Text></Text>
+                        <Text style={styles.name}>{employeeName}</Text>
+                        <Text style={styles.baseText}>{employeePosition.toUpperCase()}</Text>
                     </View>
                 </View>
             </TouchableHighlight>
