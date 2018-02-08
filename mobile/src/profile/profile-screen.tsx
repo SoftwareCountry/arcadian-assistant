@@ -1,12 +1,11 @@
-import React, { Component } from 'react';
-import { View, Text } from 'react-native';
-import styles from '../layout/styles';
+import React from 'react';
 
-export class ProfileScreen extends Component {
+import { StackNavigator } from 'react-navigation';
+import { HomeProfileScreen } from './home-profile-screen';
 
-    public render() {
-        return <View style={styles.container}>
-            <Text>Profile</Text>
-        </View>;
+export const ProfileScreen = StackNavigator({
+    Home: {
+        screen: HomeProfileScreen,
+        path: '/',
     }
-}
+});
