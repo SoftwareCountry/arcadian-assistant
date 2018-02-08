@@ -59,7 +59,6 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
 
     public onLayout = (e: LayoutChangeEvent) => {
         let size = Math.min(e.nativeEvent.layout.width, e.nativeEvent.layout.height);
-        console.log('on layout size: ', size);
         this.setState({
             size: size,
             borderRadius: size * .5,
@@ -81,8 +80,6 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
             {}
             : { display: 'none' }
         ]);
-
-        console.log(outerFrameFlattenStyle);
 
         const imgSize = (outerFrameFlattenStyle.width as number) - outerFrameFlattenStyle.borderWidth * 2;
         const imageFlattenStyle = StyleSheet.flatten([styles.image, {
