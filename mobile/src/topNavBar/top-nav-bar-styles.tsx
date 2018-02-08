@@ -11,6 +11,7 @@ const topNavBarStyles = StyleSheet.create({
         marginTop: Platform.OS === 'ios' ? 40 : 20, 
         color: 'white', 
         textAlign: 'center',
+        fontFamily: 'CenturyGothic'
     },
 });
 
