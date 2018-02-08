@@ -28,14 +28,14 @@ class ProfileScreenImpl extends Component<ProfileScreenProps> {
 
     public render() {
         const userInfo = this.props.userInfo;
-        //console.log('User ', userInfo);
+
         const employee = userInfo ? userInfo.employee : null;
-        const name = employee ? employee.name : '';
-        const position = this.uppercase(employee ? employee.position : '');
+        const name = employee ? employee.name : null;
+        const position = this.uppercase(employee ? employee.position : null);
 
         const department = this.props.departments && employee ? this.props.departments.find((d) => d.departmentId === employee.departmentId) : null;
 
-        const departmentAbbr = this.uppercase(department ? department.abbreviation : '');
+        const departmentAbbr = this.uppercase(department ? department.abbreviation : null);
 
         const base64 = userInfo ? (userInfo.employee ? userInfo.employee.photo.base64 : null) : null;
         const mime = userInfo ? (userInfo.employee ? userInfo.employee.photo.mimeType : null) : null;
@@ -74,7 +74,7 @@ class ProfileScreenImpl extends Component<ProfileScreenProps> {
     }
 
     private uppercase(text: string) {
-        return text ? text.toUpperCase() : '';
+        return text ? text.toUpperCase() : text;
     }
 }
 
