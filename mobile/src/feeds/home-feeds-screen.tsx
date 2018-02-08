@@ -11,6 +11,7 @@ import { AppState } from '../reducers/app.reducer';
 import { FeedListItem } from './feed';
 
 import { screenStyles as styles } from './styles';
+import { ArcadiaText } from '../override/acradia-text';
 
 const navBar = new TopNavBar('Feeds');
 
@@ -49,7 +50,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps> {
     }
 
     private headerComponent() {
-        return <Text style={styles.viewHeaderText}>News feed</Text>;
+        return <ArcadiaText style={styles.viewHeaderText}>News feed</ArcadiaText>;
     }
 
     private renderItem = (itemInfo: ListRenderItemInfo<Feed>) => {
