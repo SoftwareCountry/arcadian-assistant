@@ -91,7 +91,7 @@ export const selectedDayStyles = StyleSheet.create({
         left: '50%',
         backgroundColor: '#fff',
         position: 'absolute',
-        transform: [{ translateX: -50 }],
+        transform: [{ translateX: -(circleDiameter / 2) }],
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 2,
