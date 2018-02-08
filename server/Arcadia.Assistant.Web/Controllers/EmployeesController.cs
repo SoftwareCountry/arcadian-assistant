@@ -13,6 +13,8 @@
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.Web.Models;
 
+    using Microsoft.AspNetCore.Http;
+
     [Route("api/employees")]
     public class EmployeesController : Controller
     {
@@ -28,8 +30,8 @@
 
         [Route("{employeeId}")]
         [HttpGet]
-        [ProducesResponseType(typeof(EmployeeModel), 200)]
-        [ProducesResponseType(404)]
+        [ProducesResponseType(typeof(EmployeeModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(string employeeId, CancellationToken token)
         {
             var employees = await this.LoadEmployeesAsync(new EmployeesQuery().WithId(employeeId), token);
@@ -43,8 +45,8 @@
 
         [Route("")]
         [HttpGet]
-        [ProducesResponseType(typeof(EmployeeModel[]), 200)]
-        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(EmployeeModel[]), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ForDepartment([FromQuery] string departmentId, CancellationToken token)
         {
             if (this.Request.Query.Count == 0)
