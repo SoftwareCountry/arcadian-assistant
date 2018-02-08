@@ -4,25 +4,20 @@ import { View, Image, StyleSheet, ViewStyle, ImageStyle, LayoutChangeEvent } fro
 
 const styles = StyleSheet.create({
     container: {
+        width: '100%',
+        height: '100%',
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
     },
     outerFrame: {
-        // Following attributes are default
         borderColor: '#2FAFCC',
         borderWidth: 2
     },
     image: {
-        // Following attributes are default
         borderColor: '#fff',
         borderWidth: 2,
         flex: 1
-    },
-    default: {
-        height: 200,
-        width: 200,
-        borderRadius: 200 * 0.5
     }
 });
 
@@ -35,6 +30,7 @@ export interface AvatarProps {
 interface AvatarState {
     borderRadius?: number;
     size?: number;
+    visible: boolean;
 }
 
 function validateMimeType(mime: string) {
@@ -56,14 +52,18 @@ function validateEncodedImage(data: string) {
 export class Avatar extends Component<AvatarProps, AvatarState> {
     constructor(props: AvatarProps) {
         super(props);
-        this.state = {};
+        this.state = {
+            visible: false
+        };
     }
 
     public onLayout = (e: LayoutChangeEvent) => {
         let size = Math.min(e.nativeEvent.layout.width, e.nativeEvent.layout.height);
+        console.log('on layout size: ', size);
         this.setState({
             size: size,
-            borderRadius: size * .5
+            borderRadius: size * .5,
+            visible: true
         });
     }
 
@@ -71,13 +71,18 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
         const mimeType = validateMimeType(this.props.mimeType || defaultAvatar.mimeType);
         const photoBase64 = validateEncodedImage(this.props.photoBase64 || defaultAvatar.base64);
 
-        const defaultStyle = StyleSheet.flatten(styles.default);
+        const outerFrameFlattenStyle = StyleSheet.flatten([styles.outerFrame,
+        {
+            borderRadius: this.state.borderRadius,
+            width: this.state.size,
+            height: this.state.size
+        },
+        this.state.visible ?
+            {}
+            : { display: 'none' }
+        ]);
 
-        const outerFrameFlattenStyle = StyleSheet.flatten([styles.outerFrame, {
-            borderRadius: this.state.borderRadius || defaultStyle.borderRadius,
-            width: this.state.size || defaultStyle.width,
-            height: this.state.size || defaultStyle.height
-        }]);
+        console.log(outerFrameFlattenStyle);
 
         const imgSize = (outerFrameFlattenStyle.width as number) - outerFrameFlattenStyle.borderWidth * 2;
         const imageFlattenStyle = StyleSheet.flatten([styles.image, {
