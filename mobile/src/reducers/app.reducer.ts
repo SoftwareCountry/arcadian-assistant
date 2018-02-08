@@ -14,6 +14,7 @@ import { OrganizationState, organizationReducer, organizationEpics } from './org
 import { UserInfoState, userInfoReducer } from './user/user-info.reducer';
 import { userEpics } from './user/user.reducer';
 import { FeedsState, feedsReducer, feedsEpics } from './feeds/feeds.reducer';
+import { CalendarState, calendarReducer } from './calendar/calendar.reducer';
 
 export interface AppState {
     helpdesk: HelpdeskState;
@@ -21,6 +22,7 @@ export interface AppState {
     nav: NavigationState;
     userInfo: UserInfoState;
     feeds: FeedsState;
+    calendar: CalendarState;
 }
 
 const rootEpic = combineEpics(helpdeskEpics as any, organizationEpics as any, errorsEpics as any, userEpics as any, feedsEpics as any);
@@ -30,7 +32,8 @@ const reducers = combineReducers<AppState>({
     organization: organizationReducer,
     nav: navigationReducer,
     userInfo: userInfoReducer,
-    feeds: feedsReducer
+    feeds: feedsReducer,
+    calendar: calendarReducer
 });
 
 export const storeFactory = () => {
