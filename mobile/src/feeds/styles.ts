@@ -36,7 +36,6 @@ export const feedStyles = StyleSheet.create({
     },
     to: {
         fontSize: 11,
-        fontFamily: 'CenturyGothic',
         color: '#333333',
         fontWeight: '600'
     },
@@ -49,24 +48,20 @@ export const feedStyles = StyleSheet.create({
     title: {
         textAlign: 'left',
         fontSize: 15,
-        lineHeight: 18,
-        fontFamily: 'CenturyGothic'
+        lineHeight: 18
     },
     text: {
         textAlign: 'left',
         paddingTop: 2,
         paddingBottom: 2,
-        fontSize: 11,
-        fontFamily: 'CenturyGothic'
+        fontSize: 11
     },
     tags: {
         color: '#2FAFCC',
-        fontSize: 11,
-        fontFamily: 'CenturyGothic'
+        fontSize: 11
     },
     date: {
         fontSize: 9,
-        fontFamily: 'CenturyGothic',
         color: '#333333'
     }
 });

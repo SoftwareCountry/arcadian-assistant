@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { Image, Text, Platform } from 'react-native';
 import { ImageURISource } from 'react-native';
 import tabBarStyles from './tab-bar-styles';
+import { ArcadiaText } from '../override/acradia-text';
 
 
 export class TabNavigationOptionsFactory {
@@ -21,6 +22,6 @@ export class TabNavigationOptionsFactory {
     private getTabBarLabel(label: string) {
         return Platform.OS === 'ios'
             ? label
-            : <Text numberOfLines={1} ellipsizeMode={'tail'} style={tabBarStyles.tabBarLabel}>{label}</Text>;  //TODO: fix text width issue on narrow screens
+            : <ArcadiaText numberOfLines={1} ellipsizeMode={'tail'} style={tabBarStyles.tabBarLabel}>{label}</ArcadiaText>;  //TODO: fix text width issue on narrow screens
     }
 }

@@ -24,7 +24,6 @@ export const calendarStyles = StyleSheet.create({
     containerTitle: {
         fontSize: 14,
         lineHeight: 16,
-        fontFamily: 'CenturyGothic',
         color: daysCounterTitleColor
     }
 });
@@ -69,13 +68,11 @@ export const daysCounterStyles = StyleSheet.create({
     contentValue: {
         fontSize: 24,
         lineHeight: 28,
-        fontFamily: 'CenturyGothic',
         color: daysCounterFontColor
     },
     contentTitle: {
         fontSize: 9,
         lineHeight: 11,
-        fontFamily: 'CenturyGothic',
         color: daysCounterFontColor
     }
 });
@@ -100,14 +97,12 @@ export const selectedDayStyles = StyleSheet.create({
     circleCurrentDay: {
         fontSize: 36,
         lineHeight: 42,
-        fontFamily: 'CenturyGothic',
         color: daysCounterTitleColor,
         marginTop: -5
     },
     circleCurrentMonth: {
         fontSize: 18,
         lineHeight: 21,
-        fontFamily: 'CenturyGothic',
         color: daysCounterTitleColor,
         marginTop: -4
     }
