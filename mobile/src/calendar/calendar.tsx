@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ViewStyle } from 'react-native';
+import { View, StyleSheet, ViewStyle } from 'react-native';
 import { calendarScreenLayout, calendarStyles } from './styles';
 import moment from 'moment';
-import { ArcadiaText } from '../override/acradia-text';
+import { StyledText } from '../override/styled-text';
 
 export class Calendar extends Component {
     public render() {
@@ -11,7 +11,7 @@ export class Calendar extends Component {
 
         return (
             <View style={calendarStyles.container}>
-                <ArcadiaText style={calendarStyles.containerTitle}>{today.format('MMMM YYYY')}</ArcadiaText>
+                <StyledText style={calendarStyles.containerTitle}>{today.format('MMMM YYYY')}</StyledText>
                 <View></View>
             </View>
         );

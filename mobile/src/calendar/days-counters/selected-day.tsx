@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import { selectedDayStyles } from '../styles';
-import { ArcadiaText } from '../../override/acradia-text';
+import { StyledText } from '../../override/styled-text';
 
 interface SelectedDayProps {
     day: string;
@@ -12,8 +12,8 @@ export  class SelectedDay extends Component<SelectedDayProps> {
     public render() {
         return (
             <View style={selectedDayStyles.container}>
-                <ArcadiaText style={selectedDayStyles.circleCurrentDay}>{this.props.day}</ArcadiaText>
-                <ArcadiaText style={selectedDayStyles.circleCurrentMonth}>{this.props.month}</ArcadiaText>
+                <StyledText style={selectedDayStyles.circleCurrentDay}>{this.props.day}</StyledText>
+                <StyledText style={selectedDayStyles.circleCurrentMonth}>{this.props.month}</StyledText>
             </View>
         );
     }

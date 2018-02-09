@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import { daysCounterStyles } from '../styles';
-import { ArcadiaText } from '../../override/acradia-text';
+import { StyledText } from '../../override/styled-text';
 
 interface DaysCounterProps {
     textValue: string;
@@ -14,10 +14,10 @@ export class DaysCounter extends Component<DaysCounterProps> {
         return (
             <View style={daysCounterStyles.container}>
                 <View style={daysCounterStyles.content}>
-                    <ArcadiaText style={daysCounterStyles.contentValue}>{this.props.textValue}</ArcadiaText>
+                    <StyledText style={daysCounterStyles.contentValue}>{this.props.textValue}</StyledText>
                     {
                         this.props.title
-                            ? this.props.title.map((x, index) => <ArcadiaText key={index} style={daysCounterStyles.contentTitle}>{x}</ArcadiaText>)
+                            ? this.props.title.map((x, index) => <StyledText key={index} style={daysCounterStyles.contentTitle}>{x}</StyledText>)
                             : null
                     }
                 </View>

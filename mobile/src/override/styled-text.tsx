@@ -7,7 +7,7 @@ const commonStyles = StyleSheet.create({
     }
 });
 
-export class ArcadiaText extends Component<TextProperties> {
+export class StyledText extends Component<TextProperties> {
     public render() {
         const textStyles = StyleSheet.flatten([
             this.props.style,
