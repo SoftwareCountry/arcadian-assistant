@@ -10,7 +10,7 @@ const topNavBarStyles = StyleSheet.create({
     navTitle: {
         marginTop: Platform.OS === 'ios' ? 40 : 20, 
         color: 'white', 
-        textAlign: 'center',
+        textAlign: 'center'
     },
 });
 
