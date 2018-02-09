@@ -3,13 +3,15 @@ import { connect } from 'react-redux';
 import { View, LayoutChangeEvent, Text, Image } from 'react-native';
 
 import styles from '../layout/styles';
-import { layoutStyles, contentStyles } from './styles';
+import { layoutStyles, contentStyles, tileStyles } from './styles';
 import { Chevron } from './chevron';
 import { Avatar } from '../people/avatar';
 import { TopNavBar } from '../topNavBar/top-nav-bar';
 import { AppState } from '../reducers/app.reducer';
 import { UserInfoState } from '../reducers/user/user-info.reducer';
 import { Department } from '../reducers/organization/department.model';
+
+import * as icon from './icons';
 
 const navBar = new TopNavBar('');
 
@@ -40,11 +42,47 @@ class ProfileScreenImpl extends Component<ProfileScreenProps> {
         const base64 = userInfo ? (userInfo.employee ? userInfo.employee.photo.base64 : null) : null;
         const mime = userInfo ? (userInfo.employee ? userInfo.employee.photo.mimeType : null) : null;
 
+        let tilesData: { label: string, icon: string }[] = [];
+        if (employee) {
+            tilesData.push({
+                label: employee.birthDate.format('MMMM D'),
+                icon: icon.cupcake
+            });
+
+            tilesData.push({
+                label: employee.hireDate.format('YYYY-D-MM'),
+                icon: icon.hire
+            });
+
+            tilesData.push({
+                label: 'Room 702',
+                icon: icon.room
+            });
+        }
+
+        if (department) {
+            tilesData.push({
+                label: 'Organization',
+                icon: icon.organization
+            });
+        }
+
+        const tiles = tilesData.map((tile) => (
+            <View key={tile.label} style={tileStyles.container}>
+                <View style={tileStyles.tile}>
+                    <View style={tileStyles.iconContainer}>
+                        <Image source={{ uri: tile.icon }} style={tileStyles.icon} resizeMode="contain"/>
+                    </View>
+                    <Text style={tileStyles.text}>{tile.label}</Text>
+                </View>
+            </View>
+        ));
+
         return <View style={styles.container}>
             <View style={layoutStyles.container}>
                 <View style={layoutStyles.chevronPlaceholder}></View>
                 <View>
-                    <Chevron/>
+                    <Chevron />
                     <View style={layoutStyles.avatarContainer}>
                         <Avatar mimeType={mime} photoBase64={base64} />
                     </View>
@@ -62,6 +100,7 @@ class ProfileScreenImpl extends Component<ProfileScreenProps> {
                     </Text>
 
                     <View style={contentStyles.infoContainer}>
+                        {tiles}
                     </View>
 
                     <View style={contentStyles.contactsContainer}>

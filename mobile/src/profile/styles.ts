@@ -77,7 +77,38 @@ export const contentStyles = StyleSheet.create({
     },
     infoContainer: {
         flexDirection: 'row',
-        flex: 1
+        padding: 5
     },
-    contactsContainer: {}
+    contactsContainer: {
+
+    }
+});
+
+export const tileStyles = StyleSheet.create({
+    container: {
+        padding: 1,
+        width: '25%'
+    },
+    tile: {
+        backgroundColor: 'rgba(47, 175, 204, 0.2)',
+        paddingBottom: 8,
+        paddingTop: 10,
+        flexDirection: 'column',
+        height: 66
+    },
+    iconContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    icon: {
+         height: '100%',
+         width: '100%'
+    },
+    text: {
+        fontSize: 11,
+        textAlign: 'center',
+        color: '#18515E',
+        paddingTop: 2
+    }
 });
