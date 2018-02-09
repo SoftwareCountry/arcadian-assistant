@@ -6,6 +6,7 @@ import { Avatar } from '../people/avatar';
 import { Feed } from '../reducers/feeds/feed.model';
 import { feedStyles as styles } from './styles';
 import { Employee } from '../reducers/organization/employee.model';
+import { StyledText } from '../override/styled-text';
 
 interface FeedListItemProps {
     message: Feed;
@@ -31,10 +32,13 @@ export class FeedListItem extends React.Component<FeedListItemProps> {
                         <Avatar mimeType={mimeType} photoBase64={base64} />
                     </View>
                     <View style={styles.info}>
-                        <Text style={styles.title}>{employeeName}</Text>
-                        <Text style={styles.text}>{this.props.message.text}</Text>
-                        <Text style={styles.tags}>#ArcadiaNews</Text>
-                        <Text style={styles.date}>{formattedDate}</Text>
+                        <StyledText style={styles.title}>{employeeName}</StyledText>
+                        <StyledText>
+                            <Text style={styles.to}>@Arcadians</Text>
+                            <Text style={styles.text}>, {this.props.message.text}</Text>
+                        </StyledText>
+                        <StyledText style={styles.tags}>#ArcadiaNews</StyledText>
+                        <StyledText style={styles.date}>{formattedDate}</StyledText>
                     </View>
                 </View>
             </TouchableHighlight>
