@@ -6,6 +6,8 @@ import topTabBarModel from './top-tab-bar-model';
 const topTabNavigatorConfig: TabNavigatorConfig = {
     tabBarPosition: 'top',
     tabBarComponent: TabBarTop, 
+    swipeEnabled: false,
+    animationEnabled: false,
     tabBarOptions: {
         style: topTabBarStyles.tabBar,
         indicatorStyle: topTabBarStyles.tabBarIndicator,
@@ -13,7 +15,6 @@ const topTabNavigatorConfig: TabNavigatorConfig = {
         labelStyle: topTabBarStyles.tabBarLabel,
         showIcon: false,
     },
-    animationEnabled: true,
 };
 
 export const  TopTabBarNavigator = TabNavigator(

@@ -12,7 +12,7 @@ interface EmployeesListItemProps {
 
 export class EmployeesListItem extends React.Component<EmployeesListItemProps> {
     public render() {
-        const employeeName = this.props.employee ? this.props.employee.name.replace(',', '') : 'Unknown';
+        const employeeName = this.props.employee ? this.props.employee.name : 'Unknown';
         const employeePosition = this.props.employee ? this.props.employee.position : 'Unknown';
         const photo = this.props.employee ? this.props.employee.photo : null;
         const mimeType = photo ? photo.mimeType : null;
@@ -26,7 +26,7 @@ export class EmployeesListItem extends React.Component<EmployeesListItemProps> {
                     </View>
                     <View style={styles.info}>
                         <Text style={styles.name}>{employeeName}</Text>
-                        <Text style={styles.baseText}>{employeePosition.toUpperCase()}</Text>
+                        <Text style={styles.baseText}>{employeePosition}</Text>
                     </View>
                 </View>
             </TouchableHighlight>

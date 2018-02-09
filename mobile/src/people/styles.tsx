@@ -2,6 +2,7 @@ import { StyleSheet } from 'react-native';
 
 export const employeesListStyles  = StyleSheet.create({
     view: {
+        paddingTop: 5,
         flex: 1,
         backgroundColor: '#FFF'
     }
@@ -15,14 +16,13 @@ export const employeesListItemStyles = StyleSheet.create({
         justifyContent: 'center',
     },
     imgContainer: {
-        width: 70,
-        height: 70,
-        marginTop: 5,
+        width: 72,
+        height: 72,
         marginLeft: 12
     },
     img: {
-        width: 70,
-        height: 70
+        width: 72,
+        height: 72
     },
     info: {
         flex: 1,
@@ -34,10 +34,11 @@ export const employeesListItemStyles = StyleSheet.create({
     baseText: {
         fontFamily: 'Helvetica-Light',
         fontSize: 9,
-        textAlign: 'left'
+        paddingTop: 2
     },
     name: {
         fontFamily: 'Helvetica-Light',
-        fontSize: 15
+        fontSize: 15,
+        paddingBottom: 2
     }
 });
