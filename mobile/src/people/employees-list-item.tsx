@@ -4,6 +4,7 @@ import { TouchableHighlight, StyleSheet, Platform, Text, View, Image } from 'rea
 import { Avatar } from '../people/avatar';
 import { Employee } from '../reducers/organization/employee.model';
 import { employeesListItemStyles as styles } from './styles';
+import { StyledText } from '../override/styled-text';
 
 interface EmployeesListItemProps {
     employee: Employee;
@@ -25,8 +26,8 @@ export class EmployeesListItem extends React.Component<EmployeesListItemProps> {
                         <Avatar mimeType={mimeType} photoBase64={base64} style={styles.img}/>
                     </View>
                     <View style={styles.info}>
-                        <Text style={styles.name}>{employeeName}</Text>
-                        <Text style={styles.baseText}>{employeePosition}</Text>
+                        <StyledText style={styles.name}>{employeeName}</StyledText>
+                        <StyledText style={styles.baseText}>{employeePosition}</StyledText>
                     </View>
                 </View>
             </TouchableHighlight>
