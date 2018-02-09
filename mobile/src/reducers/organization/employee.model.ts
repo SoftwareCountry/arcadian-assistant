@@ -62,4 +62,8 @@ export class Employee {
     @dataMember()
     @required()
     public vacationDaysLeft: number;
+
+    @dataMember()
+    @required({nullable: true})
+    public roomNumber: string;
 }

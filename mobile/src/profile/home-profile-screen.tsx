@@ -55,7 +55,7 @@ class ProfileScreenImpl extends Component<ProfileScreenProps> {
             });
 
             tilesData.push({
-                label: 'Room 702',
+                label: `Room ${employee.roomNumber}`,
                 icon: icon.room
             });
         }
@@ -71,7 +71,7 @@ class ProfileScreenImpl extends Component<ProfileScreenProps> {
             <View key={tile.label} style={tileStyles.container}>
                 <View style={tileStyles.tile}>
                     <View style={tileStyles.iconContainer}>
-                        <Image source={{ uri: tile.icon }} style={tileStyles.icon} resizeMode="contain"/>
+                        <Image source={{ uri: tile.icon }} style={tileStyles.icon} resizeMode="contain" />
                     </View>
                     <Text style={tileStyles.text}>{tile.label}</Text>
                 </View>

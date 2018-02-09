@@ -28,6 +28,8 @@
 
         public int VacationDaysLeft { get; set; }
 
+        public string RoomNumber { get; set; }
+
         /// <summary>
         /// Positive values means that these days must be worked out.
         /// Negative means that these can be taked as days off
@@ -46,8 +48,9 @@
                     MobilePhone = metadata.MobilePhone,
                     Name = metadata.Name,
                     Position = metadata.Position,
-                    Sex = metadata.Sex
-                };
+                    Sex = metadata.Sex,
+                    RoomNumber = metadata.RoomNumber
+            };
         }
     }
 }
