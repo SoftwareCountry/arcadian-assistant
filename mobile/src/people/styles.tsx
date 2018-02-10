@@ -14,15 +14,15 @@ export const employeesListItemStyles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'center',
+        alignItems: 'center'
     },
-    imgContainer: {
+    avatarContainer: {
         width: 72,
         height: 72,
-        marginLeft: 12
+        marginLeft: 12,
     },
-    img: {
-        width: 72,
-        height: 72
+    avatar: {
+        borderWidth: 1
     },
     info: {
         flex: 1,

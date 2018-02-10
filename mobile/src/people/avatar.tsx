@@ -29,6 +29,7 @@ export interface AvatarProps {
     mimeType?: string;
     photoBase64?: string;
     style?: ViewStyle;
+    noInnerBorder?: boolean;
 }
 
 interface AvatarState {
@@ -71,10 +72,12 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
         const photoBase64 = validateEncodedImage(this.props.photoBase64 || defaultAvatar.base64);
 
         const defaultStyle = StyleSheet.flatten(styles.default);
+        const outerFrameBorderWidth = this.props.style ? this.props.style.borderWidth : defaultStyle.borderWidth;
+        const imageBorderWidth = this.props.noInnerBorder ? 0 : outerFrameBorderWidth * 2;
 
         const outerFrameFlattenStyle = StyleSheet.flatten([styles.outerFrame, {
             borderRadius: this.state.borderRadius || defaultStyle.borderRadius, 
-            borderWidth: defaultStyle.borderWidth,
+            borderWidth: outerFrameBorderWidth,
             width: this.state.size || defaultStyle.width,
             height: this.state.size || defaultStyle.height
         }]);
@@ -83,8 +86,8 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
         const imageFlattenStyle = StyleSheet.flatten([styles.image, {
             width: imgSize,
             height: imgSize,
-            borderRadius: outerFrameFlattenStyle.borderRadius - outerFrameFlattenStyle.borderWidth * .5,
-            borderWidth: defaultStyle.borderWidth * 2
+            borderRadius: imgSize * 0.5,
+            borderWidth: imageBorderWidth
         }]);
 
         return (
