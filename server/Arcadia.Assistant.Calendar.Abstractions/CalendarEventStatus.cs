@@ -1,9 +1,11 @@
 ﻿namespace Arcadia.Assistant.Calendar.Abstractions
 {
-    public enum CalendarEventStatus
+    public static class CalendarEventStatus
     {
-        Requested = 1,
-        Approved = 2,
-        Cancelled = 3
+        public const string Requested = "Requested";
+
+        public const string Approved = "Approved";
+
+        public const string Cancelled = "Cancelled";
     }
 }

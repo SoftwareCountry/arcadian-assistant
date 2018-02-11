@@ -74,10 +74,15 @@
                 return this.NotFound();
             }
 
+            if (!Enum.TryParse(requestedEvent.Status, out CalendarEventStatus status)) //TODO: just convert it to string...
+            {
+                status = CalendarEventStatus.Requested;
+            }
+
             var eventModel = new CalendarEventsModel()
             {
                 Dates = requestedEvent.Dates,
-                Status = (CalendarEventStatus)(int)requestedEvent.Status, //TODO: temporary assignment
+                Status = status,
                 Type = CalendarEventType.Dayoff
             };
 
@@ -98,7 +103,7 @@
                 return this.NotFound();
             }
 
-            var calendarEvent = new CalendarEvent(newId, model.Dates, Calendar.Abstractions.CalendarEventStatus.Requested);//TODO: temporary assignment
+            var calendarEvent = new CalendarEvent(newId, model.Dates, model.Status.ToString() );//TODO: temporary assignment
             var eventCreationResponse = await this.UpsertEventAsync(employee.Calendar, calendarEvent, token);
 
             var createdEvent = eventCreationResponse.Event; //TODO: add errors handling
@@ -126,7 +131,7 @@
                 return this.NotFound();
             }
 
-            var calendarEvent = new CalendarEvent(eventId, model.Dates, Calendar.Abstractions.CalendarEventStatus.Requested);//TODO: temporary assignment
+            var calendarEvent = new CalendarEvent(eventId, model.Dates, model.Status.ToString());//TODO: temporary assignment
             await this.UpsertEventAsync(employee.Calendar, calendarEvent, token);//TODO: add errors handling
 
             return this.NoContent();

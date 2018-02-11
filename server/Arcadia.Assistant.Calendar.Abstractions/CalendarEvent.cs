@@ -6,9 +6,9 @@
 
         public DatesPeriod Dates { get; }
 
-        public CalendarEventStatus Status { get; }
+        public string Status { get; }
 
-        public CalendarEvent(string eventId, DatesPeriod dates, CalendarEventStatus status)
+        public CalendarEvent(string eventId, DatesPeriod dates, string status)
         {
             this.EventId = eventId;
             this.Dates = dates;
