@@ -1,28 +1,64 @@
 import React from 'react';
-import { FlatList, Text, View} from 'react-native';
+import { FlatList, View, StyleSheet, ListRenderItemInfo, RefreshControl } from 'react-native';
 import { TopNavBar } from '../topNavBar/top-nav-bar';
 
-const navBar =  new TopNavBar('Feeds');
-const dataList = [
-{key: 'First Feed'},
-{key: 'Second Feed'},
-{key: 'Third Feed'},
-{key: 'Fourth Feed'},
-{key: 'Fifth Feed'},
-{key: 'Sixth Feed'},
-{key: 'Seventh Feed'},
-{key: 'Ten'}
-];
+import { Employee } from '../reducers/organization/employee.model';
+import { EmployeesStore } from '../reducers/organization/employees.reducer';
+import { Feed } from '../reducers/feeds/feed.model';
+import { connect } from 'react-redux';
+import { AppState } from '../reducers/app.reducer';
 
+import { FeedListItem } from './feed';
 
-export class HomeFeedsScreen extends React.Component {
+import { screenStyles as styles } from './styles';
+import { StyledText } from '../override/styled-text';
+
+const navBar = new TopNavBar('Feeds');
+
+interface FeedsScreenProps {
+    feeds: Feed[];
+    employees: EmployeesStore;
+}
+
+const mapStateToProps = (state: AppState): FeedsScreenProps => ({
+    feeds: state.feeds,
+    employees: state.organization.employees
+});
+
+class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps> {
     public static navigationOptions = navBar.configurate();
 
     public render() {
         return (
-            <View>
-                <FlatList data = {dataList} renderItem ={({item}) => <Text style={{padding: 10, fontSize: 18, height: 81, textAlign: 'center'}}>{item.key}</Text>} />
-            </View>
+            <FlatList
+                style={styles.view}
+                keyExtractor={this.keyExtractor}
+                ItemSeparatorComponent={this.itemSeparator}
+                data={this.props.feeds}
+                extraData={this.props.employees}
+                renderItem={this.renderItem}
+                ListHeaderComponent={this.headerComponent} />
         );
     }
+
+    private keyExtractor(item: Feed) {
+        return item ? item.messageId : '';
+    }
+
+    private itemSeparator() {
+        return <View style={styles.separator}></View>;
+    }
+
+    private headerComponent() {
+        return <StyledText style={styles.viewHeaderText}>News feed</StyledText>;
+    }
+
+    private renderItem = (itemInfo: ListRenderItemInfo<Feed>) => {
+        const { item } = itemInfo;
+        const employee: Employee = this.props.employees.employeesById.get(item.employeeId);
+
+        return <FeedListItem message={item} employee={employee} />;
+    }
 }
+
+export const HomeFeedsScreen = connect(mapStateToProps)(HomeFeedsScreenImpl);

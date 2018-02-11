@@ -59,5 +59,10 @@
 			"!artifacts/**/*.spec.js",
 			"!artifacts/**/*.index.js"
 		]
+	},
+	"rnpm": {
+		"assets": [
+	   		"./assets/fonts/"
+		]
 	}
 }

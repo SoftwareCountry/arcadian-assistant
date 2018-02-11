@@ -5,30 +5,19 @@ import { OrganizationActions } from '../organization/organization.action';
 import { UserActions } from './user.action';
 
 export interface UserInfoState {
-    user: User;
     employee: Employee;
 }
 
 const initState: UserInfoState = {
-    user: null,
     employee: null
 };
 
-export const userInfoReducer: Reducer<UserInfoState> = (state = initState, action: UserActions | OrganizationActions) => {
+export const userInfoReducer: Reducer<UserInfoState> = (state = initState, action: UserActions) => {
     switch (action.type) {
-        case 'LOAD-USER-FINISHED':
+        case 'LOAD-USER-EMPLOYEE-FINISHED':
             return {
-                ...state,
-                user: action.user
+                employee: action.employee
             };
-        case 'LOAD_EMPLOYEE_FINISHED':
-            if (state.user && state.user.employeeId === action.employee.employeeId) {
-                return {
-                    ...state,
-                    employee: action.employee,
-                };
-            }
-            return state;
         default:
             return state;
     }
