@@ -10,11 +10,14 @@
 
         public IActorRef Feed { get; }
 
-        public EmployeeContainer(EmployeeMetadata metadata, IActorRef actor, IActorRef feed)
+        public IActorRef Calendar { get; }
+
+        public EmployeeContainer(EmployeeMetadata metadata, IActorRef actor, IActorRef feed, IActorRef calendar)
         {
             this.Metadata = metadata;
             this.Actor = actor;
             this.Feed = feed;
+            this.Calendar = calendar;
         }
     }
 }

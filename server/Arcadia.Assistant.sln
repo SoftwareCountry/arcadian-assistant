@@ -39,6 +39,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Calendar", "Arcadia.Assistant.Calendar\Arcadia.Assistant.Calendar.csproj", "{ECAF9CB2-A6EC-4E07-9D8B-0E5A4174152A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Calendar.Abstractions", "Arcadia.Assistant.Calendar.Abstractions\Arcadia.Assistant.Calendar.Abstractions.csproj", "{2E85CF39-662F-44F5-89E4-7DC0CCFB3E34}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +103,14 @@ Global
 		{84008633-BB43-42CC-BAD2-59579A837688}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84008633-BB43-42CC-BAD2-59579A837688}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84008633-BB43-42CC-BAD2-59579A837688}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECAF9CB2-A6EC-4E07-9D8B-0E5A4174152A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECAF9CB2-A6EC-4E07-9D8B-0E5A4174152A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECAF9CB2-A6EC-4E07-9D8B-0E5A4174152A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECAF9CB2-A6EC-4E07-9D8B-0E5A4174152A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E85CF39-662F-44F5-89E4-7DC0CCFB3E34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E85CF39-662F-44F5-89E4-7DC0CCFB3E34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E85CF39-662F-44F5-89E4-7DC0CCFB3E34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E85CF39-662F-44F5-89E4-7DC0CCFB3E34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
