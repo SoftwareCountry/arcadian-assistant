@@ -26,6 +26,8 @@
 
         public DateTime? HireDate { get; set; }
 
+        public string RoomNumber { get; set; }
+
         public int VacationDaysLeft { get; set; }
 
         /// <summary>
@@ -46,7 +48,8 @@
                     MobilePhone = metadata.MobilePhone,
                     Name = metadata.Name,
                     Position = metadata.Position,
-                    Sex = metadata.Sex
+                    Sex = metadata.Sex,
+                    RoomNumber = metadata.RoomNumber
                 };
         }
     }
