@@ -39,8 +39,8 @@ class ProfileScreenImpl extends Component<ProfileScreenProps> {
 
         const departmentAbbr = this.uppercase(department ? department.abbreviation : null);
 
-        const base64 = userInfo ? (userInfo.employee ? userInfo.employee.photo.base64 : null) : null;
-        const mime = userInfo ? (userInfo.employee ? userInfo.employee.photo.mimeType : null) : null;
+        const base64 = employee ? userInfo.employee.photo.base64 : null;
+        const mime = employee ? userInfo.employee.photo.mimeType : null;
 
         let tilesData: { label: string, icon: any }[] = [];
         let contactsData: { icon: any, text: string, title: string }[] = [];
