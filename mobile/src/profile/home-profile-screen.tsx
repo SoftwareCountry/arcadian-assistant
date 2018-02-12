@@ -13,8 +13,6 @@ import { Department } from '../reducers/organization/department.model';
 
 import { StyledText } from '../override/styled-text';
 
-const navBar = new TopNavBar('');
-
 interface ProfileScreenProps {
     userInfo: UserInfoState;
     departments: Department[];
@@ -26,8 +24,6 @@ const mapStateToProps = (state: AppState): ProfileScreenProps => ({
 });
 
 class ProfileScreenImpl extends Component<ProfileScreenProps> {
-    public static navigationOptions = navBar.configurate();
-
     public render() {
         const userInfo = this.props.userInfo;
 
