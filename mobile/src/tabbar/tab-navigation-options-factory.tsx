@@ -1,9 +1,10 @@
 import React from 'react';
 import { NavigationTabScreenOptions } from 'react-navigation';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Image, Text, Platform } from 'react-native';
+import { Image, Platform } from 'react-native';
 import { ImageURISource } from 'react-native';
 import tabBarStyles from './tab-bar-styles';
+import { StyledText } from '../override/styled-text';
 
 
 export class TabNavigationOptionsFactory {
@@ -21,6 +22,6 @@ export class TabNavigationOptionsFactory {
     private getTabBarLabel(label: string) {
         return Platform.OS === 'ios'
             ? label
-            : <Text numberOfLines={1} ellipsizeMode={'tail'} style={tabBarStyles.tabBarLabel}>{label}</Text>;  //TODO: fix text width issue on narrow screens
+            : <StyledText numberOfLines={1} ellipsizeMode={'tail'} style={tabBarStyles.tabBarLabel}>{label}</StyledText>;  //TODO: fix text width issue on narrow screens
     }
 }

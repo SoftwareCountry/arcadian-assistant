@@ -34,6 +34,11 @@ export const feedStyles = StyleSheet.create({
         alignItems: 'flex-start',
         flexDirection: 'row'
     },
+    to: {
+        fontSize: 11,
+        color: '#333333',
+        fontWeight: '600'
+    },
     info: {
         flex: 6,
         flexDirection: 'column',
@@ -41,22 +46,22 @@ export const feedStyles = StyleSheet.create({
         paddingLeft: 13
     },
     title: {
-        fontSize: 19,
         textAlign: 'left',
-        fontWeight: '400',
-        letterSpacing: 2,
+        fontSize: 15,
+        lineHeight: 18
     },
     text: {
-        fontSize: 15,
         textAlign: 'left',
         paddingTop: 2,
-        paddingBottom: 2
+        paddingBottom: 2,
+        fontSize: 11
     },
     tags: {
         color: '#2FAFCC',
-        fontSize: 13
+        fontSize: 11
     },
     date: {
-        fontSize: 12
+        fontSize: 9,
+        color: '#333333'
     }
 });

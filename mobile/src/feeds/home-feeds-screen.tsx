@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, Text, View, StyleSheet, ListRenderItemInfo, RefreshControl } from 'react-native';
+import { FlatList, View, StyleSheet, ListRenderItemInfo, RefreshControl } from 'react-native';
 import { TopNavBar } from '../topNavBar/top-nav-bar';
 
 import { Employee } from '../reducers/organization/employee.model';
@@ -11,6 +11,7 @@ import { AppState } from '../reducers/app.reducer';
 import { FeedListItem } from './feed';
 
 import { screenStyles as styles } from './styles';
+import { StyledText } from '../override/styled-text';
 
 const navBar = new TopNavBar('Feeds');
 
@@ -49,7 +50,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps> {
     }
 
     private headerComponent() {
-        return <Text style={styles.viewHeaderText}>News feed</Text>;
+        return <StyledText style={styles.viewHeaderText}>News feed</StyledText>;
     }
 
     private renderItem = (itemInfo: ListRenderItemInfo<Feed>) => {
