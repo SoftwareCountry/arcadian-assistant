@@ -10,50 +10,21 @@ import { EmployeesListItem } from './employees-list-item';
 import { employeesListStyles as styles } from './styles';
 
 interface EmployeesListProps {
-    employees: EmployeeMap;
     myDepartmentId: string;
-}
-
-interface EmployeesListState {
-    employeesForMyDepartment: Employee[];
+    employeesForMyDepartment: EmployeeMap;
 }
 
 const mapStateToProps = (state: AppState): EmployeesListProps => ({
-    employees: state.organization.employees.employeesById,
-    myDepartmentId: state.userInfo.employee ? state.userInfo.employee.departmentId : 'unknown'
+    myDepartmentId: state.userInfo.employee ? state.userInfo.employee.departmentId : 'unknown',
+    employeesForMyDepartment: state.userInfo.employees
 });
 
 class EmployeesListImpl extends React.Component<EmployeesListProps> {
-    public state: {
-        employeesForMyDepartment: Employee[];
-    };
-
-    constructor(props: EmployeesListProps) {
-        super(props);
-        this.state = {
-            employeesForMyDepartment: []
-        };
-    }
-
-    public componentWillReceiveProps(nextProps: Readonly<EmployeesListProps>) {
-        const { employees, myDepartmentId } = nextProps;
-        
-        const employeesForMyDepartment = employees.toArray().filter(function(employee) {
-            return employee.departmentId === myDepartmentId;
-        });
-
-        if (employeesForMyDepartment.length > 0) {
-            this.setState({
-                employeesForMyDepartment: employeesForMyDepartment
-            });
-        }
-    }
-    
     public render() {
         return (
             <View style={styles.view}>
                 <FlatList
-                    data={this.state.employeesForMyDepartment}
+                    data={this.props.employeesForMyDepartment.toArray()}
                     keyExtractor={this.keyExtractor}
                     renderItem={({ item }) => <EmployeesListItem id={item.employeeId} employee={item} />} />
             </View>

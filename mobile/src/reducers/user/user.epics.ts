@@ -1,9 +1,9 @@
 import { ajaxGetJSON } from 'rxjs/observable/dom/AjaxObservable';
 import { deserialize } from 'santee-dcts/src/deserializer';
-import { loadEmployee, LoadEmployeeFinished } from '../organization/organization.action';
+import { loadEmployee, LoadEmployeeFinished, OrganizationActions, LoadEmployeesForDepartment } from '../organization/organization.action';
 import { ActionsObservable } from 'redux-observable';
 import { User } from './user.model';
-import { LoadUser, loadUserFinished, LoadUserFinished, loadUserEmployeeFinished } from './user.action';
+import { LoadUser, loadUserFinished, LoadUserFinished, loadUserEmployeeFinished, LoadUserEmployeeFinished, loadUserDepartmentEmployessFinished } from './user.action';
 import { Observable } from 'rxjs/Observable';
 import { loadFailedError } from '../errors/errors.action';
 import { apiUrl as url } from '../const';
@@ -22,3 +22,12 @@ export const loadUserFinishedEpic$ = (action$: ActionsObservable<LoadUserFinishe
         action$.ofType('LOAD_EMPLOYEE_FINISHED')
     ).filter(([userLoaded, employeeLoaded]) => userLoaded.user.employeeId === employeeLoaded.employee.employeeId)
      .map(([userLoaded, employeeLoaded]) => loadUserEmployeeFinished(employeeLoaded.employee));
+
+
+export const loadUserDepartmentEmployeesEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished | LoadEmployeeFinished>) =>
+     Observable.combineLatest<LoadUserEmployeeFinished, LoadEmployeeFinished>(
+         action$.ofType('LOAD-USER-EMPLOYEE-FINISHED'),
+         action$.ofType('LOAD_EMPLOYEE_FINISHED')
+     ).filter(([userEmployee, loadedEmployee]) => userEmployee.employee.departmentId === loadedEmployee.employee.departmentId)
+      .map(([userEmployee, loadedEmployee]) => loadedEmployee.employee)
+      .map(x => loadUserDepartmentEmployessFinished(x));

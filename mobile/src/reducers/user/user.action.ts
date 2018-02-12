@@ -1,5 +1,6 @@
 import { User } from './user.model';
 import { Employee } from '../organization/employee.model';
+import { EmployeeMap } from '../organization/employees.reducer';
 
 export interface LoadUser {
     type: 'LOAD-USER';
@@ -21,4 +22,11 @@ export interface LoadUserEmployeeFinished {
 
 export const loadUserEmployeeFinished = (employee: Employee): LoadUserEmployeeFinished => ({ type: 'LOAD-USER-EMPLOYEE-FINISHED', employee });
 
-export type UserActions = LoadUser | LoadUserFinished | LoadUserEmployeeFinished;
+export interface LoadUserDepartmentEmployessFinished {
+    type: 'LOAD-USER-DEPARTMENT-EMPOYEES-FINISHED';
+    employee: Employee;
+}
+
+export const loadUserDepartmentEmployessFinished = (employee: Employee): LoadUserDepartmentEmployessFinished => ({ type: 'LOAD-USER-DEPARTMENT-EMPOYEES-FINISHED', employee });
+
+export type UserActions = LoadUser | LoadUserFinished | LoadUserEmployeeFinished | LoadUserDepartmentEmployessFinished;
