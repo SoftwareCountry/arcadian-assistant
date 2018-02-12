@@ -25,7 +25,7 @@ export class Profile extends Component<ProfileProps> {
         const department = this.props.department;
 
         if (!employee || !department) {
-            return null
+            return null;
         }
 
         const tilesData: { label: string, icon: any, style: ImageStyle }[] = [
