@@ -44,7 +44,7 @@
 
                 case GetPhoto _:
                     var photo = this.imageBytes != null
-                        ? new Photo(Mime, Width, Height, Convert.ToBase64String(this.imageBytes))
+                        ? new Photo(Mime, Width, Height, this.imageBytes)
                         : null;
 
                     this.Sender.Tell(new GetPhoto.Response(photo));

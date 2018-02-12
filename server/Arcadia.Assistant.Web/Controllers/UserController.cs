@@ -2,14 +2,15 @@
 {
     using Arcadia.Assistant.Web.Models;
 
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     [Route("api/user")]
     public class UserController : Controller
     {
         [HttpGet]
-        [ProducesResponseType(typeof(UserModel), 200)]
-        [ProducesResponseType(404)]
+        [ProducesResponseType(typeof(UserModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetCurrentUser()
         {
             //TODO: change

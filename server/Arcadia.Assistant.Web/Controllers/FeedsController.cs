@@ -10,6 +10,7 @@
     using Arcadia.Assistant.Feeds;
     using Arcadia.Assistant.Server.Interop;
 
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     [Route("api/feeds")]
@@ -27,7 +28,7 @@
 
         [Route("messages")]
         [HttpGet]
-        [ProducesResponseType(typeof(Message[]), 200)]
+        [ProducesResponseType(typeof(Message[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllMessages(CancellationToken token)
         {
             var feedsActor = this.actorFactory.ActorSelection(this.pathsBuilder.Get("shared-feeds"));

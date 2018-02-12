@@ -11,6 +11,7 @@
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.Server.Interop;
 
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     [Route("/api/departments")]
@@ -28,7 +29,7 @@
 
         [Route("")]
         [HttpGet]
-        [ProducesResponseType(typeof(DepartmentInfo[]), 200)]
+        [ProducesResponseType(typeof(DepartmentInfo[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> All(CancellationToken token)
         {
             var departments = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
@@ -38,7 +39,7 @@
 
         [Route("{departmentId}")]
         [HttpGet]
-        [ProducesResponseType(typeof(DepartmentInfo), 200)]
+        [ProducesResponseType(typeof(DepartmentInfo), StatusCodes.Status200OK)]
         public async Task<IActionResult> Get(string departmentId, CancellationToken token)
         {
             var organization = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));

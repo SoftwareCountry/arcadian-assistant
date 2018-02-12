@@ -8,14 +8,14 @@
 
         public int Height { get; }
 
-        public string Base64 { get; }
+        public byte[] Bytes { get; } //TODO: once core 2.1 released, switch to ReadOnlySpan
 
-        public Photo(string mimeType, int width, int height, string base64)
+        public Photo(string mimeType, int width, int height, byte[] bytes)
         {
             this.MimeType = mimeType;
             this.Width = width;
             this.Height = height;
-            this.Base64 = base64;
+            this.Bytes = bytes;
         }
     }
 }
