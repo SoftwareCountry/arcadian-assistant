@@ -14,7 +14,7 @@
 
         public Sex Sex { get; set; }
 
-        public Photo Photo { get; set; }
+        public PhotoModel Photo { get; set; }
 
         public string Position { get; set; }
 
@@ -50,7 +50,7 @@
                     Position = metadata.Position,
                     Sex = metadata.Sex,
                     RoomNumber = metadata.RoomNumber
-            };
+                };
         }
     }
 }
