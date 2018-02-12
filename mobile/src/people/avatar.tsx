@@ -70,23 +70,26 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
         const mimeType = validateMimeType(this.props.mimeType || defaultAvatar.mimeType);
         const photoBase64 = validateEncodedImage(this.props.photoBase64 || defaultAvatar.base64);
 
-        const outerFrameFlattenStyle = StyleSheet.flatten([styles.outerFrame,
-        {
-            borderRadius: this.state.borderRadius,
-            width: this.state.size,
-            height: this.state.size
-        },
-        this.state.visible ?
-            {}
-            : { display: 'none' }
+        const outerFrameFlattenStyle = StyleSheet.flatten([
+            styles.outerFrame,
+            {
+                borderRadius: this.state.borderRadius,
+                width: this.state.size,
+                height: this.state.size
+            },
+            this.state.visible ?
+                {}
+                : { display: 'none' }
         ]);
 
         const imgSize = (outerFrameFlattenStyle.width as number) - outerFrameFlattenStyle.borderWidth * 2;
-        const imageFlattenStyle = StyleSheet.flatten([styles.image, {
-            width: imgSize,
-            height: imgSize,
-            borderRadius: outerFrameFlattenStyle.borderRadius - outerFrameFlattenStyle.borderWidth * .5
-        }]);
+        const imageFlattenStyle = StyleSheet.flatten([
+            styles.image,
+            {
+                width: imgSize,
+                height: imgSize,
+                borderRadius: outerFrameFlattenStyle.borderRadius - outerFrameFlattenStyle.borderWidth * .5
+            }]);
 
         return (
             <View onLayout={this.onLayout} style={styles.container}>

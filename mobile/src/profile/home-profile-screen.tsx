@@ -12,6 +12,7 @@ import { UserInfoState } from '../reducers/user/user-info.reducer';
 import { Department } from '../reducers/organization/department.model';
 
 import * as icon from './icons';
+import { StyledText } from '../override/styled-text';
 
 const navBar = new TopNavBar('');
 
@@ -71,9 +72,9 @@ class ProfileScreenImpl extends Component<ProfileScreenProps> {
             <View key={tile.label} style={tileStyles.container}>
                 <View style={tileStyles.tile}>
                     <View style={tileStyles.iconContainer}>
-                        <Image source={{ uri: tile.icon }} style={tileStyles.icon} resizeMode="contain" />
+                        <Image source={{ uri: tile.icon }} style={tileStyles.icon} resizeMode='contain' />
                     </View>
-                    <Text style={tileStyles.text}>{tile.label}</Text>
+                    <StyledText style={tileStyles.text}>{tile.label}</StyledText>
                 </View>
             </View>
         ));
@@ -89,15 +90,15 @@ class ProfileScreenImpl extends Component<ProfileScreenProps> {
                 </View>
 
                 <View style={layoutStyles.content}>
-                    <Text style={contentStyles.name}>
+                    <StyledText style={contentStyles.name}>
                         {name}
-                    </Text>
-                    <Text style={contentStyles.position}>
+                    </StyledText>
+                    <StyledText style={contentStyles.position}>
                         {position}
-                    </Text>
-                    <Text style={contentStyles.department}>
+                    </StyledText>
+                    <StyledText style={contentStyles.department}>
                         {departmentAbbr}
-                    </Text>
+                    </StyledText>
 
                     <View style={contentStyles.infoContainer}>
                         {tiles}
