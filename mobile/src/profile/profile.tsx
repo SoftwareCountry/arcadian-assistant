@@ -93,7 +93,7 @@ export class Profile extends Component<ProfileProps> {
                 <View>
                     <Chevron />
                     <View style={layoutStyles.avatarContainer}>
-                        <Avatar mimeType={employee.photo.mimeType} photoBase64={employee.photo.base64} />
+                        <Avatar photo={employee.photo} />
                     </View>
                 </View>
 

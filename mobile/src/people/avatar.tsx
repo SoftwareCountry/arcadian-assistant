@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { View, Image, StyleSheet, ViewStyle, ImageStyle, LayoutChangeEvent } from 'react-native';
+import { Photo } from '../reducers/organization/employee.model';
 
 const styles = StyleSheet.create({
     container: {
@@ -21,8 +22,7 @@ const styles = StyleSheet.create({
 });
 
 export interface AvatarProps {
-    mimeType?: string;
-    photoBase64?: string;
+    photo?: Photo;
     style?: ViewStyle;
 }
 
@@ -32,7 +32,8 @@ interface AvatarState {
     visible: boolean;
 }
 
-function validateMimeType(mime: string) {
+function validateMimeType(photo: Photo) {
+    let mime = photo ? photo.mimeType : null;
     if (mime && mime.indexOf('data:') < 0) {
         mime = `data:${mime};`;
     }
@@ -40,7 +41,8 @@ function validateMimeType(mime: string) {
     return mime;
 }
 
-function validateEncodedImage(data: string) {
+function validateEncodedImage(photo: Photo) {
+    let data = photo ? photo.base64 : null;
     if (data && data.indexOf('base64') < 0) {
         data = `base64,${data}`;
     }
@@ -66,8 +68,8 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
     }
 
     public render() {
-        const mimeType = validateMimeType(this.props.mimeType);
-        const photoBase64 = validateEncodedImage(this.props.photoBase64);
+        const mimeType = validateMimeType(this.props.photo);
+        const photoBase64 = validateEncodedImage(this.props.photo);
 
         const image = !mimeType || !photoBase64 ? require('../../src/people/userpic.png') : { uri: mimeType + photoBase64 };
 
