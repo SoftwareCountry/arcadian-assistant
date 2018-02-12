@@ -105,8 +105,18 @@ export const tileStyles = StyleSheet.create({
         justifyContent: 'center'
     },
     icon: {
-        height: '100%',
-        width: '100%'
+    },
+    iconBirthDay: {
+        width: 18
+    },
+    iconHireDate: {
+        width: 29
+    },
+    iconRoom: {
+        width: 25
+    },
+    iconOrganization: {
+        width: 28
     },
     text: {
         fontSize: 11,

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { View, LayoutChangeEvent, Text, Image } from 'react-native';
+import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet } from 'react-native';
 
 import styles from '../layout/styles';
 import { layoutStyles, contentStyles, tileStyles, contactStyles } from './styles';
@@ -12,75 +12,63 @@ import { UserInfoState } from '../reducers/user/user-info.reducer';
 import { Department } from '../reducers/organization/department.model';
 
 import { StyledText } from '../override/styled-text';
+import { Employee } from '../reducers/organization/employee.model';
 
-interface ProfileScreenProps {
-    userInfo: UserInfoState;
-    departments: Department[];
+interface ProfileProps {
+    employee: Employee;
+    department: Department;
 }
 
-const mapStateToProps = (state: AppState): ProfileScreenProps => ({
-    userInfo: state.userInfo,
-    departments: state.organization.departments
-});
-
-class ProfileScreenImpl extends Component<ProfileScreenProps> {
+export class Profile extends Component<ProfileProps> {
     public render() {
-        const userInfo = this.props.userInfo;
+        const employee = this.props.employee;
+        const department = this.props.department;
 
-        const employee = userInfo ? userInfo.employee : null;
-        const name = employee ? employee.name : null;
-        const position = this.uppercase(employee ? employee.position : null);
+        if (!employee || !department) {
+            return null
+        }
 
-        const department = this.props.departments && employee ? this.props.departments.find((d) => d.departmentId === employee.departmentId) : null;
-
-        const departmentAbbr = this.uppercase(department ? department.abbreviation : null);
-
-        const base64 = employee ? userInfo.employee.photo.base64 : null;
-        const mime = employee ? userInfo.employee.photo.mimeType : null;
-
-        let tilesData: { label: string, icon: any }[] = [];
-        let contactsData: { icon: any, text: string, title: string }[] = [];
-
-        if (employee) {
-            tilesData.push({
+        const tilesData: { label: string, icon: any, style: ImageStyle }[] = [
+            {
                 label: employee.birthDate.format('MMMM D'),
-                icon: require('../../assets/profile/birthDate.png')
-            });
-
-            tilesData.push({
+                icon: require('../../assets/profile/birthDate.png'),
+                style: StyleSheet.flatten([tileStyles.icon, tileStyles.iconBirthDay])
+            },
+            {
                 label: employee.hireDate.format('YYYY-D-MM'),
-                icon: require('../../assets/profile/hireDate.png')
-            });
-
-            tilesData.push({
+                icon: require('../../assets/profile/hireDate.png'),
+                style: StyleSheet.flatten([tileStyles.icon, tileStyles.iconHireDate])
+            },
+            {
                 label: `Room ${employee.roomNumber}`,
-                icon: require('../../assets/profile/room.png')
-            });
+                icon: require('../../assets/profile/room.png'),
+                style: StyleSheet.flatten([tileStyles.icon, tileStyles.iconRoom])
+            },
+            {
+                label: 'Organization',
+                icon: require('../../assets/profile/organization.png'),
+                style: StyleSheet.flatten([tileStyles.icon, tileStyles.iconOrganization])
+            }
+        ];
 
-            contactsData.push({
+        const contactsData: { icon: any, text: string, title: string }[] = [
+            {
                 icon: require('../../assets/profile/phone.png'),
                 text: employee ? employee.mobilePhone : '',
                 title: 'Mobile Phone:'
-            });
-            contactsData.push({
+            },
+            {
                 icon: require('../../assets/profile/email.png'),
                 text: employee ? employee.email : '',
                 title: 'Email:'
-            });
-        }
-
-        if (department) {
-            tilesData.push({
-                label: 'Organization',
-                icon: require('../../assets/profile/organization.png')
-            });
-        }
+            }
+        ];
 
         const tiles = tilesData.map((tile) => (
             <View key={tile.label} style={tileStyles.container}>
                 <View style={tileStyles.tile}>
                     <View style={tileStyles.iconContainer}>
-                        <Image source={tile.icon} style={tileStyles.icon} resizeMode='contain' />
+                        <Image source={tile.icon} style={tile.style} resizeMode='contain' />
                     </View>
                     <StyledText style={tileStyles.text}>{tile.label}</StyledText>
                 </View>
@@ -105,19 +93,19 @@ class ProfileScreenImpl extends Component<ProfileScreenProps> {
                 <View>
                     <Chevron />
                     <View style={layoutStyles.avatarContainer}>
-                        <Avatar mimeType={mime} photoBase64={base64} />
+                        <Avatar mimeType={employee.photo.mimeType} photoBase64={employee.photo.base64} />
                     </View>
                 </View>
 
                 <View style={layoutStyles.content}>
                     <StyledText style={contentStyles.name}>
-                        {name}
+                        {employee.name}
                     </StyledText>
                     <StyledText style={contentStyles.position}>
-                        {position}
+                        {this.uppercase(employee.position)}
                     </StyledText>
                     <StyledText style={contentStyles.department}>
-                        {departmentAbbr}
+                        {this.uppercase(department.abbreviation)}
                     </StyledText>
 
                     <View style={contentStyles.infoContainer}>
@@ -139,5 +127,3 @@ class ProfileScreenImpl extends Component<ProfileScreenProps> {
         return text ? text.toUpperCase() : text;
     }
 }
-
-export const HomeProfileScreen = connect(mapStateToProps)(ProfileScreenImpl);
