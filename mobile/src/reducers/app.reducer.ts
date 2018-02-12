@@ -14,7 +14,7 @@ import { OrganizationState, organizationReducer, organizationEpics } from './org
 import { UserInfoState, userInfoReducer } from './user/user-info.reducer';
 import { userEpics } from './user/user.reducer';
 import { FeedsState, feedsReducer, feedsEpics } from './feeds/feeds.reducer';
-import { CalendarState, calendarReducer } from './calendar/calendar.reducer';
+import { CalendarState, calendarReducer, calendarEpics } from './calendar/calendar.reducer';
 
 export interface AppState {
     helpdesk: HelpdeskState;
@@ -25,7 +25,7 @@ export interface AppState {
     calendar: CalendarState;
 }
 
-const rootEpic = combineEpics(helpdeskEpics as any, organizationEpics as any, errorsEpics as any, userEpics as any, feedsEpics as any);
+const rootEpic = combineEpics(helpdeskEpics as any, organizationEpics as any, errorsEpics as any, userEpics as any, feedsEpics as any, calendarEpics as any);
 
 const reducers = combineReducers<AppState>({
     helpdesk: helpdeskReducer,

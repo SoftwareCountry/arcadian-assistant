@@ -1,20 +1,27 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
-import { calendarScreenLayout, calendarStyles } from './styles';
-import moment from 'moment';
-import { StyledText } from '../override/styled-text';
+import moment, { Moment } from 'moment';
+import { connect } from 'react-redux';
+import { AppState } from '../reducers/app.reducer';
+import { CalendarEvents } from '../reducers/calendar/calendar-events';
+import { CalendarPage } from './calendar-page';
+import { CalendarPager } from './calendar-pager';
 
-export class Calendar extends Component {
+interface CalendarProps {
+    calendarEvents: CalendarEvents[];
+}
+
+interface CalendarState {
+    date: Moment;
+}
+
+export class CalendarImpl extends Component<CalendarProps, CalendarState> {
     public render() {
-        // TODO: temp
-        const today = moment();
-
-        return (
-            <View style={calendarStyles.container}>
-                <StyledText style={calendarStyles.containerTitle}>{today.format('MMMM YYYY')}</StyledText>
-                <View></View>
-            </View>
-        );
+        return <CalendarPager />;
     }
 }
 
+const mapStateToProps = (state: AppState): CalendarProps => ({
+    calendarEvents: state.calendar.calendarEvents
+});
+
+export const Calendar = connect(mapStateToProps)(CalendarImpl);

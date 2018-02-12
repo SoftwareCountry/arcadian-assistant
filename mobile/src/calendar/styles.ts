@@ -5,7 +5,7 @@ const daysCounterTitleColor = '#18515E';
 const daysCounterPrimaryColor = '#2FAFCC';
 
 const triangleHeight = 50;
-const circleDiameter = 120;
+const circleDiameter = 100;
 
 export const calendarScreenLayout = {
     calendar: {
@@ -16,15 +16,60 @@ export const calendarScreenLayout = {
     }
 };
 
+// TODO: debug
+const debugStyles = {
+    // borderWidth: 1,
+    // borderColor: '#4ea'
+};
+
 export const calendarStyles = StyleSheet.create({
     container: {
-        flex: calendarScreenLayout.calendar.flex,
-        marginTop: 20
+        marginTop: 10,
+        marginBottom: 10,
+        flex: 1,
+        alignSelf: 'stretch'
     },
-    containerTitle: {
+    today: {
+        marginBottom: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+    todayTitle: {
         fontSize: 14,
         lineHeight: 16,
         color: daysCounterTitleColor
+    },
+    weeksContainer: {
+        flex: 1
+    },
+    weeksNames: {
+        flex: 1,
+        flexDirection: 'row',
+        marginBottom: 10,
+    },
+    weekName: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        ...debugStyles
+    },
+    weeks: {
+        flex: 7,
+        flexDirection: 'column'
+    },
+    week: {
+        flex: 1,
+        flexDirection: 'row'
+    },
+    weekDay: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        ...debugStyles
+    },
+    weekDayText: {
+        fontSize: 12,
+        lineHeight: 14
     }
 });
 
@@ -66,13 +111,11 @@ export const daysCounterStyles = StyleSheet.create({
         flex: 20
     },
     contentValue: {
-        fontSize: 24,
-        lineHeight: 28,
+        fontSize: 25,
         color: daysCounterFontColor
     },
     contentTitle: {
-        fontSize: 9,
-        lineHeight: 11,
+        fontSize: 11,
         color: daysCounterFontColor
     }
 });
@@ -88,23 +131,21 @@ export const selectedDayStyles = StyleSheet.create({
         left: '50%',
         backgroundColor: '#fff',
         position: 'absolute',
-        transform: [{ translateX: -(circleDiameter / 2) }],
+        transform: [{ translateX: -50 }],
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 2,
-        borderColor: daysCounterPrimaryColor
+        borderColor: daysCounterPrimaryColor,
     },
     circleCurrentDay: {
-        fontSize: 36,
-        lineHeight: 42,
+        fontSize: 40,
         color: daysCounterTitleColor,
         marginTop: -5
     },
     circleCurrentMonth: {
-        fontSize: 18,
-        lineHeight: 21,
+        fontSize: 15,
         color: daysCounterTitleColor,
-        marginTop: -4
+        marginTop: -8
     }
 });
 
