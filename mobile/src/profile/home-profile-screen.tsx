@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { View, LayoutChangeEvent, Text, Image } from 'react-native';
 
 import styles from '../layout/styles';
-import { layoutStyles, contentStyles, tileStyles } from './styles';
+import { layoutStyles, contentStyles, tileStyles, contactStyles } from './styles';
 import { Chevron } from './chevron';
 import { Avatar } from '../people/avatar';
 import { TopNavBar } from '../topNavBar/top-nav-bar';
@@ -11,7 +11,6 @@ import { AppState } from '../reducers/app.reducer';
 import { UserInfoState } from '../reducers/user/user-info.reducer';
 import { Department } from '../reducers/organization/department.model';
 
-import * as icon from './icons';
 import { StyledText } from '../override/styled-text';
 
 const navBar = new TopNavBar('');
@@ -43,28 +42,41 @@ class ProfileScreenImpl extends Component<ProfileScreenProps> {
         const base64 = userInfo ? (userInfo.employee ? userInfo.employee.photo.base64 : null) : null;
         const mime = userInfo ? (userInfo.employee ? userInfo.employee.photo.mimeType : null) : null;
 
-        let tilesData: { label: string, icon: string }[] = [];
+        let tilesData: { label: string, icon: any }[] = [];
+        let contactsData: { icon: any, text: string, title: string }[] = [];
+
         if (employee) {
             tilesData.push({
                 label: employee.birthDate.format('MMMM D'),
-                icon: icon.cupcake
+                icon: require('../../assets/profile/birthDate.png')
             });
 
             tilesData.push({
                 label: employee.hireDate.format('YYYY-D-MM'),
-                icon: icon.hire
+                icon: require('../../assets/profile/hireDate.png')
             });
 
             tilesData.push({
                 label: `Room ${employee.roomNumber}`,
-                icon: icon.room
+                icon: require('../../assets/profile/room.png')
+            });
+
+            contactsData.push({
+                icon: require('../../assets/profile/phone.png'),
+                text: employee ? employee.mobilePhone : '',
+                title: 'Mobile Phone:'
+            });
+            contactsData.push({
+                icon: require('../../assets/profile/email.png'),
+                text: employee ? employee.email : '',
+                title: 'Email:'
             });
         }
 
         if (department) {
             tilesData.push({
                 label: 'Organization',
-                icon: icon.organization
+                icon: require('../../assets/profile/organization.png')
             });
         }
 
@@ -72,9 +84,21 @@ class ProfileScreenImpl extends Component<ProfileScreenProps> {
             <View key={tile.label} style={tileStyles.container}>
                 <View style={tileStyles.tile}>
                     <View style={tileStyles.iconContainer}>
-                        <Image source={{ uri: tile.icon }} style={tileStyles.icon} resizeMode='contain' />
+                        <Image source={tile.icon} style={tileStyles.icon} resizeMode='contain' />
                     </View>
                     <StyledText style={tileStyles.text}>{tile.label}</StyledText>
+                </View>
+            </View>
+        ));
+
+        const contacts = contactsData.map((contact) => (
+            <View style={contactStyles.container} key={contact.title}>
+                <View style={contactStyles.iconContainer}>
+                    <Image source={contact.icon} style={contactStyles.icon} resizeMode='center' />
+                </View>
+                <View style={contactStyles.textContainer}>
+                    <StyledText style={contactStyles.title}>{contact.title}</StyledText>
+                    <StyledText style={contactStyles.text}>{contact.text}</StyledText>
                 </View>
             </View>
         ));
@@ -105,7 +129,9 @@ class ProfileScreenImpl extends Component<ProfileScreenProps> {
                     </View>
 
                     <View style={contentStyles.contactsContainer}>
-
+                        <View>
+                            {contacts}
+                        </View>
                     </View>
                 </View>
 

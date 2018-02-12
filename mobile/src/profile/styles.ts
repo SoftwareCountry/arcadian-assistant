@@ -52,7 +52,7 @@ export const layoutStyles = StyleSheet.create({
             { rotate: '180deg' }
         ]
     },
-    chevronPlaceholder : {
+    chevronPlaceholder: {
         height: placeholderHeight,
         backgroundColor: chevronColor
     }
@@ -80,7 +80,10 @@ export const contentStyles = StyleSheet.create({
         padding: 5
     },
     contactsContainer: {
-
+        paddingTop: 20,
+        padding: 5,
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 });
 
@@ -102,13 +105,43 @@ export const tileStyles = StyleSheet.create({
         justifyContent: 'center'
     },
     icon: {
-         height: '100%',
-         width: '100%'
+        height: '100%',
+        width: '100%'
     },
     text: {
         fontSize: 11,
         textAlign: 'center',
         color: '#18515E',
         paddingTop: 2
+    }
+});
+
+export const contactStyles = StyleSheet.create({
+    container: {
+        flexDirection: 'row',
+        paddingBottom: 10
+    },
+    iconContainer: {
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    icon: {
+        width: 36,
+        height: 32
+    },
+    textContainer: {
+        paddingLeft: 20,
+        flexDirection: 'column'
+    },
+    text: {
+        fontSize: 14,
+        lineHeight: 17,
+        color: '#333'
+    },
+    title: {
+        paddingBottom: 3,
+        fontSize: 10,
+        lineHeight: 12,
+        color: 'rgba(0, 0, 0, 0.7)'
     }
 });
