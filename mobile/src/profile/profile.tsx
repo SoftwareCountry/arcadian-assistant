@@ -31,34 +31,34 @@ export class Profile extends Component<ProfileProps> {
         const tilesData: { label: string, icon: any, style: ImageStyle }[] = [
             {
                 label: employee.birthDate.format('MMMM D'),
-                icon: require('../../assets/profile/birthDate.png'),
+                icon: require('../../src/profile/icons/birthDate.png'),
                 style: StyleSheet.flatten([tileStyles.icon, tileStyles.iconBirthDay])
             },
             {
                 label: employee.hireDate.format('YYYY-D-MM'),
-                icon: require('../../assets/profile/hireDate.png'),
+                icon: require('../../src/profile/icons/hireDate.png'),
                 style: StyleSheet.flatten([tileStyles.icon, tileStyles.iconHireDate])
             },
             {
                 label: `Room ${employee.roomNumber}`,
-                icon: require('../../assets/profile/room.png'),
+                icon: require('../../src/profile/icons/room.png'),
                 style: StyleSheet.flatten([tileStyles.icon, tileStyles.iconRoom])
             },
             {
                 label: 'Organization',
-                icon: require('../../assets/profile/organization.png'),
+                icon: require('../../src/profile/icons/organization.png'),
                 style: StyleSheet.flatten([tileStyles.icon, tileStyles.iconOrganization])
             }
         ];
 
         const contactsData: { icon: any, text: string, title: string }[] = [
             {
-                icon: require('../../assets/profile/phone.png'),
+                icon: require('../../src/profile/icons/phone.png'),
                 text: employee ? employee.mobilePhone : '',
                 title: 'Mobile Phone:'
             },
             {
-                icon: require('../../assets/profile/email.png'),
+                icon: require('../../src/profile/icons/email.png'),
                 text: employee ? employee.email : '',
                 title: 'Email:'
             }

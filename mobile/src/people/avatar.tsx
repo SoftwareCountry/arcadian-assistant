@@ -69,7 +69,7 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
         const mimeType = validateMimeType(this.props.mimeType);
         const photoBase64 = validateEncodedImage(this.props.photoBase64);
 
-        const image = !mimeType || !photoBase64 ? require('../../assets/userpic.png') : { uri: mimeType + photoBase64 };
+        const image = !mimeType || !photoBase64 ? require('../../src/people/userpic.png') : { uri: mimeType + photoBase64 };
 
         const outerFrameFlattenStyle = StyleSheet.flatten([
             styles.outerFrame,
