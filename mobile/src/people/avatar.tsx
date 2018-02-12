@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { defaultAvatar } from './avatar-default';
 import { View, Image, StyleSheet, ViewStyle, ImageStyle, LayoutChangeEvent } from 'react-native';
 
 const styles = StyleSheet.create({
@@ -67,8 +66,10 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
     }
 
     public render() {
-        const mimeType = validateMimeType(this.props.mimeType || defaultAvatar.mimeType);
-        const photoBase64 = validateEncodedImage(this.props.photoBase64 || defaultAvatar.base64);
+        const mimeType = validateMimeType(this.props.mimeType);
+        const photoBase64 = validateEncodedImage(this.props.photoBase64);
+
+        const image = !mimeType || !photoBase64 ? require('../../assets/userpic.png') : { uri: mimeType + photoBase64 };
 
         const outerFrameFlattenStyle = StyleSheet.flatten([
             styles.outerFrame,
@@ -94,7 +95,7 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
         return (
             <View onLayout={this.onLayout} style={styles.container}>
                 <View style={outerFrameFlattenStyle}>
-                    <Image source={{ uri: mimeType + photoBase64 }} style={imageFlattenStyle} />
+                    <Image source={image} style={imageFlattenStyle} />
                 </View>
             </View>
         );
