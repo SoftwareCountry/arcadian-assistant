@@ -21,71 +21,14 @@ interface ProfileProps {
 
 export class Profile extends Component<ProfileProps> {
     public render() {
-        const employee = this.props.employee;
-        const department = this.props.department;
+        const { employee, department } = this.props;
 
         if (!employee || !department) {
             return null;
         }
 
-        const tilesData: { label: string, icon: any, style: ImageStyle }[] = [
-            {
-                label: employee.birthDate.format('MMMM D'),
-                icon: require('../../src/profile/icons/birthDate.png'),
-                style: StyleSheet.flatten([tileStyles.icon, tileStyles.iconBirthDay])
-            },
-            {
-                label: employee.hireDate.format('YYYY-D-MM'),
-                icon: require('../../src/profile/icons/hireDate.png'),
-                style: StyleSheet.flatten([tileStyles.icon, tileStyles.iconHireDate])
-            },
-            {
-                label: `Room ${employee.roomNumber}`,
-                icon: require('../../src/profile/icons/room.png'),
-                style: StyleSheet.flatten([tileStyles.icon, tileStyles.iconRoom])
-            },
-            {
-                label: 'Organization',
-                icon: require('../../src/profile/icons/organization.png'),
-                style: StyleSheet.flatten([tileStyles.icon, tileStyles.iconOrganization])
-            }
-        ];
-
-        const contactsData: { icon: any, text: string, title: string }[] = [
-            {
-                icon: require('../../src/profile/icons/phone.png'),
-                text: employee ? employee.mobilePhone : '',
-                title: 'Mobile Phone:'
-            },
-            {
-                icon: require('../../src/profile/icons/email.png'),
-                text: employee ? employee.email : '',
-                title: 'Email:'
-            }
-        ];
-
-        const tiles = tilesData.map((tile) => (
-            <View key={tile.label} style={tileStyles.container}>
-                <View style={tileStyles.tile}>
-                    <View style={tileStyles.iconContainer}>
-                        <Image source={tile.icon} style={tile.style} resizeMode='contain' />
-                    </View>
-                    <StyledText style={tileStyles.text}>{tile.label}</StyledText>
-                </View>
-            </View>
-        ));
-
-        const contacts = contactsData.map((contact) => (
-            <View style={contactStyles.container} key={contact.title}>
-                <View style={contactStyles.iconContainer}>
-                    <Image source={contact.icon} style={contactStyles.icon} resizeMode='center' />
-                </View>
-                <View style={contactStyles.textContainer}>
-                    <StyledText style={contactStyles.title}>{contact.title}</StyledText>
-                    <StyledText style={contactStyles.text}>{contact.text}</StyledText>
-                </View>
-            </View>
-        ));
+        const tiles = this.getTiles(employee);
+        const contacts = this.getContacts(employee);
 
         return <View style={styles.container}>
             <View style={layoutStyles.container}>
@@ -125,5 +68,68 @@ export class Profile extends Component<ProfileProps> {
 
     private uppercase(text: string) {
         return text ? text.toUpperCase() : text;
+    }
+
+    private getTiles(employee: Employee) {
+        const tilesData: { label: string, icon: any, style: ImageStyle }[] = [
+            {
+                label: employee.birthDate.format('MMMM D'),
+                icon: require('../../src/profile/icons/birthDate.png'),
+                style: StyleSheet.flatten([tileStyles.icon, tileStyles.iconBirthDay])
+            },
+            {
+                label: employee.hireDate.format('YYYY-D-MM'),
+                icon: require('../../src/profile/icons/hireDate.png'),
+                style: StyleSheet.flatten([tileStyles.icon, tileStyles.iconHireDate])
+            },
+            {
+                label: `Room ${employee.roomNumber}`,
+                icon: require('../../src/profile/icons/room.png'),
+                style: StyleSheet.flatten([tileStyles.icon, tileStyles.iconRoom])
+            },
+            {
+                label: 'Organization',
+                icon: require('../../src/profile/icons/organization.png'),
+                style: StyleSheet.flatten([tileStyles.icon, tileStyles.iconOrganization])
+            }
+        ];
+
+        return tilesData.map((tile) => (
+            <View key={tile.label} style={tileStyles.container}>
+                <View style={tileStyles.tile}>
+                    <View style={tileStyles.iconContainer}>
+                        <Image source={tile.icon} style={tile.style} resizeMode='contain' />
+                    </View>
+                    <StyledText style={tileStyles.text}>{tile.label}</StyledText>
+                </View>
+            </View>
+        ));
+    }
+
+    private getContacts(employee: Employee) {
+        const contactsData: { icon: any, text: string, title: string }[] = [
+            {
+                icon: require('../../src/profile/icons/phone.png'),
+                text: employee.mobilePhone,
+                title: 'Mobile Phone:'
+            },
+            {
+                icon: require('../../src/profile/icons/email.png'),
+                text: employee.email,
+                title: 'Email:'
+            }
+        ];
+
+        return contactsData.map((contact) => (
+            <View style={contactStyles.container} key={contact.title}>
+                <View style={contactStyles.iconContainer}>
+                    <Image source={contact.icon} style={contactStyles.icon} resizeMode='center' />
+                </View>
+                <View style={contactStyles.textContainer}>
+                    <StyledText style={contactStyles.title}>{contact.title}</StyledText>
+                    <StyledText style={contactStyles.text}>{contact.text}</StyledText>
+                </View>
+            </View>
+        ));
     }
 }
