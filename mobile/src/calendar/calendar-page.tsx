@@ -157,9 +157,9 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
         const circleStyles = StyleSheet.create({
             circle: {
                 backgroundColor: day.today ? '#2FAFCC' : '#fff',
-                borderRadius: 26 / 2,
-                height: 26,
-                width: 26,
+                borderRadius: 28 / 2,
+                height: 28,
+                width: 28,
                 justifyContent: 'center',
                 alignItems: 'center'
             },
