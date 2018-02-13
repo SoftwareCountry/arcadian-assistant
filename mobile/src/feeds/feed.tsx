@@ -20,8 +20,6 @@ export class FeedListItem extends React.Component<FeedListItemProps> {
 
         const employeeName = employee ? employee.name : message.title;
         const photo = employee ? employee.photo : null;
-        const mimeType = photo ? photo.mimeType : null;
-        const base64 = photo ? photo.base64 : null;
 
         const formattedDate = message.datePosted.format('MMMM D, YYYY');
 
@@ -29,7 +27,7 @@ export class FeedListItem extends React.Component<FeedListItemProps> {
             <TouchableHighlight>
                 <View style={styles.layout}>
                     <View style={styles.imgContainer}>
-                        <Avatar mimeType={mimeType} photoBase64={base64} />
+                        <Avatar photo={photo} />
                     </View>
                     <View style={styles.info}>
                         <StyledText style={styles.title}>{employeeName}</StyledText>
