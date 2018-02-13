@@ -10,17 +10,17 @@ import { EmployeesListItem } from './employees-list-item';
 import { employeesListStyles as styles } from './styles';
 
 interface EmployeesListProps {
-    myDepartmentId: string;
     employeesForMyDepartment: EmployeeMap;
 }
 
 const mapStateToProps = (state: AppState): EmployeesListProps => ({
-    myDepartmentId: state.userInfo.employee ? state.userInfo.employee.departmentId : 'unknown',
-    employeesForMyDepartment: state.userInfo.employees
+    employeesForMyDepartment: state.people.employees
 });
 
 class EmployeesListImpl extends React.Component<EmployeesListProps> {
     public render() {
+        console.log(this.props.employeesForMyDepartment);
+        
         return (
             <View style={styles.view}>
                 <FlatList
