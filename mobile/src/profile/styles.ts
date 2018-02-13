@@ -1,15 +1,12 @@
-import { StyleSheet, ViewStyle } from 'react-native';
+import { StyleSheet } from 'react-native';
 
-const daysCounterFontColor = '#fff';
-const daysCounterTitleColor = '#18515E';
-const daysCounterPrimaryColor = '#fff';
 const chevronColor = '#2FAFCC';
 
 const circleDiameter = 150;
 const chevronHeight = 50;
 const placeholderHeight = circleDiameter * .5 - chevronHeight * .5;
 
-const daysCounterShapeZIndex = 2;
+const avatarContainerZIndex = 2;
 
 export const layoutStyles = StyleSheet.create({
     container: {
@@ -26,22 +23,19 @@ export const layoutStyles = StyleSheet.create({
         borderRadius: circleDiameter / 2,
         height: circleDiameter,
         width: circleDiameter,
-        zIndex: daysCounterShapeZIndex + 1,
+        zIndex: avatarContainerZIndex + 1,
         left: '50%',
         top: placeholderHeight * -1,
         position: 'absolute',
         transform: [{ translateX: circleDiameter * -.5 }],
         alignItems: 'center',
-        justifyContent: 'center',
-        //borderWidth: 2,
-        //backgroundColor: '#fff',
-        //borderColor: daysCounterPrimaryColor,
+        justifyContent: 'center'
     },
     chevron: {
         width: '100%',
         backgroundColor: 'transparent',
         height: 0,
-        zIndex: daysCounterShapeZIndex,
+        zIndex: avatarContainerZIndex,
         borderBottomWidth: chevronHeight,
         borderStyle: 'solid',
         borderLeftColor: 'transparent',
