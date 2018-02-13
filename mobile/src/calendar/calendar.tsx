@@ -1,36 +1,41 @@
 import React, { Component, ComponentClass } from 'react';
-import moment, { Moment } from 'moment';
-import { connect, MergeProps, InferableComponentEnhancerWithProps, Dispatch } from 'react-redux';
+import { connect, Dispatch } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
-import { CalendarEvents } from '../reducers/calendar/calendar-events';
-import { CalendarPage, OnSelectedDayCallback, DayModel } from './calendar-page';
+import { OnSelectedDayCallback } from './calendar-page';
 import { CalendarPager } from './calendar-pager';
-import { CalendarActions, selectCalendarDay } from '../reducers/calendar/calendar.action';
+import { CalendarActions, selectCalendarDay, selectCalendarMonth } from '../reducers/calendar/calendar.action';
+import { WeekModel, DayModel } from '../reducers/calendar/calendar.model';
 
 interface CalendarProps {
-    calendarEvents?: CalendarEvents[];
+    weeks: WeekModel[];
 }
 
 interface CalendarDispatchProps {
     selectCalendarDay: OnSelectedDayCallback;
+    selectCalendarMonth: (month: number, year: number) => void;
 }
 
 export class CalendarImpl extends Component<CalendarProps & CalendarDispatchProps> {
     public render() {
-        return <CalendarPager onSelectedDay={this.onSelectedDay} />;
+        return <CalendarPager onSelectedDay={this.onSelectedDay} weeks={this.props.weeks} onNextMonth={this.onSelectMonth} onPrevMonth={this.onSelectMonth} />;
     }
 
     private onSelectedDay: OnSelectedDayCallback = (day) => {
         this.props.selectCalendarDay(day);
     }
+
+    private onSelectMonth = (month: number, year: number) => {
+        this.props.selectCalendarMonth(month, year);
+    }
 }
 
 const mapStateToProps = (state: AppState): CalendarProps => ({
-    calendarEvents: state.calendar.calendarEvents
+    weeks: state.calendar.calendarEvents.weeks
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>) => ({
-    selectCalendarDay: (day: DayModel) => { dispatch(selectCalendarDay(day)); }
+    selectCalendarDay: (day: DayModel) => { dispatch(selectCalendarDay(day)); },
+    selectCalendarMonth: (month: number, year: number) => { dispatch(selectCalendarMonth(month, year)); },
 });
 
 export const Calendar = connect(mapStateToProps, mapDispatchToProps)(CalendarImpl);

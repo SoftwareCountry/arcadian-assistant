@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { CalendarEvents } from '../reducers/calendar/calendar-events';
 import moment, { Moment } from 'moment';
 import { calendarStyles } from './styles';
 import { View, Button } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { CalendarPage, OnSelectedDayCallback } from './calendar-page';
+import { WeekModel } from '../reducers/calendar/calendar.model';
 
 interface CalendarInterval {
     startDate: Moment;
@@ -17,14 +17,17 @@ interface CalendarDefaultProps {
 }
 
 interface CalendarProps extends CalendarDefaultProps {
+    weeks: WeekModel[];
     onSelectedDay: OnSelectedDayCallback;
+    onPrevMonth: (month: number, year: number) => void;
+    onNextMonth: (month: number, year: number) => void;
 }
 
 interface CalendarState {
     date: Moment;
 }
 
-// TODO: Temporary implementation with Prev Next buttons. Switch on swipe.
+// TODO: Temporary implementation with Prev Next buttons. Switch to swipe.
 export class CalendarPager extends Component<CalendarProps, CalendarState> {
     public static defaultProps: CalendarDefaultProps = {
         intervals: []
@@ -40,13 +43,17 @@ export class CalendarPager extends Component<CalendarProps, CalendarState> {
 
     public onPrevClick = () => {
         const newDate = moment(this.state.date);
+        
         newDate.add(-1, 'months');
+        this.props.onPrevMonth(newDate.month(), newDate.year());
         this.setState({ date: newDate });
     }
 
     public onNextClick = () => {
         const newDate = moment(this.state.date);
+        
         newDate.add(1, 'months');
+        this.props.onNextMonth(newDate.month(), newDate.year());
         this.setState({ date: newDate });
     }
 
@@ -61,7 +68,7 @@ export class CalendarPager extends Component<CalendarProps, CalendarState> {
                 </StyledText>
                 <Button onPress={this.onNextClick} title={'>'} />
             </View>
-            <CalendarPage month={date.month()} year={date.year()} onSelectedDay={this.props.onSelectedDay} />
+            <CalendarPage onSelectedDay={this.props.onSelectedDay} weeks={this.props.weeks} />
         </View>;
     }
 }

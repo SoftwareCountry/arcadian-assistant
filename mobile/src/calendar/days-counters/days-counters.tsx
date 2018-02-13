@@ -8,7 +8,7 @@ import { AppState } from '../../reducers/app.reducer';
 import { connect } from 'react-redux';
 import { SelectedDay } from './selected-day';
 import { Triangle } from './triangle';
-import { DayModel } from '../calendar-page';
+import { DayModel } from '../../reducers/calendar/calendar.model';
 
 interface DaysCountersProps {
     daysCounters: DaysCountersModel;
@@ -28,7 +28,7 @@ class DaysCountersImpl extends Component<DaysCountersProps, DaysCounterState> {
     }
 
     public render() {
-        const { daysCounters: { allVacationDays, hoursCredit } } = this.props;
+        const { daysCounters: { allVacationDays, hoursCredit }, selectedCalendarDay } = this.props;
 
         const vacationCounter = allVacationDays
             ? <DaysCounter  textValue={allVacationDays.toString()}
@@ -41,8 +41,8 @@ class DaysCountersImpl extends Component<DaysCountersProps, DaysCounterState> {
             : <EmptyDaysCounter />;
 
 
-        const selectedDay = this.props.selectedCalendarDay 
-            ? this.props.selectedCalendarDay.date
+        const selectedDay = selectedCalendarDay 
+            ? selectedCalendarDay.date
             : null;
 
         return (
@@ -67,7 +67,7 @@ class DaysCountersImpl extends Component<DaysCountersProps, DaysCounterState> {
 
 const mapStateToProps = (state: AppState): DaysCountersProps => ({
     daysCounters: state.calendar.daysCounters,
-    selectedCalendarDay: state.calendar.selectedCalendarDay
+    selectedCalendarDay: state.calendar.calendarEvents.selectedCalendarDay
 });
 
 export const DaysCounters = connect(mapStateToProps)(DaysCountersImpl);
