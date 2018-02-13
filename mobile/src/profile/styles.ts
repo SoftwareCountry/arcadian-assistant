@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-const chevronColor = '#2FAFCC';
+export const chevronColor = '#2FAFCC';
 
 const circleDiameter = 150;
 const chevronHeight = 50;

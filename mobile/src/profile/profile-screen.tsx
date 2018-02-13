@@ -9,10 +9,12 @@ import { connect } from 'react-redux';
 import { StyledText } from '../override/styled-text';
 import { View, StyleSheet, SafeAreaView } from 'react-native';
 import { Employee } from '../reducers/organization/employee.model';
+import { chevronColor } from './styles';
 
 const styles = StyleSheet.create({
     profileContainer: {
-        flex: 1
+        flex: 1,
+        backgroundColor: chevronColor
     },
     loadingContainer: {
         flex: 1,
