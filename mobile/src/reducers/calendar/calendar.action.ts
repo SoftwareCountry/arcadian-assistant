@@ -1,4 +1,4 @@
-import { CalendarEvents } from './calendar-events';
+import { CalendarEvents } from './calendar-events.model';
 import { DayModel } from './calendar.model';
 
 export interface LoadCalendarEventsFinished {
