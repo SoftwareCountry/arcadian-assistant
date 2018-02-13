@@ -5,6 +5,14 @@ export const employeesListStyles  = StyleSheet.create({
         paddingTop: 5,
         flex: 1,
         backgroundColor: '#FFF'
+    },
+    loadingContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    loadingText: {
+        fontSize: 20
     }
 });
 

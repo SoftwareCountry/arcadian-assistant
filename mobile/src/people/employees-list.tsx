@@ -8,6 +8,7 @@ import { EmployeesStore, EmployeeMap, EmployeeIdsGroupMap } from '../reducers/or
 import { AppState } from '../reducers/app.reducer';
 import { EmployeesListItem } from './employees-list-item';
 import { employeesListStyles as styles } from './styles';
+import { StyledText } from '../override/styled-text';
 
 interface EmployeesListProps {
     employeesForMyDepartment: EmployeeMap;
@@ -19,14 +20,18 @@ const mapStateToProps = (state: AppState): EmployeesListProps => ({
 
 class EmployeesListImpl extends React.Component<EmployeesListProps> {
     public render() {
-        console.log(this.props.employeesForMyDepartment);
-        
-        return (
+        const employees = this.props.employeesForMyDepartment;
+
+        return employees.size > 0 ? 
             <View style={styles.view}>
                 <FlatList
-                    data={this.props.employeesForMyDepartment.toArray()}
+                    data={employees.toArray()}
                     keyExtractor={this.keyExtractor}
                     renderItem={({ item }) => <EmployeesListItem id={item.employeeId} employee={item} />} />
+            </View>
+        : (
+            <View style={styles.loadingContainer}>
+                    <StyledText style={styles.loadingText}>Loading...</StyledText>
             </View>
         );
     }
