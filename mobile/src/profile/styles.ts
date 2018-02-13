@@ -8,6 +8,27 @@ const placeholderHeight = circleDiameter * .5 - chevronHeight * .5;
 
 const avatarContainerZIndex = 2;
 
+export const chevronStyles = StyleSheet.create({
+    container: {
+        height: chevronHeight
+    },
+    chevron: {
+        width: '100%',
+        backgroundColor: 'transparent',
+        height: 0,
+        zIndex: avatarContainerZIndex,
+        borderBottomWidth: chevronHeight,
+        borderStyle: 'solid',
+        borderLeftColor: 'transparent',
+        borderRightColor: 'transparent',
+        borderBottomColor: chevronColor,
+        position: 'absolute',
+        transform: [
+            { rotate: '180deg' }
+        ]
+    }
+});
+
 export const layoutStyles = StyleSheet.create({
     container: {
         flex: 1,
@@ -30,21 +51,6 @@ export const layoutStyles = StyleSheet.create({
         transform: [{ translateX: circleDiameter * -.5 }],
         alignItems: 'center',
         justifyContent: 'center'
-    },
-    chevron: {
-        width: '100%',
-        backgroundColor: 'transparent',
-        height: 0,
-        zIndex: avatarContainerZIndex,
-        borderBottomWidth: chevronHeight,
-        borderStyle: 'solid',
-        borderLeftColor: 'transparent',
-        borderRightColor: 'transparent',
-        borderBottomColor: chevronColor,
-        position: 'absolute',
-        transform: [
-            { rotate: '180deg' }
-        ]
     },
     chevronPlaceholder: {
         height: placeholderHeight,

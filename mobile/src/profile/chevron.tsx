@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, LayoutChangeEvent } from 'react-native';
-import { layoutStyles } from './styles';
+import { chevronStyles } from './styles';
 
 interface ChevronProps {
     containerWidth?: number;
@@ -21,17 +21,21 @@ export class Chevron extends Component<ChevronProps, ChevronState> {
     public render() {
         const borderWidth = this.state.chevronWidth / 2;
         const rectangleStyles = StyleSheet.flatten([
-            layoutStyles.chevron,
+            chevronStyles.chevron,
             {
                 borderLeftWidth: borderWidth,
-                borderRightWidth: borderWidth,
+                borderRightWidth: borderWidth
             }
         ]);
 
-        return <View style={rectangleStyles} onLayout={this.onDaysCountersLayout}></View>;
+        return (
+            <View style={chevronStyles.container} onLayout={this.onLayout}>
+                <View style={rectangleStyles}></View>
+            </View>
+        );
     }
 
-    private onDaysCountersLayout = (e: LayoutChangeEvent) => {
+    private onLayout = (e: LayoutChangeEvent) => {
         this.setState({
             chevronWidth: e.nativeEvent.layout.width as any
         });
