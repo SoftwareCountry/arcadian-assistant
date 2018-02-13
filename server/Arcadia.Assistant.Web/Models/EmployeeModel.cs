@@ -26,9 +26,9 @@
 
         public DateTime? HireDate { get; set; }
 
-        public int VacationDaysLeft { get; set; }
-
         public string RoomNumber { get; set; }
+
+        public int VacationDaysLeft { get; set; }
 
         /// <summary>
         /// Positive values means that these days must be worked out.
