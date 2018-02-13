@@ -4,7 +4,8 @@ export const chevronColor = '#2FAFCC';
 
 const circleDiameter = 150;
 const chevronHeight = 50;
-const placeholderHeight = circleDiameter * .5 - chevronHeight * .5;
+const placeholderHeight = circleDiameter * .5 - chevronHeight * .5; //used to add background for the avatar
+const headerGap = 20; //adds additional gap over the avatar. used mainly for ios
 
 const avatarContainerZIndex = 2;
 
@@ -37,7 +38,7 @@ export const layoutStyles = StyleSheet.create({
     content: {
         flex: 1,
         flexDirection: 'column',
-        marginTop: chevronHeight + placeholderHeight
+        marginTop: placeholderHeight
 
     },
     avatarContainer: {
@@ -53,7 +54,7 @@ export const layoutStyles = StyleSheet.create({
         justifyContent: 'center'
     },
     chevronPlaceholder: {
-        height: placeholderHeight,
+        height: placeholderHeight + headerGap,
         backgroundColor: chevronColor
     }
 });
