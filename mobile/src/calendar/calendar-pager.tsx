@@ -4,7 +4,7 @@ import moment, { Moment } from 'moment';
 import { calendarStyles } from './styles';
 import { View, Button } from 'react-native';
 import { StyledText } from '../override/styled-text';
-import { CalendarPage } from './calendar-page';
+import { CalendarPage, OnSelectedDayCallback } from './calendar-page';
 
 interface CalendarInterval {
     startDate: Moment;
@@ -16,17 +16,21 @@ interface CalendarDefaultProps {
     intervals?: CalendarInterval[];
 }
 
+interface CalendarProps extends CalendarDefaultProps {
+    onSelectedDay: OnSelectedDayCallback;
+}
+
 interface CalendarState {
     date: Moment;
 }
 
 // TODO: Temporary implementation with Prev Next buttons. Switch on swipe.
-export class CalendarPager extends Component<CalendarDefaultProps, CalendarState> {
+export class CalendarPager extends Component<CalendarProps, CalendarState> {
     public static defaultProps: CalendarDefaultProps = {
         intervals: []
     };
 
-    constructor(props: CalendarDefaultProps) {
+    constructor(props: CalendarProps) {
         super(props);
 
         this.state = {
@@ -53,11 +57,11 @@ export class CalendarPager extends Component<CalendarDefaultProps, CalendarState
             <View style={calendarStyles.today}>
                 <Button onPress={this.onPrevClick} title={'<'} />
                 <StyledText style={calendarStyles.todayTitle}>
-                    {date.format('MMM YYYY')}
+                    {date.format('MMMM YYYY')}
                 </StyledText>
                 <Button onPress={this.onNextClick} title={'>'} />
             </View>
-            <CalendarPage month={date.month()} year={date.year()} />
+            <CalendarPage month={date.month()} year={date.year()} onSelectedDay={this.props.onSelectedDay} />
         </View>;
     }
 }

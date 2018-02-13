@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import { Moment } from 'moment';
 import moment from 'moment';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, TouchableHighlight } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { calendarStyles } from './styles';
 
 export interface DayModel {
-    day: number;
-    week: number;
+    date: Moment;
     hide: boolean;
     today: boolean;
     belongsToCurrentMonth: boolean;
@@ -21,6 +20,8 @@ export interface WeekModel<TDay> {
 type DaySelector<TDay> = (day: DayModel) => TDay;
 type WeekSelector<TDay, TWeek> = (days: WeekModel<TDay>) => TWeek;
 
+export type OnSelectedDayCallback = (day: DayModel) => void;
+
 interface CalendarPageDefaultProps {
     weeksPerPage?: number;
     daysPerWeek?: number;
@@ -30,6 +31,7 @@ interface CalendarPageDefaultProps {
 interface CalendarPageProps {
     month: number;
     year: number;
+    onSelectedDay: OnSelectedDayCallback;
 }
 
 export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarPageProps> {
@@ -57,8 +59,7 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
         while (before.week() === currentWeek) {
 
             const day = daySelector({
-                day: before.date(),
-                week: before.week(),
+                date: moment(before),
                 hide: this.props.hidePrevNextMonthDays,
                 today: before.date() === today.date()
                     && before.month() === today.month()
@@ -109,8 +110,7 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
             }
 
             const day = daySelector({
-                day: date.date(),
-                week: date.week(),
+                date: moment(date),
                 hide: this.props.hidePrevNextMonthDays && date.month() !== currentMonth,
                 today: date.date() === today.date()
                     && date.month() === today.month()
@@ -172,14 +172,18 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
             }
         });
 
-        return <View style={calendarStyles.weekDay} key={`${day.week}-${day.day}`}>
-                    <View style={circleStyles.circle}>
+        const onSelectedDay = () => {
+            this.props.onSelectedDay(day);
+        };
+
+        return <View style={calendarStyles.weekDay} key={`${day.date.week()}-${day.date.date()}`}>
+                    <TouchableHighlight style={circleStyles.circle} onPress={onSelectedDay}>
                         {
                             !day.hide
-                                ? <StyledText style={circleStyles.text}>{day.day}</StyledText>
+                                ? <StyledText style={circleStyles.text}>{day.date.date()}</StyledText>
                                 : null
                         }
-                    </View>
+                    </TouchableHighlight>
                 </View>;
     }
 
