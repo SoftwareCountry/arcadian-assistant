@@ -44,7 +44,8 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
     private readonly weekdaysNames = moment()
         .locale('en')
         .localeData()
-        .weekdaysShort();
+        .weekdaysShort()
+        .map(x => x.substring(0, 2));
 
     public fillWeekWithPrevMonthDays<TDay>(
         weekModel: WeekModel<TDay>,
