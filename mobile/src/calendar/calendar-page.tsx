@@ -62,9 +62,7 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
             const day = daySelector({
                 date: moment(before),
                 hide: this.props.hidePrevNextMonthDays,
-                today: before.date() === today.date()
-                    && before.month() === today.month()
-                    && before.year() === today.year(),
+                today: before.isSame(today, 'day'),
                 belongsToCurrentMonth: false
             });
 
@@ -113,9 +111,7 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
             const day = daySelector({
                 date: moment(date),
                 hide: this.props.hidePrevNextMonthDays && date.month() !== currentMonth,
-                today: date.date() === today.date()
-                    && date.month() === today.month()
-                    && date.year() === today.year(),
+                today: date.isSame(today, 'day'),
                 belongsToCurrentMonth: date.month() === currentMonth
             });
 
