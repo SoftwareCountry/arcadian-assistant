@@ -16,6 +16,11 @@
 
         public static implicit operator PhotoModel(Photo photo)
         {
+            if (photo?.Bytes == null)
+            {
+                return null;
+            }
+
             return new PhotoModel()
                 {
                     MimeType = photo.MimeType,
