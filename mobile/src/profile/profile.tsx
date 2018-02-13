@@ -71,7 +71,7 @@ export class Profile extends Component<ProfileProps> {
     }
 
     private getTiles(employee: Employee) {
-        const tilesData: { label: string, icon: any, style: ImageStyle }[] = [
+        const tilesData = [
             {
                 label: employee.birthDate.format('MMMM D'),
                 icon: require('../../src/profile/icons/birthDate.png'),
@@ -107,7 +107,7 @@ export class Profile extends Component<ProfileProps> {
     }
 
     private getContacts(employee: Employee) {
-        const contactsData: { icon: any, text: string, title: string }[] = [
+        const contactsData = [
             {
                 icon: require('../../src/profile/icons/phone.png'),
                 text: employee.mobilePhone,
