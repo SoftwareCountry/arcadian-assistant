@@ -11,6 +11,7 @@ namespace Arcadia.Assistant.Web
 
     using Arcadia.Assistant.Configuration;
     using Arcadia.Assistant.Server.Interop;
+    using Arcadia.Assistant.Web.Configuration;
 
     using Autofac;
 
@@ -27,7 +28,7 @@ namespace Arcadia.Assistant.Web
                 .SetBasePath(environment.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional:false, reloadOnChange:true)
                 .AddJsonFile($"appsettings.{environment.EnvironmentName}.json", optional:true)
-                .AddHoconContent("akka.conf", "akka", optional: false, reloadOnChange: true)
+                .AddHoconContent("akka.conf", "Akka", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
             if (environment.IsDevelopment())
@@ -45,18 +46,19 @@ namespace Arcadia.Assistant.Web
         {
             services.AddMvc();
 
-            var serverConfig = this.Configuration.GetSection("Server");
+            var appSettings = this.Configuration.Get<AppSettings>();
 
-            var systemName = serverConfig["ActorSystemName"];
-            var host = serverConfig["Host"];
-            var port = serverConfig.GetValue<int>("Port");
+            var systemName = appSettings.Server.ActorSystemName;
+            var host = appSettings.Server.Host;
+            var port = appSettings.Server.Port;
 
-            var config = ConfigurationFactory.ParseString(this.Configuration["akka"]);
+            var config = ConfigurationFactory.ParseString(appSettings.Akka);
 
             var actorSystem = ActorSystem.Create(systemName, config);
 
             var pathsBuilder = new ActorPathsBuilder(systemName, host, port);
 
+            services.AddSingleton<ITimeoutSettings>(appSettings);
             services.AddSingleton<IActorRefFactory>(actorSystem);
             services.AddSingleton(pathsBuilder);
 

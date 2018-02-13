@@ -11,6 +11,7 @@
 
     using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
+    using Arcadia.Assistant.Web.Configuration;
     using Arcadia.Assistant.Web.Models;
 
     using Microsoft.AspNetCore.Http;
@@ -22,10 +23,13 @@
 
         private readonly ActorPathsBuilder pathsBuilder;
 
-        public EmployeesController(IActorRefFactory actorSystem, ActorPathsBuilder pathsBuilder)
+        private readonly ITimeoutSettings timeoutSettings;
+
+        public EmployeesController(IActorRefFactory actorSystem, ActorPathsBuilder pathsBuilder, ITimeoutSettings timeoutSettings)
         {
             this.actorSystem = actorSystem;
             this.pathsBuilder = pathsBuilder;
+            this.timeoutSettings = timeoutSettings;
         }
 
         [Route("{employeeId}")]
@@ -67,7 +71,7 @@
 
         private async Task<EmployeeModel[]> LoadEmployeesAsync(EmployeesQuery query, CancellationToken token)
         {
-            var timeout = TimeSpan.FromSeconds(30);
+            var timeout = this.timeoutSettings.Timeout;
             var organization = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
             var response = await organization.Ask<EmployeesQuery.Response>(query, timeout, token);
 

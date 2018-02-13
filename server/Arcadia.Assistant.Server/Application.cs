@@ -29,7 +29,7 @@
 
         public void Start()
         {
-            var akkaConfig = ConfigurationFactory.ParseString(this.config["akka"]);
+            var akkaConfig = ConfigurationFactory.ParseString(this.config["Akka"]);
 
             this.ActorSystem = ActorSystem.Create("arcadia-assistant", akkaConfig);
 
