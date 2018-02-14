@@ -18,8 +18,7 @@ const tabBarStyles = StyleSheet.create({
         marginBottom: 5,
     },
     tabImages: {
-        width: 25,
-        height: 25
+        color: '#FFFFFF',
     }
 });
 
