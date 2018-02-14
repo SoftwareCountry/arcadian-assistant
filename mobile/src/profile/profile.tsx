@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet } from 'react-native';
+import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView } from 'react-native';
 
-import styles from '../layout/styles';
 import { layoutStyles, contentStyles, tileStyles, contactStyles } from './styles';
 import { Chevron } from './chevron';
 import { Avatar } from '../people/avatar';
@@ -30,7 +29,8 @@ export class Profile extends Component<ProfileProps> {
         const tiles = this.getTiles(employee);
         const contacts = this.getContacts(employee);
 
-        return <View style={styles.container}>
+        return (
+        <ScrollView style={layoutStyles.scrollView}>
             <View style={layoutStyles.container}>
                 <View style={layoutStyles.chevronPlaceholder}></View>
                 <View>
@@ -63,7 +63,8 @@ export class Profile extends Component<ProfileProps> {
                 </View>
 
             </View>
-        </View>;
+        </ScrollView>
+        );
     }
 
     private uppercase(text: string) {
