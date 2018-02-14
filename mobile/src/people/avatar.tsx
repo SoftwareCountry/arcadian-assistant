@@ -18,12 +18,16 @@ const styles = StyleSheet.create({
         borderColor: '#fff',
         borderWidth: 2,
         flex: 1
+    },
+    default: {
+        borderWidth: 1
     }
 });
 
 export interface AvatarProps {
     photo?: Photo;
     style?: ViewStyle;
+    noInnerBorder?: boolean;
 }
 
 interface AvatarState {
@@ -55,10 +59,15 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
 
         const image = !mimeType || !photoBase64 ? require('../../src/people/userpic.png') : { uri: mimeType + photoBase64 };
 
+        const defaultStyle = StyleSheet.flatten(styles.default);
+        const outerFrameBorderWidth = this.props.style ? this.props.style.borderWidth : defaultStyle.borderWidth;
+        const imageBorderWidth = this.props.noInnerBorder ? 0 : outerFrameBorderWidth * 2;
+
         const outerFrameFlattenStyle = StyleSheet.flatten([
             styles.outerFrame,
             {
                 borderRadius: this.state.borderRadius,
+                borderWidth: outerFrameBorderWidth,
                 width: this.state.size,
                 height: this.state.size
             },
@@ -73,7 +82,8 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
             {
                 width: imgSize,
                 height: imgSize,
-                borderRadius: outerFrameFlattenStyle.borderRadius - outerFrameFlattenStyle.borderWidth * .5
+                borderRadius: imgSize * .5,
+                borderWidth: imageBorderWidth
             }]);
 
         return (
