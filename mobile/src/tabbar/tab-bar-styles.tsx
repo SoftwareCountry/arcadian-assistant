@@ -14,8 +14,7 @@ const tabBarStyles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 10,
         fontFamily: 'CenturyGothic',
-        textAlign: 'center',
-        marginBottom: 5,
+        textAlign: 'center'
     },
     tabImages: {
         width: 25,
