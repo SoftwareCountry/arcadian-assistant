@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, Text, View, StyleSheet } from 'react-native';
+import { FlatList, Text, View, StyleSheet, ListRenderItemInfo } from 'react-native';
 import { connect } from 'react-redux';
 
 import { Department } from '../reducers/organization/department.model';
@@ -27,7 +27,7 @@ class EmployeesListImpl extends React.Component<EmployeesListProps> {
                 <FlatList
                     data={employees.toArray()}
                     keyExtractor={this.keyExtractor}
-                    renderItem={({ item }) => <EmployeesListItem id={item.employeeId} employee={item} />} />
+                    renderItem={this.renderItem} />
             </View>
         : (
             <View style={styles.loadingContainer}>
@@ -37,6 +37,12 @@ class EmployeesListImpl extends React.Component<EmployeesListProps> {
     }
 
     private keyExtractor = (item: Employee) => item.employeeId;
+
+    private renderItem = (itemInfo: ListRenderItemInfo<Employee>) => {
+        const { item } = itemInfo;
+
+        return <EmployeesListItem id={item.employeeId} employee={item} />;
+    }
 }
 
 export const EmployeesList = connect(mapStateToProps)(EmployeesListImpl);

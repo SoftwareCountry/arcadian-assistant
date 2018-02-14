@@ -16,14 +16,12 @@ export class EmployeesListItem extends React.Component<EmployeesListItemProps> {
         const employeeName = this.props.employee ? this.props.employee.name : 'Unknown';
         const employeePosition = this.props.employee ? this.props.employee.position : 'Unknown';
         const photo = this.props.employee ? this.props.employee.photo : null;
-        const mimeType = photo ? photo.mimeType : null;
-        const base64 = photo ? photo.base64 : null;
 
         return (
             <TouchableHighlight>
                 <View style={styles.layout}>
                     <View style={styles.avatarContainer}>
-                        <Avatar mimeType={mimeType} photoBase64={base64} style={StyleSheet.flatten(styles.avatar)} />
+                        <Avatar photo={photo} style={StyleSheet.flatten(styles.avatar)} />
                     </View>
                     <View style={styles.info}>
                         <StyledText style={styles.name}>{employeeName}</StyledText>
