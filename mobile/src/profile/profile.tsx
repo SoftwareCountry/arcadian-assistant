@@ -123,7 +123,7 @@ export class Profile extends Component<ProfileProps> {
         return contactsData.map((contact) => (
             <View style={contactStyles.container} key={contact.title}>
                 <View style={contactStyles.iconContainer}>
-                    <Image source={contact.icon} style={contactStyles.icon} resizeMode='center' />
+                    <Image source={contact.icon} style={contactStyles.icon} resizeMode='contain' />
                 </View>
                 <View style={contactStyles.textContainer}>
                     <StyledText style={contactStyles.title}>{contact.title}</StyledText>
