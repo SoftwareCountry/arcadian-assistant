@@ -13,12 +13,11 @@
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.Server.Interop;
+    using Arcadia.Assistant.Web.Configuration;
     using Arcadia.Assistant.Web.Models.Calendar;
 
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-
-    using CalendarEventStatus = Arcadia.Assistant.Web.Models.Calendar.CalendarEventStatus;
 
     [Route("/api/employees/{employeeId}/events/")]
     public class CalendarEventsController : Controller
@@ -27,10 +26,13 @@
 
         private readonly ActorPathsBuilder pathsBuilder;
 
-        public CalendarEventsController(IActorRefFactory actorSystem, ActorPathsBuilder pathsBuilder)
+        private readonly ITimeoutSettings timeoutSettings;
+
+        public CalendarEventsController(IActorRefFactory actorSystem, ActorPathsBuilder pathsBuilder, ITimeoutSettings timeoutSettings)
         {
             this.actorSystem = actorSystem;
             this.pathsBuilder = pathsBuilder;
+            this.timeoutSettings = timeoutSettings;
         }
 
         [Route("")]
@@ -39,7 +41,6 @@
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAll(string employeeId, CancellationToken token)
         {
-            var timeout = TimeSpan.FromSeconds(30);
             var employee = await this.GetEmployeeOrDefaultAsync(employeeId, token);
 
             if (employee == null)
@@ -47,7 +48,7 @@
                 return this.NotFound();
             }
 
-            var events = await employee.Calendar.Ask<GetCalendarEvents.Response>(GetCalendarEvents.Instance, timeout, token);
+            var events = await employee.Calendar.Ask<GetCalendarEvents.Response>(GetCalendarEvents.Instance, this.timeoutSettings.Timeout, token);
             var eventModels = events.Events
                 .Select(x => new CalendarEventsWithIdModel(x.EventId, CalendarEventType.Vacation, x.Dates, CalendarEventStatus.Requested));
 
@@ -139,14 +140,14 @@
 
         private async Task<UpsertCalendarEvent.Response> UpsertEventAsync(IActorRef calendarActor, CalendarEvent calendarEvent, CancellationToken token)
         {
-            var timeout = TimeSpan.FromSeconds(30);
+            var timeout = this.timeoutSettings.Timeout;
             var eventCreationResponse = await calendarActor.Ask<UpsertCalendarEvent.Response>(new UpsertCalendarEvent(calendarEvent), timeout, token);
             return eventCreationResponse;
         }
 
         private async Task<CalendarEvent> GetCalendarEventOrDefaultAsync(IActorRef calendarActor, string eventId, CancellationToken token)
         {
-            var timeout = TimeSpan.FromSeconds(30);
+            var timeout = this.timeoutSettings.Timeout;
             var calendarEvent = await calendarActor.Ask<GetCalendarEvent.Response>(new GetCalendarEvent(eventId), timeout, token);
             switch (calendarEvent)
             {
@@ -165,8 +166,9 @@
         {
             var query = new EmployeesQuery().WithId(employeeId);
 
+            var timeout = this.timeoutSettings.Timeout;
+
             //TODO: GET RID OF THAT COPY-PASTE!
-            var timeout = TimeSpan.FromSeconds(30);
             var organization = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
             var response = await organization.Ask<EmployeesQuery.Response>(query, timeout, token);
 

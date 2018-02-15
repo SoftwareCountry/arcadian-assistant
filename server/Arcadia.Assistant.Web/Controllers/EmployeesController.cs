@@ -11,6 +11,7 @@
 
     using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
+    using Arcadia.Assistant.Web.Configuration;
     using Arcadia.Assistant.Web.Models;
 
     using Microsoft.AspNetCore.Http;
@@ -22,10 +23,13 @@
 
         private readonly ActorPathsBuilder pathsBuilder;
 
-        public EmployeesController(IActorRefFactory actorSystem, ActorPathsBuilder pathsBuilder)
+        private readonly ITimeoutSettings timeoutSettings;
+
+        public EmployeesController(IActorRefFactory actorSystem, ActorPathsBuilder pathsBuilder, ITimeoutSettings timeoutSettings)
         {
             this.actorSystem = actorSystem;
             this.pathsBuilder = pathsBuilder;
+            this.timeoutSettings = timeoutSettings;
         }
 
         [Route("{employeeId}")]
@@ -47,7 +51,7 @@
         [HttpGet]
         [ProducesResponseType(typeof(EmployeeModel[]), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> ForDepartment([FromQuery] string departmentId, CancellationToken token)
+        public async Task<IActionResult> ForDepartment([FromQuery] string departmentId, [FromQuery] string roomNumber, CancellationToken token)
         {
             if (this.Request.Query.Count == 0)
             {
@@ -60,6 +64,11 @@
                 query = query.ForDepartment(departmentId);
             }
 
+            if (!string.IsNullOrWhiteSpace(roomNumber))
+            {
+                query = query.ForRoom(roomNumber);
+            }
+
             var employees = await this.LoadEmployeesAsync(query, token);
 
             return this.Ok(employees);
@@ -67,7 +76,7 @@
 
         private async Task<EmployeeModel[]> LoadEmployeesAsync(EmployeesQuery query, CancellationToken token)
         {
-            var timeout = TimeSpan.FromSeconds(30);
+            var timeout = this.timeoutSettings.Timeout;
             var organization = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
             var response = await organization.Ask<EmployeesQuery.Response>(query, timeout, token);
 

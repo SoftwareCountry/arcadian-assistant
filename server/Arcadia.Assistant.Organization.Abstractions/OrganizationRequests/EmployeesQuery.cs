@@ -10,6 +10,8 @@
 
         public string EmployeeId { get; private set; }
 
+        public string RoomNumber { get; private set; }
+
         public EmployeesQuery()
         {
         }
@@ -18,6 +20,13 @@
         {
             var obj = this.Clone();
             obj.DepartmentId = departmentId;
+            return obj;
+        }
+
+        public EmployeesQuery ForRoom(string roomNumber)
+        {
+            var obj = this.Clone();
+            obj.RoomNumber = roomNumber;
             return obj;
         }
 
@@ -33,6 +42,7 @@
             var newObj = new EmployeesQuery();
             newObj.DepartmentId = this.DepartmentId;
             newObj.EmployeeId = this.EmployeeId;
+            newObj.RoomNumber = this.RoomNumber;
 
             return newObj;
         }
