@@ -31,7 +31,7 @@ export class App extends Component<AppProps> {
     BackHandler.addEventListener('hardwareBackPress', this.onBackPress );
 
     Linking.addEventListener('url', this.onApplicaitonLinkOpened);
-    Linking.getInitialURL().then(url => this.onApplicaitonLinkOpened( { url } ))
+    Linking.getInitialURL().then(url => this.onApplicaitonLinkOpened( { url } ));
 
     //initial state
     this.props.dispatch(loadUser());
@@ -52,7 +52,7 @@ export class App extends Component<AppProps> {
     }
 
     BackHandler.removeEventListener('hardwareBackPress', this.onBackPress);
-    Linking.removeEventListener('url', this.onApplicaitonLinkOpened)
+    Linking.removeEventListener('url', this.onApplicaitonLinkOpened);
   }
 
   public render() {

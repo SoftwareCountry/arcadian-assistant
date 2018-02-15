@@ -54,8 +54,7 @@ export class OAuthProcess {
             try {
                 const code = this.loginRequest.getAuthorizationCodeFromResponse(responseUrl);
                 this.authCode.next(code);
-            }
-            catch(e) {
+            } catch (e) {
                 this.authCode.error(e);
             }
         }
@@ -87,7 +86,7 @@ export class OAuthProcess {
     
         private onTokenError = (error: any) => {
             if (error && error.status === 0) {
-                console.warn('OAuth connectivity error occurred', error)
+                console.warn('OAuth connectivity error occurred', error);
             } else {
                 //ignore, no internet connection
                 this.refreshTokenStorage.storeToken(null); // there was an error with /token endpoint so we delete existing token

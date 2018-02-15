@@ -6,7 +6,7 @@ import styles from '../layout/styles';
 import { layoutStyles, contentStyles, tileStyles, contactStyles } from './styles';
 import { Chevron } from './chevron';
 import { Avatar } from '../people/avatar';
-import { TopNavBar } from '../topNavBar/top-nav-bar';
+import { TopNavBar } from '../navigation/top-nav-bar';
 import { AppState } from '../reducers/app.reducer';
 import { UserInfoState } from '../reducers/user/user-info.reducer';
 import { Department } from '../reducers/organization/department.model';

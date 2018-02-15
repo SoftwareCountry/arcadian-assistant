@@ -23,29 +23,29 @@ type AccessCodeRequestParams = AccessCodeRequestWithAuthCodeParams | AccessCodeR
 export class TokenResponse {
     @dataMember({ fieldName: 'access_token' })
     @required()
-    accessToken: string;
+    public accessToken: string;
 
     @dataMember({ fieldName: 'token_type' })
-    tokenType: string;
+    public tokenType: string;
 
     @dataMember({ fieldName: 'expires_in' })
-    expiresIn: string;
+    public expiresIn: string;
 
     @dataMember({ fieldName: 'expires_on' })
-    expiresOn: string;
+    public expiresOn: string;
 
     @dataMember()
-    resource: string;
+    public resource: string;
 
     @dataMember({ fieldName: 'refresh_token' })
     @required()
-    refreshToken: string;
+    public refreshToken: string;
 
     @dataMember()
-    scope: string;
+    public scope: string;
 
     @dataMember({ fieldName: 'id_token' })
-    idToken: string;
+    public idToken: string;
 }
 
 export class AccessCodeRequest {
@@ -62,7 +62,7 @@ export class AccessCodeRequest {
     }
 
     public refresh(refreshToken: string) {
-        const params: AccessCodeRequestParams = { ...this.getDefaultParams(), refresh_token: refreshToken, 'grant_type': 'refresh_token' };
+        const params: AccessCodeRequestParams = { ...this.getDefaultParams(), refresh_token: refreshToken, grant_type: 'refresh_token' };
         return this.performRequest(params);
     }
 
