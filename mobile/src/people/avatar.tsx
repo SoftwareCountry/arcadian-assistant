@@ -18,9 +18,6 @@ const styles = StyleSheet.create({
         borderColor: '#fff',
         borderWidth: 2,
         flex: 1
-    },
-    default: {
-        borderWidth: 1
     }
 });
 
@@ -59,21 +56,20 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
 
         const image = !mimeType || !photoBase64 ? require('../../src/people/userpic.png') : { uri: mimeType + photoBase64 };
 
-        const defaultStyle = StyleSheet.flatten(styles.default);
-        const outerFrameBorderWidth = this.props.style ? this.props.style.borderWidth : defaultStyle.borderWidth;
-        const imageBorderWidth = this.props.noInnerBorder ? 0 : outerFrameBorderWidth * 2;
-
         const outerFrameFlattenStyle = StyleSheet.flatten([
             styles.outerFrame,
             {
                 borderRadius: this.state.borderRadius,
-                borderWidth: outerFrameBorderWidth,
                 width: this.state.size,
                 height: this.state.size
             },
+            this.props.style,
             this.state.visible ?
                 {}
-                : { display: 'none' }
+                : { display: 'none' },
+            this.props.noInnerBorder ?
+                { borderWidth : 0}
+                : {}
         ]);
 
         const imgSize = (outerFrameFlattenStyle.width as number) - outerFrameFlattenStyle.borderWidth * 2;
@@ -82,8 +78,8 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
             {
                 width: imgSize,
                 height: imgSize,
-                borderRadius: imgSize * .5,
-                borderWidth: imageBorderWidth
+                borderRadius: outerFrameFlattenStyle.borderRadius - outerFrameFlattenStyle.borderWidth * .5,
+                borderWidth: outerFrameFlattenStyle.borderWidth
             }]);
 
         return (
