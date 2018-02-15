@@ -34,7 +34,7 @@ export const employeesReducer: Reducer<EmployeesStore> = (state = defaultState, 
 
             employeeIdsByDepartment = employeeIdsByDepartment
                 .update(newEmployee.departmentId, Set(), oldCollection => oldCollection.add(newEmployee.employeeId));
-                
+
             employeesById = employeesById.set(newEmployee.employeeId, newEmployee);
 
             return {

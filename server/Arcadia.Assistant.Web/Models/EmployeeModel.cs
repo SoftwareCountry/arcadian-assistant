@@ -14,7 +14,7 @@
 
         public Sex Sex { get; set; }
 
-        public Photo Photo { get; set; }
+        public PhotoModel Photo { get; set; }
 
         public string Position { get; set; }
 
@@ -25,6 +25,8 @@
         public DateTime? BirthDate { get; set; }
 
         public DateTime? HireDate { get; set; }
+
+        public string RoomNumber { get; set; }
 
         public int VacationDaysLeft { get; set; }
 
@@ -46,7 +48,8 @@
                     MobilePhone = metadata.MobilePhone,
                     Name = metadata.Name,
                     Position = metadata.Position,
-                    Sex = metadata.Sex
+                    Sex = metadata.Sex,
+                    RoomNumber = metadata.RoomNumber
                 };
         }
     }

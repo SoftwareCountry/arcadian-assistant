@@ -1,7 +1,7 @@
 import { ActionsObservable, ofType } from 'redux-observable';
 import {
     LoadDepartments, loadDepartmentsFinished, LoadDepartmentsFinished, loadDepartments,
-    loadEmployeeFinished, LoadEmployeesForDepartment, loadEmployeesForDepartment, 
+    loadEmployeeFinished, LoadEmployeesForDepartment, loadEmployeesForDepartment,
     LoadEmployee, loadEmployee, LoadEmployeeFinished } from './organization.action';
 import { deserializeArray, deserialize } from 'santee-dcts/src/deserializer';
 import { Department } from './department.model';
@@ -10,8 +10,7 @@ import { AppState } from '../app.reducer';
 import { Employee } from './employee.model';
 import { Observable } from 'rxjs/Observable';
 import { loadFailedError } from '../errors/errors.action';
-
-export const url = 'http://localhost:5000/api'; //TODO: fix hardcode
+import { apiUrl as url } from '../const';
 
 export const loadEmployeeEpic$ = (action$: ActionsObservable<LoadEmployee>) =>
     action$.ofType('LOAD_EMPLOYEE')
@@ -30,12 +29,12 @@ export const loadDepartmentsEpic$ = (action$: ActionsObservable<LoadDepartments>
         .map(x => loadDepartmentsFinished(x))
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
-export const loadChiefsEpic$ = (action$: ActionsObservable<LoadDepartmentsFinished>) =>
+export const loadChiefsEpic$ = (action$: ActionsObservable<LoadDepartmentsFinished> ) =>
     action$.ofType('LOAD-DEPARTMENTS-FINISHED')
         .flatMap(x => x.departments.map(dep => loadEmployee(dep.chiefId)));
 
 //TODO: this thing loads all employees for all departments. It needs to be changed to load only requested ones
-export const loadDepartmentsFinishedEpic$ = (action$: ActionsObservable<LoadDepartmentsFinished>) =>
+export const loadDepartmentsFinishedEpic$ = (action$: ActionsObservable<LoadDepartmentsFinished> ) =>
     action$.ofType('LOAD-DEPARTMENTS-FINISHED')
         .flatMap(x =>
             x.departments.map(dep =>

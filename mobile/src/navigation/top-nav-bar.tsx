@@ -1,7 +1,8 @@
 import React from 'react';
-import { Text, View, StatusBar } from 'react-native';
+import { View, StatusBar } from 'react-native';
 import topNavBarStyles from './top-nav-bar-styles';
 import tabBarStyles from '../tabbar/tab-bar-styles';
+import { StyledText } from '../override/styled-text';
 
 export class TopNavBar {
     private name: string;
@@ -12,7 +13,7 @@ export class TopNavBar {
         return {
             header: <View style={topNavBarStyles.headerView}>
                 <StatusBar backgroundColor = '#2FAFCC' barStyle = 'light-content' />
-                <Text style={topNavBarStyles.navTitle}>{this.name}</Text>
+                <StyledText style={topNavBarStyles.navTitle}>{this.name}</StyledText>
             </View>,
         };
     }

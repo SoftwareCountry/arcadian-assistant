@@ -11,7 +11,10 @@
 
     using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
+    using Arcadia.Assistant.Web.Configuration;
     using Arcadia.Assistant.Web.Models;
+
+    using Microsoft.AspNetCore.Http;
 
     [Route("api/employees")]
     public class EmployeesController : Controller
@@ -20,16 +23,19 @@
 
         private readonly ActorPathsBuilder pathsBuilder;
 
-        public EmployeesController(IActorRefFactory actorSystem, ActorPathsBuilder pathsBuilder)
+        private readonly ITimeoutSettings timeoutSettings;
+
+        public EmployeesController(IActorRefFactory actorSystem, ActorPathsBuilder pathsBuilder, ITimeoutSettings timeoutSettings)
         {
             this.actorSystem = actorSystem;
             this.pathsBuilder = pathsBuilder;
+            this.timeoutSettings = timeoutSettings;
         }
 
         [Route("{employeeId}")]
         [HttpGet]
-        [ProducesResponseType(typeof(EmployeeModel), 200)]
-        [ProducesResponseType(404)]
+        [ProducesResponseType(typeof(EmployeeModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(string employeeId, CancellationToken token)
         {
             var employees = await this.LoadEmployeesAsync(new EmployeesQuery().WithId(employeeId), token);
@@ -43,9 +49,9 @@
 
         [Route("")]
         [HttpGet]
-        [ProducesResponseType(typeof(EmployeeModel[]), 200)]
-        [ProducesResponseType(typeof(string), 400)]
-        public async Task<IActionResult> ForDepartment([FromQuery] string departmentId, CancellationToken token)
+        [ProducesResponseType(typeof(EmployeeModel[]), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ForDepartment([FromQuery] string departmentId, [FromQuery] string roomNumber, CancellationToken token)
         {
             if (this.Request.Query.Count == 0)
             {
@@ -58,6 +64,11 @@
                 query = query.ForDepartment(departmentId);
             }
 
+            if (!string.IsNullOrWhiteSpace(roomNumber))
+            {
+                query = query.ForRoom(roomNumber);
+            }
+
             var employees = await this.LoadEmployeesAsync(query, token);
 
             return this.Ok(employees);
@@ -65,7 +76,7 @@
 
         private async Task<EmployeeModel[]> LoadEmployeesAsync(EmployeesQuery query, CancellationToken token)
         {
-            var timeout = TimeSpan.FromSeconds(30);
+            var timeout = this.timeoutSettings.Timeout;
             var organization = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
             var response = await organization.Ask<EmployeesQuery.Response>(query, timeout, token);
 

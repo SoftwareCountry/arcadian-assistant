@@ -5,6 +5,7 @@ const tabBarStyles = StyleSheet.create({
     tabBar: {
         height: 59,
         backgroundColor: '#2FAFCC',
+        justifyContent: 'center'
     },
     tabBarIndicator: {
         backgroundColor: 'transparent',
@@ -12,13 +13,13 @@ const tabBarStyles = StyleSheet.create({
     tabBarLabel: {
         color: '#FFFFFF',
         fontSize: 10,
-        lineHeight: 12,
+        fontFamily: 'CenturyGothic',
         textAlign: 'center',
         marginBottom: 5,
     },
     tabImages: {
-        width: 30, 
-        height: 26 
+        width: 25,
+        height: 25
     }
 });
 

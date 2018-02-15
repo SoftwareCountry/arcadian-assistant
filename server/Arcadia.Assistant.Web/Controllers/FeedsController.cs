@@ -9,7 +9,9 @@
 
     using Arcadia.Assistant.Feeds;
     using Arcadia.Assistant.Server.Interop;
+    using Arcadia.Assistant.Web.Configuration;
 
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     [Route("api/feeds")]
@@ -19,25 +21,30 @@
 
         private readonly ActorPathsBuilder pathsBuilder;
 
-        public FeedsController(ActorPathsBuilder pathsBuilder, IActorRefFactory actorFactory)
+        private readonly ITimeoutSettings timeoutSettings;
+
+        public FeedsController(ActorPathsBuilder pathsBuilder, IActorRefFactory actorFactory, ITimeoutSettings timeoutSettings)
         {
             this.pathsBuilder = pathsBuilder;
             this.actorFactory = actorFactory;
+            this.timeoutSettings = timeoutSettings;
         }
 
         [Route("messages")]
         [HttpGet]
-        [ProducesResponseType(typeof(Message[]), 200)]
+        [ProducesResponseType(typeof(Message[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllMessages(CancellationToken token)
         {
+            var timeout = this.timeoutSettings.Timeout;
+
             var feedsActor = this.actorFactory.ActorSelection(this.pathsBuilder.Get("shared-feeds"));
-            var sharedFeeds = await feedsActor.Ask<SharedFeedsActor.GetFeeds.Response>(SharedFeedsActor.GetFeeds.Instance, TimeSpan.FromSeconds(30), token);
+            var sharedFeeds = await feedsActor.Ask<SharedFeedsActor.GetFeeds.Response>(SharedFeedsActor.GetFeeds.Instance, timeout, token);
 
             //we should display information from common feeds
             var feeds = new[] { sharedFeeds.System, sharedFeeds.News };
 
             var responsesTasks = feeds
-                .Select(x => x.Ask<FeedActor.GetMessages.Response>(new FeedActor.GetMessages(), TimeSpan.FromSeconds(30), token));
+                .Select(x => x.Ask<FeedActor.GetMessages.Response>(new FeedActor.GetMessages(), timeout, token));
 
             var respones = await Task.WhenAll(responsesTasks);
             var messages = respones.SelectMany(x => x.Messages).OrderByDescending(x => x.DatePosted);

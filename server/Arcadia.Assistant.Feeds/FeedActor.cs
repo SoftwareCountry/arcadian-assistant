@@ -26,6 +26,7 @@
                     var newEvent = new MessageIsPostedToFeedEvent()
                         {
                             MessageId = postMessage.Message.MessageId,
+                            EmployeeId = postMessage.Message.EmployeeId,
                             PostedDate = postMessage.Message.DatePosted,
                             Text = postMessage.Message.Text,
                             Title = postMessage.Message.Title
@@ -53,7 +54,7 @@
 
         private void MessagePosted(MessageIsPostedToFeedEvent e)
         {
-            this.messagesList.Add(new Message(e.MessageId, e.Title, e.Text, e.PostedDate));
+            this.messagesList.Add(new Message(e.MessageId, e.EmployeeId, e.Title, e.Text, e.PostedDate));
         }
 
         public sealed class PostMessage

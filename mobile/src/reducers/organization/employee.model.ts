@@ -1,4 +1,10 @@
 import { dataMember, required } from 'santee-dcts';
+import { DataMemberDecoratorParams } from 'santee-dcts/src/dataMemberDecorator';
+import moment, { Moment } from 'moment';
+
+const dateDecoratorParams: DataMemberDecoratorParams  = {
+    customDeserializer: (value: string) => moment(value)
+};
 
 export class Photo {
     @dataMember()
@@ -9,7 +15,7 @@ export class Photo {
 
     @dataMember()
     public height: number;
-    
+
     @dataMember()
     public base64: string;
 }
@@ -43,9 +49,21 @@ export class Employee {
     @dataMember()
     public mobilePhone: string;
 
-    @dataMember()
-    public birthDate: string;
+    @dataMember(dateDecoratorParams)
+    public birthDate: Moment;
+
+    @dataMember(dateDecoratorParams)
+    public hireDate: Moment;
 
     @dataMember()
-    public hireDate: string;
+    @required()
+    public hoursCredit: number;
+
+    @dataMember()
+    @required()
+    public vacationDaysLeft: number;
+    
+    @dataMember()
+    @required({nullable: true})
+    public roomNumber: string;
 }
