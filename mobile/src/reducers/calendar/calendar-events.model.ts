@@ -4,8 +4,8 @@ import { Moment } from 'moment';
 export enum CalendarEventsType {
     Vacation = 'Vacation',
     SickLeave = 'SickLeave',
-    Dayoff = 'SickLeave',
-    AdditionalWork = 'SickLeave'
+    Dayoff = 'Dayoff',
+    AdditionalWork = 'AdditionalWork'
 }
 
 export enum CalendarEventStatus {

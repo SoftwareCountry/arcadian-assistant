@@ -1,4 +1,5 @@
 import moment, { Moment } from 'moment';
+import { CalendarEvents, CalendarEventsType } from './calendar-events.model';
 
 export interface DayModel {
     date: Moment;
@@ -38,7 +39,7 @@ export class CalendarModelBuilder {
         }
     }
 
-    public createWeeks(currentMonth: number, currentYear: number): WeekModel[] {
+    public buildWeeks(currentMonth: number, currentYear: number): WeekModel[] {
         const date = moment({
             date: 1, // start filling from the first day of the month
             month: currentMonth,
@@ -78,5 +79,78 @@ export class CalendarModelBuilder {
         }
 
         return weeksResult;
+    }
+}
+
+type PeriodType = 'startPeriod' | 'period' | 'endPeriod' | 'dotPeriod';
+
+export interface PeriodModel {
+    periodType: PeriodType;
+    eventType: CalendarEventsType;
+}
+
+export class PeriodsModel {
+    private periodsDictionary: {
+        // serjKim: maybe object with event type specific keys:
+        // { [dateKey: string] { 'Vacation':  PeriodModel, 'Dayoff': PeriodModel } } instead of array PeriodModel[]...
+        [dateKey: string]: PeriodModel[]; 
+    } = {};
+
+    public set(date: Moment, period: PeriodModel) {
+        const dateKey = PeriodsModel.generateKey(date);
+
+        let periods = this.periodsDictionary[dateKey];
+
+        if (!periods) {
+            this.periodsDictionary[dateKey] = periods = [];
+        }
+
+        periods.push(period);
+    }
+
+    public get(dateKey: string): PeriodModel[] | undefined {
+        return this.periodsDictionary[dateKey];
+    }
+
+    public static generateKey(date: Moment): string {
+        return date.format('DD-MM-YYYY');
+    }
+}
+
+export class CalendarPeriodsBuilder {
+
+    public buildPeriods(calendarEvents: CalendarEvents[]) {
+        const periodsModel = new PeriodsModel();
+
+        for ( let calendarEvent of calendarEvents) {
+            const start = moment(calendarEvent.dates.startDate);
+
+            if (start.isSame(calendarEvent.dates.endDate, 'day')) {
+                periodsModel.set(start, {
+                    periodType: 'dotPeriod',
+                    eventType: calendarEvent.type
+                });
+                continue;
+            }
+
+            while (start.isSameOrBefore(calendarEvent.dates.endDate, 'day')) {
+                let periodType: PeriodType = 'period';
+
+                if (start.isSame(calendarEvent.dates.startDate)) {
+                    periodType = 'startPeriod';
+                } else if (start.isSame(calendarEvent.dates.endDate)) {
+                    periodType = 'endPeriod';
+                }
+
+                periodsModel.set(start, {
+                    periodType: periodType,
+                    eventType: calendarEvent.type
+                });
+
+                start.add(1, 'days');
+            }
+        }
+
+        return periodsModel;
     }
 }

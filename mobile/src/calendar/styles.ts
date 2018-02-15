@@ -22,10 +22,14 @@ const debugStyles = {
     // borderColor: '#4ea'
 };
 
+const weekDayElementsZIndex = 1;
+
 export const calendarStyles = StyleSheet.create({
     container: {
         marginTop: 10,
         marginBottom: 10,
+        marginLeft: 8,
+        marginRight: 8,
         flex: 1,
         alignSelf: 'stretch'
     },
@@ -61,15 +65,58 @@ export const calendarStyles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row'
     },
-    weekDay: {
+    weekDayContainer: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
         ...debugStyles
     },
+    weekDay: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    weekDayCircle: {
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    weekDayCircleContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'transparent',
+        zIndex: weekDayElementsZIndex + 1
+    },
     weekDayText: {
         fontSize: 12,
         lineHeight: 14
+    }
+});
+
+export const calendarPeriodColors = {
+    vacation: '#2F80ED',
+    sickLeave: '#F2C94C',
+    dayoff: '#EB5757'
+};
+
+// serjKim: Depends on count of overlapped periods?..
+const periodOpacity = 0.5;
+
+export const calendarPeriodStyles = StyleSheet.create({
+    container: {
+        position: 'absolute',
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        flexDirection: 'row',
+        opacity: periodOpacity,
+        zIndex: weekDayElementsZIndex
+    },
+    halfPeriod: {
+        width: '50%'
+    },
+    period: {
+        width: '100%',
     }
 });
 

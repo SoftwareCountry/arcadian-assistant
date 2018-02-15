@@ -1,13 +1,14 @@
-import React, { Component, ComponentClass } from 'react';
+import React, { Component } from 'react';
 import { connect, Dispatch } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 import { OnSelectedDayCallback } from './calendar-page';
 import { CalendarPager } from './calendar-pager';
 import { CalendarActions, selectCalendarDay, selectCalendarMonth } from '../reducers/calendar/calendar.action';
-import { WeekModel, DayModel } from '../reducers/calendar/calendar.model';
+import { WeekModel, DayModel, PeriodsModel } from '../reducers/calendar/calendar.model';
 
 interface CalendarProps {
     weeks: WeekModel[];
+    periods: PeriodsModel;
 }
 
 interface CalendarDispatchProps {
@@ -17,7 +18,12 @@ interface CalendarDispatchProps {
 
 export class CalendarImpl extends Component<CalendarProps & CalendarDispatchProps> {
     public render() {
-        return <CalendarPager onSelectedDay={this.onSelectedDay} weeks={this.props.weeks} onNextMonth={this.onSelectMonth} onPrevMonth={this.onSelectMonth} />;
+        return <CalendarPager
+                    onSelectedDay={this.onSelectedDay}
+                    weeks={this.props.weeks}
+                    periods={this.props.periods}
+                    onNextMonth={this.onSelectMonth}
+                    onPrevMonth={this.onSelectMonth} />;
     }
 
     private onSelectedDay: OnSelectedDayCallback = (day) => {
@@ -30,7 +36,8 @@ export class CalendarImpl extends Component<CalendarProps & CalendarDispatchProp
 }
 
 const mapStateToProps = (state: AppState): CalendarProps => ({
-    weeks: state.calendar.calendarEvents.weeks
+    weeks: state.calendar.calendarEvents.weeks,
+    periods: state.calendar.calendarEvents.periods
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>) => ({

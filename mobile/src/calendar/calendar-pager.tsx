@@ -1,19 +1,13 @@
 import React, { Component } from 'react';
 import moment, { Moment } from 'moment';
 import { calendarStyles } from './styles';
-import { View, Button } from 'react-native';
+import { View, TouchableHighlight } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { CalendarPage, OnSelectedDayCallback } from './calendar-page';
-import { WeekModel } from '../reducers/calendar/calendar.model';
-
-interface CalendarInterval {
-    startDate: Moment;
-    endDate: Moment;
-    color: string;
-}
+import { WeekModel, PeriodsModel } from '../reducers/calendar/calendar.model';
 
 interface CalendarDefaultProps {
-    intervals?: CalendarInterval[];
+    periods?: PeriodsModel;
 }
 
 interface CalendarProps extends CalendarDefaultProps {
@@ -27,10 +21,10 @@ interface CalendarState {
     date: Moment;
 }
 
-// TODO: Temporary implementation with Prev Next buttons. Switch to swipe.
+// TODO: Temporary implementation with TouchableHighlight buttons. Switch to swipe.
 export class CalendarPager extends Component<CalendarProps, CalendarState> {
     public static defaultProps: CalendarDefaultProps = {
-        intervals: []
+        periods: null
     };
 
     constructor(props: CalendarProps) {
@@ -62,13 +56,18 @@ export class CalendarPager extends Component<CalendarProps, CalendarState> {
 
         return <View style={calendarStyles.container}>
             <View style={calendarStyles.today}>
-                <Button onPress={this.onPrevClick} title={'<'} />
+                {/*TODO: temp buttons. Remove and use swipe instead */}
+                <TouchableHighlight style={{width: 100, height: 20}} onPress={this.onPrevClick}>
+                    <StyledText>{'<'}</StyledText>
+                </TouchableHighlight>
                 <StyledText style={calendarStyles.todayTitle}>
                     {date.format('MMMM YYYY')}
                 </StyledText>
-                <Button onPress={this.onNextClick} title={'>'} />
+                <TouchableHighlight style={{width: 100, height: 20, justifyContent: 'flex-end', flexDirection: 'row'}} onPress={this.onNextClick}>
+                    <StyledText>{'>'}</StyledText>
+                </TouchableHighlight>
             </View>
-            <CalendarPage onSelectedDay={this.props.onSelectedDay} weeks={this.props.weeks} />
+            <CalendarPage onSelectedDay={this.props.onSelectedDay} weeks={this.props.weeks} periods={this.props.periods} />
         </View>;
     }
 }
