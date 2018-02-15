@@ -12,11 +12,10 @@ const styles = StyleSheet.create({
     },
     outerFrame: {
         borderColor: '#2FAFCC',
-        borderWidth: 2
+        borderWidth: 1
     },
     image: {
         borderColor: '#fff',
-        borderWidth: 2,
         flex: 1
     }
 });
@@ -24,7 +23,7 @@ const styles = StyleSheet.create({
 export interface AvatarProps {
     photo?: Photo;
     style?: ViewStyle;
-    noInnerBorder?: boolean;
+    imageStyle?: ViewStyle;
 }
 
 interface AvatarState {
@@ -66,10 +65,7 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
             this.props.style,
             this.state.visible ?
                 {}
-                : { display: 'none' },
-            this.props.noInnerBorder ?
-                { borderWidth : 0}
-                : {}
+                : { display: 'none' }
         ]);
 
         const imgSize = (outerFrameFlattenStyle.width as number) - outerFrameFlattenStyle.borderWidth * 2;
@@ -79,8 +75,10 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
                 width: imgSize,
                 height: imgSize,
                 borderRadius: outerFrameFlattenStyle.borderRadius - outerFrameFlattenStyle.borderWidth * .5,
-                borderWidth: outerFrameFlattenStyle.borderWidth
-            }]);
+                borderWidth: outerFrameFlattenStyle.borderWidth * 2 //by design it seems to be twice thicker than container border
+            },
+            this.props.imageStyle
+        ]);
 
         return (
             <View onLayout={this.onLayout} style={styles.container}>
