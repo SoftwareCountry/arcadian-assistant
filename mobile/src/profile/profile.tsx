@@ -36,7 +36,7 @@ export class Profile extends Component<ProfileProps> {
                 <View>
                     <Chevron />
                     <View style={layoutStyles.avatarContainer}>
-                        <Avatar photo={employee.photo} />
+                        <Avatar photo={employee.photo} imageStyle={{borderWidth: 0}} style={{borderWidth: 3}} />
                     </View>
                 </View>
 
