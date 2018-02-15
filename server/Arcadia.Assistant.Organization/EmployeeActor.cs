@@ -4,6 +4,7 @@
 
     using Akka.Actor;
 
+    using Arcadia.Assistant.Calendar;
     using Arcadia.Assistant.Feeds;
     using Arcadia.Assistant.Images;
     using Arcadia.Assistant.Organization.Abstractions;
@@ -17,15 +18,19 @@
 
         private readonly IActorRef employeeFeed;
 
+        private readonly IActorRef calendar;
+
         public EmployeeActor(EmployeeStoredInformation storedInformation)
         {
             this.employeeMetadata = storedInformation.Metadata;
 
-            this.photo = Context.ActorOf(Akka.Actor.Props.Create(() => new PhotoActor()), "photo");
+            this.photo = Context.ActorOf(Props.Create(() => new PhotoActor()), "photo");
             this.photo.Tell(new PhotoActor.SetSource(storedInformation.Photo));
 
             var employeeFeedId = $"employee-feed-{this.employeeMetadata.EmployeeId}";
             this.employeeFeed = Context.ActorOf(FeedActor.CreateProps(employeeFeedId), "feed");
+
+            this.calendar = Context.ActorOf(EmployeeCalendarActor.CreateProps(this.employeeMetadata.EmployeeId));
         }
 
         protected override void OnReceive(object message)
@@ -33,7 +38,8 @@
             switch (message)
             {
                 case GetEmployeeInfo _:
-                    this.Sender.Tell(new GetEmployeeInfo.Response(new EmployeeContainer(this.employeeMetadata, this.Self, this.employeeFeed)));
+                    var container = new EmployeeContainer(this.employeeMetadata, this.Self, this.employeeFeed, this.calendar);
+                    this.Sender.Tell(new GetEmployeeInfo.Response(container));
                     break;
 
                 case GetPhoto _:

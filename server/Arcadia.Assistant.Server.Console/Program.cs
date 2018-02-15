@@ -20,7 +20,7 @@
             var config = configurationBuilder
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddHoconContent("akka.conf", "akka", optional: false, reloadOnChange: true)
+                .AddHoconContent("akka.conf", "Akka", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .AddCommandLine(args)
                 .Build();
