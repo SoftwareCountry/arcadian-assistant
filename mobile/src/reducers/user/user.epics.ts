@@ -1,9 +1,9 @@
 import { ajaxGetJSON } from 'rxjs/observable/dom/AjaxObservable';
 import { deserialize } from 'santee-dcts/src/deserializer';
-import { loadEmployee, LoadEmployeeFinished } from '../organization/organization.action';
+import { loadEmployee, LoadEmployeeFinished, OrganizationActions, LoadEmployeesForDepartment } from '../organization/organization.action';
 import { ActionsObservable } from 'redux-observable';
 import { User } from './user.model';
-import { LoadUser, loadUserFinished, LoadUserFinished, loadUserEmployeeFinished } from './user.action';
+import { LoadUser, loadUserFinished, LoadUserFinished, loadUserEmployeeFinished, LoadUserEmployeeFinished } from './user.action';
 import { Observable } from 'rxjs/Observable';
 import { loadFailedError } from '../errors/errors.action';
 import { apiUrl as url } from '../const';

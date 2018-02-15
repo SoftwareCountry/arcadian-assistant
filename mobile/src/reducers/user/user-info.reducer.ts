@@ -1,3 +1,4 @@
+import { Map, Set } from 'immutable';
 import { User } from './user.model';
 import { Employee } from '../organization/employee.model';
 import { Reducer } from 'redux';
@@ -9,13 +10,14 @@ export interface UserInfoState {
 }
 
 const initState: UserInfoState = {
-    employee: null
+    employee: null,
 };
 
 export const userInfoReducer: Reducer<UserInfoState> = (state = initState, action: UserActions) => {
     switch (action.type) {
         case 'LOAD-USER-EMPLOYEE-FINISHED':
             return {
+                ...state,
                 employee: action.employee
             };
         default:

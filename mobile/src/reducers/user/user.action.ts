@@ -1,5 +1,6 @@
 import { User } from './user.model';
 import { Employee } from '../organization/employee.model';
+import { EmployeeMap } from '../organization/employees.reducer';
 
 export interface LoadUser {
     type: 'LOAD-USER';

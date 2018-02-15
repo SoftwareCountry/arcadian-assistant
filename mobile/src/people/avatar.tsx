@@ -12,18 +12,23 @@ const styles = StyleSheet.create({
     },
     outerFrame: {
         borderColor: '#2FAFCC',
-        borderWidth: 2
     },
     image: {
         borderColor: '#fff',
-        borderWidth: 2,
         flex: 1
+    },
+    default: {
+        height: 200,
+        width: 200,
+        borderRadius: 200 * 0.5,
+        borderWidth: 1
     }
 });
 
 export interface AvatarProps {
     photo?: Photo;
     style?: ViewStyle;
+    noInnerBorder?: boolean;
 }
 
 interface AvatarState {
@@ -53,15 +58,18 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
         const mimeType = this.validateMimeType(this.props.photo);
         const photoBase64 = this.validateEncodedImage(this.props.photo);
 
-        const image = !mimeType || !photoBase64 ? require('../../src/people/userpic.png') : { uri: mimeType + photoBase64 };
+        const defaultStyle = StyleSheet.flatten(styles.default);
+        const outerFrameBorderWidth = this.props.style ? this.props.style.borderWidth : defaultStyle.borderWidth;
+        const imageBorderWidth = this.props.noInnerBorder ? 0 : outerFrameBorderWidth * 2;
 
         const outerFrameFlattenStyle = StyleSheet.flatten([
-            styles.outerFrame,
+            styles.outerFrame, 
             {
-                borderRadius: this.state.borderRadius,
-                width: this.state.size,
-                height: this.state.size
-            },
+                borderRadius: this.state.borderRadius || defaultStyle.borderRadius, 
+                borderWidth: outerFrameBorderWidth,
+                width: this.state.size || defaultStyle.width,
+                height: this.state.size || defaultStyle.height
+            }, 
             this.state.visible ?
                 {}
                 : { display: 'none' }
@@ -69,12 +77,15 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
 
         const imgSize = (outerFrameFlattenStyle.width as number) - outerFrameFlattenStyle.borderWidth * 2;
         const imageFlattenStyle = StyleSheet.flatten([
-            styles.image,
+            styles.image, 
             {
                 width: imgSize,
                 height: imgSize,
-                borderRadius: outerFrameFlattenStyle.borderRadius - outerFrameFlattenStyle.borderWidth * .5
+                borderRadius: imgSize * 0.5,
+                borderWidth: imageBorderWidth
             }]);
+
+        const image = !mimeType || !photoBase64 ? require('../../src/people/userpic.png') : { uri: mimeType + photoBase64 };
 
         return (
             <View onLayout={this.onLayout} style={styles.container}>
