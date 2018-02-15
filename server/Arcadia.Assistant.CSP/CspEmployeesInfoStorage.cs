@@ -29,7 +29,7 @@
                     .Employee
                     .FromSql(ArcadianEmployeeQuery)
                     .Select(x => new EmployeeStoredInformation(
-                        new EmployeeMetadata(x.Id.ToString(), $"{x.LastName}, {x.FirstName} {x.MiddleName}".Trim(), x.Email)
+                        new EmployeeMetadata(x.Id.ToString(), $"{x.LastName} {x.FirstName}".Trim(), x.Email)
                         {
                             BirthDate = x.Birthday,
                             HireDate = x.HiringDate,

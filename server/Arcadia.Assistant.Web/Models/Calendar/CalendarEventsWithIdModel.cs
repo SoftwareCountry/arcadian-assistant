@@ -12,8 +12,8 @@
         {
         }
 
-        public CalendarEventsWithIdModel(string calendarEventId, DateTime from, DateTime to)
-            : base(from, to)
+        public CalendarEventsWithIdModel(string calendarEventId, CalendarEventType type, DatesPeriodModel dates, CalendarEventStatus status)
+            : base(type, dates, status)
         {
             this.CalendarEventId = calendarEventId;
         }
