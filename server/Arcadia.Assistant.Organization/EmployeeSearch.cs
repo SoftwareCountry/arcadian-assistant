@@ -91,6 +91,11 @@
                 return false;
             }
 
+            if ((this.query.RoomNumber != null) && (employee.RoomNumber != this.query.RoomNumber))
+            {
+                return false;
+            }
+
             return true;
         }
     }
