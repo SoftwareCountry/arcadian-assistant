@@ -12,7 +12,7 @@ export interface WeekModel {
     weekIndex: number;
 }
 
-export class CalendarModelBuilder {
+export class CalendarWeeksBuilder {
     private readonly weeksPerPage = 6;
     private readonly daysPerWeek = 7;
 
@@ -108,7 +108,8 @@ export class PeriodsModel {
         periods.push(period);
     }
 
-    public get(dateKey: string): PeriodModel[] | undefined {
+    public get(date: Moment): PeriodModel[] | undefined {
+        const dateKey = PeriodsModel.generateKey(date);
         return this.periodsDictionary[dateKey];
     }
 
@@ -122,7 +123,7 @@ export class CalendarPeriodsBuilder {
     public buildPeriods(calendarEvents: CalendarEvents[]) {
         const periodsModel = new PeriodsModel();
 
-        for ( let calendarEvent of calendarEvents) {
+        for (let calendarEvent of calendarEvents) {
             const start = moment(calendarEvent.dates.startDate);
 
             if (start.isSame(calendarEvent.dates.endDate, 'day')) {

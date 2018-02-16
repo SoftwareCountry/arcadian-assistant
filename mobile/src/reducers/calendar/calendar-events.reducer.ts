@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 import { CalendarActions } from './calendar.action';
-import { CalendarModelBuilder, DayModel, WeekModel, CalendarPeriodsBuilder, PeriodsModel } from './calendar.model';
+import { CalendarWeeksBuilder, DayModel, WeekModel, CalendarPeriodsBuilder, PeriodsModel } from './calendar.model';
 import moment from 'moment';
 
 export interface CalendarEventsState {
@@ -10,7 +10,7 @@ export interface CalendarEventsState {
 }
 
 const createInitState = (): CalendarEventsState => {
-    const builder = new CalendarModelBuilder();
+    const builder = new CalendarWeeksBuilder();
     const today = moment();
     const weeks = builder.buildWeeks(today.month(), today.year());
 
@@ -48,7 +48,7 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 selectedCalendarDay: action.day
             };
         case 'SELECT-CALENDAR-MONTH':
-            const builder = new CalendarModelBuilder();
+            const builder = new CalendarWeeksBuilder();
             const weeks = builder.buildWeeks(action.month, action.year);
 
             return {
