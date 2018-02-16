@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView } from 'react-native';
+import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView, Linking, TouchableHighlight, TouchableOpacity } from 'react-native';
 
 import { layoutStyles, contentStyles, tileStyles, contactStyles } from './styles';
 import { Chevron } from './chevron';
@@ -118,26 +118,34 @@ export class Profile extends Component<ProfileProps> {
                 icon: 'phone',
                 text: employee.mobilePhone,
                 title: 'Mobile Phone:',
-                size: 30
+                size: 30,
+                prefix: 'tel:'
             },
             {
                 icon: 'envelope',
                 text: employee.email,
                 title: 'Email:',
-                size: 30
+                size: 30,
+                prefix: 'mailto:'
             }
         ];
 
         return contactsData.map((contact) => (
-            <View style={contactStyles.container} key={contact.title}>
-                <View style={contactStyles.iconContainer}>
-                    <ApplicationIcon name={contact.icon} size={contact.size} style={contactStyles.icon}/>
+            <TouchableOpacity key={contact.title} onPress={this.openLink(`${contact.prefix}${contact.text}`)}>
+                <View style={contactStyles.container}>
+                    <View style={contactStyles.iconContainer} >
+                        <ApplicationIcon name={contact.icon} size={contact.size} style={contactStyles.icon}/>
+                    </View>
+                    <View style={contactStyles.textContainer}>
+                        <StyledText style={contactStyles.title}>{contact.title}</StyledText>
+                        <StyledText style={contactStyles.text}>{contact.text}</StyledText>
+                    </View>
                 </View>
-                <View style={contactStyles.textContainer}>
-                    <StyledText style={contactStyles.title}>{contact.title}</StyledText>
-                    <StyledText style={contactStyles.text}>{contact.text}</StyledText>
-                </View>
-            </View>
+            </TouchableOpacity>
         ));
+    }
+
+    private openLink(url: string) {
+        return () => Linking.openURL(url).catch(err => null); //Should we show any exception here?
     }
 }
