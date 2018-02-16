@@ -141,6 +141,7 @@ export const contactStyles = StyleSheet.create({
         paddingBottom: 10
     },
     iconContainer: {
+        width: 50,
         alignItems: 'center',
         justifyContent: 'center'
     },

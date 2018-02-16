@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView } from 'react-native';
+import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView, Linking, TouchableOpacity } from 'react-native';
 
 import { layoutStyles, contentStyles, tileStyles, contactStyles } from './styles';
 import { Chevron } from './chevron';
@@ -31,40 +31,40 @@ export class Profile extends Component<ProfileProps> {
         const contacts = this.getContacts(employee);
 
         return (
-        <ScrollView style={layoutStyles.scrollView}>
-            <View style={layoutStyles.container}>
-                <View style={layoutStyles.chevronPlaceholder}></View>
-                <View>
-                    <Chevron />
-                    <View style={layoutStyles.avatarContainer}>
-                        <Avatar photo={employee.photo} imageStyle={{borderWidth: 0}} style={{borderWidth: 3}} />
-                    </View>
-                </View>
-
-                <View style={layoutStyles.content}>
-                    <StyledText style={contentStyles.name}>
-                        {employee.name}
-                    </StyledText>
-                    <StyledText style={contentStyles.position}>
-                        {this.uppercase(employee.position)}
-                    </StyledText>
-                    <StyledText style={contentStyles.department}>
-                        {this.uppercase(department.abbreviation)}
-                    </StyledText>
-
-                    <View style={contentStyles.infoContainer}>
-                        {tiles}
-                    </View>
-
-                    <View style={contentStyles.contactsContainer}>
-                        <View>
-                            {contacts}
+            <ScrollView style={layoutStyles.scrollView}>
+                <View style={layoutStyles.container}>
+                    <View style={layoutStyles.chevronPlaceholder}></View>
+                    <View>
+                        <Chevron />
+                        <View style={layoutStyles.avatarContainer}>
+                            <Avatar photo={employee.photo} imageStyle={{ borderWidth: 0 }} style={{ borderWidth: 3 }} />
                         </View>
                     </View>
-                </View>
 
-            </View>
-        </ScrollView>
+                    <View style={layoutStyles.content}>
+                        <StyledText style={contentStyles.name}>
+                            {employee.name}
+                        </StyledText>
+                        <StyledText style={contentStyles.position}>
+                            {this.uppercase(employee.position)}
+                        </StyledText>
+                        <StyledText style={contentStyles.department}>
+                            {this.uppercase(department.abbreviation)}
+                        </StyledText>
+
+                        <View style={contentStyles.infoContainer}>
+                            {tiles}
+                        </View>
+
+                        <View style={contentStyles.contactsContainer}>
+                            <View>
+                                {contacts}
+                            </View>
+                        </View>
+                    </View>
+
+                </View>
+            </ScrollView>
         );
     }
 
@@ -118,26 +118,34 @@ export class Profile extends Component<ProfileProps> {
                 icon: 'phone',
                 text: employee.mobilePhone,
                 title: 'Mobile Phone:',
-                size: 30
+                size: 45,
+                prefix: 'tel:'
             },
             {
                 icon: 'envelope',
                 text: employee.email,
                 title: 'Email:',
-                size: 30
+                size: 30,
+                prefix: 'mailto:'
             }
         ];
 
-        return contactsData.map((contact) => (
-            <View style={contactStyles.container} key={contact.title}>
-                <View style={contactStyles.iconContainer}>
-                    <ApplicationIcon name={contact.icon} size={contact.size} style={contactStyles.icon}/>
+        return contactsData.filter(c => c.text && c.text.length > 0).map((contact) => (
+            <TouchableOpacity key={contact.title} onPress={this.openLink(`${contact.prefix}${contact.text}`)}>
+                <View style={contactStyles.container}>
+                    <View style={contactStyles.iconContainer} >
+                        <ApplicationIcon name={contact.icon} size={contact.size} style={contactStyles.icon} />
+                    </View>
+                    <View style={contactStyles.textContainer}>
+                        <StyledText style={contactStyles.title}>{contact.title}</StyledText>
+                        <StyledText style={contactStyles.text}>{contact.text}</StyledText>
+                    </View>
                 </View>
-                <View style={contactStyles.textContainer}>
-                    <StyledText style={contactStyles.title}>{contact.title}</StyledText>
-                    <StyledText style={contactStyles.text}>{contact.text}</StyledText>
-                </View>
-            </View>
+            </TouchableOpacity>
         ));
+    }
+
+    private openLink(url: string) {
+        return () => Linking.openURL(url).catch(err => console.error(err));
     }
 }
