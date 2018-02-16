@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { LoginRequest } from './login-request';
 import { RefreshTokenStorage } from './refresh-token-storage';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { LogoutRequest } from './logout-request';
 
 //https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-protocols-oauth-code
 
@@ -40,16 +41,20 @@ export class OAuthProcess {
 
     private readonly loginRequest: LoginRequest;
 
+    private readonly logoutRequest: LogoutRequest;
+
     private readonly accessCodeRequest: AccessCodeRequest;
 
     constructor(
         clientId: string,
         authorizationUrl: string,
         tokenUrl: string,
+        logoutUrl: string,
         redirectUri: string,
-        private readonly refreshTokenStorage: RefreshTokenStorage) {
+        private readonly refreshTokenStorage: RefreshTokenStorage) {        
 
         this.loginRequest = new LoginRequest(clientId, redirectUri, authorizationUrl);
+        this.logoutRequest = new LogoutRequest(logoutUrl);
         this.accessCodeRequest = new AccessCodeRequest(clientId, redirectUri, tokenUrl);
 
         const accessCodeResponse = this.authorizationCode
@@ -58,7 +63,7 @@ export class OAuthProcess {
         const refreshTokenObtainedAccessCodes = this.refreshTokenSource
             .switchMap(token => Observable.interval(this.refreshIntervalSeconds * 1000).map(() => token))
             .switchMap(token => {
-                if (token == null) {
+                if (token === null) {
                     return Observable.of<TokenResponse>(null);
                 }
 
@@ -79,8 +84,6 @@ export class OAuthProcess {
     }
 
     public async login() {
-        await this.refreshTokenStorage.storeToken(null);
-
         const value = await this.refreshTokenStorage.getRefreshToken();
         if (!value) {
             console.debug('Refresh token is not found in storage, opening login page...')
@@ -97,15 +100,13 @@ export class OAuthProcess {
     }
 
     public async forgetUser() {
+        await this.storeRefreshToken(null);
         this.refreshTokenSource.next(null);
+        //await this.logoutRequest.perform();
     }
 
-    private async onNewTokenObtained(tokenResponse: TokenResponse) {
-        try {
-            await this.refreshTokenStorage.storeToken(tokenResponse !== null ? tokenResponse.refreshToken : null);
-        } catch (e) {
-            console.error("Couldn't set refresh token in the storage", e);
-        }
+    private onNewTokenObtained(tokenResponse: TokenResponse) {
+        this.storeRefreshToken(tokenResponse ? tokenResponse.refreshToken : null);
 
         if (tokenResponse === null) {
             this.jwtTokenSource.next(notAuthenticatedInstance);
@@ -115,16 +116,12 @@ export class OAuthProcess {
         }
     }
 
-    private async onTokenError(error: any) {
+    private onTokenError(error: any) {
         if (error && error.status === 0) {
             //ignore, no internet connection
             console.warn('OAuth connectivity error occurred', error);
         } else {
-            try {
-                await this.refreshTokenStorage.storeToken(null); // there was an error with /token endpoint so we delete existing token
-            } catch (e) {
-                console.error("Couldn't delete refresh token from the storage")
-            }
+            this.storeRefreshToken(null); // there was an error with /token endpoint so we delete existing token
 
             const errorText =
                 error
@@ -133,6 +130,14 @@ export class OAuthProcess {
                         : error.toString()
                     : "unknown error"
             this.jwtTokenSource.error(new OauthError(error));
+        }
+    }
+
+    private async storeRefreshToken(token: string | null) {
+        try {
+            await this.refreshTokenStorage.storeToken(token);
+        } catch (e) {
+            console.error("Couldn't change refresh token in the storage", e)
         }
     }
 }
