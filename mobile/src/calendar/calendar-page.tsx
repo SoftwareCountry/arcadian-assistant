@@ -2,9 +2,9 @@ import React, { Component, Fragment } from 'react';
 import moment, { Moment } from 'moment';
 import { View, StyleSheet, TouchableHighlight, LayoutChangeEvent, PixelRatio } from 'react-native';
 import { StyledText } from '../override/styled-text';
-import { calendarStyles, calendarPeriodStyles, calendarPeriodColors } from './styles';
-import { DayModel, WeekModel, PeriodsModel, PeriodModel } from '../reducers/calendar/calendar.model';
-import { StartPeriod, EndPeriod, Period, DotPeriod } from './calendar-page-period';
+import { calendarStyles, calendarIntervalStyles, calendarIntervalColors } from './styles';
+import { DayModel, WeekModel, IntervalsModel, IntervalModel } from '../reducers/calendar/calendar.model';
+import { StartInterval, EndInterval, Interval, IntervalBoundary } from './calendar-page-interval';
 import { CalendarEventsType } from '../reducers/calendar/calendar-events.model';
 import { WeekDay, WeekDayCircle } from './calendar-page-weekday';
 
@@ -12,7 +12,7 @@ export type OnSelectedDayCallback = (day: DayModel) => void;
 
 interface CalendarPageDefaultProps {
     hidePrevNextMonthDays?: boolean;
-    periods?: PeriodsModel;
+    intervals?: IntervalsModel;
 }
 
 interface CalendarPageProps {
@@ -35,10 +35,10 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
         .weekdaysShort()
         .map(x => x.substring(0, 2));
 
-    private readonly periodColors = {
-        [CalendarEventsType.Vacation]: calendarPeriodColors.vacation,
-        [CalendarEventsType.SickLeave]: calendarPeriodColors.sickLeave,
-        [CalendarEventsType.Dayoff]: calendarPeriodColors.dayoff
+    private readonly intervalColors = {
+        [CalendarEventsType.Vacation]: calendarIntervalColors.vacation,
+        [CalendarEventsType.SickLeave]: calendarIntervalColors.sickLeave,
+        [CalendarEventsType.Dayoff]: calendarIntervalColors.dayoff
     };
 
     constructor(props: CalendarPageDefaultProps & CalendarPageProps) {
@@ -98,39 +98,39 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
                         <WeekDayCircle day={day} onSelectedDay={this.props.onSelectedDay} weekHeight={this.state.weekHeight} />
                     </View>
                     {
-                        this.renderPeriods(day.date)
+                        this.renderIntervals(day.date)
                     }
                 </WeekDay>
             </View>
         );
     }
 
-    private renderPeriods(date: Moment) {
-        if (!this.props.periods) {
+    private renderIntervals(date: Moment) {
+        if (!this.props.intervals) {
             return null;
         }
 
-        const periods = this.props.periods.get(date);
+        const intervals = this.props.intervals.get(date);
 
-        if (!periods) {
+        if (!intervals) {
             return null;
         }
 
-        return periods.map((period, index) => this.renderPeriod(period, index));
+        return intervals.map((interval, index) => this.renderInterval(interval, index));
     }
 
-    private renderPeriod(period: PeriodModel, elementKey: number): JSX.Element | null {
-        const color = this.periodColors[period.eventType] || '#fff';
+    private renderInterval(interval: IntervalModel, elementKey: number): JSX.Element | null {
+        const color = this.intervalColors[interval.eventType] || '#fff';
 
-        switch (period.periodType) {
-            case 'startPeriod':
-                return <StartPeriod key={elementKey} size={this.state.weekHeight} color={color} />;
-            case 'endPeriod':
-                return <EndPeriod key={elementKey} size={this.state.weekHeight} color={color} />;
-            case 'period':
-                return <Period key={elementKey} size={this.state.weekHeight} color={color} />;
-            case 'dotPeriod':
-                return <DotPeriod key={elementKey} size={this.state.weekHeight} color={color} />;
+        switch (interval.intervalType) {
+            case 'startInterval':
+                return <StartInterval key={elementKey} size={this.state.weekHeight} color={color} />;
+            case 'endInterval':
+                return <EndInterval key={elementKey} size={this.state.weekHeight} color={color} />;
+            case 'interval':
+                return <Interval key={elementKey} size={this.state.weekHeight} color={color} />;
+            case 'intervalBoundary':
+                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} />;
             default:
                 return null;
         }

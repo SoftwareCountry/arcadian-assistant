@@ -1,31 +1,31 @@
 import React, { Component } from 'react';
-import { calendarPeriodStyles, periodMargin } from './styles';
+import { calendarIntervalStyles, intervalMargin } from './styles';
 import { View, StyleSheet, PixelRatio } from 'react-native';
 
-interface HalfPeriodProps {
+interface HalfIntervalProps {
     size: number;
     align: 'left' | 'right';
     color: string;
 }
 
-export class HalfPeriod extends Component<HalfPeriodProps> {
+export class HalfInterval extends Component<HalfIntervalProps> {
     public render() {
-        const { containerStyles, circleStyles, periodStyles } = this.calculateStyles();
+        const { containerStyles, circleStyles, intervalStyles } = this.calculateStyles();
 
         return (
             <View style={containerStyles}>
                 <View style={circleStyles}></View>
-                <View style={periodStyles}></View>
+                <View style={intervalStyles}></View>
             </View>
         );
     }
 
     private calculateStyles() {
-        const margin = (this.props.size * periodMargin);
+        const margin = (this.props.size * intervalMargin);
         const size = this.props.size - margin;
 
         const containerStyles = StyleSheet.flatten([
-            calendarPeriodStyles.container,
+            calendarIntervalStyles.container,
             this.props.align === 'right'
                 ? { flexDirection: 'row-reverse' }
                 : {}
@@ -49,8 +49,8 @@ export class HalfPeriod extends Component<HalfPeriodProps> {
                 }
         ]);
 
-        const periodStyles = StyleSheet.flatten([
-            calendarPeriodStyles.halfPeriod,
+        const intervalStyles = StyleSheet.flatten([
+            calendarIntervalStyles.halfInterval,
             {
                 height: size,
                 backgroundColor: this.props.color
@@ -60,28 +60,28 @@ export class HalfPeriod extends Component<HalfPeriodProps> {
         return {
             containerStyles,
             circleStyles,
-            periodStyles
+            intervalStyles
         };
     }
 }
 
-type PeriodProps = { size: number, color: string };
+type IntervalProps = { size: number, color: string };
 
-export const StartPeriod = (props: PeriodProps) => <HalfPeriod size={props.size} align={'left'} color={props.color} />;
+export const StartInterval = (props: IntervalProps) => <HalfInterval size={props.size} align={'left'} color={props.color} />;
 
-export const EndPeriod = (props: PeriodProps) => <HalfPeriod size={props.size} align={'right'} color={props.color} />;
+export const EndInterval = (props: IntervalProps) => <HalfInterval size={props.size} align={'right'} color={props.color} />;
 
-export const Period = (props: PeriodProps) => {
-    const margin = (props.size * periodMargin);
+export const Interval = (props: IntervalProps) => {
+    const margin = (props.size * intervalMargin);
     const size = props.size - margin;
 
     const containerStyles = StyleSheet.flatten([
-        calendarPeriodStyles.container,
+        calendarIntervalStyles.container,
         { justifyContent: 'center' }
     ]);
 
-    const periodStyles = StyleSheet.flatten([
-        calendarPeriodStyles.period,
+    const intervalStyles = StyleSheet.flatten([
+        calendarIntervalStyles.interval,
         {
             height: size,
             backgroundColor: props.color
@@ -89,21 +89,21 @@ export const Period = (props: PeriodProps) => {
     ]);
 
     return (
-        <View style={calendarPeriodStyles.container}>
-            <View style={periodStyles}></View>
+        <View style={calendarIntervalStyles.container}>
+            <View style={intervalStyles}></View>
         </View>
     );
 };
 
-export const DotPeriod = (props: PeriodProps) => {
-    const margin = (props.size * periodMargin);
+export const IntervalBoundary = (props: IntervalProps) => {
+    const margin = (props.size * intervalMargin);
     const size = props.size - margin;
 
     const containerStyles = StyleSheet.flatten([
-        calendarPeriodStyles.container,
+        calendarIntervalStyles.container,
         { justifyContent: 'center' }
     ]);
-
+    
     const circleStyles = StyleSheet.flatten([
         {
             borderRadius: PixelRatio.roundToNearestPixel(size / 2),

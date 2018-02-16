@@ -82,35 +82,33 @@ export class CalendarWeeksBuilder {
     }
 }
 
-type PeriodType = 'startPeriod' | 'period' | 'endPeriod' | 'dotPeriod';
+type IntervalType = 'startInterval' | 'interval' | 'endInterval' | 'intervalBoundary';
 
-export interface PeriodModel {
-    periodType: PeriodType;
+export interface IntervalModel {
+    intervalType: IntervalType;
     eventType: CalendarEventsType;
 }
 
-export class PeriodsModel {
-    private periodsDictionary: {
-        // serjKim: maybe object with event type specific keys:
-        // { [dateKey: string] { 'Vacation':  PeriodModel, 'Dayoff': PeriodModel } } instead of array PeriodModel[]...
-        [dateKey: string]: PeriodModel[]; 
+export class IntervalsModel {
+    private intervalsDictionary: {
+        [dateKey: string]: IntervalModel[];
     } = {};
 
-    public set(date: Moment, period: PeriodModel) {
-        const dateKey = PeriodsModel.generateKey(date);
+    public set(date: Moment, interval: IntervalModel) {
+        const dateKey = IntervalsModel.generateKey(date);
 
-        let periods = this.periodsDictionary[dateKey];
+        let intervals = this.intervalsDictionary[dateKey];
 
-        if (!periods) {
-            this.periodsDictionary[dateKey] = periods = [];
+        if (!intervals) {
+            this.intervalsDictionary[dateKey] = intervals = [];
         }
 
-        periods.push(period);
+        intervals.push(interval);
     }
 
-    public get(date: Moment): PeriodModel[] | undefined {
-        const dateKey = PeriodsModel.generateKey(date);
-        return this.periodsDictionary[dateKey];
+    public get(date: Moment): IntervalModel[] | undefined {
+        const dateKey = IntervalsModel.generateKey(date);
+        return this.intervalsDictionary[dateKey];
     }
 
     public static generateKey(date: Moment): string {
@@ -118,33 +116,33 @@ export class PeriodsModel {
     }
 }
 
-export class CalendarPeriodsBuilder {
+export class CalendarIntervalsBuilder {
 
-    public buildPeriods(calendarEvents: CalendarEvents[]) {
-        const periodsModel = new PeriodsModel();
+    public buildIntervals(calendarEvents: CalendarEvents[]) {
+        const intervalsModel = new IntervalsModel();
 
         for (let calendarEvent of calendarEvents) {
             const start = moment(calendarEvent.dates.startDate);
 
             if (start.isSame(calendarEvent.dates.endDate, 'day')) {
-                periodsModel.set(start, {
-                    periodType: 'dotPeriod',
+                intervalsModel.set(start, {
+                    intervalType: 'intervalBoundary',
                     eventType: calendarEvent.type
                 });
                 continue;
             }
 
             while (start.isSameOrBefore(calendarEvent.dates.endDate, 'day')) {
-                let periodType: PeriodType = 'period';
+                let intervalType: IntervalType = 'interval';
 
                 if (start.isSame(calendarEvent.dates.startDate)) {
-                    periodType = 'startPeriod';
+                    intervalType = 'startInterval';
                 } else if (start.isSame(calendarEvent.dates.endDate)) {
-                    periodType = 'endPeriod';
+                    intervalType = 'endInterval';
                 }
 
-                periodsModel.set(start, {
-                    periodType: periodType,
+                intervalsModel.set(start, {
+                    intervalType: intervalType,
                     eventType: calendarEvent.type
                 });
 
@@ -152,6 +150,6 @@ export class CalendarPeriodsBuilder {
             }
         }
 
-        return periodsModel;
+        return intervalsModel;
     }
 }

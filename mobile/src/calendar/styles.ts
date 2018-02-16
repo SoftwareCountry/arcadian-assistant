@@ -85,31 +85,31 @@ export const calendarStyles = StyleSheet.create({
     }
 });
 
-export const calendarPeriodColors = {
+export const calendarIntervalColors = {
     vacation: '#2F80ED',
     sickLeave: '#F2C94C',
     dayoff: '#EB5757'
 };
 
-// serjKim: Depends on count of overlapped periods?..
-const periodOpacity = 0.5;
-export const periodMargin = 0.2;
+// serjKim: Depends on count of overlapped intervals?..
+const intervalOpacity = 0.5;
+export const intervalMargin = 0.2;
 
-export const calendarPeriodStyles = StyleSheet.create({
+export const calendarIntervalStyles = StyleSheet.create({
     container: {
         position: 'absolute',
         width: '100%',
         alignItems: 'center',
         justifyContent: 'flex-end',
         flexDirection: 'row',
-        opacity: periodOpacity,
+        opacity: intervalOpacity,
         zIndex: weekDayElementsZIndex
     },
-    halfPeriod: {
+    halfInterval: {
         width: '50%'
     },
-    period: {
-        width: '100%',
+    interval: {
+        flex: 1
     }
 });
 

@@ -6,7 +6,7 @@ import { apiUrl } from '../const';
 import { deserializeArray } from 'santee-dcts';
 import { loadCalendarEventsFinished } from './calendar.action';
 import { loadFailedError } from '../errors/errors.action';
-import { CalendarEvents, CalendarEventsType, CalendarEventStatus, DatesPeriod } from './calendar-events.model';
+import { CalendarEvents, CalendarEventsType, CalendarEventStatus, DatesInterval } from './calendar-events.model';
 import moment from 'moment';
 
 export const loadCalendarEventsFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>) =>
@@ -15,10 +15,10 @@ export const loadCalendarEventsFinishedEpic$ = (action$: ActionsObservable<LoadU
         //     ajaxGetJSON(`${apiUrl}/employees/${x.employee.employeeId}/events`).map((obj: Object[]) => deserializeArray(obj, CalendarEvents))
         // )
         // .map(x => loadCalendarEventsFinished(x))
-        // TODO: Next PR: Take events from API and add Agenda to save periods. Now it's just a mock to show how my calendar works.
+        // TODO: Next PR: Take events from API and add Agenda to save intervals. Now it's just a mock to show how my calendar works.
         .map(() => {
             const mockEvent = new CalendarEvents();
-            const mockPeriod = new DatesPeriod();
+            const mockInterval = new DatesInterval();
             const startDate = moment();
 
             startDate.add(-4, 'days');
@@ -27,20 +27,20 @@ export const loadCalendarEventsFinishedEpic$ = (action$: ActionsObservable<LoadU
 
             endDate.add(14, 'days');
 
-            mockPeriod.startDate = startDate;
-            mockPeriod.endDate = endDate;
-            mockPeriod.startWorkingHour = 0;
-            mockPeriod.finishWorkingHour = 8;
+            mockInterval.startDate = startDate;
+            mockInterval.endDate = endDate;
+            mockInterval.startWorkingHour = 0;
+            mockInterval.finishWorkingHour = 8;
 
             mockEvent.calendarEventId = '1';
             mockEvent.type = CalendarEventsType.Vacation;
-            mockEvent.dates = mockPeriod;
+            mockEvent.dates = mockInterval;
             mockEvent.status = CalendarEventStatus.Approved;
 
             // --
 
             const mockEvent2 = new CalendarEvents();
-            const mockPeriod2 = new DatesPeriod();
+            const mockInterval2 = new DatesInterval();
             const startDate2 = moment();
 
             startDate2.add(-8, 'days');
@@ -49,32 +49,32 @@ export const loadCalendarEventsFinishedEpic$ = (action$: ActionsObservable<LoadU
 
             endDate2.add(14, 'days');
 
-            mockPeriod2.startDate = startDate2;
-            mockPeriod2.endDate = endDate2;
-            mockPeriod2.startWorkingHour = 0;
-            mockPeriod2.finishWorkingHour = 8;
+            mockInterval2.startDate = startDate2;
+            mockInterval2.endDate = endDate2;
+            mockInterval2.startWorkingHour = 0;
+            mockInterval2.finishWorkingHour = 8;
 
             mockEvent2.calendarEventId = '2';
             mockEvent2.type = CalendarEventsType.SickLeave;
-            mockEvent2.dates = mockPeriod2;
+            mockEvent2.dates = mockInterval2;
             mockEvent2.status = CalendarEventStatus.Approved;
 
             // --
 
             const mockEvent3 = new CalendarEvents();
-            const mockPeriod3 = new DatesPeriod();
+            const mockInterval3 = new DatesInterval();
             const startDate3 = moment();
 
             startDate3.add(-9, 'days');
 
-            mockPeriod3.startDate = startDate3;
-            mockPeriod3.endDate = startDate3;
-            mockPeriod3.startWorkingHour = 0;
-            mockPeriod3.finishWorkingHour = 8;
+            mockInterval3.startDate = startDate3;
+            mockInterval3.endDate = startDate3;
+            mockInterval3.startWorkingHour = 0;
+            mockInterval3.finishWorkingHour = 8;
 
             mockEvent3.calendarEventId = '2';
             mockEvent3.type = CalendarEventsType.Dayoff;
-            mockEvent3.dates = mockPeriod3;
+            mockEvent3.dates = mockInterval3;
             mockEvent3.status = CalendarEventStatus.Approved;
 
             return loadCalendarEventsFinished([mockEvent, mockEvent2, mockEvent3]);

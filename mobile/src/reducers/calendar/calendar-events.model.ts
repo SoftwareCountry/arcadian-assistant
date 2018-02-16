@@ -14,7 +14,7 @@ export enum CalendarEventStatus {
     Cancelled = 'Cancelled'
 }
 
-export class DatesPeriod {
+export class DatesInterval {
     @dataMember()
     @required()
     public startDate: Moment;
@@ -43,7 +43,7 @@ export class CalendarEvents {
 
     @dataMember()
     @required()
-    public dates: DatesPeriod;
+    public dates: DatesInterval;
 
     @dataMember()
     @required()

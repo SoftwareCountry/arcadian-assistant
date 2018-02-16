@@ -1,12 +1,12 @@
 import { Reducer } from 'redux';
 import { CalendarActions } from './calendar.action';
-import { CalendarWeeksBuilder, DayModel, WeekModel, CalendarPeriodsBuilder, PeriodsModel } from './calendar.model';
+import { CalendarWeeksBuilder, DayModel, WeekModel, CalendarIntervalsBuilder, IntervalsModel } from './calendar.model';
 import moment from 'moment';
 
 export interface CalendarEventsState {
     weeks: WeekModel[];
     selectedCalendarDay: DayModel;
-    periods: PeriodsModel;
+    intervals: IntervalsModel;
 }
 
 const createInitState = (): CalendarEventsState => {
@@ -26,7 +26,7 @@ const createInitState = (): CalendarEventsState => {
     return {
         weeks: weeks,
         selectedCalendarDay: todayModel,
-        periods: null
+        intervals: null
     };
 };
 
@@ -35,12 +35,12 @@ const initState = createInitState();
 export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = initState, action: CalendarActions) => {
     switch (action.type) {
         case 'LOAD-CALENDAR-EVENTS-FINISHED':
-            const builderPeriods = new CalendarPeriodsBuilder();
-            const periods = builderPeriods.buildPeriods(action.calendarEvents);
+            const builderIntervals = new CalendarIntervalsBuilder();
+            const intervals = builderIntervals.buildIntervals(action.calendarEvents);
 
             return {
                 ...state,
-                periods: periods
+                intervals: intervals
             };
         case 'SELECT-CALENDAR-DAY':
             return {
