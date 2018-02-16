@@ -130,7 +130,7 @@ export class Profile extends Component<ProfileProps> {
             }
         ];
 
-        return contactsData.map((contact) => (
+        return contactsData.filter(c => c.text && c.text.length > 0).map((contact) => (
             <TouchableOpacity key={contact.title} onPress={this.openLink(`${contact.prefix}${contact.text}`)}>
                 <View style={contactStyles.container}>
                     <View style={contactStyles.iconContainer} >
