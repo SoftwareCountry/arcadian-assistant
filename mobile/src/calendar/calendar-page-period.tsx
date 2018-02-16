@@ -1,6 +1,6 @@
 import React from 'react';
 import { calendarPeriodStyles, periodMargin } from './styles';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, PixelRatio } from 'react-native';
 
 const HalfPeriod = (props: {
     size: number,
@@ -21,7 +21,7 @@ const HalfPeriod = (props: {
         {
             borderRadius: size,
             height: size,
-            width: size / 2,
+            width: PixelRatio.roundToNearestPixel(size / 2),
             backgroundColor: props.color
         },
         props.align === 'right'
@@ -92,7 +92,7 @@ export const DotPeriod = (props: PeriodProps) => {
 
     const circleStyles = StyleSheet.flatten([
         {
-            borderRadius: size / 2,
+            borderRadius: PixelRatio.roundToNearestPixel(size / 2),
             height: size,
             width: size,
             backgroundColor: props.color

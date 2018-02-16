@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import moment, { Moment } from 'moment';
-import { View, StyleSheet, TouchableHighlight, LayoutChangeEvent } from 'react-native';
+import { View, StyleSheet, TouchableHighlight, LayoutChangeEvent, PixelRatio } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { calendarStyles, calendarPeriodStyles, calendarPeriodColors } from './styles';
 import { DayModel, WeekModel, PeriodsModel, PeriodModel } from '../reducers/calendar/calendar.model';
@@ -75,7 +75,7 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
         // invoke once to reduce perfomance load
         if (!this.state.weekHeight) {
             this.setState({
-                weekHeight: e.nativeEvent.layout.height
+                weekHeight: PixelRatio.roundToNearestPixel(e.nativeEvent.layout.height)
             });
         }
     }
