@@ -1,7 +1,9 @@
 import { Reducer } from 'redux';
 import { CalendarActions } from './calendar.action';
-import { CalendarWeeksBuilder, DayModel, WeekModel, CalendarIntervalsBuilder, IntervalsModel } from './calendar.model';
+import { DayModel, WeekModel, IntervalsModel } from './calendar.model';
 import moment from 'moment';
+import { CalendarWeeksBuilder } from './calendar-weeks-builder';
+import { CalendarIntervalsBuilder } from './calendar-intervals-builder';
 
 export interface CalendarEventsState {
     weeks: WeekModel[];

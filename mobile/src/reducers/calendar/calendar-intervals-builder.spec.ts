@@ -1,6 +1,7 @@
 import moment from 'moment';
-import { CalendarWeeksBuilder, WeekModel, IntervalsModel, IntervalModel, CalendarIntervalsBuilder } from './calendar.model';
+import { WeekModel, IntervalsModel, IntervalModel } from './calendar.model';
 import { CalendarEvents, CalendarEventsType, DatesInterval } from './calendar-events.model';
+import { CalendarIntervalsBuilder } from './calendar-intervals-builder';
 
 describe('IntervalsModel', () => {
     it('should generate string key with "DD-MM-YYYY" format', () => {
@@ -96,7 +97,7 @@ describe('CalendarIntervalsBuilder', () => {
         const intervals = intervalsModel.get(date);
 
         expect(intervals[0].eventType).toBe(event.type);
-        expect(intervals[0].intervalType).toBe('dotInterval');
+        expect(intervals[0].intervalType).toBe('intervalBoundary');
     });
 
     it('should build interval if endDate > startDate', () => {
