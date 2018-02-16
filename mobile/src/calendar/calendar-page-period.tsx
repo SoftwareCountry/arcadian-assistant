@@ -1,5 +1,5 @@
 import React from 'react';
-import { calendarPeriodStyles } from './styles';
+import { calendarPeriodStyles, periodMargin } from './styles';
 import { View, StyleSheet } from 'react-native';
 
 const HalfPeriod = (props: {
@@ -7,7 +7,7 @@ const HalfPeriod = (props: {
     align: 'left' | 'right',
     color: string
 }) => {
-    const margin = (props.size * 0.2);
+    const margin = (props.size * periodMargin);
     const size = props.size - margin;
 
     const containerStyles = StyleSheet.flatten([
@@ -58,7 +58,7 @@ export const StartPeriod = (props: PeriodProps) => <HalfPeriod size={props.size}
 export const EndPeriod = (props: PeriodProps) => <HalfPeriod size={props.size} align={'right'} color={props.color} />;
 
 export const Period = (props: PeriodProps) => {
-    const margin = (props.size * 0.2);
+    const margin = (props.size * periodMargin);
     const size = props.size - margin;
 
     const containerStyles = StyleSheet.flatten([
@@ -82,7 +82,7 @@ export const Period = (props: PeriodProps) => {
 };
 
 export const DotPeriod = (props: PeriodProps) => {
-    const margin = (props.size * 0.2);
+    const margin = (props.size * periodMargin);
     const size = props.size - margin;
 
     const containerStyles = StyleSheet.flatten([

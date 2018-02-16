@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, TouchableHighlight } from 'react-native';
-import { calendarStyles } from './styles';
+import { calendarStyles, periodMargin } from './styles';
 import { DayModel } from '../reducers/calendar/calendar.model';
 import { OnSelectedDayCallback } from './calendar-page';
 import { StyledText } from '../override/styled-text';
@@ -34,14 +34,14 @@ export class WeekDayCircle extends Component<WeekDayCircleProps> {
             }
         ]);
 
-        const innerCircleSize = (circleStyles.width as number) - (circleStyles.width as number * 0.2);
+        const innerCircleSize = (circleStyles.width as number) - (circleStyles.width as number * periodMargin);
 
         const innerCircleStyles = StyleSheet.flatten([
             calendarStyles.weekDayCircle,
             {
                 width: innerCircleSize,
                 height: innerCircleSize,
-                borderRadius: circleStyles.borderRadius - (circleStyles.borderRadius * 0.2),
+                borderRadius: circleStyles.borderRadius - (circleStyles.borderRadius * periodMargin),
                 backgroundColor: day.today
                     ? '#2FAFCC'
                     : 'transparent'

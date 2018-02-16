@@ -101,6 +101,7 @@ export const calendarPeriodColors = {
 
 // serjKim: Depends on count of overlapped periods?..
 const periodOpacity = 0.5;
+export const periodMargin = 0.2;
 
 export const calendarPeriodStyles = StyleSheet.create({
     container: {
