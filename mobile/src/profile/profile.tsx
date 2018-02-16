@@ -118,7 +118,7 @@ export class Profile extends Component<ProfileProps> {
                 icon: 'phone',
                 text: employee.mobilePhone,
                 title: 'Mobile Phone:',
-                size: 30,
+                size: 45,
                 prefix: 'tel:'
             },
             {
