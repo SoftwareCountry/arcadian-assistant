@@ -146,6 +146,6 @@ export class Profile extends Component<ProfileProps> {
     }
 
     private openLink(url: string) {
-        return () => Linking.openURL(url).catch(err => null); //Should we show any exception here?
+        return () => Linking.openURL(url).catch(err => console.error(err));
     }
 }
