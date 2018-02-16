@@ -16,12 +16,6 @@ export const calendarScreenLayout = {
     }
 };
 
-// TODO: debug
-const debugStyles = {
-    // borderWidth: 1,
-    // borderColor: '#4ea'
-};
-
 const weekDayElementsZIndex = 1;
 
 export const calendarStyles = StyleSheet.create({
@@ -54,8 +48,7 @@ export const calendarStyles = StyleSheet.create({
     weekName: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
-        ...debugStyles
+        justifyContent: 'center'
     },
     weeks: {
         flex: 7,
@@ -68,8 +61,7 @@ export const calendarStyles = StyleSheet.create({
     weekDayContainer: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
-        ...debugStyles
+        justifyContent: 'center'
     },
     weekDay: {
         flex: 1,
