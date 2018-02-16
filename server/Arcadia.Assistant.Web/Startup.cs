@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-// ReSharper disable UnusedMember.Global
-
-namespace Arcadia.Assistant.Web
+﻿namespace Arcadia.Assistant.Web
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     using Akka.Actor;
     using Akka.Configuration;
 
@@ -15,15 +13,22 @@ namespace Arcadia.Assistant.Web
 
     using Autofac;
 
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Options;
+    using Microsoft.IdentityModel.Tokens;
+
     using Swashbuckle.AspNetCore.Swagger;
+    using Swashbuckle.AspNetCore.SwaggerGen;
 
     public class Startup
     {
-        private readonly IHostingEnvironment environment;
-
         public Startup(IHostingEnvironment environment)
         {
-            this.environment = environment;
             var configBuilder = new ConfigurationBuilder()
                 .SetBasePath(environment.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional:false, reloadOnChange:true)
@@ -36,17 +41,17 @@ namespace Arcadia.Assistant.Web
                 configBuilder.AddUserSecrets<Startup>();
             }
 
-            this.Configuration = configBuilder.Build();
+            this.AppSettings = configBuilder.Build().Get<AppSettings>();
         }
 
-        public IConfiguration Configuration { get; }
+        public AppSettings AppSettings { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
+        // ReSharper disable once UnusedMember.Global
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-
-            var appSettings = this.Configuration.Get<AppSettings>();
+            var appSettings = this.AppSettings;
 
             var systemName = appSettings.Server.ActorSystemName;
             var host = appSettings.Server.Host;
@@ -59,30 +64,57 @@ namespace Arcadia.Assistant.Web
             var pathsBuilder = new ActorPathsBuilder(systemName, host, port);
 
             services.AddSingleton<ITimeoutSettings>(appSettings);
+            services.AddSingleton<ISecuritySettings>(appSettings.Security);
             services.AddSingleton<IActorRefFactory>(actorSystem);
             services.AddSingleton(pathsBuilder);
 
-            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new Info() { Title = "Arcadian-Assistant API", Version = "v1" }); });
+            services.AddSwaggerGen(
+                c =>
+                    {
+                        c.SwaggerDoc("v1", new Info() { Title = "Arcadian-Assistant API", Version = "v1" });
+
+                        var scheme = new OAuth2Scheme();
+                        scheme.Flow = "implicit";
+
+                        scheme.AuthorizationUrl = appSettings.Security.AuthorizationUrl;
+                        scheme.TokenUrl = appSettings.Security.TokenUrl;
+
+                        c.AddSecurityDefinition("oauth2", scheme);
+                    });
+
             services.ConfigureSwaggerGen(
                 x =>
                     {
                         x.DescribeAllEnumsAsStrings();
                         //x.CustomSchemaIds(t => t.FullName);
                     });
+
+            services
+                .AddAuthentication(options => { options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme; })
+                .AddJwtBearer(
+                    jwtOptions =>
+                        {
+                            jwtOptions.Audience = appSettings.Security.ClientId;
+                            jwtOptions.MetadataAddress = appSettings.Security.OpenIdConfigurationUrl;
+                        });
         }
 
+        // ReSharper disable once UnusedMember.Global
         public void ConfigureContainer(ContainerBuilder builder)
         {
             
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        // ReSharper disable once UnusedMember.Global
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ISecuritySettings securitySettings)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseAuthentication();
 
             app.UseSwagger();
             app.UseSwaggerUI(
@@ -91,6 +123,13 @@ namespace Arcadia.Assistant.Web
                         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Arcadian-Assistant API");
                         c.ShowJsonEditor();
                         c.ShowRequestHeaders();
+                        c.ConfigureOAuth2(
+                            securitySettings.ClientId,
+                            null,
+                            securitySettings.SwaggerRedirectUri,
+                            "ArcadiaAssistant",
+                            additionalQueryStringParameters: new Dictionary<string, string>() { { "resource", securitySettings.ClientId } }
+                            );
                     });
 
             app.UseMvc();
