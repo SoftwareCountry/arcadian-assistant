@@ -7,25 +7,10 @@ import { UserInfoState } from '../reducers/user/user-info.reducer';
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
 import { StyledText } from '../override/styled-text';
-import { View, StyleSheet, SafeAreaView } from 'react-native';
+import { View, SafeAreaView } from 'react-native';
 import { Employee } from '../reducers/organization/employee.model';
-import { chevronColor } from './styles';
-
-const styles = StyleSheet.create({
-    profileContainer: {
-        flex: 1,
-        backgroundColor: chevronColor
-    },
-    loadingContainer: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    loadingText: {
-        fontSize: 20
-    }
-});
-
+import { chevronColor, profileScreenStyles } from './styles';
+ 
 interface ProfileScreenProps {
     employee: Employee;
     departments: Department[];
@@ -42,12 +27,12 @@ class ProfileScreenImpl extends Component<ProfileScreenProps> {
         const department = this.props.departments && employee ? this.props.departments.find((d) => d.departmentId === employee.departmentId) : null;
 
         return employee && department ?
-            <SafeAreaView style={styles.profileContainer}>
+            <SafeAreaView style={profileScreenStyles.profileContainer}>
                 <Profile department={department} employee={employee} />
             </SafeAreaView>
             : (
-                <View style={styles.loadingContainer}>
-                    <StyledText style={styles.loadingText}>Loading...</StyledText>
+                <View style={profileScreenStyles.loadingContainer}>
+                    <StyledText style={profileScreenStyles.loadingText}>Loading...</StyledText>
                 </View>
             );
     }

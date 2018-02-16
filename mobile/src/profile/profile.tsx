@@ -12,6 +12,7 @@ import { Department } from '../reducers/organization/department.model';
 
 import { StyledText } from '../override/styled-text';
 import { Employee } from '../reducers/organization/employee.model';
+import { ApplicationIcon } from '../override/application-icon';
 
 interface ProfileProps {
     employee: Employee;
@@ -75,23 +76,27 @@ export class Profile extends Component<ProfileProps> {
         const tilesData = [
             {
                 label: employee.birthDate.format('MMMM D'),
-                icon: require('../../src/profile/icons/birthDate.png'),
-                style: StyleSheet.flatten([tileStyles.icon, tileStyles.iconBirthDay])
+                icon: 'birthday',
+                style: StyleSheet.flatten([tileStyles.icon]),
+                size: 30
             },
             {
                 label: employee.hireDate.format('YYYY-D-MM'),
-                icon: require('../../src/profile/icons/hireDate.png'),
-                style: StyleSheet.flatten([tileStyles.icon, tileStyles.iconHireDate])
+                icon: 'handshake',
+                style: StyleSheet.flatten([tileStyles.icon]),
+                size: 20
             },
             {
                 label: `Room ${employee.roomNumber}`,
-                icon: require('../../src/profile/icons/room.png'),
-                style: StyleSheet.flatten([tileStyles.icon, tileStyles.iconRoom])
+                icon: 'office',
+                style: StyleSheet.flatten([tileStyles.icon]),
+                size: 25
             },
             {
                 label: 'Organization',
-                icon: require('../../src/profile/icons/organization.png'),
-                style: StyleSheet.flatten([tileStyles.icon, tileStyles.iconOrganization])
+                icon: 'org_structure',
+                style: StyleSheet.flatten([tileStyles.icon]),
+                size: 28
             }
         ];
 
@@ -99,7 +104,7 @@ export class Profile extends Component<ProfileProps> {
             <View key={tile.label} style={tileStyles.container}>
                 <View style={tileStyles.tile}>
                     <View style={tileStyles.iconContainer}>
-                        <Image source={tile.icon} style={tile.style} resizeMode='contain' />
+                        <ApplicationIcon name={tile.icon} size={tile.size} style={tile.style} />
                     </View>
                     <StyledText style={tileStyles.text}>{tile.label}</StyledText>
                 </View>
@@ -110,21 +115,23 @@ export class Profile extends Component<ProfileProps> {
     private getContacts(employee: Employee) {
         const contactsData = [
             {
-                icon: require('../../src/profile/icons/phone.png'),
+                icon: 'phone',
                 text: employee.mobilePhone,
-                title: 'Mobile Phone:'
+                title: 'Mobile Phone:',
+                size: 30
             },
             {
-                icon: require('../../src/profile/icons/email.png'),
+                icon: 'envelope',
                 text: employee.email,
-                title: 'Email:'
+                title: 'Email:',
+                size: 30
             }
         ];
 
         return contactsData.map((contact) => (
             <View style={contactStyles.container} key={contact.title}>
                 <View style={contactStyles.iconContainer}>
-                    <Image source={contact.icon} style={contactStyles.icon} resizeMode='contain' />
+                    <ApplicationIcon name={contact.icon} size={contact.size} style={contactStyles.icon}/>
                 </View>
                 <View style={contactStyles.textContainer}>
                     <StyledText style={contactStyles.title}>{contact.title}</StyledText>

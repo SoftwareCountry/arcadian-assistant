@@ -14,27 +14,27 @@ const tabbarModel: NavigationRouteConfigMap = {
     News: {
         screen: FeedsScreen,
         path: '/',
-        navigationOptions: navOptionsFactory.create('Feeds', require('../../src/tabbar/News.png'), require('../../src/tabbar/News.png'))
+        navigationOptions: navOptionsFactory.create('Feeds', 'feeds')
     },
     People: {
         screen: PeopleScreen,
         path: '/people',
-        navigationOptions: navOptionsFactory.create('People', require('../../src/tabbar/People.png'), require('../../src/tabbar/People.png'))
+        navigationOptions: navOptionsFactory.create('People', 'people')
     },
     Helpdesk: {
         screen: HelpdeskScreen,
         path: '/helpdesk',
-        navigationOptions: navOptionsFactory.create('Helpdesk', require('../../src/tabbar/Helpdesk.png'), require('../../src/tabbar/Helpdesk.png'))
+        navigationOptions: navOptionsFactory.create('Helpdesk', 'helpdesk')
     },
     Calendar: {
         screen: CalendarScreen,
         path: '/calendar',
-        navigationOptions: navOptionsFactory.create('Calendar', require('../../src/tabbar/Calendar.png'), require('../../src/tabbar/Calendar.png'))
+        navigationOptions: navOptionsFactory.create('Calendar', 'calendar')
     },
     Profile: {
         screen: ProfileScreen,
         path: '/profile',
-        navigationOptions: navOptionsFactory.create('Profile', require('../../src/tabbar/Profile.png'), require('../../src/tabbar/Profile.png'))
+        navigationOptions: navOptionsFactory.create('Profile', 'profile')
     }
 };
 
