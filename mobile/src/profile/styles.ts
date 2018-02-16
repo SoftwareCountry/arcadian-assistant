@@ -31,6 +31,10 @@ export const chevronStyles = StyleSheet.create({
 });
 
 export const layoutStyles = StyleSheet.create({
+    scrollView: {
+        flex: 1,
+        backgroundColor: '#fff'
+    },
     container: {
         flex: 1,
         alignSelf: 'stretch'
