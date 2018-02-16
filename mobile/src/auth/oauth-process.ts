@@ -104,7 +104,7 @@ export class OAuthProcess {
         try {
             await this.refreshTokenStorage.storeToken(tokenResponse !== null ? tokenResponse.refreshToken : null);
         } catch (e) {
-            console.error("Couldn't delete refresh token from the storage", e);
+            console.error("Couldn't set refresh token in the storage", e);
         }
 
         if (tokenResponse === null) {
@@ -115,15 +115,20 @@ export class OAuthProcess {
         }
     }
 
-    private onTokenError(error: any) {
+    private async onTokenError(error: any) {
         if (error && error.status === 0) {
             //ignore, no internet connection
             console.warn('OAuth connectivity error occurred', error);
         } else {
-            this.refreshTokenStorage.storeToken(null); // there was an error with /token endpoint so we delete existing token
-            const errorText = 
-                error 
-                    ? error.message 
+            try {
+                await this.refreshTokenStorage.storeToken(null); // there was an error with /token endpoint so we delete existing token
+            } catch (e) {
+                console.error("Couldn't delete refresh token from the storage")
+            }
+
+            const errorText =
+                error
+                    ? error.message
                         ? error.message.toString()
                         : error.toString()
                     : "unknown error"
