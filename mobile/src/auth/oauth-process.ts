@@ -55,8 +55,6 @@ export class OAuthProcess {
         const accessCodeResponse = this.authorizationCode
             .switchMap(code => this.accessCodeRequest.fetchNew(code));
 
-        //accessCodeResponse.subscribe(x => this.onNewAccessCode(x), )
-
         const refreshTokenObtainedAccessCodes = this.refreshTokenSource
             .switchMap(token => Observable.interval(this.refreshIntervalSeconds * 1000).map(() => token))
             .switchMap(token => {
@@ -123,6 +121,12 @@ export class OAuthProcess {
             console.warn('OAuth connectivity error occurred', error);
         } else {
             this.refreshTokenStorage.storeToken(null); // there was an error with /token endpoint so we delete existing token
+            const errorText = 
+                error 
+                    ? error.message 
+                        ? error.message.toString()
+                        : error.toString()
+                    : "unknown error"
             this.jwtTokenSource.error(new OauthError(error));
         }
     }
