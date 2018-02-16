@@ -31,40 +31,40 @@ export class Profile extends Component<ProfileProps> {
         const contacts = this.getContacts(employee);
 
         return (
-        <ScrollView style={layoutStyles.scrollView}>
-            <View style={layoutStyles.container}>
-                <View style={layoutStyles.chevronPlaceholder}></View>
-                <View>
-                    <Chevron />
-                    <View style={layoutStyles.avatarContainer}>
-                        <Avatar photo={employee.photo} imageStyle={{borderWidth: 0}} style={{borderWidth: 3}} />
-                    </View>
-                </View>
-
-                <View style={layoutStyles.content}>
-                    <StyledText style={contentStyles.name}>
-                        {employee.name}
-                    </StyledText>
-                    <StyledText style={contentStyles.position}>
-                        {this.uppercase(employee.position)}
-                    </StyledText>
-                    <StyledText style={contentStyles.department}>
-                        {this.uppercase(department.abbreviation)}
-                    </StyledText>
-
-                    <View style={contentStyles.infoContainer}>
-                        {tiles}
-                    </View>
-
-                    <View style={contentStyles.contactsContainer}>
-                        <View>
-                            {contacts}
+            <ScrollView style={layoutStyles.scrollView}>
+                <View style={layoutStyles.container}>
+                    <View style={layoutStyles.chevronPlaceholder}></View>
+                    <View>
+                        <Chevron />
+                        <View style={layoutStyles.avatarContainer}>
+                            <Avatar photo={employee.photo} imageStyle={{ borderWidth: 0 }} style={{ borderWidth: 3 }} />
                         </View>
                     </View>
-                </View>
 
-            </View>
-        </ScrollView>
+                    <View style={layoutStyles.content}>
+                        <StyledText style={contentStyles.name}>
+                            {employee.name}
+                        </StyledText>
+                        <StyledText style={contentStyles.position}>
+                            {this.uppercase(employee.position)}
+                        </StyledText>
+                        <StyledText style={contentStyles.department}>
+                            {this.uppercase(department.abbreviation)}
+                        </StyledText>
+
+                        <View style={contentStyles.infoContainer}>
+                            {tiles}
+                        </View>
+
+                        <View style={contentStyles.contactsContainer}>
+                            <View>
+                                {contacts}
+                            </View>
+                        </View>
+                    </View>
+
+                </View>
+            </ScrollView>
         );
     }
 
@@ -134,7 +134,7 @@ export class Profile extends Component<ProfileProps> {
             <TouchableOpacity key={contact.title} onPress={this.openLink(`${contact.prefix}${contact.text}`)}>
                 <View style={contactStyles.container}>
                     <View style={contactStyles.iconContainer} >
-                        <ApplicationIcon name={contact.icon} size={contact.size} style={contactStyles.icon}/>
+                        <ApplicationIcon name={contact.icon} size={contact.size} style={contactStyles.icon} />
                     </View>
                     <View style={contactStyles.textContainer}>
                         <StyledText style={contactStyles.title}>{contact.title}</StyledText>
