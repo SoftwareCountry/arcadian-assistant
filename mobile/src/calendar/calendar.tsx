@@ -9,6 +9,7 @@ import { WeekModel, DayModel, IntervalsModel } from '../reducers/calendar/calend
 interface CalendarProps {
     weeks: WeekModel[];
     intervals: IntervalsModel;
+    selectedCalendarDay: DayModel;
 }
 
 interface CalendarDispatchProps {
@@ -19,6 +20,7 @@ interface CalendarDispatchProps {
 export class CalendarImpl extends Component<CalendarProps & CalendarDispatchProps> {
     public render() {
         return <CalendarPager
+                    selectedDay={this.props.selectedCalendarDay}
                     onSelectedDay={this.onSelectedDay}
                     weeks={this.props.weeks}
                     intervals={this.props.intervals}
@@ -37,7 +39,8 @@ export class CalendarImpl extends Component<CalendarProps & CalendarDispatchProp
 
 const mapStateToProps = (state: AppState): CalendarProps => ({
     weeks: state.calendar.calendarEvents.weeks,
-    intervals: state.calendar.calendarEvents.intervals
+    intervals: state.calendar.calendarEvents.intervals,
+    selectedCalendarDay: state.calendar.calendarEvents.selectedCalendarDay
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>) => ({

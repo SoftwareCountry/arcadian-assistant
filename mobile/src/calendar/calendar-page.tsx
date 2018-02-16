@@ -18,6 +18,7 @@ interface CalendarPageDefaultProps {
 interface CalendarPageProps {
     weeks: WeekModel[];
     onSelectedDay: OnSelectedDayCallback;
+    selectedDay: DayModel;
 }
 
 interface CalendarPageState {
@@ -95,7 +96,7 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
             <View style={calendarStyles.weekDayContainer} key={`${day.date.week()}-${day.date.date()}`}>
                 <WeekDay hide={this.props.hidePrevNextMonthDays && !day.belongsToCurrentMonth}>
                     <View style={calendarStyles.weekDayCircleContainer}>
-                        <WeekDayCircle day={day} onSelectedDay={this.props.onSelectedDay} weekHeight={this.state.weekHeight} />
+                        <WeekDayCircle day={day} selectedDay={this.props.selectedDay} onSelectedDay={this.props.onSelectedDay} weekHeight={this.state.weekHeight} />
                     </View>
                     {
                         this.renderIntervals(day.date)

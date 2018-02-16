@@ -4,10 +4,11 @@ import { calendarStyles } from './styles';
 import { View, TouchableHighlight } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { CalendarPage, OnSelectedDayCallback } from './calendar-page';
-import { WeekModel, IntervalsModel } from '../reducers/calendar/calendar.model';
+import { WeekModel, IntervalsModel, DayModel } from '../reducers/calendar/calendar.model';
 
 interface CalendarDefaultProps {
     intervals?: IntervalsModel;
+    selectedDay?: DayModel;
 }
 
 interface CalendarProps extends CalendarDefaultProps {
@@ -24,7 +25,8 @@ interface CalendarState {
 // TODO: Temporary implementation with TouchableHighlight buttons. Switch to swipe.
 export class CalendarPager extends Component<CalendarProps, CalendarState> {
     public static defaultProps: CalendarDefaultProps = {
-        intervals: null
+        intervals: null,
+        selectedDay: null
     };
 
     constructor(props: CalendarProps) {
@@ -67,7 +69,7 @@ export class CalendarPager extends Component<CalendarProps, CalendarState> {
                     <StyledText>{'>'}</StyledText>
                 </TouchableHighlight>
             </View>
-            <CalendarPage onSelectedDay={this.props.onSelectedDay} weeks={this.props.weeks} intervals={this.props.intervals} />
+            <CalendarPage selectedDay={this.props.selectedDay} onSelectedDay={this.props.onSelectedDay} weeks={this.props.weeks} intervals={this.props.intervals} />
         </View>;
     }
 }
