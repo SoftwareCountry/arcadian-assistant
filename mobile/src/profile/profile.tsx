@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView, Linking, TouchableHighlight, TouchableOpacity } from 'react-native';
+import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView, Linking, TouchableOpacity } from 'react-native';
 
 import { layoutStyles, contentStyles, tileStyles, contactStyles } from './styles';
 import { Chevron } from './chevron';
