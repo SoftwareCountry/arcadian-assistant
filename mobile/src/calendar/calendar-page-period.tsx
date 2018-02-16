@@ -1,55 +1,69 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { calendarPeriodStyles, periodMargin } from './styles';
 import { View, StyleSheet, PixelRatio } from 'react-native';
 
-const HalfPeriod = (props: {
-    size: number,
-    align: 'left' | 'right',
-    color: string
-}) => {
-    const margin = (props.size * periodMargin);
-    const size = props.size - margin;
+interface HalfPeriodProps {
+    size: number;
+    align: 'left' | 'right';
+    color: string;
+}
 
-    const containerStyles = StyleSheet.flatten([
-        calendarPeriodStyles.container,
-        props.align === 'right'
-            ? { flexDirection: 'row-reverse' }
-            : {}
-    ]);
+export class HalfPeriod extends Component<HalfPeriodProps> {
+    public render() {
+        const { containerStyles, circleStyles, periodStyles } = this.calculateStyles();
 
-    const circleStyles = StyleSheet.flatten([
-        {
-            borderRadius: size,
-            height: size,
-            width: PixelRatio.roundToNearestPixel(size / 2),
-            backgroundColor: props.color
-        },
-        props.align === 'right'
-            ? {
-                borderTopLeftRadius: 0,
-                borderBottomLeftRadius: 0,
+        return (
+            <View style={containerStyles}>
+                <View style={circleStyles}></View>
+                <View style={periodStyles}></View>
+            </View>
+        );
+    }
+
+    private calculateStyles() {
+        const margin = (this.props.size * periodMargin);
+        const size = this.props.size - margin;
+
+        const containerStyles = StyleSheet.flatten([
+            calendarPeriodStyles.container,
+            this.props.align === 'right'
+                ? { flexDirection: 'row-reverse' }
+                : {}
+        ]);
+
+        const circleStyles = StyleSheet.flatten([
+            {
+                borderRadius: size,
+                height: size,
+                width: PixelRatio.roundToNearestPixel(size / 2),
+                backgroundColor: this.props.color
+            },
+            this.props.align === 'right'
+                ? {
+                    borderTopLeftRadius: 0,
+                    borderBottomLeftRadius: 0,
+                }
+                : {
+                    borderTopRightRadius: 0,
+                    borderBottomRightRadius: 0,
+                }
+        ]);
+
+        const periodStyles = StyleSheet.flatten([
+            calendarPeriodStyles.halfPeriod,
+            {
+                height: size,
+                backgroundColor: this.props.color
             }
-            : {
-                borderTopRightRadius: 0,
-                borderBottomRightRadius: 0,
-            }
-    ]);
+        ]);
 
-    const periodStyles = StyleSheet.flatten([
-        calendarPeriodStyles.halfPeriod,
-        {
-            height: size,
-            backgroundColor: props.color
-        }
-    ]);
-
-    return (
-        <View style={containerStyles}>
-            <View style={circleStyles}></View>
-            <View style={periodStyles}></View>
-        </View>
-    );
-};
+        return {
+            containerStyles,
+            circleStyles,
+            periodStyles
+        };
+    }
+}
 
 type PeriodProps = { size: number, color: string };
 
