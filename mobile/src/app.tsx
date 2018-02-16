@@ -41,7 +41,7 @@ export class App extends Component<AppProps> {
     const oauthManager = new OAuthManager();
     this.oauthProcess = oauthManager.start(clientId, tenant, redirectUri);
     
-    this.oauthProcess.login();
+    this.oauthProcess.login().catch(console.error);
     this.oauthProcess.jwtToken.forEach(console.log);
   }
 

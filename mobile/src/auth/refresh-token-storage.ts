@@ -15,7 +15,7 @@ export class RefreshTokenFilesystemStorage implements RefreshTokenStorage {
     public async storeToken(refreshToken: string | null) {
 
         if (!refreshToken) {
-            await AsyncStorage.removeItem(refreshToken);
+            await AsyncStorage.removeItem(this.keyName);
         } else {
             await AsyncStorage.setItem(this.keyName, refreshToken);
         }
