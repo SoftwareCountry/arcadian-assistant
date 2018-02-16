@@ -5,7 +5,7 @@ const daysCounterTitleColor = '#18515E';
 const daysCounterPrimaryColor = '#2FAFCC';
 
 const triangleHeight = 50;
-const circleDiameter = 100;
+const circleDiameter = 120;
 
 export const calendarScreenLayout = {
     calendar: {
@@ -171,7 +171,7 @@ export const selectedDayStyles = StyleSheet.create({
         left: '50%',
         backgroundColor: '#fff',
         position: 'absolute',
-        transform: [{ translateX: -50 }],
+        transform: [{ translateX: -(circleDiameter / 2) }],
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 2,
