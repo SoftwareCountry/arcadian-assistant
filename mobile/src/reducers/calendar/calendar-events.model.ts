@@ -2,16 +2,16 @@ import { dataMember, required } from 'santee-dcts';
 import { Moment } from 'moment';
 
 export enum CalendarEventsType {
-    Vacation = 1,
-    SickLeave = 2,
-    Dayoff = 3,
-    AdditionalWork = 4
+    Vacation = 'Vacation',
+    SickLeave = 'SickLeave',
+    Dayoff = 'Dayoff',
+    AdditionalWork = 'AdditionalWork'
 }
 
 export enum CalendarEventStatus {
-    Requested = 1,
-    Approved = 2,
-    Cancelled = 3
+    Requested = 'Requested',
+    Approved = 'Approved',
+    Cancelled = 'Cancelled'
 }
 
 export class DatesPeriod {
