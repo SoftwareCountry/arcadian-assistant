@@ -4,7 +4,7 @@ import { loadEmployee, LoadEmployeeFinished, OrganizationActions, LoadEmployeesF
 import { ActionsObservable } from 'redux-observable';
 import { User } from '../user/user.model';
 import { LoadUser, loadUserFinished, LoadUserFinished, loadUserEmployeeFinished, LoadUserEmployeeFinished } from '../user/user.action';
-import { loadUserDepartmentEmployessFinished } from './people.action';
+import { loadUserDepartmentEmployeesFinished } from './people.action';
 import { Observable } from 'rxjs/Observable';
 import { loadFailedError } from '../errors/errors.action';
 import { apiUrl as url } from '../const';
@@ -15,4 +15,4 @@ export const loadUserDepartmentEmployeesEpic$ = (action$: ActionsObservable<Load
          action$.ofType('LOAD_EMPLOYEE_FINISHED')
      ).filter(([userEmployee, loadedEmployee]) => userEmployee.employee.departmentId === loadedEmployee.employee.departmentId)
       .map(([userEmployee, loadedEmployee]) => loadedEmployee.employee)
-      .map(x => loadUserDepartmentEmployessFinished(x));
+      .map(x => loadUserDepartmentEmployeesFinished(x));

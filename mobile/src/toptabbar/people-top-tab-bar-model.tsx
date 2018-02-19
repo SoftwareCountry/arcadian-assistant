@@ -13,17 +13,17 @@ const peopleTopTabBarModel: NavigationRouteConfigMap = {
     Department: {
         screen: PeopleDepartment,
         path: '/people/department',
-        navigationOptions: navOptionsFactory.create('Department', null, null)
+        navigationOptions: navOptionsFactory.create('Department', null)
     },
     Room: {
         screen: PeopleRoom,
         path: '/people/room',
-        navigationOptions: navOptionsFactory.create('Room', null, null)
+        navigationOptions: navOptionsFactory.create('Room', null)
     },
     Company: {
         screen: PeopleCompany,
         path: '/people/company',
-        navigationOptions: navOptionsFactory.create('Company', null, null)
+        navigationOptions: navOptionsFactory.create('Company', null)
     }
 };
 

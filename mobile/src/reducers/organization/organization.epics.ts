@@ -33,13 +33,6 @@ export const loadChiefsEpic$ = (action$: ActionsObservable<LoadDepartmentsFinish
     action$.ofType('LOAD-DEPARTMENTS-FINISHED')
         .flatMap(x => x.departments.map(dep => loadEmployee(dep.chiefId)));
 
-//TODO: this thing loads all employees for all departments. It needs to be changed to load only requested ones
-export const loadDepartmentsFinishedEpic$ = (action$: ActionsObservable<LoadDepartmentsFinished> ) =>
-    action$.ofType('LOAD-DEPARTMENTS-FINISHED')
-        .flatMap(x =>
-            x.departments.map(dep =>
-                loadEmployeesForDepartment(dep.departmentId)));
-
 export const loadEmployeesForDepartmentEpic$ = (action$: ActionsObservable<LoadEmployeesForDepartment>, state: AppState) =>
     action$.ofType('LOAD_EMPLOYEES_FOR_DEPARTMENT')
         .groupBy(x => x.departmentId)

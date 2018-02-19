@@ -20,11 +20,11 @@ export interface NavigatePeopleCompany {
 
 export const navigatePeopleCompany = (): NavigatePeopleCompany => ({ type: 'NAVIGATE-PEOPLE-COMPANY' });
 
-export interface LoadUserDepartmentEmployessFinished {
-    type: 'LOAD-USER-DEPARTMENT-EMPOYEES-FINISHED';
+export interface LoadUserDepartmentEmployeesFinished {
+    type: 'LOAD-USER-DEPARTMENT-EMPLOYEES-FINISHED';
     employee: Employee;
 }
 
-export const loadUserDepartmentEmployessFinished = (employee: Employee): LoadUserDepartmentEmployessFinished => ({ type: 'LOAD-USER-DEPARTMENT-EMPOYEES-FINISHED', employee });
+export const loadUserDepartmentEmployeesFinished = (employee: Employee): LoadUserDepartmentEmployeesFinished => ({ type: 'LOAD-USER-DEPARTMENT-EMPLOYEES-FINISHED', employee });
 
-export type PeopleActions = LoadUserDepartmentEmployessFinished | NavigatePeopleDepartment | NavigatePeopleRoom | NavigatePeopleCompany;
+export type PeopleActions = LoadUserDepartmentEmployeesFinished | NavigatePeopleDepartment | NavigatePeopleRoom | NavigatePeopleCompany;
