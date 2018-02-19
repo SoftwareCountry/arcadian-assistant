@@ -74,7 +74,7 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
             {
                 width: imgSize,
                 height: imgSize,
-                borderRadius: outerFrameFlattenStyle.borderRadius - outerFrameFlattenStyle.borderWidth * .5,
+                borderRadius: imgSize * 0.5,
                 borderWidth: outerFrameFlattenStyle.borderWidth * 2 //by design it seems to be twice thicker than container border
             },
             this.props.imageStyle

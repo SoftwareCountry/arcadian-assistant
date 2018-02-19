@@ -118,14 +118,14 @@ export class Profile extends Component<ProfileProps> {
                 icon: 'phone',
                 text: employee.mobilePhone,
                 title: 'Mobile Phone:',
-                size: 45,
+                size: 35,
                 prefix: 'tel:'
             },
             {
                 icon: 'envelope',
                 text: employee.email,
                 title: 'Email:',
-                size: 30,
+                size: 25,
                 prefix: 'mailto:'
             }
         ];

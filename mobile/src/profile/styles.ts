@@ -1,11 +1,14 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 
 export const chevronColor = '#2FAFCC';
 
-const circleDiameter = 150;
+const circleDiameter = Dimensions.get('window').width * 0.5;
 const chevronHeight = 50;
-const placeholderHeight = circleDiameter * .5 - chevronHeight * .5; //used to add background for the avatar
 const headerGap = 20; //adds additional gap over the avatar. used mainly for ios
+const placeholderHeight =  circleDiameter * 0.5; //used to add background for the avatar
+const paddingInfoContainer = 12;
+const paddingTile = 1;
+
 
 const avatarContainerZIndex = 2;
 
@@ -57,7 +60,7 @@ export const layoutStyles = StyleSheet.create({
     content: {
         flex: 1,
         flexDirection: 'column',
-        marginTop: placeholderHeight
+        marginTop: circleDiameter * 0.5 - headerGap
 
     },
     avatarContainer: {
@@ -66,7 +69,7 @@ export const layoutStyles = StyleSheet.create({
         width: circleDiameter,
         zIndex: avatarContainerZIndex + 1,
         left: '50%',
-        top: placeholderHeight * -1,
+        top: -circleDiameter * 0.5 + chevronHeight * 0.5,
         position: 'absolute',
         transform: [{ translateX: circleDiameter * -.5 }],
         alignItems: 'center',
@@ -87,20 +90,23 @@ export const contentStyles = StyleSheet.create({
     position: {
         fontSize: 13,
         textAlign: 'center',
-        color: '#000'
+        color: '#000',
+        top: 10
     },
     department: {
         fontSize: 13,
         textAlign: 'center',
         color: '#2FAFCC',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        top: 15
     },
     infoContainer: {
         flexDirection: 'row',
-        padding: 5
+        padding: paddingInfoContainer,
+        top: 30
     },
     contactsContainer: {
-        paddingTop: 20,
+        top: 40,
         padding: 5,
         alignItems: 'center',
         justifyContent: 'center'
@@ -109,8 +115,8 @@ export const contentStyles = StyleSheet.create({
 
 export const tileStyles = StyleSheet.create({
     container: {
-        padding: 1,
-        width: '25%'
+        padding: paddingTile,
+        width: (Dimensions.get('window').width - 2 * paddingInfoContainer - 3 * paddingTile) / 4,
     },
     tile: {
         backgroundColor: 'rgba(47, 175, 204, 0.2)',
@@ -138,12 +144,15 @@ export const tileStyles = StyleSheet.create({
 export const contactStyles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        paddingBottom: 10
+       paddingLeft: 30,
+       height: 60,
+       alignItems: 'center'
     },
     iconContainer: {
         width: 50,
+        height: 40,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     icon: {
         color: '#18515E',
