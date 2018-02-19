@@ -16,7 +16,7 @@ interface PeopleCompanyDispatchProps {
 }
 
 const mapStateToProps = (state: AppState): PeopleCompanyProps => ({
-    routeName: 'Room'
+    routeName: 'Company'
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
