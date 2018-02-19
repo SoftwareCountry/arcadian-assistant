@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, LayoutChangeEvent, ViewStyle, StyleSheet } from 'react-native';
+import { View, LayoutChangeEvent } from 'react-native';
 import { daysCountersStyles } from '../styles';
 import { DaysCounter, EmptyDaysCounter } from './days-counter';
 import { DaysCounterSeparator } from './days-counter-separator';
@@ -8,10 +8,11 @@ import { AppState } from '../../reducers/app.reducer';
 import { connect } from 'react-redux';
 import { SelectedDay } from './selected-day';
 import { Triangle } from './triangle';
-import moment from 'moment';
+import { DayModel } from '../../reducers/calendar/calendar.model';
 
 interface DaysCountersProps {
     daysCounters: DaysCountersModel;
+    selectedCalendarDay: DayModel;
 }
 
 interface DaysCounterState {
@@ -27,7 +28,7 @@ class DaysCountersImpl extends Component<DaysCountersProps, DaysCounterState> {
     }
 
     public render() {
-        const { daysCounters: { allVacationDays, hoursCredit } } = this.props;
+        const { daysCounters: { allVacationDays, hoursCredit }, selectedCalendarDay } = this.props;
 
         const vacationCounter = allVacationDays
             ? <DaysCounter  textValue={allVacationDays.toString()}
@@ -39,14 +40,15 @@ class DaysCountersImpl extends Component<DaysCountersProps, DaysCounterState> {
                             title={hoursCredit.title} />
             : <EmptyDaysCounter />;
 
-        // TODO: temp. Use the selected day from calendar
-        const currentDate = moment();
-        const date = { day: currentDate.format('D'), month: currentDate.format('MMMM') };
+
+        const selectedDay = selectedCalendarDay 
+            ? selectedCalendarDay.date
+            : null;
 
         return (
             <View style={daysCountersStyles.container} onLayout={this.onDaysCountersLayout}>
                 <Triangle containerWidth={this.state.daysCountersWidth} />
-                <SelectedDay {...date} />
+                <SelectedDay day={selectedDay} />
                 <View style={daysCountersStyles.counters}>
                     { vacationCounter }
                     <DaysCounterSeparator />
@@ -64,7 +66,8 @@ class DaysCountersImpl extends Component<DaysCountersProps, DaysCounterState> {
 }
 
 const mapStateToProps = (state: AppState): DaysCountersProps => ({
-    daysCounters: state.calendar.daysCounters
+    daysCounters: state.calendar.daysCounters,
+    selectedCalendarDay: state.calendar.calendarEvents.selectedCalendarDay
 });
 
 export const DaysCounters = connect(mapStateToProps)(DaysCountersImpl);

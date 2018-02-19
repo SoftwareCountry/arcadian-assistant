@@ -1,43 +1,17 @@
 import { combineReducers } from 'redux';
-import { VacationDaysCounter, HoursCreditCounter } from './days-counters.model';
-import { Reducer } from 'redux';
-import { UserActions } from '../user/user.action';
-import { ConvertHoursCreditToDays } from './convert-hours-credit-to-days';
-
-interface DaysCountersState {
-    allVacationDays: VacationDaysCounter;
-    hoursCredit: HoursCreditCounter;
-}
-
-const initState: DaysCountersState = {
-    allVacationDays: null,
-    hoursCredit: null
-};
-
-export const daysCountersReducer: Reducer<DaysCountersState> = (state = initState, action: UserActions) => {
-    switch (action.type) {
-        case 'LOAD-USER-EMPLOYEE-FINISHED':
-
-            const allVacationDaysCounter = new VacationDaysCounter(action.employee.vacationDaysLeft);
-
-            const daysConverter = new ConvertHoursCreditToDays();
-            const calculatedDays = daysConverter.convert(action.employee.hoursCredit);
-
-            const hoursCreditCounter = new HoursCreditCounter(action.employee.hoursCredit, calculatedDays.days, calculatedDays.rest);
-
-            return {
-                allVacationDays: allVacationDaysCounter,
-                hoursCredit: hoursCreditCounter,
-            };
-        default:
-            return state;
-    }
-};
+import { combineEpics } from 'redux-observable';
+import { loadCalendarEventsFinishedEpic$ } from './calendar.epics';
+import { DaysCountersState, daysCountersReducer } from './days-counters.reducer';
+import { calendarEventsReducer, CalendarEventsState } from './calendar-events.reducer';
 
 export interface CalendarState {
     daysCounters: DaysCountersState;
+    calendarEvents: CalendarEventsState;
 }
 
+export const calendarEpics = combineEpics(loadCalendarEventsFinishedEpic$ as any);
+
 export const calendarReducer = combineReducers<CalendarState>({
-    daysCounters: daysCountersReducer
+    daysCounters: daysCountersReducer,
+    calendarEvents: calendarEventsReducer
 });
