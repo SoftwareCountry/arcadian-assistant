@@ -4,15 +4,17 @@ const daysCounterFontColor = '#fff';
 const daysCounterTitleColor = '#18515E';
 const daysCounterPrimaryColor = '#2FAFCC';
 
-const triangleHeight = 50;
 const circleDiameter = 120;
 
 export const calendarScreenLayout = {
+    daysCounters: {
+        flex: 2
+    },
     calendar: {
-        flex: 1
+        flex: 8
     },
     agenda: {
-        flex: 1
+        flex: 4
     }
 };
 
@@ -24,7 +26,7 @@ export const calendarStyles = StyleSheet.create({
         marginBottom: 10,
         marginLeft: 8,
         marginRight: 8,
-        flex: 1,
+        flex: calendarScreenLayout.calendar.flex,
         alignSelf: 'stretch'
     },
     today: {
@@ -115,25 +117,28 @@ export const calendarIntervalStyles = StyleSheet.create({
 
 export const agendaStyles = StyleSheet.create({
     container: {
-        flex: calendarScreenLayout.calendar.flex,
-        alignSelf: 'stretch'
+        flex: calendarScreenLayout.agenda.flex,
+        alignSelf: 'stretch',
+        flexDirection: 'row'
+    }
+});
+
+export const agendaTodayStyles = StyleSheet.create({
+    container: {
+        flex: 2
+    }
+});
+
+export const agendaButtonsStyles = StyleSheet.create({
+    container: {
+        flex: 3
     }
 });
 
 export const daysCountersStyles = StyleSheet.create({
     container: {
-        flex: 1
-    },
-    counters: {
-        flex: 1,
+        flex: calendarScreenLayout.daysCounters.flex,
         flexDirection: 'row'
-    }
-});
-
-export const daysCounterSeparatorStyles = StyleSheet.create({
-    container: {
-        width: circleDiameter,
-        backgroundColor: daysCounterPrimaryColor
     }
 });
 
@@ -141,14 +146,11 @@ export const daysCounterStyles = StyleSheet.create({
     container: {
         backgroundColor: daysCounterPrimaryColor,
         flexDirection: 'column',
-        width: '50%',
         flex: 1
     },
     content: {
-        marginTop: triangleHeight,
         flexDirection: 'column',
         alignItems: 'center',
-        flex: 20
     },
     contentValue: {
         fontSize: 25,
@@ -186,23 +188,5 @@ export const selectedDayStyles = StyleSheet.create({
         fontSize: 15,
         color: daysCounterTitleColor,
         marginTop: -8
-    }
-});
-
-export const triangleStyles = StyleSheet.create({
-    container: {
-        backgroundColor: 'transparent',
-        width: 0,
-        height: 0,
-        zIndex: daysCounterShapeZIndex,
-        borderBottomWidth: triangleHeight,
-        borderStyle: 'solid',
-        borderLeftColor: 'transparent',
-        borderRightColor: 'transparent',
-        borderBottomColor: '#fff',
-        position: 'absolute',
-        transform: [
-            { rotate: '180deg' }
-        ]
     }
 });
