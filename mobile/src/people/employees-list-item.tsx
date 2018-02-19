@@ -21,7 +21,7 @@ export class EmployeesListItem extends React.Component<EmployeesListItemProps> {
             <TouchableHighlight>
                 <View style={styles.layout}>
                     <View style={styles.avatarContainer}>
-                        <Avatar photo={photo} style={StyleSheet.flatten(styles.avatar)} />
+                        <Avatar photo={photo} style={StyleSheet.flatten(styles.avatarOuterFrame)} imageStyle={StyleSheet.flatten(styles.avatarImage)} />
                     </View>
                     <View style={styles.info}>
                         <StyledText style={styles.name}>{employeeName}</StyledText>

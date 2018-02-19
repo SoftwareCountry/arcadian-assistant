@@ -1,6 +1,7 @@
 import { Reducer } from 'redux';
 import { Map, Set } from 'immutable';
 import { combineEpics } from 'redux-observable';
+import { NavigationAction } from 'react-navigation';
 
 import { User } from '../user/user.model';
 import { Employee } from '../organization/employee.model';
@@ -21,8 +22,16 @@ const initState: PeopleState = {
 export const peopleEpics = combineEpics(
     loadUserDepartmentEmployeesEpic$ as any);
 
-export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions) => {
+export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions | NavigationAction) => {
+    console.log(action.type);
     switch (action.type) {
+        case 'Navigation/NAVIGATE':
+            console.log(action.type + ' - ' + action.routeName);
+            if (action.routeName === 'Room') {
+                console.log('Secondary level tabbar event: ' + action.routeName);
+            }
+            return state;
+            // break;
         case 'LOAD-USER-DEPARTMENT-EMPOYEES-FINISHED':
             let { employees } = state;
 

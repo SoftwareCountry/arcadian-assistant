@@ -13,6 +13,7 @@ const tabNavigatorConfig: TabNavigatorConfig = {
         showIcon: true,
     },
     animationEnabled: false,
+    lazy: true
 };
 
 export const RootNavigator = TabNavigator(

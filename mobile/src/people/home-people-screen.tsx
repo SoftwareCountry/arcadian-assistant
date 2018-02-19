@@ -23,8 +23,8 @@ class HomePeopleScreenImpl extends React.Component<PeopleScreenProps> {
     public render() {
         
         return (
-            <View style={{ height: 500, flex: 1 }}>
-            <TopTabBarNavigator />
+            <View style={{ flex: 1 }}>
+                <TopTabBarNavigator />
             </View>
         );
     }

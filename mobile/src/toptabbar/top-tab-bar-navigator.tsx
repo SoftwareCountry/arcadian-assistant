@@ -1,13 +1,14 @@
 import { TabNavigator, TabNavigatorConfig, TabBarTop } from 'react-navigation';
 import React from 'react';
 import topTabBarStyles from './top-tab-bar-styles';
-import topTabBarModel from './top-tab-bar-model';
+import peopleTopTabBarModel from './people-top-tab-bar-model';
 
 const topTabNavigatorConfig: TabNavigatorConfig = {
     tabBarPosition: 'top',
     tabBarComponent: TabBarTop, 
     swipeEnabled: false,
     animationEnabled: false,
+    lazy: true,
     tabBarOptions: {
         style: topTabBarStyles.tabBar,
         indicatorStyle: topTabBarStyles.tabBarIndicator,
@@ -18,6 +19,6 @@ const topTabNavigatorConfig: TabNavigatorConfig = {
 };
 
 export const  TopTabBarNavigator = TabNavigator(
-    topTabBarModel,
-    topTabNavigatorConfig,
+    peopleTopTabBarModel,
+    topTabNavigatorConfig
 );

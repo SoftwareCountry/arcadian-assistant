@@ -1,27 +1,30 @@
 import { TabNavigatorConfig, NavigationRouteConfigMap } from 'react-navigation';
 import React from 'react';
+import { PeopleDepartment } from '../people/people-department';
+import { PeopleRoom } from '../people/people-room';
+import { PeopleCompany } from '../people/people-company';
 import { EmployeesList } from '../people/employees-list';
 import { TabNavigationOptionsFactory } from '../tabbar/tab-navigation-options-factory';
 
 const navOptionsFactory = new TabNavigationOptionsFactory();
 
-const topTabBarModel: NavigationRouteConfigMap = {
+const peopleTopTabBarModel: NavigationRouteConfigMap = {
 
     Department: {
-        screen: EmployeesList,
-        path: '/people',
+        screen: PeopleDepartment,
+        path: '/people/department',
         navigationOptions: navOptionsFactory.create('Department', null, null)
     },
     Room: {
-        screen: EmployeesList,
-        path: '/people',
+        screen: PeopleRoom,
+        path: '/people/room',
         navigationOptions: navOptionsFactory.create('Room', null, null)
     },
     Company: {
-        screen: EmployeesList,
-        path: '/people',
+        screen: PeopleCompany,
+        path: '/people/company',
         navigationOptions: navOptionsFactory.create('Company', null, null)
     }
 };
 
-export default topTabBarModel;
+export default peopleTopTabBarModel;

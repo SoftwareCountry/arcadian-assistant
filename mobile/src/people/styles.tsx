@@ -29,8 +29,11 @@ export const employeesListItemStyles = StyleSheet.create({
         height: 72,
         marginLeft: 12,
     },
-    avatar: {
+    avatarOuterFrame: {
         borderWidth: 1
+    },
+    avatarImage: {
+        borderWidth: 2
     },
     info: {
         flex: 1,
