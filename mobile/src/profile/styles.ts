@@ -108,8 +108,6 @@ export const contentStyles = StyleSheet.create({
     contactsContainer: {
         top: 40,
         padding: 5,
-        alignItems: 'center',
-        justifyContent: 'center'
     }
 });
 
@@ -144,7 +142,7 @@ export const tileStyles = StyleSheet.create({
 export const contactStyles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-       paddingLeft: 30,
+       paddingLeft: 45,
        height: 60,
        alignItems: 'center'
     },
@@ -152,7 +150,7 @@ export const contactStyles = StyleSheet.create({
         width: 50,
         height: 40,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'center'
     },
     icon: {
         color: '#18515E',
