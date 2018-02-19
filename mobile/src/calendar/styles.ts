@@ -129,9 +129,25 @@ export const agendaTodayStyles = StyleSheet.create({
     }
 });
 
-export const agendaButtonsStyles = StyleSheet.create({
+export const agendaPrimaryButtonsStyles = StyleSheet.create({
     container: {
-        flex: 3
+        flex: 3,
+        flexDirection: 'column',
+        alignContent: 'space-between',
+        marginLeft: 15,
+        marginRight: 15,
+    },
+    primaryButton: {
+        flex: 3,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: calendarIntervalColors.vacation
+    },
+    primaryButtonTitle: {
+        fontSize: 12,
+        lineHeight: 14,
+        color: '#18515E'
     }
 });
 
