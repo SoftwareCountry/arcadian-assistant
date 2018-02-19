@@ -30,7 +30,26 @@ export const chevronStyles = StyleSheet.create({
     }
 });
 
+export const profileScreenStyles = StyleSheet.create({
+    profileContainer: {
+        flex: 1,
+        backgroundColor: chevronColor
+    },
+    loadingContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    loadingText: {
+        fontSize: 20
+    }
+});
+
 export const layoutStyles = StyleSheet.create({
+    scrollView: {
+        flex: 1,
+        backgroundColor: '#fff'
+    },
     container: {
         flex: 1,
         alignSelf: 'stretch'
@@ -106,18 +125,7 @@ export const tileStyles = StyleSheet.create({
         justifyContent: 'center'
     },
     icon: {
-    },
-    iconBirthDay: {
-        width: 18
-    },
-    iconHireDate: {
-        width: 29
-    },
-    iconRoom: {
-        width: 25
-    },
-    iconOrganization: {
-        width: 28
+        color: '#18515E',
     },
     text: {
         fontSize: 11,
@@ -133,12 +141,12 @@ export const contactStyles = StyleSheet.create({
         paddingBottom: 10
     },
     iconContainer: {
+        width: 50,
         alignItems: 'center',
         justifyContent: 'center'
     },
     icon: {
-        width: 36,
-        height: 32
+        color: '#18515E',
     },
     textContainer: {
         paddingLeft: 20,

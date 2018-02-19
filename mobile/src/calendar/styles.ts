@@ -16,15 +16,100 @@ export const calendarScreenLayout = {
     }
 };
 
+const weekDayElementsZIndex = 1;
+
 export const calendarStyles = StyleSheet.create({
     container: {
-        flex: calendarScreenLayout.calendar.flex,
-        marginTop: 20
+        marginTop: 10,
+        marginBottom: 10,
+        marginLeft: 8,
+        marginRight: 8,
+        flex: 1,
+        alignSelf: 'stretch'
     },
-    containerTitle: {
+    today: {
+        marginBottom: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+    todayTitle: {
         fontSize: 14,
         lineHeight: 16,
         color: daysCounterTitleColor
+    },
+    weeksContainer: {
+        flex: 1
+    },
+    weeksNames: {
+        flex: 1,
+        flexDirection: 'row',
+        marginBottom: 10,
+    },
+    weekName: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    weeks: {
+        flex: 7,
+        flexDirection: 'column'
+    },
+    week: {
+        flex: 1,
+        flexDirection: 'row'
+    },
+    weekDayContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    weekDay: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    weekDayCircle: {
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    weekDayCircleContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'transparent',
+        zIndex: weekDayElementsZIndex + 1
+    },
+    weekDayText: {
+        fontSize: 12,
+        lineHeight: 14
+    }
+});
+
+export const calendarIntervalColors = {
+    vacation: '#2F80ED',
+    sickLeave: '#F2C94C',
+    dayoff: '#EB5757'
+};
+
+// serjKim: Depends on count of overlapped intervals?..
+const intervalOpacity = 0.5;
+export const intervalMargin = 0.2;
+
+export const calendarIntervalStyles = StyleSheet.create({
+    container: {
+        position: 'absolute',
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        flexDirection: 'row',
+        opacity: intervalOpacity,
+        zIndex: weekDayElementsZIndex
+    },
+    halfInterval: {
+        width: '50%'
+    },
+    interval: {
+        flex: 1
     }
 });
 
@@ -66,13 +151,11 @@ export const daysCounterStyles = StyleSheet.create({
         flex: 20
     },
     contentValue: {
-        fontSize: 24,
-        lineHeight: 28,
+        fontSize: 25,
         color: daysCounterFontColor
     },
     contentTitle: {
-        fontSize: 9,
-        lineHeight: 11,
+        fontSize: 11,
         color: daysCounterFontColor
     }
 });
@@ -92,19 +175,17 @@ export const selectedDayStyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 2,
-        borderColor: daysCounterPrimaryColor
+        borderColor: daysCounterPrimaryColor,
     },
     circleCurrentDay: {
-        fontSize: 36,
-        lineHeight: 42,
+        fontSize: 40,
         color: daysCounterTitleColor,
         marginTop: -5
     },
     circleCurrentMonth: {
-        fontSize: 18,
-        lineHeight: 21,
+        fontSize: 15,
         color: daysCounterTitleColor,
-        marginTop: -4
+        marginTop: -8
     }
 });
 
