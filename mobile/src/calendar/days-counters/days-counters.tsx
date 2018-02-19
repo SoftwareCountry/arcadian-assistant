@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, LayoutChangeEvent } from 'react-native';
-import { daysCountersStyles } from '../styles';
+import { daysCountersStyles } from './styles';
 import { DaysCounter, EmptyDaysCounter } from './days-counter';
 import { DaysCountersModel } from '../../reducers/calendar/days-counters.model';
 import { AppState } from '../../reducers/app.reducer';
@@ -19,12 +19,20 @@ class DaysCountersImpl extends Component<DaysCountersProps> {
 
         const vacationCounter = allVacationDays
             ? <DaysCounter  textValue={allVacationDays.toString()}
-                            title={allVacationDays.title} />
+                            title={allVacationDays.title}
+                            icon={{
+                                name: 'vacation',
+                                size: 30
+                            }} />
             : <EmptyDaysCounter />;
 
         const daysoffCounter = hoursCredit
             ? <DaysCounter  textValue={hoursCredit.toString()}
-                            title={hoursCredit.title} />
+                            title={hoursCredit.title}
+                            icon={{
+                                name: 'dayoff',
+                                size: 30
+                            }} />
             : <EmptyDaysCounter />;
 
         return (

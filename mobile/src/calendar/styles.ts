@@ -1,6 +1,5 @@
 import { StyleSheet, ViewStyle } from 'react-native';
 
-const daysCounterFontColor = '#fff';
 const daysCounterTitleColor = '#18515E';
 const daysCounterPrimaryColor = '#2FAFCC';
 
@@ -132,33 +131,6 @@ export const agendaTodayStyles = StyleSheet.create({
 export const agendaButtonsStyles = StyleSheet.create({
     container: {
         flex: 3
-    }
-});
-
-export const daysCountersStyles = StyleSheet.create({
-    container: {
-        flex: calendarScreenLayout.daysCounters.flex,
-        flexDirection: 'row'
-    }
-});
-
-export const daysCounterStyles = StyleSheet.create({
-    container: {
-        backgroundColor: daysCounterPrimaryColor,
-        flexDirection: 'column',
-        flex: 1
-    },
-    content: {
-        flexDirection: 'column',
-        alignItems: 'center',
-    },
-    contentValue: {
-        fontSize: 25,
-        color: daysCounterFontColor
-    },
-    contentTitle: {
-        fontSize: 11,
-        color: daysCounterFontColor
     }
 });
 
