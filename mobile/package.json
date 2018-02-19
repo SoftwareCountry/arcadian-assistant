@@ -17,6 +17,7 @@
 		"@types/moment": "^2.13.0",
 		"@types/react-test-renderer": "^16.0.0",
 		"@types/redux-logger": "^3.0.5",
+		"babel-plugin-transform-inline-environment-variables": "^0.3.0",
 		"immutable": "^3.8.2",
 		"moment": "^2.20.1",
 		"react": "^16.0.0",
@@ -63,7 +64,7 @@
 	},
 	"rnpm": {
 		"assets": [
-	   		"./assets/fonts/"
+			"./assets/fonts/"
 		]
 	}
 }
