@@ -34,7 +34,7 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
         .locale('en')
         .localeData()
         .weekdaysShort()
-        .map(x => x.substring(0, 2));
+        .map(x => x.substring(0, 2).toUpperCase());
 
     private readonly intervalColors = {
         [CalendarEventsType.Vacation]: calendarIntervalColors.vacation,

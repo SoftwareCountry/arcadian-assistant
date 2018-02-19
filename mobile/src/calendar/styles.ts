@@ -21,7 +21,7 @@ const weekDayElementsZIndex = 1;
 
 export const calendarStyles = StyleSheet.create({
     container: {
-        marginTop: 10,
+        marginTop: 25,
         marginBottom: 10,
         marginLeft: 8,
         marginRight: 8,
@@ -35,7 +35,7 @@ export const calendarStyles = StyleSheet.create({
     },
     todayTitle: {
         fontSize: 14,
-        lineHeight: 16,
+        lineHeight: 17,
         color: daysCounterTitleColor
     },
     weeksContainer: {
@@ -44,7 +44,7 @@ export const calendarStyles = StyleSheet.create({
     weeksNames: {
         flex: 1,
         flexDirection: 'row',
-        marginBottom: 10,
+        //marginBottom: 10,
     },
     weekName: {
         flex: 1,
@@ -82,7 +82,8 @@ export const calendarStyles = StyleSheet.create({
     },
     weekDayText: {
         fontSize: 12,
-        lineHeight: 14
+        lineHeight: 14,
+        color: 'rgba(0, 0, 0, 0.5433)'
     }
 });
 
@@ -93,7 +94,7 @@ export const calendarIntervalColors = {
 };
 
 // serjKim: Depends on count of overlapped intervals?..
-const intervalOpacity = 0.5;
+const intervalOpacity = .95;
 export const intervalMargin = 0.2;
 
 export const calendarIntervalStyles = StyleSheet.create({
@@ -118,19 +119,23 @@ export const agendaStyles = StyleSheet.create({
     container: {
         flex: calendarScreenLayout.agenda.flex,
         alignSelf: 'stretch',
-        flexDirection: 'row'
+        flexDirection: 'row',
+        paddingTop: 5,
+        paddingBottom: 5
     }
 });
 
 export const agendaTodayStyles = StyleSheet.create({
     container: {
-        flex: 2
+        flex: 5,
+        borderRightWidth: 1,
+        borderColor: 'rgba(0, 0, 0, 0.2)'
     }
 });
 
 export const agendaButtonsStyles = StyleSheet.create({
     container: {
-        flex: 3
+        flex: 8
     }
 });
 
@@ -138,27 +143,18 @@ const daysCounterShapeZIndex = 2;
 
 export const selectedDayStyles = StyleSheet.create({
     container: {
-        borderRadius: circleDiameter / 2,
-        height: circleDiameter,
-        width: circleDiameter,
-        zIndex: daysCounterShapeZIndex + 1,
-        left: '50%',
-        backgroundColor: '#fff',
-        position: 'absolute',
-        transform: [{ translateX: -(circleDiameter / 2) }],
+        //transform: [{ translateX: -(circleDiameter / 2) }],
         alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 2,
-        borderColor: daysCounterPrimaryColor,
+        justifyContent: 'center'
     },
     circleCurrentDay: {
-        fontSize: 40,
-        color: daysCounterTitleColor,
-        marginTop: -5
+        fontSize: 42,
+        lineHeight: 51,
+        color: daysCounterTitleColor
     },
     circleCurrentMonth: {
-        fontSize: 15,
-        color: daysCounterTitleColor,
-        marginTop: -8
+        fontSize: 16,
+        lineHeight: 20,
+        color: daysCounterTitleColor
     }
 });

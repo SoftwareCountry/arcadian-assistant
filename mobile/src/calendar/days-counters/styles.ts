@@ -32,7 +32,8 @@ export const daysCounterStyles = StyleSheet.create({
         marginBottom: 10
     },
     icon: {
-        paddingRight: 10
+        paddingRight: 10,
+        color: 'rgba(24, 81, 94, 0.5)'
     },
     contentValue: {
         fontSize: 26,
