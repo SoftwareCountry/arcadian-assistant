@@ -1,4 +1,5 @@
 import { StyleSheet, ViewStyle } from 'react-native';
+import { CalendarEventsType } from '../reducers/calendar/calendar-events.model';
 
 const daysCounterTitleColor = '#18515E';
 const daysCounterPrimaryColor = '#2FAFCC';
@@ -87,10 +88,30 @@ export const calendarStyles = StyleSheet.create({
     }
 });
 
-export const calendarIntervalColors = {
-    vacation: '#2F80ED',
-    sickLeave: '#F2C94C',
-    dayoff: '#EB5757'
+export class CalendarIntervalColor {
+    public static vacation = '#2F80ED';
+    public static sickLeave = '#F2C94C';
+    public static dayoff = '#EB5757';
+    public static additionalWork = '#18515E'; //TODO: replace with the right color
+
+    public static getColor(type: CalendarEventsType) {
+        switch(type) {
+            case CalendarEventsType.Vacation:
+                return CalendarIntervalColor.vacation;
+
+            case CalendarEventsType.SickLeave:
+                return CalendarIntervalColor.sickLeave;
+
+            case CalendarEventsType.Dayoff:
+                return CalendarIntervalColor.dayoff;
+
+            case CalendarEventsType.AdditionalWork:
+                return CalendarIntervalColor.additionalWork;
+
+            default:
+                return null;
+        }
+    }
 };
 
 // serjKim: Depends on count of overlapped intervals?..

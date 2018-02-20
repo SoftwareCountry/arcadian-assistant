@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { IntervalsModel, WeekModel } from '../reducers/calendar/calendar.model';
 import { AppState } from '../reducers/app.reducer';
 import { CalendarEventsType } from '../reducers/calendar/calendar-events.model';
-import { calendarIntervalColors } from './styles';
+import { CalendarIntervalColor } from './styles';
 import { StyledText } from '../override/styled-text';
 
 interface CalendarLegendProps {
@@ -43,18 +43,6 @@ const styles = StyleSheet.create({
 });
 
 class CalendarLegendImpl extends Component<CalendarLegendProps> {
-    private readonly intervalColors: { [type: string]: string } = {
-        [CalendarEventsType.Vacation]: calendarIntervalColors.vacation,
-        [CalendarEventsType.SickLeave]: calendarIntervalColors.sickLeave,
-        [CalendarEventsType.Dayoff]: calendarIntervalColors.dayoff
-    };
-
-    private readonly intervalNames: { [type: string]: string } = {
-        [CalendarEventsType.Vacation]: 'Vacation',
-        [CalendarEventsType.SickLeave]: 'Sick Leave',
-        [CalendarEventsType.Dayoff]: 'Dayoff'
-    };
-
     private getVisibleCalendarEvents() {
         const { intervals, weeks } = this.props;
         const calendarEventsMap: Map<CalendarEventsType, number> = new Map();
@@ -68,7 +56,7 @@ class CalendarLegendImpl extends Component<CalendarLegendProps> {
                 const dayIntervals = intervals.get(day.date) || [];
                 dayIntervals.forEach(interval => {
                     let eventCounter = calendarEventsMap.get(interval.eventType) || 0;
-                    calendarEventsMap.set(interval.eventType, eventCounter++);
+                    calendarEventsMap.set(interval.eventType, ++eventCounter);
                 });
             });
         });
@@ -77,17 +65,15 @@ class CalendarLegendImpl extends Component<CalendarLegendProps> {
     }
 
     public render() {
-        const { intervals, weeks } = this.props;
-
         const existingIntervals = this.getVisibleCalendarEvents();
         const legend: JSX.Element[] = [];
 
         existingIntervals.forEach((value, type) => {
-            const style = StyleSheet.flatten([styles.marker, { backgroundColor: this.intervalColors[type] }]);
+            const style = StyleSheet.flatten([styles.marker, { backgroundColor: CalendarIntervalColor.getColor(type) }]);
             legend.push((
                 <View key={type} style={styles.itemContainer}>
                     <View style={style}></View>
-                    <StyledText style={styles.label}>{this.intervalNames[type]}</StyledText>
+                    <StyledText style={styles.label}>{type}</StyledText>
                 </View>
             ));
         });
