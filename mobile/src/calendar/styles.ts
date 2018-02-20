@@ -31,8 +31,7 @@ export const calendarStyles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     todayTitle: {
-        fontSize: 14,
-        lineHeight: 17,
+        fontSize: 16,
         color: daysCounterTitleColor
     },
     weeksContainer: {
@@ -76,10 +75,18 @@ export const calendarStyles = StyleSheet.create({
         backgroundColor: 'transparent',
         zIndex: weekDayElementsZIndex + 1
     },
+    weekDayNumber: {
+        fontSize: 12,
+        fontFamily: 'Roboto'
+    },
+    weekDaySelectedNumber: {
+        fontWeight: '500'
+    },
     weekDayText: {
         fontSize: 12,
-        lineHeight: 14,
-        color: 'rgba(0, 0, 0, 0.5433)'
+        color: 'rgba(0, 0, 0, 0.5433)',
+        fontWeight: '500',
+        fontFamily: 'Roboto'
     }
 });
 

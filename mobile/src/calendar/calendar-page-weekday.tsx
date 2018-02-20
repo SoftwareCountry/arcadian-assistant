@@ -50,13 +50,19 @@ export class WeekDayCircle extends Component<WeekDayCircleProps> {
             }
         ]);
 
-        const circleTextStyles = StyleSheet.flatten({
-            color: day.belongsToCurrentMonth
-                ? this.isSelectedDay(day)
-                    ? '#fff'
-                    : '#000'
-                : '#dadada'
-        });
+        const circleTextStyles = StyleSheet.flatten([
+            calendarStyles.weekDayNumber,
+            this.isSelectedDay(day)
+                ? calendarStyles.weekDaySelectedNumber
+                : {},
+            {
+                color: day.belongsToCurrentMonth
+                    ? this.isSelectedDay(day)
+                        ? '#fff'
+                        : '#000'
+                    : '#dadada'
+            }
+        ]);
 
         return (
             <TouchableHighlight style={circleStyles} onPress={this.onSelectedDay}>
@@ -72,7 +78,7 @@ export class WeekDayCircle extends Component<WeekDayCircleProps> {
     }
 
     private isSelectedDay(day: DayModel) {
-        return this.props.selectedDay 
+        return this.props.selectedDay
             && this.props.selectedDay.date
             && this.props.selectedDay.date.isSame(day.date, 'day');
     }
