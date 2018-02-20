@@ -1,24 +1,20 @@
 import React, { Component } from 'react';
 import { TouchableOpacity, ViewStyle, LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { StyledText } from '../override/styled-text';
-import { eventsEditorStyles } from './styles';
+import { calendarActionsStyles } from './styles';
 
-export type OnPressEventsEditorButton = (isRequest: boolean) => void;
-
-interface EventsEditorButtonProps {
-    requestTitle: string;
-    reviewTitle: string;
-    onPress: OnPressEventsEditorButton;
+interface CalendarActionButtonProps {
+    onPress: () => void;
     borderColor: string;
-    isRequest: boolean;
+    title: string;
 }
 
-interface EventsEditorButtonState {
+interface CalendarActionButtonState {
     buttonHeight: number;
 }
 
-export class EventsEditorButton extends Component<EventsEditorButtonProps, EventsEditorButtonState> {
-    constructor(props: EventsEditorButtonProps) {
+export class CalendarActionButton extends Component<CalendarActionButtonProps, CalendarActionButtonState> {
+    constructor(props: CalendarActionButtonProps) {
         super(props);
         this.state = {
             buttonHeight: 0
@@ -28,7 +24,7 @@ export class EventsEditorButton extends Component<EventsEditorButtonProps, Event
     public render() {
 
         const buttonStyles = StyleSheet.flatten([
-            eventsEditorStyles.button,
+            calendarActionsStyles.button,
             {
                 height: this.state.buttonHeight,
                 borderColor: this.props.borderColor,
@@ -38,7 +34,7 @@ export class EventsEditorButton extends Component<EventsEditorButtonProps, Event
 
         return (
             <TouchableOpacity style={buttonStyles} onLayout={this.onButtonLayout} onPress={this.onButtonEditorPress}>
-                <StyledText style={eventsEditorStyles.buttonTitle}>{this.title}</StyledText>
+                <StyledText style={calendarActionsStyles.buttonTitle}>{this.props.title}</StyledText>
             </TouchableOpacity>
         );
     }
@@ -49,15 +45,9 @@ export class EventsEditorButton extends Component<EventsEditorButtonProps, Event
         });
     }
 
-    private get title(): string {
-        return this.props.isRequest 
-            ? this.props.requestTitle 
-            : this.props.reviewTitle;
-    }
-
     private onButtonEditorPress = () => {
-        this.props.onPress(this.props.isRequest);
+        this.props.onPress();
     }
 }
 
-export const EventsEditorSeparator = () => <View style={{flex: 1}}></View>;
+export const CalendarActionButtonSeparator = () => <View style={calendarActionsStyles.separator}></View>;

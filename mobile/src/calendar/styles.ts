@@ -156,7 +156,7 @@ export const agendaSelectedDayStyles = StyleSheet.create({
     }
 });
 
-export const eventsEditorStyles = StyleSheet.create({
+export const calendarActionsStyles = StyleSheet.create({
     container: {
         flex: 4,
         flexDirection: 'column',
@@ -175,6 +175,9 @@ export const eventsEditorStyles = StyleSheet.create({
         fontSize: 12,
         lineHeight: 14,
         color: '#18515E'
+    },
+    separator: {
+        flex: 1
     }
 });
 
