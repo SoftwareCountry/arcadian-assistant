@@ -114,7 +114,7 @@ export class CalendarIntervalColor {
 }
 
 // serjKim: Depends on count of overlapped intervals?..
-const intervalOpacity = .95;
+const intervalOpacity = .89;
 export const intervalMargin = 0.2;
 
 export const calendarIntervalStyles = StyleSheet.create({
