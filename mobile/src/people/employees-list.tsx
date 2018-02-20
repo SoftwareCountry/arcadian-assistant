@@ -16,7 +16,15 @@ export interface EmployeesListProps {
 
 export class EmployeesList extends React.Component<EmployeesListProps> {
     public render() {
-        const employees = this.props.employees;
+        const employees = this.props.employees.sort((a, b) => {
+            if (a.name < b.name) {
+                return -1;
+            } else if (a > b) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
 
         return employees.length > 0 ? 
             <View style={styles.view}>
