@@ -2,9 +2,6 @@ import { StyleSheet, ViewStyle, PixelRatio } from 'react-native';
 import { CalendarEventsType } from '../reducers/calendar/calendar-events.model';
 
 const daysCounterTitleColor = '#18515E';
-const daysCounterPrimaryColor = '#2FAFCC';
-
-const circleDiameter = 120;
 
 export const calendarScreenLayout = {
     daysCounters: {
@@ -19,7 +16,6 @@ export const calendarScreenLayout = {
 };
 
 const weekDayElementsZIndex = 1;
-
 export const calendarStyles = StyleSheet.create({
     container: {
         marginTop: 25,
