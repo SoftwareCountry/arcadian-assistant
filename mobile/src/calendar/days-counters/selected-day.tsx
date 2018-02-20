@@ -3,16 +3,24 @@ import { View } from 'react-native';
 import { selectedDayStyles } from '../styles';
 import { StyledText } from '../../override/styled-text';
 import { Moment } from 'moment';
+import { DayModel } from '../../reducers/calendar/calendar.model';
+import { AppState } from '../../reducers/app.reducer';
+import { connect } from 'react-redux';
 
 interface SelectedDayProps {
-    day: Moment;
+    selectedCalendarDay: DayModel;
 }
 
-export  class SelectedDay extends Component<SelectedDayProps> {
+class SelectedDayImpl extends Component<SelectedDayProps> {
     public render() {
 
-        const day = this.props.day ? this.props.day.format('D') : '';
-        const month = this.props.day ? this.props.day.format('MMMM') : '';
+        let day;
+        let month;
+
+        if (this.props.selectedCalendarDay) {
+            day = this.props.selectedCalendarDay.date.format('D');
+            month = this.props.selectedCalendarDay.date.format('MMMM');
+        }
 
         return (
             <View style={selectedDayStyles.container}>
@@ -22,3 +30,9 @@ export  class SelectedDay extends Component<SelectedDayProps> {
         );
     }
 }
+
+const mapStateToProps = (state: AppState): SelectedDayProps => ({
+    selectedCalendarDay: state.calendar.calendarEvents.selectedCalendarDay
+});
+
+export const SelectedDay = connect(mapStateToProps)(SelectedDayImpl);

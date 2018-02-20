@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { TouchableHighlight, TouchableOpacity, View } from 'react-native';
-import { eventsEditorStyles, calendarIntervalColors } from './styles';
+import { eventsEditorStyles, CalendarIntervalColor } from './styles';
 import { StyledText } from '../override/styled-text';
 import { EventsEditorButton, EventsEditorSeparator, OnPressEventsEditorButton } from './events-editor-button';
 import { AppState } from '../reducers/app.reducer';
@@ -22,7 +22,7 @@ export class EventsEditorImpl extends Component<EventsEditorProps> {
                 <EventsEditorButton
                     requestTitle={'Request Vacation'}
                     reviewTitle={'Review Vacation'}
-                    borderColor={calendarIntervalColors.vacation}
+                    borderColor={CalendarIntervalColor.vacation}
                     onPress={this.onVacationButtonPress}
                     isRequest={!vacation} />
 
@@ -31,7 +31,7 @@ export class EventsEditorImpl extends Component<EventsEditorProps> {
                 <EventsEditorButton
                     requestTitle={'Claim Dayoff'}
                     reviewTitle={'Review Dayoff'}
-                    borderColor={calendarIntervalColors.dayoff}
+                    borderColor={CalendarIntervalColor.dayoff}
                     onPress={this.onDayoffButtonPress}
                     isRequest={!dayoff} />
 
@@ -40,7 +40,7 @@ export class EventsEditorImpl extends Component<EventsEditorProps> {
                 <EventsEditorButton
                     requestTitle={'Claim Sick Leave'}
                     reviewTitle={'Review Sick Leave'}
-                    borderColor={calendarIntervalColors.sickLeave}
+                    borderColor={CalendarIntervalColor.sickLeave}
                     onPress={this.onSickleaveButtonPress}
                     isRequest={!sickleave} />
 
