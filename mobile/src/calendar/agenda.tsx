@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { calendarScreenLayout, agendaStyles } from './styles';
 import { StyleSheet, Text, View } from 'react-native';
 import { DaysCounters } from './days-counters/days-counters';
-import { AgendaButtons } from './agenda-buttons';
+import { EventsEditor } from './events-editor';
 import { Today } from './today';
 
 export class Agenda extends Component {
@@ -10,7 +10,7 @@ export class Agenda extends Component {
         return (
             <View style={agendaStyles.container}>
                 <Today />
-                <AgendaButtons />
+                <EventsEditor />
             </View>
         );
     }

@@ -129,7 +129,7 @@ export const agendaTodayStyles = StyleSheet.create({
     }
 });
 
-export const agendaPrimaryButtonsStyles = StyleSheet.create({
+export const eventsEditorStyles = StyleSheet.create({
     container: {
         flex: 3,
         flexDirection: 'column',
@@ -137,14 +137,14 @@ export const agendaPrimaryButtonsStyles = StyleSheet.create({
         marginLeft: 15,
         marginRight: 15,
     },
-    primaryButton: {
+    button: {
         flex: 3,
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
         borderColor: calendarIntervalColors.vacation
     },
-    primaryButtonTitle: {
+    buttonTitle: {
         fontSize: 12,
         lineHeight: 14,
         color: '#18515E'
