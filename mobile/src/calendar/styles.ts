@@ -77,7 +77,7 @@ export const calendarStyles = StyleSheet.create({
     },
     weekDayNumber: {
         fontSize: 12,
-        fontFamily: 'Roboto'
+        //fontFamily: 'Roboto' TODO: import font ?
     },
     weekDaySelectedNumber: {
         fontWeight: '500'
@@ -86,7 +86,7 @@ export const calendarStyles = StyleSheet.create({
         fontSize: 12,
         color: 'rgba(0, 0, 0, 0.5433)',
         fontWeight: '500',
-        fontFamily: 'Roboto'
+        //fontFamily: 'Roboto' TODO: import font ?
     }
 });
 
