@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { CalendarActionButton } from './calendar-action-button';
 import { IntervalModel } from '../reducers/calendar/calendar.model';
-import { CalendarIntervalColor } from './styles';
+import { CalendarEventsColor } from './styles';
 
 interface SickLeaveActionButtonProps {
     interval: IntervalModel;
@@ -11,7 +11,7 @@ interface SickLeaveActionButtonProps {
 export class SickLeaveActionButton extends Component<SickLeaveActionButtonProps> {
     public render() {
         return (
-            <CalendarActionButton title={this.title} borderColor={CalendarIntervalColor.sickLeave} onPress={this.onSickLeaveAction} />
+            <CalendarActionButton title={this.title} borderColor={CalendarEventsColor.sickLeave} onPress={this.onSickLeaveAction} />
         );
     }
 

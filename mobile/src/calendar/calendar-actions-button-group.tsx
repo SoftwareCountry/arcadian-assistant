@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { TouchableHighlight, TouchableOpacity, View } from 'react-native';
-import { calendarActionsStyles, CalendarIntervalColor } from './styles';
+import { calendarActionsStyles, CalendarEventsColor } from './styles';
 import { CalendarActionButtonSeparator } from './calendar-action-button';
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';

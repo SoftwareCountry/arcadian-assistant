@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { CalendarActionButton } from './calendar-action-button';
 import { IntervalModel } from '../reducers/calendar/calendar.model';
-import { CalendarIntervalColor } from './styles';
+import { CalendarEventsColor } from './styles';
 
 interface DayoffActionButtonProps {
     interval: IntervalModel;
@@ -11,7 +11,7 @@ interface DayoffActionButtonProps {
 export class DayoffActionButton extends Component<DayoffActionButtonProps> {
     public render() {
         return (
-            <CalendarActionButton title={this.title} borderColor={CalendarIntervalColor.dayoff} onPress={this.onDayoffAction} />
+            <CalendarActionButton title={this.title} borderColor={CalendarEventsColor.dayoff} onPress={this.onDayoffAction} />
         );
     }
 

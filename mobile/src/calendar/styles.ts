@@ -90,7 +90,7 @@ export const calendarStyles = StyleSheet.create({
     }
 });
 
-export class CalendarIntervalColor {
+export class CalendarEventsColor {
     public static vacation = '#2F80ED';
     public static sickLeave = '#F2C94C';
     public static dayoff = '#EB5757';
@@ -99,16 +99,16 @@ export class CalendarIntervalColor {
     public static getColor(type: CalendarEventsType) {
         switch (type) {
             case CalendarEventsType.Vacation:
-                return CalendarIntervalColor.vacation;
+                return CalendarEventsColor.vacation;
 
             case CalendarEventsType.SickLeave:
-                return CalendarIntervalColor.sickLeave;
+                return CalendarEventsColor.sickLeave;
 
             case CalendarEventsType.Dayoff:
-                return CalendarIntervalColor.dayoff;
+                return CalendarEventsColor.dayoff;
 
             case CalendarEventsType.AdditionalWork:
-                return CalendarIntervalColor.additionalWork;
+                return CalendarEventsColor.additionalWork;
 
             default:
                 return null;
@@ -169,7 +169,7 @@ export const calendarActionsStyles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: CalendarIntervalColor.vacation
+        borderColor: CalendarEventsColor.vacation
     },
     buttonTitle: {
         fontSize: 12,
