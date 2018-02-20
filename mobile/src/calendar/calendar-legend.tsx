@@ -18,27 +18,6 @@ const mapStateToProps = (state: AppState): CalendarLegendProps => ({
 });
 
 class CalendarLegendImpl extends Component<CalendarLegendProps> {
-    private getVisibleCalendarEvents() {
-        const { intervals, weeks } = this.props;
-        const calendarEventsMap: Map<CalendarEventsType, number> = new Map();
-
-        if (!weeks || !intervals) {
-            return calendarEventsMap;
-        }
-
-        weeks.forEach(week => {
-            week.days.forEach(day => {
-                const dayIntervals = intervals.get(day.date) || [];
-                dayIntervals.forEach(interval => {
-                    let eventCounter = calendarEventsMap.get(interval.eventType) || 0;
-                    calendarEventsMap.set(interval.eventType, ++eventCounter);
-                });
-            });
-        });
-
-        return calendarEventsMap;
-    }
-
     public render() {
         const existingIntervals = this.getVisibleCalendarEvents();
         const legend: JSX.Element[] = [];
@@ -60,6 +39,27 @@ class CalendarLegendImpl extends Component<CalendarLegendProps> {
                 </View>
             </View>
         );
+    }
+
+    private getVisibleCalendarEvents() {
+        const { intervals, weeks } = this.props;
+        const calendarEventsMap: Map<CalendarEventsType, number> = new Map();
+
+        if (!weeks || !intervals) {
+            return calendarEventsMap;
+        }
+
+        weeks.forEach(week => {
+            week.days.forEach(day => {
+                const dayIntervals = intervals.get(day.date) || [];
+                dayIntervals.forEach(interval => {
+                    let eventCounter = calendarEventsMap.get(interval.eventType) || 0;
+                    calendarEventsMap.set(interval.eventType, ++eventCounter);
+                });
+            });
+        });
+
+        return calendarEventsMap;
     }
 }
 

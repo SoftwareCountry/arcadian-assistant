@@ -95,7 +95,7 @@ export class CalendarIntervalColor {
     public static additionalWork = '#18515E'; //TODO: replace with the right color
 
     public static getColor(type: CalendarEventsType) {
-        switch(type) {
+        switch (type) {
             case CalendarEventsType.Vacation:
                 return CalendarIntervalColor.vacation;
 
@@ -112,7 +112,7 @@ export class CalendarIntervalColor {
                 return null;
         }
     }
-};
+}
 
 // serjKim: Depends on count of overlapped intervals?..
 const intervalOpacity = .95;
