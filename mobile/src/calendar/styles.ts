@@ -148,7 +148,7 @@ export const agendaStyles = StyleSheet.create({
     }
 });
 
-export const agendaTodayStyles = StyleSheet.create({
+export const agendaSelectedDayStyles = StyleSheet.create({
     container: {
         flex: 5,
         borderRightWidth: 1,

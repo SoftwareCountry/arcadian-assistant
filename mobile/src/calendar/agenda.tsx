@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { agendaStyles, agendaTodayStyles } from './styles';
+import { agendaStyles, agendaSelectedDayStyles } from './styles';
 import { StyleSheet, Text, View } from 'react-native';
 import { DaysCounters } from './days-counters/days-counters';
 import { AgendaButtons } from './agenda-buttons';
@@ -10,7 +10,7 @@ export class Agenda extends Component {
     public render() {
         return (
             <View style={agendaStyles.container}>
-                <View style={agendaTodayStyles.container}>
+                <View style={agendaSelectedDayStyles.container}>
                     <SelectedDay />
                     <CalendarLegend />
                 </View>
