@@ -12,12 +12,8 @@ const tabNavigatorConfig: TabNavigatorConfig = {
         labelStyle: tabBarStyles.tabBarLabel,
         showIcon: true,
     },
-<<<<<<< HEAD
     animationEnabled: false,
     lazy: true
-=======
-    animationEnabled: false
->>>>>>> 30bb38a237a06b225a4e2ded8f6d85dddf5defe9
 };
 
 export const RootNavigator = TabNavigator(
