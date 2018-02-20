@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import moment, { Moment } from 'moment';
 import { View, StyleSheet, TouchableHighlight, LayoutChangeEvent, PixelRatio } from 'react-native';
 import { StyledText } from '../override/styled-text';
-import { calendarStyles, calendarIntervalStyles, calendarIntervalColors } from './styles';
+import { calendarStyles, calendarIntervalStyles, CalendarIntervalColor } from './styles';
 import { DayModel, WeekModel, IntervalsModel, IntervalModel } from '../reducers/calendar/calendar.model';
 import { StartInterval, EndInterval, Interval, IntervalBoundary } from './calendar-page-interval';
 import { CalendarEventsType } from '../reducers/calendar/calendar-events.model';
@@ -34,13 +34,7 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
         .locale('en')
         .localeData()
         .weekdaysShort()
-        .map(x => x.substring(0, 2));
-
-    private readonly intervalColors = {
-        [CalendarEventsType.Vacation]: calendarIntervalColors.vacation,
-        [CalendarEventsType.SickLeave]: calendarIntervalColors.sickLeave,
-        [CalendarEventsType.Dayoff]: calendarIntervalColors.dayoff
-    };
+        .map(x => x.substring(0, 2).toUpperCase());
 
     constructor(props: CalendarPageDefaultProps & CalendarPageProps) {
         super(props);
@@ -121,7 +115,7 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
     }
 
     private renderInterval(interval: IntervalModel, elementKey: number): JSX.Element | null {
-        const color = this.intervalColors[interval.eventType] || '#fff';
+        const color = CalendarIntervalColor.getColor(interval.eventType) || '#fff';
 
         switch (interval.intervalType) {
             case 'startInterval':
