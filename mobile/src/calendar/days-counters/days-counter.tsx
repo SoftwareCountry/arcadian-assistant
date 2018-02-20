@@ -21,15 +21,15 @@ export class DaysCounter extends Component<DaysCounterProps> {
             : null;
 
         const title = this.props.title
-            ? <StyledText style={daysCounterStyles.contentTitle}>{this.props.title.join(' ')}</StyledText>
+            ? <StyledText style={daysCounterStyles.label}>{this.props.title.join(' ')}</StyledText>
             : null;
 
         return (
             <View style={daysCounterStyles.container}>
                 <View style={daysCounterStyles.content}>
-                    <View style={daysCounterStyles.counter}>
+                    <View style={daysCounterStyles.counterContainer}>
                         {icon}
-                        <StyledText style={daysCounterStyles.contentValue}>{this.props.textValue}</StyledText>
+                        <StyledText style={daysCounterStyles.counter}>{this.props.textValue}</StyledText>
                     </View>
                     {title}
                 </View>

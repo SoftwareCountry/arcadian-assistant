@@ -1,9 +1,9 @@
 import { StyleSheet, ViewStyle } from 'react-native';
 
-const daysCounterFontColor = '#18515E';
-const daysCounterTitleColor = '#18515E';
-const daysCounterPrimaryColor = '#2FAFCC';
+const counterColor = '#18515E';
+const labelColor = counterColor;
 const backgroundColor = 'rgba(47, 175, 204, 0.2)';
+const iconColor = counterColor;
 
 export const daysCountersStyles = StyleSheet.create({
     container: {
@@ -25,7 +25,7 @@ export const daysCounterStyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
-    counter: {
+    counterContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
@@ -33,16 +33,17 @@ export const daysCounterStyles = StyleSheet.create({
     },
     icon: {
         paddingRight: 10,
-        color: 'rgba(24, 81, 94, 0.5)'
+        color: iconColor,
+        opacity: .5
     },
-    contentValue: {
+    counter: {
         fontSize: 26,
         lineHeight: 32,
-        color: daysCounterFontColor
+        color: counterColor
     },
-    contentTitle: {
+    label: {
         fontSize: 10,
         lineHeight: 12,
-        color: daysCounterFontColor
+        color: labelColor
     }
 });
