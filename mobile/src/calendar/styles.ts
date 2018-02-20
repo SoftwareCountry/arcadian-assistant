@@ -44,8 +44,7 @@ export const calendarStyles = StyleSheet.create({
     },
     weeksNames: {
         flex: 1,
-        flexDirection: 'row',
-        //marginBottom: 10,
+        flexDirection: 'row'
     },
     weekName: {
         flex: 1,
@@ -162,7 +161,6 @@ export const agendaButtonsStyles = StyleSheet.create({
 
 export const selectedDayStyles = StyleSheet.create({
     container: {
-        //transform: [{ translateX: -(circleDiameter / 2) }],
         alignItems: 'center',
         justifyContent: 'center'
     },
