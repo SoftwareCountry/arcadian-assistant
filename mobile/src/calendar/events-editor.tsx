@@ -29,7 +29,7 @@ export class EventsEditorImpl extends Component<EventsEditorProps> {
                 <EventsEditorSeparator />
 
                 <EventsEditorButton
-                    requestTitle={'Claim Dayoff'}
+                    requestTitle={'Process Dayoff'}
                     reviewTitle={'Review Dayoff'}
                     borderColor={CalendarIntervalColor.dayoff}
                     onPress={this.onDayoffButtonPress}
