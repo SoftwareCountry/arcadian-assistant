@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { IntervalsModel, WeekModel } from '../reducers/calendar/calendar.model';
 import { AppState } from '../reducers/app.reducer';
 import { CalendarEventsType } from '../reducers/calendar/calendar-events.model';
-import { CalendarIntervalColor } from './styles';
+import { CalendarIntervalColor, legendStyles as styles } from './styles';
 import { StyledText } from '../override/styled-text';
 
 interface CalendarLegendProps {
@@ -15,31 +15,6 @@ interface CalendarLegendProps {
 const mapStateToProps = (state: AppState): CalendarLegendProps => ({
     intervals: state.calendar.calendarEvents.intervals,
     weeks: state.calendar.calendarEvents.weeks
-});
-
-const legendMarkerSize = 12;
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        paddingTop: 15
-    },
-    itemContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingBottom: 5
-    },
-    marker: {
-        width: legendMarkerSize,
-        height: legendMarkerSize,
-        borderRadius: PixelRatio.roundToNearestPixel(legendMarkerSize / 2)
-    },
-    label: {
-        paddingLeft: 10,
-        color: '#18515E',
-        fontSize: 10,
-        lineHeight: 12
-    }
 });
 
 class CalendarLegendImpl extends Component<CalendarLegendProps> {

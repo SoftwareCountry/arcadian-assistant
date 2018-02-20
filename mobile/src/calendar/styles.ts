@@ -160,8 +160,6 @@ export const agendaButtonsStyles = StyleSheet.create({
     }
 });
 
-const daysCounterShapeZIndex = 2;
-
 export const selectedDayStyles = StyleSheet.create({
     container: {
         //transform: [{ translateX: -(circleDiameter / 2) }],
@@ -177,5 +175,30 @@ export const selectedDayStyles = StyleSheet.create({
         fontSize: 16,
         lineHeight: 20,
         color: daysCounterTitleColor
+    }
+});
+
+const legendMarkerSize = 12;
+export const legendStyles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        paddingTop: 15
+    },
+    itemContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingBottom: 5
+    },
+    marker: {
+        width: legendMarkerSize,
+        height: legendMarkerSize,
+        borderRadius: PixelRatio.roundToNearestPixel(legendMarkerSize / 2)
+    },
+    label: {
+        paddingLeft: 10,
+        color: '#18515E',
+        fontSize: 10,
+        lineHeight: 12
     }
 });
