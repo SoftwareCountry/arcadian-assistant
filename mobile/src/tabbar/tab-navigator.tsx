@@ -12,8 +12,7 @@ const tabNavigatorConfig: TabNavigatorConfig = {
         labelStyle: tabBarStyles.tabBarLabel,
         showIcon: true,
     },
-    animationEnabled: false,
-    initialRouteName: 'Calendar'
+    animationEnabled: false
 };
 
 export const RootNavigator = TabNavigator(
