@@ -8,7 +8,6 @@ import { Employee } from '../organization/employee.model';
 import { OrganizationActions, loadEmployeesForDepartment } from '../organization/organization.action';
 import { UserActions } from '../user/user.action';
 import { PeopleActions } from './people.action';
-import { loadUserDepartmentEmployeesEpic$ } from './people.epics';
 import { EmployeeMap } from '../organization/employees.reducer';
 
 export interface PeopleState {
@@ -31,9 +30,6 @@ const initState: PeopleState = {
     }
 };
 
-export const peopleEpics = combineEpics(
-    loadUserDepartmentEmployeesEpic$ as any);
-
 export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions) => {
     switch (action.type) {
         case 'NAVIGATE-PEOPLE-DEPARTMENT':
@@ -46,13 +42,6 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
             }};
         case 'NAVIGATE-PEOPLE-COMPANY':
             return state;
-        case 'LOAD-USER-DEPARTMENT-EMPLOYEES-FINISHED':
-            let { employees } = state;
-
-            return {
-                ...state,
-                employees: employees.set(action.employee.employeeId, action.employee)
-            };
         default:
             return state;
     }

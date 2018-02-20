@@ -22,11 +22,4 @@ export interface NavigatePeopleCompany {
 
 export const navigatePeopleCompany = (): NavigatePeopleCompany => ({ type: 'NAVIGATE-PEOPLE-COMPANY' });
 
-export interface LoadUserDepartmentEmployeesFinished {
-    type: 'LOAD-USER-DEPARTMENT-EMPLOYEES-FINISHED';
-    employee: Employee;
-}
-
-export const loadUserDepartmentEmployeesFinished = (employee: Employee): LoadUserDepartmentEmployeesFinished => ({ type: 'LOAD-USER-DEPARTMENT-EMPLOYEES-FINISHED', employee });
-
-export type PeopleActions = LoadUserDepartmentEmployeesFinished | NavigatePeopleDepartment | NavigatePeopleRoom | NavigatePeopleCompany;
+export type PeopleActions = NavigatePeopleDepartment | NavigatePeopleRoom | NavigatePeopleCompany;
