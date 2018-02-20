@@ -7,10 +7,12 @@ import { EmployeesList } from './employees-list';
 import { AppState } from '../reducers/app.reducer';
 import { PeopleActions, navigatePeopleDepartment } from '../reducers/people/people.action';
 import { loadEmployeesForDepartment } from '../reducers/organization/organization.action';
+import { EmployeesStore, EmployeeMap, EmployeeIdsGroupMap } from '../reducers/organization/employees.reducer';
 
 interface PeopleDepartmentProps {
+    employeesMap: EmployeeMap;
     departmentId: string;
-    employeesSubsetFilter: Function;
+    employeesSubsetFilterCallback: any;
 }
 
 interface PeopleDepartmentDispatchProps {
@@ -18,13 +20,14 @@ interface PeopleDepartmentDispatchProps {
 }
 
 const mapStateToProps = (state: AppState): PeopleDepartmentProps => ({
+    employeesMap: state.organization.employees.employeesById,
     departmentId: state.userInfo.employee.departmentId,
-    employeesSubsetFilter: state.people.employeesSubsetFilter
+    employeesSubsetFilterCallback: state.people.employeesDepartmentSubsetFilterCallback
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
     navigatePeopleDepartment: (departmentId: string) => { 
-        dispatch(navigatePeopleDepartment()); 
+        dispatch(navigatePeopleDepartment(departmentId)); 
         dispatch(loadEmployeesForDepartment(departmentId));
     },
 });
@@ -35,8 +38,7 @@ export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentProps 
     }
 
     public render() {
-        this.props.employeesSubsetFilter();
-        return <EmployeesList />;
+        return <EmployeesList employees={this.props.employeesMap.toArray().filter(this.props.employeesSubsetFilterCallback)} />;
     }
 }
 

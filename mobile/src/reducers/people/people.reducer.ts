@@ -13,29 +13,39 @@ import { EmployeeMap } from '../organization/employees.reducer';
 
 export interface PeopleState {
     employees: EmployeeMap;
-    employeesSubsetFilter: Function;
+    employeesDepartmentSubsetFilterCallback: any;
+    employeesRoomSubsetFilterCallback: any;
+    employeesSubsetFilterCallback: any;
 }
 
 const initState: PeopleState = {
     employees: Map(),
-    employeesSubsetFilter: () => {}
+    employeesDepartmentSubsetFilterCallback: function(employee: Employee) {
+        return employee.employeeId === '';
+    },
+    employeesRoomSubsetFilterCallback: function(employee: Employee) {
+        return employee.employeeId === '';
+    },
+    employeesSubsetFilterCallback: function(employee: Employee) {
+        return employee.employeeId === '';
+    }
 };
 
 export const peopleEpics = combineEpics(
     loadUserDepartmentEmployeesEpic$ as any);
 
 export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions) => {
-    console.log(action.type);
     switch (action.type) {
         case 'NAVIGATE-PEOPLE-DEPARTMENT':
-            return {...state, employeesSubsetFilter: () => { console.log('department filter'); }};
-            // break;
+            return {...state, employeesDepartmentSubsetFilterCallback: function(employee: Employee) {
+                return employee.departmentId === action.departmentId;
+            }};
         case 'NAVIGATE-PEOPLE-ROOM':
-            return {...state, employeesSubsetFilter: () => { console.log('room filter'); }};
-            // break;
+            return {...state, employeesRoomSubsetFilterCallback: function(employee: Employee) {
+                return employee.roomNumber === action.roomNumber;
+            }};
         case 'NAVIGATE-PEOPLE-COMPANY':
-            return {...state, employeesSubsetFilter: () => { console.log('company filter'); }};
-            // break;
+            return state;
         case 'LOAD-USER-DEPARTMENT-EMPLOYEES-FINISHED':
             let { employees } = state;
 

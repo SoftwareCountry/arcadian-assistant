@@ -29,7 +29,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
     }
 
     public render() {
-        return <EmployeesList />;
+        return <View />;
     }
 }
 

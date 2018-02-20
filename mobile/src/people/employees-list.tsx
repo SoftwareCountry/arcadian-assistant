@@ -10,22 +10,18 @@ import { EmployeesListItem } from './employees-list-item';
 import { employeesListStyles as styles } from './styles';
 import { StyledText } from '../override/styled-text';
 
-interface EmployeesListProps {
-    employeesForMyDepartment: EmployeeMap;
+export interface EmployeesListProps {
+    employees: Employee[];
 }
 
-const mapStateToProps = (state: AppState): EmployeesListProps => ({
-    employeesForMyDepartment: state.people.employees
-});
-
-class EmployeesListImpl extends React.Component<EmployeesListProps> {
+export class EmployeesList extends React.Component<EmployeesListProps> {
     public render() {
-        const employees = this.props.employeesForMyDepartment;
+        const employees = this.props.employees;
 
-        return employees.size > 0 ? 
+        return employees.length > 0 ? 
             <View style={styles.view}>
                 <FlatList
-                    data={employees.toArray()}
+                    data={employees}
                     keyExtractor={this.keyExtractor}
                     renderItem={this.renderItem} />
             </View>
@@ -44,5 +40,3 @@ class EmployeesListImpl extends React.Component<EmployeesListProps> {
         return <EmployeesListItem id={item.employeeId} employee={item} />;
     }
 }
-
-export const EmployeesList = connect(mapStateToProps)(EmployeesListImpl);

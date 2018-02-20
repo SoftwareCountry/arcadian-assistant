@@ -1,7 +1,7 @@
 import { ActionsObservable, ofType } from 'redux-observable';
 import {
     LoadDepartments, loadDepartmentsFinished, LoadDepartmentsFinished, loadDepartments,
-    loadEmployeeFinished, LoadEmployeesForDepartment, loadEmployeesForDepartment,
+    loadEmployeeFinished, LoadEmployeesForDepartment, LoadEmployeesForRoom, loadEmployeesForDepartment,
     LoadEmployee, loadEmployee, LoadEmployeeFinished } from './organization.action';
 import { deserializeArray, deserialize } from 'santee-dcts/src/deserializer';
 import { Department } from './department.model';
@@ -42,3 +42,13 @@ export const loadEmployeesForDepartmentEpic$ = (action$: ActionsObservable<LoadE
         .mergeAll()
         .flatMap(x => x.map(loadEmployeeFinished))
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+
+export const loadEmployeesForRoomEpic$ = (action$: ActionsObservable<LoadEmployeesForRoom>, state: AppState) =>
+        action$.ofType('LOAD_EMPLOYEES_FOR_ROOM')
+            .groupBy(x => x.roomNumber)
+            .map(x =>
+                x.switchMap(y =>
+                    ajaxGetJSON(`${url}/employees?roomNumber=${x.key}`).map(obj => deserializeArray(obj as any, Employee))))
+            .mergeAll()
+            .flatMap(x => x.map(loadEmployeeFinished))
+            .catch((e: Error) => Observable.of(loadFailedError(e.message)));

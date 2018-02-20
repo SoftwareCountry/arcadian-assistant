@@ -4,15 +4,17 @@ import { EmployeeMap } from '../organization/employees.reducer';
 
 export interface NavigatePeopleDepartment {
     type: 'NAVIGATE-PEOPLE-DEPARTMENT';
+    departmentId: string;
 }
 
-export const navigatePeopleDepartment = (): NavigatePeopleDepartment => ({ type: 'NAVIGATE-PEOPLE-DEPARTMENT' });
+export const navigatePeopleDepartment = (departmentId: string): NavigatePeopleDepartment => ({ type: 'NAVIGATE-PEOPLE-DEPARTMENT', departmentId });
 
 export interface NavigatePeopleRoom {
     type: 'NAVIGATE-PEOPLE-ROOM';
+    roomNumber: string;
 }
 
-export const navigatePeopleRoom = (): NavigatePeopleRoom => ({ type: 'NAVIGATE-PEOPLE-ROOM' });
+export const navigatePeopleRoom = (roomNumber: string): NavigatePeopleRoom => ({ type: 'NAVIGATE-PEOPLE-ROOM', roomNumber });
 
 export interface NavigatePeopleCompany {
     type: 'NAVIGATE-PEOPLE-COMPANY';

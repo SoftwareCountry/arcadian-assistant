@@ -6,10 +6,13 @@ import { FlatList, Text, View, StyleSheet, ListRenderItemInfo } from 'react-nati
 import { EmployeesList } from './employees-list';
 import { AppState } from '../reducers/app.reducer';
 import { PeopleActions, navigatePeopleRoom } from '../reducers/people/people.action';
+import { loadEmployeesForRoom } from '../reducers/organization/organization.action';
+import { EmployeesStore, EmployeeMap, EmployeeIdsGroupMap } from '../reducers/organization/employees.reducer';
 
 interface PeopleRoomProps {
+    employeesMap: EmployeeMap;
     roomNumber: string;
-    employeesSubsetFilter: Function;
+    employeesSubsetFilterCallback: any;
 }
 
 interface PeopleRoomDispatchProps {
@@ -17,15 +20,15 @@ interface PeopleRoomDispatchProps {
 }
 
 const mapStateToProps = (state: AppState): PeopleRoomProps => ({
+    employeesMap: state.organization.employees.employeesById,
     roomNumber: state.userInfo.employee.roomNumber,
-    employeesSubsetFilter: state.people.employeesSubsetFilter
+    employeesSubsetFilterCallback: state.people.employeesRoomSubsetFilterCallback
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
     navigatePeopleRoom: (roomNumber: string) => { 
-        dispatch(navigatePeopleRoom()); 
-        console.log('PULL EMPLOYEES FOR ROOM WITH NUMBER ' + roomNumber );
-        //dispatch(loadEmployeesForDepartment(departmentId));
+        dispatch(navigatePeopleRoom(roomNumber)); 
+        dispatch(loadEmployeesForRoom(roomNumber));
     },
 });
 
@@ -35,8 +38,7 @@ export class PeopleRoomImpl extends React.Component<PeopleRoomProps & PeopleRoom
     }
 
     public render() {
-        this.props.employeesSubsetFilter();
-        return <EmployeesList />;
+        return <EmployeesList employees={this.props.employeesMap.toArray().filter(this.props.employeesSubsetFilterCallback)} />;
     }
 }
 
