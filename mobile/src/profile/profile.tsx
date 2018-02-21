@@ -18,6 +18,7 @@ interface ProfileProps {
     employee: Employee;
     department: Department;
 }
+const TileSeparator = () => <View style = {tileStyles.separator}></View>;
 
 export class Profile extends Component<ProfileProps> {
     public render() {
@@ -31,7 +32,7 @@ export class Profile extends Component<ProfileProps> {
         const contacts = this.getContacts(employee);
 
         return (
-            <ScrollView style={layoutStyles.scrollView}>
+            <ScrollView style={layoutStyles.scrollView} alwaysBounceVertical = {false}>
                 <View style={layoutStyles.container}>
                     <View style={layoutStyles.chevronPlaceholder}></View>
                     <View>
@@ -99,9 +100,11 @@ export class Profile extends Component<ProfileProps> {
                 size: 28
             }
         ];
+        const lastIndex = tilesData.length - 1;
 
-        return tilesData.map((tile) => (
-            <View key={tile.label} style={tileStyles.container}>
+        return tilesData.map((tile, index) => (
+            <React.Fragment key={tile.label}>
+            <View style={tileStyles.container}>
                 <View style={tileStyles.tile}>
                     <View style={tileStyles.iconContainer}>
                         <ApplicationIcon name={tile.icon} size={tile.size} style={tile.style} />
@@ -109,6 +112,10 @@ export class Profile extends Component<ProfileProps> {
                     <StyledText style={tileStyles.text}>{tile.label}</StyledText>
                 </View>
             </View>
+            {
+                lastIndex !== index ? <TileSeparator key = {`${tile.label}-${index}`} /> : null
+            }
+            </React.Fragment>
         ));
     }
 

@@ -60,8 +60,8 @@ export const layoutStyles = StyleSheet.create({
     content: {
         flex: 1,
         flexDirection: 'column',
-        marginTop: circleDiameter * 0.5 - headerGap
-
+        marginTop: circleDiameter * 0.5 - headerGap,
+        height: 350
     },
     avatarContainer: {
         borderRadius: circleDiameter / 2,
@@ -113,8 +113,7 @@ export const contentStyles = StyleSheet.create({
 
 export const tileStyles = StyleSheet.create({
     container: {
-        padding: paddingTile,
-        width: (Dimensions.get('window').width - 2 * paddingInfoContainer - 3 * paddingTile) / 4,
+        width: '25%'
     },
     tile: {
         backgroundColor: 'rgba(47, 175, 204, 0.2)',
@@ -136,6 +135,10 @@ export const tileStyles = StyleSheet.create({
         textAlign: 'center',
         color: '#18515E',
         paddingTop: 2
+    },
+    separator: {
+        flexBasis: 1,
+        backgroundColor: '#fff'
     }
 });
 
