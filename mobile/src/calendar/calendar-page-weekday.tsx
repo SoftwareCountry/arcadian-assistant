@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, TouchableHighlight } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { calendarStyles, intervalMargin } from './styles';
 import { DayModel } from '../reducers/calendar/calendar.model';
 import { OnSelectedDayCallback } from './calendar-page';
@@ -65,11 +65,11 @@ export class WeekDayCircle extends Component<WeekDayCircleProps> {
         ]);
 
         return (
-            <TouchableHighlight style={circleStyles} onPress={this.onSelectedDay}>
+            <TouchableOpacity style={circleStyles} onPress={this.onSelectedDay} activeOpacity={0.9}>
                 <View style={innerCircleStyles}>
                     <StyledText style={circleTextStyles}>{day.date.date()}</StyledText>
                 </View>
-            </TouchableHighlight>
+            </TouchableOpacity>
         );
     }
 

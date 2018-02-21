@@ -90,7 +90,7 @@ export const calendarStyles = StyleSheet.create({
     }
 });
 
-export class CalendarIntervalColor {
+export class CalendarEventsColor {
     public static vacation = '#2F80ED';
     public static sickLeave = '#F2C94C';
     public static dayoff = '#EB5757';
@@ -99,16 +99,16 @@ export class CalendarIntervalColor {
     public static getColor(type: CalendarEventsType) {
         switch (type) {
             case CalendarEventsType.Vacation:
-                return CalendarIntervalColor.vacation;
+                return CalendarEventsColor.vacation;
 
             case CalendarEventsType.SickLeave:
-                return CalendarIntervalColor.sickLeave;
+                return CalendarEventsColor.sickLeave;
 
             case CalendarEventsType.Dayoff:
-                return CalendarIntervalColor.dayoff;
+                return CalendarEventsColor.dayoff;
 
             case CalendarEventsType.AdditionalWork:
-                return CalendarIntervalColor.additionalWork;
+                return CalendarEventsColor.additionalWork;
 
             default:
                 return null;
@@ -150,15 +150,34 @@ export const agendaStyles = StyleSheet.create({
 
 export const agendaSelectedDayStyles = StyleSheet.create({
     container: {
-        flex: 5,
+        flex: 3,
         borderRightWidth: 1,
         borderColor: 'rgba(0, 0, 0, 0.2)'
     }
 });
 
-export const agendaButtonsStyles = StyleSheet.create({
+export const calendarActionsStyles = StyleSheet.create({
     container: {
-        flex: 8
+        flex: 4,
+        flexDirection: 'column',
+        alignContent: 'space-between',
+        marginLeft: 20,
+        marginRight: 20,
+    },
+    button: {
+        flex: 3,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: CalendarEventsColor.vacation
+    },
+    buttonTitle: {
+        fontSize: 12,
+        lineHeight: 14,
+        color: '#18515E'
+    },
+    separator: {
+        flex: 1
     }
 });
 

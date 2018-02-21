@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { IntervalsModel, DayModel } from '../reducers/calendar/calendar.model';
 import { AppState } from '../reducers/app.reducer';
 import { CalendarEventsType } from '../reducers/calendar/calendar-events.model';
-import { CalendarIntervalColor, legendStyles as styles } from './styles';
+import { CalendarEventsColor, legendStyles as styles } from './styles';
 import { StyledText } from '../override/styled-text';
 
 interface CalendarLegendProps {
@@ -21,7 +21,7 @@ class CalendarLegendImpl extends Component<CalendarLegendProps> {
     public render() {
         const selectedEvents = this.getEventsForSelectedDate();
         const legend = selectedEvents.map(type => {
-            const style = StyleSheet.flatten([styles.marker, { backgroundColor: CalendarIntervalColor.getColor(type) }]);
+            const style = StyleSheet.flatten([styles.marker, { backgroundColor: CalendarEventsColor.getColor(type) }]);
             return (
                 <View key={type} style={styles.itemContainer}>
                     <View style={style}></View>
