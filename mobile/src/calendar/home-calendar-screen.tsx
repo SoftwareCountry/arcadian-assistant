@@ -5,14 +5,16 @@ import { calendarScreenLayout } from './styles';
 import { Calendar } from './calendar';
 import { Agenda } from './agenda';
 import { TopNavBar } from '../topNavBar/top-nav-bar';
+import { DaysCounters } from './days-counters/days-counters';
 
-const navBar =  new TopNavBar('Calendar');
+const navBar =  new TopNavBar('');
 
 export class CalendarScreenImpl extends Component {
     public static navigationOptions = navBar.configurate();
 
     public render() {
         return <View style={styles.container}>
+            <DaysCounters />
             <Calendar />
             <Agenda />
         </View>;
