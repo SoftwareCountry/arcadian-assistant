@@ -48,7 +48,8 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps> {
 
              if (intervals) {
                 vacation = intervals.find(x => x.eventType === CalendarEventsType.Vacation);
-                dayoff = intervals.find(x => x.eventType === CalendarEventsType.Dayoff);
+                dayoff = intervals.find(x => x.eventType === CalendarEventsType.Dayoff) ||
+                         intervals.find(x => x.eventType === CalendarEventsType.AdditionalWork);
                 sickleave = intervals.find(x => x.eventType === CalendarEventsType.SickLeave);
              }
         }
