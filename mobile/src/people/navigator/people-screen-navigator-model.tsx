@@ -1,14 +1,14 @@
 import { TabNavigatorConfig, NavigationRouteConfigMap } from 'react-navigation';
 import React from 'react';
-import { PeopleDepartment } from '../people/people-department';
-import { PeopleRoom } from '../people/people-room';
-import { PeopleCompany } from '../people/people-company';
-import { EmployeesList } from '../people/employees-list';
-import { TabNavigationOptionsFactory } from '../tabbar/tab-navigation-options-factory';
+import { PeopleDepartment } from '../people-department';
+import { PeopleRoom } from '../people-room';
+import { PeopleCompany } from '../people-company';
+import { EmployeesList } from '../employees-list';
+import { TabNavigationOptionsFactory } from '../../tabbar/tab-navigation-options-factory';
 
 const navOptionsFactory = new TabNavigationOptionsFactory();
 
-const peopleTopTabBarModel: NavigationRouteConfigMap = {
+const peopleScreenNavigatorModel: NavigationRouteConfigMap = {
 
     Department: {
         screen: PeopleDepartment,
@@ -27,4 +27,4 @@ const peopleTopTabBarModel: NavigationRouteConfigMap = {
     }
 };
 
-export default peopleTopTabBarModel;
+export default peopleScreenNavigatorModel;

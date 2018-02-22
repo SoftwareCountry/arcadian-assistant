@@ -1,4 +1,4 @@
-import { Employee } from '../organization/employee.model';
+import { Employee } from '../reducers/organization/employee.model';
 
 export function employeesAZSort (first: Employee, second: Employee) {
     if (first.name < second.name) {

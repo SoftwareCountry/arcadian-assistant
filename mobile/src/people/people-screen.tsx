@@ -2,7 +2,7 @@ import { StackNavigator, addNavigationHelpers, NavigationState } from 'react-nav
 import React from 'react';
 import { Text, View, Image, Platform, StatusBar, SafeAreaView } from 'react-native';
 import { TopNavBar } from '../topNavBar/top-nav-bar';
-import { TopTabBarNavigator } from '../toptabbar/top-tab-bar-navigator';
+import { PeopleScreenNavigator } from './navigator/people-screen-navigator';
 import { Department } from '../reducers/organization/department.model';
 import { connect, Dispatch } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
@@ -32,7 +32,7 @@ class PeopleScreenImpl extends React.Component<PeopleScreenProps> {
 
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: '#2FAFCC' }}>
-                <TopTabBarNavigator navigation={navigation} />
+                <PeopleScreenNavigator navigation={navigation} />
             </SafeAreaView>
         );
     }

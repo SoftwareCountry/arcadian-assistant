@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Platform } from 'react-native';
 
-const topTabBarStyles = StyleSheet.create({
+const peopleScreenNavigatorStyles = StyleSheet.create({
     tabBar: {
         height: 50,
         backgroundColor: '#2FAFCC',
@@ -18,4 +18,4 @@ const topTabBarStyles = StyleSheet.create({
 });
 
 
-export default topTabBarStyles;
+export default peopleScreenNavigatorStyles;
