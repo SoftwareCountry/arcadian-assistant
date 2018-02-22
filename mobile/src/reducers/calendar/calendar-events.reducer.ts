@@ -1,5 +1,5 @@
 import { Reducer } from 'redux';
-import { CalendarActions } from './calendar.action';
+import { CalendarActions, cancelDialog, editSickLeave, prolongueSickLeave } from './calendar.action';
 import { DayModel, WeekModel, IntervalsModel } from './calendar.model';
 import moment from 'moment';
 import { CalendarWeeksBuilder } from './calendar-weeks-builder';
@@ -67,12 +67,41 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 weeks: weeks
             };
 
-        case 'EDIT-SICK-LEAVE':
-            const dialog: DialogActiveState = {
+        case 'PROLONGUE-SICK-LEAVE':
+            const prolongueDialog: DialogActiveState = {
                 active: true,
                 title: 'Select date to Prolongue your sick leave',
                 text: 'Your sick leave has started on MM D, YYYY and will be prolongued to MM D, YYYY.',
-                icon: 'sick_leave'
+                icon: 'sick_leave',
+                cancel: {
+                    label: 'Back',
+                    action: prolongueSickLeave
+                },
+                accept: {
+                    label: 'Confirm',
+                    action: cancelDialog
+                }
+            };
+
+            return {
+                ...state,
+                dialog: prolongueDialog
+            };
+
+        case 'EDIT-SICK-LEAVE':
+            const dialog: DialogActiveState = {
+                active: true,
+                title: 'Hey! Hope you feel better',
+                text: 'Your sick leave has started on MM D, YYYY and still not completed.',
+                icon: 'sick_leave',
+                cancel: {
+                    label: 'Prolongue',
+                    action: editSickLeave
+                },
+                accept: {
+                    label: 'Complete',
+                    action: cancelDialog
+                }
             };
 
             return {

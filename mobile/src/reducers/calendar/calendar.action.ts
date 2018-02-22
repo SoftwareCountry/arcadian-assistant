@@ -29,6 +29,12 @@ export interface EditSickLeave {
 
 export const editSickLeave = (): EditSickLeave => ({ type: 'EDIT-SICK-LEAVE' });
 
+export interface ProlongueSickLeave {
+    type: 'PROLONGUE-SICK-LEAVE';
+}
+
+export const prolongueSickLeave = (): ProlongueSickLeave => ({ type: 'PROLONGUE-SICK-LEAVE' });
+
 export interface CancelDialog {
     type: 'CANCEL-CALENDAR-DIALOG';
 }
@@ -37,4 +43,4 @@ export const cancelDialog = (): CancelDialog => ({ type: 'CANCEL-CALENDAR-DIALOG
 
 export type CalendarActions = LoadCalendarEventsFinished |
     SelectCalendarDay | SelectCalendarMonth |
-    EditSickLeave | CancelDialog;
+    EditSickLeave | ProlongueSickLeave | CancelDialog;
