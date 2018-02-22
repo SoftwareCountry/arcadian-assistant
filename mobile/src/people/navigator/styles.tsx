@@ -15,7 +15,8 @@ const peopleScreenNavigatorStyles = StyleSheet.create({
         color: '#FFF',
         fontSize: 13,
         lineHeight: 15,
-        textAlign: 'center'
+        textAlign: 'center',
+        fontFamily: 'CenturyGothic'
     }
 });
 
