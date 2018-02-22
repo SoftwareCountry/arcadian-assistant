@@ -9,14 +9,24 @@ import { EventDialog } from './event-dialog/event-dialog';
 
 export class Agenda extends Component {
     public render() {
+        const dialogOpened = false;
+
+        const displayNone = StyleSheet.flatten({ display: 'none' });
+
+        const controlsStyles = StyleSheet.flatten(dialogOpened ? displayNone : agendaStyles.controls);
+        const dialogStyles = StyleSheet.flatten(dialogOpened ? agendaStyles.dialog : displayNone);
+
         return (
             <View style={agendaStyles.container}>
-                <View style={agendaSelectedDayStyles.container}>
-                    <SelectedDay />
-                    <CalendarLegend />
-                </View>
-                <View>
+                <View style={controlsStyles}>
+                    <View style={agendaSelectedDayStyles.container}>
+                        <SelectedDay />
+                        <CalendarLegend />
+                    </View>
                     <CalendarActionsButtonGroup />
+                </View>
+
+                <View style={dialogStyles}>
                     <EventDialog />
                 </View>
             </View>
