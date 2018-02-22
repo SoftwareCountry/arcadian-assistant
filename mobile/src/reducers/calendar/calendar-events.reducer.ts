@@ -75,7 +75,7 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 icon: 'sick_leave',
                 cancel: {
                     label: 'Back',
-                    action: prolongueSickLeave
+                    action: editSickLeave
                 },
                 accept: {
                     label: 'Confirm',
@@ -96,7 +96,7 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 icon: 'sick_leave',
                 cancel: {
                     label: 'Prolongue',
-                    action: editSickLeave
+                    action: prolongueSickLeave
                 },
                 accept: {
                     label: 'Complete',
