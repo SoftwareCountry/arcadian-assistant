@@ -63,6 +63,7 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & A
     }
 
     private onSickLeaveAction = () => {
+        //TODO: move to button
         this.props.editSickLeave();
     }
 }

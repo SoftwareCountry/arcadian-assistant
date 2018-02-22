@@ -68,6 +68,7 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
             };
 
         case 'PROLONGUE-SICK-LEAVE':
+            //TODO: move props to button dispatcher
             const prolongueDialog: DialogActiveState = {
                 active: true,
                 title: 'Select date to Prolongue your sick leave',
@@ -89,6 +90,7 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
             };
 
         case 'EDIT-SICK-LEAVE':
+            //TODO: move props to button dispatcher
             const dialog: DialogActiveState = {
                 active: true,
                 title: 'Hey! Hope you feel better',
