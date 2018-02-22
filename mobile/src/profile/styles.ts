@@ -51,17 +51,17 @@ export const profileScreenStyles = StyleSheet.create({
 export const layoutStyles = StyleSheet.create({
     scrollView: {
         flex: 1,
-        backgroundColor: '#fff'
+        backgroundColor: '#fff',
+        marginTop: circleDiameter * 0.50
     },
     container: {
         flex: 1,
-        alignSelf: 'stretch'
+        alignSelf: 'stretch',
+        backgroundColor: 'white'
     },
     content: {
         flex: 1,
         flexDirection: 'column',
-        marginTop: circleDiameter * 0.5 - headerGap,
-        height: 350
     },
     avatarContainer: {
         borderRadius: circleDiameter / 2,
@@ -108,6 +108,9 @@ export const contentStyles = StyleSheet.create({
     contactsContainer: {
         top: 40,
         padding: 5,
+        paddingBottom: 50,
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 });
 
@@ -145,7 +148,6 @@ export const tileStyles = StyleSheet.create({
 export const contactStyles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-       paddingLeft: 45,
        height: 60,
        alignItems: 'center'
     },

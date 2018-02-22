@@ -32,7 +32,6 @@ export class Profile extends Component<ProfileProps> {
         const contacts = this.getContacts(employee);
 
         return (
-            <ScrollView style={layoutStyles.scrollView} alwaysBounceVertical = {false}>
                 <View style={layoutStyles.container}>
                     <View style={layoutStyles.chevronPlaceholder}></View>
                     <View>
@@ -41,7 +40,7 @@ export class Profile extends Component<ProfileProps> {
                             <Avatar photo={employee.photo} imageStyle={{ borderWidth: 0 }} style={{ borderWidth: 3 }} />
                         </View>
                     </View>
-
+                    <ScrollView style={layoutStyles.scrollView} alwaysBounceVertical = {false}>
                     <View style={layoutStyles.content}>
                         <StyledText style={contentStyles.name}>
                             {employee.name}
@@ -63,9 +62,8 @@ export class Profile extends Component<ProfileProps> {
                             </View>
                         </View>
                     </View>
-
+                    </ScrollView>
                 </View>
-            </ScrollView>
         );
     }
 
