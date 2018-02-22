@@ -1,30 +1,34 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { AppState } from '../../reducers/app.reducer';
-import { connect } from 'react-redux';
+import { connect, Dispatch } from 'react-redux';
 import { ApplicationIcon } from '../../override/application-icon';
 import { StyledText } from '../../override/styled-text';
+import { CalendarActions, cancelDialog } from '../../reducers/calendar/calendar.action';
 
-interface EventDialogProps {
+export interface EventDialogProps {
+    title: string;
+    text: string;
+    icon: string;
 }
 
-export class EventDialogImpl extends Component<EventDialogProps> {
-    public render() {
-        const iconName = '';
-        const iconSize = 0;
+interface EventDialogDispatchProps {
+    cancel: () => void;
+}
 
-        const dialogTitle = '';
-        const dialogText = '';
+export class EventDialogImpl extends Component<EventDialogProps & EventDialogDispatchProps> {
+    public render() {
+        const iconSize = 0;
 
         return (
             <View>
                 <View>
-                    <ApplicationIcon name={iconName} size={iconSize} />
+                    <ApplicationIcon name={this.props.icon} size={iconSize} />
                 </View>
                 <View>
-                    <StyledText>{dialogTitle}</StyledText>
+                    <StyledText>{this.props.title}</StyledText>
                     <View>
-                        <StyledText>{dialogText}</StyledText>
+                        <StyledText>{this.props.text}</StyledText>
                     </View>
 
                     <View>
@@ -33,14 +37,27 @@ export class EventDialogImpl extends Component<EventDialogProps> {
                     </View>
                 </View>
                 <View>
-                    {/* Close dialog button */}
+                    <TouchableOpacity onPress={this.cancel}>
+                        <StyledText style={{fontSize: 50}}>˟</StyledText>
+                    </TouchableOpacity>
                 </View>
             </View>
         );
     }
+
+    private cancel = () => {
+        this.props.cancel();
+    }
 }
 
 const mapStateToProps = (state: AppState) => ({
+    title: state.calendar.calendarEvents.dialog.title,
+    text: state.calendar.calendarEvents.dialog.text,
+    icon: state.calendar.calendarEvents.dialog.icon
 });
 
-export const EventDialog = connect(mapStateToProps)(EventDialogImpl);
+const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>) => ({
+    cancel: () => {dispatch(cancelDialog());}
+});
+
+export const EventDialog = connect(mapStateToProps, mapDispatchToProps)(EventDialogImpl);

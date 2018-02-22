@@ -7,9 +7,20 @@ import { CalendarLegend } from './calendar-legend';
 import { SelectedDay } from './days-counters/selected-day';
 import { EventDialog } from './event-dialog/event-dialog';
 
-export class Agenda extends Component {
+import { AppState } from '../reducers/app.reducer';
+import { connect } from 'react-redux';
+
+interface AgendaProps {
+    dialogActive: boolean;
+}
+
+const mapStateToProps = (state: AppState) => ({
+    dialogActive: state.calendar.calendarEvents.dialog.active
+})
+
+export class AgendaImpl extends Component<AgendaProps> {
     public render() {
-        const dialogOpened = false;
+        const dialogOpened = this.props.dialogActive;
 
         const displayNone = StyleSheet.flatten({ display: 'none' });
 
@@ -34,3 +45,4 @@ export class Agenda extends Component {
     }
 }
 
+export const Agenda = connect(mapStateToProps)(AgendaImpl);

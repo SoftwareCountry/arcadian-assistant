@@ -5,7 +5,7 @@ import { CalendarEventsColor } from './styles';
 
 interface SickLeaveActionButtonProps {
     interval: IntervalModel;
-    // TODO: pass needed dispatch actions
+    onPress: () => void;
 }
 
 export class SickLeaveActionButton extends Component<SickLeaveActionButtonProps> {
@@ -22,7 +22,7 @@ export class SickLeaveActionButton extends Component<SickLeaveActionButtonProps>
     }
 
     public onSickLeaveAction = () => {
-        // TODO: do something
+        this.props.onPress();
     }
 }
 

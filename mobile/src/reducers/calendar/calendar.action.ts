@@ -23,5 +23,18 @@ export interface SelectCalendarMonth {
 
 export const selectCalendarMonth = (month: number, year: number): SelectCalendarMonth => ({ type: 'SELECT-CALENDAR-MONTH', month, year });
 
-export type CalendarActions = LoadCalendarEventsFinished | 
-    SelectCalendarDay | SelectCalendarMonth;
+export interface EditSickLeave {
+    type: 'EDIT-SICK-LEAVE';
+}
+
+export const editSickLeave = (): EditSickLeave => ({ type: 'EDIT-SICK-LEAVE' });
+
+export interface CancelDialog {
+    type: 'CANCEL-CALENDAR-DIALOG';
+}
+
+export const cancelDialog = (): CancelDialog => ({ type: 'CANCEL-CALENDAR-DIALOG' });
+
+export type CalendarActions = LoadCalendarEventsFinished |
+    SelectCalendarDay | SelectCalendarMonth |
+    EditSickLeave | CancelDialog;
