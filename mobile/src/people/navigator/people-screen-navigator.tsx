@@ -1,6 +1,6 @@
 import { TabNavigator, TabNavigatorConfig, TabBarTop } from 'react-navigation';
 import React from 'react';
-import peopleScreenNavigatorStyles from './people-screen-navigator-styles';
+import peopleScreenNavigatorStyles from './styles';
 import peopleScreenNavigatorModel from './people-screen-navigator-model';
 
 const peopleScreenNavigatorConfig: TabNavigatorConfig = {
