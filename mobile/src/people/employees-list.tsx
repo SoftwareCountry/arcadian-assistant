@@ -8,7 +8,7 @@ import { EmployeesStore, EmployeeMap, EmployeeIdsGroupMap } from '../reducers/or
 import { AppState } from '../reducers/app.reducer';
 import { EmployeesListItem } from './employees-list-item';
 import { employeesListStyles as styles } from './styles';
-import { EmployeesComparer } from '../reducers/people/employee-comparer';
+import { employeesAZSort } from './employee-comparer';
 import { StyledText } from '../override/styled-text';
 
 export interface EmployeesListProps {
@@ -17,15 +17,7 @@ export interface EmployeesListProps {
 
 export class EmployeesList extends React.Component<EmployeesListProps> {
     public render() {
-        const employees = this.props.employees.sort((a, b) => {
-            if (a.name < b.name) {
-                return -1;
-            } else if (a.name > b.name) {
-                return 1;
-            } else {
-                return 0;
-            }
-        });
+        const employees = this.props.employees.sort(employeesAZSort);
 
         return employees.length > 0 ? 
             <View style={styles.view}>
