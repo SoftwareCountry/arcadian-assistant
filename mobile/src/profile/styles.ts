@@ -5,7 +5,7 @@ export const chevronColor = '#2FAFCC';
 const circleDiameter = Dimensions.get('window').width * 0.5;
 const chevronHeight = 50;
 const headerGap = 20; //adds additional gap over the avatar. used mainly for ios
-const placeholderHeight =  circleDiameter * 0.5; //used to add background for the avatar
+const placeholderHeight = circleDiameter * 0.5; //used to add background for the avatar
 const paddingInfoContainer = 12;
 const paddingTile = 1;
 
@@ -57,7 +57,7 @@ export const layoutStyles = StyleSheet.create({
     container: {
         flex: 1,
         alignSelf: 'stretch',
-        backgroundColor: 'white'
+        backgroundColor: '#fff'
     },
     content: {
         flex: 1,
@@ -91,22 +91,21 @@ export const contentStyles = StyleSheet.create({
         fontSize: 13,
         textAlign: 'center',
         color: '#000',
-        top: 10
+        marginTop: 10
     },
     department: {
         fontSize: 13,
         textAlign: 'center',
         color: '#2FAFCC',
         fontWeight: 'bold',
-        top: 15
+        marginTop: 8
     },
     infoContainer: {
         flexDirection: 'row',
         padding: paddingInfoContainer,
-        top: 30
+        marginTop: 20
     },
     contactsContainer: {
-        top: 40,
         padding: 5,
         paddingBottom: 50,
         alignItems: 'center',
@@ -148,8 +147,8 @@ export const tileStyles = StyleSheet.create({
 export const contactStyles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-       height: 60,
-       alignItems: 'center'
+        height: 60,
+        alignItems: 'center'
     },
     iconContainer: {
         width: 50,
