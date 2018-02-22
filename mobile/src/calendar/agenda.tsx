@@ -5,6 +5,7 @@ import { DaysCounters } from './days-counters/days-counters';
 import { CalendarActionsButtonGroup } from './calendar-actions-button-group';
 import { CalendarLegend } from './calendar-legend';
 import { SelectedDay } from './days-counters/selected-day';
+import { EventDialog } from './event-dialog/event-dialog';
 
 export class Agenda extends Component {
     public render() {
@@ -14,7 +15,10 @@ export class Agenda extends Component {
                     <SelectedDay />
                     <CalendarLegend />
                 </View>
-                <CalendarActionsButtonGroup />
+                <View>
+                    <CalendarActionsButtonGroup />
+                    <EventDialog />
+                </View>
             </View>
         );
     }
