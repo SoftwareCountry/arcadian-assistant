@@ -1,5 +1,5 @@
 import { Reducer } from 'redux';
-import { CalendarActions, cancelDialog, editSickLeave, prolongueSickLeave } from './calendar.action';
+import { CalendarActions, cancelDialog, editSickLeave, prolongueSickLeave, confirmSickLeave, completeSickLeave, confirmProlongueSickLeave } from './calendar.action';
 import { DayModel, WeekModel, IntervalsModel } from './calendar.model';
 import moment from 'moment';
 import { CalendarWeeksBuilder } from './calendar-weeks-builder';
@@ -66,7 +66,26 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 ...state,
                 weeks: weeks
             };
+        case 'CLAIM-SICK-LEAVE':
+            const claimDialog: DialogActiveState = {
+                active: true,
+                title: 'Select date to Complete your Sick Leave',
+                text: 'Your sick leave has started on March 5, 2018 and will be complete on March 14, 2018.',
+                icon: 'sick_leave',
+                cancel: {
+                    label: 'Back',
+                    action: cancelDialog
+                },
+                accept: {
+                    label: 'Confirm',
+                    action: confirmSickLeave // TODO: add epic to confirmSickLeave
+                }
+            };
 
+            return {
+                ...state,
+                dialog: claimDialog
+            };
         case 'PROLONGUE-SICK-LEAVE':
             //TODO: move props to button dispatcher
             const prolongueDialog: DialogActiveState = {
@@ -74,13 +93,14 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 title: 'Select date to Prolongue your sick leave',
                 text: 'Your sick leave has started on MM D, YYYY and will be prolongued to MM D, YYYY.',
                 icon: 'sick_leave',
+                close: cancelDialog,
                 cancel: {
                     label: 'Back',
                     action: editSickLeave
                 },
                 accept: {
                     label: 'Confirm',
-                    action: cancelDialog
+                    action: confirmProlongueSickLeave // TODO: add epic to confirmProlongueSickLeave
                 }
             };
 
@@ -96,13 +116,14 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 title: 'Hey! Hope you feel better',
                 text: 'Your sick leave has started on MM D, YYYY and still not completed.',
                 icon: 'sick_leave',
+                close: cancelDialog,
                 cancel: {
                     label: 'Prolongue',
                     action: prolongueSickLeave
                 },
                 accept: {
                     label: 'Complete',
-                    action: cancelDialog
+                    action: completeSickLeave // TODO: add epic to completeSickLeave
                 }
             };
 

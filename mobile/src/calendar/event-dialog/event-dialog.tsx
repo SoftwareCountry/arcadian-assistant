@@ -20,6 +20,7 @@ export interface EventDialogProps {
     icon: string;
     cancel?: ButtonProps;
     accept?: ButtonProps;
+    close?: () => CalendarActions;
 }
 
 interface EventDialogDispatchProps {
@@ -68,11 +69,11 @@ export class EventDialogImpl extends Component<EventDialogProps & EventDialogDis
     }
 
     private close = () => {
-        if (this.props.cancel) {
+        if (!this.props.close) {
             this.cancel();
             return;
         }
-        this.props.dispatch(cancelDialog());
+        this.props.dispatch(this.props.close());
     }
 
     private cancel = () => {
