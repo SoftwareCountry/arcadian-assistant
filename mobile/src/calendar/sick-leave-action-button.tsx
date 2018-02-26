@@ -19,7 +19,7 @@ export class SickLeaveActionButton extends Component<SickLeaveActionButtonProps>
     public get title() : string {
         return !this.props.interval
             ? 'Claim Sick Leave'
-            : 'Review Sick Leave';
+            : 'Edit Sick Leave';
     }
 
     public onSickLeaveAction = () => {

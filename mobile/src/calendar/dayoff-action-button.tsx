@@ -18,7 +18,7 @@ export class DayoffActionButton extends Component<DayoffActionButtonProps> {
     public get title() : string {
         return !this.props.interval
             ? 'Process Dayoff'
-            : 'Review Dayoff';
+            : 'Edit Dayoff';
     }
 
     public onDayoffAction = () => {
