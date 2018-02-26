@@ -6,8 +6,9 @@ import moment from 'moment';
 import { CalendarWeeksBuilder } from './calendar-weeks-builder';
 import { CalendarIntervalsBuilder } from './calendar-intervals-builder';
 import { EventDialogProps } from '../../calendar/event-dialog/event-dialog';
+import { claimSickLeaveDialogConfig, prolongSickLeaveDialogConfig, editSickLeaveDialogConfig } from './sick-leave-dialog-config';
 
-interface DialogActiveState extends EventDialogProps {
+export interface DialogActiveState extends EventDialogProps {
     active: boolean;
 }
 
@@ -68,69 +69,26 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 weeks: weeks
             };
         case 'CLAIM-SICK-LEAVE':
-            const claimDialog: DialogActiveState = {
-                active: true,
-                title: 'Select date to Complete your Sick Leave',
-                text: 'Your sick leave has started on March 5, 2018 and will be complete on March 14, 2018.',
-                icon: 'sick_leave',
-                cancel: {
-                    label: 'Back',
-                    action: cancelDialog
-                },
-                accept: {
-                    label: 'Confirm',
-                    action: confirmSickLeave // TODO: add epic to confirmSickLeave
-                }
-            };
+            const claimSickLeaveConfig = claimSickLeaveDialogConfig();
 
             return {
                 ...state,
-                dialog: claimDialog
+                dialog: claimSickLeaveConfig
             };
         case 'PROLONG-SICK-LEAVE':
-            //TODO: move props to button dispatcher
-            const prolongDialog: DialogActiveState = {
-                active: true,
-                title: 'Select date to Prolong your sick leave',
-                text: 'Your sick leave has started on MM D, YYYY and will be prolonged to MM D, YYYY.',
-                icon: 'sick_leave',
-                close: cancelDialog,
-                cancel: {
-                    label: 'Back',
-                    action: editSickLeave
-                },
-                accept: {
-                    label: 'Confirm',
-                    action: confirmProlongSickLeave // TODO: add epic to confirmProlongSickLeave
-                }
-            };
+            const prolongSickLeaveConfig = prolongSickLeaveDialogConfig();
 
             return {
                 ...state,
-                dialog: prolongDialog
+                dialog: prolongSickLeaveConfig
             };
 
         case 'EDIT-SICK-LEAVE':
-            //TODO: move props to button dispatcher
-            const dialog: DialogActiveState = {
-                active: true,
-                title: 'Hey! Hope you feel better',
-                text: 'Your sick leave has started on MM D, YYYY and still not completed.',
-                icon: 'sick_leave',
-                close: cancelDialog,
-                cancel: {
-                    label: 'Prolong',
-                    action: prolongSickLeave
-                },
-                accept: {
-                    label: 'Complete',
-                    action: completeSickLeave // TODO: add epic to completeSickLeave
-                }
-            };
+            const editSickLeaveConfig = editSickLeaveDialogConfig();
 
             return {
                 ...state,
-                dialog: dialog
+                dialog: editSickLeaveConfig
             };
 
         case 'CANCEL-CALENDAR-DIALOG':
