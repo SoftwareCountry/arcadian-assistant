@@ -74,7 +74,7 @@ const mapStateToProps = (state: AppState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>) => ({
-    editSickLeave: () => {dispatch(editSickLeave());}
+    editSickLeave: () => { dispatch(editSickLeave()); }
 });
 
 export const CalendarActionsButtonGroup = connect(mapStateToProps, mapDispatchToProps)(ActionsButtonGroupImpl);

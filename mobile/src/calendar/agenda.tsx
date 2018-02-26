@@ -16,7 +16,7 @@ interface AgendaProps {
 
 const mapStateToProps = (state: AppState) => ({
     dialogActive: state.calendar.calendarEvents.dialog.active
-})
+});
 
 export class AgendaImpl extends Component<AgendaProps> {
     public render() {
