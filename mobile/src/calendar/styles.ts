@@ -141,10 +141,17 @@ export const calendarIntervalStyles = StyleSheet.create({
 export const agendaStyles = StyleSheet.create({
     container: {
         flex: calendarScreenLayout.agenda.flex,
+        alignSelf: 'stretch'
+    },
+    controls: {
+        flex: 1,
         alignSelf: 'stretch',
         flexDirection: 'row',
         paddingTop: 5,
         paddingBottom: 5
+    },
+    dialog: {
+        flex: 1
     }
 });
 

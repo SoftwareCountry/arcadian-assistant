@@ -9,13 +9,19 @@ import { CalendarEventsType } from '../reducers/calendar/calendar-events.model';
 import { VacationActionButton } from './vacation-action-button';
 import { DayoffActionButton } from './dayoff-action-button';
 import { SickLeaveActionButton } from './sick-leave-action-button';
+import { Dispatch } from 'redux';
+import { CalendarActions, editSickLeave } from '../reducers/calendar/calendar.action';
 
 interface ActionButtonGroupProps {
     intervalsModel: IntervalsModel;
     selectedCalendarDay: DayModel;
 }
 
-export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps> {
+interface ActionButtonsGroupDispatchProps {
+    editSickLeave: () => void;
+}
+
+export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & ActionButtonsGroupDispatchProps> {
     public render() {
         const { vacation, dayoff, sickleave } = this.getIntervals();
 
@@ -29,7 +35,7 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps> {
 
                 <CalendarActionButtonSeparator />
 
-                <SickLeaveActionButton interval={sickleave} />
+                <SickLeaveActionButton interval={sickleave} onPress={this.onSickLeaveAction}/>
 
                 <CalendarActionButtonSeparator />
             </View>
@@ -55,6 +61,11 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps> {
 
         return { vacation, dayoff, sickleave };
     }
+
+    private onSickLeaveAction = () => {
+        //TODO: move to button
+        this.props.editSickLeave();
+    }
 }
 
 const mapStateToProps = (state: AppState) => ({
@@ -62,4 +73,8 @@ const mapStateToProps = (state: AppState) => ({
     selectedCalendarDay: state.calendar.calendarEvents.selectedCalendarDay
 });
 
-export const CalendarActionsButtonGroup = connect(mapStateToProps)(ActionsButtonGroupImpl);
+const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>) => ({
+    editSickLeave: () => {dispatch(editSickLeave());}
+});
+
+export const CalendarActionsButtonGroup = connect(mapStateToProps, mapDispatchToProps)(ActionsButtonGroupImpl);

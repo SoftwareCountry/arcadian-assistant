@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, ViewStyle, LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import { TouchableOpacity, ViewStyle, LayoutChangeEvent, StyleSheet, View, TextStyle } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { calendarActionsStyles } from './styles';
 
 interface CalendarActionButtonProps {
     onPress: () => void;
-    borderColor: string;
+    borderColor?: string;
     title: string;
+    style?: ViewStyle;
+    textStyle?: TextStyle;
 }
 
 interface CalendarActionButtonState {
@@ -29,12 +31,18 @@ export class CalendarActionButton extends Component<CalendarActionButtonProps, C
                 height: this.state.buttonHeight,
                 borderColor: this.props.borderColor,
                 borderRadius: this.state.buttonHeight
-            }
+            },
+            this.props.style
+        ]);
+
+        const textStyle = StyleSheet.flatten([
+            calendarActionsStyles.buttonTitle,
+            this.props.textStyle
         ]);
 
         return (
             <TouchableOpacity style={buttonStyles} onLayout={this.onButtonLayout} onPress={this.onButtonEditorPress}>
-                <StyledText style={calendarActionsStyles.buttonTitle}>{this.props.title}</StyledText>
+                <StyledText style={textStyle}>{this.props.title}</StyledText>
             </TouchableOpacity>
         );
     }
