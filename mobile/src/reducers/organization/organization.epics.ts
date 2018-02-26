@@ -2,7 +2,8 @@ import { ActionsObservable, ofType } from 'redux-observable';
 import {
     LoadDepartments, loadDepartmentsFinished, LoadDepartmentsFinished, loadDepartments,
     loadEmployeeFinished, LoadEmployeesForDepartment, LoadEmployeesForRoom, loadEmployeesForDepartment,
-    LoadEmployee, loadEmployee, LoadEmployeeFinished } from './organization.action';
+    LoadEmployee, loadEmployee, LoadEmployeeFinished, loadEmployeesForRoom } from './organization.action';
+import { LoadUserEmployeeFinished } from '../user/user.action';
 import { deserializeArray, deserialize } from 'santee-dcts/src/deserializer';
 import { Department } from './department.model';
 import { ajaxGetJSON } from 'rxjs/observable/dom/AjaxObservable';
@@ -52,3 +53,12 @@ export const loadEmployeesForRoomEpic$ = (action$: ActionsObservable<LoadEmploye
             .mergeAll()
             .flatMap(x => x.map(loadEmployeeFinished))
             .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+
+export const loadEmployeesForUserDepartmentEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>) =>
+            action$.ofType('LOAD-USER-EMPLOYEE-FINISHED')
+                .map(x => loadEmployeesForDepartment(x.employee.departmentId));
+        
+        
+export const loadEmployeesForUserRoomEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>) =>
+                action$.ofType('LOAD-USER-EMPLOYEE-FINISHED')
+                    .map(x => loadEmployeesForRoom(x.employee.roomNumber));

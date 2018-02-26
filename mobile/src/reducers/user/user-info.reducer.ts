@@ -10,7 +10,7 @@ export interface UserInfoState {
 }
 
 const initState: UserInfoState = {
-    employee: null,
+    employee: null
 };
 
 export const userInfoReducer: Reducer<UserInfoState> = (state = initState, action: UserActions) => {

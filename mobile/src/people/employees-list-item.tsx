@@ -13,8 +13,8 @@ interface EmployeesListItemProps {
 
 export class EmployeesListItem extends React.Component<EmployeesListItemProps> {
     public render() {
-        const employeeName = this.props.employee ? this.props.employee.name : 'Unknown';
-        const employeePosition = this.props.employee ? this.props.employee.position : 'Unknown';
+        const employeeName = this.props.employee ? this.props.employee.name : null;
+        const employeePosition = this.props.employee ? this.props.employee.position : null;
         const photo = this.props.employee ? this.props.employee.photo : null;
 
         return (
