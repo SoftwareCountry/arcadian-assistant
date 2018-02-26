@@ -35,14 +35,14 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & A
 
                 <CalendarActionButtonSeparator />
 
-                <SickLeaveActionButton interval={sickleave} onPress={this.onSickLeaveAction}/>
+                <SickLeaveActionButton interval={sickleave} onPress={this.onSickLeaveAction} />
 
                 <CalendarActionButtonSeparator />
             </View>
         );
     }
 
-    private getIntervals(): {vacation: IntervalModel, dayoff: IntervalModel, sickleave: IntervalModel } {
+    private getIntervals(): { vacation: IntervalModel, dayoff: IntervalModel, sickleave: IntervalModel } {
         const { intervalsModel, selectedCalendarDay } = this.props;
 
         let vacation: IntervalModel;
@@ -50,13 +50,13 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & A
         let sickleave: IntervalModel;
 
         if (intervalsModel) {
-             const intervals = intervalsModel.get(selectedCalendarDay.date);
+            const intervals = intervalsModel.get(selectedCalendarDay.date);
 
-             if (intervals) {
+            if (intervals) {
                 vacation = intervals.find(x => x.eventType === CalendarEventsType.Vacation);
                 dayoff = intervals.find(x => x.eventType === CalendarEventsType.Dayoff || x.eventType === CalendarEventsType.AdditionalWork);
                 sickleave = intervals.find(x => x.eventType === CalendarEventsType.SickLeave);
-             }
+            }
         }
 
         return { vacation, dayoff, sickleave };
@@ -74,7 +74,7 @@ const mapStateToProps = (state: AppState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>) => ({
-    editSickLeave: () => {dispatch(editSickLeave());}
+    editSickLeave: () => { dispatch(editSickLeave()); }
 });
 
 export const CalendarActionsButtonGroup = connect(mapStateToProps, mapDispatchToProps)(ActionsButtonGroupImpl);
