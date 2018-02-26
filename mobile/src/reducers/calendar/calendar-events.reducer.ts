@@ -1,5 +1,6 @@
 import { Reducer } from 'redux';
-import { CalendarActions, cancelDialog, editSickLeave, prolongueSickLeave, confirmSickLeave, completeSickLeave, confirmProlongueSickLeave } from './calendar.action';
+import { CalendarActions, cancelDialog } from './calendar.action';
+import { editSickLeave, prolongueSickLeave, confirmSickLeave, completeSickLeave, confirmProlongueSickLeave } from './sick-leave.action';
 import { DayModel, WeekModel, IntervalsModel } from './calendar.model';
 import moment from 'moment';
 import { CalendarWeeksBuilder } from './calendar-weeks-builder';

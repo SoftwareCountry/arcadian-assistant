@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import { agendaStyles, agendaSelectedDayStyles } from './styles';
-import { StyleSheet, Text, View } from 'react-native';
-import { DaysCounters } from './days-counters/days-counters';
+import { StyleSheet, View } from 'react-native';
 import { CalendarActionsButtonGroup } from './calendar-actions-button-group';
 import { CalendarLegend } from './calendar-legend';
 import { SelectedDay } from './days-counters/selected-day';
 import { EventDialog } from './event-dialog/event-dialog';
-
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
 

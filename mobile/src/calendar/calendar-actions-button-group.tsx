@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { TouchableHighlight, TouchableOpacity, View } from 'react-native';
-import { calendarActionsStyles, CalendarEventsColor } from './styles';
+import { calendarActionsStyles } from './styles';
 import { CalendarActionButtonSeparator } from './calendar-action-button';
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
@@ -10,7 +10,8 @@ import { VacationActionButton } from './vacation-action-button';
 import { DayoffActionButton } from './dayoff-action-button';
 import { SickLeaveActionButton } from './sick-leave-action-button';
 import { Dispatch } from 'redux';
-import { CalendarActions, editSickLeave, claimSickLeave, prolongueSickLeave } from '../reducers/calendar/calendar.action';
+import { CalendarActions } from '../reducers/calendar/calendar.action';
+import { editSickLeave, claimSickLeave, prolongueSickLeave } from '../reducers/calendar/sick-leave.action';
 
 interface ActionButtonGroupProps {
     intervalsModel: IntervalsModel;
