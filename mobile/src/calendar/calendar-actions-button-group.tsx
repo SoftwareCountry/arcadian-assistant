@@ -11,7 +11,7 @@ import { DayoffActionButton } from './dayoff-action-button';
 import { SickLeaveActionButton } from './sick-leave-action-button';
 import { Dispatch } from 'redux';
 import { CalendarActions } from '../reducers/calendar/calendar.action';
-import { editSickLeave, claimSickLeave, prolongueSickLeave } from '../reducers/calendar/sick-leave.action';
+import { editSickLeave, claimSickLeave, prolongSickLeave } from '../reducers/calendar/sick-leave.action';
 
 interface ActionButtonGroupProps {
     intervalsModel: IntervalsModel;

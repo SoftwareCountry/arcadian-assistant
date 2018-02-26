@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 import { CalendarActions, cancelDialog } from './calendar.action';
-import { editSickLeave, prolongueSickLeave, confirmSickLeave, completeSickLeave, confirmProlongueSickLeave } from './sick-leave.action';
+import { editSickLeave, prolongSickLeave, confirmSickLeave, completeSickLeave, confirmProlongSickLeave } from './sick-leave.action';
 import { DayModel, WeekModel, IntervalsModel } from './calendar.model';
 import moment from 'moment';
 import { CalendarWeeksBuilder } from './calendar-weeks-builder';
@@ -87,12 +87,12 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 ...state,
                 dialog: claimDialog
             };
-        case 'PROLONGUE-SICK-LEAVE':
+        case 'PROLONG-SICK-LEAVE':
             //TODO: move props to button dispatcher
-            const prolongueDialog: DialogActiveState = {
+            const prolongDialog: DialogActiveState = {
                 active: true,
-                title: 'Select date to Prolongue your sick leave',
-                text: 'Your sick leave has started on MM D, YYYY and will be prolongued to MM D, YYYY.',
+                title: 'Select date to Prolong your sick leave',
+                text: 'Your sick leave has started on MM D, YYYY and will be prolonged to MM D, YYYY.',
                 icon: 'sick_leave',
                 close: cancelDialog,
                 cancel: {
@@ -101,13 +101,13 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 },
                 accept: {
                     label: 'Confirm',
-                    action: confirmProlongueSickLeave // TODO: add epic to confirmProlongueSickLeave
+                    action: confirmProlongSickLeave // TODO: add epic to confirmProlongSickLeave
                 }
             };
 
             return {
                 ...state,
-                dialog: prolongueDialog
+                dialog: prolongDialog
             };
 
         case 'EDIT-SICK-LEAVE':
@@ -119,8 +119,8 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 icon: 'sick_leave',
                 close: cancelDialog,
                 cancel: {
-                    label: 'Prolongue',
-                    action: prolongueSickLeave
+                    label: 'Prolong',
+                    action: prolongSickLeave
                 },
                 accept: {
                     label: 'Complete',

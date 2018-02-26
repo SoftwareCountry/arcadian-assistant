@@ -22,16 +22,16 @@ export interface CompleteSickLeave {
 
 export const completeSickLeave = (): CompleteSickLeave => ({ type: 'COMPLETE-SICK-LEAVE' });
 
-export interface ProlongueSickLeave {
-    type: 'PROLONGUE-SICK-LEAVE';
+export interface ProlongSickLeave {
+    type: 'PROLONG-SICK-LEAVE';
 }
 
-export const prolongueSickLeave = (): ProlongueSickLeave => ({ type: 'PROLONGUE-SICK-LEAVE' });
+export const prolongSickLeave = (): ProlongSickLeave => ({ type: 'PROLONG-SICK-LEAVE' });
 
-export interface ConfirmProlongueSickLeave {
-    type: 'CONFIRM-PROLONGUE-SICK-LEAVE';
+export interface ConfirmProlongSickLeave {
+    type: 'CONFIRM-PROLONG-SICK-LEAVE';
 }
 
-export const confirmProlongueSickLeave = (): ConfirmProlongueSickLeave => ({ type: 'CONFIRM-PROLONGUE-SICK-LEAVE' });
+export const confirmProlongSickLeave = (): ConfirmProlongSickLeave => ({ type: 'CONFIRM-PROLONG-SICK-LEAVE' });
 
-export type SickLeaveActions = ClaimSickLeave | ConfirmClaimSickLeave | EditSickLeave | CompleteSickLeave | ProlongueSickLeave | ConfirmProlongueSickLeave;
+export type SickLeaveActions = ClaimSickLeave | ConfirmClaimSickLeave | EditSickLeave | CompleteSickLeave | ProlongSickLeave | ConfirmProlongSickLeave;
