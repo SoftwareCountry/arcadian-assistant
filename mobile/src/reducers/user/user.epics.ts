@@ -18,7 +18,8 @@ export const loadUserEpic$ = (action$: ActionsObservable<LoadUser>) =>
 
 export const loadUserFinishedEpic$ = (action$: ActionsObservable<LoadUserFinished | LoadEmployeeFinished>) =>
     Observable.combineLatest<LoadUserFinished, LoadEmployeeFinished>(
-        action$.ofType('LOAD-USER-FINISHED'), 
-        action$.ofType('LOAD_EMPLOYEE_FINISHED')
-    ).filter(([userLoaded, employeeLoaded]) => userLoaded.user.employeeId === employeeLoaded.employee.employeeId)
-     .map(([userLoaded, employeeLoaded]) => loadUserEmployeeFinished(employeeLoaded.employee));
+            action$.ofType('LOAD-USER-FINISHED'), 
+            action$.ofType('LOAD_EMPLOYEE_FINISHED'))
+        .filter(([userLoaded, employeeLoaded]) => userLoaded.user.employeeId === employeeLoaded.employee.employeeId)
+        .first()
+        .map(([userLoaded, employeeLoaded]) => loadUserEmployeeFinished(employeeLoaded.employee));
