@@ -18,6 +18,7 @@ interface ProfileProps {
     employee: Employee;
     department: Department;
 }
+const TileSeparator = () => <View style = {tileStyles.separator}></View>;
 
 export class Profile extends Component<ProfileProps> {
     public render() {
@@ -31,7 +32,6 @@ export class Profile extends Component<ProfileProps> {
         const contacts = this.getContacts(employee);
 
         return (
-            <ScrollView style={layoutStyles.scrollView}>
                 <View style={layoutStyles.container}>
                     <View style={layoutStyles.chevronPlaceholder}></View>
                     <View>
@@ -40,7 +40,7 @@ export class Profile extends Component<ProfileProps> {
                             <Avatar photo={employee.photo} imageStyle={{ borderWidth: 0 }} style={{ borderWidth: 3 }} />
                         </View>
                     </View>
-
+                    <ScrollView style={layoutStyles.scrollView} alwaysBounceVertical = {false}>
                     <View style={layoutStyles.content}>
                         <StyledText style={contentStyles.name}>
                             {employee.name}
@@ -62,9 +62,8 @@ export class Profile extends Component<ProfileProps> {
                             </View>
                         </View>
                     </View>
-
+                    </ScrollView>
                 </View>
-            </ScrollView>
         );
     }
 
@@ -99,9 +98,11 @@ export class Profile extends Component<ProfileProps> {
                 size: 28
             }
         ];
+        const lastIndex = tilesData.length - 1;
 
-        return tilesData.map((tile) => (
-            <View key={tile.label} style={tileStyles.container}>
+        return tilesData.map((tile, index) => (
+            <React.Fragment key={tile.label}>
+            <View style={tileStyles.container}>
                 <View style={tileStyles.tile}>
                     <View style={tileStyles.iconContainer}>
                         <ApplicationIcon name={tile.icon} size={tile.size} style={tile.style} />
@@ -109,6 +110,10 @@ export class Profile extends Component<ProfileProps> {
                     <StyledText style={tileStyles.text}>{tile.label}</StyledText>
                 </View>
             </View>
+            {
+                lastIndex !== index ? <TileSeparator key = {`${tile.label}-${index}`} /> : null
+            }
+            </React.Fragment>
         ));
     }
 
@@ -118,14 +123,14 @@ export class Profile extends Component<ProfileProps> {
                 icon: 'phone',
                 text: employee.mobilePhone,
                 title: 'Mobile Phone:',
-                size: 45,
+                size: 35,
                 prefix: 'tel:'
             },
             {
                 icon: 'envelope',
                 text: employee.email,
                 title: 'Email:',
-                size: 30,
+                size: 25,
                 prefix: 'mailto:'
             }
         ];
