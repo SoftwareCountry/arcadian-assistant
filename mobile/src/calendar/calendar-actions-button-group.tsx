@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { TouchableHighlight, TouchableOpacity, View } from 'react-native';
-import { calendarActionsStyles, CalendarEventsColor } from './styles';
+import { calendarActionsStyles } from './styles';
 import { CalendarActionButtonSeparator } from './calendar-action-button';
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
@@ -10,7 +10,8 @@ import { VacationActionButton } from './vacation-action-button';
 import { DayoffActionButton } from './dayoff-action-button';
 import { SickLeaveActionButton } from './sick-leave-action-button';
 import { Dispatch } from 'redux';
-import { CalendarActions, editSickLeave } from '../reducers/calendar/calendar.action';
+import { CalendarActions } from '../reducers/calendar/calendar.action';
+import { editSickLeave, claimSickLeave, prolongSickLeave } from '../reducers/calendar/sick-leave.action';
 
 interface ActionButtonGroupProps {
     intervalsModel: IntervalsModel;
@@ -18,7 +19,10 @@ interface ActionButtonGroupProps {
 }
 
 interface ActionButtonsGroupDispatchProps {
-    editSickLeave: () => void;
+    sickLeaveActions: {
+        claim: () => void;
+        edit: () => void;
+    };
 }
 
 export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & ActionButtonsGroupDispatchProps> {
@@ -35,7 +39,7 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & A
 
                 <CalendarActionButtonSeparator />
 
-                <SickLeaveActionButton interval={sickleave} onPress={this.onSickLeaveAction} />
+                <SickLeaveActionButton interval={sickleave} {...this.props.sickLeaveActions} />
 
                 <CalendarActionButtonSeparator />
             </View>
@@ -61,11 +65,6 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & A
 
         return { vacation, dayoff, sickleave };
     }
-
-    private onSickLeaveAction = () => {
-        //TODO: move to button
-        this.props.editSickLeave();
-    }
 }
 
 const mapStateToProps = (state: AppState) => ({
@@ -74,7 +73,10 @@ const mapStateToProps = (state: AppState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>) => ({
-    editSickLeave: () => { dispatch(editSickLeave()); }
+    sickLeaveActions: {
+        claim: () => { dispatch(claimSickLeave()); },
+        edit: () => { dispatch(editSickLeave()); },
+    }
 });
 
 export const CalendarActionsButtonGroup = connect(mapStateToProps, mapDispatchToProps)(ActionsButtonGroupImpl);

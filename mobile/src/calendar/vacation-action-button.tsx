@@ -18,7 +18,7 @@ export class VacationActionButton extends Component<VacationActionButtonProps> {
     public get title() : string {
         return !this.props.interval
             ? 'Request Vacation'
-            : 'Review Vacation';
+            : 'Edit Vacation';
     }
 
     public onVacationAction = () => {

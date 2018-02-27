@@ -5,7 +5,8 @@ import { CalendarEventsColor } from './styles';
 
 interface SickLeaveActionButtonProps {
     interval: IntervalModel;
-    onPress: () => void;
+    claim: () => void;
+    edit: () => void;
 }
 
 export class SickLeaveActionButton extends Component<SickLeaveActionButtonProps> {
@@ -18,11 +19,15 @@ export class SickLeaveActionButton extends Component<SickLeaveActionButtonProps>
     public get title() : string {
         return !this.props.interval
             ? 'Claim Sick Leave'
-            : 'Review Sick Leave';
+            : 'Edit Sick Leave';
     }
 
     public onSickLeaveAction = () => {
-        this.props.onPress();
+        if (!this.props.interval) {
+            this.props.claim();
+        } else {
+            this.props.edit();
+        }
     }
 }
 
