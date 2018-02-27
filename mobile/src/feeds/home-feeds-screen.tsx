@@ -36,8 +36,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps> {
                 ItemSeparatorComponent={this.itemSeparator}
                 data={this.props.feeds}
                 extraData={this.props.employees}
-                renderItem={this.renderItem}
-                ListHeaderComponent={this.headerComponent} />
+                renderItem={this.renderItem} />
         );
     }
 
@@ -47,10 +46,6 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps> {
 
     private itemSeparator() {
         return <View style={styles.separator}></View>;
-    }
-
-    private headerComponent() {
-        return <StyledText style={styles.viewHeaderText}>News feed</StyledText>;
     }
 
     private renderItem = (itemInfo: ListRenderItemInfo<Feed>) => {

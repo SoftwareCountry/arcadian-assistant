@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, TouchableHighlight } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { calendarStyles, intervalMargin } from './styles';
 import { DayModel } from '../reducers/calendar/calendar.model';
 import { OnSelectedDayCallback } from './calendar-page';
@@ -50,20 +50,26 @@ export class WeekDayCircle extends Component<WeekDayCircleProps> {
             }
         ]);
 
-        const circleTextStyles = StyleSheet.flatten({
-            color: day.belongsToCurrentMonth
-                ? this.isSelectedDay(day)
-                    ? '#fff'
-                    : '#000'
-                : '#dadada'
-        });
+        const circleTextStyles = StyleSheet.flatten([
+            calendarStyles.weekDayNumber,
+            this.isSelectedDay(day)
+                ? calendarStyles.weekDaySelectedNumber
+                : {},
+            {
+                color: day.belongsToCurrentMonth
+                    ? this.isSelectedDay(day)
+                        ? '#fff'
+                        : '#000'
+                    : '#dadada'
+            }
+        ]);
 
         return (
-            <TouchableHighlight style={circleStyles} onPress={this.onSelectedDay}>
+            <TouchableOpacity style={circleStyles} onPress={this.onSelectedDay} activeOpacity={0.9}>
                 <View style={innerCircleStyles}>
                     <StyledText style={circleTextStyles}>{day.date.date()}</StyledText>
                 </View>
-            </TouchableHighlight>
+            </TouchableOpacity>
         );
     }
 
@@ -72,7 +78,7 @@ export class WeekDayCircle extends Component<WeekDayCircleProps> {
     }
 
     private isSelectedDay(day: DayModel) {
-        return this.props.selectedDay 
+        return this.props.selectedDay
             && this.props.selectedDay.date
             && this.props.selectedDay.date.isSame(day.date, 'day');
     }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, Text, View, StyleSheet } from 'react-native';
+import { FlatList, Text, View, StyleSheet, ListRenderItemInfo } from 'react-native';
 import { connect } from 'react-redux';
 
 import { Department } from '../reducers/organization/department.model';
@@ -8,61 +8,36 @@ import { EmployeesStore, EmployeeMap, EmployeeIdsGroupMap } from '../reducers/or
 import { AppState } from '../reducers/app.reducer';
 import { EmployeesListItem } from './employees-list-item';
 import { employeesListStyles as styles } from './styles';
+import { employeesAZSort } from './employee-comparer';
+import { StyledText } from '../override/styled-text';
 
-interface EmployeesListProps {
-    employees: EmployeeMap;
-    myDepartmentId: string;
+export interface EmployeesListProps {
+    employees: Employee[];
 }
 
-interface EmployeesListState {
-    employeesForMyDepartment: Employee[];
-}
-
-const mapStateToProps = (state: AppState): EmployeesListProps => ({
-    employees: state.organization.employees.employeesById,
-    myDepartmentId: state.userInfo.employee ? state.userInfo.employee.departmentId : 'unknown'
-});
-
-
-
-class EmployeesListImpl extends React.Component<EmployeesListProps> {
-    public state: {
-        employeesForMyDepartment: Employee[];
-    };
-
-    constructor(props: EmployeesListProps) {
-        super(props);
-        this.state = {
-            employeesForMyDepartment: []
-        };
-    }
-
-    public componentWillReceiveProps(nextProps: Readonly<EmployeesListProps>) {
-        const { employees, myDepartmentId } = nextProps;
-        
-        const employeesForMyDepartment = employees.toArray().filter(function(employee) {
-            return employee.departmentId === myDepartmentId;
-        });
-
-        if (employeesForMyDepartment.length > 0) {
-            this.setState({
-                employeesForMyDepartment: employeesForMyDepartment
-            });
-        }
-    }
-    
+export class EmployeesList extends React.Component<EmployeesListProps> {
     public render() {
-        return (
+        const employees = this.props.employees.sort(employeesAZSort);
+
+        return employees.length > 0 ? 
             <View style={styles.view}>
                 <FlatList
-                    data={this.state.employeesForMyDepartment}
+                    data={employees}
                     keyExtractor={this.keyExtractor}
-                    renderItem={({ item }) => <EmployeesListItem id={item.employeeId} employee={item} />} />
+                    renderItem={this.renderItem} />
+            </View>
+        : (
+            <View style={styles.loadingContainer}>
+                    <StyledText style={styles.loadingText}>Loading...</StyledText>
             </View>
         );
     }
 
     private keyExtractor = (item: Employee) => item.employeeId;
-}
 
-export const EmployeesList = connect(mapStateToProps)(EmployeesListImpl);
+    private renderItem = (itemInfo: ListRenderItemInfo<Employee>) => {
+        const { item } = itemInfo;
+
+        return <EmployeesListItem id={item.employeeId} employee={item} />;
+    }
+}
