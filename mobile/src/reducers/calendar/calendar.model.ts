@@ -12,7 +12,7 @@ export interface WeekModel {
     weekIndex: number;
 }
 
-export type IntervalType = 'startInterval' | 'interval' | 'endInterval' | 'intervalBoundary';
+export type IntervalType = 'startInterval' | 'interval' | 'endInterval' | 'intervalFullBoundary' | 'intervalLeftBoundary' | 'intervalRightBoundary';
 
 export interface IntervalModel {
     intervalType: IntervalType;

@@ -95,27 +95,81 @@ export const Interval = (props: IntervalProps) => {
     );
 };
 
-export const IntervalBoundary = (props: IntervalProps) => {
-    const margin = (props.size * intervalMargin);
-    const size = props.size - margin;
+export const IntervalBoundary = (props: IntervalProps & { boundary: 'full' | 'left'| 'right' }) => {
+    const margin = 0.65;
+    const circleSize = PixelRatio.roundToNearestPixel(props.size - (props.size * margin));
+    const halfCircleSize = PixelRatio.roundToNearestPixel(props.size - (props.size * (margin + 0.08)));
+
+    const colors: {
+        [boundary: string]: { left: string; right: string }
+    } = {
+        'full': { left: props.color, right: props.color },
+        'left': { left: props.color, right: 'transparent' },
+        'right': { left: 'transparent', right: props.color },
+    };
+
+    const circleTopDistance = props.size * intervalMargin;
 
     const containerStyles = StyleSheet.flatten([
         calendarIntervalStyles.container,
-        { justifyContent: 'center' }
+        calendarIntervalStyles.boundary,
+        {
+            justifyContent: 'center',
+            backgroundColor: 'transparent',
+            height: props.size,
+            width: props.size - (props.size * intervalMargin),
+            left: '25%',
+            opacity: 1
+        }
     ]);
-    
+
+    const circleRadius = PixelRatio.roundToNearestPixel(circleSize / 2);
+
     const circleStyles = StyleSheet.flatten([
         {
-            borderRadius: PixelRatio.roundToNearestPixel(size / 2),
-            height: size,
-            width: size,
-            backgroundColor: props.color
+            borderRadius: circleRadius,
+            height: circleSize,
+            width: circleSize,
+            backgroundColor: '#fff',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'row',
+            position: 'absolute',
+            bottom: 0,
+            right: 0
+        }
+    ]);
+
+    const halfCircleRadius = PixelRatio.roundToNearestPixel(halfCircleSize / 2);
+
+    const leftHalfStyles = StyleSheet.flatten([
+        {
+            borderRadius: halfCircleSize,
+            height: halfCircleSize,
+            width: halfCircleRadius,
+            backgroundColor: colors[props.boundary].left,
+            borderTopRightRadius: 0,
+            borderBottomRightRadius: 0
+        }
+    ]);
+
+    const rightHalfStyles = StyleSheet.flatten([
+        {
+            borderRadius: halfCircleSize,
+            height: halfCircleSize,
+            width: halfCircleRadius,
+            backgroundColor: colors[props.boundary].right,
+            borderTopLeftRadius: 0,
+            borderBottomLeftRadius: 0
         }
     ]);
 
     return (
         <View style={containerStyles}>
-            <View style={circleStyles}></View>
+            <View style={circleStyles}>
+                <View style={leftHalfStyles}></View>
+                <View style={rightHalfStyles}></View>
+            </View>
         </View>
     );
 };

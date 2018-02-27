@@ -1,4 +1,4 @@
-import { CalendarEvents } from './calendar-events.model';
+import { CalendarEvents, CalendarEventsType } from './calendar-events.model';
 import { IntervalsModel, IntervalType } from './calendar.model';
 import moment from 'moment';
 
@@ -12,7 +12,9 @@ export class CalendarIntervalsBuilder {
 
             if (start.isSame(calendarEvent.dates.endDate, 'day')) {
                 intervalsModel.set(start, {
-                    intervalType: 'intervalBoundary',
+                    intervalType: calendarEvent.type === CalendarEventsType.Dayoff || calendarEvent.type === CalendarEventsType.AdditionalWork
+                        ? 'intervalLeftBoundary' 
+                        : 'intervalFullBoundary',
                     eventType: calendarEvent.type
                 });
                 continue;

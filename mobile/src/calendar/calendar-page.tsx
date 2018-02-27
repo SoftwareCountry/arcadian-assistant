@@ -1,12 +1,12 @@
 import React, { Component, Fragment } from 'react';
 import moment, { Moment } from 'moment';
-import { View, StyleSheet, TouchableHighlight, LayoutChangeEvent, PixelRatio } from 'react-native';
+import { View, StyleSheet, LayoutChangeEvent, PixelRatio } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { calendarStyles, calendarIntervalStyles, CalendarEventsColor } from './styles';
 import { DayModel, WeekModel, IntervalsModel, IntervalModel } from '../reducers/calendar/calendar.model';
 import { StartInterval, EndInterval, Interval, IntervalBoundary } from './calendar-page-interval';
 import { CalendarEventsType } from '../reducers/calendar/calendar-events.model';
-import { WeekDay, WeekDayCircle } from './calendar-page-weekday';
+import { WeekDay, WeekDayCircle, WeekDayTouchable } from './calendar-page-weekday';
 
 export type OnSelectedDayCallback = (day: DayModel) => void;
 
@@ -89,9 +89,8 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
         return (
             <View style={calendarStyles.weekDayContainer} key={`${day.date.week()}-${day.date.date()}`}>
                 <WeekDay hide={this.props.hidePrevNextMonthDays && !day.belongsToCurrentMonth}>
-                    <View style={calendarStyles.weekDayCircleContainer}>
-                        <WeekDayCircle day={day} selectedDay={this.props.selectedDay} onSelectedDay={this.props.onSelectedDay} weekHeight={this.state.weekHeight} />
-                    </View>
+                    <WeekDayTouchable onSelectedDay={this.props.onSelectedDay} day={day} />
+                    <WeekDayCircle day={day} selectedDay={this.props.selectedDay} weekHeight={this.state.weekHeight} />
                     {
                         this.renderIntervals(day.date)
                     }
@@ -124,8 +123,12 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
                 return <EndInterval key={elementKey} size={this.state.weekHeight} color={color} />;
             case 'interval':
                 return <Interval key={elementKey} size={this.state.weekHeight} color={color} />;
-            case 'intervalBoundary':
-                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} />;
+            case 'intervalFullBoundary':
+                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'full'} />;
+            case 'intervalLeftBoundary':
+                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'left'} />;
+            case 'intervalRightBoundary':
+                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'right'} />;
             default:
                 return null;
         }

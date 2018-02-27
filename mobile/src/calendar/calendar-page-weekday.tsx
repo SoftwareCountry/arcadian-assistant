@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, PixelRatio, TouchableOpacity } from 'react-native';
 import { calendarStyles, intervalMargin } from './styles';
 import { DayModel } from '../reducers/calendar/calendar.model';
 import { OnSelectedDayCallback } from './calendar-page';
@@ -14,7 +14,6 @@ export const WeekDay = (props: { hide: boolean, children: any[] }) =>
 interface WeekDayCircleProps {
     weekHeight: number;
     day: DayModel;
-    onSelectedDay: OnSelectedDayCallback;
     selectedDay: DayModel;
 }
 
@@ -22,12 +21,14 @@ export class WeekDayCircle extends Component<WeekDayCircleProps> {
     public render() {
         const { day, weekHeight } = this.props;
 
+        const height = PixelRatio.roundToNearestPixel(weekHeight - (weekHeight * 0));
+
         const circleStyles = StyleSheet.flatten([
             calendarStyles.weekDayCircle,
             {
-                width: weekHeight,
-                height: weekHeight,
-                borderRadius: weekHeight / 2,
+                width: height,
+                height: height,
+                borderRadius: PixelRatio.roundToNearestPixel(height / 2),
                 borderWidth: 2,
                 borderColor: this.isSelectedDay(day) ? '#2FAFCC' : 'transparent',
                 backgroundColor: this.isSelectedDay(day)
@@ -65,21 +66,41 @@ export class WeekDayCircle extends Component<WeekDayCircleProps> {
         ]);
 
         return (
-            <TouchableOpacity style={circleStyles} onPress={this.onSelectedDay} activeOpacity={0.9}>
-                <View style={innerCircleStyles}>
-                    <StyledText style={circleTextStyles}>{day.date.date()}</StyledText>
+            <View style={calendarStyles.weekDayCircleContainer}>
+                <View style={circleStyles}>
+                    <View style={innerCircleStyles}>
+                        <StyledText style={circleTextStyles}>{day.date.date()}</StyledText>
+                    </View>
                 </View>
-            </TouchableOpacity>
+            </View>
         );
-    }
-
-    private onSelectedDay = () => {
-        this.props.onSelectedDay(this.props.day);
     }
 
     private isSelectedDay(day: DayModel) {
         return this.props.selectedDay
             && this.props.selectedDay.date
             && this.props.selectedDay.date.isSame(day.date, 'day');
+    }
+}
+
+interface WeekDayTouchableProps {
+    day: DayModel;
+    onSelectedDay: OnSelectedDayCallback;
+}
+
+export class WeekDayTouchable extends Component<WeekDayTouchableProps> {
+    public shouldComponentUpdate() {
+        return false;
+    }
+
+    public render() {
+        return (
+            <TouchableOpacity style={calendarStyles.weekDayTouchable} onPressIn={this.onSelectedDay} delayPressIn={0}>
+            </TouchableOpacity>
+        );
+    }
+
+    private onSelectedDay = () => {
+        this.props.onSelectedDay(this.props.day);
     }
 }
