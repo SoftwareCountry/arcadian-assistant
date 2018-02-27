@@ -4,6 +4,7 @@
 
     using Akka.Actor;
 
+    using Arcadia.Assistant.Calendar;
     using Arcadia.Assistant.Feeds;
     using Arcadia.Assistant.Images;
     using Arcadia.Assistant.Organization.Abstractions;
@@ -17,15 +18,19 @@
 
         private readonly IActorRef employeeFeed;
 
+        private readonly IActorRef calendar;
+
         public EmployeeActor(EmployeeStoredInformation storedInformation)
         {
             this.employeeMetadata = storedInformation.Metadata;
 
-            this.photo = Context.ActorOf(Akka.Actor.Props.Create(() => new PhotoActor()), "photo");
+            this.photo = Context.ActorOf(Props.Create(() => new PhotoActor()), "photo");
             this.photo.Tell(new PhotoActor.SetSource(storedInformation.Photo));
 
             var employeeFeedId = $"employee-feed-{this.employeeMetadata.EmployeeId}";
             this.employeeFeed = Context.ActorOf(FeedActor.CreateProps(employeeFeedId), "feed");
+
+            this.calendar = Context.ActorOf(EmployeeCalendarActor.CreateProps(this.employeeMetadata.EmployeeId));
         }
 
         protected override void OnReceive(object message)
@@ -33,7 +38,8 @@
             switch (message)
             {
                 case GetEmployeeInfo _:
-                    this.Sender.Tell(new GetEmployeeInfo.Response(new EmployeeContainer(this.employeeMetadata, this.Self, this.employeeFeed)));
+                    var container = new EmployeeContainer(this.employeeMetadata, this.Self, this.employeeFeed, this.calendar);
+                    this.Sender.Tell(new GetEmployeeInfo.Response(container));
                     break;
 
                 case GetPhoto _:
@@ -56,13 +62,13 @@
             if (informationMetadata.Position != this.employeeMetadata.Position)
             {
                 var text = $"{informationMetadata.Name} is now {informationMetadata.Position}";
-                this.employeeFeed.Tell(new FeedActor.PostMessage(new Message(Guid.NewGuid(), "Employee position has changed", text, DateTimeOffset.Now)));
+                this.employeeFeed.Tell(new FeedActor.PostMessage(new Message(Guid.NewGuid(), informationMetadata.EmployeeId, "Employee position has changed", text, DateTimeOffset.Now)));
             }
 
             if (informationMetadata.Name != this.employeeMetadata.Name)
             {
                 var text = $"From now on, {this.employeeMetadata.Name} is to be known as {informationMetadata.Name}";
-                this.employeeFeed.Tell(new FeedActor.PostMessage(new Message(Guid.NewGuid(), "Employee name has changed", text, DateTimeOffset.Now)));
+                this.employeeFeed.Tell(new FeedActor.PostMessage(new Message(Guid.NewGuid(), informationMetadata.EmployeeId, "Employee name has changed", text, DateTimeOffset.Now)));
             }
 
             //TODO: department id change handler

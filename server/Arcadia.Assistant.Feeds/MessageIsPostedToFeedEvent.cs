@@ -10,6 +10,9 @@
         public Guid MessageId { get; set; }
 
         [DataMember]
+        public string EmployeeId { get; set; }
+
+        [DataMember]
         public string Title { get; set; }
 
         [DataMember]

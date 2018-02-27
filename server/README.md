@@ -14,3 +14,14 @@ In order to make things run, connection strings and resource urls have to be pro
 Both Web and Server listens on environment variables, command line arguments and user secrets. Do the following to run it in development:
 1. Open Arcadia.Assistant.Server.Console properties, go to Debug tab and insert `/ConnectionStrings:ArcadiaCSP "<your_connection_string_here>"` to command line window.
 Alternatively, that can be added to Environment variables window. @ArcadiaTeam, please refer to Teams wiki in order to get proper connection strings
+2. Right click on Arcadia.Assistant.Web and select `Manage User Secrets`. Edit the content as follows (take the values from the wiki):
+```json
+{
+  "Security": {
+    "ClientId": "<insert here>",
+    "AuthorizationUrl": "<insert here>",
+    "TokenUrl": "<insert here>",
+    "OpenIdConfigurationUrl": "<insert here>"
+  }
+}
+```

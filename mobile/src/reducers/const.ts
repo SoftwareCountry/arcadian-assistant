@@ -1,0 +1,1 @@
+export const apiUrl = 'https://arcadia-assistant-dev.arcadialab.ru/api'; //TODO: fix hardcode
