@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { WeekModel, IntervalsModel, IntervalModel } from './calendar.model';
+import { WeekModel, IntervalsModel, IntervalModel, IntervalType } from './calendar.model';
 import { CalendarEvents, CalendarEventsType, DatesInterval } from './calendar-events.model';
 import { CalendarIntervalsBuilder } from './calendar-intervals-builder';
 
@@ -97,7 +97,7 @@ describe('CalendarIntervalsBuilder', () => {
         const intervals = intervalsModel.get(date);
 
         expect(intervals[0].eventType).toBe(event.type);
-        expect(intervals[0].intervalType).toBe('intervalBoundary');
+        expect(intervals[0].intervalType).toBe('intervalFullBoundary');
     });
 
     it('should build interval if endDate > startDate', () => {
@@ -177,7 +177,7 @@ describe('CalendarIntervalsBuilder', () => {
         expect(intervals.length).toBe(1);
         expect(intervals[0].intervalType).toBe('startInterval');
         expect(intervals[0].eventType).toBe(CalendarEventsType.Vacation);
-        
+
         intervals = intervalsModel.get(moment({ day: 2, month: 0, year: 2018 }));
 
         expect(intervals.length).toBe(2);
@@ -199,5 +199,107 @@ describe('CalendarIntervalsBuilder', () => {
         expect(intervals.length).toBe(1);
         expect(intervals[0].intervalType).toBe('endInterval');
         expect(intervals[0].eventType).toBe(CalendarEventsType.SickLeave);
+    });
+
+    describe('dayoff', () => {
+
+        const testDayoff = (testedEventType: CalendarEventsType.Dayoff | CalendarEventsType.AdditionalWork) => {
+            describe(testedEventType, () => {
+                it('should return interval left boundary, if startWorkingHour between (0, 4] and finishWorkingHour is 0', () => {
+                    const date1 = moment({ day: 1, month: 0, year: 2018 });
+
+                    const event1 = new CalendarEvents();
+                    event1.calendarEventId = '1';
+                    event1.type = testedEventType;
+                    event1.dates = new DatesInterval();
+                    event1.dates.startDate = moment(date1);
+                    event1.dates.endDate = moment(date1);
+
+                    event1.dates.startWorkingHour = 3;
+                    event1.dates.finishWorkingHour = 0;
+
+                    const builder = new CalendarIntervalsBuilder();
+                    const intervalsModel = builder.buildIntervals([event1]);
+
+                    const intervals = intervalsModel.get(moment({ day: 1, month: 0, year: 2018 }));
+
+                    expect(intervals.length).toBe(1);
+                    expect(intervals[0].intervalType).toBe('intervalLeftBoundary');
+                    expect(intervals[0].eventType).toBe(testedEventType);
+                });
+
+                it('should return interval right boundary, if startWorkingHour is 0 and finishWorkingHour between [4, 8]', () => {
+                    const date1 = moment({ day: 1, month: 0, year: 2018 });
+
+                    const event1 = new CalendarEvents();
+                    event1.calendarEventId = '1';
+                    event1.type = testedEventType;
+                    event1.dates = new DatesInterval();
+                    event1.dates.startDate = moment(date1);
+                    event1.dates.endDate = moment(date1);
+
+                    event1.dates.startWorkingHour = 0;
+                    event1.dates.finishWorkingHour = 8;
+
+                    const builder = new CalendarIntervalsBuilder();
+                    const intervalsModel = builder.buildIntervals([event1]);
+
+                    const intervals = intervalsModel.get(moment({ day: 1, month: 0, year: 2018 }));
+
+                    expect(intervals.length).toBe(1);
+                    expect(intervals[0].intervalType).toBe('intervalRightBoundary');
+                    expect(intervals[0].eventType).toBe(testedEventType);
+                });
+
+                it('should return interval full boundary, if startWorkingHour is not 0 and finishWorkingHour is not 0', () => {
+                    const date1 = moment({ day: 1, month: 0, year: 2018 });
+
+                    const event1 = new CalendarEvents();
+                    event1.calendarEventId = '1';
+                    event1.type = testedEventType;
+                    event1.dates = new DatesInterval();
+                    event1.dates.startDate = moment(date1);
+                    event1.dates.endDate = moment(date1);
+
+                    event1.dates.startWorkingHour = 4;
+                    event1.dates.finishWorkingHour = 6;
+
+                    const builder = new CalendarIntervalsBuilder();
+                    const intervalsModel = builder.buildIntervals([event1]);
+
+                    const intervals = intervalsModel.get(moment({ day: 1, month: 0, year: 2018 }));
+
+                    expect(intervals.length).toBe(1);
+                    expect(intervals[0].intervalType).toBe('intervalFullBoundary');
+                    expect(intervals[0].eventType).toBe(testedEventType);
+                });
+
+                it('should return null, if startWorkingHour is 0 and finishWorkingHour is 0', () => {
+                    const date1 = moment({ day: 1, month: 0, year: 2018 });
+
+                    const event1 = new CalendarEvents();
+                    event1.calendarEventId = '1';
+                    event1.type = testedEventType;
+                    event1.dates = new DatesInterval();
+                    event1.dates.startDate = moment(date1);
+                    event1.dates.endDate = moment(date1);
+
+                    event1.dates.startWorkingHour = 0;
+                    event1.dates.finishWorkingHour = 0;
+
+                    const builder = new CalendarIntervalsBuilder();
+                    const intervalsModel = builder.buildIntervals([event1]);
+
+                    const intervals = intervalsModel.get(moment({ day: 1, month: 0, year: 2018 }));
+
+                    expect(intervals.length).toBe(1);
+                    expect(intervals[0].intervalType).toBe(null);
+                    expect(intervals[0].eventType).toBe(testedEventType);
+                });
+            });
+
+            testDayoff(CalendarEventsType.Dayoff);
+            testDayoff(CalendarEventsType.AdditionalWork);
+        };
     });
 });

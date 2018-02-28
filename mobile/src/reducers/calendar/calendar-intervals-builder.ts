@@ -10,11 +10,14 @@ export class CalendarIntervalsBuilder {
         for (let calendarEvent of calendarEvents) {
             const start = moment(calendarEvent.dates.startDate);
 
+            if (calendarEvent.type === CalendarEventsType.Dayoff || calendarEvent.type === CalendarEventsType.AdditionalWork) {
+                this.buildIntervalBoundary(start, intervalsModel, calendarEvent);
+                continue;
+            }
+
             if (start.isSame(calendarEvent.dates.endDate, 'day')) {
                 intervalsModel.set(start, {
-                    intervalType: calendarEvent.type === CalendarEventsType.Dayoff || calendarEvent.type === CalendarEventsType.AdditionalWork
-                        ? 'intervalLeftBoundary' 
-                        : 'intervalFullBoundary',
+                    intervalType: 'intervalFullBoundary',
                     eventType: calendarEvent.type
                 });
                 continue;
@@ -39,5 +42,37 @@ export class CalendarIntervalsBuilder {
         }
 
         return intervalsModel;
+    }
+
+    private buildIntervalBoundary(keyDate: moment.Moment, intervalsModel: IntervalsModel, calendarEvent: CalendarEvents) {
+        const intervalType = this.getBoundaryType(calendarEvent);
+
+        intervalsModel.set(keyDate, {
+            intervalType: intervalType,
+            eventType: calendarEvent.type
+        });
+    }
+
+    private getBoundaryType(calendarEvent: CalendarEvents): IntervalType | null {
+        const { startWorkingHour, finishWorkingHour } = calendarEvent.dates;
+
+        if (startWorkingHour === 0 && finishWorkingHour === 0) {
+            return null;
+        }
+
+        if ((startWorkingHour > 0 && startWorkingHour <= 4) && finishWorkingHour === 0) {
+            return 'intervalLeftBoundary';
+        }
+
+        if (startWorkingHour === 0 && (finishWorkingHour >= 4 || finishWorkingHour <= 8)
+        ) {
+            return 'intervalRightBoundary';
+        }
+
+        if (startWorkingHour !== 0 && finishWorkingHour !== 0) {
+            return 'intervalFullBoundary';
+        }
+
+        return null;
     }
 }
