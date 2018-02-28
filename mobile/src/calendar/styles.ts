@@ -11,7 +11,7 @@ export const calendarScreenLayout = {
         flex: 8
     },
     agenda: {
-        flex: 4
+        flex: 5
     }
 };
 
