@@ -27,7 +27,7 @@ interface CalendarPageState {
 
 export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarPageProps, CalendarPageState> {
     public static defaultProps: CalendarPageDefaultProps = {
-        hidePrevNextMonthDays: false
+        hidePrevNextMonthDays: true
     };
 
     private readonly weekdaysNames = moment()
