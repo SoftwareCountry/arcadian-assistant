@@ -90,16 +90,13 @@ export const calendarStyles = StyleSheet.create({
     },
     weekDayNumber: {
         fontSize: 12,
-        //fontFamily: 'Roboto' TODO: import font ?
+        lineHeight: 14,
+        color: 'rgba(0, 0, 0, 0.8678)'
     },
-    weekDaySelectedNumber: {
-        fontWeight: '500'
-    },
-    weekDayText: {
+    weekDayName: {
         fontSize: 12,
+        lineHeight: 14,
         color: 'rgba(0, 0, 0, 0.5433)',
-        fontWeight: '500',
-        //fontFamily: 'Roboto' TODO: import font ?
     }
 });
 

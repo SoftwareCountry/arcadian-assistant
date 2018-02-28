@@ -61,9 +61,6 @@ export class WeekDayCircle extends Component<WeekDayCircleProps> {
 
         const circleTextStyles = StyleSheet.flatten([
             calendarStyles.weekDayNumber,
-            this.isSelectedDay(day)
-                ? calendarStyles.weekDaySelectedNumber
-                : {},
             {
                 color: day.belongsToCurrentMonth
                     ? this.isSelectedDay(day)

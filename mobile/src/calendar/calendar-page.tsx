@@ -52,7 +52,7 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
                     {
                         this.weekdaysNames.map((weekdayName, index) =>
                             <View key={`${index}-${weekdayName}`} style={calendarStyles.weekName}>
-                                <StyledText style={calendarStyles.weekDayText}>{weekdayName}</StyledText>
+                                <StyledText style={calendarStyles.weekDayName}>{weekdayName}</StyledText>
                             </View>
                         )
                     }
