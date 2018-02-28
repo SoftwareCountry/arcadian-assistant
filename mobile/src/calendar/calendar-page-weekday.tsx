@@ -11,13 +11,21 @@ export const WeekDay = (props: { hide: boolean, children: any[] }) =>
         ? null
         : <View style={calendarStyles.weekDay}>{props.children}</View>;
 
-interface WeekDayCircleProps {
+interface WeekDayCircleDefaultProps {
+    customTextColor?: string;
+}
+
+interface WeekDayCircleProps extends WeekDayCircleDefaultProps {
     weekHeight: number;
     day: DayModel;
     selectedDay: DayModel;
 }
 
 export class WeekDayCircle extends Component<WeekDayCircleProps> {
+    public static defaultProps: WeekDayCircleDefaultProps = {
+        customTextColor: '#000'
+    };
+
     public render() {
         const { day, weekHeight } = this.props;
 
@@ -60,7 +68,7 @@ export class WeekDayCircle extends Component<WeekDayCircleProps> {
                 color: day.belongsToCurrentMonth
                     ? this.isSelectedDay(day)
                         ? '#fff'
-                        : '#000'
+                        : this.props.customTextColor
                     : '#dadada'
             }
         ]);

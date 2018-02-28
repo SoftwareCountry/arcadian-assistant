@@ -86,26 +86,43 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
     }
 
     private renderDay(day: DayModel) {
+        const intervalModels = this.getIntervalsByDate(day.date);
+        const dayTextColor = this.getDayTextColor(intervalModels);
+
         return (
             <View style={calendarStyles.weekDayContainer} key={`${day.date.week()}-${day.date.date()}`}>
                 <WeekDay hide={this.props.hidePrevNextMonthDays && !day.belongsToCurrentMonth}>
                     <WeekDayTouchable onSelectedDay={this.props.onSelectedDay} day={day} />
-                    <WeekDayCircle day={day} selectedDay={this.props.selectedDay} weekHeight={this.state.weekHeight} />
+                    <WeekDayCircle day={day} selectedDay={this.props.selectedDay} weekHeight={this.state.weekHeight} customTextColor={dayTextColor} />
                     {
-                        this.renderIntervals(day.date)
+                        this.renderIntervals(intervalModels)
                     }
                 </WeekDay>
             </View>
         );
     }
 
-    private renderIntervals(date: Moment) {
+    private getDayTextColor(intervals: IntervalModel[]): string | null {
+        if (!intervals || !intervals.length) {
+            return null;
+        }
+
+        return intervals.some(x => !x.boundary)
+            ? '#fff'
+            : null;
+    }
+
+    private getIntervalsByDate(date: moment.Moment): IntervalModel[] | null {
         if (!this.props.intervals) {
             return null;
         }
 
         const intervals = this.props.intervals.get(date);
 
+        return intervals;
+    }
+
+    private renderIntervals(intervals: IntervalModel[]) {
         if (!intervals) {
             return null;
         }
