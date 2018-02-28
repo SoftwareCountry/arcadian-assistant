@@ -19,6 +19,7 @@ export interface IntervalModel {
     eventType: CalendarEventsType;
     startDate: moment.Moment;
     endDate: moment.Moment;
+    boundary: boolean;
 }
 
 export class IntervalsModel {

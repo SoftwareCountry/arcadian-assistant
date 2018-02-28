@@ -18,7 +18,8 @@ describe('IntervalsModel', () => {
                 intervalType: 'startInterval',
                 eventType: CalendarEventsType.AdditionalWork,
                 startDate: date,
-                endDate: date
+                endDate: date,
+                boundary: true
             };
 
             intervalsModel.set(date, intervalModel);
@@ -37,7 +38,8 @@ describe('IntervalsModel', () => {
                 intervalType: 'startInterval',
                 eventType: CalendarEventsType.AdditionalWork,
                 startDate: key,
-                endDate: key
+                endDate: key,
+                boundary: true
             };
 
             intervalsModel.set(key, intervalModel);
@@ -48,7 +50,8 @@ describe('IntervalsModel', () => {
                 intervalType: 'startInterval',
                 eventType: CalendarEventsType.AdditionalWork,
                 startDate: key,
-                endDate: key
+                endDate: key,
+                boundary: true
             };
 
             intervalsModel.set(key, intervalModel2);
@@ -75,7 +78,8 @@ describe('IntervalsModel', () => {
             intervalType: 'startInterval',
             eventType: CalendarEventsType.AdditionalWork,
             startDate: date,
-            endDate: date
+            endDate: date,
+            boundary: true
         };
 
         intervalsModel.set(date, intervalModel);
@@ -108,6 +112,7 @@ describe('CalendarIntervalsBuilder', () => {
         expect(intervals[0].intervalType).toBe('intervalFullBoundary');
         expect(intervals[0].startDate).toBe(event.dates.startDate);
         expect(intervals[0].endDate).toBe(event.dates.endDate);
+        expect(intervals[0].boundary).toBeTruthy();
     });
 
     it('should build interval if endDate > startDate', () => {
@@ -133,6 +138,7 @@ describe('CalendarIntervalsBuilder', () => {
         expect(intervals[0].intervalType).toBe('startInterval');
         expect(intervals[0].startDate).toBe(event.dates.startDate);
         expect(intervals[0].endDate).toBe(event.dates.endDate);
+        expect(intervals[0].boundary).toBeFalsy();
 
         const two = moment({ day: 2, month: 0, year: 2018 });
         intervals = intervalsModel.get(two);
@@ -141,6 +147,7 @@ describe('CalendarIntervalsBuilder', () => {
         expect(intervals[0].intervalType).toBe('interval');
         expect(intervals[0].startDate).toBe(event.dates.startDate);
         expect(intervals[0].endDate).toBe(event.dates.endDate);
+        expect(intervals[0].boundary).toBeFalsy();
 
         const three = moment({ day: 3, month: 0, year: 2018 });
         intervals = intervalsModel.get(three);
@@ -149,6 +156,7 @@ describe('CalendarIntervalsBuilder', () => {
         expect(intervals[0].intervalType).toBe('interval');
         expect(intervals[0].startDate).toBe(event.dates.startDate);
         expect(intervals[0].endDate).toBe(event.dates.endDate);
+        expect(intervals[0].boundary).toBeFalsy();
 
         const four = moment({ day: 4, month: 0, year: 2018 });
         intervals = intervalsModel.get(four);
@@ -157,6 +165,7 @@ describe('CalendarIntervalsBuilder', () => {
         expect(intervals[0].intervalType).toBe('endInterval');
         expect(intervals[0].startDate).toBe(event.dates.startDate);
         expect(intervals[0].endDate).toBe(event.dates.endDate);
+        expect(intervals[0].boundary).toBeFalsy();
     });
 
     it('should build crossing intervals', () => {
@@ -258,6 +267,7 @@ describe('CalendarIntervalsBuilder', () => {
                     expect(intervals[0].eventType).toBe(testedEventType);
                     expect(intervals[0].startDate).toBe(event1.dates.startDate);
                     expect(intervals[0].endDate).toBe(event1.dates.endDate);
+                    expect(intervals[0].boundary).toBeTruthy();
                 });
 
                 it('should return interval right boundary, if startWorkingHour is 0 and finishWorkingHour between [4, 8]', () => {
@@ -283,6 +293,7 @@ describe('CalendarIntervalsBuilder', () => {
                     expect(intervals[0].eventType).toBe(testedEventType);
                     expect(intervals[0].startDate).toBe(event1.dates.startDate);
                     expect(intervals[0].endDate).toBe(event1.dates.endDate);
+                    expect(intervals[0].boundary).toBeTruthy();
                 });
 
                 it('should return interval full boundary, if startWorkingHour is not 0 and finishWorkingHour is not 0', () => {
@@ -308,6 +319,7 @@ describe('CalendarIntervalsBuilder', () => {
                     expect(intervals[0].eventType).toBe(testedEventType);
                     expect(intervals[0].startDate).toBe(event1.dates.startDate);
                     expect(intervals[0].endDate).toBe(event1.dates.endDate);
+                    expect(intervals[0].boundary).toBeTruthy();
                 });
 
                 it('should return null, if startWorkingHour is 0 and finishWorkingHour is 0', () => {
@@ -333,6 +345,7 @@ describe('CalendarIntervalsBuilder', () => {
                     expect(intervals[0].eventType).toBe(testedEventType);
                     expect(intervals[0].startDate).toBe(event1.dates.startDate);
                     expect(intervals[0].endDate).toBe(event1.dates.endDate);
+                    expect(intervals[0].boundary).toBeTruthy();
                 });
             });
 

@@ -20,7 +20,8 @@ export class CalendarIntervalsBuilder {
                     intervalType: 'intervalFullBoundary',
                     eventType: calendarEvent.type,
                     startDate: calendarEvent.dates.startDate,
-                    endDate: calendarEvent.dates.endDate
+                    endDate: calendarEvent.dates.endDate,
+                    boundary: true
                 });
                 continue;
             }
@@ -38,7 +39,8 @@ export class CalendarIntervalsBuilder {
                     intervalType: intervalType,
                     eventType: calendarEvent.type,
                     startDate: calendarEvent.dates.startDate,
-                    endDate: calendarEvent.dates.endDate
+                    endDate: calendarEvent.dates.endDate,
+                    boundary: false
                 });
 
                 start.add(1, 'days');
@@ -55,7 +57,8 @@ export class CalendarIntervalsBuilder {
             intervalType: intervalType,
             eventType: calendarEvent.type,
             startDate: calendarEvent.dates.startDate,
-            endDate: calendarEvent.dates.endDate
+            endDate: calendarEvent.dates.endDate,
+            boundary: true
         });
     }
 
