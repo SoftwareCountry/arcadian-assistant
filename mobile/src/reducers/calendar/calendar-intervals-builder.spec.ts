@@ -16,7 +16,9 @@ describe('IntervalsModel', () => {
             const date = moment();
             const intervalModel: IntervalModel = {
                 intervalType: 'startInterval',
-                eventType: CalendarEventsType.AdditionalWork
+                eventType: CalendarEventsType.AdditionalWork,
+                startDate: date,
+                endDate: date
             };
 
             intervalsModel.set(date, intervalModel);
@@ -33,7 +35,9 @@ describe('IntervalsModel', () => {
 
             const intervalModel: IntervalModel = {
                 intervalType: 'startInterval',
-                eventType: CalendarEventsType.AdditionalWork
+                eventType: CalendarEventsType.AdditionalWork,
+                startDate: key,
+                endDate: key
             };
 
             intervalsModel.set(key, intervalModel);
@@ -42,7 +46,9 @@ describe('IntervalsModel', () => {
 
             const intervalModel2: IntervalModel = {
                 intervalType: 'startInterval',
-                eventType: CalendarEventsType.AdditionalWork
+                eventType: CalendarEventsType.AdditionalWork,
+                startDate: key,
+                endDate: key
             };
 
             intervalsModel.set(key, intervalModel2);
@@ -67,7 +73,9 @@ describe('IntervalsModel', () => {
         const date = moment();
         const intervalModel: IntervalModel = {
             intervalType: 'startInterval',
-            eventType: CalendarEventsType.AdditionalWork
+            eventType: CalendarEventsType.AdditionalWork,
+            startDate: date,
+            endDate: date
         };
 
         intervalsModel.set(date, intervalModel);
@@ -98,6 +106,8 @@ describe('CalendarIntervalsBuilder', () => {
 
         expect(intervals[0].eventType).toBe(event.type);
         expect(intervals[0].intervalType).toBe('intervalFullBoundary');
+        expect(intervals[0].startDate).toBe(event.dates.startDate);
+        expect(intervals[0].endDate).toBe(event.dates.endDate);
     });
 
     it('should build interval if endDate > startDate', () => {
@@ -121,24 +131,32 @@ describe('CalendarIntervalsBuilder', () => {
 
         expect(intervals[0].eventType).toBe(event.type);
         expect(intervals[0].intervalType).toBe('startInterval');
+        expect(intervals[0].startDate).toBe(event.dates.startDate);
+        expect(intervals[0].endDate).toBe(event.dates.endDate);
 
         const two = moment({ day: 2, month: 0, year: 2018 });
         intervals = intervalsModel.get(two);
 
         expect(intervals[0].eventType).toBe(event.type);
         expect(intervals[0].intervalType).toBe('interval');
+        expect(intervals[0].startDate).toBe(event.dates.startDate);
+        expect(intervals[0].endDate).toBe(event.dates.endDate);
 
         const three = moment({ day: 3, month: 0, year: 2018 });
         intervals = intervalsModel.get(three);
 
         expect(intervals[0].eventType).toBe(event.type);
         expect(intervals[0].intervalType).toBe('interval');
+        expect(intervals[0].startDate).toBe(event.dates.startDate);
+        expect(intervals[0].endDate).toBe(event.dates.endDate);
 
         const four = moment({ day: 4, month: 0, year: 2018 });
         intervals = intervalsModel.get(four);
 
         expect(intervals[0].eventType).toBe(event.type);
         expect(intervals[0].intervalType).toBe('endInterval');
+        expect(intervals[0].startDate).toBe(event.dates.startDate);
+        expect(intervals[0].endDate).toBe(event.dates.endDate);
     });
 
     it('should build crossing intervals', () => {
@@ -177,28 +195,40 @@ describe('CalendarIntervalsBuilder', () => {
         expect(intervals.length).toBe(1);
         expect(intervals[0].intervalType).toBe('startInterval');
         expect(intervals[0].eventType).toBe(CalendarEventsType.Vacation);
+        expect(intervals[0].startDate).toBe(event1.dates.startDate);
+        expect(intervals[0].endDate).toBe(event1.dates.endDate);
 
         intervals = intervalsModel.get(moment({ day: 2, month: 0, year: 2018 }));
 
         expect(intervals.length).toBe(2);
         expect(intervals[0].intervalType).toBe('interval');
         expect(intervals[0].eventType).toBe(CalendarEventsType.Vacation);
+        expect(intervals[0].startDate).toBe(event1.dates.startDate);
+        expect(intervals[0].endDate).toBe(event1.dates.endDate);
         expect(intervals[1].intervalType).toBe('startInterval');
         expect(intervals[1].eventType).toBe(CalendarEventsType.SickLeave);
+        expect(intervals[1].startDate).toBe(event2.dates.startDate);
+        expect(intervals[1].endDate).toBe(event2.dates.endDate);
 
         intervals = intervalsModel.get(moment({ day: 3, month: 0, year: 2018 }));
 
         expect(intervals.length).toBe(2);
         expect(intervals[0].intervalType).toBe('endInterval');
         expect(intervals[0].eventType).toBe(CalendarEventsType.Vacation);
+        expect(intervals[0].startDate).toBe(event1.dates.startDate);
+        expect(intervals[0].endDate).toBe(event1.dates.endDate);
         expect(intervals[1].intervalType).toBe('interval');
         expect(intervals[1].eventType).toBe(CalendarEventsType.SickLeave);
+        expect(intervals[1].startDate).toBe(event2.dates.startDate);
+        expect(intervals[1].endDate).toBe(event2.dates.endDate);
 
         intervals = intervalsModel.get(moment({ day: 4, month: 0, year: 2018 }));
 
         expect(intervals.length).toBe(1);
         expect(intervals[0].intervalType).toBe('endInterval');
         expect(intervals[0].eventType).toBe(CalendarEventsType.SickLeave);
+        expect(intervals[0].startDate).toBe(event2.dates.startDate);
+        expect(intervals[0].endDate).toBe(event2.dates.endDate);
     });
 
     describe('dayoff', () => {
@@ -226,6 +256,8 @@ describe('CalendarIntervalsBuilder', () => {
                     expect(intervals.length).toBe(1);
                     expect(intervals[0].intervalType).toBe('intervalLeftBoundary');
                     expect(intervals[0].eventType).toBe(testedEventType);
+                    expect(intervals[0].startDate).toBe(event1.dates.startDate);
+                    expect(intervals[0].endDate).toBe(event1.dates.endDate);
                 });
 
                 it('should return interval right boundary, if startWorkingHour is 0 and finishWorkingHour between [4, 8]', () => {
@@ -249,6 +281,8 @@ describe('CalendarIntervalsBuilder', () => {
                     expect(intervals.length).toBe(1);
                     expect(intervals[0].intervalType).toBe('intervalRightBoundary');
                     expect(intervals[0].eventType).toBe(testedEventType);
+                    expect(intervals[0].startDate).toBe(event1.dates.startDate);
+                    expect(intervals[0].endDate).toBe(event1.dates.endDate);
                 });
 
                 it('should return interval full boundary, if startWorkingHour is not 0 and finishWorkingHour is not 0', () => {
@@ -272,6 +306,8 @@ describe('CalendarIntervalsBuilder', () => {
                     expect(intervals.length).toBe(1);
                     expect(intervals[0].intervalType).toBe('intervalFullBoundary');
                     expect(intervals[0].eventType).toBe(testedEventType);
+                    expect(intervals[0].startDate).toBe(event1.dates.startDate);
+                    expect(intervals[0].endDate).toBe(event1.dates.endDate);
                 });
 
                 it('should return null, if startWorkingHour is 0 and finishWorkingHour is 0', () => {
@@ -295,6 +331,8 @@ describe('CalendarIntervalsBuilder', () => {
                     expect(intervals.length).toBe(1);
                     expect(intervals[0].intervalType).toBe(null);
                     expect(intervals[0].eventType).toBe(testedEventType);
+                    expect(intervals[0].startDate).toBe(event1.dates.startDate);
+                    expect(intervals[0].endDate).toBe(event1.dates.endDate);
                 });
             });
 

@@ -17,6 +17,8 @@ export type IntervalType = 'startInterval' | 'interval' | 'endInterval' | 'inter
 export interface IntervalModel {
     intervalType: IntervalType;
     eventType: CalendarEventsType;
+    startDate: moment.Moment;
+    endDate: moment.Moment;
 }
 
 export class IntervalsModel {
