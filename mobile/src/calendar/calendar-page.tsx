@@ -4,9 +4,10 @@ import { View, StyleSheet, LayoutChangeEvent, PixelRatio } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { calendarStyles, calendarIntervalStyles, CalendarEventsColor } from './styles';
 import { DayModel, WeekModel, IntervalsModel, IntervalModel } from '../reducers/calendar/calendar.model';
-import { StartInterval, EndInterval, Interval, IntervalBoundary } from './calendar-page-interval';
+import { StartInterval, EndInterval, Interval } from './calendar-page-interval';
 import { CalendarEventsType } from '../reducers/calendar/calendar-events.model';
 import { WeekDay, WeekDayCircle, WeekDayTouchable } from './calendar-page-weekday';
+import { IntervalBoundary } from './calendar-page-interval-boundary';
 
 export type OnSelectedDayCallback = (day: DayModel) => void;
 
