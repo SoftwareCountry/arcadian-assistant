@@ -65,20 +65,15 @@ export class CalendarIntervalsBuilder {
     private getBoundaryType(calendarEvent: CalendarEvents): IntervalType | null {
         const { startWorkingHour, finishWorkingHour } = calendarEvent.dates;
 
-        if (startWorkingHour === 0 && finishWorkingHour === 0) {
-            return null;
-        }
-
-        if ((startWorkingHour > 0 && startWorkingHour <= 4) && finishWorkingHour === 0) {
+        if (0 <= startWorkingHour && finishWorkingHour <= 4) {
             return 'intervalLeftBoundary';
         }
 
-        if (startWorkingHour === 0 && (finishWorkingHour >= 4 || finishWorkingHour <= 8)
-        ) {
+        if (4 <= startWorkingHour && finishWorkingHour <= 8) {
             return 'intervalRightBoundary';
         }
 
-        if (startWorkingHour !== 0 && finishWorkingHour !== 0) {
+        if (0 <= startWorkingHour && finishWorkingHour <= 8) {
             return 'intervalFullBoundary';
         }
 
