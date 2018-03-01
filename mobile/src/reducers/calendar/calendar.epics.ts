@@ -52,7 +52,7 @@ export const loadCalendarEventsFinishedEpic$ = (action$: ActionsObservable<LoadU
             mockInterval2.startDate = startDate2;
             mockInterval2.endDate = endDate2;
             mockInterval2.startWorkingHour = 0;
-            mockInterval2.finishWorkingHour = 8;
+            mockInterval2.finishWorkingHour = 3;
 
             mockEvent2.calendarEventId = '2';
             mockEvent2.type = CalendarEventsType.SickLeave;
@@ -70,7 +70,7 @@ export const loadCalendarEventsFinishedEpic$ = (action$: ActionsObservable<LoadU
             mockInterval3.startDate = startDate3;
             mockInterval3.endDate = startDate3;
             mockInterval3.startWorkingHour = 0;
-            mockInterval3.finishWorkingHour = 8;
+            mockInterval3.finishWorkingHour = 4;
 
             mockEvent3.calendarEventId = '2';
             mockEvent3.type = CalendarEventsType.Dayoff;
