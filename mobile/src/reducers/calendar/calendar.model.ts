@@ -22,10 +22,14 @@ export interface IntervalModel {
     boundary: boolean;
 }
 
+type IntervalsModelDictionary = {
+    [dateKey: string]: IntervalModel[];
+};
+
 export class IntervalsModel {
-    private intervalsDictionary: {
-        [dateKey: string]: IntervalModel[];
-    } = {};
+    constructor(
+        private readonly intervalsDictionary: IntervalsModelDictionary = {}
+    ) { }
 
     public set(date: Moment, interval: IntervalModel) {
         const dateKey = IntervalsModel.generateKey(date);
@@ -42,6 +46,10 @@ export class IntervalsModel {
     public get(date: Moment): IntervalModel[] | undefined {
         const dateKey = IntervalsModel.generateKey(date);
         return this.intervalsDictionary[dateKey];
+    }
+
+    public copy(): IntervalsModel {
+        return new IntervalsModel({ ...this.intervalsDictionary });
     }
 
     public static generateKey(date: Moment): string {

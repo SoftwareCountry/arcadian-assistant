@@ -7,6 +7,20 @@ export class CalendarIntervalsBuilder {
     public buildIntervals(calendarEvents: CalendarEvents[]) {
         const intervalsModel = new IntervalsModel();
 
+        this.insertCalendarEvents(intervalsModel, calendarEvents);
+
+        return intervalsModel;
+    }
+
+    public appendCalendarEvents(
+        existingModel: IntervalsModel,
+        calendarEvents: CalendarEvents[]
+    ) {
+        this.insertCalendarEvents(existingModel, calendarEvents);
+    }
+
+    private insertCalendarEvents(intervalsModel: IntervalsModel, calendarEvents: CalendarEvents[]) {
+
         for (let calendarEvent of calendarEvents) {
             const start = moment(calendarEvent.dates.startDate);
 

@@ -6,10 +6,18 @@ import moment from 'moment';
 import { CalendarWeeksBuilder } from './calendar-weeks-builder';
 import { CalendarIntervalsBuilder } from './calendar-intervals-builder';
 import { EventDialogModel, ClaimSickLeaveDialogModel, ProlongSickLeaveDialogModel, EditSickLeaveDialogModel } from './event-dialog/event-dialog.model';
+import { addNewSickLeaveEventReducer, claimSickLeaveReducer } from './sick-leave.reducer';
 
 export interface DialogActiveState {
     active: boolean;
     model: EventDialogModel<any>;
+}
+
+export interface EditIntervalsState {
+    active: boolean;
+    unchangedIntervals: IntervalsModel;
+    startDay: DayModel;
+    endDay: DayModel;
 }
 
 export interface CalendarEventsState {
@@ -17,6 +25,7 @@ export interface CalendarEventsState {
     selectedCalendarDay: DayModel;
     intervals: IntervalsModel;
     dialog: DialogActiveState;
+    editIntervals: EditIntervalsState;
 }
 
 const createInitState = (): CalendarEventsState => {
@@ -38,11 +47,19 @@ const createInitState = (): CalendarEventsState => {
         model: null
     };
 
+    const defaultEditIntervalsState: EditIntervalsState = {
+        active: false,
+        unchangedIntervals: null,
+        startDay: null,
+        endDay: null
+    };
+
     return {
         weeks: weeks,
         selectedCalendarDay: todayModel,
         dialog: defaultDialogState,
-        intervals: null
+        intervals: null,
+        editIntervals: defaultEditIntervalsState
     };
 };
 
@@ -59,19 +76,12 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 intervals: intervals
             };
         case 'SELECT-CALENDAR-DAY':
-
-            let dialogModel: ClaimSickLeaveDialogModel = null;
-            if (state.dialog.active) {
-                dialogModel = state.dialog.model.copy();
-                dialogModel.endDate = action.day.date;
-            }
+            const newSickLeaveState = addNewSickLeaveEventReducer(state, action);
 
             return {
                 ...state,
-                dialog: {
-                    ...state.dialog,
-                    model: dialogModel
-                },
+                intervals: newSickLeaveState.intervals,
+                dialog: newSickLeaveState.dialog,
                 selectedCalendarDay: action.day
             };
         case 'SELECT-CALENDAR-MONTH':
@@ -83,16 +93,13 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 weeks: weeks
             };
         case 'CLAIM-SICK-LEAVE':
-            const claimSickLeaveDialog = new ClaimSickLeaveDialogModel();
-
-            claimSickLeaveDialog.startDate = state.selectedCalendarDay.date;
+            const claimSickLeaveDialog = claimSickLeaveReducer(state, action);
 
             return {
                 ...state,
-                dialog: {
-                    active: true,
-                    model: claimSickLeaveDialog
-                }
+                intervals: claimSickLeaveDialog.intervals,
+                dialog: claimSickLeaveDialog.dialog,
+                editIntervals: claimSickLeaveDialog.editIntervals
             };
         case 'CONFIRM-CLAIM-SICK-LEAVE':
             return {
@@ -100,6 +107,12 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 dialog: {
                     active: false,
                     model: null
+                },
+                editIntervals: {
+                    active: false,
+                    unchangedIntervals: null,
+                    startDay: null,
+                    endDay: null
                 }
             };
         case 'PROLONG-SICK-LEAVE':
@@ -120,14 +133,29 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 ...state,
                 dialog: {
                     ...state.dialog,
+                    active: true,
                     model: editSickLeaveDialog
                 }
             };
 
         case 'CANCEL-CALENDAR-DIALOG':
+            const restoredIntervals = state.editIntervals.unchangedIntervals
+                ? state.editIntervals.unchangedIntervals
+                : state.intervals;
+
             return {
                 ...state,
-                dialog: { active: false } as DialogActiveState
+                intervals: restoredIntervals,
+                dialog: {
+                    active: false,
+                    model: null
+                },
+                editIntervals: {
+                    active: false,
+                    unchangedIntervals: null,
+                    startDay: null,
+                    endDay: null
+                }
             };
 
         default:
