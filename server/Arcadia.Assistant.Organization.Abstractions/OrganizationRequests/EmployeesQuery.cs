@@ -1,8 +1,7 @@
 ﻿namespace Arcadia.Assistant.Organization.Abstractions.OrganizationRequests
 {
+    using System;
     using System.Collections.Generic;
-
-    using Akka.Actor;
 
     public class EmployeesQuery
     {
@@ -12,9 +11,11 @@
 
         public string RoomNumber { get; private set; }
 
-        public EmployeesQuery()
-        {
-        }
+        public DateQuery BirthDate { get; private set; }
+
+        public DateQuery HireDate { get; private set; }
+
+        //public EmployeesQueryCondition Condition { get; private set; }
 
         public EmployeesQuery ForDepartment(string departmentId)
         {
@@ -37,12 +38,28 @@
             return obj;
         }
 
+        public EmployeesQuery WithBirthDate(DateQuery bithDateQuery)
+        {
+            var obj = this.Clone();
+            obj.BirthDate = bithDateQuery;
+            return obj;
+        }
+
+        public EmployeesQuery WithHireDate(DateQuery hireDateQuery)
+        {
+            var obj = this.Clone();
+            obj.HireDate = hireDateQuery;
+            return obj;
+        }
+
         private EmployeesQuery Clone()
         {
             var newObj = new EmployeesQuery();
             newObj.DepartmentId = this.DepartmentId;
             newObj.EmployeeId = this.EmployeeId;
             newObj.RoomNumber = this.RoomNumber;
+            newObj.BirthDate = this.BirthDate;
+            newObj.HireDate = this.HireDate;
 
             return newObj;
         }
