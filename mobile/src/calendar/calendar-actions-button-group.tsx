@@ -12,6 +12,7 @@ import { SickLeaveActionButton } from './sick-leave-action-button';
 import { Dispatch } from 'redux';
 import { CalendarActions } from '../reducers/calendar/calendar.action';
 import { editSickLeave, claimSickLeave, prolongSickLeave } from '../reducers/calendar/sick-leave.action';
+import { Moment } from 'moment';
 
 interface ActionButtonGroupProps {
     intervalsModel: IntervalsModel;
@@ -20,7 +21,7 @@ interface ActionButtonGroupProps {
 
 interface ActionButtonsGroupDispatchProps {
     sickLeaveActions: {
-        claim: () => void;
+        claim: (startDate: Moment) => void;
         edit: () => void;
     };
 }
@@ -39,7 +40,7 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & A
 
                 <CalendarActionButtonSeparator />
 
-                <SickLeaveActionButton interval={sickleave} {...this.props.sickLeaveActions} />
+                <SickLeaveActionButton interval={sickleave} selectedDay={this.props.selectedCalendarDay} {...this.props.sickLeaveActions} />
 
                 <CalendarActionButtonSeparator />
             </View>
@@ -74,7 +75,7 @@ const mapStateToProps = (state: AppState) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>) => ({
     sickLeaveActions: {
-        claim: () => { dispatch(claimSickLeave()); },
+        claim: (startDate: Moment) => { dispatch(claimSickLeave(startDate)); },
         edit: () => { dispatch(editSickLeave()); },
     }
 });

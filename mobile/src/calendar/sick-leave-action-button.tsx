@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { CalendarActionButton } from './calendar-action-button';
-import { IntervalModel } from '../reducers/calendar/calendar.model';
+import { IntervalModel, DayModel } from '../reducers/calendar/calendar.model';
 import { CalendarEventsColor } from './styles';
+import { Moment } from 'moment';
 
 interface SickLeaveActionButtonProps {
     interval: IntervalModel;
-    claim: () => void;
+    selectedDay: DayModel;
+    claim: (selectedDay: Moment) => void;
     edit: () => void;
 }
 
@@ -24,7 +26,7 @@ export class SickLeaveActionButton extends Component<SickLeaveActionButtonProps>
 
     public onSickLeaveAction = () => {
         if (!this.props.interval) {
-            this.props.claim();
+            this.props.claim(this.props.selectedDay.date);
         } else {
             this.props.edit();
         }
