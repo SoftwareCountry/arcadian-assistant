@@ -21,7 +21,7 @@
         {
             var departments = this.actorSystem.ActorOf(this.actorSystem.DI().Props<OrganizationActor>(), "organization");
             var helpdesk = this.actorSystem.ActorOf(Props.Create(() => new HelpdeskActor()), "helpdesk");
-            var feeds = this.actorSystem.ActorOf(Props.Create(() => new SharedFeedsActor()), "shared-feeds");
+            var feeds = this.actorSystem.ActorOf(Props.Create(() => new SharedFeedsActor(departments)), "shared-feeds");
 
             return new ServerActorsCollection(departments, helpdesk, feeds);
         }

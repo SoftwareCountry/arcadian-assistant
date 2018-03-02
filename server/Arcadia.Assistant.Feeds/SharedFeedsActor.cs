@@ -14,10 +14,11 @@
 
         private const string SystemFeedId = "system-feed";
 
-        public SharedFeedsActor()
+        public SharedFeedsActor(IActorRef organization)
         {
             this.newsFeed = Context.ActorOf(Props.Create(() => new FeedActor(NewsFeedId)), NewsFeedId);
             this.systemFeed = Context.ActorOf(Props.Create(() => new FeedActor(SystemFeedId)), SystemFeedId);
+            Context.ActorOf(Props.Create(() => new DailyPollsActor(organization, this.newsFeed)), "daily-polls");
 
             this.systemFeed.Tell(new FeedActor.PostMessage(new Message(Guid.NewGuid(), "557", "System is up", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus tempor blandit velit in sollicitudin. Nulla. ", DateTimeOffset.Now)));
         }
