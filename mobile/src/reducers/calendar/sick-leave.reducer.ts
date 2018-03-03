@@ -22,8 +22,8 @@ export const claimSickLeaveReducer = (state: CalendarEventsState, action: ClaimS
             active: true,
             model: claimSickLeaveDialog
         },
-        editIntervals: {
-            ...state.editIntervals,
+        editingOfIntervals: {
+            ...state.editingOfIntervals,
             active: true,
             startDay: state.selectedCalendarDay,
             unchangedIntervals: state.intervals,
@@ -34,16 +34,16 @@ export const claimSickLeaveReducer = (state: CalendarEventsState, action: ClaimS
 
 export const selectSickLeaveEndDateReducer = (state: CalendarEventsState, action: SelectCalendarDay): CalendarEventsState => {
 
-    if (state.editIntervals.active) {
+    if (state.editingOfIntervals.active) {
         const newCalendarEvents = new CalendarEvents();
 
         newCalendarEvents.type = CalendarEventsType.SickLeave;
         newCalendarEvents.dates = new DatesInterval();
-        newCalendarEvents.dates.startDate = state.editIntervals.startDay.date;
+        newCalendarEvents.dates.startDate = state.editingOfIntervals.startDay.date;
         newCalendarEvents.dates.endDate = action.day.date;
 
-        const changedIntervals = state.editIntervals.unchangedIntervals
-            ? state.editIntervals.unchangedIntervals.copy()
+        const changedIntervals = state.editingOfIntervals.unchangedIntervals
+            ? state.editingOfIntervals.unchangedIntervals.copy()
             : null;
 
         if (changedIntervals) {
@@ -61,8 +61,8 @@ export const selectSickLeaveEndDateReducer = (state: CalendarEventsState, action
                 ...state.dialog,
                 model: dialogModel
             },
-            editIntervals: {
-                ...state.editIntervals,
+            editingOfIntervals: {
+                ...state.editingOfIntervals,
                 endDay: action.day
             }
         };
@@ -72,16 +72,16 @@ export const selectSickLeaveEndDateReducer = (state: CalendarEventsState, action
 };
 
 export const confirmClaimSickLeaveReducer = (state: CalendarEventsState, action: ConfirmClaimSickLeave): CalendarEventsState => {
-    const intervalsToSave = state.editIntervals.unchangedIntervals
-        ? state.editIntervals.unchangedIntervals.copy()
+    const intervalsToSave = state.editingOfIntervals.unchangedIntervals
+        ? state.editingOfIntervals.unchangedIntervals.copy()
         : null;
 
     if (intervalsToSave) {
         const newCalendarEvents = new CalendarEvents();
         newCalendarEvents.type = CalendarEventsType.SickLeave;
         newCalendarEvents.dates = new DatesInterval();
-        newCalendarEvents.dates.startDate = state.editIntervals.startDay.date;
-        newCalendarEvents.dates.endDate = state.editIntervals.endDay.date;
+        newCalendarEvents.dates.startDate = state.editingOfIntervals.startDay.date;
+        newCalendarEvents.dates.endDate = state.editingOfIntervals.endDay.date;
 
         const builder = new CalendarIntervalsBuilder();
 
@@ -95,7 +95,7 @@ export const confirmClaimSickLeaveReducer = (state: CalendarEventsState, action:
             active: false,
             model: null
         },
-        editIntervals: {
+        editingOfIntervals: {
             active: false,
             unchangedIntervals: null,
             startDay: null,

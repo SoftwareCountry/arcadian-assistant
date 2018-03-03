@@ -13,7 +13,7 @@ export interface DialogActiveState {
     model: EventDialogModel<any>;
 }
 
-export interface EditIntervalsState {
+export interface EditingOfIntervalsState {
     active: boolean;
     unchangedIntervals: IntervalsModel;
     startDay: DayModel;
@@ -25,7 +25,7 @@ export interface CalendarEventsState {
     selectedCalendarDay: DayModel;
     intervals: IntervalsModel;
     dialog: DialogActiveState;
-    editIntervals: EditIntervalsState;
+    editingOfIntervals: EditingOfIntervalsState;
     disableCalendarDaysBefore: DayModel;
     disableCalendarActionsButtonGroup: boolean;
 }
@@ -49,7 +49,7 @@ const createInitState = (): CalendarEventsState => {
         model: null
     };
 
-    const defaultEditIntervalsState: EditIntervalsState = {
+    const defaultEditingOfIntervalsState: EditingOfIntervalsState = {
         active: false,
         unchangedIntervals: null,
         startDay: null,
@@ -61,7 +61,7 @@ const createInitState = (): CalendarEventsState => {
         selectedCalendarDay: todayModel,
         dialog: defaultDialogState,
         intervals: null,
-        editIntervals: defaultEditIntervalsState,
+        editingOfIntervals: defaultEditingOfIntervalsState,
         disableCalendarDaysBefore: null,
         disableCalendarActionsButtonGroup: true
     };
@@ -134,8 +134,8 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
             };
 
         case 'CANCEL-CALENDAR-DIALOG':
-            const restoredIntervals = state.editIntervals.unchangedIntervals
-                ? state.editIntervals.unchangedIntervals
+            const restoredIntervals = state.editingOfIntervals.unchangedIntervals
+                ? state.editingOfIntervals.unchangedIntervals
                 : state.intervals;
 
             return {
@@ -145,7 +145,7 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                     active: false,
                     model: null
                 },
-                editIntervals: {
+                editingOfIntervals: {
                     active: false,
                     unchangedIntervals: null,
                     startDay: null,

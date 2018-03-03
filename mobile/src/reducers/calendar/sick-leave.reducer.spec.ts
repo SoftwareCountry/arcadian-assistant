@@ -1,4 +1,4 @@
-import { CalendarEventsState, calendarEventsReducer, EditIntervalsState } from './calendar-events.reducer';
+import { CalendarEventsState, calendarEventsReducer, EditingOfIntervalsState } from './calendar-events.reducer';
 import { claimSickLeaveReducer } from './sick-leave.reducer';
 import { claimSickLeave, confirmSickLeave, ConfirmClaimSickLeave } from './sick-leave.action';
 import moment from 'moment';
@@ -11,7 +11,7 @@ describe('claimSickLeaveReducer', () => {
     let state: CalendarEventsState;
     let intervalsAfterClaim: IntervalsModel;
     let intervalsBeforeClaim: IntervalsModel;
-    let editIntervals: EditIntervalsState;
+    let editingOfIntervals: EditingOfIntervalsState;
     const startDate = moment();
 
     beforeEach(() => {
@@ -26,7 +26,7 @@ describe('claimSickLeaveReducer', () => {
         state = calendarEventsReducer(state, action);
 
         intervalsAfterClaim = state.intervals;
-        editIntervals = state.editIntervals;
+        editingOfIntervals = state.editingOfIntervals;
     });
 
     it('should activate dialog', () => {
@@ -51,16 +51,16 @@ describe('claimSickLeaveReducer', () => {
         expect(state.dialog.model.accept.action).toBe(confirmSickLeave);
     });
 
-    it('should activate edit intervals', () => {
-        expect(editIntervals.active).toBeTruthy();
+    it('should activate editing of intervals', () => {
+        expect(editingOfIntervals.active).toBeTruthy();
     });
 
     it('should has edit startDay is selected day', () => {
-        expect(editIntervals.startDay).toBe(state.selectedCalendarDay);
+        expect(editingOfIntervals.startDay).toBe(state.selectedCalendarDay);
     });
 
     it('should has unchanged intervals', () => {
-        expect(editIntervals.unchangedIntervals).toBe(intervalsBeforeClaim);
+        expect(editingOfIntervals.unchangedIntervals).toBe(intervalsBeforeClaim);
     });
 
     it('should has intervals as copy', () => {
@@ -117,8 +117,8 @@ describe('select sick leave endDate', () => {
             .toBe(`Your sick leave has started on ${startDate.format(eventDialogTextDateFormat)} and will be complete on ${endDay.date.format(eventDialogTextDateFormat)}`);
     });
 
-    it('should has edit intervals with end day', () => {
-        expect(state.editIntervals.endDay).toBe(endDay);
+    it('should has editing of intervals with end day', () => {
+        expect(state.editingOfIntervals.endDay).toBe(endDay);
     });
 });
 
@@ -183,20 +183,20 @@ describe('confirm claim sick leave', () => {
         expect(state.dialog.model).toBeNull();
     });
 
-    it('should disactivate edit intervals', () => {
-        expect(state.editIntervals.active).toBeFalsy();
+    it('should disactivate edititing of intervals', () => {
+        expect(state.editingOfIntervals.active).toBeFalsy();
     });
 
-    it('should reset edit intervals endDay to null', () => {
-        expect(state.editIntervals.endDay).toBeNull();
+    it('should reset editing of intervals endDay to null', () => {
+        expect(state.editingOfIntervals.endDay).toBeNull();
     });
 
-    it('should reset edit intervals startDay to null', () => {
-        expect(state.editIntervals.startDay).toBeNull();
+    it('should reset editing of intervals startDay to null', () => {
+        expect(state.editingOfIntervals.startDay).toBeNull();
     });
 
     it('should reset edit unchanged intervals to null', () => {
-        expect(state.editIntervals.unchangedIntervals).toBeNull();
+        expect(state.editingOfIntervals.unchangedIntervals).toBeNull();
     });
 
     it('should enable calendar days before start day', () => {
