@@ -6,7 +6,7 @@ import moment from 'moment';
 import { CalendarWeeksBuilder } from './calendar-weeks-builder';
 import { CalendarIntervalsBuilder } from './calendar-intervals-builder';
 import { EventDialogModel, ClaimSickLeaveDialogModel, ProlongSickLeaveDialogModel, EditSickLeaveDialogModel } from './event-dialog/event-dialog.model';
-import { addNewSickLeaveEventReducer, claimSickLeaveReducer } from './sick-leave.reducer';
+import { addNewSickLeaveEventReducer, claimSickLeaveReducer, confirmClaimSickLeaveReducer } from './sick-leave.reducer';
 
 export interface DialogActiveState {
     active: boolean;
@@ -76,12 +76,13 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 intervals: intervals
             };
         case 'SELECT-CALENDAR-DAY':
-            const newSickLeaveState = addNewSickLeaveEventReducer(state, action);
+            const newSickLeaveEventState = addNewSickLeaveEventReducer(state, action);
 
             return {
                 ...state,
-                intervals: newSickLeaveState.intervals,
-                dialog: newSickLeaveState.dialog,
+                intervals: newSickLeaveEventState.intervals,
+                dialog: newSickLeaveEventState.dialog,
+                editIntervals: newSickLeaveEventState.editIntervals,
                 selectedCalendarDay: action.day
             };
         case 'SELECT-CALENDAR-MONTH':
@@ -102,18 +103,13 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 editIntervals: claimSickLeaveDialog.editIntervals
             };
         case 'CONFIRM-CLAIM-SICK-LEAVE':
+            const confirmClaimSickLeaveState = confirmClaimSickLeaveReducer(state, action);
+
             return {
                 ...state,
-                dialog: {
-                    active: false,
-                    model: null
-                },
-                editIntervals: {
-                    active: false,
-                    unchangedIntervals: null,
-                    startDay: null,
-                    endDay: null
-                }
+                intervals: confirmClaimSickLeaveState.intervals,
+                dialog: confirmClaimSickLeaveState.dialog,
+                editIntervals: confirmClaimSickLeaveState.editIntervals
             };
         case 'PROLONG-SICK-LEAVE':
             const prolongSickLeaveDialog = new ProlongSickLeaveDialogModel();

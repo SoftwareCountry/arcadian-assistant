@@ -20,6 +20,7 @@ export interface IntervalModel {
     startDate: moment.Moment;
     endDate: moment.Moment;
     boundary: boolean;
+    draft: boolean;
 }
 
 type IntervalsModelDictionary = {

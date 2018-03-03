@@ -2,30 +2,45 @@ import { CalendarEvents, CalendarEventsType } from './calendar-events.model';
 import { IntervalsModel, IntervalType } from './calendar.model';
 import moment from 'moment';
 
+interface BuildConfig {
+    /**
+     * Intervals which has just been added but not saved yet
+     */
+    draft?: boolean;
+}
+
 export class CalendarIntervalsBuilder {
 
-    public buildIntervals(calendarEvents: CalendarEvents[]) {
+    public buildIntervals(
+        calendarEvents: CalendarEvents[],
+        config: BuildConfig = {}
+    ) {
         const intervalsModel = new IntervalsModel();
 
-        this.insertCalendarEvents(intervalsModel, calendarEvents);
+        this.insertCalendarEvents(intervalsModel, calendarEvents, config);
 
         return intervalsModel;
     }
 
     public appendCalendarEvents(
         existingModel: IntervalsModel,
-        calendarEvents: CalendarEvents[]
+        calendarEvents: CalendarEvents[],
+        config: BuildConfig = {}
     ) {
-        this.insertCalendarEvents(existingModel, calendarEvents);
+        this.insertCalendarEvents(existingModel, calendarEvents, config);
     }
 
-    private insertCalendarEvents(intervalsModel: IntervalsModel, calendarEvents: CalendarEvents[]) {
+    private insertCalendarEvents(
+        intervalsModel: IntervalsModel,
+        calendarEvents: CalendarEvents[],
+        { draft = false }: BuildConfig = {}
+    ) {
 
         for (let calendarEvent of calendarEvents) {
             const start = moment(calendarEvent.dates.startDate);
 
             if (calendarEvent.type === CalendarEventsType.Dayoff || calendarEvent.type === CalendarEventsType.AdditionalWork) {
-                this.buildIntervalBoundary(start, intervalsModel, calendarEvent);
+                this.buildIntervalBoundary(start, intervalsModel, calendarEvent, draft);
                 continue;
             }
 
@@ -35,7 +50,8 @@ export class CalendarIntervalsBuilder {
                     eventType: calendarEvent.type,
                     startDate: calendarEvent.dates.startDate,
                     endDate: calendarEvent.dates.endDate,
-                    boundary: true
+                    boundary: true,
+                    draft: draft
                 });
                 continue;
             }
@@ -54,7 +70,8 @@ export class CalendarIntervalsBuilder {
                     eventType: calendarEvent.type,
                     startDate: calendarEvent.dates.startDate,
                     endDate: calendarEvent.dates.endDate,
-                    boundary: false
+                    boundary: false,
+                    draft: draft
                 });
 
                 start.add(1, 'days');
@@ -64,7 +81,7 @@ export class CalendarIntervalsBuilder {
         return intervalsModel;
     }
 
-    private buildIntervalBoundary(keyDate: moment.Moment, intervalsModel: IntervalsModel, calendarEvent: CalendarEvents) {
+    private buildIntervalBoundary(keyDate: moment.Moment, intervalsModel: IntervalsModel, calendarEvent: CalendarEvents, draft: boolean) {
         const intervalType = this.getBoundaryType(calendarEvent);
 
         intervalsModel.set(keyDate, {
@@ -72,7 +89,8 @@ export class CalendarIntervalsBuilder {
             eventType: calendarEvent.type,
             startDate: calendarEvent.dates.startDate,
             endDate: calendarEvent.dates.endDate,
-            boundary: true
+            boundary: true,
+            draft: draft
         });
     }
 

@@ -19,7 +19,8 @@ describe('IntervalsModel', () => {
                 eventType: CalendarEventsType.AdditionalWork,
                 startDate: date,
                 endDate: date,
-                boundary: true
+                boundary: true,
+                draft: false
             };
 
             intervalsModel.set(date, intervalModel);
@@ -39,7 +40,8 @@ describe('IntervalsModel', () => {
                 eventType: CalendarEventsType.AdditionalWork,
                 startDate: key,
                 endDate: key,
-                boundary: true
+                boundary: true,
+                draft: false
             };
 
             intervalsModel.set(key, intervalModel);
@@ -51,7 +53,8 @@ describe('IntervalsModel', () => {
                 eventType: CalendarEventsType.AdditionalWork,
                 startDate: key,
                 endDate: key,
-                boundary: true
+                boundary: true,
+                draft: false
             };
 
             intervalsModel.set(key, intervalModel2);
@@ -79,7 +82,8 @@ describe('IntervalsModel', () => {
             eventType: CalendarEventsType.AdditionalWork,
             startDate: date,
             endDate: date,
-            boundary: true
+            boundary: true,
+            draft: false
         };
 
         intervalsModel.set(date, intervalModel);
@@ -104,7 +108,8 @@ describe('IntervalsModel', () => {
                 eventType: CalendarEventsType.SickLeave,
                 startDate: startDate,
                 endDate: endDate,
-                boundary: false
+                boundary: false,
+                draft: false
             };
 
             const interval: IntervalModel = {
@@ -112,7 +117,8 @@ describe('IntervalsModel', () => {
                 eventType: CalendarEventsType.SickLeave,
                 startDate: startDate,
                 endDate: endDate,
-                boundary: false
+                boundary: false,
+                draft: false
             };
 
             const endInterval: IntervalModel = {
@@ -120,7 +126,8 @@ describe('IntervalsModel', () => {
                 eventType: CalendarEventsType.SickLeave,
                 startDate: startDate,
                 endDate: endDate,
-                boundary: false
+                boundary: false,
+                draft: false
             };
 
             intervalsModel.set(startDate, startInterval);

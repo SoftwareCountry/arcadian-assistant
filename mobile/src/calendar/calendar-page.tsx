@@ -136,17 +136,17 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
 
         switch (interval.intervalType) {
             case 'startInterval':
-                return <StartInterval key={elementKey} size={this.state.weekHeight} color={color} />;
+                return <StartInterval key={elementKey} size={this.state.weekHeight} color={color} draft={interval.draft} />;
             case 'endInterval':
-                return <EndInterval key={elementKey} size={this.state.weekHeight} color={color} />;
+                return <EndInterval key={elementKey} size={this.state.weekHeight} color={color} draft={interval.draft} />;
             case 'interval':
-                return <Interval key={elementKey} size={this.state.weekHeight} color={color} />;
+                return <Interval key={elementKey} size={this.state.weekHeight} color={color} draft={interval.draft} />;
             case 'intervalFullBoundary':
-                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'full'} />;
+                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'full'} draft={interval.draft} />;
             case 'intervalLeftBoundary':
-                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'left'} />;
+                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'left'} draft={interval.draft} />;
             case 'intervalRightBoundary':
-                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'right'} />;
+                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'right'} draft={interval.draft} />;
             default:
                 return null;
         }
