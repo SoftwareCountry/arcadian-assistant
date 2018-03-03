@@ -2,7 +2,7 @@ import { Moment } from 'moment';
 import { cancelDialog, CalendarActions } from '../calendar.action';
 import { confirmSickLeave, editSickLeave, confirmProlongSickLeave, prolongSickLeave, completeSickLeave } from '../sick-leave.action';
 
-const eventDialogTextDateFormat = 'MMMM D, YYYY';
+export const eventDialogTextDateFormat = 'MMMM D, YYYY';
 
 interface ButtonProps {
     label: string;
@@ -52,7 +52,7 @@ export class ClaimSickLeaveDialogModel extends EventDialogModel<ClaimSickLeaveDi
     public readonly title = 'Select date to Complete your Sick Leave';
 
     public get text(): string {
-        return `Your sick leave has started on ${this.startDate.format(eventDialogTextDateFormat)} ${this.endDate ? `and will be complete on ${this.endDate.format(eventDialogTextDateFormat)}` : ''}`;
+        return `Your sick leave has started on ${this.startDate.format(eventDialogTextDateFormat)}${this.endDate ? ` and will be complete on ${this.endDate.format(eventDialogTextDateFormat)}` : ''}`;
     }
 
     public readonly icon = 'sick_leave';
