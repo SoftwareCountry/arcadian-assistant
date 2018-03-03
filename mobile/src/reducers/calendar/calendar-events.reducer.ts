@@ -85,9 +85,7 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
 
             return {
                 ...state,
-                intervals: newSickLeaveEventState.intervals,
-                dialog: newSickLeaveEventState.dialog,
-                editIntervals: newSickLeaveEventState.editIntervals,
+                ...newSickLeaveEventState,
                 selectedCalendarDay: action.day
             };
         case 'SELECT-CALENDAR-MONTH':
@@ -103,20 +101,14 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
 
             return {
                 ...state,
-                intervals: claimSickLeaveDialog.intervals,
-                dialog: claimSickLeaveDialog.dialog,
-                editIntervals: claimSickLeaveDialog.editIntervals,
-                disableCalendarDaysBefore: claimSickLeaveDialog.disableCalendarDaysBefore
+                ...claimSickLeaveDialog
             };
         case 'CONFIRM-CLAIM-SICK-LEAVE':
             const confirmClaimSickLeaveState = confirmClaimSickLeaveReducer(state, action);
 
             return {
                 ...state,
-                intervals: confirmClaimSickLeaveState.intervals,
-                dialog: confirmClaimSickLeaveState.dialog,
-                editIntervals: confirmClaimSickLeaveState.editIntervals,
-                disableCalendarDaysBefore: confirmClaimSickLeaveState.disableCalendarDaysBefore
+                ...confirmClaimSickLeaveState
             };
         case 'PROLONG-SICK-LEAVE':
             const prolongSickLeaveDialog = new ProlongSickLeaveDialogModel();
