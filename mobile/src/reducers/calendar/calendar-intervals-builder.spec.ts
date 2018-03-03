@@ -88,6 +88,69 @@ describe('IntervalsModel', () => {
         expect(array.length).toEqual(1);
         expect(array[0]).toEqual(intervalModel);
     });
+
+    describe('copy', () => {
+        let startDate = moment({ day: 1, month: 1, year: 2018 });
+        let intervalDate = moment({ day: 2, month: 1, year: 2018 });
+        let endDate = moment({ day: 3, month: 1, year: 2018 });
+
+        let intervalsModel: IntervalsModel;
+
+        beforeEach(() => {
+            intervalsModel = new IntervalsModel();
+
+            const startInterval: IntervalModel = {
+                intervalType: 'startInterval',
+                eventType: CalendarEventsType.SickLeave,
+                startDate: startDate,
+                endDate: endDate,
+                boundary: false
+            };
+
+            const interval: IntervalModel = {
+                intervalType: 'interval',
+                eventType: CalendarEventsType.SickLeave,
+                startDate: startDate,
+                endDate: endDate,
+                boundary: false
+            };
+
+            const endInterval: IntervalModel = {
+                intervalType: 'endInterval',
+                eventType: CalendarEventsType.SickLeave,
+                startDate: startDate,
+                endDate: endDate,
+                boundary: false
+            };
+
+            intervalsModel.set(startDate, startInterval);
+            intervalsModel.set(intervalDate, interval);
+            intervalsModel.set(endDate, endInterval);
+        });
+
+        it('should return copy of IntervalsModel', () => {
+            const copied = intervalsModel.copy();
+
+            expect(intervalsModel).not.toBe(copied);
+        });
+
+        it('should return shallow copy of intervals', () => {
+            const copied = intervalsModel.copy();
+
+            expect(intervalsModel.get(startDate)).not.toBe(copied.get(startDate));
+            expect(intervalsModel.get(intervalDate)).not.toBe(copied.get(intervalDate));
+            expect(intervalsModel.get(endDate)).not.toBe(copied.get(endDate));
+        });
+
+        it('should not copy intervals elements', () => {
+            const copied = intervalsModel.copy();
+
+            expect(intervalsModel.get(startDate)[0]).toBe(copied.get(startDate)[0]);
+            expect(intervalsModel.get(intervalDate)[0]).toBe(copied.get(intervalDate)[0]);
+            expect(intervalsModel.get(endDate)[0]).toBe(copied.get(endDate)[0]);
+        });
+    });
+
 });
 
 describe('CalendarIntervalsBuilder', () => {

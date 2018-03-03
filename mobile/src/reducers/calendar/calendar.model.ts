@@ -49,7 +49,17 @@ export class IntervalsModel {
     }
 
     public copy(): IntervalsModel {
-        return new IntervalsModel({ ...this.intervalsDictionary });
+        const copiedDictionary = { ...this.intervalsDictionary };
+
+        const keys = Object.keys(copiedDictionary);
+
+        for (let key of keys) {
+            copiedDictionary[key] = copiedDictionary[key]
+                ? [...copiedDictionary[key]]
+                : copiedDictionary[key];
+        }
+
+        return new IntervalsModel(copiedDictionary);
     }
 
     public static generateKey(date: Moment): string {
