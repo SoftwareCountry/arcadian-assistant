@@ -1,14 +1,14 @@
 import { CalendarEventsState, calendarEventsReducer, EditIntervalsState } from './calendar-events.reducer';
 import { claimSickLeaveReducer } from './sick-leave.reducer';
-import { claimSickLeave, confirmSickLeave } from './sick-leave.action';
+import { claimSickLeave, confirmSickLeave, ConfirmClaimSickLeave } from './sick-leave.action';
 import moment from 'moment';
 import { eventDialogTextDateFormat, ClaimSickLeaveDialogModel } from './event-dialog/event-dialog.model';
-import { cancelDialog, LoadCalendarEventsFinished, loadCalendarEventsFinished } from './calendar.action';
-import { IntervalsModel } from './calendar.model';
+import { cancelDialog, LoadCalendarEventsFinished, loadCalendarEventsFinished, selectCalendarDay } from './calendar.action';
+import { IntervalsModel, DayModel } from './calendar.model';
+import { CalendarEventsType } from './calendar-events.model';
 
 describe('claimSickLeaveReducer', () => {
     let state: CalendarEventsState;
-    let dialog: ClaimSickLeaveDialogModel;
     let intervalsAfterClaim: IntervalsModel;
     let intervalsBeforeClaim: IntervalsModel;
     let editIntervals: EditIntervalsState;
@@ -24,41 +24,32 @@ describe('claimSickLeaveReducer', () => {
         state = calendarEventsReducer(state, action);
 
         intervalsAfterClaim = state.intervals;
-        dialog = state.dialog.model as ClaimSickLeaveDialogModel;
         editIntervals = state.editIntervals;
     });
 
-    it('should active dialog', () => {
+    it('should activate dialog', () => {
         expect(state.dialog.active).toBeTruthy();
     });
 
     it('should has sick_leave icon', () => {
-        expect(dialog.icon).toBe('sick_leave');
+        expect(state.dialog.model.icon).toBe('sick_leave');
     });
 
     it('should has text', () => {
-        expect(dialog.text).toBe(`Your sick leave has started on ${startDate.format(eventDialogTextDateFormat)}`);
+        expect(state.dialog.model.text).toBe(`Your sick leave has started on ${startDate.format(eventDialogTextDateFormat)}`);
     });
 
     it('should has back is cancel dialog action', () => {
-        expect(dialog.cancel.label).toBe('Back');
-        expect(dialog.cancel.action).toBe(cancelDialog);
+        expect(state.dialog.model.cancel.label).toBe('Back');
+        expect(state.dialog.model.cancel.action).toBe(cancelDialog);
     });
 
     it('should has confirm is cancel dialog action', () => {
-        expect(dialog.accept.label).toBe('Confirm');
-        expect(dialog.accept.action).toBe(confirmSickLeave);
+        expect(state.dialog.model.accept.label).toBe('Confirm');
+        expect(state.dialog.model.accept.action).toBe(confirmSickLeave);
     });
 
-    it('should has startDate = selected day', () => {
-        expect(dialog.startDate.isSame(state.selectedCalendarDay.date, 'day')).toBeTruthy();
-    });
-
-    it('should has endDate is undefined', () => {
-        expect(dialog.endDate).toBeUndefined();
-    });
-
-    it('should active edit intervals', () => {
+    it('should activate edit intervals', () => {
         expect(editIntervals.active).toBeTruthy();
     });
 
@@ -72,5 +63,133 @@ describe('claimSickLeaveReducer', () => {
 
     it('should has intervals as copy', () => {
         expect(state.intervals).not.toBe(intervalsBeforeClaim);
+    });
+});
+
+describe('select sick leave endDate', () => {
+    let state: CalendarEventsState;
+    let intervalsAfterClaim: IntervalsModel;
+    let intervalsBeforeClaim: IntervalsModel;
+    const startDate = moment();
+    let endDay: DayModel;
+
+    beforeEach(() => {
+        const loadCalendarEventsFinishedAction = loadCalendarEventsFinished([]);
+        state = calendarEventsReducer(undefined, loadCalendarEventsFinishedAction);
+
+        intervalsBeforeClaim = state.intervals;
+    });
+
+    beforeEach(() => {
+        const action = claimSickLeave(startDate);
+        state = calendarEventsReducer(state, action);
+
+        intervalsAfterClaim = state.intervals;
+    });
+
+    beforeEach(() => {
+        endDay = state.selectedCalendarDay;
+    });
+
+    beforeEach(() => {
+        const action = selectCalendarDay(endDay);
+        state = calendarEventsReducer(state, action);
+    });
+
+    it ('should add draft interval', () => {
+
+        const intervals = state.intervals.get(endDay.date);
+
+        expect(intervals[0].draft).toBeTruthy();
+        expect(intervals[0].eventType).toBe(CalendarEventsType.SickLeave);
+        expect(intervals[0].startDate.isSame(startDate, 'day')).toBeTruthy();
+        expect(intervals[0].endDate.isSame(endDay.date, 'day')).toBeTruthy();
+    });
+
+    it('should has dialog with text', () => {
+        expect(state.dialog.model.text)
+            .toBe(`Your sick leave has started on ${startDate.format(eventDialogTextDateFormat)} and will be complete on ${endDay.date.format(eventDialogTextDateFormat)}`);
+    });
+
+    it('should has edit intervals with end day', () => {
+        expect(state.editIntervals.endDay).toBe(endDay);
+    });
+});
+
+describe('confirm claim sick leave', () => {
+    let state: CalendarEventsState;
+    let intervalsAfterClaim: IntervalsModel;
+    let intervalsBeforeClaim: IntervalsModel;
+    const startDate = moment();
+    let endDay: DayModel;
+
+    beforeEach(() => {
+        const loadCalendarEventsFinishedAction = loadCalendarEventsFinished([]);
+        state = calendarEventsReducer(undefined, loadCalendarEventsFinishedAction);
+
+        intervalsBeforeClaim = state.intervals;
+    });
+
+    beforeEach(() => {
+        const action = claimSickLeave(startDate);
+        state = calendarEventsReducer(state, action);
+
+        intervalsAfterClaim = state.intervals;
+    });
+
+    beforeEach(() => {
+        endDay = state.selectedCalendarDay;
+    });
+
+    beforeEach(() => {
+        const action = selectCalendarDay(endDay);
+        state = calendarEventsReducer(state, action);
+    });
+
+    beforeEach(() => {
+        const action = confirmSickLeave();
+        state = calendarEventsReducer(state, action);
+    });
+
+    it('should add interval as non-draft', () => {
+        const intervals = state.intervals.get(endDay.date);
+
+        expect(intervals[0].draft).toBeFalsy();
+        expect(intervals[0].eventType).toBe(CalendarEventsType.SickLeave);
+        expect(intervals[0].startDate.isSame(startDate, 'day')).toBeTruthy();
+        expect(intervals[0].endDate.isSame(endDay.date, 'day')).toBeTruthy();
+    });
+
+    it('should add interval as non-draft', () => {
+        const intervals = state.intervals.get(endDay.date);
+
+        expect(intervals[0].draft).toBeFalsy();
+        expect(intervals[0].eventType).toBe(CalendarEventsType.SickLeave);
+        expect(intervals[0].startDate.isSame(startDate, 'day')).toBeTruthy();
+        expect(intervals[0].endDate.isSame(endDay.date, 'day')).toBeTruthy();
+    });
+
+    it('should disactivate dialog', () => {
+        expect(state.dialog.active).toBeFalsy();
+    });
+
+    it('should reset dialog model to null', () => {
+        expect(state.dialog.model).toBeNull();
+    });
+
+    it('should disactivate edit intervals', () => {
+        expect(state.editIntervals.active).toBeFalsy();
+    });
+
+    it('should reset edit intervals endDay to null', () => {
+        expect(state.editIntervals.endDay).toBeNull();
+    });
+
+    it('should reset edit intervals startDay to null', () => {
+        expect(state.editIntervals.startDay).toBeNull();
+    });
+
+    it('should reset edit unchanged intervals to null', () => {
+        expect(state.editIntervals.unchangedIntervals).toBeNull();
     });
 });

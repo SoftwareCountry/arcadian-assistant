@@ -6,7 +6,7 @@ import moment from 'moment';
 import { CalendarWeeksBuilder } from './calendar-weeks-builder';
 import { CalendarIntervalsBuilder } from './calendar-intervals-builder';
 import { EventDialogModel, ClaimSickLeaveDialogModel, ProlongSickLeaveDialogModel, EditSickLeaveDialogModel } from './event-dialog/event-dialog.model';
-import { addNewSickLeaveEventReducer, claimSickLeaveReducer, confirmClaimSickLeaveReducer } from './sick-leave.reducer';
+import { selectSickLeaveEndDateReducer, claimSickLeaveReducer, confirmClaimSickLeaveReducer } from './sick-leave.reducer';
 
 export interface DialogActiveState {
     active: boolean;
@@ -76,7 +76,7 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 intervals: intervals
             };
         case 'SELECT-CALENDAR-DAY':
-            const newSickLeaveEventState = addNewSickLeaveEventReducer(state, action);
+            const newSickLeaveEventState = selectSickLeaveEndDateReducer(state, action);
 
             return {
                 ...state,

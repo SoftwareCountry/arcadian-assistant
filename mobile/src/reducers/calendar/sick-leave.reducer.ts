@@ -31,7 +31,7 @@ export const claimSickLeaveReducer = (state: CalendarEventsState, action: ClaimS
     };
 };
 
-export const addNewSickLeaveEventReducer = (state: CalendarEventsState, action: SelectCalendarDay): CalendarEventsState => {
+export const selectSickLeaveEndDateReducer = (state: CalendarEventsState, action: SelectCalendarDay): CalendarEventsState => {
 
     if (state.editIntervals.active) {
         const newCalendarEvents = new CalendarEvents();
