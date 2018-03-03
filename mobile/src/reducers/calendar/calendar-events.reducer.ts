@@ -27,6 +27,7 @@ export interface CalendarEventsState {
     dialog: DialogActiveState;
     editIntervals: EditIntervalsState;
     disableCalendarDaysBefore: DayModel;
+    disableCalendarActionsButtonGroup: boolean;
 }
 
 const createInitState = (): CalendarEventsState => {
@@ -61,7 +62,8 @@ const createInitState = (): CalendarEventsState => {
         dialog: defaultDialogState,
         intervals: null,
         editIntervals: defaultEditIntervalsState,
-        disableCalendarDaysBefore: null
+        disableCalendarDaysBefore: null,
+        disableCalendarActionsButtonGroup: true
     };
 };
 
@@ -75,7 +77,8 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
 
             return {
                 ...state,
-                intervals: intervals
+                intervals: intervals,
+                disableCalendarActionsButtonGroup: false
             };
         case 'SELECT-CALENDAR-DAY':
             const newSickLeaveEventState = selectSickLeaveEndDateReducer(state, action);

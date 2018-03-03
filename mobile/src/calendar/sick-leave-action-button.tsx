@@ -7,6 +7,7 @@ import { Moment } from 'moment';
 interface SickLeaveActionButtonProps {
     interval: IntervalModel;
     selectedDay: DayModel;
+    disabled: boolean;
     claim: (selectedDay: Moment) => void;
     edit: () => void;
 }
@@ -14,7 +15,7 @@ interface SickLeaveActionButtonProps {
 export class SickLeaveActionButton extends Component<SickLeaveActionButtonProps> {
     public render() {
         return (
-            <CalendarActionButton title={this.title} borderColor={CalendarEventsColor.sickLeave} onPress={this.onSickLeaveAction} />
+            <CalendarActionButton title={this.title} borderColor={CalendarEventsColor.sickLeave} onPress={this.onSickLeaveAction} disabled={this.props.disabled} />
         );
     }
 

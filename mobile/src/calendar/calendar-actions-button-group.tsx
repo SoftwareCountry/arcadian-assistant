@@ -17,6 +17,7 @@ import { Moment } from 'moment';
 interface ActionButtonGroupProps {
     intervalsModel: IntervalsModel;
     selectedCalendarDay: DayModel;
+    disableActionButtons: boolean;
 }
 
 interface ActionButtonsGroupDispatchProps {
@@ -32,15 +33,15 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & A
 
         return (
             <View style={calendarActionsStyles.container}>
-                <VacationActionButton interval={vacation} />
+                <VacationActionButton interval={vacation} disabled={this.props.disableActionButtons} />
 
                 <CalendarActionButtonSeparator />
 
-                <DayoffActionButton interval={dayoff} />
+                <DayoffActionButton interval={dayoff} disabled={this.props.disableActionButtons} />
 
                 <CalendarActionButtonSeparator />
 
-                <SickLeaveActionButton interval={sickleave} selectedDay={this.props.selectedCalendarDay} {...this.props.sickLeaveActions} />
+                <SickLeaveActionButton interval={sickleave} selectedDay={this.props.selectedCalendarDay} disabled={this.props.disableActionButtons} {...this.props.sickLeaveActions} />
 
                 <CalendarActionButtonSeparator />
             </View>
@@ -68,9 +69,10 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & A
     }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: AppState): ActionButtonGroupProps => ({
     intervalsModel: state.calendar.calendarEvents.intervals,
-    selectedCalendarDay: state.calendar.calendarEvents.selectedCalendarDay
+    selectedCalendarDay: state.calendar.calendarEvents.selectedCalendarDay,
+    disableActionButtons: state.calendar.calendarEvents.disableCalendarActionsButtonGroup
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>) => ({
