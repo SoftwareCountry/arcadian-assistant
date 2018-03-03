@@ -13,13 +13,14 @@ export type OnSelectedDayCallback = (day: DayModel) => void;
 
 interface CalendarPageDefaultProps {
     hidePrevNextMonthDays?: boolean;
-    intervals?: IntervalsModel;
 }
 
 interface CalendarPageProps {
     weeks: WeekModel[];
     onSelectedDay: OnSelectedDayCallback;
     selectedDay: DayModel;
+    intervals?: IntervalsModel;
+    disableBefore?: DayModel;
 }
 
 interface CalendarPageState {
@@ -89,11 +90,14 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
     private renderDay(day: DayModel) {
         const intervalModels = this.getIntervalsByDate(day.date);
         const dayTextColor = this.getDayTextColor(intervalModels);
+        const disableDay = this.props.disableBefore
+            ? day.date.isBefore(this.props.disableBefore.date, 'day')
+            : false;
 
         return (
             <View style={calendarStyles.weekDayContainer} key={`${day.date.week()}-${day.date.date()}`}>
                 <WeekDay hide={this.props.hidePrevNextMonthDays && !day.belongsToCurrentMonth}>
-                    <WeekDayTouchable onSelectedDay={this.props.onSelectedDay} day={day} />
+                    <WeekDayTouchable onSelectedDay={this.props.onSelectedDay} day={day} disabled={disableDay} />
                     <WeekDayCircle day={day} selectedDay={this.props.selectedDay} weekHeight={this.state.weekHeight} customTextColor={dayTextColor} />
                     {
                         this.renderIntervals(intervalModels)

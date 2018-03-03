@@ -9,6 +9,7 @@ import { WeekModel, IntervalsModel, DayModel } from '../reducers/calendar/calend
 interface CalendarDefaultProps {
     intervals?: IntervalsModel;
     selectedDay?: DayModel;
+    disableBefore?: DayModel;
 }
 
 interface CalendarProps extends CalendarDefaultProps {
@@ -26,7 +27,8 @@ interface CalendarState {
 export class CalendarPager extends Component<CalendarProps, CalendarState> {
     public static defaultProps: CalendarDefaultProps = {
         intervals: null,
-        selectedDay: null
+        selectedDay: null,
+        disableBefore: null
     };
 
     constructor(props: CalendarProps) {
@@ -69,7 +71,12 @@ export class CalendarPager extends Component<CalendarProps, CalendarState> {
                     <StyledText>{'>'}</StyledText>
                 </TouchableOpacity>
             </View>
-            <CalendarPage selectedDay={this.props.selectedDay} onSelectedDay={this.props.onSelectedDay} weeks={this.props.weeks} intervals={this.props.intervals} />
+            <CalendarPage
+                selectedDay={this.props.selectedDay}
+                onSelectedDay={this.props.onSelectedDay}
+                weeks={this.props.weeks}
+                intervals={this.props.intervals}
+                disableBefore={this.props.disableBefore} />
         </View>;
     }
 }

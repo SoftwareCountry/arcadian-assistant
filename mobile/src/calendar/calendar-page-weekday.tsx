@@ -91,16 +91,13 @@ export class WeekDayCircle extends Component<WeekDayCircleProps> {
 interface WeekDayTouchableProps {
     day: DayModel;
     onSelectedDay: OnSelectedDayCallback;
+    disabled: boolean;
 }
 
 export class WeekDayTouchable extends Component<WeekDayTouchableProps> {
-    public shouldComponentUpdate() {
-        return false;
-    }
-
     public render() {
         return (
-            <TouchableOpacity style={calendarStyles.weekDayTouchable} onPressIn={this.onSelectedDay} delayPressIn={0}>
+            <TouchableOpacity style={calendarStyles.weekDayTouchable} onPressIn={this.onSelectedDay} delayPressIn={0} disabled={this.props.disabled}>
             </TouchableOpacity>
         );
     }

@@ -27,7 +27,8 @@ export const claimSickLeaveReducer = (state: CalendarEventsState, action: ClaimS
             active: true,
             startDay: state.selectedCalendarDay,
             unchangedIntervals: state.intervals,
-        }
+        },
+        disableCalendarDaysBefore: state.selectedCalendarDay
     };
 };
 
@@ -99,6 +100,7 @@ export const confirmClaimSickLeaveReducer = (state: CalendarEventsState, action:
             unchangedIntervals: null,
             startDay: null,
             endDay: null
-        }
+        },
+         disableCalendarDaysBefore: null
     };
 };

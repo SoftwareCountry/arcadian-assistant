@@ -19,7 +19,9 @@ describe('claimSickLeaveReducer', () => {
         state = calendarEventsReducer(undefined, loadCalendarEventsFinishedAction);
 
         intervalsBeforeClaim = state.intervals;
+    });
 
+    beforeEach(() => {
         const action = claimSickLeave(startDate);
         state = calendarEventsReducer(state, action);
 
@@ -63,6 +65,10 @@ describe('claimSickLeaveReducer', () => {
 
     it('should has intervals as copy', () => {
         expect(state.intervals).not.toBe(intervalsBeforeClaim);
+    });
+
+    it('should disable calendar days before start day', () => {
+        expect(state.disableCalendarDaysBefore.date.isSame(startDate, 'day')).toBeTruthy();
     });
 });
 
@@ -191,5 +197,9 @@ describe('confirm claim sick leave', () => {
 
     it('should reset edit unchanged intervals to null', () => {
         expect(state.editIntervals.unchangedIntervals).toBeNull();
+    });
+
+    it('should enable calendar days before start day', () => {
+        expect(state.disableCalendarDaysBefore).toBeNull();
     });
 });

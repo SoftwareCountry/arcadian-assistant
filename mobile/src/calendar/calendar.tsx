@@ -10,6 +10,7 @@ interface CalendarProps {
     weeks: WeekModel[];
     intervals: IntervalsModel;
     selectedCalendarDay: DayModel;
+    disableCalendarDaysBefore: DayModel;
 }
 
 interface CalendarDispatchProps {
@@ -25,7 +26,8 @@ export class CalendarImpl extends Component<CalendarProps & CalendarDispatchProp
                     weeks={this.props.weeks}
                     intervals={this.props.intervals}
                     onNextMonth={this.onSelectMonth}
-                    onPrevMonth={this.onSelectMonth} />;
+                    onPrevMonth={this.onSelectMonth}
+                    disableBefore={this.props.disableCalendarDaysBefore} />;
     }
 
     private onSelectedDay: OnSelectedDayCallback = (day) => {
@@ -40,7 +42,8 @@ export class CalendarImpl extends Component<CalendarProps & CalendarDispatchProp
 const mapStateToProps = (state: AppState): CalendarProps => ({
     weeks: state.calendar.calendarEvents.weeks,
     intervals: state.calendar.calendarEvents.intervals,
-    selectedCalendarDay: state.calendar.calendarEvents.selectedCalendarDay
+    selectedCalendarDay: state.calendar.calendarEvents.selectedCalendarDay,
+    disableCalendarDaysBefore: state.calendar.calendarEvents.disableCalendarDaysBefore
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>) => ({

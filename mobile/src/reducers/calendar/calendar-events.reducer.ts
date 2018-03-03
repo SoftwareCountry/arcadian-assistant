@@ -26,6 +26,7 @@ export interface CalendarEventsState {
     intervals: IntervalsModel;
     dialog: DialogActiveState;
     editIntervals: EditIntervalsState;
+    disableCalendarDaysBefore: DayModel;
 }
 
 const createInitState = (): CalendarEventsState => {
@@ -59,7 +60,8 @@ const createInitState = (): CalendarEventsState => {
         selectedCalendarDay: todayModel,
         dialog: defaultDialogState,
         intervals: null,
-        editIntervals: defaultEditIntervalsState
+        editIntervals: defaultEditIntervalsState,
+        disableCalendarDaysBefore: null
     };
 };
 
@@ -100,7 +102,8 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 ...state,
                 intervals: claimSickLeaveDialog.intervals,
                 dialog: claimSickLeaveDialog.dialog,
-                editIntervals: claimSickLeaveDialog.editIntervals
+                editIntervals: claimSickLeaveDialog.editIntervals,
+                disableCalendarDaysBefore: claimSickLeaveDialog.disableCalendarDaysBefore
             };
         case 'CONFIRM-CLAIM-SICK-LEAVE':
             const confirmClaimSickLeaveState = confirmClaimSickLeaveReducer(state, action);
@@ -109,7 +112,8 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 ...state,
                 intervals: confirmClaimSickLeaveState.intervals,
                 dialog: confirmClaimSickLeaveState.dialog,
-                editIntervals: confirmClaimSickLeaveState.editIntervals
+                editIntervals: confirmClaimSickLeaveState.editIntervals,
+                disableCalendarDaysBefore: confirmClaimSickLeaveState.disableCalendarDaysBefore
             };
         case 'PROLONG-SICK-LEAVE':
             const prolongSickLeaveDialog = new ProlongSickLeaveDialogModel();
@@ -151,7 +155,8 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                     unchangedIntervals: null,
                     startDay: null,
                     endDay: null
-                }
+                },
+                disableCalendarDaysBefore: null
             };
 
         default:
