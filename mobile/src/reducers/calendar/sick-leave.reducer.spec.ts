@@ -186,7 +186,7 @@ describe('confirm claim sick leave', () => {
         expect(state.editingOfIntervals.startDay).toBeNull();
     });
 
-    it('should reset edit unchanged intervals to null', () => {
+    it('should reset editing of intervals unchanged intervals to null', () => {
         expect(state.editingOfIntervals.unchangedIntervals).toBeNull();
     });
 
