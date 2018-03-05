@@ -76,6 +76,7 @@ export const confirmClaimSickLeaveReducer = (state: CalendarEventsState, action:
         ? state.editingOfIntervals.unchangedIntervals.copy()
         : null;
 
+    // TODO: temp: reload again all calendar events. Will be removed next PR. Just for demo
     if (intervalsToSave) {
         const newCalendarEvents = new CalendarEvents();
         newCalendarEvents.type = CalendarEventsType.SickLeave;
