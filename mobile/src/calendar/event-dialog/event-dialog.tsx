@@ -9,6 +9,8 @@ import { CalendarActions, cancelDialog } from '../../reducers/calendar/calendar.
 import { layout, content, buttons } from './styles';
 import { CalendarActionButton } from '../calendar-action-button';
 import { EventDialogModel, EventDialogEmptyModel } from '../../reducers/calendar/event-dialog/event-dialog.model';
+import { Employee } from '../../reducers/organization/employee.model';
+import { CalendarEvents } from '../../reducers/calendar/calendar-events.model';
 
 interface EventDialogProps {
     model?: EventDialogModel<any>;
@@ -50,14 +52,14 @@ export class EventDialogImpl extends Component<EventDialogProps & EventDialogDis
     private getActionButtons() {
         const { model } = this.props;
 
-        if (!model || !model.cancel || !model.accept) {
+        if (!model || !model.cancelLabel || !model.acceptLabel) {
             return null;
         }
 
         return (
             <View style={layout.buttons}>
-                <CalendarActionButton title={model.cancel.label} onPress={this.cancel} style={buttons.cancel} textStyle={buttons.cancelLabel} />
-                <CalendarActionButton title={model.accept.label} onPress={this.accept} style={buttons.accept} textStyle={buttons.acceptLabel} />
+                <CalendarActionButton title={model.cancelLabel} onPress={this.cancel} style={buttons.cancel} textStyle={buttons.cancelLabel} />
+                <CalendarActionButton title={model.acceptLabel} onPress={this.accept} style={buttons.accept} textStyle={buttons.acceptLabel} />
             </View>
         );
     }
@@ -71,11 +73,11 @@ export class EventDialogImpl extends Component<EventDialogProps & EventDialogDis
     }
 
     private cancel = () => {
-        this.props.dispatch(this.props.model.cancel.action());
+        this.props.dispatch(this.props.model.cancelAction());
     }
 
     private accept = () => {
-        this.props.dispatch(this.props.model.accept.action());
+        this.props.dispatch(this.props.model.acceptAction());
     }
 }
 

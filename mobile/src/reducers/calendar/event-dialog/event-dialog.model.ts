@@ -1,23 +1,25 @@
 import { Moment } from 'moment';
 import { cancelDialog, CalendarActions } from '../calendar.action';
 import { confirmSickLeave, editSickLeave, confirmProlongSickLeave, prolongSickLeave, completeSickLeave } from '../sick-leave.action';
+import { Employee } from '../../organization/employee.model';
+import { CalendarEvents } from '../calendar-events.model';
 
 export const eventDialogTextDateFormat = 'MMMM D, YYYY';
-
-interface ButtonProps {
-    label: string;
-    action: () => CalendarActions;
-}
 
 export abstract class EventDialogModel<T extends EventDialogModel<T>> {
     public abstract title: string;
     public abstract text: string;
     public abstract icon: string;
-    public cancel?: ButtonProps;
-    public accept?: ButtonProps;
+
+    public abstract cancelLabel: string;
+    public abstract acceptLabel: string;
+
     public close?: () => CalendarActions;
 
     constructor(protected readonly tCtor: new () => T) {}
+
+    public abstract cancelAction(): CalendarActions;
+    public abstract acceptAction(): CalendarActions;
 
     public copy(): T {
         const instance = new this.tCtor();
@@ -25,8 +27,8 @@ export abstract class EventDialogModel<T extends EventDialogModel<T>> {
         instance.title = this.title;
         instance.text = this.text;
         instance.icon = this.icon;
-        instance.cancel = this.cancel ? {...this.cancel} : this.cancel;
-        instance.accept = this.accept ? {...this.accept} : this.accept;
+        instance.cancelLabel = this.cancelLabel;
+        instance.acceptLabel = this.acceptLabel;
         instance.close = this.close;
 
         return instance;
@@ -37,17 +39,26 @@ export class EventDialogEmptyModel extends EventDialogModel<EventDialogEmptyMode
     public title: string;
     public text: string;
     public icon: string;
-    public cancel: ButtonProps = { label: null, action: null };
-    public accept: ButtonProps = { label: null, action: null };
+
+    public cancelLabel: string;
+    public acceptLabel: string;
 
     constructor() {
         super(EventDialogEmptyModel);
+    }
+
+    public cancelAction(): CalendarActions {
+        return cancelDialog();
+    }
+    public acceptAction(): CalendarActions {
+        return cancelDialog();
     }
 }
 
 export class ClaimSickLeaveDialogModel extends EventDialogModel<ClaimSickLeaveDialogModel> {
     public startDate: Moment;
     public endDate: Moment;
+    public calendarEvents: CalendarEvents;
 
     public readonly title = 'Select date to Complete your Sick Leave';
 
@@ -57,18 +68,19 @@ export class ClaimSickLeaveDialogModel extends EventDialogModel<ClaimSickLeaveDi
 
     public readonly icon = 'sick_leave';
 
-    public readonly cancel: ButtonProps = {
-        label: 'Back',
-        action: cancelDialog
-    };
-
-    public readonly accept: ButtonProps = {
-        label: 'Confirm',
-        action: confirmSickLeave // TODO: add epic to confirmSickLeave
-    };
+    public readonly cancelLabel = 'Back';
+    public readonly acceptLabel = 'Confirm';
 
     constructor() {
         super(ClaimSickLeaveDialogModel);
+    }
+
+    public cancelAction(): CalendarActions {
+        return cancelDialog();
+    }
+
+    public acceptAction(): CalendarActions {
+        return confirmSickLeave(); // TODO: add epic to confirmSickLeave
     }
 
     public copy(): ClaimSickLeaveDialogModel {
@@ -76,6 +88,7 @@ export class ClaimSickLeaveDialogModel extends EventDialogModel<ClaimSickLeaveDi
 
         newInstance.startDate = this.startDate;
         newInstance.endDate = this.endDate;
+        newInstance.calendarEvents = this.calendarEvents;
 
         return newInstance;
     }
@@ -86,17 +99,20 @@ export class ProlongSickLeaveDialogModel extends EventDialogModel<ProlongSickLea
     public readonly text = 'Your sick leave has started on MM D, YYYY and will be prolonged to MM D, YYYY.';
     public readonly icon = 'sick_leave';
     public readonly close = cancelDialog;
-    public readonly cancel: ButtonProps = {
-        label: 'Back',
-        action: editSickLeave
-    };
-    public readonly accept: ButtonProps = {
-        label: 'Confirm',
-        action: confirmProlongSickLeave // TODO: add epic to confirmProlongSickLeave
-    };
+
+    public readonly cancelLabel = 'Back';
+    public readonly acceptLabel = 'Confirm';
 
     constructor() {
         super(ProlongSickLeaveDialogModel);
+    }
+
+    public cancelAction(): CalendarActions {
+        return editSickLeave();
+    }
+
+    public acceptAction(): CalendarActions {
+        return confirmProlongSickLeave(); // TODO: add epic to confirmProlongSickLeave
     }
 }
 
@@ -105,16 +121,19 @@ export class EditSickLeaveDialogModel extends EventDialogModel<EditSickLeaveDial
     public readonly text = 'Your sick leave has started on MM D, YYYY and still not completed.';
     public readonly icon = 'sick_leave';
     public readonly close = cancelDialog;
-    public readonly cancel: ButtonProps = {
-        label: 'Prolong',
-        action: prolongSickLeave
-    };
-    public readonly accept: ButtonProps = {
-        label: 'Complete',
-        action: completeSickLeave // TODO: add epic to completeSickLeave
-    };
+
+    public readonly cancelLabel = 'Prolong';
+    public readonly acceptLabel = 'Complete';
 
     constructor() {
         super(EditSickLeaveDialogModel);
+    }
+
+    public cancelAction(): CalendarActions {
+        return prolongSickLeave();
+    }
+
+    public acceptAction(): CalendarActions {
+        return completeSickLeave(); // TODO: add epic to completeSickLeave
     }
 }
