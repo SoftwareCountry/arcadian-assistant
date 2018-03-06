@@ -25,8 +25,8 @@ export abstract class EventDialogModel<T extends EventDialogModel<T>> {
         instance.title = this.title;
         instance.text = this.text;
         instance.icon = this.icon;
-        instance.cancel = this.cancel;
-        instance.accept = this.accept;
+        instance.cancel = this.cancel ? {...this.cancel} : this.cancel;
+        instance.accept = this.accept ? {...this.accept} : this.accept;
         instance.close = this.close;
 
         return instance;
