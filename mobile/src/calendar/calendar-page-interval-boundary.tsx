@@ -28,7 +28,10 @@ export class IntervalBoundary extends Component<IntervalBoundaryProps> {
                 width: size - (size * intervalMargin),
                 left: '25%',
                 opacity: 1
-            }
+            },
+            this.props.draft
+                ? calendarIntervalStyles.draft
+                : {},
         ]);
 
         const circleRadius = PixelRatio.roundToNearestPixel(circleSize / 2);

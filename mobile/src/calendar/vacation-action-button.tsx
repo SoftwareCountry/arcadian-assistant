@@ -5,13 +5,14 @@ import { CalendarEventsColor } from './styles';
 
 interface VacationActionButtonProps {
     interval: IntervalModel;
+    disabled: boolean;
     // TODO: pass needed dispatch actions
 }
 
 export class VacationActionButton extends Component<VacationActionButtonProps> {
     public render() {
         return (
-            <CalendarActionButton title={this.title} borderColor={CalendarEventsColor.vacation} onPress={this.onVacationAction} />
+            <CalendarActionButton title={this.title} borderColor={CalendarEventsColor.vacation} onPress={this.onVacationAction} disabled={this.props.disabled} />
         );
     }
 

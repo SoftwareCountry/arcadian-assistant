@@ -1,8 +1,11 @@
+import { Moment } from 'moment';
+
 export interface ClaimSickLeave {
     type: 'CLAIM-SICK-LEAVE';
+    startDate: Moment;
 }
 
-export const claimSickLeave = (): ClaimSickLeave => ({ type: 'CLAIM-SICK-LEAVE' });
+export const claimSickLeave = (startDate: Moment): ClaimSickLeave => ({ type: 'CLAIM-SICK-LEAVE', startDate });
 
 export interface ConfirmClaimSickLeave {
     type: 'CONFIRM-CLAIM-SICK-LEAVE';

@@ -8,19 +8,12 @@ import { CalendarActions, cancelDialog } from '../../reducers/calendar/calendar.
 
 import { layout, content, buttons } from './styles';
 import { CalendarActionButton } from '../calendar-action-button';
+import { EventDialogModel, EventDialogEmptyModel } from '../../reducers/calendar/event-dialog/event-dialog.model';
+import { Employee } from '../../reducers/organization/employee.model';
+import { CalendarEvents } from '../../reducers/calendar/calendar-events.model';
 
-export interface ButtonProps {
-    label: string;
-    action: () => CalendarActions;
-}
-
-export interface EventDialogProps {
-    title: string;
-    text: string;
-    icon: string;
-    cancel?: ButtonProps;
-    accept?: ButtonProps;
-    close?: () => CalendarActions;
+interface EventDialogProps {
+    model?: EventDialogModel<any>;
 }
 
 interface EventDialogDispatchProps {
@@ -30,17 +23,18 @@ interface EventDialogDispatchProps {
 export class EventDialogImpl extends Component<EventDialogProps & EventDialogDispatchProps> {
     public render() {
         const actionButtons = this.getActionButtons();
+        const model = this.props.model ? this.props.model : new EventDialogEmptyModel();
 
         return (
             <View style={layout.container}>
                 <View style={layout.icon}>
-                    <ApplicationIcon name={this.props.icon} style={content.icon} />
+                    <ApplicationIcon name={model.icon} style={content.icon} />
                 </View>
                 <View style={layout.content}>
                     <View style={layout.text}>
-                        <StyledText style={content.title}>{this.props.title}</StyledText>
+                        <StyledText style={content.title}>{model.title}</StyledText>
                         <View>
-                            <StyledText style={content.text}>{this.props.text}</StyledText>
+                            <StyledText style={content.text}>{model.text}</StyledText>
                         </View>
                     </View>
 
@@ -56,40 +50,42 @@ export class EventDialogImpl extends Component<EventDialogProps & EventDialogDis
     }
 
     private getActionButtons() {
-        if (!this.props.cancel || !this.props.accept) {
+        const { model } = this.props;
+
+        if (!model || !model.cancelLabel || !model.acceptLabel) {
             return null;
         }
 
         return (
             <View style={layout.buttons}>
-                <CalendarActionButton title={this.props.cancel.label} onPress={this.cancel} style={buttons.cancel} textStyle={buttons.cancelLabel} />
-                <CalendarActionButton title={this.props.accept.label} onPress={this.accept} style={buttons.accept} textStyle={buttons.acceptLabel} />
+                <CalendarActionButton title={model.cancelLabel} onPress={this.cancel} style={buttons.cancel} textStyle={buttons.cancelLabel} />
+                <CalendarActionButton title={model.acceptLabel} onPress={this.accept} style={buttons.accept} textStyle={buttons.acceptLabel} />
             </View>
         );
     }
 
     private close = () => {
-        if (!this.props.close) {
+        if (!this.props.model.close) {
             this.cancel();
             return;
         }
-        this.props.dispatch(this.props.close());
+        this.props.dispatch(this.props.model.close());
     }
 
     private cancel = () => {
-        this.props.dispatch(this.props.cancel.action());
+        this.props.dispatch(this.props.model.cancelAction());
     }
 
     private accept = () => {
-        this.props.dispatch(this.props.accept.action());
+        this.props.dispatch(this.props.model.acceptAction());
     }
 }
 
-const mapStateToProps = (state: AppState) => ({
-    ...state.calendar.calendarEvents.dialog as EventDialogProps
+const mapStateToProps = (state: AppState): EventDialogProps => ({
+    model: state.calendar.calendarEvents.dialog.model
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>) => ({
+const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>): EventDialogDispatchProps => ({
     dispatch: dispatch
 });
 

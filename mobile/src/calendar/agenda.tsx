@@ -12,7 +12,7 @@ interface AgendaProps {
     dialogActive: boolean;
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: AppState): AgendaProps => ({
     dialogActive: state.calendar.calendarEvents.dialog.active
 });
 
