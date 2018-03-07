@@ -43,16 +43,20 @@ describe('claimSickLeaveReducer', () => {
 
     it('should have dialog with cancel which is cancelDialog action', () => {
         expect(state.dialog.model.cancelLabel).toBe('Back');
-        expect(state.dialog.model.cancelAction).toBe(cancelDialog);
+        expect(state.dialog.model.cancelAction()).toEqual(cancelDialog());
     });
 
     it('should have dialog with confirm which is confirmSickLeave action', () => {
         expect(state.dialog.model.acceptLabel).toBe('Confirm');
-        expect(state.dialog.model.acceptAction).toBe(confirmSickLeave);
+        expect(state.dialog.model.acceptAction()).toEqual(confirmSickLeave());
     });
 
     it('should activate editing of intervals', () => {
         expect(editingOfIntervals.active).toBeTruthy();
+    });
+
+    it('should have editing of intervals with eventType which is SickLeave', () => {
+        expect(editingOfIntervals.eventType).toBe(CalendarEventsType.SickLeave);
     });
 
     it('should have editing of intervals with startDay which is selected day', () => {

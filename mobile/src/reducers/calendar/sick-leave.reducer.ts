@@ -27,6 +27,7 @@ export const claimSickLeaveReducer = (state: CalendarEventsState, action: ClaimS
             active: true,
             startDay: state.selectedCalendarDay,
             unchangedIntervals: state.intervals,
+            eventType: CalendarEventsType.SickLeave
         },
         disableCalendarDaysBefore: state.selectedCalendarDay
     };
@@ -34,7 +35,7 @@ export const claimSickLeaveReducer = (state: CalendarEventsState, action: ClaimS
 
 export const selectSickLeaveEndDateReducer = (state: CalendarEventsState, action: SelectCalendarDay): CalendarEventsState => {
 
-    if (state.editingOfIntervals.active) {
+    if (state.editingOfIntervals.active && state.editingOfIntervals.eventType === CalendarEventsType.SickLeave) {
         const newCalendarEvents = new CalendarEvents();
 
         newCalendarEvents.type = CalendarEventsType.SickLeave;
@@ -100,7 +101,8 @@ export const confirmClaimSickLeaveReducer = (state: CalendarEventsState, action:
             active: false,
             unchangedIntervals: null,
             startDay: null,
-            endDay: null
+            endDay: null,
+            eventType: null
         },
          disableCalendarDaysBefore: null
     };

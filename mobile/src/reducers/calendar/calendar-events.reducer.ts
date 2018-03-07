@@ -7,6 +7,7 @@ import { CalendarWeeksBuilder } from './calendar-weeks-builder';
 import { CalendarIntervalsBuilder } from './calendar-intervals-builder';
 import { EventDialogModel, ClaimSickLeaveDialogModel, ProlongSickLeaveDialogModel, EditSickLeaveDialogModel } from './event-dialog/event-dialog.model';
 import { selectSickLeaveEndDateReducer, claimSickLeaveReducer, confirmClaimSickLeaveReducer } from './sick-leave.reducer';
+import { CalendarEventsType } from './calendar-events.model';
 
 export interface DialogActiveState {
     active: boolean;
@@ -18,6 +19,7 @@ export interface EditingOfIntervalsState {
     unchangedIntervals: IntervalsModel;
     startDay: DayModel;
     endDay: DayModel;
+    eventType: CalendarEventsType;
 }
 
 export interface CalendarEventsState {
@@ -53,7 +55,8 @@ const createInitState = (): CalendarEventsState => {
         active: false,
         unchangedIntervals: null,
         startDay: null,
-        endDay: null
+        endDay: null,
+        eventType: null
     };
 
     return {
@@ -149,7 +152,8 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                     active: false,
                     unchangedIntervals: null,
                     startDay: null,
-                    endDay: null
+                    endDay: null,
+                    eventType: null
                 },
                 disableCalendarDaysBefore: null
             };
