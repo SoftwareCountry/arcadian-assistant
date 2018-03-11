@@ -10,6 +10,7 @@
     using Arcadia.Assistant.Configuration;
     using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.Web.Configuration;
+    using Arcadia.Assistant.Web.Infrastructure;
 
     using Autofac;
 
@@ -96,6 +97,7 @@
                         {
                             jwtOptions.Audience = appSettings.Security.ClientId;
                             jwtOptions.MetadataAddress = appSettings.Security.OpenIdConfigurationUrl;
+                            jwtOptions.Events = new JwtEventsHandler();
                         });
         }
 
