@@ -2,6 +2,9 @@
 {
     using System.ComponentModel.DataAnnotations;
 
+    using Swashbuckle.AspNetCore.SwaggerGen;
+
+    [SwaggerSchemaFilter(typeof(StatusSwaggerSchemaFilter))]
     public class CalendarEventsModel
     {
         [Required]
@@ -12,6 +15,7 @@
         public DatesPeriodModel Dates { get; set; }
 
         [Required]
+        [CalendarEventStatusValidator]
         public string Status { get; set; }
 
         public CalendarEventsModel()

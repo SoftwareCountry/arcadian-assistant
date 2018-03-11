@@ -15,6 +15,6 @@
 
         public static readonly string[] All = { Vacation, Dayoff, Workout, Sickleave };
 
-        public static bool IsKnownStatus(string x) => All.Contains(x, StringComparer.InvariantCultureIgnoreCase);
+        public static bool IsKnownType(string x) => All.Contains(x, StringComparer.InvariantCultureIgnoreCase);
     }
 }

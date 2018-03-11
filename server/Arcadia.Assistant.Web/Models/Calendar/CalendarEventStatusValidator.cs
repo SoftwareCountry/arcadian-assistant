@@ -4,19 +4,19 @@
 
     using Arcadia.Assistant.Calendar.Abstractions;
 
-    public class CalendarEventTypeValidator : ValidationAttribute
+    public class CalendarEventStatusValidator : ValidationAttribute
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             switch (value)
             {
-                case string type when CalendarEventTypes.IsKnownType(type):
+                case string type when CalendarEventStatuses.IsKnownStatus(type):
                     return ValidationResult.Success;
                 case string type:
-                    var validTypes = string.Join(", ", CalendarEventTypes.All);
-                    return new ValidationResult($"Calendar event type `{type}` is not recognized. Must be one of the ${validTypes}");
+                    var validTypes = string.Join(", ", CalendarEventStatuses.All);
+                    return new ValidationResult($"Calendar event status `{type}` is not recognized. Must be one of the ${validTypes}");
                 default:
-                    return new ValidationResult("Type must be string");
+                    return new ValidationResult("Status must be string");
             }
         }
     }
