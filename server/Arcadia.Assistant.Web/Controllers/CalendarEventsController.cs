@@ -50,7 +50,7 @@
 
             var events = await employee.Calendar.Ask<GetCalendarEvents.Response>(GetCalendarEvents.Instance, this.timeoutSettings.Timeout, token);
             var eventModels = events.Events
-                .Select(x => new CalendarEventsWithIdModel(x.EventId, CalendarEventType.Vacation, x.Dates, CalendarEventStatus.Requested));
+                .Select(x => new CalendarEventsWithIdModel(x.EventId, x.Type, x.Dates, x.Status));
 
             return this.Ok(eventModels);
         }
@@ -75,16 +75,11 @@
                 return this.NotFound();
             }
 
-            if (!Enum.TryParse(requestedEvent.Status, out CalendarEventStatus status)) //TODO: just convert it to string...
-            {
-                status = CalendarEventStatus.Requested;
-            }
-
             var eventModel = new CalendarEventsModel()
             {
                 Dates = requestedEvent.Dates,
-                Status = status,
-                Type = CalendarEventType.Dayoff
+                Status = requestedEvent.Status,
+                Type = requestedEvent.Type
             };
 
             return this.Ok(eventModel);
@@ -95,6 +90,11 @@
         [ProducesResponseType(typeof(CalendarEventsWithIdModel), StatusCodes.Status201Created)]
         public async Task<IActionResult> Create(string employeeId, [FromBody] CalendarEventsModel model, CancellationToken token)
         {
+            if (!this.ModelState.IsValid)
+            {
+                return this.BadRequest(this.ModelState);
+            }
+
             var newId = Guid.NewGuid().ToString();
 
             var employee = await this.GetEmployeeOrDefaultAsync(employeeId, token);
@@ -104,11 +104,11 @@
                 return this.NotFound();
             }
 
-            var calendarEvent = new CalendarEvent(newId, model.Dates, model.Status.ToString() );//TODO: temporary assignment
+            var calendarEvent = new CalendarEvent(newId, model.Type, model.Dates, model.Status);
             var eventCreationResponse = await this.UpsertEventAsync(employee.Calendar, calendarEvent, token);
 
             var createdEvent = eventCreationResponse.Event; //TODO: add errors handling
-            var responseObject = new CalendarEventsWithIdModel(createdEvent.EventId, CalendarEventType.Vacation, createdEvent.Dates, CalendarEventStatus.Requested);
+            var responseObject = new CalendarEventsWithIdModel(createdEvent.EventId, createdEvent.Type, createdEvent.Dates, createdEvent.Status);
 
             return this.AcceptedAtAction(nameof(this.Get), new { eventId = responseObject.CalendarEventId }, responseObject);
         }
@@ -119,6 +119,11 @@
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Update(string employeeId, string eventId, [FromBody] CalendarEventsModel model, CancellationToken token)
         {
+            if (!this.ModelState.IsValid)
+            {
+                return this.BadRequest(this.ModelState);
+            }
+
             var employee = await this.GetEmployeeOrDefaultAsync(employeeId, token);
 
             if (employee == null)
@@ -132,7 +137,7 @@
                 return this.NotFound();
             }
 
-            var calendarEvent = new CalendarEvent(eventId, model.Dates, model.Status.ToString());//TODO: temporary assignment
+            var calendarEvent = new CalendarEvent(eventId, model.Type, model.Dates, model.Status);
             await this.UpsertEventAsync(employee.Calendar, calendarEvent, token);//TODO: add errors handling
 
             return this.NoContent();

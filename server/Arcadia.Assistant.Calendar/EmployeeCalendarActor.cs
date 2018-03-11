@@ -40,6 +40,7 @@
                     break;
 
                 case UpsertCalendarEvent cmd:
+                    //TODO: split insert and update
                     this.eventsById[cmd.Event.EventId] = cmd.Event;
                     this.Sender.Tell(new UpsertCalendarEvent.Response(cmd.Event));
                     break;

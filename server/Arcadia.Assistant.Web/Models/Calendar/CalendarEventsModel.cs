@@ -1,25 +1,24 @@
 ﻿namespace Arcadia.Assistant.Web.Models.Calendar
 {
-    using System;
-    using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
 
     public class CalendarEventsModel
     {
         [Required]
-        public CalendarEventType Type { get; set; }
+        [CalendarEventTypeValidator]
+        public string Type { get; set; }
 
         [Required]
         public DatesPeriodModel Dates { get; set; }
 
-        [DefaultValue(CalendarEventStatus.Requested)]
-        public CalendarEventStatus Status { get; set; } = CalendarEventStatus.Requested;
+        [Required]
+        public string Status { get; set; }
 
         public CalendarEventsModel()
         {
         }
 
-        public CalendarEventsModel(CalendarEventType type, DatesPeriodModel dates, CalendarEventStatus status)
+        public CalendarEventsModel(string type, DatesPeriodModel dates, string status)
         {
             this.Type = type;
             this.Dates = dates;
