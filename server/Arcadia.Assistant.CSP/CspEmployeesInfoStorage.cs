@@ -37,6 +37,7 @@
                             MobilePhone = x.MobilePhone,
                             RoomNumber = x.RoomNumber,
                             Position = x.Position.Title,
+                            Sid = x.Sid.HasValue ? x.Sid.Value.ToString() : null,
                             DepartmentId = x.DepartmentId.HasValue ? x.DepartmentId.Value.ToString() : null,
                             Sex = x.Gender == "M"
                                     ? Sex.Male
