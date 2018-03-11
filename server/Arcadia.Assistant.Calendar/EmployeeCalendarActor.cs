@@ -1,5 +1,6 @@
 ﻿namespace Arcadia.Assistant.Calendar
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -39,10 +40,24 @@
                     this.Sender.Tell(new GetCalendarEvent.Response.Found(this.eventsById[request.EventId]));
                     break;
 
+                case UpsertCalendarEvent cmd when cmd.Event.EventId == null:
+                    this.Sender.Tell(new UpsertCalendarEvent.Error(new ArgumentNullException(nameof(cmd.Event.EventId))));
+                    break;
+
+                //insert
+                case UpsertCalendarEvent cmd when !this.eventsById.ContainsKey(cmd.Event.EventId):
+                    var newEvent = new CalendarEvent(cmd.Event.EventId, cmd.Event.Type, cmd.Event.Dates, CalendarEventStatuses.Requested);
+
+                    //this.Persist();
+
+                    this.eventsById[cmd.Event.EventId] = newEvent;
+                    this.Sender.Tell(new UpsertCalendarEvent.Success(newEvent));
+                    break;
+
+                //update
                 case UpsertCalendarEvent cmd:
-                    //TODO: split insert and update
                     this.eventsById[cmd.Event.EventId] = cmd.Event;
-                    this.Sender.Tell(new UpsertCalendarEvent.Response(cmd.Event));
+                    this.Sender.Tell(new UpsertCalendarEvent.Success(cmd.Event));
                     break;
 
                 default:

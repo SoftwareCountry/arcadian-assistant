@@ -10,7 +10,10 @@
     using Arcadia.Assistant.Configuration;
     using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.Web.Configuration;
+    using Arcadia.Assistant.Web.Employees;
     using Arcadia.Assistant.Web.Infrastructure;
+    using Arcadia.Assistant.Web.Models.Calendar;
+    using Arcadia.Assistant.Web.Users;
 
     using Autofac;
 
@@ -54,21 +57,6 @@
             services.AddMvc();
             var appSettings = this.AppSettings;
 
-            var systemName = appSettings.Server.ActorSystemName;
-            var host = appSettings.Server.Host;
-            var port = appSettings.Server.Port;
-
-            var config = ConfigurationFactory.ParseString(appSettings.Akka);
-
-            var actorSystem = ActorSystem.Create(systemName, config);
-
-            var pathsBuilder = new ActorPathsBuilder(systemName, host, port);
-
-            services.AddSingleton<ITimeoutSettings>(appSettings);
-            services.AddSingleton<ISecuritySettings>(appSettings.Security);
-            services.AddSingleton<IActorRefFactory>(actorSystem);
-            services.AddSingleton(pathsBuilder);
-
             services.AddSwaggerGen(
                 c =>
                     {
@@ -104,7 +92,24 @@
         // ReSharper disable once UnusedMember.Global
         public void ConfigureContainer(ContainerBuilder builder)
         {
-            
+            var appSettings = this.AppSettings;
+            var systemName = appSettings.Server.ActorSystemName;
+            var host = appSettings.Server.Host;
+            var port = appSettings.Server.Port;
+
+            var config = ConfigurationFactory.ParseString(appSettings.Akka);
+
+            var actorSystem = ActorSystem.Create(systemName, config);
+
+            var pathsBuilder = new ActorPathsBuilder(systemName, host, port);
+
+            builder.RegisterInstance(appSettings).As<ITimeoutSettings>();
+            builder.RegisterInstance(appSettings.Security).As<ISecuritySettings>();
+            builder.RegisterInstance(actorSystem).As<IActorRefFactory>();
+            builder.RegisterInstance(pathsBuilder).AsSelf();
+
+            builder.RegisterType<EmployeesSearch>().As<IEmployeesSearch>();
+            builder.RegisterType<MockUserEmployeeSearch>().As<IUserEmployeeSearch>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

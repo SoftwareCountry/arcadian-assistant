@@ -1,6 +1,5 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
-    using System;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -9,9 +8,9 @@
 
     using Microsoft.AspNetCore.Mvc;
 
-    using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.Web.Configuration;
+    using Arcadia.Assistant.Web.Employees;
     using Arcadia.Assistant.Web.Models;
 
     using Microsoft.AspNetCore.Http;
@@ -19,16 +18,13 @@
     [Route("api/employees")]
     public class EmployeesController : Controller
     {
-        private readonly IActorRefFactory actorSystem;
+        private IEmployeesSearch employeesSearch;
 
-        private readonly ActorPathsBuilder pathsBuilder;
+        private ITimeoutSettings timeoutSettings;
 
-        private readonly ITimeoutSettings timeoutSettings;
-
-        public EmployeesController(IActorRefFactory actorSystem, ActorPathsBuilder pathsBuilder, ITimeoutSettings timeoutSettings)
+        public EmployeesController(IEmployeesSearch employeesSearch, ITimeoutSettings timeoutSettings)
         {
-            this.actorSystem = actorSystem;
-            this.pathsBuilder = pathsBuilder;
+            this.employeesSearch = employeesSearch;
             this.timeoutSettings = timeoutSettings;
         }
 
@@ -76,15 +72,12 @@
 
         private async Task<EmployeeModel[]> LoadEmployeesAsync(EmployeesQuery query, CancellationToken token)
         {
-            var timeout = this.timeoutSettings.Timeout;
-            var organization = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
-            var response = await organization.Ask<EmployeesQuery.Response>(query, timeout, token);
-
-            var tasks = response.Employees.Select(
+            var employees = await this.employeesSearch.Search(query, token);
+            var tasks = employees.Select(
                 async x =>
                     {
                         var employee = EmployeeModel.FromMetadata(x.Metadata);
-                        var photo = await x.Actor.Ask<GetPhoto.Response>(GetPhoto.Instance, timeout, token);
+                        var photo = await x.Actor.Ask<GetPhoto.Response>(GetPhoto.Instance, this.timeoutSettings.Timeout, token);
                         employee.Photo = photo.Photo;
                         employee.HoursCredit = 12;
                         employee.VacationDaysLeft = 28;
