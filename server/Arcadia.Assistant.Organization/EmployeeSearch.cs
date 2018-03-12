@@ -96,6 +96,16 @@
                 return false;
             }
 
+            if ((this.query.HireDate != null) && !this.query.HireDate.Matches(employee.HireDate))
+            {
+                return false;
+            }
+
+            if ((this.query.BirthDate != null) && (!employee.BirthDate.HasValue || !this.query.BirthDate.Matches(employee.BirthDate.Value)))
+            {
+                return false;
+            }
+
             return true;
         }
     }

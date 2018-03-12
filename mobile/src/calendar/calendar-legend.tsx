@@ -20,10 +20,10 @@ const mapStateToProps = (state: AppState): CalendarLegendProps => ({
 class CalendarLegendImpl extends Component<CalendarLegendProps> {
     public render() {
         const selectedEvents = this.getEventsForSelectedDate();
-        const legend = selectedEvents.map(type => {
+        const legend = selectedEvents.map((type, index) => {
             const style = StyleSheet.flatten([styles.marker, { backgroundColor: CalendarEventsColor.getColor(type) }]);
             return (
-                <View key={type} style={styles.itemContainer}>
+                <View key={type + index} style={styles.itemContainer}>
                     <View style={style}></View>
                     <StyledText style={styles.label}>{type}</StyledText>
                 </View>

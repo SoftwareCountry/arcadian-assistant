@@ -9,6 +9,7 @@ interface CalendarActionButtonProps {
     title: string;
     style?: ViewStyle;
     textStyle?: TextStyle;
+    disabled?: boolean;
 }
 
 interface CalendarActionButtonState {
@@ -32,6 +33,8 @@ export class CalendarActionButton extends Component<CalendarActionButtonProps, C
                 borderColor: this.props.borderColor,
                 borderRadius: this.state.buttonHeight
             },
+            this.state.buttonHeight === 0 // Prevent border flicker
+            ? { borderWidth: 0, borderColor: 'transparent' } : {},
             this.props.style
         ]);
 
@@ -41,7 +44,7 @@ export class CalendarActionButton extends Component<CalendarActionButtonProps, C
         ]);
 
         return (
-            <TouchableOpacity style={buttonStyles} onLayout={this.onButtonLayout} onPress={this.onButtonEditorPress}>
+            <TouchableOpacity style={buttonStyles} onLayout={this.onButtonLayout} onPress={this.onButtonEditorPress} disabled={this.props.disabled}>
                 <StyledText style={textStyle}>{this.props.title}</StyledText>
             </TouchableOpacity>
         );

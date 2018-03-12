@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { TouchableHighlight, TouchableOpacity, View } from 'react-native';
-import { calendarActionsStyles, CalendarEventsColor } from './styles';
+import { calendarActionsStyles } from './styles';
 import { CalendarActionButtonSeparator } from './calendar-action-button';
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
@@ -10,15 +10,21 @@ import { VacationActionButton } from './vacation-action-button';
 import { DayoffActionButton } from './dayoff-action-button';
 import { SickLeaveActionButton } from './sick-leave-action-button';
 import { Dispatch } from 'redux';
-import { CalendarActions, editSickLeave } from '../reducers/calendar/calendar.action';
+import { CalendarActions } from '../reducers/calendar/calendar.action';
+import { editSickLeave, claimSickLeave, prolongSickLeave } from '../reducers/calendar/sick-leave.action';
+import { Moment } from 'moment';
 
 interface ActionButtonGroupProps {
     intervalsModel: IntervalsModel;
     selectedCalendarDay: DayModel;
+    disableActionButtons: boolean;
 }
 
 interface ActionButtonsGroupDispatchProps {
-    editSickLeave: () => void;
+    sickLeaveActions: {
+        claim: (startDate: Moment) => void;
+        edit: () => void;
+    };
 }
 
 export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & ActionButtonsGroupDispatchProps> {
@@ -27,15 +33,15 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & A
 
         return (
             <View style={calendarActionsStyles.container}>
-                <VacationActionButton interval={vacation} />
+                <VacationActionButton interval={vacation} disabled={this.props.disableActionButtons} />
 
                 <CalendarActionButtonSeparator />
 
-                <DayoffActionButton interval={dayoff} />
+                <DayoffActionButton interval={dayoff} disabled={this.props.disableActionButtons} />
 
                 <CalendarActionButtonSeparator />
 
-                <SickLeaveActionButton interval={sickleave} onPress={this.onSickLeaveAction} />
+                <SickLeaveActionButton interval={sickleave} selectedDay={this.props.selectedCalendarDay} disabled={this.props.disableActionButtons} {...this.props.sickLeaveActions} />
 
                 <CalendarActionButtonSeparator />
             </View>
@@ -61,20 +67,19 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & A
 
         return { vacation, dayoff, sickleave };
     }
-
-    private onSickLeaveAction = () => {
-        //TODO: move to button
-        this.props.editSickLeave();
-    }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: AppState): ActionButtonGroupProps => ({
     intervalsModel: state.calendar.calendarEvents.intervals,
-    selectedCalendarDay: state.calendar.calendarEvents.selectedCalendarDay
+    selectedCalendarDay: state.calendar.calendarEvents.selectedCalendarDay,
+    disableActionButtons: state.calendar.calendarEvents.disableCalendarActionsButtonGroup
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>) => ({
-    editSickLeave: () => { dispatch(editSickLeave()); }
+    sickLeaveActions: {
+        claim: (startDate: Moment) => { dispatch(claimSickLeave(startDate)); },
+        edit: () => { dispatch(editSickLeave()); },
+    }
 });
 
 export const CalendarActionsButtonGroup = connect(mapStateToProps, mapDispatchToProps)(ActionsButtonGroupImpl);

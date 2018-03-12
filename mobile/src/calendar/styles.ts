@@ -11,11 +11,15 @@ export const calendarScreenLayout = {
         flex: 8
     },
     agenda: {
-        flex: 4
+        flex: 5
     }
 };
 
-const weekDayElementsZIndex = 1;
+const intervalZIndex = 1;
+const weekDayCircleZIndex = intervalZIndex + 1;
+const intervalBoundaryZIndex = weekDayCircleZIndex + 1;
+const weekDayTouchableZIndex = intervalBoundaryZIndex + 1;
+
 export const calendarStyles = StyleSheet.create({
     container: {
         marginTop: 25,
@@ -64,6 +68,15 @@ export const calendarStyles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center'
     },
+    weekDayTouchable: {
+        position: 'absolute',
+        backgroundColor: 'transparent',
+        top: 0,
+        bottom: 0,
+        right: 0,
+        left: 0,
+        zIndex: weekDayTouchableZIndex
+    },
     weekDayCircle: {
         justifyContent: 'center',
         alignItems: 'center'
@@ -73,20 +86,17 @@ export const calendarStyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'transparent',
-        zIndex: weekDayElementsZIndex + 1
+        zIndex: weekDayCircleZIndex
     },
     weekDayNumber: {
         fontSize: 12,
-        //fontFamily: 'Roboto' TODO: import font ?
+        lineHeight: 14,
+        color: 'rgba(0, 0, 0, 0.8678)'
     },
-    weekDaySelectedNumber: {
-        fontWeight: '500'
-    },
-    weekDayText: {
+    weekDayName: {
         fontSize: 12,
+        lineHeight: 14,
         color: 'rgba(0, 0, 0, 0.5433)',
-        fontWeight: '500',
-        //fontFamily: 'Roboto' TODO: import font ?
     }
 });
 
@@ -94,7 +104,7 @@ export class CalendarEventsColor {
     public static vacation = '#2F80ED';
     public static sickLeave = '#F2C94C';
     public static dayoff = '#EB5757';
-    public static additionalWork = '#18515E'; //TODO: replace with the right color
+    public static additionalWork = '#219653';
 
     public static getColor(type: CalendarEventsType) {
         switch (type) {
@@ -128,13 +138,19 @@ export const calendarIntervalStyles = StyleSheet.create({
         justifyContent: 'flex-end',
         flexDirection: 'row',
         opacity: intervalOpacity,
-        zIndex: weekDayElementsZIndex
+        zIndex: intervalZIndex
     },
     halfInterval: {
         width: '50%'
     },
     interval: {
         flex: 1
+    },
+    boundary: {
+        zIndex: intervalBoundaryZIndex
+    },
+    draft: {
+        opacity: 0.6
     }
 });
 

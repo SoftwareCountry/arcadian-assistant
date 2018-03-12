@@ -1,13 +1,25 @@
 import { Reducer } from 'redux';
-import { CalendarActions, cancelDialog, editSickLeave, prolongueSickLeave } from './calendar.action';
+import { CalendarActions, cancelDialog } from './calendar.action';
+import { editSickLeave, prolongSickLeave, confirmSickLeave, completeSickLeave, confirmProlongSickLeave } from './sick-leave.action';
 import { DayModel, WeekModel, IntervalsModel } from './calendar.model';
 import moment from 'moment';
 import { CalendarWeeksBuilder } from './calendar-weeks-builder';
 import { CalendarIntervalsBuilder } from './calendar-intervals-builder';
-import { EventDialogProps } from '../../calendar/event-dialog/event-dialog';
+import { EventDialogModel, ClaimSickLeaveDialogModel, ProlongSickLeaveDialogModel, EditSickLeaveDialogModel } from './event-dialog/event-dialog.model';
+import { selectSickLeaveEndDateReducer, claimSickLeaveReducer, confirmClaimSickLeaveReducer } from './sick-leave.reducer';
+import { CalendarEventsType } from './calendar-events.model';
 
-interface DialogActiveState extends EventDialogProps {
+export interface DialogActiveState {
     active: boolean;
+    model: EventDialogModel<any>;
+}
+
+export interface EditingOfIntervalsState {
+    active: boolean;
+    unchangedIntervals: IntervalsModel;
+    startDay: DayModel;
+    endDay: DayModel;
+    eventType: CalendarEventsType;
 }
 
 export interface CalendarEventsState {
@@ -15,6 +27,9 @@ export interface CalendarEventsState {
     selectedCalendarDay: DayModel;
     intervals: IntervalsModel;
     dialog: DialogActiveState;
+    editingOfIntervals: EditingOfIntervalsState;
+    disableCalendarDaysBefore: DayModel;
+    disableCalendarActionsButtonGroup: boolean;
 }
 
 const createInitState = (): CalendarEventsState => {
@@ -31,13 +46,27 @@ const createInitState = (): CalendarEventsState => {
         }
     }
 
-    const dialog = { active: false} as DialogActiveState;
+    const defaultDialogState: DialogActiveState = {
+        active: false,
+        model: null
+    };
+
+    const defaultEditingOfIntervalsState: EditingOfIntervalsState = {
+        active: false,
+        unchangedIntervals: null,
+        startDay: null,
+        endDay: null,
+        eventType: null
+    };
 
     return {
         weeks: weeks,
         selectedCalendarDay: todayModel,
-        dialog: dialog,
-        intervals: null
+        dialog: defaultDialogState,
+        intervals: null,
+        editingOfIntervals: defaultEditingOfIntervalsState,
+        disableCalendarDaysBefore: null,
+        disableCalendarActionsButtonGroup: true
     };
 };
 
@@ -51,11 +80,15 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
 
             return {
                 ...state,
-                intervals: intervals
+                intervals: intervals,
+                disableCalendarActionsButtonGroup: false
             };
         case 'SELECT-CALENDAR-DAY':
+            const newSickLeaveEventState = selectSickLeaveEndDateReducer(state, action);
+
             return {
                 ...state,
+                ...newSickLeaveEventState,
                 selectedCalendarDay: action.day
             };
         case 'SELECT-CALENDAR-MONTH':
@@ -66,55 +99,63 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 ...state,
                 weeks: weeks
             };
-
-        case 'PROLONGUE-SICK-LEAVE':
-            //TODO: move props to button dispatcher
-            const prolongueDialog: DialogActiveState = {
-                active: true,
-                title: 'Select date to Prolongue your sick leave',
-                text: 'Your sick leave has started on MM D, YYYY and will be prolongued to MM D, YYYY.',
-                icon: 'sick_leave',
-                cancel: {
-                    label: 'Back',
-                    action: editSickLeave
-                },
-                accept: {
-                    label: 'Confirm',
-                    action: cancelDialog
-                }
-            };
+        case 'CLAIM-SICK-LEAVE':
+            const claimSickLeaveDialog = claimSickLeaveReducer(state, action);
 
             return {
                 ...state,
-                dialog: prolongueDialog
+                ...claimSickLeaveDialog
+            };
+        case 'CONFIRM-CLAIM-SICK-LEAVE':
+            const confirmClaimSickLeaveState = confirmClaimSickLeaveReducer(state, action);
+
+            return {
+                ...state,
+                ...confirmClaimSickLeaveState
+            };
+        case 'PROLONG-SICK-LEAVE':
+            const prolongSickLeaveDialog = new ProlongSickLeaveDialogModel();
+
+            return {
+                ...state,
+                dialog: {
+                    ...state.dialog,
+                    model: prolongSickLeaveDialog
+                }
             };
 
         case 'EDIT-SICK-LEAVE':
-            //TODO: move props to button dispatcher
-            const dialog: DialogActiveState = {
-                active: true,
-                title: 'Hey! Hope you feel better',
-                text: 'Your sick leave has started on MM D, YYYY and still not completed.',
-                icon: 'sick_leave',
-                cancel: {
-                    label: 'Prolongue',
-                    action: prolongueSickLeave
-                },
-                accept: {
-                    label: 'Complete',
-                    action: cancelDialog
+            const editSickLeaveDialog = new EditSickLeaveDialogModel();
+
+            return {
+                ...state,
+                dialog: {
+                    ...state.dialog,
+                    active: true,
+                    model: editSickLeaveDialog
                 }
             };
 
-            return {
-                ...state,
-                dialog: dialog
-            };
-
         case 'CANCEL-CALENDAR-DIALOG':
+            const restoredIntervals = state.editingOfIntervals.unchangedIntervals
+                ? state.editingOfIntervals.unchangedIntervals
+                : state.intervals;
+
             return {
                 ...state,
-                dialog: { active: false } as DialogActiveState
+                intervals: restoredIntervals,
+                dialog: {
+                    active: false,
+                    model: null
+                },
+                editingOfIntervals: {
+                    active: false,
+                    unchangedIntervals: null,
+                    startDay: null,
+                    endDay: null,
+                    eventType: null
+                },
+                disableCalendarDaysBefore: null
             };
 
         default:

@@ -1,24 +1,26 @@
 import React, { Component, Fragment } from 'react';
 import moment, { Moment } from 'moment';
-import { View, StyleSheet, TouchableHighlight, LayoutChangeEvent, PixelRatio } from 'react-native';
+import { View, StyleSheet, LayoutChangeEvent, PixelRatio } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { calendarStyles, calendarIntervalStyles, CalendarEventsColor } from './styles';
 import { DayModel, WeekModel, IntervalsModel, IntervalModel } from '../reducers/calendar/calendar.model';
-import { StartInterval, EndInterval, Interval, IntervalBoundary } from './calendar-page-interval';
+import { StartInterval, EndInterval, Interval } from './calendar-page-interval';
 import { CalendarEventsType } from '../reducers/calendar/calendar-events.model';
-import { WeekDay, WeekDayCircle } from './calendar-page-weekday';
+import { WeekDay, WeekDayCircle, WeekDayTouchable } from './calendar-page-weekday';
+import { IntervalBoundary } from './calendar-page-interval-boundary';
 
 export type OnSelectedDayCallback = (day: DayModel) => void;
 
 interface CalendarPageDefaultProps {
     hidePrevNextMonthDays?: boolean;
-    intervals?: IntervalsModel;
 }
 
 interface CalendarPageProps {
     weeks: WeekModel[];
     onSelectedDay: OnSelectedDayCallback;
     selectedDay: DayModel;
+    intervals?: IntervalsModel;
+    disableBefore?: DayModel;
 }
 
 interface CalendarPageState {
@@ -27,7 +29,7 @@ interface CalendarPageState {
 
 export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarPageProps, CalendarPageState> {
     public static defaultProps: CalendarPageDefaultProps = {
-        hidePrevNextMonthDays: false
+        hidePrevNextMonthDays: true
     };
 
     private readonly weekdaysNames = moment()
@@ -52,7 +54,7 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
                     {
                         this.weekdaysNames.map((weekdayName, index) =>
                             <View key={`${index}-${weekdayName}`} style={calendarStyles.weekName}>
-                                <StyledText style={calendarStyles.weekDayText}>{weekdayName}</StyledText>
+                                <StyledText style={calendarStyles.weekDayName}>{weekdayName}</StyledText>
                             </View>
                         )
                     }
@@ -86,27 +88,46 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
     }
 
     private renderDay(day: DayModel) {
+        const intervalModels = this.getIntervalsByDate(day.date);
+        const dayTextColor = this.getDayTextColor(intervalModels);
+        const disableDay = this.props.disableBefore
+            ? day.date.isBefore(this.props.disableBefore.date, 'day')
+            : false;
+
         return (
             <View style={calendarStyles.weekDayContainer} key={`${day.date.week()}-${day.date.date()}`}>
                 <WeekDay hide={this.props.hidePrevNextMonthDays && !day.belongsToCurrentMonth}>
-                    <View style={calendarStyles.weekDayCircleContainer}>
-                        <WeekDayCircle day={day} selectedDay={this.props.selectedDay} onSelectedDay={this.props.onSelectedDay} weekHeight={this.state.weekHeight} />
-                    </View>
+                    <WeekDayTouchable onSelectedDay={this.props.onSelectedDay} day={day} disabled={disableDay} />
+                    <WeekDayCircle day={day} selectedDay={this.props.selectedDay} weekHeight={this.state.weekHeight} customTextColor={dayTextColor} />
                     {
-                        this.renderIntervals(day.date)
+                        this.renderIntervals(intervalModels)
                     }
                 </WeekDay>
             </View>
         );
     }
 
-    private renderIntervals(date: Moment) {
+    private getDayTextColor(intervals: IntervalModel[]): string | null {
+        if (!intervals || !intervals.length) {
+            return null;
+        }
+
+        return intervals.some(x => !x.boundary)
+            ? '#fff'
+            : null;
+    }
+
+    private getIntervalsByDate(date: moment.Moment): IntervalModel[] | null {
         if (!this.props.intervals) {
             return null;
         }
 
         const intervals = this.props.intervals.get(date);
 
+        return intervals;
+    }
+
+    private renderIntervals(intervals: IntervalModel[]) {
         if (!intervals) {
             return null;
         }
@@ -119,13 +140,17 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
 
         switch (interval.intervalType) {
             case 'startInterval':
-                return <StartInterval key={elementKey} size={this.state.weekHeight} color={color} />;
+                return <StartInterval key={elementKey} size={this.state.weekHeight} color={color} draft={interval.draft} />;
             case 'endInterval':
-                return <EndInterval key={elementKey} size={this.state.weekHeight} color={color} />;
+                return <EndInterval key={elementKey} size={this.state.weekHeight} color={color} draft={interval.draft} />;
             case 'interval':
-                return <Interval key={elementKey} size={this.state.weekHeight} color={color} />;
-            case 'intervalBoundary':
-                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} />;
+                return <Interval key={elementKey} size={this.state.weekHeight} color={color} draft={interval.draft} />;
+            case 'intervalFullBoundary':
+                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'full'} draft={interval.draft} />;
+            case 'intervalLeftBoundary':
+                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'left'} draft={interval.draft} />;
+            case 'intervalRightBoundary':
+                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'right'} draft={interval.draft} />;
             default:
                 return null;
         }
