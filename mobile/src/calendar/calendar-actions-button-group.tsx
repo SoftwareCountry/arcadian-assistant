@@ -6,13 +6,15 @@ import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
 import { IntervalsModel, DayModel, IntervalModel } from '../reducers/calendar/calendar.model';
 import { CalendarEventsType } from '../reducers/calendar/calendar-events.model';
-import { VacationActionButton } from './vacation-action-button';
+import { VacationActionButton, VacationActionButtonProps } from './vacation-action-button';
 import { DayoffActionButton } from './dayoff-action-button';
 import { SickLeaveActionButton } from './sick-leave-action-button';
 import { Dispatch } from 'redux';
 import { CalendarActions } from '../reducers/calendar/calendar.action';
 import { editSickLeave, claimSickLeave, prolongSickLeave } from '../reducers/calendar/sick-leave.action';
 import { Moment } from 'moment';
+import { claimVacation, editVacation } from '../reducers/calendar/vacation.action';
+import { claimDayOff, editDayOff } from '../reducers/calendar/day-off.action';
 
 interface ActionButtonGroupProps {
     intervalsModel: IntervalsModel;
@@ -20,28 +22,58 @@ interface ActionButtonGroupProps {
     disableActionButtons: boolean;
 }
 
+interface ActionButtonDispatchProps {
+    claim: (startDate: Moment) => void;
+    edit: () => void;
+}
+
 interface ActionButtonsGroupDispatchProps {
-    sickLeaveActions: {
-        claim: (startDate: Moment) => void;
-        edit: () => void;
-    };
+    vacationActions: ActionButtonDispatchProps;
+    dayoffActions: ActionButtonDispatchProps;
+    sickLeaveActions: ActionButtonDispatchProps;
 }
 
 export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & ActionButtonsGroupDispatchProps> {
     public render() {
         const { vacation, dayoff, sickleave } = this.getIntervals();
 
+        const buttonProps: VacationActionButtonProps = {
+            disabled: this.props.disableActionButtons,
+            selectedDay: this.props.selectedCalendarDay
+        } as VacationActionButtonProps;
+
+        const vacationsProps: VacationActionButtonProps = Object.assign(
+            {
+                interval: dayoff,
+                ...this.props.vacationActions
+            },
+            buttonProps);
+
+        const dayOffProps: VacationActionButtonProps = Object.assign(
+            {
+                interval: dayoff,
+                ...this.props.dayoffActions
+            },
+            buttonProps);
+
+        const sickLeaveProps: VacationActionButtonProps = Object.assign(
+            {
+                interval: sickleave,
+                ...this.props.sickLeaveActions
+            },
+            buttonProps);
+
         return (
             <View style={calendarActionsStyles.container}>
-                <VacationActionButton interval={vacation} disabled={this.props.disableActionButtons} />
+                <VacationActionButton {...vacationsProps} />
 
                 <CalendarActionButtonSeparator />
 
-                <DayoffActionButton interval={dayoff} disabled={this.props.disableActionButtons} />
+                <DayoffActionButton {...dayOffProps} />
 
                 <CalendarActionButtonSeparator />
 
-                <SickLeaveActionButton interval={sickleave} selectedDay={this.props.selectedCalendarDay} disabled={this.props.disableActionButtons} {...this.props.sickLeaveActions} />
+                <SickLeaveActionButton {...sickLeaveProps} />
 
                 <CalendarActionButtonSeparator />
             </View>
@@ -76,9 +108,19 @@ const mapStateToProps = (state: AppState): ActionButtonGroupProps => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>) => ({
+    vacationActions: {
+        claim: (startDate: Moment) => { dispatch(claimVacation(startDate)); },
+        edit: () => { dispatch(editVacation()); }
+    },
+
+    dayoffActions: {
+        claim: (startDate: Moment) => { dispatch(claimDayOff(startDate)); },
+        edit: () => { dispatch(editDayOff()); }
+    },
+
     sickLeaveActions: {
         claim: (startDate: Moment) => { dispatch(claimSickLeave(startDate)); },
-        edit: () => { dispatch(editSickLeave()); },
+        edit: () => { dispatch(editSickLeave()); }
     }
 });
 

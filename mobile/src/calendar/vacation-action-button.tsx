@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import { CalendarActionButton } from './calendar-action-button';
-import { IntervalModel } from '../reducers/calendar/calendar.model';
+import { IntervalModel, DayModel } from '../reducers/calendar/calendar.model';
 import { CalendarEventsColor } from './styles';
+import { Moment } from 'moment';
 
-interface VacationActionButtonProps {
+export interface VacationActionButtonProps {
     interval: IntervalModel;
     disabled: boolean;
-    // TODO: pass needed dispatch actions
+    selectedDay: DayModel;
+    claim: (selectedDay: Moment) => void;
+    edit: () => void;
 }
 
 export class VacationActionButton extends Component<VacationActionButtonProps> {
@@ -23,7 +26,11 @@ export class VacationActionButton extends Component<VacationActionButtonProps> {
     }
 
     public onVacationAction = () => {
-        // TODO: do something
+        if (!this.props.interval) {
+            this.props.claim(this.props.selectedDay.date);
+        } else {
+            this.props.edit();
+        }
     }
 }
 
