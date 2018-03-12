@@ -111,13 +111,13 @@ export class CalendarEventsColor {
             case CalendarEventsType.Vacation:
                 return CalendarEventsColor.vacation;
 
-            case CalendarEventsType.SickLeave:
+            case CalendarEventsType.Sickleave:
                 return CalendarEventsColor.sickLeave;
 
             case CalendarEventsType.Dayoff:
                 return CalendarEventsColor.dayoff;
 
-            case CalendarEventsType.AdditionalWork:
+            case CalendarEventsType.Workout:
                 return CalendarEventsColor.additionalWork;
 
             default:

@@ -39,7 +39,7 @@ export class CalendarIntervalsBuilder {
         for (let calendarEvent of calendarEvents) {
             const start = moment(calendarEvent.dates.startDate);
 
-            if (calendarEvent.type === CalendarEventsType.Dayoff || calendarEvent.type === CalendarEventsType.AdditionalWork) {
+            if (calendarEvent.type === CalendarEventsType.Dayoff || calendarEvent.type === CalendarEventsType.Workout) {
                 this.buildIntervalBoundary(start, intervalsModel, calendarEvent, draft);
                 continue;
             }

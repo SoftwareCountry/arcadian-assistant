@@ -60,8 +60,8 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & A
 
             if (intervals) {
                 vacation = intervals.find(x => x.eventType === CalendarEventsType.Vacation);
-                dayoff = intervals.find(x => x.eventType === CalendarEventsType.Dayoff || x.eventType === CalendarEventsType.AdditionalWork);
-                sickleave = intervals.find(x => x.eventType === CalendarEventsType.SickLeave);
+                dayoff = intervals.find(x => x.eventType === CalendarEventsType.Dayoff || x.eventType === CalendarEventsType.Workout);
+                sickleave = intervals.find(x => x.eventType === CalendarEventsType.Sickleave);
             }
         }
 
@@ -77,7 +77,7 @@ const mapStateToProps = (state: AppState): ActionButtonGroupProps => ({
 
 const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>) => ({
     sickLeaveActions: {
-        claim: (startDate: Moment) => { dispatch(claimSickLeave(startDate)); },
+        claim: (startDate: Moment) => { dispatch(claimSickLeave()); },
         edit: () => { dispatch(editSickLeave()); },
     }
 });

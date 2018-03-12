@@ -1,34 +1,44 @@
 import { Reducer } from 'redux';
-import { CalendarActions, cancelDialog } from './calendar.action';
-import { editSickLeave, prolongSickLeave, confirmSickLeave, completeSickLeave, confirmProlongSickLeave } from './sick-leave.action';
+import { CalendarActions } from './calendar.action';
+import { backToClaimSickLeave } from './sick-leave.action';
 import { DayModel, WeekModel, IntervalsModel } from './calendar.model';
 import moment from 'moment';
 import { CalendarWeeksBuilder } from './calendar-weeks-builder';
 import { CalendarIntervalsBuilder } from './calendar-intervals-builder';
-import { EventDialogModel, ClaimSickLeaveDialogModel, ProlongSickLeaveDialogModel, EditSickLeaveDialogModel } from './event-dialog/event-dialog.model';
-import { selectSickLeaveEndDateReducer, claimSickLeaveReducer, confirmClaimSickLeaveReducer } from './sick-leave.reducer';
-import { CalendarEventsType } from './calendar-events.model';
+import { EventDialogModel, ProlongSickLeaveDialogModel, EditSickLeaveDialogModel } from './event-dialog/event-dialog.model';
+import { selectEndDateSickLeaveReducer, claimSickLeaveReducer, confirmClaimSickLeaveReducer, selectStartDateSickLeaveReducer, confirmStartDateSickLeaveReducer, backToClaimSickLeaveReducre } from './sick-leave.reducer';
 
 export interface DialogActiveState {
-    active: boolean;
     model: EventDialogModel<any>;
 }
 
 export interface EditingOfIntervalsState {
-    active: boolean;
     unchangedIntervals: IntervalsModel;
-    startDay: DayModel;
-    endDay: DayModel;
-    eventType: CalendarEventsType;
 }
 
-export interface CalendarEventsState {
+export interface IntervalsSubState {
+    intervals: IntervalsModel;
+}
+
+export interface EventDialogSubState {
+    dialog: DialogActiveState;
+}
+
+export interface EditingOfIntervalsSubState {
+    editingOfIntervals: EditingOfIntervalsState;
+}
+
+export interface DisableDaysCalendarDaysBeforeSubState {
+    disableCalendarDaysBefore: DayModel;
+}
+
+export interface CalendarEventsState extends 
+IntervalsSubState, 
+EventDialogSubState, 
+EditingOfIntervalsSubState,
+DisableDaysCalendarDaysBeforeSubState {
     weeks: WeekModel[];
     selectedCalendarDay: DayModel;
-    intervals: IntervalsModel;
-    dialog: DialogActiveState;
-    editingOfIntervals: EditingOfIntervalsState;
-    disableCalendarDaysBefore: DayModel;
     disableCalendarActionsButtonGroup: boolean;
 }
 
@@ -47,16 +57,11 @@ const createInitState = (): CalendarEventsState => {
     }
 
     const defaultDialogState: DialogActiveState = {
-        active: false,
         model: null
     };
 
     const defaultEditingOfIntervalsState: EditingOfIntervalsState = {
-        active: false,
-        unchangedIntervals: null,
-        startDay: null,
-        endDay: null,
-        eventType: null
+        unchangedIntervals: null
     };
 
     return {
@@ -84,11 +89,13 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 disableCalendarActionsButtonGroup: false
             };
         case 'SELECT-CALENDAR-DAY':
-            const newSickLeaveEventState = selectSickLeaveEndDateReducer(state, action);
+            const startSickLeaveDialog = selectStartDateSickLeaveReducer(state, action);
+            const endSickLeaveEventState = selectEndDateSickLeaveReducer(state, action);
 
             return {
                 ...state,
-                ...newSickLeaveEventState,
+                ...startSickLeaveDialog,
+                ...endSickLeaveEventState,
                 selectedCalendarDay: action.day
             };
         case 'SELECT-CALENDAR-MONTH':
@@ -105,6 +112,20 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
             return {
                 ...state,
                 ...claimSickLeaveDialog
+            };
+        case 'CONFIRM-START-DATE-SICK-LEAVE':
+            const confirmStartDateSickLeaveDialog = confirmStartDateSickLeaveReducer(state, action);
+
+            return {
+                ...state,
+                ...confirmStartDateSickLeaveDialog
+            };
+        case 'BACK-TO-CLAIM-SICK-LEAVE':
+            const backToClaimSickLeaveDialog = backToClaimSickLeaveReducre(state, action);
+
+            return {
+                ...state,
+                ...backToClaimSickLeaveDialog
             };
         case 'CONFIRM-CLAIM-SICK-LEAVE':
             const confirmClaimSickLeaveState = confirmClaimSickLeaveReducer(state, action);
@@ -145,15 +166,10 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 ...state,
                 intervals: restoredIntervals,
                 dialog: {
-                    active: false,
                     model: null
                 },
                 editingOfIntervals: {
-                    active: false,
                     unchangedIntervals: null,
-                    startDay: null,
-                    endDay: null,
-                    eventType: null
                 },
                 disableCalendarDaysBefore: null
             };

@@ -4,16 +4,16 @@ import { AppState } from '../../reducers/app.reducer';
 import { connect, Dispatch } from 'react-redux';
 import { ApplicationIcon } from '../../override/application-icon';
 import { StyledText } from '../../override/styled-text';
-import { CalendarActions, cancelDialog } from '../../reducers/calendar/calendar.action';
+import { CalendarActions } from '../../reducers/calendar/calendar.action';
 
 import { layout, content, buttons } from './styles';
 import { CalendarActionButton } from '../calendar-action-button';
 import { EventDialogModel, EventDialogEmptyModel } from '../../reducers/calendar/event-dialog/event-dialog.model';
 import { Employee } from '../../reducers/organization/employee.model';
-import { CalendarEvents } from '../../reducers/calendar/calendar-events.model';
 
 interface EventDialogProps {
     model?: EventDialogModel<any>;
+    userEmployee: Employee;
 }
 
 interface EventDialogDispatchProps {
@@ -56,10 +56,12 @@ export class EventDialogImpl extends Component<EventDialogProps & EventDialogDis
             return null;
         }
 
+        const disableAccept = model.disableAccept();
+
         return (
             <View style={layout.buttons}>
                 <CalendarActionButton title={model.cancelLabel} onPress={this.cancel} style={buttons.cancel} textStyle={buttons.cancelLabel} />
-                <CalendarActionButton title={model.acceptLabel} onPress={this.accept} style={buttons.accept} textStyle={buttons.acceptLabel} />
+                <CalendarActionButton title={model.acceptLabel} onPress={this.accept} style={buttons.accept} textStyle={buttons.acceptLabel} disabled={disableAccept} />
             </View>
         );
     }
@@ -77,12 +79,13 @@ export class EventDialogImpl extends Component<EventDialogProps & EventDialogDis
     }
 
     private accept = () => {
-        this.props.dispatch(this.props.model.acceptAction());
+        this.props.dispatch(this.props.model.acceptAction({ userEmployee: this.props.userEmployee }));
     }
 }
 
 const mapStateToProps = (state: AppState): EventDialogProps => ({
-    model: state.calendar.calendarEvents.dialog.model
+    model: state.calendar.calendarEvents.dialog.model,
+    userEmployee: state.userInfo.employee
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>): EventDialogDispatchProps => ({
