@@ -25,8 +25,10 @@
                     x.Id.ToString(),
                     x.Name,
                     x.Abbreviation,
-                    x.ParentDepartmentId == null ? null : x.ParentDepartmentId.ToString())
+                    (x.ParentDepartmentId == null) || (x.Id == x.ParentDepartmentId) ? null : x.ParentDepartmentId.ToString())
                     { ChiefId = x.ChiefId == null ? null : x.ChiefId.ToString() };
+
+        private readonly Expression<Func<Department, bool>> isHeadDepartment = x => (x.CompanyId == 154) && (x.Id == x.ParentDepartmentId);
 
         protected override async Task<LoadHeadDepartment.Response> GetHeadDepartment()
         {
@@ -34,7 +36,7 @@
             {
                 var department = await context
                     .Department
-                    .Where(x => (x.CompanyId == 154) && (x.Abbreviation == "CEO")) //TODO: fix hard code
+                    .Where(this.isHeadDepartment)
                     .Select(this.mapDepartment)
                     .FirstOrDefaultAsync();
 
