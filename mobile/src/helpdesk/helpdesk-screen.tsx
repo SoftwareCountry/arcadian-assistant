@@ -38,7 +38,6 @@ class HelpdeskScreenImpl extends Component<HelpdeskScreenProps & HelpdeskScreenD
 
         return <ScrollView>
                 {progressBar}
-                <EmployeeCardWithAvatar employeeName='Ivan'  />
                 <Button title='Back' onPress={ () => this.props.onBackClick() } ></Button>
             </ScrollView>;
     }

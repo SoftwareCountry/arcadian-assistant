@@ -3,9 +3,14 @@ import { Animated, Easing, View, Text, ScrollView, Dimensions, TouchableOpacity,
 import { AppState } from '../../reducers/app.reducer';
 import { connect, Dispatch, MapStateToProps, MapDispatchToPropsFunction } from 'react-redux';
 import { EmployeeCardWithAvatar } from '../employee-card-with-avatar';
+import { DepartmentsTree } from './departments-tree';
+import { Employee } from '../../reducers/organization/employee.model';
 
+interface DepartmentsHScrollableListProps {
+    departmentsTree: DepartmentsTree;
+}
 
-export class DepartmentsHScrollableList extends Component {
+export class DepartmentsHScrollableList extends Component<DepartmentsHScrollableListProps> {
     private animatedValue: Animated.Value;
     private buttonText: Text;
 
@@ -38,6 +43,8 @@ export class DepartmentsHScrollableList extends Component {
             outputRange: [0, 260]
           }); */
 
+        const employee: Employee = this.props.departmentsTree.root.head;
+
         return <View>
             <Animated.ScrollView 
                 horizontal 
@@ -61,9 +68,9 @@ export class DepartmentsHScrollableList extends Component {
                     console.log('test on scroll' + event.currentTarget); 
                 }}
             >
-                <EmployeeCardWithAvatar employeeName='Ivan' ref='id1' />
-                <EmployeeCardWithAvatar employeeName='Petr' ref='id2' />
-                <EmployeeCardWithAvatar employeeName='Sergey' ref='id3' />
+                <EmployeeCardWithAvatar employee={employee} ref='id1' />
+                <EmployeeCardWithAvatar employee={employee} ref='id2' />
+                <EmployeeCardWithAvatar employee={employee} ref='id3' />
             </Animated.ScrollView>
             {/* <TouchableOpacity onPress={this.animate} style={{ flex: 1, height: 30 }}>
                 <Text ref={node => this.buttonText = node} >
