@@ -12,8 +12,8 @@
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
-    using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.Web.Configuration;
+    using Arcadia.Assistant.Web.Employees;
     using Arcadia.Assistant.Web.Models.Calendar;
 
     using Microsoft.AspNetCore.Http;
@@ -22,17 +22,15 @@
     [Route("/api/employees/{employeeId}/events/")]
     public class CalendarEventsController : Controller
     {
-        private readonly IActorRefFactory actorSystem;
-
-        private readonly ActorPathsBuilder pathsBuilder;
+        private readonly IEmployeesSearch employeesSearch;
 
         private readonly ITimeoutSettings timeoutSettings;
 
-        public CalendarEventsController(IActorRefFactory actorSystem, ActorPathsBuilder pathsBuilder, ITimeoutSettings timeoutSettings)
+
+        public CalendarEventsController(ITimeoutSettings timeoutSettings, IEmployeesSearch employeesSearch)
         {
-            this.actorSystem = actorSystem;
-            this.pathsBuilder = pathsBuilder;
             this.timeoutSettings = timeoutSettings;
+            this.employeesSearch = employeesSearch;
         }
 
         [Route("")]
@@ -50,7 +48,7 @@
 
             var events = await employee.Calendar.Ask<GetCalendarEvents.Response>(GetCalendarEvents.Instance, this.timeoutSettings.Timeout, token);
             var eventModels = events.Events
-                .Select(x => new CalendarEventsWithIdModel(x.EventId, CalendarEventType.Vacation, x.Dates, CalendarEventStatus.Requested));
+                .Select(x => new CalendarEventsWithIdModel(x.EventId, x.Type, x.Dates, x.Status));
 
             return this.Ok(eventModels);
         }
@@ -75,16 +73,11 @@
                 return this.NotFound();
             }
 
-            if (!Enum.TryParse(requestedEvent.Status, out CalendarEventStatus status)) //TODO: just convert it to string...
-            {
-                status = CalendarEventStatus.Requested;
-            }
-
             var eventModel = new CalendarEventsModel()
             {
                 Dates = requestedEvent.Dates,
-                Status = status,
-                Type = CalendarEventType.Dayoff
+                Status = requestedEvent.Status,
+                Type = requestedEvent.Type
             };
 
             return this.Ok(eventModel);
@@ -95,6 +88,11 @@
         [ProducesResponseType(typeof(CalendarEventsWithIdModel), StatusCodes.Status201Created)]
         public async Task<IActionResult> Create(string employeeId, [FromBody] CalendarEventsModel model, CancellationToken token)
         {
+            if (!this.ModelState.IsValid)
+            {
+                return this.BadRequest(this.ModelState);
+            }
+
             var newId = Guid.NewGuid().ToString();
 
             var employee = await this.GetEmployeeOrDefaultAsync(employeeId, token);
@@ -104,13 +102,23 @@
                 return this.NotFound();
             }
 
-            var calendarEvent = new CalendarEvent(newId, model.Dates, model.Status.ToString() );//TODO: temporary assignment
+            var calendarEvent = new CalendarEvent(newId, model.Type, model.Dates, model.Status);
             var eventCreationResponse = await this.UpsertEventAsync(employee.Calendar, calendarEvent, token);
 
-            var createdEvent = eventCreationResponse.Event; //TODO: add errors handling
-            var responseObject = new CalendarEventsWithIdModel(createdEvent.EventId, CalendarEventType.Vacation, createdEvent.Dates, CalendarEventStatus.Requested);
+            switch (eventCreationResponse)
+            {
+                case UpsertCalendarEvent.Success success:
+                    var createdEvent = success.Event;
+                    var responseObject = new CalendarEventsWithIdModel(createdEvent.EventId, createdEvent.Type, createdEvent.Dates, createdEvent.Status);
 
-            return this.AcceptedAtAction(nameof(this.Get), new { eventId = responseObject.CalendarEventId }, responseObject);
+                    return this.AcceptedAtAction(nameof(this.Get), new { eventId = responseObject.CalendarEventId }, responseObject);
+
+                case UpsertCalendarEvent.Error error:
+                    return this.BadRequest(error.Exception.Message);
+                
+                default:
+                    return this.StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [Route("{eventId}")]
@@ -119,6 +127,11 @@
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Update(string employeeId, string eventId, [FromBody] CalendarEventsModel model, CancellationToken token)
         {
+            if (!this.ModelState.IsValid)
+            {
+                return this.BadRequest(this.ModelState);
+            }
+
             var employee = await this.GetEmployeeOrDefaultAsync(employeeId, token);
 
             if (employee == null)
@@ -132,10 +145,20 @@
                 return this.NotFound();
             }
 
-            var calendarEvent = new CalendarEvent(eventId, model.Dates, model.Status.ToString());//TODO: temporary assignment
-            await this.UpsertEventAsync(employee.Calendar, calendarEvent, token);//TODO: add errors handling
+            var calendarEvent = new CalendarEvent(eventId, model.Type, model.Dates, model.Status);
+            var response = await this.UpsertEventAsync(employee.Calendar, calendarEvent, token);
 
-            return this.NoContent();
+            switch (response)
+            {
+                case UpsertCalendarEvent.Success _:
+                    return this.NoContent();
+
+                case UpsertCalendarEvent.Error error:
+                    return this.BadRequest(error.Exception.Message);
+
+                default:
+                    return this.StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         private async Task<UpsertCalendarEvent.Response> UpsertEventAsync(IActorRef calendarActor, CalendarEvent calendarEvent, CancellationToken token)
@@ -165,14 +188,9 @@
         private async Task<EmployeeContainer> GetEmployeeOrDefaultAsync(string employeeId, CancellationToken token)
         {
             var query = new EmployeesQuery().WithId(employeeId);
+            var employees = await this.employeesSearch.Search(query, token);
 
-            var timeout = this.timeoutSettings.Timeout;
-
-            //TODO: GET RID OF THAT COPY-PASTE!
-            var organization = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
-            var response = await organization.Ask<EmployeesQuery.Response>(query, timeout, token);
-
-            return response.Employees.SingleOrDefault();
+            return employees.SingleOrDefault();
         }
     }
 }

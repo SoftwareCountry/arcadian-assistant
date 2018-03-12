@@ -12,6 +12,8 @@
 
         public string ChiefId { get; set; }
 
+        public bool IsHeadDepartment => this.ParentDepartmentId == null;
+
         public DepartmentInfo(string departmentId, string name, string abbreviation, string parentDepartmentId = null)
         {
             this.DepartmentId = departmentId;
