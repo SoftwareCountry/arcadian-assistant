@@ -38,7 +38,7 @@
 
         public sealed class GetFeeds
         {
-            public static GetFeeds Instance = new GetFeeds();
+            public static readonly GetFeeds Instance = new GetFeeds();
 
             public sealed class Response
             {

@@ -21,7 +21,7 @@
             foreach (var employee in employees.Employees)
             {
                 var title = employee.Metadata.Name;
-                var msg = $"{employee.Metadata.Name} turns {employee.Metadata.Age}! Happy Birthsday!";
+                var msg = $"{employee.Metadata.Name} turns {employee.Metadata.Age}! Happy Birthday!";
                 this.feed.Tell(new FeedActor.PostMessage(new Message(Guid.NewGuid(), employee.Metadata.EmployeeId, title, msg, DateTimeOffset.Now)));
             }
         }
