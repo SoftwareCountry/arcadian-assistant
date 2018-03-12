@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Animated, Easing, View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { Animated, Easing, View, Text, ScrollView, Dimensions, TouchableOpacity, ScrollResponderEvent } from 'react-native';
 import { AppState } from '../../reducers/app.reducer';
 import { connect, Dispatch, MapStateToProps, MapDispatchToPropsFunction } from 'react-redux';
 import { EmployeeCardWithAvatar } from '../employee-card-with-avatar';
@@ -39,7 +39,28 @@ export class DepartmentsHScrollableList extends Component {
           }); */
 
         return <View>
-            <Animated.ScrollView horizontal >
+            <Animated.ScrollView 
+                horizontal 
+                pagingEnabled 
+                onMomentumScrollEnd={function test(event: any) {
+                    const eventN = event.nativeEvent.target;
+                    var offset = event.nativeEvent.contentOffset;
+                    if (offset) {
+                        var page = Math.round(offset.x / Dimensions.get('window').width) + 1;
+                        console.log('page #' + page);
+                        // if (this.state.page !== page) {
+                        //     console.log('page #' + page);
+                        //     this.setState({ page: page });
+                        // }
+                    }
+                    console.log('momentumScrollEnd: ' + eventN);
+                }}
+                onResponderRelease={function test(event: ScrollResponderEvent) { 
+                    const target = event.currentTarget;
+                    //const compByTarget =  ReactNativeComponentTree.getInstanceFromNode(target)._currentElement.id;
+                    console.log('test on scroll' + event.currentTarget); 
+                }}
+            >
                 <EmployeeCardWithAvatar employeeName='Ivan' ref='id1' />
                 <EmployeeCardWithAvatar employeeName='Petr' ref='id2' />
                 <EmployeeCardWithAvatar employeeName='Sergey' ref='id3' />

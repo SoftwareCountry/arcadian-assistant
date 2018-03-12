@@ -1,10 +1,11 @@
 import React from 'react';
 import { Action } from 'redux';
 import { connect, Dispatch } from 'react-redux';
-import { View } from 'react-native';
+import { View, Text, ScrollView, Dimensions, Animated } from 'react-native';
 
 import { EmployeesList } from './employees-list';
 import { AppState } from '../reducers/app.reducer';
+import { DepartmentsHScrollableList } from './departments/departments-horizontal-scrollable-list';
 
 interface PeopleCompanyProps {
     routeName: string;
@@ -14,9 +15,13 @@ const mapStateToProps = (state: AppState): PeopleCompanyProps => ({
     routeName: 'Company'
 });
 
-export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps> {  
+export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps> {
     public render() {
-        return <View style={{flex: 1, backgroundColor: '#fff'}}/>;
+        return <ScrollView>
+            <DepartmentsHScrollableList />
+            <DepartmentsHScrollableList />
+            <DepartmentsHScrollableList />
+        </ScrollView>;
     }
 }
 
