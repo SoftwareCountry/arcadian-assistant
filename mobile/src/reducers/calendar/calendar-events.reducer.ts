@@ -81,20 +81,25 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
     switch (action.type) {
         case 'LOAD-CALENDAR-EVENTS-FINISHED':
             const builderIntervals = new CalendarIntervalsBuilder();
-
-            let intervals = null;
-            if (!state.intervals) {
-                intervals = builderIntervals.buildIntervals(action.calendarEvents);
-            } else {
-                const copiedIntevals = state.intervals.copy();
-                builderIntervals.appendCalendarEvents(copiedIntevals, action.calendarEvents);
-                intervals = copiedIntevals;
-            }
+            const intervals = builderIntervals.buildIntervals(action.calendarEvents);
 
             return {
                 ...state,
                 intervals: intervals,
                 disableCalendarActionsButtonGroup: false
+            };
+        case 'CALENDAR-EVENT-CREATED':
+            const builderCalendarIntervals = new CalendarIntervalsBuilder();
+
+            const intervalsWithNewEvent = state.intervals
+                ? state.intervals.copy()
+                : new IntervalsModel();
+
+            builderCalendarIntervals.appendCalendarEvents(intervalsWithNewEvent, [action.calendarEvent]);
+
+            return {
+                ...state,
+                intervals: intervalsWithNewEvent
             };
         case 'SELECT-CALENDAR-DAY':
             const startSickLeaveDialog = selectStartDateSickLeaveReducer(state, action);

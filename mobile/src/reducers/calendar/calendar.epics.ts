@@ -4,7 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import { ajaxGetJSON, ajaxPost } from 'rxjs/observable/dom/AjaxObservable';
 import { apiUrl } from '../const';
 import { deserializeArray, deserialize } from 'santee-dcts';
-import { loadCalendarEventsFinished } from './calendar.action';
+import { loadCalendarEventsFinished, calendarEventCreated } from './calendar.action';
 import { loadFailedError } from '../errors/errors.action';
 import { CalendarEvents } from './calendar-events.model';
 import { ConfirmClaimSickLeave } from './sick-leave.action';
@@ -27,5 +27,5 @@ export const calendarEventsSavedEpic$ = (action$: ActionsObservable<ConfirmClaim
             )
             .map(obj => deserialize(obj.response, CalendarEvents))
         )
-        .map(x => loadCalendarEventsFinished([x]))
+        .map(x => calendarEventCreated(x))
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
