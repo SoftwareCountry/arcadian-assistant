@@ -33,13 +33,13 @@ export interface DisableDaysCalendarDaysBeforeSubState {
 }
 
 export interface CalendarEventsState extends 
-IntervalsSubState, 
-EventDialogSubState, 
-EditingOfIntervalsSubState,
-DisableDaysCalendarDaysBeforeSubState {
-    weeks: WeekModel[];
-    selectedCalendarDay: DayModel;
-    disableCalendarActionsButtonGroup: boolean;
+    IntervalsSubState, 
+    EventDialogSubState, 
+    EditingOfIntervalsSubState,
+    DisableDaysCalendarDaysBeforeSubState {
+        weeks: WeekModel[];
+        selectedCalendarDay: DayModel;
+        disableCalendarActionsButtonGroup: boolean;
 }
 
 const createInitState = (): CalendarEventsState => {
