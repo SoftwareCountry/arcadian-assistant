@@ -15,7 +15,7 @@ describe('IntervalsModel', () => {
             const date = moment();
             const intervalModel: IntervalModel = {
                 intervalType: 'startInterval',
-                eventType: CalendarEventsType.AdditionalWork,
+                eventType: CalendarEventsType.Workout,
                 startDate: date,
                 endDate: date,
                 boundary: true,
@@ -36,7 +36,7 @@ describe('IntervalsModel', () => {
 
             const intervalModel: IntervalModel = {
                 intervalType: 'startInterval',
-                eventType: CalendarEventsType.AdditionalWork,
+                eventType: CalendarEventsType.Workout,
                 startDate: key,
                 endDate: key,
                 boundary: true,
@@ -49,7 +49,7 @@ describe('IntervalsModel', () => {
 
             const intervalModel2: IntervalModel = {
                 intervalType: 'startInterval',
-                eventType: CalendarEventsType.AdditionalWork,
+                eventType: CalendarEventsType.Workout,
                 startDate: key,
                 endDate: key,
                 boundary: true,
@@ -78,7 +78,7 @@ describe('IntervalsModel', () => {
         const date = moment();
         const intervalModel: IntervalModel = {
             intervalType: 'startInterval',
-            eventType: CalendarEventsType.AdditionalWork,
+            eventType: CalendarEventsType.Workout,
             startDate: date,
             endDate: date,
             boundary: true,
@@ -104,7 +104,7 @@ describe('IntervalsModel', () => {
 
             const startInterval: IntervalModel = {
                 intervalType: 'startInterval',
-                eventType: CalendarEventsType.SickLeave,
+                eventType: CalendarEventsType.Sickleave,
                 startDate: startDate,
                 endDate: endDate,
                 boundary: false,
@@ -113,7 +113,7 @@ describe('IntervalsModel', () => {
 
             const interval: IntervalModel = {
                 intervalType: 'interval',
-                eventType: CalendarEventsType.SickLeave,
+                eventType: CalendarEventsType.Sickleave,
                 startDate: startDate,
                 endDate: endDate,
                 boundary: false,
@@ -122,7 +122,7 @@ describe('IntervalsModel', () => {
 
             const endInterval: IntervalModel = {
                 intervalType: 'endInterval',
-                eventType: CalendarEventsType.SickLeave,
+                eventType: CalendarEventsType.Sickleave,
                 startDate: startDate,
                 endDate: endDate,
                 boundary: false,

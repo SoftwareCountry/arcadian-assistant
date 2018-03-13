@@ -9,6 +9,13 @@ export interface LoadCalendarEventsFinished {
 
 export const loadCalendarEventsFinished = (calendarEvents: CalendarEvents[]): LoadCalendarEventsFinished => ({ type: 'LOAD-CALENDAR-EVENTS-FINISHED', calendarEvents });
 
+export interface CalendarEventCreated {
+    type: 'CALENDAR-EVENT-CREATED';
+    calendarEvent: CalendarEvents;
+}
+
+export const calendarEventCreated = (calendarEvent: CalendarEvents): CalendarEventCreated => ({ type: 'CALENDAR-EVENT-CREATED', calendarEvent });
+
 export interface SelectCalendarDay {
     type: 'SELECT-CALENDAR-DAY';
     day: DayModel;
@@ -30,7 +37,7 @@ export interface CancelDialog {
 
 export const cancelDialog = (): CancelDialog => ({ type: 'CANCEL-CALENDAR-DIALOG' });
 
-export type CalendarActions = LoadCalendarEventsFinished |
+export type CalendarActions = LoadCalendarEventsFinished | CalendarEventCreated |
     SelectCalendarDay | SelectCalendarMonth |
     SickLeaveActions |
     CancelDialog;

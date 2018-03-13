@@ -1,10 +1,14 @@
 import { Moment } from 'moment';
 import { cancelDialog, CalendarActions } from '../calendar.action';
-import { confirmSickLeave, editSickLeave, confirmProlongSickLeave, prolongSickLeave, completeSickLeave } from '../sick-leave.action';
+import { confirmSickLeave, editSickLeave, confirmProlongSickLeave, prolongSickLeave, completeSickLeave, confirmStartDateSickLeave, backToClaimSickLeave } from '../sick-leave.action';
 import { Employee } from '../../organization/employee.model';
 import { CalendarEvents } from '../calendar-events.model';
 
 export const eventDialogTextDateFormat = 'MMMM D, YYYY';
+
+export interface EventDialogActionArgs {
+    userEmployee: Employee;
+}
 
 export abstract class EventDialogModel<T extends EventDialogModel<T>> {
     public abstract title: string;
@@ -19,7 +23,11 @@ export abstract class EventDialogModel<T extends EventDialogModel<T>> {
     constructor(protected readonly tCtor: new () => T) {}
 
     public abstract cancelAction(): CalendarActions;
-    public abstract acceptAction(): CalendarActions;
+    public abstract acceptAction(args: EventDialogActionArgs): CalendarActions;
+
+    public disableAccept(): boolean {
+        return false;
+    }
 
     public copy(): T {
         const instance = new this.tCtor();
@@ -56,6 +64,39 @@ export class EventDialogEmptyModel extends EventDialogModel<EventDialogEmptyMode
 }
 
 export class ClaimSickLeaveDialogModel extends EventDialogModel<ClaimSickLeaveDialogModel> {
+    public readonly title = 'Select date to Start your Sick Leave';
+    public readonly icon = 'sick_leave';
+    public readonly cancelLabel = 'Back';
+    public readonly acceptLabel = 'Confirm';
+
+    public startDate: Moment;
+
+    constructor() {
+        super(ClaimSickLeaveDialogModel);
+    }
+
+    public get text(): string {
+        return `Your sick leave starts on ${this.startDate.format(eventDialogTextDateFormat)}`;
+    }
+
+    public cancelAction(): CalendarActions {
+        return cancelDialog();
+    }
+
+    public acceptAction(args: EventDialogActionArgs): CalendarActions {
+        return confirmStartDateSickLeave(this.startDate);
+    }
+
+    public copy(): ClaimSickLeaveDialogModel {
+        const newInstance = super.copy();
+
+        newInstance.startDate = this.startDate;
+
+        return newInstance;
+    }
+}
+
+export class SelectEndDateSickLeaveDialogModel extends EventDialogModel<SelectEndDateSickLeaveDialogModel> {
     public startDate: Moment;
     public endDate: Moment;
     public calendarEvents: CalendarEvents;
@@ -72,18 +113,24 @@ export class ClaimSickLeaveDialogModel extends EventDialogModel<ClaimSickLeaveDi
     public readonly acceptLabel = 'Confirm';
 
     constructor() {
-        super(ClaimSickLeaveDialogModel);
+        super(SelectEndDateSickLeaveDialogModel);
     }
 
     public cancelAction(): CalendarActions {
-        return cancelDialog();
+        return backToClaimSickLeave(this.startDate);
     }
 
-    public acceptAction(): CalendarActions {
-        return confirmSickLeave(); // TODO: add epic to confirmSickLeave
+    public acceptAction(args: EventDialogActionArgs): CalendarActions {
+        return confirmSickLeave(args.userEmployee, this.calendarEvents);
     }
 
-    public copy(): ClaimSickLeaveDialogModel {
+    public disableAccept() {
+        return !this.calendarEvents;
+    }
+
+    public close = () => cancelDialog();
+
+    public copy(): SelectEndDateSickLeaveDialogModel {
         const newInstance = super.copy();
 
         newInstance.startDate = this.startDate;

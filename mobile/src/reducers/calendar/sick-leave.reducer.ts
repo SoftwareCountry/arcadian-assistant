@@ -1,47 +1,99 @@
 import { SelectCalendarDay } from './calendar.action';
-import { CalendarEventsState } from './calendar-events.reducer';
-import { CalendarEvents, DatesInterval, CalendarEventsType } from './calendar-events.model';
+import { CalendarEventsState, EventDialogSubState, IntervalsSubState, EditingOfIntervalsSubState, DisableDaysCalendarDaysBeforeSubState } from './calendar-events.reducer';
+import { CalendarEvents, DatesInterval, CalendarEventsType, CalendarEventStatus } from './calendar-events.model';
 import { CalendarIntervalsBuilder } from './calendar-intervals-builder';
-import { ClaimSickLeaveDialogModel } from './event-dialog/event-dialog.model';
-import { ClaimSickLeave, ConfirmClaimSickLeave } from './sick-leave.action';
-import { IntervalsModel } from './calendar.model';
+import { ClaimSickLeaveDialogModel, SelectEndDateSickLeaveDialogModel } from './event-dialog/event-dialog.model';
+import { ClaimSickLeave, ConfirmClaimSickLeave, ConfirmStartDateSickLeave, BackToClaimSickLeave } from './sick-leave.action';
 
-export const claimSickLeaveReducer = (state: CalendarEventsState, action: ClaimSickLeave): CalendarEventsState => {
+export const claimSickLeaveReducer = (state: CalendarEventsState, action: ClaimSickLeave): EventDialogSubState | null => {
     const claimSickLeaveDialog = new ClaimSickLeaveDialogModel();
 
     claimSickLeaveDialog.startDate = state.selectedCalendarDay.date;
+
+    return {
+        dialog: {
+            model: claimSickLeaveDialog
+        }
+    };
+};
+
+interface ConfirmStartDateSickLeaveSubState extends IntervalsSubState, EventDialogSubState, EditingOfIntervalsSubState, DisableDaysCalendarDaysBeforeSubState {}
+
+export const confirmStartDateSickLeaveReducer = (state: CalendarEventsState, action: ConfirmStartDateSickLeave): ConfirmStartDateSickLeaveSubState | null => {
+    const selectEndDateDialog = new SelectEndDateSickLeaveDialogModel();
+
+    selectEndDateDialog.startDate = action.startDate;
 
     const editedIntervals = state.intervals
         ? state.intervals.copy()
         : null;
 
     return {
-        ...state,
         intervals: editedIntervals,
         dialog: {
-            active: true,
-            model: claimSickLeaveDialog
+            model: selectEndDateDialog
         },
         editingOfIntervals: {
-            ...state.editingOfIntervals,
-            active: true,
-            startDay: state.selectedCalendarDay,
             unchangedIntervals: state.intervals,
-            eventType: CalendarEventsType.SickLeave
         },
         disableCalendarDaysBefore: state.selectedCalendarDay
     };
 };
 
-export const selectSickLeaveEndDateReducer = (state: CalendarEventsState, action: SelectCalendarDay): CalendarEventsState => {
+interface BackToClaimSickLeaveSubState extends IntervalsSubState, EventDialogSubState, EditingOfIntervalsSubState, DisableDaysCalendarDaysBeforeSubState {}
 
-    if (state.editingOfIntervals.active && state.editingOfIntervals.eventType === CalendarEventsType.SickLeave) {
+export const backToClaimSickLeaveReducer = (state: CalendarEventsState, action: BackToClaimSickLeave): BackToClaimSickLeaveSubState | null => {
+    const claimSickLeaveDialog = new ClaimSickLeaveDialogModel();
+
+    claimSickLeaveDialog.startDate = action.startDate;
+
+    const restoredIntervals = state.editingOfIntervals.unchangedIntervals
+        ? state.editingOfIntervals.unchangedIntervals
+        : state.intervals;
+
+    return {
+        intervals: restoredIntervals,
+        dialog: {
+            model: claimSickLeaveDialog
+        },
+        editingOfIntervals: {
+            unchangedIntervals: null
+        },
+        disableCalendarDaysBefore: null
+    };
+};
+
+export const selectStartDateSickLeaveReducer = (state: CalendarEventsState, action: SelectCalendarDay): EventDialogSubState | null => {
+    if (state.dialog.model instanceof ClaimSickLeaveDialogModel) {
+        const dialogModel = state.dialog.model.copy();
+
+        dialogModel.startDate = action.day.date;
+
+        return {
+            dialog: {
+                ...state.dialog,
+                model: dialogModel
+            }
+        };
+    }
+
+    return null;
+};
+
+interface SelectEndDateSickLeaveSubState extends IntervalsSubState, EventDialogSubState {}
+
+export const selectEndDateSickLeaveReducer = (state: CalendarEventsState, action: SelectCalendarDay): SelectEndDateSickLeaveSubState | null => {
+
+    if (state.dialog.model instanceof SelectEndDateSickLeaveDialogModel) {
         const newCalendarEvents = new CalendarEvents();
 
-        newCalendarEvents.type = CalendarEventsType.SickLeave;
+        newCalendarEvents.type = CalendarEventsType.Sickleave;
         newCalendarEvents.dates = new DatesInterval();
-        newCalendarEvents.dates.startDate = state.editingOfIntervals.startDay.date;
+        newCalendarEvents.dates.startWorkingHour = 0;
+        newCalendarEvents.dates.finishWorkingHour = 8;
+        newCalendarEvents.dates.startDate = state.dialog.model.startDate;
         newCalendarEvents.dates.endDate = action.day.date;
+        newCalendarEvents.status = CalendarEventStatus.Requested;
 
         const changedIntervals = state.editingOfIntervals.unchangedIntervals
             ? state.editingOfIntervals.unchangedIntervals.copy()
@@ -52,58 +104,36 @@ export const selectSickLeaveEndDateReducer = (state: CalendarEventsState, action
             builder.appendCalendarEvents(changedIntervals, [newCalendarEvents], { draft: true });
         }
 
-        const dialogModel: ClaimSickLeaveDialogModel = state.dialog.model.copy();
+        const dialogModel = state.dialog.model.copy();
         dialogModel.endDate = newCalendarEvents.dates.endDate;
+        dialogModel.calendarEvents = newCalendarEvents;
 
         return {
-            ...state,
             intervals: changedIntervals,
             dialog: {
-                ...state.dialog,
                 model: dialogModel
-            },
-            editingOfIntervals: {
-                ...state.editingOfIntervals,
-                endDay: action.day
             }
         };
     }
 
-    return state;
+    return null;
 };
 
-export const confirmClaimSickLeaveReducer = (state: CalendarEventsState, action: ConfirmClaimSickLeave): CalendarEventsState => {
-    const intervalsToSave = state.editingOfIntervals.unchangedIntervals
-        ? state.editingOfIntervals.unchangedIntervals.copy()
-        : null;
+interface ConfirmClaimSickLeaveSubState extends IntervalsSubState, EventDialogSubState, EditingOfIntervalsSubState, DisableDaysCalendarDaysBeforeSubState {}
 
-    // TODO: temp: reload again all calendar events. Will be removed next PR. Just for demo
-    if (intervalsToSave) {
-        const newCalendarEvents = new CalendarEvents();
-        newCalendarEvents.type = CalendarEventsType.SickLeave;
-        newCalendarEvents.dates = new DatesInterval();
-        newCalendarEvents.dates.startDate = state.editingOfIntervals.startDay.date;
-        newCalendarEvents.dates.endDate = state.editingOfIntervals.endDay.date;
-
-        const builder = new CalendarIntervalsBuilder();
-
-        builder.appendCalendarEvents(intervalsToSave, [newCalendarEvents], { draft: false });
-    }
+export const confirmClaimSickLeaveReducer = (state: CalendarEventsState, action: ConfirmClaimSickLeave): ConfirmClaimSickLeaveSubState => {
+    const restoredIntervals = state.editingOfIntervals.unchangedIntervals
+        ? state.editingOfIntervals.unchangedIntervals
+        : state.intervals;
 
     return {
-        ...state,
-        intervals: intervalsToSave,
+        intervals: restoredIntervals,
         dialog: {
-            active: false,
             model: null
         },
         editingOfIntervals: {
-            active: false,
             unchangedIntervals: null,
-            startDay: null,
-            endDay: null,
-            eventType: null
         },
-         disableCalendarDaysBefore: null
+        disableCalendarDaysBefore: null
     };
 };
