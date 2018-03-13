@@ -76,7 +76,7 @@ export class ClaimSickLeaveDialogModel extends EventDialogModel<ClaimSickLeaveDi
     }
 
     public get text(): string {
-        return `Your sick leave has started on ${this.startDate.format(eventDialogTextDateFormat)}`;
+        return `Your sick leave starts on ${this.startDate.format(eventDialogTextDateFormat)}`;
     }
 
     public cancelAction(): CalendarActions {
