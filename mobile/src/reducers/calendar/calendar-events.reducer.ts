@@ -81,7 +81,15 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
     switch (action.type) {
         case 'LOAD-CALENDAR-EVENTS-FINISHED':
             const builderIntervals = new CalendarIntervalsBuilder();
-            const intervals = builderIntervals.buildIntervals(action.calendarEvents);
+
+            let intervals = null;
+            if (!state.intervals) {
+                intervals = builderIntervals.buildIntervals(action.calendarEvents);
+            } else {
+                const copiedIntevals = state.intervals.copy();
+                builderIntervals.appendCalendarEvents(copiedIntevals, action.calendarEvents);
+                intervals = copiedIntevals;
+            }
 
             return {
                 ...state,

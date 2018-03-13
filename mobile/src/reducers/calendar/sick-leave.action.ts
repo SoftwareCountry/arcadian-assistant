@@ -54,12 +54,5 @@ export interface ConfirmProlongSickLeave {
 
 export const confirmProlongSickLeave = (): ConfirmProlongSickLeave => ({ type: 'CONFIRM-PROLONG-SICK-LEAVE' });
 
-export interface SickLeaveSaved {
-    type: 'SICK-LEAVE-SAVED';
-    employee: Employee;
-}
-
-export const sickLeaveSaved = (employee: Employee): SickLeaveSaved => ({ type: 'SICK-LEAVE-SAVED', employee });
-
-export type SickLeaveActions = ClaimSickLeave | ConfirmStartDateSickLeave | BackToClaimSickLeave | ConfirmClaimSickLeave | SickLeaveSaved |
+export type SickLeaveActions = ClaimSickLeave | ConfirmStartDateSickLeave | BackToClaimSickLeave | ConfirmClaimSickLeave |
     EditSickLeave | CompleteSickLeave | ProlongSickLeave | ConfirmProlongSickLeave;

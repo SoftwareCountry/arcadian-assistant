@@ -119,10 +119,15 @@ export const selectEndDateSickLeaveReducer = (state: CalendarEventsState, action
     return null;
 };
 
-interface ConfirmClaimSickLeaveSubState extends EventDialogSubState, EditingOfIntervalsSubState, DisableDaysCalendarDaysBeforeSubState {}
+interface ConfirmClaimSickLeaveSubState extends IntervalsSubState, EventDialogSubState, EditingOfIntervalsSubState, DisableDaysCalendarDaysBeforeSubState {}
 
 export const confirmClaimSickLeaveReducer = (state: CalendarEventsState, action: ConfirmClaimSickLeave): ConfirmClaimSickLeaveSubState => {
+    const restoredIntervals = state.editingOfIntervals.unchangedIntervals
+        ? state.editingOfIntervals.unchangedIntervals
+        : state.intervals;
+
     return {
+        intervals: restoredIntervals,
         dialog: {
             model: null
         },
