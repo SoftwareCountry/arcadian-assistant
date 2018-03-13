@@ -5,7 +5,7 @@ export enum CalendarEventsType {
     Vacation = 'Vacation',
     Sickleave = 'Sickleave',
     Dayoff = 'Dayoff',
-    Workout = 'Workoff'
+    Workout = 'Workout'
 }
 
 export enum CalendarEventStatus {
