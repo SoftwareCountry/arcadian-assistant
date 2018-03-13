@@ -22,7 +22,7 @@ interface ActionButtonGroupProps {
 
 interface ActionButtonsGroupDispatchProps {
     sickLeaveActions: {
-        claim: (startDate: Moment) => void;
+        claim: () => void;
         edit: () => void;
     };
 }
@@ -77,7 +77,7 @@ const mapStateToProps = (state: AppState): ActionButtonGroupProps => ({
 
 const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>) => ({
     sickLeaveActions: {
-        claim: (startDate: Moment) => { dispatch(claimSickLeave()); },
+        claim: () => { dispatch(claimSickLeave()); },
         edit: () => { dispatch(editSickLeave()); },
     }
 });
