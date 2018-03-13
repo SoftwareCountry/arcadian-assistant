@@ -8,22 +8,12 @@ import { LoginRequest } from './login-request';
 import { RefreshTokenStorage } from './refresh-token-storage';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { LogoutRequest } from './logout-request';
+import { NotAuthenticatedState, AuthenticationState } from './authentication-state';
 
 //https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-protocols-oauth-code
 
-export interface AuthenticatedState {
-    isAuthenticated: true;
-    refreshToken: string;
-    jwtToken: string;
-}
-
-export interface NotAuthenticatedState {
-    isAuthenticated: false;
-}
-
 const notAuthenticatedInstance: NotAuthenticatedState = { isAuthenticated: false }; //save a reference, so distinct works
 
-export type AuthenticationState = AuthenticatedState | NotAuthenticatedState;
 
 export class OAuthProcess {
 
@@ -86,7 +76,7 @@ export class OAuthProcess {
     public async login() {
         const value = await this.refreshTokenStorage.getRefreshToken();
         if (!value) {
-            console.debug('Refresh token is not found in storage, opening login page...')
+            console.debug('Refresh token is not found in storage, opening login page...');
             //no refresh token is stored
             await this.loginRequest.openLoginPage(false); //TODO: catch exception
         } else {
@@ -137,7 +127,7 @@ export class OAuthProcess {
         try {
             await this.refreshTokenStorage.storeToken(token);
         } catch (e) {
-            console.error("Couldn't change refresh token in the storage", e)
+            console.error("Couldn't change refresh token in the storage", e);
         }
     }
 }
