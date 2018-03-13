@@ -1,5 +1,5 @@
-import { Linking } from "react-native";
-import { ajaxGet, ajaxPost } from "rxjs/observable/dom/AjaxObservable";
+import { Linking } from 'react-native';
+import { ajaxGet, ajaxPost } from 'rxjs/observable/dom/AjaxObservable';
 
 export class LogoutRequest {
     constructor(private readonly logoutUrl: string) {
