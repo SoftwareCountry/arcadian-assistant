@@ -29,7 +29,7 @@ describe('claimSickLeaveReducer', () => {
     });
 
     it('should have dialog with text', () => {
-        expect(state.dialog.model.text).toBe(`Your sick leave has started on ${state.selectedCalendarDay.date.format(eventDialogTextDateFormat)}`);
+        expect(state.dialog.model.text).toBe(`Your sick leave starts on ${state.selectedCalendarDay.date.format(eventDialogTextDateFormat)}`);
     });
 
     it('should have dialog with cancel which is cancelDialog action', () => {
@@ -68,7 +68,7 @@ describe('select sickleave startDate', () => {
 
     it('should have dialog with text', () => {
         expect(state.dialog.model.text)
-            .toBe(`Your sick leave has started on ${state.selectedCalendarDay.date.format(eventDialogTextDateFormat)}`);
+            .toBe(`Your sick leave starts on ${state.selectedCalendarDay.date.format(eventDialogTextDateFormat)}`);
     });
 
     it('should have dialog with cancel which is cancelDialog action', () => {
@@ -177,7 +177,7 @@ describe('back to claimSickleave', () => {
 
     it('should have dialog with text', () => {
         expect(state.dialog.model.text)
-            .toBe(`Your sick leave has started on ${state.selectedCalendarDay.date.format(eventDialogTextDateFormat)}`);
+            .toBe(`Your sick leave starts on ${state.selectedCalendarDay.date.format(eventDialogTextDateFormat)}`);
     });
 
     it('should enable calendar days before start day', () => {
