@@ -8,9 +8,11 @@ import { Employee } from '../../reducers/organization/employee.model';
 
 interface DepartmentsHScrollableListProps {
     departmentsTree: DepartmentsTree;
+    employees: Employee[];
 }
 
 export class DepartmentsHScrollableList extends Component<DepartmentsHScrollableListProps> {
+    private employeeCards: EmployeeCardWithAvatar[];
     private animatedValue: Animated.Value;
     private buttonText: Text;
 
@@ -33,6 +35,10 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
         ).start();
     } */
 
+    public componentWillMount() {
+        this.employeeCards = [];
+    }
+
     public componentDidMount() {
         // this.animate.bind(this, Easing.bounce);
     }
@@ -43,34 +49,37 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
             outputRange: [0, 260]
           }); */
 
-        const employee: Employee = this.props.departmentsTree.root.head;
+        // const employee: Employee = this.props.departmentsTree.root.head;
 
         return <View>
             <Animated.ScrollView 
                 horizontal 
                 pagingEnabled 
                 onMomentumScrollEnd={function test(event: any) {
-                    const eventN = event.nativeEvent.target;
+                    // const eventN = event.nativeEvent.target;
                     var offset = event.nativeEvent.contentOffset;
                     if (offset) {
                         var page = Math.round(offset.x / Dimensions.get('window').width) + 1;
                         console.log('page #' + page);
+                        // console.log('page #' + page + ' card: ' + this.employeeCards[page]);
                         // if (this.state.page !== page) {
                         //     console.log('page #' + page);
                         //     this.setState({ page: page });
                         // }
                     }
-                    console.log('momentumScrollEnd: ' + eventN);
-                }}
-                onResponderRelease={function test(event: ScrollResponderEvent) { 
-                    const target = event.currentTarget;
-                    //const compByTarget =  ReactNativeComponentTree.getInstanceFromNode(target)._currentElement.id;
-                    console.log('test on scroll' + event.currentTarget); 
+                    // console.log('momentumScrollEnd: ' + eventN);
                 }}
             >
-                <EmployeeCardWithAvatar employee={employee} ref='id1' />
-                <EmployeeCardWithAvatar employee={employee} ref='id2' />
-                <EmployeeCardWithAvatar employee={employee} ref='id3' />
+                
+                {
+                    this.props.employees.map(employee => <EmployeeCardWithAvatar 
+                        employee={employee} 
+                        leftNeighbor={(this.props.employees.indexOf(employee) > 0 && this.props.employees.length > 1) ? this.props.employees[this.props.employees.indexOf(employee) - 1] : null } 
+                        rightNeighbor={(this.props.employees.indexOf(employee) < this.props.employees.length - 1 && this.props.employees.length > 1) ? this.props.employees[this.props.employees.indexOf(employee) + 1] : null} 
+                        ref={(employeeCard) => { this.employeeCards.push(employeeCard); }} 
+                        key={employee.employeeId} 
+                    />)
+                }
             </Animated.ScrollView>
             {/* <TouchableOpacity onPress={this.animate} style={{ flex: 1, height: 30 }}>
                 <Text ref={node => this.buttonText = node} >

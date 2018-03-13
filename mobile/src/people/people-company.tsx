@@ -32,19 +32,20 @@ function departmentsTreeFor(organization: OrganizationState) {
             departmentId: topLevelDepartment.departmentId, 
             head: topLevelEmployee, 
             parent: null, 
-            children: childrenNodes(organization.departments.filter((department) => department.parentDepartmentId === topLevelDepartment.departmentId), organization.employees.employeesById)
+            children: childrenNodes(topLevelDepartment.departmentId, organization.departments, organization.employees.employeesById)
         } 
     };
 
     return departmentsTree;
 }
 
-function childrenNodes(departments: Department[], employees: EmployeeMap) {
+function childrenNodes(headDeaprtmentId: string, departments: Department[], employees: EmployeeMap) {
     var nodes: DepartmentsTreeNode[] = [];
-
-    departments.forEach(department => {
+    const sublings = departments.filter((subDepartment) => subDepartment.parentDepartmentId === headDeaprtmentId);
+    sublings.forEach(department => {
         const employee: Employee = employees.get(department.chiefId);
-        nodes.push({ departmentId: department.departmentId, head: employee, parent: null, children: null });
+        const subSublings = departments.filter((subDepartment) => subDepartment.parentDepartmentId === department.departmentId);
+        nodes.push({ departmentId: department.departmentId, head: employee, parent: null, children: subSublings.length > 0 ? childrenNodes(department.departmentId, departments, employees) : null });
     });
 
     return nodes;
@@ -53,11 +54,13 @@ function childrenNodes(departments: Department[], employees: EmployeeMap) {
 export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps> {
     public render() {
         console.log('Head department: ' + this.props.headDepartment.name);
+        // this.props.departmentsTree.root.children.values('head')
+        console.log(this.props.departmentsTree.root.children.map(a => a.head));
 
         return <ScrollView>
-            <DepartmentsHScrollableList departmentsTree={this.props.departmentsTree} />
-            <DepartmentsHScrollableList departmentsTree={this.props.departmentsTree} />
-            <DepartmentsHScrollableList departmentsTree={this.props.departmentsTree} />
+            <DepartmentsHScrollableList departmentsTree={this.props.departmentsTree} employees={[this.props.departmentsTree.root.head]} />
+            <DepartmentsHScrollableList departmentsTree={this.props.departmentsTree} employees={this.props.departmentsTree.root.children.map(a => a.head)} />
+            <DepartmentsHScrollableList departmentsTree={this.props.departmentsTree} employees={[]} />
         </ScrollView>;
     }
 }
