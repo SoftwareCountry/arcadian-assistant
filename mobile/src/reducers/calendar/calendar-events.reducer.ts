@@ -6,7 +6,7 @@ import moment from 'moment';
 import { CalendarWeeksBuilder } from './calendar-weeks-builder';
 import { CalendarIntervalsBuilder } from './calendar-intervals-builder';
 import { EventDialogModel, ProlongSickLeaveDialogModel, EditSickLeaveDialogModel } from './event-dialog/event-dialog.model';
-import { selectEndDateSickLeaveReducer, claimSickLeaveReducer, confirmClaimSickLeaveReducer, selectStartDateSickLeaveReducer, confirmStartDateSickLeaveReducer, backToClaimSickLeaveReducre } from './sick-leave.reducer';
+import { selectEndDateSickLeaveReducer, claimSickLeaveReducer, confirmClaimSickLeaveReducer, selectStartDateSickLeaveReducer, confirmStartDateSickLeaveReducer, backToClaimSickLeaveReducer } from './sick-leave.reducer';
 
 export interface DialogActiveState {
     model: EventDialogModel<any>;
@@ -32,9 +32,9 @@ export interface DisableDaysCalendarDaysBeforeSubState {
     disableCalendarDaysBefore: DayModel;
 }
 
-export interface CalendarEventsState extends 
-    IntervalsSubState, 
-    EventDialogSubState, 
+export interface CalendarEventsState extends
+    IntervalsSubState,
+    EventDialogSubState,
     EditingOfIntervalsSubState,
     DisableDaysCalendarDaysBeforeSubState {
         weeks: WeekModel[];
@@ -121,7 +121,7 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 ...confirmStartDateSickLeaveDialog
             };
         case 'BACK-TO-CLAIM-SICK-LEAVE':
-            const backToClaimSickLeaveDialog = backToClaimSickLeaveReducre(state, action);
+            const backToClaimSickLeaveDialog = backToClaimSickLeaveReducer(state, action);
 
             return {
                 ...state,

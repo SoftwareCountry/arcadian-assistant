@@ -42,7 +42,7 @@ export const confirmStartDateSickLeaveReducer = (state: CalendarEventsState, act
 
 interface BackToClaimSickLeaveSubState extends IntervalsSubState, EventDialogSubState, EditingOfIntervalsSubState, DisableDaysCalendarDaysBeforeSubState {}
 
-export const backToClaimSickLeaveReducre = (state: CalendarEventsState, action: BackToClaimSickLeave): BackToClaimSickLeaveSubState | null => {
+export const backToClaimSickLeaveReducer = (state: CalendarEventsState, action: BackToClaimSickLeave): BackToClaimSickLeaveSubState | null => {
     const claimSickLeaveDialog = new ClaimSickLeaveDialogModel();
 
     claimSickLeaveDialog.startDate = action.startDate;
