@@ -15,6 +15,9 @@ import { UserInfoState, userInfoReducer } from './user/user-info.reducer';
 import { userEpics } from './user/user.reducer';
 import { FeedsState, feedsReducer, feedsEpics } from './feeds/feeds.reducer';
 import { CalendarState, calendarReducer, calendarEpics } from './calendar/calendar.reducer';
+import { SecuredApiClient } from '../auth/secured-api-client';
+import config from '../config';
+import { OAuthProcess } from '../auth/oauth-process';
 
 export interface AppState {
     helpdesk: HelpdeskState;
@@ -36,8 +39,14 @@ const reducers = combineReducers<AppState>({
     calendar: calendarReducer
 });
 
-export const storeFactory = () => {
-    const epicMiddleware = createEpicMiddleware(rootEpic);
+interface EpicDependencies {
+    apiClient: SecuredApiClient;
+}
+
+export const storeFactory = (oauthProcess: OAuthProcess) => {
+    const dependencies: EpicDependencies = { apiClient: new SecuredApiClient(config.apiUrl, oauthProcess.authenticationState as any ) };
+    const options = { dependencies };
+    const epicMiddleware = createEpicMiddleware(rootEpic, options);
     //const loggerMiddleware = createLogger();
 
     return createStore(reducers, applyMiddleware(epicMiddleware));

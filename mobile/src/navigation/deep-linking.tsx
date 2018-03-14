@@ -1,8 +1,7 @@
-import { Dispatch } from 'react-redux';
 import { OAuthProcess } from '../auth/oauth-process';
 
 export class DeepLinking {
-    constructor(private dispatch: Dispatch<any>, private oauthProcess: OAuthProcess) {
+    constructor(private oauthProcess: OAuthProcess) {
     }
 
     public openUrl(url: string) {

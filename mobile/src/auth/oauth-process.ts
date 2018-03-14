@@ -14,10 +14,9 @@ import { NotAuthenticatedState, AuthenticationState } from './authentication-sta
 
 const notAuthenticatedInstance: NotAuthenticatedState = { isAuthenticated: false }; //save a reference, so distinct works
 
-
 export class OAuthProcess {
 
-    public get jwtToken() { return this.jwtTokenSource.asObservable().distinctUntilChanged(); }
+    public get authenticationState() { return this.authenticationStateSource.asObservable().distinctUntilChanged(); }
 
     private readonly refreshIntervalSeconds = 15; //once in 5 minutes
 
@@ -25,7 +24,7 @@ export class OAuthProcess {
 
     private readonly refreshTokenSource: Subject<string> = new Subject<string>();
 
-    private readonly jwtTokenSource = new BehaviorSubject<AuthenticationState>(notAuthenticatedInstance);
+    private readonly authenticationStateSource = new BehaviorSubject<AuthenticationState>(notAuthenticatedInstance);
 
     private readonly accessCodeSubscription: Subscription;
 
@@ -99,10 +98,10 @@ export class OAuthProcess {
         this.storeRefreshToken(tokenResponse ? tokenResponse.refreshToken : null);
 
         if (tokenResponse === null) {
-            this.jwtTokenSource.next(notAuthenticatedInstance);
+            this.authenticationStateSource.next(notAuthenticatedInstance);
         } else {
             this.refreshTokenSource.next(tokenResponse.refreshToken);
-            this.jwtTokenSource.next({ isAuthenticated: true, jwtToken: tokenResponse.accessToken, refreshToken: tokenResponse.refreshToken });
+            this.authenticationStateSource.next({ isAuthenticated: true, jwtToken: tokenResponse.accessToken, refreshToken: tokenResponse.refreshToken });
         }
     }
 
@@ -118,8 +117,8 @@ export class OAuthProcess {
                     ? error.message
                         ? error.message.toString()
                         : error.toString()
-                    : "unknown error"
-            this.jwtTokenSource.error(new OauthError(error));
+                    : 'unknown error';
+            this.authenticationStateSource.error(new OauthError(error));
         }
     }
 

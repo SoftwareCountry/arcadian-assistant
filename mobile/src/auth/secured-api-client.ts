@@ -1,10 +1,10 @@
 import { ajaxGetJSON, ajaxPost, ajaxPut, ajaxDelete } from 'rxjs/observable/dom/AjaxObservable';
 import { Observable } from 'rxjs/Observable';
-import { AuthenticatedState } from './authentication-state';
+import { AuthenticationState, AuthenticatedState } from './authentication-state';
 
 export class SecuredApiClient {
 
-    constructor(private apiRootUrl: string, private authState: Observable<AuthenticatedState>) {
+    constructor(private apiRootUrl: string, private authState: Observable<AuthenticationState>) {
     }
 
     public getJSON(relativeUrl: string, headers?: Object) {
@@ -34,7 +34,7 @@ export class SecuredApiClient {
     private getHeaders(headers?: Object) {
         return this.authState
             .first(x => x.isAuthenticated)
-            .map(x => ({
+            .map((x: AuthenticatedState) => ({
                 ...headers,
                 'Authorization': `Bearer ${x.jwtToken}`
             }));
