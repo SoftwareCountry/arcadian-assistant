@@ -43,34 +43,29 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
         // this.animate.bind(this, Easing.bounce);
     }
 
+    public onMomentumScrollEnd(event: any) {
+        var offset = event.nativeEvent.contentOffset;
+        if (offset) {
+            var page = Math.round(offset.x / Dimensions.get('window').width) + 1;
+            const visibleCard: EmployeeCardWithAvatar = this.employeeCards[page - 1];
+            visibleCard.revealNeighboursAvatars(true);
+        }
+    }
+
+    public onScrollBeginDrag(event: any) {
+        this.employeeCards.forEach(card => {
+            card.revealNeighboursAvatars(false);
+        });
+    }
+
     public render() {
-        /* const marginLeft = this.animatedValue.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 260]
-          }); */
-
-        // const employee: Employee = this.props.departmentsTree.root.head;
-
         return <View>
             <Animated.ScrollView 
                 horizontal 
                 pagingEnabled 
-                onMomentumScrollEnd={function test(event: any) {
-                    // const eventN = event.nativeEvent.target;
-                    var offset = event.nativeEvent.contentOffset;
-                    if (offset) {
-                        var page = Math.round(offset.x / Dimensions.get('window').width) + 1;
-                        console.log('page #' + page);
-                        // console.log('page #' + page + ' card: ' + this.employeeCards[page]);
-                        // if (this.state.page !== page) {
-                        //     console.log('page #' + page);
-                        //     this.setState({ page: page });
-                        // }
-                    }
-                    // console.log('momentumScrollEnd: ' + eventN);
-                }}
+                onMomentumScrollEnd={this.onMomentumScrollEnd.bind(this)}
+                onScrollBeginDrag={this.onScrollBeginDrag.bind(this)}
             >
-                
                 {
                     this.props.employees.map(employee => <EmployeeCardWithAvatar 
                         employee={employee} 
@@ -81,11 +76,6 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                     />)
                 }
             </Animated.ScrollView>
-            {/* <TouchableOpacity onPress={this.animate} style={{ flex: 1, height: 30 }}>
-                <Text ref={node => this.buttonText = node} >
-                    Animate
-                </Text>
-            </TouchableOpacity> */}
         </View>;
     }
 }

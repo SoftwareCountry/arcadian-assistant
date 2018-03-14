@@ -12,11 +12,12 @@ interface EmployeeCardWithAvatarProps {
 export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProps> {
     public state = {
         fadeInAnim: new Animated.Value(0),
-        fadeOutAnim: new Animated.Value(1)
+        fadeOutAnim: new Animated.Value(1),
+        isNeighboursAvatarsVisible: true
     };
 
-    public revealNeighborsAvatars = () => {
-        console.log('pop up neighbors');
+    public revealNeighboursAvatars(visibility: boolean) {
+        this.setState({isNeighboursAvatarsVisible: visibility});
     }
 
     public componentDidMount() {
@@ -24,7 +25,7 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
           this.state.fadeInAnim,
           {
             toValue: 1,
-            duration: 2000,
+            duration: 3000,
           }
         ).start();
 
@@ -32,30 +33,27 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
             this.state.fadeOutAnim,
             {
               toValue: 0,
-              duration: 1000,
+              duration: 2000,
             }
         ).start();
     }
 
     public render() {
         const employee = this.props.employee;
+        const neighboursAvatarsVisibility = this.state.isNeighboursAvatarsVisible;
         const { fadeInAnim, fadeOutAnim } = this.state;
         const photo = employee ? employee.photo : null;
 
         return (
-            <Animated.View style={{ width: Dimensions.get('window').width, height: 100, justifyContent: 'space-between', opacity: fadeInAnim, overflow: 'hidden' }}>
-                <View style={{ position: 'absolute', top: (100 - 50) * 0.5, left: -50 * 0.5 }}>
+            <Animated.View style={{ width: Dimensions.get('window').width, height: 100, justifyContent: 'space-between', overflow: 'hidden' }}>
+                <Animated.View style={{ position: 'absolute', top: (100 - 50) * 0.5, left: -50 * 0.5, opacity: neighboursAvatarsVisibility ? fadeInAnim : fadeOutAnim }}>
                     { this.props.leftNeighbor ? <Avatar photo={this.props.leftNeighbor.photo} style={{ width: 50, height: 50 }} /> : null }
-                </View>
+                </Animated.View>
                 <Avatar photo={photo} style={{ width: 150, height: 150 }} />
-                <View style={{ position: 'absolute', top: (100 - 50) * 0.5, left: (Dimensions.get('window').width - 50 * 0.5 )}}>
+                <Animated.View style={{ position: 'absolute', top: (100 - 50) * 0.5, left: (Dimensions.get('window').width - 50 * 0.5 ), opacity: neighboursAvatarsVisibility ? fadeInAnim : fadeOutAnim}}>
                     { this.props.rightNeighbor ? <Avatar photo={this.props.rightNeighbor.photo} style={{ width: 50, height: 50 }} /> : null }
-                </View>
+                </Animated.View>
             </Animated.View>
         );
-    }
-
-    public revealNeighbors() {
-        console.log('Reveal Neighbors photo if any');
     }
 }
