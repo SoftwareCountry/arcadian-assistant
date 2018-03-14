@@ -1,5 +1,6 @@
 import { CalendarEvents } from './calendar-events.model';
 import { DayModel } from './calendar.model';
+import { SickLeaveActions } from './sick-leave.action';
 
 export interface LoadCalendarEventsFinished {
     type: 'LOAD-CALENDAR-EVENTS-FINISHED';
@@ -23,5 +24,13 @@ export interface SelectCalendarMonth {
 
 export const selectCalendarMonth = (month: number, year: number): SelectCalendarMonth => ({ type: 'SELECT-CALENDAR-MONTH', month, year });
 
-export type CalendarActions = LoadCalendarEventsFinished | 
-    SelectCalendarDay | SelectCalendarMonth;
+export interface CancelDialog {
+    type: 'CANCEL-CALENDAR-DIALOG';
+}
+
+export const cancelDialog = (): CancelDialog => ({ type: 'CANCEL-CALENDAR-DIALOG' });
+
+export type CalendarActions = LoadCalendarEventsFinished |
+    SelectCalendarDay | SelectCalendarMonth |
+    SickLeaveActions |
+    CancelDialog;

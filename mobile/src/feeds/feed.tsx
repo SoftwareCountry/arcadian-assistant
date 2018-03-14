@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableHighlight, StyleSheet, Platform, Text, View, Image } from 'react-native';
+import { TouchableHighlight, StyleSheet, Platform, Text, View, Image, LayoutChangeEvent } from 'react-native';
 import { LayoutEvent } from 'react-navigation';
 
 import { Avatar } from '../people/avatar';
@@ -13,7 +13,18 @@ interface FeedListItemProps {
     employee: Employee;
 }
 
-export class FeedListItem extends React.Component<FeedListItemProps> {
+interface FeedListItemState {
+    avatarHeight: number;
+}
+
+export class FeedListItem extends React.Component<FeedListItemProps, FeedListItemState> {
+    constructor(props: FeedListItemProps) {
+        super(props);
+        this.state = {
+            avatarHeight: undefined
+        };
+    }
+
     public render() {
         const message = this.props.message;
         const employee = this.props.employee;
@@ -23,10 +34,17 @@ export class FeedListItem extends React.Component<FeedListItemProps> {
 
         const formattedDate = message.datePosted.format('MMMM D, YYYY');
 
+        const imgContainerStyle = StyleSheet.flatten([
+            styles.imgContainer,
+            this.state.avatarHeight
+                ? { height: this.state.avatarHeight }
+                : {}
+        ]);
+
         return (
             <TouchableHighlight>
                 <View style={styles.layout}>
-                    <View style={styles.imgContainer}>
+                    <View style={imgContainerStyle} onLayout={this.onAvatarContainerLayout}>
                         <Avatar photo={photo} />
                     </View>
                     <View style={styles.info}>
@@ -41,5 +59,12 @@ export class FeedListItem extends React.Component<FeedListItemProps> {
                 </View>
             </TouchableHighlight>
         );
+    }
+
+    private onAvatarContainerLayout = (evt: LayoutChangeEvent) => {
+        const layout = evt.nativeEvent.layout;
+        this.setState({
+            avatarHeight: Math.max(layout.height, layout.width)
+        });
     }
 }

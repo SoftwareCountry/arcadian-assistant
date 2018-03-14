@@ -1,8 +1,10 @@
 import { ActionsObservable, ofType } from 'redux-observable';
 import {
     LoadDepartments, loadDepartmentsFinished, LoadDepartmentsFinished, loadDepartments,
-    loadEmployeeFinished, LoadEmployeesForDepartment, loadEmployeesForDepartment,
-    LoadEmployee, loadEmployee, LoadEmployeeFinished } from './organization.action';
+    loadEmployeeFinished, LoadEmployeesForDepartment, LoadEmployeesForRoom, loadEmployeesForDepartment,
+    LoadEmployee, loadEmployee, LoadEmployeeFinished, loadEmployeesForRoom
+} from './organization.action';
+import { LoadUserEmployeeFinished } from '../user/user.action';
 import { deserializeArray, deserialize } from 'santee-dcts/src/deserializer';
 import { Department } from './department.model';
 import { ajaxGetJSON } from 'rxjs/observable/dom/AjaxObservable';
@@ -29,16 +31,9 @@ export const loadDepartmentsEpic$ = (action$: ActionsObservable<LoadDepartments>
         .map(x => loadDepartmentsFinished(x))
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
-export const loadChiefsEpic$ = (action$: ActionsObservable<LoadDepartmentsFinished> ) =>
+export const loadChiefsEpic$ = (action$: ActionsObservable<LoadDepartmentsFinished>) =>
     action$.ofType('LOAD-DEPARTMENTS-FINISHED')
         .flatMap(x => x.departments.map(dep => loadEmployee(dep.chiefId)));
-
-//TODO: this thing loads all employees for all departments. It needs to be changed to load only requested ones
-export const loadDepartmentsFinishedEpic$ = (action$: ActionsObservable<LoadDepartmentsFinished> ) =>
-    action$.ofType('LOAD-DEPARTMENTS-FINISHED')
-        .flatMap(x =>
-            x.departments.map(dep =>
-                loadEmployeesForDepartment(dep.departmentId)));
 
 export const loadEmployeesForDepartmentEpic$ = (action$: ActionsObservable<LoadEmployeesForDepartment>, state: AppState) =>
     action$.ofType('LOAD_EMPLOYEES_FOR_DEPARTMENT')
@@ -49,3 +44,22 @@ export const loadEmployeesForDepartmentEpic$ = (action$: ActionsObservable<LoadE
         .mergeAll()
         .flatMap(x => x.map(loadEmployeeFinished))
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+
+export const loadEmployeesForRoomEpic$ = (action$: ActionsObservable<LoadEmployeesForRoom>, state: AppState) =>
+    action$.ofType('LOAD_EMPLOYEES_FOR_ROOM')
+        .groupBy(x => x.roomNumber)
+        .map(x =>
+            x.switchMap(y =>
+                ajaxGetJSON(`${url}/employees?roomNumber=${x.key}`).map(obj => deserializeArray(obj as any, Employee))))
+        .mergeAll()
+        .flatMap(x => x.map(loadEmployeeFinished))
+        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+
+export const loadEmployeesForUserDepartmentEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>) =>
+    action$.ofType('LOAD-USER-EMPLOYEE-FINISHED')
+        .map(x => loadEmployeesForDepartment(x.employee.departmentId));
+
+
+export const loadEmployeesForUserRoomEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>) =>
+    action$.ofType('LOAD-USER-EMPLOYEE-FINISHED')
+        .map(x => loadEmployeesForRoom(x.employee.roomNumber));

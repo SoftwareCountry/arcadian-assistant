@@ -1,5 +1,6 @@
 ﻿namespace Arcadia.Assistant.Organization
 {
+    using System;
     using System.Collections.Generic;
 
     using Akka.Actor;
@@ -92,6 +93,26 @@
             }
 
             if ((this.query.RoomNumber != null) && (employee.RoomNumber != this.query.RoomNumber))
+            {
+                return false;
+            }
+
+            if ((this.query.Sid != null) && !string.Equals(employee.Sid, this.query.Sid, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return false;
+            }
+
+            if ((this.query.Email != null) && !string.Equals(employee.Email, this.query.Email, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return false;
+            }
+
+            if ((this.query.HireDate != null) && !this.query.HireDate.Matches(employee.HireDate))
+            {
+                return false;
+            }
+
+            if ((this.query.BirthDate != null) && (!employee.BirthDate.HasValue || !this.query.BirthDate.Matches(employee.BirthDate.Value)))
             {
                 return false;
             }

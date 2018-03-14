@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import { calendarIntervalStyles, intervalMargin } from './styles';
 import { View, StyleSheet, PixelRatio } from 'react-native';
 
-interface HalfIntervalProps {
-    size: number;
+export type IntervalProps = { size: number, color: string, draft: boolean };
+
+interface HalfIntervalProps extends IntervalProps {
     align: 'left' | 'right';
-    color: string;
 }
 
 export class HalfInterval extends Component<HalfIntervalProps> {
@@ -28,6 +28,9 @@ export class HalfInterval extends Component<HalfIntervalProps> {
             calendarIntervalStyles.container,
             this.props.align === 'right'
                 ? { flexDirection: 'row-reverse' }
+                : {},
+            this.props.draft
+                ? calendarIntervalStyles.draft
                 : {}
         ]);
 
@@ -65,11 +68,9 @@ export class HalfInterval extends Component<HalfIntervalProps> {
     }
 }
 
-type IntervalProps = { size: number, color: string };
+export const StartInterval = (props: IntervalProps) => <HalfInterval size={props.size} align={'left'} color={props.color} draft={props.draft} />;
 
-export const StartInterval = (props: IntervalProps) => <HalfInterval size={props.size} align={'left'} color={props.color} />;
-
-export const EndInterval = (props: IntervalProps) => <HalfInterval size={props.size} align={'right'} color={props.color} />;
+export const EndInterval = (props: IntervalProps) => <HalfInterval size={props.size} align={'right'} color={props.color} draft={props.draft} />;
 
 export const Interval = (props: IntervalProps) => {
     const margin = (props.size * intervalMargin);
@@ -77,7 +78,10 @@ export const Interval = (props: IntervalProps) => {
 
     const containerStyles = StyleSheet.flatten([
         calendarIntervalStyles.container,
-        { justifyContent: 'center' }
+        { justifyContent: 'center' },
+        props.draft
+            ? calendarIntervalStyles.draft
+            : {},
     ]);
 
     const intervalStyles = StyleSheet.flatten([
@@ -89,33 +93,8 @@ export const Interval = (props: IntervalProps) => {
     ]);
 
     return (
-        <View style={calendarIntervalStyles.container}>
-            <View style={intervalStyles}></View>
-        </View>
-    );
-};
-
-export const IntervalBoundary = (props: IntervalProps) => {
-    const margin = (props.size * intervalMargin);
-    const size = props.size - margin;
-
-    const containerStyles = StyleSheet.flatten([
-        calendarIntervalStyles.container,
-        { justifyContent: 'center' }
-    ]);
-    
-    const circleStyles = StyleSheet.flatten([
-        {
-            borderRadius: PixelRatio.roundToNearestPixel(size / 2),
-            height: size,
-            width: size,
-            backgroundColor: props.color
-        }
-    ]);
-
-    return (
         <View style={containerStyles}>
-            <View style={circleStyles}></View>
+            <View style={intervalStyles}></View>
         </View>
     );
 };

@@ -3,7 +3,7 @@ import { deserialize } from 'santee-dcts/src/deserializer';
 import { loadEmployee, LoadEmployeeFinished } from '../organization/organization.action';
 import { ActionsObservable } from 'redux-observable';
 import { User } from './user.model';
-import { LoadUser, loadUserFinished, LoadUserFinished, loadUserEmployeeFinished } from './user.action';
+import { LoadUser, loadUserFinished, LoadUserFinished, loadUserEmployeeFinished, LoadUserEmployeeFinished } from './user.action';
 import { Observable } from 'rxjs/Observable';
 import { loadFailedError } from '../errors/errors.action';
 import { apiUrl as url } from '../const';
@@ -18,7 +18,8 @@ export const loadUserEpic$ = (action$: ActionsObservable<LoadUser>) =>
 
 export const loadUserFinishedEpic$ = (action$: ActionsObservable<LoadUserFinished | LoadEmployeeFinished>) =>
     Observable.combineLatest<LoadUserFinished, LoadEmployeeFinished>(
-        action$.ofType('LOAD-USER-FINISHED'), 
-        action$.ofType('LOAD_EMPLOYEE_FINISHED')
-    ).filter(([userLoaded, employeeLoaded]) => userLoaded.user.employeeId === employeeLoaded.employee.employeeId)
-     .map(([userLoaded, employeeLoaded]) => loadUserEmployeeFinished(employeeLoaded.employee));
+            action$.ofType('LOAD-USER-FINISHED'), 
+            action$.ofType('LOAD_EMPLOYEE_FINISHED'))
+        .filter(([userLoaded, employeeLoaded]) => userLoaded.user.employeeId === employeeLoaded.employee.employeeId)
+        .first()
+        .map(([userLoaded, employeeLoaded]) => loadUserEmployeeFinished(employeeLoaded.employee));

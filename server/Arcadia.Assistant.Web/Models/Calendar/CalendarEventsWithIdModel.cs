@@ -8,11 +8,12 @@
         [Required]
         public string CalendarEventId { get; set; }
 
+        // ReSharper disable once UnusedMember.Global
         public CalendarEventsWithIdModel()
         {
         }
 
-        public CalendarEventsWithIdModel(string calendarEventId, CalendarEventType type, DatesPeriodModel dates, CalendarEventStatus status)
+        public CalendarEventsWithIdModel(string calendarEventId, string type, DatesPeriodModel dates, string status)
             : base(type, dates, status)
         {
             this.CalendarEventId = calendarEventId;

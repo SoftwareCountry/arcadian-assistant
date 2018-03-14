@@ -1,5 +1,7 @@
 ﻿namespace Arcadia.Assistant.Calendar.Abstractions.Messages
 {
+    using System;
+
     public class UpsertCalendarEvent
     {
         public CalendarEvent Event { get; }
@@ -9,13 +11,27 @@
             this.Event = @event;
         }
 
-        public class Response
+        public abstract class Response
+        {
+        }
+
+        public class Success : Response
         {
             public CalendarEvent Event { get; }
 
-            public Response(CalendarEvent @event)
+            public Success(CalendarEvent @event)
             {
                 this.Event = @event;
+            }
+        }
+
+        public class Error : Response
+        {
+            public Exception Exception { get; }
+
+            public Error(Exception exception)
+            {
+                this.Exception = exception;
             }
         }
     }

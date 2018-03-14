@@ -26,6 +26,8 @@
 
         public string DepartmentId { get; set; }
 
+        public string Sid { get; set; }
+
         public DateTime HireDate { get; set; }
 
         public DateTime? FireDate { get; set; }

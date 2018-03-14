@@ -1,30 +1,32 @@
-import { StyleSheet, ViewStyle } from 'react-native';
+import { StyleSheet, ViewStyle, PixelRatio } from 'react-native';
+import { CalendarEventsType } from '../reducers/calendar/calendar-events.model';
 
-const daysCounterFontColor = '#fff';
 const daysCounterTitleColor = '#18515E';
-const daysCounterPrimaryColor = '#2FAFCC';
-
-const triangleHeight = 50;
-const circleDiameter = 120;
 
 export const calendarScreenLayout = {
+    daysCounters: {
+        flex: 2
+    },
     calendar: {
-        flex: 1
+        flex: 8
     },
     agenda: {
-        flex: 1
+        flex: 5
     }
 };
 
-const weekDayElementsZIndex = 1;
+const intervalZIndex = 1;
+const weekDayCircleZIndex = intervalZIndex + 1;
+const intervalBoundaryZIndex = weekDayCircleZIndex + 1;
+const weekDayTouchableZIndex = intervalBoundaryZIndex + 1;
 
 export const calendarStyles = StyleSheet.create({
     container: {
-        marginTop: 10,
+        marginTop: 25,
         marginBottom: 10,
         marginLeft: 8,
         marginRight: 8,
-        flex: 1,
+        flex: calendarScreenLayout.calendar.flex,
         alignSelf: 'stretch'
     },
     today: {
@@ -33,8 +35,7 @@ export const calendarStyles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     todayTitle: {
-        fontSize: 14,
-        lineHeight: 16,
+        fontSize: 16,
         color: daysCounterTitleColor
     },
     weeksContainer: {
@@ -42,8 +43,7 @@ export const calendarStyles = StyleSheet.create({
     },
     weeksNames: {
         flex: 1,
-        flexDirection: 'row',
-        marginBottom: 10,
+        flexDirection: 'row'
     },
     weekName: {
         flex: 1,
@@ -68,6 +68,15 @@ export const calendarStyles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center'
     },
+    weekDayTouchable: {
+        position: 'absolute',
+        backgroundColor: 'transparent',
+        top: 0,
+        bottom: 0,
+        right: 0,
+        left: 0,
+        zIndex: weekDayTouchableZIndex
+    },
     weekDayCircle: {
         justifyContent: 'center',
         alignItems: 'center'
@@ -77,22 +86,48 @@ export const calendarStyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'transparent',
-        zIndex: weekDayElementsZIndex + 1
+        zIndex: weekDayCircleZIndex
     },
-    weekDayText: {
+    weekDayNumber: {
         fontSize: 12,
-        lineHeight: 14
+        lineHeight: 14,
+        color: 'rgba(0, 0, 0, 0.8678)'
+    },
+    weekDayName: {
+        fontSize: 12,
+        lineHeight: 14,
+        color: 'rgba(0, 0, 0, 0.5433)',
     }
 });
 
-export const calendarIntervalColors = {
-    vacation: '#2F80ED',
-    sickLeave: '#F2C94C',
-    dayoff: '#EB5757'
-};
+export class CalendarEventsColor {
+    public static vacation = '#2F80ED';
+    public static sickLeave = '#F2C94C';
+    public static dayoff = '#EB5757';
+    public static additionalWork = '#219653';
+
+    public static getColor(type: CalendarEventsType) {
+        switch (type) {
+            case CalendarEventsType.Vacation:
+                return CalendarEventsColor.vacation;
+
+            case CalendarEventsType.SickLeave:
+                return CalendarEventsColor.sickLeave;
+
+            case CalendarEventsType.Dayoff:
+                return CalendarEventsColor.dayoff;
+
+            case CalendarEventsType.AdditionalWork:
+                return CalendarEventsColor.additionalWork;
+
+            default:
+                return null;
+        }
+    }
+}
 
 // serjKim: Depends on count of overlapped intervals?..
-const intervalOpacity = 0.5;
+const intervalOpacity = .89;
 export const intervalMargin = 0.2;
 
 export const calendarIntervalStyles = StyleSheet.create({
@@ -103,106 +138,110 @@ export const calendarIntervalStyles = StyleSheet.create({
         justifyContent: 'flex-end',
         flexDirection: 'row',
         opacity: intervalOpacity,
-        zIndex: weekDayElementsZIndex
+        zIndex: intervalZIndex
     },
     halfInterval: {
         width: '50%'
     },
     interval: {
         flex: 1
+    },
+    boundary: {
+        zIndex: intervalBoundaryZIndex
+    },
+    draft: {
+        opacity: 0.6
     }
 });
 
 export const agendaStyles = StyleSheet.create({
     container: {
-        flex: calendarScreenLayout.calendar.flex,
+        flex: calendarScreenLayout.agenda.flex,
         alignSelf: 'stretch'
-    }
-});
-
-export const daysCountersStyles = StyleSheet.create({
-    container: {
-        flex: 1
     },
-    counters: {
+    controls: {
         flex: 1,
-        flexDirection: 'row'
-    }
-});
-
-export const daysCounterSeparatorStyles = StyleSheet.create({
-    container: {
-        width: circleDiameter,
-        backgroundColor: daysCounterPrimaryColor
-    }
-});
-
-export const daysCounterStyles = StyleSheet.create({
-    container: {
-        backgroundColor: daysCounterPrimaryColor,
-        flexDirection: 'column',
-        width: '50%',
+        alignSelf: 'stretch',
+        flexDirection: 'row',
+        paddingTop: 5,
+        paddingBottom: 5
+    },
+    dialog: {
         flex: 1
-    },
-    content: {
-        marginTop: triangleHeight,
-        flexDirection: 'column',
-        alignItems: 'center',
-        flex: 20
-    },
-    contentValue: {
-        fontSize: 25,
-        color: daysCounterFontColor
-    },
-    contentTitle: {
-        fontSize: 11,
-        color: daysCounterFontColor
     }
 });
 
-const daysCounterShapeZIndex = 2;
+export const agendaSelectedDayStyles = StyleSheet.create({
+    container: {
+        flex: 3,
+        borderRightWidth: 1,
+        borderColor: 'rgba(0, 0, 0, 0.2)'
+    }
+});
+
+export const calendarActionsStyles = StyleSheet.create({
+    container: {
+        flex: 4,
+        flexDirection: 'column',
+        alignContent: 'space-between',
+        marginLeft: 20,
+        marginRight: 20,
+    },
+    button: {
+        flex: 3,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: CalendarEventsColor.vacation
+    },
+    buttonTitle: {
+        fontSize: 12,
+        lineHeight: 14,
+        color: '#18515E'
+    },
+    separator: {
+        flex: 1
+    }
+});
 
 export const selectedDayStyles = StyleSheet.create({
     container: {
-        borderRadius: circleDiameter / 2,
-        height: circleDiameter,
-        width: circleDiameter,
-        zIndex: daysCounterShapeZIndex + 1,
-        left: '50%',
-        backgroundColor: '#fff',
-        position: 'absolute',
-        transform: [{ translateX: -(circleDiameter / 2) }],
         alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 2,
-        borderColor: daysCounterPrimaryColor,
+        justifyContent: 'center'
     },
     circleCurrentDay: {
-        fontSize: 40,
-        color: daysCounterTitleColor,
-        marginTop: -5
+        fontSize: 42,
+        lineHeight: 51,
+        color: daysCounterTitleColor
     },
     circleCurrentMonth: {
-        fontSize: 15,
-        color: daysCounterTitleColor,
-        marginTop: -8
+        fontSize: 16,
+        lineHeight: 20,
+        color: daysCounterTitleColor
     }
 });
 
-export const triangleStyles = StyleSheet.create({
+const legendMarkerSize = 12;
+export const legendStyles = StyleSheet.create({
     container: {
-        backgroundColor: 'transparent',
-        width: 0,
-        height: 0,
-        zIndex: daysCounterShapeZIndex,
-        borderBottomWidth: triangleHeight,
-        borderStyle: 'solid',
-        borderLeftColor: 'transparent',
-        borderRightColor: 'transparent',
-        borderBottomColor: '#fff',
-        position: 'absolute',
-        transform: [
-            { rotate: '180deg' }
-        ]
+        flex: 1,
+        alignItems: 'center',
+        paddingTop: 15
+    },
+    itemContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingBottom: 5
+    },
+    marker: {
+        width: legendMarkerSize,
+        height: legendMarkerSize,
+        borderRadius: PixelRatio.roundToNearestPixel(legendMarkerSize / 2)
+    },
+    label: {
+        paddingLeft: 10,
+        color: '#18515E',
+        fontSize: 10,
+        lineHeight: 12
     }
 });
