@@ -59,10 +59,14 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
     }
 
     public render() {
+        this.employeeCards = [];
+        const isScrollEnabled = this.props.employees.length > 1;
+
         return <View>
             <Animated.ScrollView 
                 horizontal 
                 pagingEnabled 
+                scrollEnabled={isScrollEnabled} 
                 onMomentumScrollEnd={this.onMomentumScrollEnd.bind(this)}
                 onScrollBeginDrag={this.onScrollBeginDrag.bind(this)}
             >
@@ -71,7 +75,11 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                         employee={employee} 
                         leftNeighbor={(this.props.employees.indexOf(employee) > 0 && this.props.employees.length > 1) ? this.props.employees[this.props.employees.indexOf(employee) - 1] : null } 
                         rightNeighbor={(this.props.employees.indexOf(employee) < this.props.employees.length - 1 && this.props.employees.length > 1) ? this.props.employees[this.props.employees.indexOf(employee) + 1] : null} 
-                        ref={(employeeCard) => { this.employeeCards.push(employeeCard); }} 
+                        ref={(employeeCard) => { 
+                            if ( employeeCard != null ) {
+                                this.employeeCards.push(employeeCard);
+                            }
+                        }} 
                         key={employee.employeeId} 
                     />)
                 }

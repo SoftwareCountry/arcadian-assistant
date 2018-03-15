@@ -21,21 +21,21 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
     }
 
     public componentDidMount() {
-        Animated.timing(
-          this.state.fadeInAnim,
-          {
-            toValue: 1,
-            duration: 3000,
-          }
-        ).start();
+        // Animated.timing(
+        //   this.state.fadeInAnim,
+        //   {
+        //     toValue: 1,
+        //     duration: 3000,
+        //   }
+        // ).start();
 
-        Animated.timing(
-            this.state.fadeOutAnim,
-            {
-              toValue: 0,
-              duration: 2000,
-            }
-        ).start();
+        // Animated.timing(
+        //     this.state.fadeOutAnim,
+        //     {
+        //       toValue: 0,
+        //       duration: 2000,
+        //     }
+        // ).start();
     }
 
     public render() {
@@ -44,6 +44,22 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
         const { fadeInAnim, fadeOutAnim } = this.state;
         const photo = employee ? employee.photo : null;
 
+        Animated.timing(
+            this.state.fadeInAnim,
+            {
+              toValue: 1,
+              duration: 3000,
+            }
+          ).start();
+  
+        Animated.timing(
+              this.state.fadeOutAnim,
+              {
+                toValue: 0,
+                duration: 2000,
+              }
+          ).start();
+  
         return (
             <Animated.View style={{ width: Dimensions.get('window').width, height: 100, justifyContent: 'space-between', overflow: 'hidden' }}>
                 <Animated.View style={{ position: 'absolute', top: (100 - 50) * 0.5, left: -50 * 0.5, opacity: neighboursAvatarsVisibility ? fadeInAnim : fadeOutAnim }}>
