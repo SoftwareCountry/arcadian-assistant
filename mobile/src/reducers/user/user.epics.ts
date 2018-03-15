@@ -16,7 +16,11 @@ export const loadUserEpic$ = (action$: ActionsObservable<LoadUser>, appState: Ap
         .map(x => loadUserFinished(x))
         .catch(x => Observable.of(loadFailedError(x.message)));
 
-export const loadUserFinishedEpic$ = (action$: ActionsObservable<LoadUserFinished | LoadEmployeeFinished>) =>
+export const loadUserFinishedEpic$ = (action$: ActionsObservable<LoadUserFinished>) => 
+    action$.ofType('LOAD-USER-FINISHED')
+        .map((x) => loadEmployee(x.user.employeeId));
+
+export const combineUserAndEmployeeEpic$ = (action$: ActionsObservable<LoadUserFinished | LoadEmployeeFinished>) =>
     Observable.combineLatest<LoadUserFinished, LoadEmployeeFinished>(
             action$.ofType('LOAD-USER-FINISHED'), 
             action$.ofType('LOAD_EMPLOYEE_FINISHED'))
