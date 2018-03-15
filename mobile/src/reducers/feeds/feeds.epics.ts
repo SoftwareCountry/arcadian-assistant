@@ -2,15 +2,14 @@ import { ActionsObservable, ofType } from 'redux-observable';
 import * as fAction from './feeds.action';
 import * as oAction from '../organization/organization.action';
 import { deserializeArray, deserialize } from 'santee-dcts/src/deserializer';
-import { ajaxGetJSON } from 'rxjs/observable/dom/AjaxObservable';
 import { Observable } from 'rxjs/Observable';
 import { loadFailedError } from '../errors/errors.action';
-import { apiUrl as url } from '../const';
 import { Feed } from './feed.model';
+import { AppState, DependenciesContainer } from '../app.reducer';
 
-export const loadFeedsEpic$ = (action$: ActionsObservable<fAction.LoadFeeds>) =>
+export const loadFeedsEpic$ = (action$: ActionsObservable<fAction.LoadFeeds>, appState: AppState, deps: DependenciesContainer) =>
     action$.ofType('LOAD_FEEDS')
-        .switchMap(x => ajaxGetJSON(`${url}/feeds/messages`))
+        .switchMap(x => deps.apiClient.getJSON(`/feeds/messages`))
         .map(x => deserializeArray(x as any, Feed))
         .map(x => fAction.loadFeedsFinished(x))
         .catch(e => Observable.of(loadFailedError(e.message)));

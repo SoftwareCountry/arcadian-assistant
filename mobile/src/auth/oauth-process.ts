@@ -50,7 +50,10 @@ export class OAuthProcess {
             .switchMap(code => this.accessCodeRequest.fetchNew(code));
 
         const refreshTokenObtainedAccessCodes = this.refreshTokenSource
-            .switchMap(token => Observable.interval(this.refreshIntervalSeconds * 1000).map(() => token))
+            .switchMap(token => 
+                Observable.concat(
+                    Observable.of(token),
+                    Observable.interval(this.refreshIntervalSeconds * 1000).map(() => token))) //emit token once, and continue reemitting it
             .switchMap(token => {
                 if (token === null) {
                     return Observable.of<TokenResponse>(null);

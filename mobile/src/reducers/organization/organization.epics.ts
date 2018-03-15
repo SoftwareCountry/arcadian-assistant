@@ -7,7 +7,6 @@ import {
 import { LoadUserEmployeeFinished } from '../user/user.action';
 import { deserializeArray, deserialize } from 'santee-dcts/src/deserializer';
 import { Department } from './department.model';
-import { ajaxGetJSON } from 'rxjs/observable/dom/AjaxObservable';
 import { AppState, AppEpic, DependenciesContainer } from '../app.reducer';
 import { Employee } from './employee.model';
 import { Observable } from 'rxjs/Observable';
