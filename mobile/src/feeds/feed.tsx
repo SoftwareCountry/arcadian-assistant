@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableHighlight, StyleSheet, Platform, Text, View, Image, LayoutChangeEvent } from 'react-native';
+import { TouchableHighlight, StyleSheet, Platform, Text, View, Image, LayoutChangeEvent, TouchableOpacity } from 'react-native';
 import { LayoutEvent } from 'react-navigation';
 
 import { Avatar } from '../people/avatar';
@@ -7,6 +7,8 @@ import { Feed } from '../reducers/feeds/feed.model';
 import { feedStyles as styles } from './styles';
 import { Employee } from '../reducers/organization/employee.model';
 import { StyledText } from '../override/styled-text';
+import { EmployeeDetailsProps, mapEmployeeDetailsDispatchToProps } from '../layout/user-selected-dispatcher';
+import { Dispatch, connect } from 'react-redux';
 
 interface FeedListItemProps {
     message: Feed;
@@ -17,8 +19,12 @@ interface FeedListItemState {
     avatarHeight: number;
 }
 
-export class FeedListItem extends React.Component<FeedListItemProps, FeedListItemState> {
-    constructor(props: FeedListItemProps) {
+const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsProps => ({
+    ...mapEmployeeDetailsDispatchToProps(dispatch)
+});
+
+export class FeedListItemImpl extends React.Component<FeedListItemProps & EmployeeDetailsProps, FeedListItemState> {
+    constructor(props: FeedListItemProps & EmployeeDetailsProps) {
         super(props);
         this.state = {
             avatarHeight: undefined
@@ -44,9 +50,11 @@ export class FeedListItem extends React.Component<FeedListItemProps, FeedListIte
         return (
             <TouchableHighlight>
                 <View style={styles.layout}>
-                    <View style={imgContainerStyle} onLayout={this.onAvatarContainerLayout}>
-                        <Avatar photo={photo} />
-                    </View>
+                    <TouchableOpacity onPress={() => this.props.onAvatarClicked(this.props.employee)} style={imgContainerStyle}>
+                        <View style={imgContainerStyle} onLayout={this.onAvatarContainerLayout}>
+                            <Avatar photo={photo} />
+                        </View>
+                    </TouchableOpacity>
                     <View style={styles.info}>
                         <StyledText style={styles.title}>{employeeName}</StyledText>
                         <StyledText>
@@ -68,3 +76,5 @@ export class FeedListItem extends React.Component<FeedListItemProps, FeedListIte
         });
     }
 }
+
+export const FeedListItem = connect(null, mapDispatchToProps)(FeedListItemImpl);

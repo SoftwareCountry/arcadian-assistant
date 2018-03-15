@@ -38,4 +38,4 @@ class PeopleScreenImpl extends React.Component<PeopleScreenProps> {
     }
 }
 
-export const PeopleScreen = connect(mapStateToProps)(PeopleScreenImpl);
+export const PeopleHomeScreen = connect(mapStateToProps)(PeopleScreenImpl);
