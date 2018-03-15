@@ -5,25 +5,21 @@ import { Employee } from '../reducers/organization/employee.model';
 import { employeesListItemStyles as styles } from './styles';
 import { StyledText } from '../override/styled-text';
 import { Dispatch, connect } from 'react-redux';
-import { mapEmployeeDetailsDispatchToProps, EmployeeDetailsProps } from '../layout/user-selected-dispatcher';
 
 interface EmployeesListItemProps {
     employee: Employee;
     id: string;
+    onItemClicked: (e: Employee) => void;
 }
 
-const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsProps => ({
-    ...mapEmployeeDetailsDispatchToProps(dispatch)
-});
-
-export class EmployeesListItemImpl extends React.Component<EmployeesListItemProps & EmployeeDetailsProps> {
+export class EmployeesListItem extends React.Component<EmployeesListItemProps> {
     public render() {
         const employeeName = this.props.employee ? this.props.employee.name : null;
         const employeePosition = this.props.employee ? this.props.employee.position : null;
         const photo = this.props.employee ? this.props.employee.photo : null;
 
         return (
-            <TouchableOpacity onPress = {() => this.props.onAvatarClicked(this.props.employee)}>
+            <TouchableOpacity onPress = {() => this.props.onItemClicked(this.props.employee)}>
                 <View style={styles.layout}>
                     <View style={styles.avatarContainer}>                
                         <Avatar photo={photo} style={StyleSheet.flatten(styles.avatarOuterFrame)} imageStyle={StyleSheet.flatten(styles.avatarImage)} />
@@ -37,5 +33,3 @@ export class EmployeesListItemImpl extends React.Component<EmployeesListItemProp
         );
     }
 }
-
-export const EmployeesListItem = connect(null, mapDispatchToProps)(EmployeesListItemImpl);

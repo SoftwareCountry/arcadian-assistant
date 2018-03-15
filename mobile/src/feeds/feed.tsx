@@ -7,24 +7,20 @@ import { Feed } from '../reducers/feeds/feed.model';
 import { feedStyles as styles } from './styles';
 import { Employee } from '../reducers/organization/employee.model';
 import { StyledText } from '../override/styled-text';
-import { EmployeeDetailsProps, mapEmployeeDetailsDispatchToProps } from '../layout/user-selected-dispatcher';
 import { Dispatch, connect } from 'react-redux';
 
 interface FeedListItemProps {
     message: Feed;
     employee: Employee;
+    onAvatarClicked: (e: Employee) => void;
 }
 
 interface FeedListItemState {
     avatarHeight: number;
 }
 
-const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsProps => ({
-    ...mapEmployeeDetailsDispatchToProps(dispatch)
-});
-
-export class FeedListItemImpl extends React.Component<FeedListItemProps & EmployeeDetailsProps, FeedListItemState> {
-    constructor(props: FeedListItemProps & EmployeeDetailsProps) {
+export class FeedListItem extends React.Component<FeedListItemProps, FeedListItemState> {
+    constructor(props: FeedListItemProps) {
         super(props);
         this.state = {
             avatarHeight: undefined
@@ -76,5 +72,3 @@ export class FeedListItemImpl extends React.Component<FeedListItemProps & Employ
         });
     }
 }
-
-export const FeedListItem = connect(null, mapDispatchToProps)(FeedListItemImpl);
