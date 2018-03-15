@@ -82,6 +82,7 @@ export class OAuthProcess {
             //no refresh token is stored
             await this.loginRequest.openLoginPage(false); //TODO: catch exception
         } else {
+            console.debug('Using refresh token from the application storage');
             //request refresh            
             this.refreshTokenSource.next(value);
         }
