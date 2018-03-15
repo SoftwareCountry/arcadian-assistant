@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 import { StackNavigator } from 'react-navigation';
-import { Profile } from './profile';
 import { Department } from '../reducers/organization/department.model';
 import { UserInfoState } from '../reducers/user/user-info.reducer';
 import { AppState } from '../reducers/app.reducer';
@@ -9,7 +8,8 @@ import { connect } from 'react-redux';
 import { StyledText } from '../override/styled-text';
 import { View, SafeAreaView } from 'react-native';
 import { Employee } from '../reducers/organization/employee.model';
-import { chevronColor, profileScreenStyles } from './styles';
+import { chevronColor, profileScreenStyles, layoutStyles } from './styles';
+import { EmployeeDetails } from '../employee-details/employee-details';
  
 interface ProfileScreenProps {
     employee: Employee;
@@ -28,7 +28,7 @@ class ProfileScreenImpl extends Component<ProfileScreenProps> {
 
         return employee && department ?
             <SafeAreaView style={profileScreenStyles.profileContainer}>
-                <Profile department={department} employee={employee} />
+               <EmployeeDetails department={department} employee={employee} layoutStylesChevronPlaceholder = {layoutStyles.chevronPlaceholder}/>
             </SafeAreaView>
             : (
                 <View style={profileScreenStyles.loadingContainer}>

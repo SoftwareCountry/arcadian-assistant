@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView, Linking, TouchableOpacity } from 'react-native';
+import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView, Linking, TouchableOpacity, ViewStyle } from 'react-native';
 
 import { layoutStyles, contentStyles, tileStyles, contactStyles } from '../profile/styles';
 import { Chevron } from '../profile/chevron';
@@ -18,6 +18,8 @@ import { layoutStylesForEmployeeDetailsScreen } from './styles';
 interface EmployeeDetailsProps {
     employee: Employee;
     department: Department;
+    layoutStylesChevronPlaceholder: ViewStyle;
+
 }
 const TileSeparator = () => <View style = {tileStyles.separator}></View>;
 
@@ -34,7 +36,7 @@ export class EmployeeDetails extends Component<EmployeeDetailsProps> {
 
         return (
                 <View style={layoutStyles.container}>
-                    <View style={layoutStylesForEmployeeDetailsScreen.chevronPlaceholder}></View>
+                    <View style={this.props.layoutStylesChevronPlaceholder}></View>
                     <View>
                         <Chevron />
                         <View style={layoutStyles.avatarContainer}>
