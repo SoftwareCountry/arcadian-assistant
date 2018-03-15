@@ -19,7 +19,7 @@ const mapStateToProps = (state: AppState): PeopleDepartmentProps => ({
 
 export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentProps> {  
     public render() {
-        const predicate = function(employee: Employee) {
+        const predicate = (employee: Employee) => {
             return this.props.userEmployee && employee.departmentId === this.props.userEmployee.departmentId;
         };
 

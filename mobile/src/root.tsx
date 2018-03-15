@@ -19,12 +19,14 @@ export class Root extends Component<{}> {
         config.oauth.clientId,
         config.oauth.tenant,
         config.oauth.redirectUri);
-        
+
+        /*
       this.oauthProcess.forgetUser()
         .then(x => this.oauthProcess.login())
         .catch(console.error);
+*/
 
-      //this.oauthProcess.login().catch(console.error);
+      this.oauthProcess.login().catch(console.error);
       this.oauthProcess.authenticationState.forEach(console.log);
   
       Linking.addEventListener('url', this.onApplicaitonLinkOpened);

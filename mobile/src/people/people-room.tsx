@@ -19,7 +19,7 @@ const mapStateToProps = (state: AppState): PeopleRoomProps => ({
 
 export class PeopleRoomImpl extends React.Component<PeopleRoomProps> {  
     public render() {
-        const predicate = function(employee: Employee) {
+        const predicate = (employee: Employee) => {
             return this.props.userEmployee && employee.roomNumber === this.props.userEmployee.roomNumber;
         };
 

@@ -1,10 +1,10 @@
-import { createStore, combineReducers, Reducer, applyMiddleware } from 'redux';
+import { createStore, combineReducers, Reducer, applyMiddleware, Action } from 'redux';
 import { List } from 'immutable';
 import { AppState } from './app.reducer';
 import { HelpdeskState, helpdeskReducer, helpdeskEpics } from './helpdesk/helpdesk.reducer';
 import { navigationReducer, peopleNavigationReducer } from './navigation.reducer';
 import { NavigationState } from 'react-navigation';
-import { combineEpics, createEpicMiddleware } from 'redux-observable';
+import { combineEpics, createEpicMiddleware, Epic } from 'redux-observable';
 //import { createLogger } from 'redux-logger';
 import logger from 'redux-logger';
 import { errorsEpics } from './errors/errors.reducer';
@@ -41,12 +41,14 @@ const reducers = combineReducers<AppState>({
     calendar: calendarReducer,
 });
 
-interface EpicDependencies {
+export interface DependenciesContainer {
     apiClient: SecuredApiClient;
 }
 
+export type AppEpic<T extends Action> = Epic<T, AppState, DependenciesContainer>;
+
 export const storeFactory = (oauthProcess: OAuthProcess) => {
-    const dependencies: EpicDependencies = { apiClient: new SecuredApiClient(config.apiUrl, oauthProcess.authenticationState as any ) };
+    const dependencies: DependenciesContainer = { apiClient: new SecuredApiClient(config.apiUrl, oauthProcess.authenticationState as any ) };
     const options = { dependencies };
     const epicMiddleware = createEpicMiddleware(rootEpic, options);
     //const loggerMiddleware = createLogger();

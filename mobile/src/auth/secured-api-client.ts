@@ -28,7 +28,8 @@ export class SecuredApiClient {
     }
 
     private getFullUrl(relativeUrl: string) {
-        return new URL(relativeUrl, this.apiRootUrl).toString();
+        const url = this.apiRootUrl + relativeUrl;
+        return url.replace(/([^:]\/)\/+/g, '$1');
     }
 
     private getHeaders(headers?: Object) {
