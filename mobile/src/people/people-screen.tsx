@@ -1,7 +1,7 @@
 import { StackNavigator, addNavigationHelpers, NavigationState } from 'react-navigation';
 import React from 'react';
 import { Text, View, Image, Platform, StatusBar, SafeAreaView } from 'react-native';
-import { TopNavBar } from '../topNavBar/top-nav-bar';
+import { TopNavBar } from '../navigation/top-nav-bar';
 import { PeopleScreenNavigator } from './navigator/people-screen-navigator';
 import { Department } from '../reducers/organization/department.model';
 import { connect, Dispatch } from 'react-redux';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { FlatList, View, StyleSheet, ListRenderItemInfo, RefreshControl } from 'react-native';
-import { TopNavBar } from '../topNavBar/top-nav-bar';
+import { TopNavBar } from '../navigation/top-nav-bar';
 
 import { Employee } from '../reducers/organization/employee.model';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';

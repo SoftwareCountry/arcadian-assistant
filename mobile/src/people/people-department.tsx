@@ -9,19 +9,18 @@ import { Employee } from '../reducers/organization/employee.model';
 
 interface PeopleDepartmentProps {
     employeesMap: EmployeeMap;
-    departmentId: string;
+    userEmployee: Employee;
 }
 
 const mapStateToProps = (state: AppState): PeopleDepartmentProps => ({
     employeesMap: state.organization.employees.employeesById,
-    departmentId: state.userInfo.employee.departmentId
+    userEmployee: state.userInfo.employee
 });
 
 export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentProps> {  
     public render() {
-        const departmentId = this.props.departmentId;
-        const predicate = function(employee: Employee) {
-            return employee.departmentId === departmentId;
+        const predicate = (employee: Employee) => {
+            return this.props.userEmployee && employee.departmentId === this.props.userEmployee.departmentId;
         };
 
         return <EmployeesList employees={this.props.employeesMap.toArray().filter(predicate)} />;
