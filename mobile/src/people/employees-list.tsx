@@ -1,6 +1,6 @@
 import React from 'react';
 import { FlatList, Text, View, StyleSheet, ListRenderItemInfo } from 'react-native';
-import { connect } from 'react-redux';
+import { connect, Dispatch } from 'react-redux';
 
 import { Department } from '../reducers/organization/department.model';
 import { Employee } from '../reducers/organization/employee.model';
@@ -10,9 +10,11 @@ import { EmployeesListItem } from './employees-list-item';
 import { employeesListStyles as styles } from './styles';
 import { employeesAZSort } from './employee-comparer';
 import { StyledText } from '../override/styled-text';
+import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 
 export interface EmployeesListProps {
     employees: Employee[];
+    onItemClicked: (e: Employee) => void;
 }
 
 export class EmployeesList extends React.Component<EmployeesListProps> {
@@ -38,6 +40,6 @@ export class EmployeesList extends React.Component<EmployeesListProps> {
     private renderItem = (itemInfo: ListRenderItemInfo<Employee>) => {
         const { item } = itemInfo;
 
-        return <EmployeesListItem id={item.employeeId} employee={item} />;
+        return <EmployeesListItem id={item.employeeId} employee={item} onItemClicked={this.props.onItemClicked}/>;
     }
 }

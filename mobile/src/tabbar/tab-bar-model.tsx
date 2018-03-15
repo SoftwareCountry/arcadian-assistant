@@ -1,7 +1,7 @@
 import { TabNavigatorConfig, NavigationRouteConfigMap } from 'react-navigation';
 import React from 'react';
 import { FeedsScreen } from '../feeds/feeds-screen';
-import { PeopleScreen } from '../people/people-screen';
+import { PeopleScreen } from '../people/navigator/people-stack-navigator';
 import { HelpdeskScreen } from '../helpdesk/helpdesk-screen';
 import { CalendarScreen } from '../calendar/calendar-screen';
 import { ProfileScreen } from '../profile/profile-screen';

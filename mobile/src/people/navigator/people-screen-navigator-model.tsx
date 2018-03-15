@@ -3,7 +3,6 @@ import React from 'react';
 import { PeopleDepartment } from '../people-department';
 import { PeopleRoom } from '../people-room';
 import { PeopleCompany } from '../people-company';
-import { EmployeesList } from '../employees-list';
 import { TabNavigationOptionsFactory } from '../../tabbar/tab-navigation-options-factory';
 
 const navOptionsFactory = new TabNavigationOptionsFactory();
