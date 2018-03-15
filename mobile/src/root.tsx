@@ -27,7 +27,7 @@ export class Root extends Component<{}> {
 */
 
       this.oauthProcess.login().catch(console.error);
-      this.oauthProcess.authenticationState.forEach(console.log);
+      //this.oauthProcess.authenticationState.forEach(console.log);
   
       Linking.addEventListener('url', this.onApplicaitonLinkOpened);
       Linking.getInitialURL().then(url => this.onApplicaitonLinkOpened( { url } ));

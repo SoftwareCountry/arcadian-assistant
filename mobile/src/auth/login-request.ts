@@ -39,7 +39,6 @@ export class LoginRequest {
         }
 
         const url = this.getAuthorizationUrl(this.authorizationUrl, params);
-
         return Linking.openURL(url);
     }
 
