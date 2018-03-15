@@ -50,11 +50,11 @@ export class FeedListItemImpl extends React.Component<FeedListItemProps & Employ
         return (
             <TouchableHighlight>
                 <View style={styles.layout}>
-                    <TouchableOpacity onPress={() => this.props.onAvatarClicked(this.props.employee)} style={imgContainerStyle}>
-                        <View style={imgContainerStyle} onLayout={this.onAvatarContainerLayout}>
+                    <View style={imgContainerStyle} onLayout={this.onAvatarContainerLayout}>
+                        <TouchableOpacity onPress={() => this.props.onAvatarClicked(this.props.employee)} style={styles.touchableOpacityContainer}>
                             <Avatar photo={photo} />
-                        </View>
-                    </TouchableOpacity>
+                        </TouchableOpacity>
+                    </View>
                     <View style={styles.info}>
                         <StyledText style={styles.title}>{employeeName}</StyledText>
                         <StyledText>
