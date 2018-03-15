@@ -21,11 +21,6 @@ const tabbarModel: NavigationRouteConfigMap = {
         path: '/people',
         navigationOptions: navOptionsFactory.create('People', 'people')
     },
-    Helpdesk: {
-        screen: HelpdeskScreen,
-        path: '/helpdesk',
-        navigationOptions: navOptionsFactory.create('Helpdesk', 'helpdesk')
-    },
     Calendar: {
         screen: CalendarScreen,
         path: '/calendar',

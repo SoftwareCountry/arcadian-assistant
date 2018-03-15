@@ -10,12 +10,12 @@ import { openEmployeeDetailsAction } from '../employee-details/employee-details-
 
 interface PeopleRoomProps {
     employeesMap: EmployeeMap;
-    roomNumber: string;
+    userEmployee: Employee;
 }
 
 const mapStateToProps = (state: AppState): PeopleRoomProps => ({
     employeesMap: state.organization.employees.employeesById,
-    roomNumber: state.userInfo.employee.roomNumber
+    userEmployee: state.userInfo.employee
 });
 
 interface EmployeesListDispatchProps {
@@ -27,9 +27,8 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeesListDispatchProps
 
 export class PeopleRoomImpl extends React.Component<PeopleRoomProps & EmployeesListDispatchProps> {  
     public render() {
-        const roomNumber = this.props.roomNumber;
-        const predicate = function(employee: Employee) {
-            return employee.roomNumber === roomNumber;
+        const predicate = (employee: Employee) => {
+            return this.props.userEmployee && employee.roomNumber === this.props.userEmployee.roomNumber;
         };
 
         return <EmployeesList employees={this.props.employeesMap.toArray().filter(predicate)} onItemClicked = {this.props.onItemClicked}/>;

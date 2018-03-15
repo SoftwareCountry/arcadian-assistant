@@ -4,13 +4,19 @@
 	"private": true,
 	"watch": {
 		"lint": {
-			"patterns": ["src"],
-			"extensions": ["ts", "tsx"]
+			"patterns": [
+				"src"
+			],
+			"extensions": [
+				"ts",
+				"tsx"
+			]
 		}
 	},
 	"scripts": {
 		"start": "node node_modules/react-native/local-cli/cli.js start",
-		"test": "jest --coverage",
+		"test": "jest",
+		"test-coverage": "jest --coverage",
 		"tsc": "tsc",
 		"clean": "rimraf artifacts",
 		"copyImages": "copyfiles -u 1 src/**/*.png src/**/*.jpg artifacts",
@@ -23,6 +29,7 @@
 		"@types/moment": "^2.13.0",
 		"@types/react-test-renderer": "^16.0.0",
 		"@types/redux-logger": "^3.0.5",
+		"babel-plugin-transform-inline-environment-variables": "^0.3.0",
 		"immutable": "^3.8.2",
 		"moment": "^2.20.1",
 		"react": "^16.0.0",
@@ -34,7 +41,8 @@
 		"redux-logger": "^3.0.6",
 		"redux-observable": "^0.17.0",
 		"rxjs": "^5.5.2",
-		"santee-dcts": "^0.9.4"
+		"santee-dcts": "^0.9.4",
+		"url-search-params-polyfill": "^3.0.0"
 	},
 	"devDependencies": {
 		"@types/immutable": "^3.8.7",

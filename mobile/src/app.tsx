@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, BackHandler } from 'react-native';
+import { StyleSheet, View, BackHandler, Linking } from 'react-native';
 
 import { RootNavigator } from './tabbar/tab-navigator';
 import { AppState, storeFactory } from './reducers/app.reducer';
@@ -52,14 +52,4 @@ const mapStateToProps = (state: AppState) => ({
   nav: state.nav
 });
 
-const AppWithNavigationState = connect(mapStateToProps)(App);
-
-export class Root extends Component<{}> {
-  public render() {
-    return (
-      <Provider store={storeFactory()}>
-        <AppWithNavigationState/>
-      </Provider>
-    );
-  }
-}
+export const AppWithNavigationState = connect(mapStateToProps)(App);

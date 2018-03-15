@@ -5,7 +5,7 @@ import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollVie
 import { layoutStyles, contentStyles, tileStyles, contactStyles } from '../profile/styles';
 import { Chevron } from '../profile/chevron';
 import { Avatar } from '../people/avatar';
-import { TopNavBar } from '../topNavBar/top-nav-bar';
+import { TopNavBar } from '../navigation/top-nav-bar';
 import { AppState } from '../reducers/app.reducer';
 import { UserInfoState } from '../reducers/user/user-info.reducer';
 import { Department } from '../reducers/organization/department.model';
