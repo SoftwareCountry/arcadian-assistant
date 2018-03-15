@@ -69,6 +69,7 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                 scrollEnabled={isScrollEnabled} 
                 onMomentumScrollEnd={this.onMomentumScrollEnd.bind(this)}
                 onScrollBeginDrag={this.onScrollBeginDrag.bind(this)}
+                style={{ borderTopWidth: 1, borderColor: 'rgba(0, 0, 0, 0.15)'}}
             >
                 {
                     this.props.employees.map(employee => <EmployeeCardWithAvatar 

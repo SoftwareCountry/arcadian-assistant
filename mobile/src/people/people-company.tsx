@@ -57,7 +57,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps> {
         // this.props.departmentsTree.root.children.values('head')
         console.log(this.props.departmentsTree.root.children.map(a => a.head));
 
-        return <ScrollView>
+        return <ScrollView style={{ backgroundColor: '#fff' }}>
             <DepartmentsHScrollableList departmentsTree={this.props.departmentsTree} employees={[this.props.departmentsTree.root.head]} />
             <DepartmentsHScrollableList departmentsTree={this.props.departmentsTree} employees={this.props.departmentsTree.root.children.map(a => a.head)} />
             <DepartmentsHScrollableList departmentsTree={this.props.departmentsTree} employees={[]} />
