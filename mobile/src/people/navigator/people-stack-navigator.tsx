@@ -1,10 +1,10 @@
 import React from 'react';
-import { StackNavigator } from 'react-navigation';
+import { StackNavigator, NavigationRouteConfigMap } from 'react-navigation';
 import { EmployeeDetailsScreen } from '../../employee-details/employee-details-screen';
 import { PeopleHomeScreen } from '../people-screen';
 import { stackNavigatorConfig } from '../../override/stack-navigator-config';
 
-export const PeopleScreen = StackNavigator({
+const routeConfig: NavigationRouteConfigMap = {
     PeopleHomeScreen: {
         screen: PeopleHomeScreen,
         path: '/',
@@ -13,6 +13,6 @@ export const PeopleScreen = StackNavigator({
         screen: EmployeeDetailsScreen,
         path: '/profile',
     }
-}, stackNavigatorConfig);
+};
 
-
+export const PeopleScreen = StackNavigator(routeConfig, stackNavigatorConfig);

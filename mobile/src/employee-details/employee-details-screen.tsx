@@ -33,4 +33,4 @@ export class EmployeeDetailsScreenImpl extends Component<EmployeeDetailsProps & 
     }
 }
 
-export const EmployeeDetailsScreen = connect(mapStateToProps)(EmployeeDetailsScreenImpl)
+export const EmployeeDetailsScreen = connect(mapStateToProps)(EmployeeDetailsScreenImpl);
