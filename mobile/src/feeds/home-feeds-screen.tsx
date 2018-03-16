@@ -1,17 +1,18 @@
 import React from 'react';
 import { FlatList, View, StyleSheet, ListRenderItemInfo, RefreshControl } from 'react-native';
-import { TopNavBar } from '../topNavBar/top-nav-bar';
+import { TopNavBar } from '../navigation/top-nav-bar';
 
 import { Employee } from '../reducers/organization/employee.model';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Feed } from '../reducers/feeds/feed.model';
-import { connect } from 'react-redux';
+import { connect, Dispatch } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 
 import { FeedListItem } from './feed';
 
 import { screenStyles as styles } from './styles';
 import { StyledText } from '../override/styled-text';
+import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 
 const navBar = new TopNavBar('Feeds');
 
@@ -20,12 +21,20 @@ interface FeedsScreenProps {
     employees: EmployeesStore;
 }
 
+interface FeedScreenDispatchProps {
+    onAvatarClicked: (employee: Employee) => void;
+}
+
 const mapStateToProps = (state: AppState): FeedsScreenProps => ({
     feeds: state.feeds,
     employees: state.organization.employees
 });
 
-class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps> {
+const mapDispatchToProps = (dispatch: Dispatch<any>): FeedScreenDispatchProps => ({
+    onAvatarClicked: (employee: Employee) => dispatch( openEmployeeDetailsAction(employee))
+});
+
+class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenDispatchProps> {
     public static navigationOptions = navBar.configurate();
 
     public render() {
@@ -52,8 +61,8 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps> {
         const { item } = itemInfo;
         const employee: Employee = this.props.employees.employeesById.get(item.employeeId);
 
-        return <FeedListItem message={item} employee={employee} />;
+        return <FeedListItem message={item} employee={employee} onAvatarClicked={this.props.onAvatarClicked} />;
     }
 }
 
-export const HomeFeedsScreen = connect(mapStateToProps)(HomeFeedsScreenImpl);
+export const HomeFeedsScreen = connect(mapStateToProps, mapDispatchToProps)(HomeFeedsScreenImpl);

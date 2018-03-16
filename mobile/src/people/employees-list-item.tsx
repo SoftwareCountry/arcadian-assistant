@@ -1,14 +1,15 @@
 import React from 'react';
-import { TouchableHighlight, StyleSheet, Platform, Text, View, Image } from 'react-native';
-
+import { StyleSheet, Platform, Text, View, Image, TouchableOpacity } from 'react-native';
 import { Avatar } from '../people/avatar';
 import { Employee } from '../reducers/organization/employee.model';
 import { employeesListItemStyles as styles } from './styles';
 import { StyledText } from '../override/styled-text';
+import { Dispatch, connect } from 'react-redux';
 
 interface EmployeesListItemProps {
     employee: Employee;
     id: string;
+    onItemClicked: (e: Employee) => void;
 }
 
 export class EmployeesListItem extends React.Component<EmployeesListItemProps> {
@@ -18,9 +19,9 @@ export class EmployeesListItem extends React.Component<EmployeesListItemProps> {
         const photo = this.props.employee ? this.props.employee.photo : null;
 
         return (
-            <TouchableHighlight>
+            <TouchableOpacity onPress = {() => this.props.onItemClicked(this.props.employee)}>
                 <View style={styles.layout}>
-                    <View style={styles.avatarContainer}>
+                    <View style={styles.avatarContainer}>                
                         <Avatar photo={photo} style={StyleSheet.flatten(styles.avatarOuterFrame)} imageStyle={StyleSheet.flatten(styles.avatarImage)} />
                     </View>
                     <View style={styles.info}>
@@ -28,7 +29,7 @@ export class EmployeesListItem extends React.Component<EmployeesListItemProps> {
                         <StyledText style={styles.baseText}>{employeePosition}</StyledText>
                     </View>
                 </View>
-            </TouchableHighlight>
+             </TouchableOpacity>
         );
     }
 }

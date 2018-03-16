@@ -34,6 +34,10 @@ export const feedStyles = StyleSheet.create({
         alignItems: 'flex-start',
         flexDirection: 'row'
     },
+    touchableOpacityContainer: {
+        marginTop: 0,
+        flex: 2
+    },
     to: {
         fontSize: 11,
         color: '#333333',
