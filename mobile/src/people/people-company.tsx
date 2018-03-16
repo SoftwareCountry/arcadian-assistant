@@ -30,9 +30,11 @@ function departmentsTreeFor(organization: OrganizationState) {
     const topLevelEmployee: Employee = organization.employees.employeesById.get(topLevelDepartment.chiefId);
     const departmentsTree: DepartmentsTree = { root: { 
             departmentId: topLevelDepartment.departmentId, 
+            departmentAbbreviation: topLevelDepartment.abbreviation,
+            departmentChiefId: topLevelDepartment.chiefId,
             head: topLevelEmployee, 
             parent: null, 
-            children: childrenNodes(topLevelDepartment.departmentId, organization.departments, organization.employees.employeesById),
+            children: childrenNodes(topLevelDepartment, organization.departments, organization.employees.employeesById),
             subordinates: organization.employees.employeesById.filter((employee) => employee.departmentId === topLevelDepartment.departmentId).toArray()
         } 
     };
@@ -40,13 +42,20 @@ function departmentsTreeFor(organization: OrganizationState) {
     return departmentsTree;
 }
 
-function childrenNodes(headDeaprtmentId: string, departments: Department[], employees: EmployeeMap) {
+function childrenNodes(headDeaprtment: Department, departments: Department[], employees: EmployeeMap) {
     var nodes: DepartmentsTreeNode[] = [];
-    const sublings = departments.filter((subDepartment) => subDepartment.parentDepartmentId === headDeaprtmentId);
+    const sublings = departments.filter((subDepartment) => subDepartment.parentDepartmentId === headDeaprtment.departmentId);
     sublings.forEach(department => {
         const employee: Employee = employees.get(department.chiefId);
         const subSublings = departments.filter((subDepartment) => subDepartment.parentDepartmentId === department.departmentId);
-        nodes.push({ departmentId: department.departmentId, head: employee, parent: null, children: subSublings.length > 0 ? childrenNodes(department.departmentId, departments, employees) : null, subordinates: employees.filter((emp) => emp.departmentId === headDeaprtmentId).toArray() });
+        nodes.push({ 
+            departmentId: department.departmentId, 
+            departmentAbbreviation: department.abbreviation,
+            departmentChiefId: department.chiefId,
+            head: employee, 
+            parent: headDeaprtment, 
+            children: subSublings.length > 0 ? childrenNodes(department, departments, employees) : null, 
+            subordinates: employees.filter((emp) => emp.departmentId === headDeaprtment.departmentId).toArray() });
     });
 
     return nodes;
