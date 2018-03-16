@@ -50,7 +50,7 @@ class ConfirmSickLeaveEventDialogImpl extends Component<ClaimSickLeaveEventDialo
     }
 
     private get text(): string {
-        return `Your sick leave has started on ${this.props.startDay.date.format(eventDialogTextDateFormat)}${this.props.endDay ? ` and will be complete on ${this.props.endDay.date.format(eventDialogTextDateFormat)}` : ''}`;
+        return `Your sick leave starts on ${this.props.startDay.date.format(eventDialogTextDateFormat)}${this.props.endDay ? ` and completes on ${this.props.endDay.date.format(eventDialogTextDateFormat)}` : ''}`;
     }
 }
 
