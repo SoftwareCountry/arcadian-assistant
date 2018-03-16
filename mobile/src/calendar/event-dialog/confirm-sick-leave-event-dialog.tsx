@@ -13,7 +13,7 @@ import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dial
 
 interface ClaimSickLeaveEventDialogDispatchProps {
     back: () => void;
-    confirmSickLeave: (userEmployee: Employee, startDate: Moment, endDate: Moment) => void;
+    confirmSickLeave: (employeeId: string, startDate: Moment, endDate: Moment) => void;
     closeDialog: () => void;
 }
 
@@ -42,7 +42,7 @@ class ConfirmSickLeaveEventDialogImpl extends Component<ClaimSickLeaveEventDialo
     }
 
     private acceptAction = () => {
-        this.props.confirmSickLeave(this.props.userEmployee, this.props.startDay.date, this.props.endDay.date);
+        this.props.confirmSickLeave(this.props.userEmployee.employeeId, this.props.startDay.date, this.props.endDay.date);
     }
 
     private closeDialog = () => {
@@ -62,7 +62,7 @@ const mapStateToProps = (state: AppState): ClaimSickLeaveEventDialogProps => ({
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ClaimSickLeaveEventDialogDispatchProps => ({
     back: () => { dispatch(openEventDialog(EventDialogType.ClaimSickLeave)); },
-    confirmSickLeave: (userEmployee: Employee, startDate: Moment, endDate: Moment) => { dispatch(confirmSickLeave(userEmployee, startDate, endDate)); },
+    confirmSickLeave: (employeeId: string, startDate: Moment, endDate: Moment) => { dispatch(confirmSickLeave(employeeId, startDate, endDate)); },
     closeDialog: () => { dispatch(closeEventDialog()); }
 });
 

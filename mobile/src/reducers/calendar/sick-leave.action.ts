@@ -4,12 +4,12 @@ import { CalendarEvents } from './calendar-events.model';
 
 export interface ConfirmClaimSickLeave {
     type: 'CONFIRM-CLAIM-SICK-LEAVE';
-    employee: Employee;
+    employeeId: string;
     startDate: Moment;
     endDate: Moment;
 }
 
-export const confirmSickLeave = (employee: Employee, startDate: Moment, endDate: Moment): ConfirmClaimSickLeave => ({ type: 'CONFIRM-CLAIM-SICK-LEAVE', employee, startDate, endDate });
+export const confirmSickLeave = (employeeId: string, startDate: Moment, endDate: Moment): ConfirmClaimSickLeave => ({ type: 'CONFIRM-CLAIM-SICK-LEAVE', employeeId, startDate, endDate });
 
 export interface CompleteSickLeave {
     type: 'COMPLETE-SICK-LEAVE';

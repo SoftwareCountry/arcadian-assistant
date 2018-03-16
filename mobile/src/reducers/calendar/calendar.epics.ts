@@ -39,7 +39,7 @@ export const calendarEventsSavedEpic$ = (action$: ActionsObservable<ConfirmClaim
             calendarEvents.status = CalendarEventStatus.Requested;
 
             return ajaxPost(
-                `${apiUrl}/employees/${x.employee.employeeId}/events`, 
+                `${apiUrl}/employees/${x.employeeId}/events`, 
                 calendarEvents, 
                 { 'Content-Type': 'application/json' }
             ).map(obj => deserialize(obj.response, CalendarEvents));
