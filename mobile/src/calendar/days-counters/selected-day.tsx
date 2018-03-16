@@ -32,7 +32,7 @@ class SelectedDayImpl extends Component<SelectedDayProps> {
 }
 
 const mapStateToProps = (state: AppState): SelectedDayProps => ({
-    selectedCalendarDay: state.calendar.calendarEvents.selectedCalendarDay
+    selectedCalendarDay: state.calendar.calendarEvents.selection.single.day
 });
 
 export const SelectedDay = connect(mapStateToProps)(SelectedDayImpl);

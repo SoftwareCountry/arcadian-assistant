@@ -11,8 +11,9 @@ import { DayoffActionButton } from './dayoff-action-button';
 import { SickLeaveActionButton } from './sick-leave-action-button';
 import { Dispatch } from 'redux';
 import { CalendarActions } from '../reducers/calendar/calendar.action';
-import { editSickLeave, claimSickLeave, prolongSickLeave } from '../reducers/calendar/sick-leave.action';
 import { Moment } from 'moment';
+import { openEventDialog } from '../reducers/calendar/event-dialog/event-dialog.action';
+import { EventDialogType } from '../reducers/calendar/event-dialog/event-dialog-type.model';
 
 interface ActionButtonGroupProps {
     intervalsModel: IntervalsModel;
@@ -22,7 +23,7 @@ interface ActionButtonGroupProps {
 
 interface ActionButtonsGroupDispatchProps {
     sickLeaveActions: {
-        claim: (startDate: Moment) => void;
+        claim: () => void;
         edit: () => void;
     };
 }
@@ -60,8 +61,8 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & A
 
             if (intervals) {
                 vacation = intervals.find(x => x.eventType === CalendarEventsType.Vacation);
-                dayoff = intervals.find(x => x.eventType === CalendarEventsType.Dayoff || x.eventType === CalendarEventsType.AdditionalWork);
-                sickleave = intervals.find(x => x.eventType === CalendarEventsType.SickLeave);
+                dayoff = intervals.find(x => x.eventType === CalendarEventsType.Dayoff || x.eventType === CalendarEventsType.Workout);
+                sickleave = intervals.find(x => x.eventType === CalendarEventsType.Sickleave);
             }
         }
 
@@ -71,14 +72,14 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & A
 
 const mapStateToProps = (state: AppState): ActionButtonGroupProps => ({
     intervalsModel: state.calendar.calendarEvents.intervals,
-    selectedCalendarDay: state.calendar.calendarEvents.selectedCalendarDay,
+    selectedCalendarDay: state.calendar.calendarEvents.selection.single.day,
     disableActionButtons: state.calendar.calendarEvents.disableCalendarActionsButtonGroup
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>) => ({
     sickLeaveActions: {
-        claim: (startDate: Moment) => { dispatch(claimSickLeave(startDate)); },
-        edit: () => { dispatch(editSickLeave()); },
+        claim: () => { dispatch(openEventDialog(EventDialogType.ClaimSickLeave)); },
+        edit: () => { /*TODO: openEventDialog(EditSickLeave) */ },
     }
 });
 

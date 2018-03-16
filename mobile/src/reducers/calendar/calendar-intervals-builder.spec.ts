@@ -103,7 +103,7 @@ describe('CalendarIntervalsBuilder', () => {
 
         const event2 = new CalendarEvents();
         event2.calendarEventId = '1';
-        event2.type = CalendarEventsType.SickLeave;
+        event2.type = CalendarEventsType.Sickleave;
         event2.dates = new DatesInterval();
         event2.dates.startDate = moment(date2);
         event2.dates.endDate = moment(date2);
@@ -128,7 +128,7 @@ describe('CalendarIntervalsBuilder', () => {
         expect(intervals[0].startDate).toBe(event1.dates.startDate);
         expect(intervals[0].endDate).toBe(event1.dates.endDate);
         expect(intervals[1].intervalType).toBe('startInterval');
-        expect(intervals[1].eventType).toBe(CalendarEventsType.SickLeave);
+        expect(intervals[1].eventType).toBe(CalendarEventsType.Sickleave);
         expect(intervals[1].startDate).toBe(event2.dates.startDate);
         expect(intervals[1].endDate).toBe(event2.dates.endDate);
 
@@ -140,7 +140,7 @@ describe('CalendarIntervalsBuilder', () => {
         expect(intervals[0].startDate).toBe(event1.dates.startDate);
         expect(intervals[0].endDate).toBe(event1.dates.endDate);
         expect(intervals[1].intervalType).toBe('interval');
-        expect(intervals[1].eventType).toBe(CalendarEventsType.SickLeave);
+        expect(intervals[1].eventType).toBe(CalendarEventsType.Sickleave);
         expect(intervals[1].startDate).toBe(event2.dates.startDate);
         expect(intervals[1].endDate).toBe(event2.dates.endDate);
 
@@ -148,7 +148,7 @@ describe('CalendarIntervalsBuilder', () => {
 
         expect(intervals.length).toBe(1);
         expect(intervals[0].intervalType).toBe('endInterval');
-        expect(intervals[0].eventType).toBe(CalendarEventsType.SickLeave);
+        expect(intervals[0].eventType).toBe(CalendarEventsType.Sickleave);
         expect(intervals[0].startDate).toBe(event2.dates.startDate);
         expect(intervals[0].endDate).toBe(event2.dates.endDate);
     });
@@ -174,7 +174,7 @@ describe('CalendarIntervalsBuilder', () => {
 
         const event2 = new CalendarEvents();
         event2.calendarEventId = '2';
-        event2.type = CalendarEventsType.SickLeave;
+        event2.type = CalendarEventsType.Sickleave;
         event2.dates = new DatesInterval();
         event2.dates.startDate = moment(date2);
         event2.dates.endDate = moment(date2);
@@ -309,7 +309,7 @@ describe('CalendarIntervalsBuilder', () => {
 
     describe('dayoff', () => {
 
-        const testDayoff = (testedEventType: CalendarEventsType.Dayoff | CalendarEventsType.AdditionalWork) => {
+        const testDayoff = (testedEventType: CalendarEventsType.Dayoff | CalendarEventsType.Workout) => {
             describe(testedEventType, () => {
                 it('should return interval left boundary, if interval [startWorkingHour, finishWorkingHour] is between [0, 4]', () => {
                     const date1 = moment({ day: 1, month: 0, year: 2018 });
@@ -391,7 +391,7 @@ describe('CalendarIntervalsBuilder', () => {
             });
 
             testDayoff(CalendarEventsType.Dayoff);
-            testDayoff(CalendarEventsType.AdditionalWork);
+            testDayoff(CalendarEventsType.Workout);
         };
     });
 });

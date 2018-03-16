@@ -7,18 +7,19 @@ import { SelectedDay } from './days-counters/selected-day';
 import { EventDialog } from './event-dialog/event-dialog';
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
+import { EventDialogType } from '../reducers/calendar/event-dialog/event-dialog-type.model';
 
 interface AgendaProps {
-    dialogActive: boolean;
+    dialogType: EventDialogType;
 }
 
 const mapStateToProps = (state: AppState): AgendaProps => ({
-    dialogActive: state.calendar.calendarEvents.dialog.active
+    dialogType: state.calendar.eventDialog.dialogType
 });
 
 export class AgendaImpl extends Component<AgendaProps> {
     public render() {
-        const dialogOpened = this.props.dialogActive;
+        const dialogOpened = !!this.props.dialogType;
 
         const displayNone = StyleSheet.flatten({ display: 'none' });
 
@@ -36,7 +37,7 @@ export class AgendaImpl extends Component<AgendaProps> {
                 </View>
 
                 <View style={dialogStyles}>
-                    <EventDialog />
+                    <EventDialog dialogType={this.props.dialogType} />
                 </View>
             </View>
         );

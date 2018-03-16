@@ -104,21 +104,21 @@ export class CalendarEventsColor {
     public static vacation = '#2F80ED';
     public static sickLeave = '#F2C94C';
     public static dayoff = '#EB5757';
-    public static additionalWork = '#219653';
+    public static workout = '#219653';
 
     public static getColor(type: CalendarEventsType) {
         switch (type) {
             case CalendarEventsType.Vacation:
                 return CalendarEventsColor.vacation;
 
-            case CalendarEventsType.SickLeave:
+            case CalendarEventsType.Sickleave:
                 return CalendarEventsColor.sickLeave;
 
             case CalendarEventsType.Dayoff:
                 return CalendarEventsColor.dayoff;
 
-            case CalendarEventsType.AdditionalWork:
-                return CalendarEventsColor.additionalWork;
+            case CalendarEventsType.Workout:
+                return CalendarEventsColor.workout;
 
             default:
                 return null;

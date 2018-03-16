@@ -9,6 +9,13 @@ export interface LoadCalendarEventsFinished {
 
 export const loadCalendarEventsFinished = (calendarEvents: CalendarEvents[]): LoadCalendarEventsFinished => ({ type: 'LOAD-CALENDAR-EVENTS-FINISHED', calendarEvents });
 
+export interface CalendarEventCreated {
+    type: 'CALENDAR-EVENT-CREATED';
+    calendarEvent: CalendarEvents;
+}
+
+export const calendarEventCreated = (calendarEvent: CalendarEvents): CalendarEventCreated => ({ type: 'CALENDAR-EVENT-CREATED', calendarEvent });
+
 export interface SelectCalendarDay {
     type: 'SELECT-CALENDAR-DAY';
     day: DayModel;
@@ -24,13 +31,19 @@ export interface SelectCalendarMonth {
 
 export const selectCalendarMonth = (month: number, year: number): SelectCalendarMonth => ({ type: 'SELECT-CALENDAR-MONTH', month, year });
 
-export interface CancelDialog {
-    type: 'CANCEL-CALENDAR-DIALOG';
+export enum CalendarSelectionModeType {
+    SingleDay = 'SingleDay',
+    Interval = 'Interval'
 }
 
-export const cancelDialog = (): CancelDialog => ({ type: 'CANCEL-CALENDAR-DIALOG' });
+export interface CalendarSelectionMode {
+    type: 'CALENDAR-SELECTION-MODE';
+    selectionMode: CalendarSelectionModeType;
+    color: string;
+}
 
-export type CalendarActions = LoadCalendarEventsFinished |
+export const calendarSelectionMode = (selectionMode: CalendarSelectionModeType, color: string = null): CalendarSelectionMode => ({ type: 'CALENDAR-SELECTION-MODE', selectionMode, color });
+
+export type CalendarActions = LoadCalendarEventsFinished | CalendarEventCreated |
     SelectCalendarDay | SelectCalendarMonth |
-    SickLeaveActions |
-    CancelDialog;
+    CalendarSelectionMode;

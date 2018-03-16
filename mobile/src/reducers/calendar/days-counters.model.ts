@@ -19,7 +19,7 @@ export class VacationDaysCounter implements DaysCounter  {
 }
 
 enum HoursCreditType {
-    AdditionalWork = 'AdditionalWork',
+    Workout = 'Workout',
     DaysOff = 'DaysOff'
 }
 
@@ -39,13 +39,13 @@ export class HoursCreditCounter implements DaysCounter {
         return `${(this.days ? this.days : '')}${this.rest}`;
     }
 
-    public get isAdditionalWork(): boolean {
-        return this.type === HoursCreditType.AdditionalWork;
+    public get isWorkout(): boolean {
+        return this.type === HoursCreditType.Workout;
     }
 
     public get title(): [string, string] {
         const phrases = {
-            [HoursCreditType.AdditionalWork]: 'return',
+            [HoursCreditType.Workout]: 'return',
             [HoursCreditType.DaysOff]: 'available'
         };
 
@@ -54,7 +54,7 @@ export class HoursCreditCounter implements DaysCounter {
 
     private get type(): HoursCreditType {
         return this.hours > 0
-            ? HoursCreditType.AdditionalWork
+            ? HoursCreditType.Workout
             : HoursCreditType.DaysOff;
     }
 }
