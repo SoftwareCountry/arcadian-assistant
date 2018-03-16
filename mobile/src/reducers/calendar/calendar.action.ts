@@ -31,13 +31,19 @@ export interface SelectCalendarMonth {
 
 export const selectCalendarMonth = (month: number, year: number): SelectCalendarMonth => ({ type: 'SELECT-CALENDAR-MONTH', month, year });
 
-export interface CancelDialog {
-    type: 'CANCEL-CALENDAR-DIALOG';
+export enum CalendarSelectionModeType {
+    SingleDay = 'SingleDay',
+    Interval = 'Interval'
 }
 
-export const cancelDialog = (): CancelDialog => ({ type: 'CANCEL-CALENDAR-DIALOG' });
+export interface CalendarSelectionMode {
+    type: 'CALENDAR-SELECTION-MODE';
+    selectionMode: CalendarSelectionModeType;
+    color: string;
+}
+
+export const calendarSelectionMode = (selectionMode: CalendarSelectionModeType, color: string): CalendarSelectionMode => ({ type: 'CALENDAR-SELECTION-MODE', selectionMode, color });
 
 export type CalendarActions = LoadCalendarEventsFinished | CalendarEventCreated |
     SelectCalendarDay | SelectCalendarMonth |
-    SickLeaveActions |
-    CancelDialog;
+    CalendarSelectionMode;

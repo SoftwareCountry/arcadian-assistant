@@ -2,39 +2,14 @@ import { Moment } from 'moment';
 import { Employee } from '../organization/employee.model';
 import { CalendarEvents } from './calendar-events.model';
 
-export interface ClaimSickLeave {
-    type: 'CLAIM-SICK-LEAVE';
-}
-
-export const claimSickLeave = (): ClaimSickLeave => ({ type: 'CLAIM-SICK-LEAVE' });
-
-export interface ConfirmStartDateSickLeave {
-    type: 'CONFIRM-START-DATE-SICK-LEAVE';
-    startDate: Moment;
-}
-
-export const confirmStartDateSickLeave = (startDate: Moment): ConfirmStartDateSickLeave => ({ type: 'CONFIRM-START-DATE-SICK-LEAVE', startDate });
-
-export interface BackToClaimSickLeave {
-    type: 'BACK-TO-CLAIM-SICK-LEAVE';
-    startDate: Moment;
-}
-
-export const backToClaimSickLeave = (startDate: Moment): BackToClaimSickLeave => ({ type: 'BACK-TO-CLAIM-SICK-LEAVE', startDate });
-
 export interface ConfirmClaimSickLeave {
     type: 'CONFIRM-CLAIM-SICK-LEAVE';
     employee: Employee;
-    calendarEvents: CalendarEvents;
+    startDate: Moment;
+    endDate: Moment;
 }
 
-export const confirmSickLeave = (employee: Employee, calendarEvents: CalendarEvents): ConfirmClaimSickLeave => ({ type: 'CONFIRM-CLAIM-SICK-LEAVE', employee, calendarEvents });
-
-export interface EditSickLeave {
-    type: 'EDIT-SICK-LEAVE';
-}
-
-export const editSickLeave = (): EditSickLeave => ({ type: 'EDIT-SICK-LEAVE' });
+export const confirmSickLeave = (employee: Employee, startDate: Moment, endDate: Moment): ConfirmClaimSickLeave => ({ type: 'CONFIRM-CLAIM-SICK-LEAVE', employee, startDate, endDate });
 
 export interface CompleteSickLeave {
     type: 'COMPLETE-SICK-LEAVE';
@@ -42,17 +17,10 @@ export interface CompleteSickLeave {
 
 export const completeSickLeave = (): CompleteSickLeave => ({ type: 'COMPLETE-SICK-LEAVE' });
 
-export interface ProlongSickLeave {
-    type: 'PROLONG-SICK-LEAVE';
-}
-
-export const prolongSickLeave = (): ProlongSickLeave => ({ type: 'PROLONG-SICK-LEAVE' });
-
 export interface ConfirmProlongSickLeave {
     type: 'CONFIRM-PROLONG-SICK-LEAVE';
 }
 
 export const confirmProlongSickLeave = (): ConfirmProlongSickLeave => ({ type: 'CONFIRM-PROLONG-SICK-LEAVE' });
 
-export type SickLeaveActions = ClaimSickLeave | ConfirmStartDateSickLeave | BackToClaimSickLeave | ConfirmClaimSickLeave |
-    EditSickLeave | CompleteSickLeave | ProlongSickLeave | ConfirmProlongSickLeave;
+export type SickLeaveActions =  ConfirmClaimSickLeave | CompleteSickLeave | ConfirmProlongSickLeave;
