@@ -7,7 +7,6 @@ import { CalendarActionButton } from '../calendar-action-button';
 
 interface EventDialogBaseDefaultProps {
     disableAccept?: boolean;
-    close?: () => void;
 }
 
 interface EventDialogBaseProps extends EventDialogBaseDefaultProps {
@@ -16,8 +15,9 @@ interface EventDialogBaseProps extends EventDialogBaseDefaultProps {
     text: string;
     cancelLabel: string;
     acceptLabel: string;
-    cancelAction: () => void;
-    acceptAction: () => void;
+    onCancelPress: () => void;
+    onActionPress: () => void;
+    onClosePress: () => void;
 }
 
 export const eventDialogTextDateFormat = 'MMMM D, YYYY';
@@ -68,18 +68,14 @@ export class EventDialogBase extends Component<EventDialogBaseProps> {
     }
 
     private close = () => {
-        if (!this.props.close) {
-            this.cancel();
-            return;
-        }
-        this.props.close();
+        this.props.onClosePress();
     }
 
     private cancel = () => {
-        this.props.cancelAction();
+        this.props.onCancelPress();
     }
 
     private accept = () => {
-        this.props.acceptAction();
+        this.props.onActionPress();
     }
 }
