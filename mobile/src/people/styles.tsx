@@ -101,3 +101,40 @@ export const companyItemStyles = StyleSheet.create({
         paddingBottom: 2
     }
 });
+
+export const companyTinyItemStyles = StyleSheet.create({
+    layout: {
+        height: 38,
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    avatarContainer: {
+        width: 25,
+        height: 25,
+        marginLeft: 32,
+    },
+    avatarOuterFrame: {
+        borderWidth: 1
+    },
+    avatarImage: {
+        borderWidth: 1
+    },
+    info: {
+        flex: 1,
+        marginRight: 32,
+        marginLeft: 12,
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start'
+    },
+    baseText: {
+        fontFamily: 'Helvetica-Light',
+        fontSize: 11,
+    },
+    name: {
+        fontFamily: 'Helvetica-Light',
+        fontSize: 11,
+    }
+});

@@ -11,7 +11,7 @@ import { AppState } from '../reducers/app.reducer';
 import { DepartmentsHScrollableList } from './departments/departments-horizontal-scrollable-list';
 import { DepartmentsTree } from './departments/departments-tree';
 import { DepartmentsTreeNode } from './departments/departments-tree-node';
-import { EmployeeMap } from '../reducers/organization/employees.reducer';
+import { EmployeeMap, EmployeesStore } from '../reducers/organization/employees.reducer';
 
 interface PeopleCompanyProps {
     routeName: string;
@@ -32,7 +32,8 @@ function departmentsTreeFor(organization: OrganizationState) {
             departmentId: topLevelDepartment.departmentId, 
             head: topLevelEmployee, 
             parent: null, 
-            children: childrenNodes(topLevelDepartment.departmentId, organization.departments, organization.employees.employeesById)
+            children: childrenNodes(topLevelDepartment.departmentId, organization.departments, organization.employees.employeesById),
+            subordinates: organization.employees.employeesById.filter((employee) => employee.departmentId === topLevelDepartment.departmentId).toArray()
         } 
     };
 
@@ -45,7 +46,7 @@ function childrenNodes(headDeaprtmentId: string, departments: Department[], empl
     sublings.forEach(department => {
         const employee: Employee = employees.get(department.chiefId);
         const subSublings = departments.filter((subDepartment) => subDepartment.parentDepartmentId === department.departmentId);
-        nodes.push({ departmentId: department.departmentId, head: employee, parent: null, children: subSublings.length > 0 ? childrenNodes(department.departmentId, departments, employees) : null });
+        nodes.push({ departmentId: department.departmentId, head: employee, parent: null, children: subSublings.length > 0 ? childrenNodes(department.departmentId, departments, employees) : null, subordinates: employees.filter((emp) => emp.departmentId === headDeaprtmentId).toArray() });
     });
 
     return nodes;
@@ -59,7 +60,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps> {
 
         return <ScrollView style={{ backgroundColor: '#fff' }}>
             <DepartmentsHScrollableList departmentsTree={this.props.departmentsTree} employees={[this.props.departmentsTree.root.head]} />
-            <DepartmentsHScrollableList departmentsTree={this.props.departmentsTree} employees={this.props.departmentsTree.root.children.map(a => a.head)} />
+            <DepartmentsHScrollableList departmentsTree={this.props.departmentsTree} employees={this.props.departmentsTree.root.children.map(a => a.head)} subordinates={this.props.departmentsTree.root.subordinates.length > 0 ? this.props.departmentsTree.root.subordinates : null} />
             <DepartmentsHScrollableList departmentsTree={this.props.departmentsTree} employees={[]} />
         </ScrollView>;
     }

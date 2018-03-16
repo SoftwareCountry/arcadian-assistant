@@ -5,13 +5,25 @@ import { connect, Dispatch, MapStateToProps, MapDispatchToPropsFunction } from '
 import { EmployeeCardWithAvatar } from '../employee-card-with-avatar';
 import { DepartmentsTree } from './departments-tree';
 import { Employee } from '../../reducers/organization/employee.model';
+import { PeopleActions, requestEmployeesForDepartment } from '../../reducers/people/people.action';
 
 interface DepartmentsHScrollableListProps {
     departmentsTree: DepartmentsTree;
     employees: Employee[];
+    subordinates?: Employee[];
 }
 
-export class DepartmentsHScrollableList extends Component<DepartmentsHScrollableListProps> {
+interface DepartmentsHScrollableListDispatchProps {
+    requestEmployeesForDepartment: (departmentId: string) => void;
+}
+
+const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
+    requestEmployeesForDepartment: (departmentId: string) => { 
+        dispatch(requestEmployeesForDepartment(departmentId)); 
+    },
+});
+
+export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScrollableListProps & DepartmentsHScrollableListDispatchProps> {
     private employeeCards: EmployeeCardWithAvatar[];
     private animatedValue: Animated.Value;
     private buttonText: Text;
@@ -47,8 +59,12 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
         var offset = event.nativeEvent.contentOffset;
         if (offset) {
             var page = Math.round(offset.x / Dimensions.get('window').width) + 1;
-            const visibleCard: EmployeeCardWithAvatar = this.employeeCards[page - 1];
-            visibleCard.revealNeighboursAvatars(true);
+            if (page > this.employeeCards.length) {
+                this.props.requestEmployeesForDepartment(this.props.departmentsTree.root.departmentId);
+            } else {
+                const visibleCard: EmployeeCardWithAvatar = this.employeeCards[page - 1];
+                visibleCard.revealNeighboursAvatars(true);
+            }
         }
     }
 
@@ -69,7 +85,6 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                 scrollEnabled={isScrollEnabled} 
                 onMomentumScrollEnd={this.onMomentumScrollEnd.bind(this)}
                 onScrollBeginDrag={this.onScrollBeginDrag.bind(this)}
-                style={{ borderTopWidth: 1, borderColor: 'rgba(0, 0, 0, 0.15)'}}
             >
                 {
                     this.props.employees.map(employee => <EmployeeCardWithAvatar 
@@ -84,7 +99,13 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                         key={employee.employeeId} 
                     />)
                 }
+                
+                {
+                    (this.props.subordinates != null) ? <EmployeeCardWithAvatar employees={this.props.subordinates} /> : null
+                }
             </Animated.ScrollView>
         </View>;
     }
 }
+
+export const DepartmentsHScrollableList = connect(null, mapDispatchToProps)(DepartmentsHScrollableListImpl);
