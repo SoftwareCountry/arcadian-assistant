@@ -1,5 +1,5 @@
-import { SickLeaveActions } from './sick-leave.action';
-import { EventDialogType } from './event-dialog/event-dialog-type.model';
+import { EventDialogType } from './event-dialog-type.model';
+import { SickLeaveActions } from '../sick-leave.action';
 
 export interface OpenEventDialog {
     type: 'OPEN-EVENT-DIALOG';

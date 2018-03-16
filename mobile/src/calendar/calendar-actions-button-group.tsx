@@ -12,7 +12,7 @@ import { SickLeaveActionButton } from './sick-leave-action-button';
 import { Dispatch } from 'redux';
 import { CalendarActions } from '../reducers/calendar/calendar.action';
 import { Moment } from 'moment';
-import { openEventDialog } from '../reducers/calendar/event-dialog.action';
+import { openEventDialog } from '../reducers/calendar/event-dialog/event-dialog.action';
 import { EventDialogType } from '../reducers/calendar/event-dialog/event-dialog-type.model';
 
 interface ActionButtonGroupProps {

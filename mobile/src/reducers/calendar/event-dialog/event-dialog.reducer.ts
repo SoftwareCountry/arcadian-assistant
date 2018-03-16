@@ -1,5 +1,5 @@
 import { EventDialogActions } from './event-dialog.action';
-import { EventDialogType } from './event-dialog/event-dialog-type.model';
+import { EventDialogType } from './event-dialog-type.model';
 
 export interface EventDialogState {
     dialogType: EventDialogType;

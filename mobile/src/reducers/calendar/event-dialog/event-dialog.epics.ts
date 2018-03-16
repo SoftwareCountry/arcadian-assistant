@@ -1,8 +1,8 @@
 import { EventDialogActions, OpenEventDialog, closeEventDialog } from './event-dialog.action';
 import { ActionsObservable } from 'redux-observable';
-import { CalendarSelectionModeType, calendarSelectionMode } from './calendar.action';
-import { CalendarEventsColor } from '../../calendar/styles';
-import { EventDialogType } from './event-dialog/event-dialog-type.model';
+import { calendarSelectionMode, CalendarSelectionModeType } from '../calendar.action';
+import { CalendarEventsColor } from '../../../calendar/styles';
+import { EventDialogType } from './event-dialog-type.model';
 
 export const openEventDialogEpic$ = (action$: ActionsObservable<EventDialogActions>) =>
     action$.filter(x => x.type === 'OPEN-EVENT-DIALOG')

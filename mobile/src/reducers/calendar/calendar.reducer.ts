@@ -3,8 +3,8 @@ import { combineEpics } from 'redux-observable';
 import { loadCalendarEventsFinishedEpic$, calendarEventsSavedEpic$, calendarEventCreatedEpic$ } from './calendar.epics';
 import { DaysCountersState, daysCountersReducer } from './days-counters.reducer';
 import { calendarEventsReducer, CalendarEventsState } from './calendar-events.reducer';
-import { eventDialogReducer, EventDialogState } from './event-dialog.reducer';
-import { openEventDialogEpic$, closeEventDialogEpic$ } from './event-dialog.epics';
+import { EventDialogState, eventDialogReducer } from './event-dialog/event-dialog.reducer';
+import { openEventDialogEpic$, closeEventDialogEpic$ } from './event-dialog/event-dialog.epics';
 
 export interface CalendarState {
     daysCounters: DaysCountersState;

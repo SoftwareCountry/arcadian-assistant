@@ -4,7 +4,7 @@ import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base'
 import { AppState } from '../../reducers/app.reducer';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { EventDialogActions, closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog.action';
+import { EventDialogActions, closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { DayModel } from '../../reducers/calendar/calendar.model';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
 

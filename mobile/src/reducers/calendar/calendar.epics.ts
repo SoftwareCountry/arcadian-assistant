@@ -8,7 +8,7 @@ import { loadCalendarEventsFinished, calendarEventCreated, CalendarEventCreated 
 import { loadFailedError } from '../errors/errors.action';
 import { CalendarEvents, CalendarEventStatus, CalendarEventsType } from './calendar-events.model';
 import { ConfirmClaimSickLeave } from './sick-leave.action';
-import { closeEventDialog } from './event-dialog.action';
+import { closeEventDialog } from './event-dialog/event-dialog.action';
 
 export const loadCalendarEventsFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>) =>
     action$.filter(x => x.type === 'LOAD-USER-EMPLOYEE-FINISHED')
