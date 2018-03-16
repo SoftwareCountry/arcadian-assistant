@@ -18,10 +18,7 @@ const mapStateToProps = (state: AppState): PeopleScreenProps => ({
     peopleNav: state.peopleNav,
 });
 
-const navBar =  new TopNavBar('People');
-
 class PeopleScreenImpl extends React.Component<PeopleScreenProps> {
-    public static navigationOptions = navBar.configurate();
     
     public render() {
         
