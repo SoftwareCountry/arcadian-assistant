@@ -7,10 +7,8 @@ export const calendarSelectionModeReducer = (state: CalendarEventsState, action:
     if (action.selectionMode === CalendarSelectionModeType.SingleDay) {
         return {
             selection: {
-                mode: action.selectionMode,
-                startDay: state.selectedCalendarDay,
-                endDay: null,
-                color: action.color
+                ...state.selection,
+                interval: null
             },
             disableCalendarDaysBefore: null
         };
@@ -19,12 +17,14 @@ export const calendarSelectionModeReducer = (state: CalendarEventsState, action:
     if (action.selectionMode === CalendarSelectionModeType.Interval) {
         return  {
             selection: {
-                mode: action.selectionMode,
-                startDay: state.selectedCalendarDay,
-                endDay: null,
-                color: action.color
+                ...state.selection,
+                interval: {
+                    startDay: state.selection.single.day,
+                    endDay: null,
+                    color: action.color
+                }
             },
-            disableCalendarDaysBefore: state.selectedCalendarDay
+            disableCalendarDaysBefore: state.selection.single.day
         };
     }
 

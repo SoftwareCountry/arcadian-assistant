@@ -67,3 +67,18 @@ export class IntervalsModel {
         return date.format('DD-MM-YYYY');
     }
 }
+
+export interface SingleSelection {
+    day: DayModel;
+}
+
+export interface IntervalSelection {
+    startDay: DayModel;
+    endDay: DayModel;
+    color: string;
+}
+
+export interface CalendarSelection {
+    single: SingleSelection;
+    interval: IntervalSelection;
+}

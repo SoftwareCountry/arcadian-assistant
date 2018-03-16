@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
 import { connect, Dispatch } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
-import { OnSelectedDayCallback, CalendarSelection } from './calendar-page';
+import { OnSelectedDayCallback } from './calendar-page';
 import { CalendarPager } from './calendar-pager';
 import { CalendarActions, selectCalendarDay, selectCalendarMonth } from '../reducers/calendar/calendar.action';
-import { WeekModel, DayModel, IntervalsModel } from '../reducers/calendar/calendar.model';
+import { WeekModel, DayModel, IntervalsModel, CalendarSelection } from '../reducers/calendar/calendar.model';
 
 interface CalendarProps {
     weeks: WeekModel[];
     intervals: IntervalsModel;
-    selectedCalendarDay: DayModel;
     selection: CalendarSelection;
     disableCalendarDaysBefore: DayModel;
 }
@@ -22,7 +21,6 @@ interface CalendarDispatchProps {
 export class CalendarImpl extends Component<CalendarProps & CalendarDispatchProps> {
     public render() {
         return <CalendarPager
-                    selectedDay={this.props.selectedCalendarDay}
                     onSelectedDay={this.onSelectedDay}
                     weeks={this.props.weeks}
                     intervals={this.props.intervals}
@@ -44,7 +42,6 @@ export class CalendarImpl extends Component<CalendarProps & CalendarDispatchProp
 const mapStateToProps = (state: AppState): CalendarProps => ({
     weeks: state.calendar.calendarEvents.weeks,
     intervals: state.calendar.calendarEvents.intervals,
-    selectedCalendarDay: state.calendar.calendarEvents.selectedCalendarDay,
     selection: state.calendar.calendarEvents.selection,
     disableCalendarDaysBefore: state.calendar.calendarEvents.disableCalendarDaysBefore
 });

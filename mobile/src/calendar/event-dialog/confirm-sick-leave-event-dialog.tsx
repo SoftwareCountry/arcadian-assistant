@@ -55,8 +55,8 @@ class ConfirmSickLeaveEventDialogImpl extends Component<ClaimSickLeaveEventDialo
 }
 
 const mapStateToProps = (state: AppState): ClaimSickLeaveEventDialogProps => ({
-    startDay: state.calendar.calendarEvents.selection.startDay,
-    endDay: state.calendar.calendarEvents.selection.endDay,
+    startDay: state.calendar.calendarEvents.selection.interval.startDay,
+    endDay: state.calendar.calendarEvents.selection.interval.endDay,
     userEmployee: state.userInfo.employee
 });
 

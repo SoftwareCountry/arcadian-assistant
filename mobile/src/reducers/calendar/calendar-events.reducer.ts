@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 import { CalendarActions, CalendarSelectionModeType, CalendarSelectionMode } from './calendar.action';
-import { DayModel, WeekModel, IntervalsModel } from './calendar.model';
+import { DayModel, WeekModel, IntervalsModel, CalendarSelection } from './calendar.model';
 import moment from 'moment';
 import { CalendarWeeksBuilder } from './calendar-weeks-builder';
 import { CalendarIntervalsBuilder } from './calendar-intervals-builder';
@@ -15,15 +15,8 @@ export interface DisableDaysCalendarDaysBeforeSubState {
     disableCalendarDaysBefore: DayModel;
 }
 
-export interface SelectionState {
-    mode: CalendarSelectionModeType;
-    startDay: DayModel;
-    endDay: DayModel;
-    color: string;
-}
-
 export interface SelectionSubState {
-    selection: SelectionState;
+    selection: CalendarSelection;
 }
 
 export interface CalendarEventsState extends
@@ -31,7 +24,6 @@ export interface CalendarEventsState extends
     DisableDaysCalendarDaysBeforeSubState,
     SelectionSubState {
         weeks: WeekModel[];
-        selectedCalendarDay: DayModel;
         disableCalendarActionsButtonGroup: boolean;
 }
 
@@ -49,16 +41,15 @@ const createInitState = (): CalendarEventsState => {
         }
     }
 
-    const defaultSelection: SelectionState = {
-        mode: CalendarSelectionModeType.SingleDay,
-        startDay: null,
-        endDay: null,
-        color: null
+    const defaultSelection: CalendarSelection = {
+        single: {
+            day: todayModel
+        },
+        interval: null
     };
 
     return {
         weeks: weeks,
-        selectedCalendarDay: todayModel,
         intervals: null,
         disableCalendarDaysBefore: null,
         disableCalendarActionsButtonGroup: true,
@@ -99,8 +90,7 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
             return {
                 ...state,
                 ...singleDayState,
-                ...intervalState,
-                selectedCalendarDay: action.day
+                ...intervalState
             };
         case 'SELECT-CALENDAR-MONTH':
             const builder = new CalendarWeeksBuilder();

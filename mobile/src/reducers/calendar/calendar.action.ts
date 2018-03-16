@@ -42,7 +42,7 @@ export interface CalendarSelectionMode {
     color: string;
 }
 
-export const calendarSelectionMode = (selectionMode: CalendarSelectionModeType, color: string): CalendarSelectionMode => ({ type: 'CALENDAR-SELECTION-MODE', selectionMode, color });
+export const calendarSelectionMode = (selectionMode: CalendarSelectionModeType, color: string = null): CalendarSelectionMode => ({ type: 'CALENDAR-SELECTION-MODE', selectionMode, color });
 
 export type CalendarActions = LoadCalendarEventsFinished | CalendarEventCreated |
     SelectCalendarDay | SelectCalendarMonth |

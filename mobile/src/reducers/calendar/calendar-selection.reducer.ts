@@ -4,25 +4,27 @@ import { CalendarEvents, CalendarEventsType, DatesInterval, CalendarEventStatus 
 import { CalendarIntervalsBuilder } from './calendar-intervals-builder';
 
 export const singleDaySelectionReducer = (state: CalendarEventsState, action: SelectCalendarDay): SelectionSubState | null => {
-    if (state.selection.mode === CalendarSelectionModeType.SingleDay) {
-        return {
-            selection: {
-                ...state.selection,
-                startDay: action.day
+    return {
+        selection: {
+            ...state.selection,
+            single: {
+                day: action.day
             }
-        };
-    }
-
-    return null;
+        }
+    };
 };
 
 export const intervalSelectionReducer = (state: CalendarEventsState, action: SelectCalendarDay): SelectionSubState | null => {
-    if (state.selection.mode === CalendarSelectionModeType.Interval) {
-
+    if (state.selection.interval) {
         return {
             selection: {
-                ...state.selection,
-                endDay: action.day,
+                single: {
+                    day: action.day
+                },
+                interval: {
+                    ...state.selection.interval,
+                    endDay: action.day
+                }
             }
         };
     }

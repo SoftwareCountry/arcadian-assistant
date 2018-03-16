@@ -43,7 +43,7 @@ class ClaimSickLeaveEventDialogImpl extends Component<ClaimSickLeaveEventDialogP
 }
 
 const mapStateToProps = (state: AppState): ClaimSickLeaveEventDialogProps => ({
-    startDay: state.calendar.calendarEvents.selection.startDay
+    startDay: state.calendar.calendarEvents.selection.single.day
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ClaimSickLeaveEventDialogDispatchProps => ({

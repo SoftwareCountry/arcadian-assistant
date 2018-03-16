@@ -72,7 +72,7 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & A
 
 const mapStateToProps = (state: AppState): ActionButtonGroupProps => ({
     intervalsModel: state.calendar.calendarEvents.intervals,
-    selectedCalendarDay: state.calendar.calendarEvents.selectedCalendarDay,
+    selectedCalendarDay: state.calendar.calendarEvents.selection.single.day,
     disableActionButtons: state.calendar.calendarEvents.disableCalendarActionsButtonGroup
 });
 
