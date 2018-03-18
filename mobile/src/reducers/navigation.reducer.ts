@@ -7,7 +7,6 @@ export const navigationReducer = (state: NavigationState, action: NavigationActi
     return nextState || state;
 };
 
-export const peopleNavigationReducer = (state: NavigationState, action: NavigationAction) => {
-    const nextState = PeopleScreenNavigator.router.getStateForAction(action, state);
-    return nextState || state;
+export const navigationMiddlewareKeyReducer = (state: string = '') => {
+    return state;
 };

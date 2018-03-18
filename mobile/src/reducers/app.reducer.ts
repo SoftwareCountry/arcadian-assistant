@@ -1,8 +1,8 @@
-import { createStore, combineReducers, Reducer, applyMiddleware, Action } from 'redux';
+import { createStore, combineReducers, Reducer, applyMiddleware, Action, Middleware } from 'redux';
 import { List } from 'immutable';
 import { AppState } from './app.reducer';
 import { HelpdeskState, helpdeskReducer, helpdeskEpics } from './helpdesk/helpdesk.reducer';
-import { navigationReducer, peopleNavigationReducer } from './navigation.reducer';
+import { navigationReducer, navigationMiddlewareKeyReducer } from './navigation.reducer';
 import { NavigationState } from 'react-navigation';
 import { combineEpics, createEpicMiddleware, Epic } from 'redux-observable';
 //import { createLogger } from 'redux-logger';
@@ -18,12 +18,15 @@ import { CalendarState, calendarReducer, calendarEpics } from './calendar/calend
 import { SecuredApiClient } from '../auth/secured-api-client';
 import config from '../config';
 import { OAuthProcess } from '../auth/oauth-process';
+import { createReactNavigationReduxMiddleware, createReduxBoundAddListener } from 'react-navigation-redux-helpers';
 
 export interface AppState {
     helpdesk: HelpdeskState;
     organization: OrganizationState;
+    
     nav: NavigationState;
-    peopleNav: NavigationState;
+    navigationMiddlewareKey: string;
+
     userInfo: UserInfoState;
     feeds: FeedsState;
     calendar: CalendarState;
@@ -35,7 +38,7 @@ const reducers = combineReducers<AppState>({
     helpdesk: helpdeskReducer,
     organization: organizationReducer,
     nav: navigationReducer,
-    peopleNav: peopleNavigationReducer,
+    navigationMiddlewareKey: navigationMiddlewareKeyReducer,
     userInfo: userInfoReducer,
     feeds: feedsReducer,
     calendar: calendarReducer,
@@ -47,11 +50,14 @@ export interface DependenciesContainer {
 
 export type AppEpic<T extends Action> = Epic<T, AppState, DependenciesContainer>;
 
-export const storeFactory = (oauthProcess: OAuthProcess) => {
+export const storeFactory = (oauthProcess: OAuthProcess, ) => {
     const dependencies: DependenciesContainer = { apiClient: new SecuredApiClient(config.apiUrl, oauthProcess.authenticationState as any ) };
     const options = { dependencies };
     const epicMiddleware = createEpicMiddleware(rootEpic, options);
-    //const loggerMiddleware = createLogger();
 
-    return createStore(reducers, applyMiddleware(epicMiddleware));
+    const navigationMiddlewareKey = 'root';
+
+    const reactNavigationMiddleware = createReactNavigationReduxMiddleware<AppState>(navigationMiddlewareKey, (state) => state.nav);
+
+    return createStore(reducers, { navigationMiddlewareKey }, applyMiddleware(epicMiddleware, reactNavigationMiddleware, logger));
 };
