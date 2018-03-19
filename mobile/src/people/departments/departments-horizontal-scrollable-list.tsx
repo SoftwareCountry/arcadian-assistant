@@ -4,11 +4,13 @@ import { AppState } from '../../reducers/app.reducer';
 import { connect, Dispatch, MapStateToProps, MapDispatchToPropsFunction } from 'react-redux';
 import { EmployeeCardWithAvatar } from '../employee-card-with-avatar';
 import { DepartmentsTree } from './departments-tree';
+import { DepartmentsTreeNode } from './departments-tree-node';
 import { Employee } from '../../reducers/organization/employee.model';
 import { PeopleActions, requestEmployeesForDepartment } from '../../reducers/people/people.action';
 
 interface DepartmentsHScrollableListProps {
-    departmentsTree: DepartmentsTree;
+    departmentsTree?: DepartmentsTree;
+    departmentsTreeNodes?: DepartmentsTreeNode[];
     employees: Employee[];
     subordinates?: Employee[];
 }
@@ -88,7 +90,8 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
             >
                 {
                     this.props.employees.map(employee => <EmployeeCardWithAvatar 
-                        employee={employee} 
+                        employee={employee}
+                        departmentAbbreviation={this.props.departmentsTreeNodes[this.props.employees.indexOf(employee)].departmentAbbreviation} 
                         leftNeighbor={(this.props.employees.indexOf(employee) > 0 && this.props.employees.length > 1) ? this.props.employees[this.props.employees.indexOf(employee) - 1] : null } 
                         rightNeighbor={(this.props.employees.indexOf(employee) < this.props.employees.length - 1 && this.props.employees.length > 1) ? this.props.employees[this.props.employees.indexOf(employee) + 1] : null} 
                         ref={(employeeCard) => { 
@@ -101,7 +104,12 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
                 }
                 
                 {
-                    (this.props.subordinates != null) ? <EmployeeCardWithAvatar employees={this.props.subordinates} /> : null
+                    (this.props.subordinates != null && this.props.departmentsTreeNodes[0].parent != null) ? 
+                        <EmployeeCardWithAvatar 
+                            employees={this.props.subordinates} 
+                            chiefId={this.props.departmentsTreeNodes[0].parent.chiefId} 
+                        /> 
+                            : null
                 }
             </Animated.ScrollView>
         </View>;

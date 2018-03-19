@@ -7,6 +7,8 @@ import { companyItemStyles as styles, companyTinyItemStyles as tinyStyles} from 
 
 interface EmployeeCardWithAvatarProps {
     employee?: Employee;
+    departmentAbbreviation?: string;
+    chiefId?: string;
     employees?: Employee[];
     leftNeighbor?: Employee;
     rightNeighbor?: Employee;
@@ -67,7 +69,7 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
         const calcultatedHeight = Dimensions.get('screen').height - 90 - 194;
         console.log('Calculated height: ' + calcultatedHeight);
         if (employees != null) {
-            const filteredEmployees = employees.filter((emp) => emp.employeeId !== '144');
+            const filteredEmployees = employees.filter((emp) => emp.employeeId !== this.props.chiefId);
             return (
                 <View style={{ backgroundColor: '#abfcba', width: Dimensions.get('window').width, height: calcultatedHeight, overflow: 'hidden', borderTopWidth: 1, borderColor: 'rgba(0, 0, 0, 0.15)' }}>
                 <FlatList
@@ -89,7 +91,7 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
                         <View style={styles.info}>
                             <StyledText style={styles.name}>{employee.name}</StyledText>
                             <StyledText style={styles.baseText}>{employee.position}</StyledText>
-                            <StyledText style={styles.depabbText}>DEP_ABB</StyledText>
+                            <StyledText style={styles.depabbText}>{this.props.departmentAbbreviation}</StyledText>
                         </View>
                     </View>
                     <Animated.View style={{ position: 'absolute', top: (90 - 44) * 0.5, left: (Dimensions.get('window').width - 44 * 0.5 ), opacity: neighboursAvatarsVisibility ? fadeInAnim : fadeOutAnim}}>
