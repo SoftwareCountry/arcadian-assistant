@@ -82,3 +82,17 @@ export interface CalendarSelection {
     single: SingleSelection;
     interval: IntervalSelection;
 }
+
+export class ExtractedIntervals {
+    public readonly vacation: IntervalModel;
+    public readonly dayoff: IntervalModel;
+    public readonly sickleave: IntervalModel;
+
+    constructor(intervals: IntervalModel[]) {
+        if (intervals) {
+            this.vacation = intervals.find(x => x.eventType === CalendarEventsType.Vacation);
+            this.dayoff = intervals.find(x => x.eventType === CalendarEventsType.Dayoff || x.eventType === CalendarEventsType.Workout);
+            this.sickleave = intervals.find(x => x.eventType === CalendarEventsType.Sickleave);
+        }
+    }
+}

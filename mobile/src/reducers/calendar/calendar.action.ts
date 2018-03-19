@@ -44,6 +44,13 @@ export interface CalendarSelectionMode {
 
 export const calendarSelectionMode = (selectionMode: CalendarSelectionModeType, color: string = null): CalendarSelectionMode => ({ type: 'CALENDAR-SELECTION-MODE', selectionMode, color });
 
+export interface IntervalsBySingleDaySelection {
+    type: 'INTERVALS-BY-SINGLE-DAY-SELECTION';
+}
+
+export const intervalsBySingleDaySelection = (): IntervalsBySingleDaySelection => ({ type: 'INTERVALS-BY-SINGLE-DAY-SELECTION' });
+
 export type CalendarActions = LoadCalendarEventsFinished | CalendarEventCreated |
     SelectCalendarDay | SelectCalendarMonth |
-    CalendarSelectionMode;
+    CalendarSelectionMode |
+    IntervalsBySingleDaySelection;

@@ -2,7 +2,7 @@ import { LoadUserEmployeeFinished } from '../user/user.action';
 import { ActionsObservable } from 'redux-observable';
 import { Observable } from 'rxjs/Observable';
 import { deserializeArray, deserialize } from 'santee-dcts';
-import { loadCalendarEventsFinished, calendarEventCreated, CalendarEventCreated } from './calendar.action';
+import { loadCalendarEventsFinished, calendarEventCreated, CalendarEventCreated, IntervalsBySingleDaySelection, CalendarSelectionMode, CalendarSelectionModeType, intervalsBySingleDaySelection, SelectCalendarDay, LoadCalendarEventsFinished } from './calendar.action';
 import { loadFailedError } from '../errors/errors.action';
 import { CalendarEvents, CalendarEventStatus, CalendarEventsType } from './calendar-events.model';
 import { ConfirmClaimSickLeave } from './sick-leave.action';
@@ -48,3 +48,9 @@ export const calendarEventsSavedEpic$ = (action$: ActionsObservable<ConfirmClaim
         })
         .map(x => calendarEventCreated(x))
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+
+export const intervalsBySingleDaySelectionEpic$ = (action$: ActionsObservable<SelectCalendarDay | LoadCalendarEventsFinished | CalendarEventCreated>) =>
+    action$.filter(x => x.type === 'SELECT-CALENDAR-DAY'
+            || x.type === 'LOAD-CALENDAR-EVENTS-FINISHED'
+            || x.type === 'CALENDAR-EVENT-CREATED')
+        .map(x => intervalsBySingleDaySelection());
