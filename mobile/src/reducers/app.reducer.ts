@@ -59,5 +59,5 @@ export const storeFactory = (oauthProcess: OAuthProcess, ) => {
 
     const reactNavigationMiddleware = createReactNavigationReduxMiddleware<AppState>(navigationMiddlewareKey, (state) => state.nav);
 
-    return createStore(reducers, { navigationMiddlewareKey }, applyMiddleware(epicMiddleware, reactNavigationMiddleware, logger));
+    return createStore(reducers, { navigationMiddlewareKey }, applyMiddleware(epicMiddleware, reactNavigationMiddleware));
 };
