@@ -6,17 +6,24 @@ export interface RefreshTokenStorage {
 }
 
 export class RefreshTokenFilesystemStorage implements RefreshTokenStorage {
-    private keyName = 'refresh-token';
+    private readonly keyName = 'refresh-token';
+    private refreshToken: string = null;
 
-    public getRefreshToken() {
+    public async getRefreshToken() {
+        if (this.refreshToken !== null) {
+            return this.refreshToken;
+        }
+
         return AsyncStorage.getItem(this.keyName);
     }
 
     public async storeToken(refreshToken: string | null) {
 
         if (!refreshToken) {
+            this.refreshToken = null;
             await AsyncStorage.removeItem(this.keyName);
         } else {
+            this.refreshToken = refreshToken;
             await AsyncStorage.setItem(this.keyName, refreshToken);
         }
     }

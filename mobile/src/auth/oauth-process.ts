@@ -22,8 +22,8 @@ export class OAuthProcess {
 
     private readonly authorizationCode: Subject<string> = new Subject<string>();
 
-    private readonly refreshTokenSource: Subject<string> = new Subject<string>();
-
+    private readonly refreshTokenSource: Subject<RefreshTokenRequest> = new Subject<RefreshTokenRequest>();
+ 
     private readonly authenticationStateSource = new BehaviorSubject<AuthenticationState>(notAuthenticatedInstance);
 
     private readonly accessCodeSubscription: Subscription;
@@ -50,10 +50,7 @@ export class OAuthProcess {
             .switchMap(code => this.accessCodeRequest.fetchNew(code));
 
         const refreshTokenObtainedAccessCodes = this.refreshTokenSource
-            .switchMap(token => 
-                Observable.concat(
-                    Observable.of(token),
-                    Observable.interval(this.refreshIntervalSeconds * 1000).map(() => token))) //emit token once, and continue reemitting it
+            .switchMap(request => this.getPeriodicalRefreshTokens(request))
             .switchMap(token => {
                 if (token === null) {
                     return Observable.of<TokenResponse>(null);
@@ -84,7 +81,7 @@ export class OAuthProcess {
         } else {
             console.debug('Using refresh token from the application storage');
             //request refresh            
-            this.refreshTokenSource.next(value);
+            this.refreshTokenSource.next( { immediateRefresh: true, tokenValue: value });
         }
     }
 
@@ -104,7 +101,7 @@ export class OAuthProcess {
         if (tokenResponse === null) {
             this.authenticationStateSource.next(notAuthenticatedInstance);
         } else {
-            this.refreshTokenSource.next(tokenResponse.refreshToken);
+            this.refreshTokenSource.next( { tokenValue: tokenResponse.refreshToken, immediateRefresh: false });
             this.authenticationStateSource.next({ isAuthenticated: true, jwtToken: tokenResponse.accessToken, refreshToken: tokenResponse.refreshToken });
         }
     }
@@ -133,4 +130,18 @@ export class OAuthProcess {
             console.error("Couldn't change refresh token in the storage", e);
         }
     }
+
+    private getPeriodicalRefreshTokens(request: RefreshTokenRequest) {
+        const scheduledEmition = Observable.interval(this.refreshIntervalSeconds * 1000).map(() => request.tokenValue);
+        if (request.immediateRefresh) {
+            return Observable.concat( Observable.of(request.tokenValue), scheduledEmition);
+        } else {
+            return scheduledEmition;
+        }
+    }
+}
+
+interface RefreshTokenRequest {
+    tokenValue: string;
+    immediateRefresh: boolean;
 }
