@@ -16,7 +16,7 @@ interface EmployeeDetailsProps {
 
 interface NavigationProps {
     navigation: {
-        state: NavigationRoute<{employee: Employee}> //TODO: this should be taken from redux state instead.
+        state: NavigationRoute //TODO: this should be taken from redux state instead.
     };
 }
 
@@ -26,7 +26,7 @@ const mapStateToProps = (state: AppState): EmployeeDetailsProps => ({
 
 export class EmployeeDetailsScreenImpl extends Component<EmployeeDetailsProps & NavigationProps> {
     public render() {
-        const employee = this.props.navigation.state.params.employee;
+        const employee = this.props.navigation.state.params.employee as Employee;
 
         const department = this.props.departments.find((d: Department) => d.departmentId === employee.departmentId);
 
