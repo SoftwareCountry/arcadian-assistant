@@ -20,9 +20,25 @@ namespace Arcadia.Assistant.Web.Controllers
         [Route("types/{type}/statuses")]
         [HttpGet]
         [ProducesResponseType(typeof(string[]), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetStatusesForType(string type)
         {
-            return this.Ok(CalendarEventStatuses.All);
+            if (string.Equals(type, CalendarEventTypes.Vacation))
+            {
+                return this.Ok(VacationStatuses.All);
+            }
+
+            if (string.Equals(type, CalendarEventTypes.Dayoff) || string.Equals(type, CalendarEventTypes.Workout))
+            {
+                return this.Ok(WorkHoursChangeStatuses.All);
+            }
+
+            if (string.Equals(type, CalendarEventTypes.Sickleave))
+            {
+                return this.Ok(SickLeaveStatuses.All);
+            }
+
+            return this.NotFound();
         }
     }
 }
