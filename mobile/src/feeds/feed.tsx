@@ -47,7 +47,7 @@ export class FeedListItem extends React.Component<FeedListItemProps, FeedListIte
             <TouchableHighlight>
                 <View style={styles.layout}>
                     <View style={imgContainerStyle} onLayout={this.onAvatarContainerLayout}>
-                        <TouchableOpacity onPress={() => this.props.onAvatarClicked(this.props.employee)} style={styles.touchableOpacityContainer}>
+                        <TouchableOpacity onPress = {this.onAvatarClicked} style={styles.touchableOpacityContainer}>
                             <Avatar photo={photo} />
                         </TouchableOpacity>
                     </View>
@@ -71,4 +71,5 @@ export class FeedListItem extends React.Component<FeedListItemProps, FeedListIte
             avatarHeight: Math.max(layout.height, layout.width)
         });
     }
+    private onAvatarClicked = () => this.props.onAvatarClicked(this.props.employee);
 }

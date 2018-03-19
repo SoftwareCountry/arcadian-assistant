@@ -19,7 +19,7 @@ export class EmployeesListItem extends React.Component<EmployeesListItemProps> {
         const photo = this.props.employee ? this.props.employee.photo : null;
 
         return (
-            <TouchableOpacity onPress = {() => this.props.onItemClicked(this.props.employee)}>
+            <TouchableOpacity onPress = {this.onItemClicked}>
                 <View style={styles.layout}>
                     <View style={styles.avatarContainer}>                
                         <Avatar photo={photo} style={StyleSheet.flatten(styles.avatarOuterFrame)} imageStyle={StyleSheet.flatten(styles.avatarImage)} />
@@ -32,4 +32,7 @@ export class EmployeesListItem extends React.Component<EmployeesListItemProps> {
              </TouchableOpacity>
         );
     }
+
+    private onItemClicked = () => this.props.onItemClicked(this.props.employee);
+
 }
