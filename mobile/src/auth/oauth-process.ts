@@ -50,14 +50,7 @@ export class OAuthProcess {
             .switchMap(code => this.accessCodeRequest.fetchNew(code));
 
         const refreshTokenObtainedAccessCodes = this.refreshTokenSource
-            .switchMap(request => {
-                const scheduledEmition = Observable.interval(this.refreshIntervalSeconds * 1000).map(() => request.tokenValue);
-                if (request.immediateRefresh) {
-                    return Observable.concat( Observable.of(request.tokenValue), scheduledEmition);
-                } else {
-                    return scheduledEmition;
-                }
-            })
+            .switchMap(request => this.getPeriodicalRefreshTokens(request))
             .switchMap(token => {
                 if (token === null) {
                     return Observable.of<TokenResponse>(null);
@@ -135,6 +128,15 @@ export class OAuthProcess {
             await this.refreshTokenStorage.storeToken(token);
         } catch (e) {
             console.error("Couldn't change refresh token in the storage", e);
+        }
+    }
+
+    private getPeriodicalRefreshTokens(request: RefreshTokenRequest) {
+        const scheduledEmition = Observable.interval(this.refreshIntervalSeconds * 1000).map(() => request.tokenValue);
+        if (request.immediateRefresh) {
+            return Observable.concat( Observable.of(request.tokenValue), scheduledEmition);
+        } else {
+            return scheduledEmition;
         }
     }
 }
