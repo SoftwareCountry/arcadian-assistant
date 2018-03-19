@@ -15,7 +15,7 @@
         public DatesPeriodModel Dates { get; set; }
 
         [Required]
-        [CalendarEventStatusValidator]
+        //[CalendarEventStatusValidator] TODO: Fix that
         public string Status { get; set; }
 
         public CalendarEventsModel()
