@@ -2,6 +2,13 @@ import { CalendarEvents } from './calendar-events.model';
 import { DayModel } from './calendar.model';
 import { SickLeaveActions } from './sick-leave.action';
 
+export interface LoadCalendarEvents {
+    type: 'LOAD-CALENDAR-EVENTS';
+    employeeId: string;
+}
+
+export const loadCalendarEvents = (employeeId: string): LoadCalendarEvents => ({ type: 'LOAD-CALENDAR-EVENTS', employeeId });
+
 export interface LoadCalendarEventsFinished {
     type: 'LOAD-CALENDAR-EVENTS-FINISHED';
     calendarEvents: CalendarEvents[];
