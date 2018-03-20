@@ -22,7 +22,9 @@
             {
                 var title = employee.Metadata.Name;
                 var msg = $"{employee.Metadata.Name} turns {employee.Metadata.Age}! Happy Birthday!";
-                this.feed.Tell(new FeedActor.PostMessage(new Message(Guid.NewGuid(), employee.Metadata.EmployeeId, title, msg, DateTimeOffset.Now)));
+                var hd = employee.Metadata.BirthDate.HasValue ? employee.Metadata.BirthDate.Value : DateTime.Now;
+                var datePosted = new DateTimeOffset(DateTime.Now.Year, hd.Month, hd.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second, new TimeSpan(0));
+                this.feed.Tell(new FeedActor.PostMessage(new Message(Guid.NewGuid(), employee.Metadata.EmployeeId, title, msg, datePosted)));
             }
         }
 

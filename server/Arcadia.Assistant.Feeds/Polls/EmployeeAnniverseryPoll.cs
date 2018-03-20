@@ -22,7 +22,9 @@
             {
                 var title = employee.Metadata.Name;
                 var msg = $"Congratulations with Anniversery! {employee.Metadata.YearsServed} years served!";
-                this.feed.Tell(new FeedActor.PostMessage(new Message(Guid.NewGuid(), employee.Metadata.EmployeeId, title, msg, DateTimeOffset.Now)));
+                var hd = employee.Metadata.HireDate;
+                var datePosted = new DateTimeOffset(DateTime.Now.Year, hd.Month, hd.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second, new TimeSpan(0));
+                this.feed.Tell(new FeedActor.PostMessage(new Message(Guid.NewGuid(), employee.Metadata.EmployeeId, title, msg, datePosted)));
             }
         }
 
