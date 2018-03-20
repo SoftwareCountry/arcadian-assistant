@@ -6,22 +6,27 @@ import { EmployeeCardWithAvatar } from '../employee-card-with-avatar';
 import { DepartmentsTree } from './departments-tree';
 import { DepartmentsTreeNode } from './departments-tree-node';
 import { Employee } from '../../reducers/organization/employee.model';
-import { PeopleActions, requestEmployeesForDepartment } from '../../reducers/people/people.action';
+import { PeopleActions, requestEmployeesForDepartment, updateDepartmentIdsTree } from '../../reducers/people/people.action';
 
 interface DepartmentsHScrollableListProps {
-    departmentsTree?: DepartmentsTree;
+    departmentsTree: DepartmentsTree;
+    treeLevel?: number;
     departmentsTreeNodes?: DepartmentsTreeNode[];
-    employees: Employee[];
+    employees?: Employee[];
     subordinates?: Employee[];
 }
 
 interface DepartmentsHScrollableListDispatchProps {
     requestEmployeesForDepartment: (departmentId: string) => void;
+    updateDepartmentIdsTree: (index: number, departmentId: string) => void;
 }
 
 const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
     requestEmployeesForDepartment: (departmentId: string) => { 
         dispatch(requestEmployeesForDepartment(departmentId)); 
+    },
+    updateDepartmentIdsTree: (index: number, departmentId: string) => { 
+        dispatch(updateDepartmentIdsTree(index, departmentId)); 
     },
 });
 
@@ -49,12 +54,9 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
         ).start();
     } */
 
-    public componentWillMount() {
-        this.employeeCards = [];
-    }
-
     public componentDidMount() {
         // this.animate.bind(this, Easing.bounce);
+        this.props.updateDepartmentIdsTree(this.props.treeLevel, this.props.departmentsTreeNodes[0].departmentId);
     }
 
     public onMomentumScrollEnd(event: any) {
@@ -63,9 +65,11 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
             var page = Math.round(offset.x / Dimensions.get('window').width) + 1;
             if (page > this.employeeCards.length) {
                 this.props.requestEmployeesForDepartment(this.props.departmentsTree.root.departmentId);
+                //this.props.requestEmployeesForDepartment('12');
             } else {
                 const visibleCard: EmployeeCardWithAvatar = this.employeeCards[page - 1];
                 visibleCard.revealNeighboursAvatars(true);
+                this.props.updateDepartmentIdsTree(this.props.treeLevel, visibleCard.props.employee.departmentId);
             }
         }
     }
@@ -78,7 +82,7 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
 
     public render() {
         this.employeeCards = [];
-        const isScrollEnabled = this.props.employees.length > 1;
+        const isScrollEnabled = this.props.employees != null ? this.props.employees.length > 1 : false;
 
         return <View>
             <Animated.ScrollView 
@@ -89,7 +93,7 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
                 onScrollBeginDrag={this.onScrollBeginDrag.bind(this)}
             >
                 {
-                    this.props.employees.map(employee => <EmployeeCardWithAvatar 
+                    this.props.employees != null ? this.props.employees.map(employee => <EmployeeCardWithAvatar 
                         employee={employee}
                         departmentAbbreviation={this.props.departmentsTreeNodes[this.props.employees.indexOf(employee)].departmentAbbreviation} 
                         leftNeighbor={(this.props.employees.indexOf(employee) > 0 && this.props.employees.length > 1) ? this.props.employees[this.props.employees.indexOf(employee) - 1] : null } 
@@ -100,14 +104,15 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
                             }
                         }} 
                         key={employee.employeeId} 
-                    />)
+                    />) : null
                 }
                 
                 {
-                    (this.props.subordinates != null && this.props.departmentsTreeNodes[0].parent != null) ? 
+                    // (this.props.subordinates != null && this.props.departmentsTreeNodes[0].parent != null) ? 
+                    (this.props.subordinates != null) ? 
                         <EmployeeCardWithAvatar 
                             employees={this.props.subordinates} 
-                            chiefId={this.props.departmentsTreeNodes[0].parent.chiefId} 
+                            chiefId={this.props.departmentsTreeNodes != null ? this.props.departmentsTreeNodes[0].parent.chiefId : null} 
                         /> 
                             : null
                 }

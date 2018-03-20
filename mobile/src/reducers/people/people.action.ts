@@ -9,4 +9,12 @@ export interface RequestEmployeesForDepartment {
 
 export const requestEmployeesForDepartment = (departmentId: string): RequestEmployeesForDepartment => ({ type: 'REQUEST-EMPLOYEES-FOR-DEPARTMENT', departmentId });
 
-export type PeopleActions = RequestEmployeesForDepartment;
+export interface UpdateDepartmentIdsTree {
+    type: 'UPDATE-DEPARTMENT-IDS-TREE';
+    index: number;
+    departmentId: string;
+}
+
+export const updateDepartmentIdsTree = (index: number, departmentId: string): UpdateDepartmentIdsTree => ({ type: 'UPDATE-DEPARTMENT-IDS-TREE', index, departmentId });
+
+export type PeopleActions = RequestEmployeesForDepartment | UpdateDepartmentIdsTree;

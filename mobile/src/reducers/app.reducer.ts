@@ -25,6 +25,7 @@ export interface AppState {
     userInfo: UserInfoState;
     feeds: FeedsState;
     calendar: CalendarState;
+    people: PeopleState;
 }
 
 const rootEpic = combineEpics(helpdeskEpics as any, organizationEpics as any, errorsEpics as any, userEpics as any, feedsEpics as any, calendarEpics as any, peopleEpics as any);

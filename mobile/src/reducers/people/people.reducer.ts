@@ -13,16 +13,30 @@ import { EmployeeMap } from '../organization/employees.reducer';
 
 export interface PeopleState {
     departmentId: string;
+    departmentIdsBranch: [string];
 }
 
 const initState: PeopleState = {
     departmentId: null,
+    departmentIdsBranch: null
 };
 
 export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions | NavigationAction) => {
     switch (action.type) {
         case 'REQUEST-EMPLOYEES-FOR-DEPARTMENT':
             return state;
+        case 'UPDATE-DEPARTMENT-IDS-TREE':
+            var depIds = state.departmentIdsBranch;
+            if (depIds === null) {
+                depIds = [''];
+            }
+
+            if (depIds.length - 1 < action.index) {
+                depIds.push(action.departmentId);
+            } else {
+                depIds[action.index] = action.departmentId;
+            }
+            return {...state, departmentIdsBranch: depIds};
         default:
             return state;
     }
