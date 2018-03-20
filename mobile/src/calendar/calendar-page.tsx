@@ -185,17 +185,17 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
         const color = CalendarEventsColor.getColor(interval.calendarEvent.type) || '#fff';
 
         switch (interval.intervalType) {
-            case 'startInterval':
+            case IntervalType.StartInterval:
                 return <StartInterval key={elementKey} size={this.state.weekHeight} color={color} />;
-            case 'endInterval':
+            case IntervalType.EndInterval:
                 return <EndInterval key={elementKey} size={this.state.weekHeight} color={color} />;
-            case 'interval':
+            case IntervalType.Interval:
                 return <Interval key={elementKey} size={this.state.weekHeight} color={color} />;
-            case 'intervalFullBoundary':
+            case IntervalType.IntervalFullBoundary:
                 return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'full'} />;
-            case 'intervalLeftBoundary':
+            case IntervalType.IntervalLeftBoundary:
                 return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'left'} />;
-            case 'intervalRightBoundary':
+            case IntervalType.IntervalRightBoundary:
                 return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'right'} />;
             default:
                 return null;

@@ -28,7 +28,7 @@ export class CalendarIntervalsBuilder {
 
             if (start.isSame(calendarEvent.dates.endDate, 'day')) {
                 intervalsModel.set(start, {
-                    intervalType: 'intervalFullBoundary',
+                    intervalType: IntervalType.IntervalFullBoundary,
                     calendarEvent: calendarEvent,
                     boundary: true
                 });
@@ -36,12 +36,12 @@ export class CalendarIntervalsBuilder {
             }
 
             while (start.isSameOrBefore(calendarEvent.dates.endDate, 'day')) {
-                let intervalType: IntervalType = 'interval';
+                let intervalType: IntervalType = IntervalType.Interval;
 
                 if (start.isSame(calendarEvent.dates.startDate)) {
-                    intervalType = 'startInterval';
+                    intervalType = IntervalType.StartInterval;
                 } else if (start.isSame(calendarEvent.dates.endDate)) {
-                    intervalType = 'endInterval';
+                    intervalType = IntervalType.EndInterval;
                 }
 
                 intervalsModel.set(start, {
@@ -71,15 +71,15 @@ export class CalendarIntervalsBuilder {
         const { startWorkingHour, finishWorkingHour } = calendarEvent.dates;
 
         if (0 <= startWorkingHour && finishWorkingHour <= 4) {
-            return 'intervalLeftBoundary';
+            return IntervalType.IntervalLeftBoundary;
         }
 
         if (4 <= startWorkingHour && finishWorkingHour <= 8) {
-            return 'intervalRightBoundary';
+            return IntervalType.IntervalRightBoundary;
         }
 
         if (0 <= startWorkingHour && finishWorkingHour <= 8) {
-            return 'intervalFullBoundary';
+            return IntervalType.IntervalFullBoundary;
         }
 
         return null;

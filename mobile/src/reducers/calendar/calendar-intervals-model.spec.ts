@@ -1,4 +1,4 @@
-import { IntervalsModel, IntervalModel } from './calendar.model';
+import { IntervalsModel, IntervalModel, IntervalType } from './calendar.model';
 import moment from 'moment';
 import { CalendarEventsType, CalendarEvents, DatesInterval } from './calendar-events.model';
 import { Moment } from 'moment';
@@ -27,7 +27,7 @@ describe('IntervalsModel', () => {
             const intervalsModel = new IntervalsModel();
 
             const intervalModel: IntervalModel = {
-                intervalType: 'startInterval',
+                intervalType: IntervalType.StartInterval,
                 calendarEvent: calendarEvent,
                 boundary: true
             };
@@ -45,7 +45,7 @@ describe('IntervalsModel', () => {
             const key = moment();
 
             const intervalModel: IntervalModel = {
-                intervalType: 'startInterval',
+                intervalType: IntervalType.StartInterval,
                 calendarEvent: calendarEvent,
                 boundary: true
             };
@@ -55,7 +55,7 @@ describe('IntervalsModel', () => {
             const existingArray = intervalsModel.get(key);
 
             const intervalModel2: IntervalModel = {
-                intervalType: 'startInterval',
+                intervalType: IntervalType.StartInterval,
                 calendarEvent: calendarEvent,
                 boundary: true
             };
@@ -79,7 +79,7 @@ describe('IntervalsModel', () => {
     it('should get elements by key', () => {
         const intervalsModel = new IntervalsModel();
         const intervalModel: IntervalModel = {
-            intervalType: 'startInterval',
+            intervalType: IntervalType.StartInterval,
             calendarEvent: calendarEvent,
             boundary: true
         };
@@ -108,19 +108,19 @@ describe('IntervalsModel', () => {
             intervalsModel = new IntervalsModel();
 
             const startInterval: IntervalModel = {
-                intervalType: 'startInterval',
+                intervalType: IntervalType.StartInterval,
                 calendarEvent: copiedCalendarEvent,
                 boundary: false
             };
 
             const interval: IntervalModel = {
-                intervalType: 'interval',
+                intervalType: IntervalType.Interval,
                 calendarEvent: copiedCalendarEvent,
                 boundary: false
             };
 
             const endInterval: IntervalModel = {
-                intervalType: 'endInterval',
+                intervalType: IntervalType.EndInterval,
                 calendarEvent: copiedCalendarEvent,
                 boundary: false
             };
