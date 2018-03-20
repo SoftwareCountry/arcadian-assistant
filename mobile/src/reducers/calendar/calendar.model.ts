@@ -18,7 +18,6 @@ export interface IntervalModel {
     intervalType: IntervalType;
     calendarEvent: CalendarEvents;
     boundary: boolean;
-    draft: boolean;
 }
 
 type IntervalsModelDictionary = {

@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
 import { calendarIntervalStyles, intervalMargin } from './styles';
-import { View, StyleSheet, PixelRatio } from 'react-native';
+import { View, StyleSheet, PixelRatio, ViewStyle } from 'react-native';
 
-export type IntervalProps = { size: number, color: string, draft: boolean };
+export interface IntervalProps { 
+    size: number; 
+    color: string; 
+    style?: ViewStyle;
+}
 
 interface HalfIntervalProps extends IntervalProps {
     align: 'left' | 'right';
@@ -29,9 +33,7 @@ export class HalfInterval extends Component<HalfIntervalProps> {
             this.props.align === 'right'
                 ? { flexDirection: 'row-reverse' }
                 : {},
-            this.props.draft
-                ? calendarIntervalStyles.draft
-                : {}
+            this.props.style
         ]);
 
         const circleStyles = StyleSheet.flatten([
@@ -68,9 +70,9 @@ export class HalfInterval extends Component<HalfIntervalProps> {
     }
 }
 
-export const StartInterval = (props: IntervalProps) => <HalfInterval size={props.size} align={'left'} color={props.color} draft={props.draft} />;
+export const StartInterval = (props: IntervalProps) => <HalfInterval size={props.size} align={'left'} color={props.color} style={props.style} />;
 
-export const EndInterval = (props: IntervalProps) => <HalfInterval size={props.size} align={'right'} color={props.color} draft={props.draft} />;
+export const EndInterval = (props: IntervalProps) => <HalfInterval size={props.size} align={'right'} color={props.color} style={props.style} />;
 
 export const Interval = (props: IntervalProps) => {
     const margin = (props.size * intervalMargin);
@@ -79,9 +81,7 @@ export const Interval = (props: IntervalProps) => {
     const containerStyles = StyleSheet.flatten([
         calendarIntervalStyles.container,
         { justifyContent: 'center' },
-        props.draft
-            ? calendarIntervalStyles.draft
-            : {},
+        props.style
     ]);
 
     const intervalStyles = StyleSheet.flatten([

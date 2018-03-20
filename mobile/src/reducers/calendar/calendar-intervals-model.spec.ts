@@ -29,8 +29,7 @@ describe('IntervalsModel', () => {
             const intervalModel: IntervalModel = {
                 intervalType: 'startInterval',
                 calendarEvent: calendarEvent,
-                boundary: true,
-                draft: false
+                boundary: true
             };
 
             intervalsModel.set(date, intervalModel);
@@ -48,8 +47,7 @@ describe('IntervalsModel', () => {
             const intervalModel: IntervalModel = {
                 intervalType: 'startInterval',
                 calendarEvent: calendarEvent,
-                boundary: true,
-                draft: false
+                boundary: true
             };
 
             intervalsModel.set(key, intervalModel);
@@ -59,8 +57,7 @@ describe('IntervalsModel', () => {
             const intervalModel2: IntervalModel = {
                 intervalType: 'startInterval',
                 calendarEvent: calendarEvent,
-                boundary: true,
-                draft: false
+                boundary: true
             };
 
             intervalsModel.set(key, intervalModel2);
@@ -84,8 +81,7 @@ describe('IntervalsModel', () => {
         const intervalModel: IntervalModel = {
             intervalType: 'startInterval',
             calendarEvent: calendarEvent,
-            boundary: true,
-            draft: false
+            boundary: true
         };
 
         intervalsModel.set(date, intervalModel);
@@ -114,22 +110,19 @@ describe('IntervalsModel', () => {
             const startInterval: IntervalModel = {
                 intervalType: 'startInterval',
                 calendarEvent: copiedCalendarEvent,
-                boundary: false,
-                draft: false
+                boundary: false
             };
 
             const interval: IntervalModel = {
                 intervalType: 'interval',
                 calendarEvent: copiedCalendarEvent,
-                boundary: false,
-                draft: false
+                boundary: false
             };
 
             const endInterval: IntervalModel = {
                 intervalType: 'endInterval',
                 calendarEvent: copiedCalendarEvent,
-                boundary: false,
-                draft: false
+                boundary: false
             };
 
             intervalsModel.set(startDate, startInterval);

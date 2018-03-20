@@ -167,18 +167,18 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
         }
 
         if (startDay.date.isSame(endDay.date, 'day')) {
-            return <IntervalBoundary size={this.state.weekHeight} color={color} boundary={'full'} draft={true} />;
+            return <IntervalBoundary size={this.state.weekHeight} color={color} boundary={'full'} style={calendarIntervalStyles.selection} />;
         }
 
         if (day.date.isSame(startDay.date, 'day')) {
-            return <StartInterval size={this.state.weekHeight} color={color} draft={true} />;
+            return <StartInterval size={this.state.weekHeight} color={color} style={calendarIntervalStyles.selection} />;
         }
 
         if (day.date.isSame(endDay.date, 'day')) {
-            return <EndInterval size={this.state.weekHeight} color={color} draft={true} />;
+            return <EndInterval size={this.state.weekHeight} color={color} style={calendarIntervalStyles.selection} />;
         }
 
-        return <Interval size={this.state.weekHeight} color={color} draft={true} />;
+        return <Interval size={this.state.weekHeight} color={color} style={calendarIntervalStyles.selection} />;
     }
 
     private renderInterval(interval: IntervalModel, elementKey: number): JSX.Element | null {
@@ -186,17 +186,17 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
 
         switch (interval.intervalType) {
             case 'startInterval':
-                return <StartInterval key={elementKey} size={this.state.weekHeight} color={color} draft={interval.draft} />;
+                return <StartInterval key={elementKey} size={this.state.weekHeight} color={color} />;
             case 'endInterval':
-                return <EndInterval key={elementKey} size={this.state.weekHeight} color={color} draft={interval.draft} />;
+                return <EndInterval key={elementKey} size={this.state.weekHeight} color={color} />;
             case 'interval':
-                return <Interval key={elementKey} size={this.state.weekHeight} color={color} draft={interval.draft} />;
+                return <Interval key={elementKey} size={this.state.weekHeight} color={color} />;
             case 'intervalFullBoundary':
-                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'full'} draft={interval.draft} />;
+                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'full'} />;
             case 'intervalLeftBoundary':
-                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'left'} draft={interval.draft} />;
+                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'left'} />;
             case 'intervalRightBoundary':
-                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'right'} draft={interval.draft} />;
+                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'right'} />;
             default:
                 return null;
         }
