@@ -11,7 +11,7 @@ export enum CalendarEventsType {
 
 export enum CalendarEventStatus {
     Requested = 'Requested',
-    Approved = 'Approved',
+    Completed = 'Completed',
     Cancelled = 'Cancelled'
 }
 
