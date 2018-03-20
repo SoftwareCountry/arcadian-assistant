@@ -29,12 +29,12 @@ describe('calendar events reducer', () => {
             let intervals = state.intervals.get(calendarEvent.dates.startDate);
 
             expect(intervals.length).toBe(1);
-            expect(intervals[0].eventType).toBe(calendarEvent.type);
+            expect(intervals[0].calendarEvent.type).toBe(calendarEvent.type);
 
             intervals = state.intervals.get(calendarEvent.dates.endDate);
 
             expect(intervals.length).toBe(1);
-            expect(intervals[0].eventType).toBe(calendarEvent.type);
+            expect(intervals[0].calendarEvent.type).toBe(calendarEvent.type);
         });
 
         it('should enable calendar actions group', () => {
@@ -66,12 +66,12 @@ describe('calendar events reducer', () => {
             let intervals = state.intervals.get(calendarEvent.dates.startDate);
 
             expect(intervals.length).toBe(1);
-            expect(intervals[0].eventType).toBe(calendarEvent.type);
+            expect(intervals[0].calendarEvent.type).toBe(calendarEvent.type);
 
             intervals = state.intervals.get(calendarEvent.dates.endDate);
 
             expect(intervals.length).toBe(1);
-            expect(intervals[0].eventType).toBe(calendarEvent.type);
+            expect(intervals[0].calendarEvent.type).toBe(calendarEvent.type);
         });
     });
 

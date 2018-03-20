@@ -182,7 +182,7 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
     }
 
     private renderInterval(interval: IntervalModel, elementKey: number): JSX.Element | null {
-        const color = CalendarEventsColor.getColor(interval.eventType) || '#fff';
+        const color = CalendarEventsColor.getColor(interval.calendarEvent.type) || '#fff';
 
         switch (interval.intervalType) {
             case 'startInterval':

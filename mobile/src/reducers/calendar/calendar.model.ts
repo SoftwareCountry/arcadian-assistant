@@ -16,9 +16,7 @@ export type IntervalType = 'startInterval' | 'interval' | 'endInterval' | 'inter
 
 export interface IntervalModel {
     intervalType: IntervalType;
-    eventType: CalendarEventsType;
-    startDate: moment.Moment;
-    endDate: moment.Moment;
+    calendarEvent: CalendarEvents;
     boundary: boolean;
     draft: boolean;
 }
@@ -90,9 +88,9 @@ export class ExtractedIntervals {
 
     constructor(intervals: IntervalModel[]) {
         if (intervals) {
-            this.vacation = intervals.find(x => x.eventType === CalendarEventsType.Vacation);
-            this.dayoff = intervals.find(x => x.eventType === CalendarEventsType.Dayoff || x.eventType === CalendarEventsType.Workout);
-            this.sickleave = intervals.find(x => x.eventType === CalendarEventsType.Sickleave);
+            this.vacation = intervals.find(x => x.calendarEvent.type === CalendarEventsType.Vacation);
+            this.dayoff = intervals.find(x => x.calendarEvent.type === CalendarEventsType.Dayoff || x.calendarEvent.type === CalendarEventsType.Workout);
+            this.sickleave = intervals.find(x => x.calendarEvent.type === CalendarEventsType.Sickleave);
         }
     }
 }

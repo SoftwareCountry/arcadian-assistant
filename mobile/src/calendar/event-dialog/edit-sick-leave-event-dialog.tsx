@@ -7,15 +7,19 @@ import { connect } from 'react-redux';
 import { EventDialogActions, closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { DayModel, IntervalModel, ExtractedIntervals } from '../../reducers/calendar/calendar.model';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
-import { CalendarEventsType } from '../../reducers/calendar/calendar-events.model';
+import { CalendarEventsType, CalendarEvents } from '../../reducers/calendar/calendar-events.model';
+import { completeSickLeave } from '../../reducers/calendar/sick-leave.action';
+import { Employee } from '../../reducers/organization/employee.model';
+import { Moment } from 'moment';
 
 interface EditSickLeaveEventDialogDispatchProps {
     cancelDialog: () => void;
-    confirmStartDate: () => void;
+    completeSickLeave: (employeeId: string, calendarEvent: CalendarEvents) => void;
 }
 
 interface EditSickLeaveEventDialogProps {
-    editedIntervals: ExtractedIntervals;
+    intervals: ExtractedIntervals;
+    userEmployee: Employee;
 }
 
 class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogProps & EditSickLeaveEventDialogDispatchProps> {
@@ -36,7 +40,9 @@ class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogPro
     }
 
     private acceptAction = () => {
-        this.props.confirmStartDate();
+        const { userEmployee, intervals } = this.props;
+
+        this.props.completeSickLeave(userEmployee.employeeId, intervals.sickleave.calendarEvent);
     }
 
     public get text(): string {
@@ -46,21 +52,22 @@ class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogPro
     }
 
     private getSickLeaveStartDate(): string {
-        if (!this.props.editedIntervals.sickleave) {
+        if (!this.props.intervals.sickleave) {
             return null;
         }
 
-        return this.props.editedIntervals.sickleave.startDate.format(eventDialogTextDateFormat);
+        return this.props.intervals.sickleave.calendarEvent.dates.startDate.format(eventDialogTextDateFormat);
     }
 }
 
 const mapStateToProps = (state: AppState): EditSickLeaveEventDialogProps => ({
-    editedIntervals: state.calendar.calendarEvents.intervalsBySingleDaySelection
+    intervals: state.calendar.calendarEvents.intervalsBySingleDaySelection,
+    userEmployee: state.userInfo.employee
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): EditSickLeaveEventDialogDispatchProps => ({
     cancelDialog: () => { dispatch(closeEventDialog()); },
-    confirmStartDate: () => {  }
+    completeSickLeave: (employeeId: string, calendarEvent: CalendarEvents) => { dispatch(completeSickLeave(employeeId, calendarEvent)); }
 });
 
 export const EditSickLeaveEventDialog = connect(mapStateToProps, mapDispatchToProps)(EditSickLeaveEventDialogImpl);

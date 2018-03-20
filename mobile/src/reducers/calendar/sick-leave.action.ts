@@ -13,9 +13,11 @@ export const confirmSickLeave = (employeeId: string, startDate: Moment, endDate:
 
 export interface CompleteSickLeave {
     type: 'COMPLETE-SICK-LEAVE';
+    employeeId: string;
+    calendarEvent: CalendarEvents;
 }
 
-export const completeSickLeave = (): CompleteSickLeave => ({ type: 'COMPLETE-SICK-LEAVE' });
+export const completeSickLeave = (employeeId: string, calendarEvent: CalendarEvents): CompleteSickLeave => ({ type: 'COMPLETE-SICK-LEAVE', employeeId, calendarEvent });
 
 export interface ConfirmProlongSickLeave {
     type: 'CONFIRM-PROLONG-SICK-LEAVE';

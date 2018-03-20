@@ -47,9 +47,7 @@ export class CalendarIntervalsBuilder {
             if (start.isSame(calendarEvent.dates.endDate, 'day')) {
                 intervalsModel.set(start, {
                     intervalType: 'intervalFullBoundary',
-                    eventType: calendarEvent.type,
-                    startDate: calendarEvent.dates.startDate,
-                    endDate: calendarEvent.dates.endDate,
+                    calendarEvent: calendarEvent,
                     boundary: true,
                     draft: draft
                 });
@@ -67,9 +65,7 @@ export class CalendarIntervalsBuilder {
 
                 intervalsModel.set(start, {
                     intervalType: intervalType,
-                    eventType: calendarEvent.type,
-                    startDate: calendarEvent.dates.startDate,
-                    endDate: calendarEvent.dates.endDate,
+                    calendarEvent: calendarEvent,
                     boundary: false,
                     draft: draft
                 });
@@ -86,9 +82,7 @@ export class CalendarIntervalsBuilder {
 
         intervalsModel.set(keyDate, {
             intervalType: intervalType,
-            eventType: calendarEvent.type,
-            startDate: calendarEvent.dates.startDate,
-            endDate: calendarEvent.dates.endDate,
+            calendarEvent: calendarEvent,
             boundary: true,
             draft: draft
         });
