@@ -83,14 +83,14 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
         this.employeeCards = [];
         
         const { headDepartment } = this.props;
-        const employees = headDepartment != null && headDepartment.children != null ? headDepartment.children.map(child => child.head) : null;
+        const subDepartments = headDepartment != null && headDepartment.children != null ? headDepartment.children : null;
         const subordinates = headDepartment != null && headDepartment.subordinates != null ? headDepartment.subordinates : null;
 
         if (subordinates != null) {
             // this.props.requestEmployeesForDepartment(this.props.headDepartment.departmentId);
         }
         
-        const isScrollEnabled = employees != null ? employees.length > 1 : false;
+        const isScrollEnabled = subDepartments != null ? subDepartments.length > 1 : false;
 
         return <View>
             <Animated.ScrollView 
@@ -101,17 +101,17 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
                 onScrollBeginDrag={this.onScrollBeginDrag.bind(this)}
             >
                 {
-                    employees != null ? employees.map(employee => <EmployeeCardWithAvatar 
-                        employee={employee}
-                        departmentAbbreviation={headDepartment.children[employees.indexOf(employee)].departmentAbbreviation} 
-                        leftNeighbor={(employees.indexOf(employee) > 0 && employees.length > 1) ? employees[employees.indexOf(employee) - 1] : null } 
-                        rightNeighbor={(employees.indexOf(employee) < employees.length - 1 && employees.length > 1) ? employees[employees.indexOf(employee) + 1] : null} 
+                    subDepartments != null ? subDepartments.map(subDepartment => <EmployeeCardWithAvatar 
+                        employee={subDepartment.head}
+                        departmentAbbreviation={subDepartment.departmentAbbreviation} 
+                        leftNeighbor={(subDepartments.indexOf(subDepartment) > 0 && subDepartments.length > 1) ? subDepartments[subDepartments.indexOf(subDepartment) - 1].head : null } 
+                        rightNeighbor={(subDepartments.indexOf(subDepartment) < subDepartments.length - 1 && subDepartments.length > 1) ? subDepartments[subDepartments.indexOf(subDepartment) + 1].head : null} 
                         ref={(employeeCard) => { 
                             if ( employeeCard != null ) {
                                 this.employeeCards.push(employeeCard);
                             }
                         }} 
-                        key={employee.employeeId} 
+                        key={subDepartment.departmentId} 
                     />) : null
                 }
                 
