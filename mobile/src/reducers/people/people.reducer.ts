@@ -13,7 +13,7 @@ import { EmployeeMap } from '../organization/employees.reducer';
 
 export interface PeopleState {
     departmentId: string;
-    departmentIdsBranch: [string];
+    departmentIdsBranch: string[];
 }
 
 const initState: PeopleState = {
@@ -35,6 +35,7 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
                 depIds.push(action.departmentId);
             } else {
                 depIds[action.index] = action.departmentId;
+                depIds = depIds.slice(0, action.index + 1);
             }
             return {...state, departmentIdsBranch: depIds};
         default:

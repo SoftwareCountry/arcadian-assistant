@@ -18,7 +18,7 @@ interface PeopleCompanyProps {
     routeName: string;
     headDepartment: Department;
     departmentsTree: DepartmentsTree;
-    departmentIdsBranch?: [string];
+    departmentIdsBranch?: string[];
 }
 
 const mapStateToProps = (state: AppState): PeopleCompanyProps => ({
@@ -93,8 +93,6 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps> {
                 treeLevel={0}
                 departmentsTreeNodes={this.props.departmentsTree.root.children} 
                 headDepartment={this.props.departmentsTree.root}
-                employees={this.props.departmentsTree.root.children.map(a => a.head)} 
-                subordinates={this.props.departmentsTree.root.subordinates.length > 0 ? this.props.departmentsTree.root.subordinates : null} 
             />
 
             {
@@ -103,8 +101,6 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps> {
                     treeLevel={1}
                     departmentsTreeNodes={this.props.departmentsTree.root.children[indexFor3Level].children}
                     headDepartment={this.props.departmentsTree.root.children[indexFor3Level]}
-                    employees={this.props.departmentsTree.root.children[indexFor3Level].children != null ? this.props.departmentsTree.root.children[indexFor3Level].children.map(a => a.head) : null}
-                    subordinates={this.props.departmentsTree.root.children[indexFor3Level].subordinates.length > 0 ? this.props.departmentsTree.root.children[indexFor3Level].subordinates : null}
                 /> : null
             }
         </ScrollView>;

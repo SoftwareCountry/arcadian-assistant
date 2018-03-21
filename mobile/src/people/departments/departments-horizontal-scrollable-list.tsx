@@ -12,9 +12,7 @@ interface DepartmentsHScrollableListProps {
     departmentsTree: DepartmentsTree;
     treeLevel?: number;
     departmentsTreeNodes?: DepartmentsTreeNode[];
-    employees?: Employee[];
-    subordinates?: Employee[];
-    headDepartment?: DepartmentsTreeNode;
+    headDepartment: DepartmentsTreeNode;
 }
 
 interface DepartmentsHScrollableListDispatchProps {
@@ -65,12 +63,12 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
         if (offset) {
             var page = Math.round(offset.x / Dimensions.get('window').width) + 1;
             if (page > this.employeeCards.length) {
-                this.props.requestEmployeesForDepartment(this.props.departmentsTree.root.departmentId);
-                //this.props.requestEmployeesForDepartment('12');
+                this.props.requestEmployeesForDepartment(this.props.headDepartment.departmentId);
             } else {
                 const visibleCard: EmployeeCardWithAvatar = this.employeeCards[page - 1];
                 visibleCard.revealNeighboursAvatars(true);
-                this.props.updateDepartmentIdsTree(this.props.treeLevel, visibleCard.props.employee.departmentId);
+                const visibleDepartment = this.props.headDepartment.children[page - 1];
+                this.props.updateDepartmentIdsTree(this.props.treeLevel, visibleDepartment.departmentId);
             }
         }
     }
@@ -83,12 +81,17 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
 
     public render() {
         this.employeeCards = [];
-        const isScrollEnabled = this.props.employees != null ? this.props.employees.length > 1 : false;
-
+        
         const { headDepartment } = this.props;
         const employees = headDepartment != null && headDepartment.children != null ? headDepartment.children.map(child => child.head) : null;
         const subordinates = headDepartment != null && headDepartment.subordinates != null ? headDepartment.subordinates : null;
+
+        if (subordinates != null) {
+            // this.props.requestEmployeesForDepartment(this.props.headDepartment.departmentId);
+        }
         
+        const isScrollEnabled = employees != null ? employees.length > 1 : false;
+
         return <View>
             <Animated.ScrollView 
                 horizontal 
@@ -114,7 +117,7 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
                 
                 {
                     // (this.props.subordinates != null && this.props.departmentsTreeNodes[0].parent != null) ? 
-                    (this.props.subordinates != null) ? 
+                    (subordinates != null) ? 
                         <EmployeeCardWithAvatar 
                             employees={subordinates} 
                             chiefId={headDepartment.departmentChiefId} 
