@@ -14,6 +14,7 @@ interface DepartmentsHScrollableListProps {
     departmentsTreeNodes?: DepartmentsTreeNode[];
     employees?: Employee[];
     subordinates?: Employee[];
+    headDepartment?: DepartmentsTreeNode;
 }
 
 interface DepartmentsHScrollableListDispatchProps {
@@ -84,6 +85,10 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
         this.employeeCards = [];
         const isScrollEnabled = this.props.employees != null ? this.props.employees.length > 1 : false;
 
+        const { headDepartment } = this.props;
+        const employees = headDepartment != null && headDepartment.children != null ? headDepartment.children.map(child => child.head) : null;
+        const subordinates = headDepartment != null && headDepartment.subordinates != null ? headDepartment.subordinates : null;
+        
         return <View>
             <Animated.ScrollView 
                 horizontal 
@@ -93,11 +98,11 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
                 onScrollBeginDrag={this.onScrollBeginDrag.bind(this)}
             >
                 {
-                    this.props.employees != null ? this.props.employees.map(employee => <EmployeeCardWithAvatar 
+                    employees != null ? employees.map(employee => <EmployeeCardWithAvatar 
                         employee={employee}
-                        departmentAbbreviation={this.props.departmentsTreeNodes[this.props.employees.indexOf(employee)].departmentAbbreviation} 
-                        leftNeighbor={(this.props.employees.indexOf(employee) > 0 && this.props.employees.length > 1) ? this.props.employees[this.props.employees.indexOf(employee) - 1] : null } 
-                        rightNeighbor={(this.props.employees.indexOf(employee) < this.props.employees.length - 1 && this.props.employees.length > 1) ? this.props.employees[this.props.employees.indexOf(employee) + 1] : null} 
+                        departmentAbbreviation={headDepartment.children[employees.indexOf(employee)].departmentAbbreviation} 
+                        leftNeighbor={(employees.indexOf(employee) > 0 && employees.length > 1) ? employees[employees.indexOf(employee) - 1] : null } 
+                        rightNeighbor={(employees.indexOf(employee) < employees.length - 1 && employees.length > 1) ? employees[employees.indexOf(employee) + 1] : null} 
                         ref={(employeeCard) => { 
                             if ( employeeCard != null ) {
                                 this.employeeCards.push(employeeCard);
@@ -111,8 +116,8 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
                     // (this.props.subordinates != null && this.props.departmentsTreeNodes[0].parent != null) ? 
                     (this.props.subordinates != null) ? 
                         <EmployeeCardWithAvatar 
-                            employees={this.props.subordinates} 
-                            chiefId={this.props.departmentsTreeNodes != null ? this.props.departmentsTreeNodes[0].parent.chiefId : null} 
+                            employees={subordinates} 
+                            chiefId={headDepartment.departmentChiefId} 
                         /> 
                             : null
                 }

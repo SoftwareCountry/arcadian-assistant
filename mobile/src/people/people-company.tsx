@@ -12,6 +12,7 @@ import { DepartmentsHScrollableList } from './departments/departments-horizontal
 import { DepartmentsTree } from './departments/departments-tree';
 import { DepartmentsTreeNode } from './departments/departments-tree-node';
 import { EmployeeMap, EmployeesStore } from '../reducers/organization/employees.reducer';
+import { EmployeeCardWithAvatar } from './employee-card-with-avatar';
 
 interface PeopleCompanyProps {
     routeName: string;
@@ -72,21 +73,26 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps> {
         const { children } = this.props.departmentsTree.root;
         var indexFor3Level = null;
         if (this.props.departmentIdsBranch != null) {
-            indexFor3Level = children.indexOf(children.filter(department => department.departmentId === this.props.departmentIdsBranch[1])[0]);
+            indexFor3Level = children.indexOf(children.filter(department => department.departmentId === this.props.departmentIdsBranch[0])[0]);
             console.log('index: ' + indexFor3Level);
         }
         
         return <ScrollView style={{ backgroundColor: '#fff' }}>
-            <DepartmentsHScrollableList 
+            <EmployeeCardWithAvatar 
+                employee={this.props.departmentsTree.root.head}
+                departmentAbbreviation={this.props.departmentsTree.root.departmentAbbreviation}
+            />
+            {/* <DepartmentsHScrollableList 
                 departmentsTree={this.props.departmentsTree} 
                 treeLevel={0}
                 departmentsTreeNodes={[this.props.departmentsTree.root]} 
                 employees={[this.props.departmentsTree.root.head]} 
-            />
+            /> */}
             <DepartmentsHScrollableList 
                 departmentsTree={this.props.departmentsTree} 
-                treeLevel={1}
+                treeLevel={0}
                 departmentsTreeNodes={this.props.departmentsTree.root.children} 
+                headDepartment={this.props.departmentsTree.root}
                 employees={this.props.departmentsTree.root.children.map(a => a.head)} 
                 subordinates={this.props.departmentsTree.root.subordinates.length > 0 ? this.props.departmentsTree.root.subordinates : null} 
             />
@@ -94,8 +100,9 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps> {
             {
                 indexFor3Level != null ? <DepartmentsHScrollableList
                     departmentsTree={this.props.departmentsTree}
-                    treeLevel={2}
+                    treeLevel={1}
                     departmentsTreeNodes={this.props.departmentsTree.root.children[indexFor3Level].children}
+                    headDepartment={this.props.departmentsTree.root.children[indexFor3Level]}
                     employees={this.props.departmentsTree.root.children[indexFor3Level].children != null ? this.props.departmentsTree.root.children[indexFor3Level].children.map(a => a.head) : null}
                     subordinates={this.props.departmentsTree.root.children[indexFor3Level].subordinates.length > 0 ? this.props.departmentsTree.root.children[indexFor3Level].subordinates : null}
                 /> : null
