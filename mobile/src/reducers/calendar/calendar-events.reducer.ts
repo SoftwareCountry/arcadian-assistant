@@ -70,12 +70,12 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
 
             return {
                 ...state,
-                intervals: intervals.asReadOnly(),
+                intervals: intervals,
                 disableCalendarActionsButtonGroup: false
             };
         case 'CALENDAR-EVENT-CREATED':
             const intervalsWithNewEvent = state.intervals
-                ? state.intervals.copyIntervalsModel()
+                ? state.intervals.copy()
                 : new IntervalsModel();
 
             const calendarEvents = new CalendarEvents([action.calendarEvent]);
@@ -84,7 +84,7 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
 
             return {
                 ...state,
-                intervals: intervalsWithNewEvent.asReadOnly()
+                intervals: intervalsWithNewEvent
             };
         case 'SELECT-CALENDAR-DAY':
             const singleDayState = singleDaySelectionReducer(state, action);

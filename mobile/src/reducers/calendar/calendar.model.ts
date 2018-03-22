@@ -27,23 +27,16 @@ export interface IntervalModel {
     boundary: boolean;
 }
 
-export class ReadOnlyIntervalsModel {
-    constructor(private readonly intervalsModel: IntervalsModel) {}
-
-    public get(date: Moment): IntervalModel[] {
-        return this.intervalsModel.get(date);
-    }
-
-    public copyIntervalsModel(): IntervalsModel {
-        return this.intervalsModel.copy();
-    }
+export interface ReadOnlyIntervalsModel {
+    get(date: Moment): IntervalModel[] | undefined;
+    copy(): IntervalsModel;
 }
 
 type IntervalsModelDictionary = {
     [dateKey: string]: IntervalModel[];
 };
 
-export class IntervalsModel {
+export class IntervalsModel implements ReadOnlyIntervalsModel {
     constructor(
         private readonly intervalsDictionary: IntervalsModelDictionary = {}
     ) { }
@@ -77,10 +70,6 @@ export class IntervalsModel {
         }
 
         return new IntervalsModel(copiedDictionary);
-    }
-
-    public asReadOnly(): ReadOnlyIntervalsModel {
-        return new ReadOnlyIntervalsModel(this);
     }
 
     public static generateKey(date: Moment): string {
