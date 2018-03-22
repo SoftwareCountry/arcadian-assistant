@@ -3,7 +3,6 @@ import { View, StyleSheet, PixelRatio } from 'react-native';
 import { connect } from 'react-redux';
 import { IntervalsModel, DayModel } from '../reducers/calendar/calendar.model';
 import { AppState } from '../reducers/app.reducer';
-import { CalendarEventsType } from '../reducers/calendar/calendar-events.model';
 import { CalendarEventsColor, legendStyles as styles } from './styles';
 import { StyledText } from '../override/styled-text';
 

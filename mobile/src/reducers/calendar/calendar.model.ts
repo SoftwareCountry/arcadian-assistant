@@ -1,5 +1,5 @@
 import moment, { Moment } from 'moment';
-import { CalendarEvents, CalendarEventsType } from './calendar-events.model';
+import { CalendarEvent, CalendarEventType, CalendarEventStatus } from './calendar-event.model';
 
 export interface DayModel {
     date: Moment;
@@ -23,8 +23,20 @@ export enum IntervalType {
 
 export interface IntervalModel {
     intervalType: IntervalType;
-    calendarEvent: CalendarEvents;
+    calendarEvent: CalendarEvent;
     boundary: boolean;
+}
+
+export class ReadOnlyIntervalsModel {
+    constructor(private readonly intervalsModel: IntervalsModel) {}
+
+    public get(date: Moment): IntervalModel[] {
+        return this.intervalsModel.get(date);
+    }
+
+    public copyIntervalsModel(): IntervalsModel {
+        return this.intervalsModel.copy();
+    }
 }
 
 type IntervalsModelDictionary = {
@@ -67,6 +79,10 @@ export class IntervalsModel {
         return new IntervalsModel(copiedDictionary);
     }
 
+    public asReadOnly(): ReadOnlyIntervalsModel {
+        return new ReadOnlyIntervalsModel(this);
+    }
+
     public static generateKey(date: Moment): string {
         return date.format('DD-MM-YYYY');
     }
@@ -94,9 +110,9 @@ export class ExtractedIntervals {
 
     constructor(intervals: IntervalModel[]) {
         if (intervals) {
-            this.vacation = intervals.find(x => x.calendarEvent.type === CalendarEventsType.Vacation);
-            this.dayoff = intervals.find(x => x.calendarEvent.type === CalendarEventsType.Dayoff || x.calendarEvent.type === CalendarEventsType.Workout);
-            this.sickleave = intervals.find(x => x.calendarEvent.type === CalendarEventsType.Sickleave);
+            this.vacation = intervals.find(x => x.calendarEvent.type === CalendarEventType.Vacation);
+            this.dayoff = intervals.find(x => x.calendarEvent.type === CalendarEventType.Dayoff || x.calendarEvent.type === CalendarEventType.Workout);
+            this.sickleave = intervals.find(x => x.calendarEvent.type === CalendarEventType.Sickleave);
         }
     }
 }

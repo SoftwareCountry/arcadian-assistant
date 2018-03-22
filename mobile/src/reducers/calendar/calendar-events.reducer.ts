@@ -3,7 +3,7 @@ import { CalendarActions, CalendarSelectionModeType, CalendarSelectionMode } fro
 import { DayModel, WeekModel, IntervalsModel, CalendarSelection, IntervalModel, ExtractedIntervals } from './calendar.model';
 import moment from 'moment';
 import { CalendarWeeksBuilder } from './calendar-weeks-builder';
-import { CalendarIntervalsBuilder } from './calendar-intervals-builder';
+import { CalendarEvents } from './calendar-events.model';
 import { singleDaySelectionReducer, intervalSelectionReducer } from './calendar-selection.reducer';
 import { calendarSelectionModeReducer } from './calendar-selection-mode.reducer';
 
@@ -66,8 +66,7 @@ const initState = createInitState();
 export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = initState, action: CalendarActions) => {
     switch (action.type) {
         case 'LOAD-CALENDAR-EVENTS-FINISHED':
-            const builderIntervals = new CalendarIntervalsBuilder();
-            const intervals = builderIntervals.buildIntervals(action.calendarEvents);
+            const intervals = action.calendarEvents.buildIntervalsModel();
 
             return {
                 ...state,
@@ -75,13 +74,13 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 disableCalendarActionsButtonGroup: false
             };
         case 'CALENDAR-EVENT-CREATED':
-            const builderCalendarIntervals = new CalendarIntervalsBuilder();
-
             const intervalsWithNewEvent = state.intervals
                 ? state.intervals.copy()
                 : new IntervalsModel();
 
-            builderCalendarIntervals.appendCalendarEvents(intervalsWithNewEvent, [action.calendarEvent]);
+            const calendarEvents = new CalendarEvents([action.calendarEvent]);
+
+            calendarEvents.appendToIntervalsModel(intervalsWithNewEvent);
 
             return {
                 ...state,

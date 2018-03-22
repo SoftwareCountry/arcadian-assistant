@@ -1,5 +1,5 @@
 import { StyleSheet, ViewStyle, PixelRatio } from 'react-native';
-import { CalendarEventsType } from '../reducers/calendar/calendar-events.model';
+import { CalendarEventType } from '../reducers/calendar/calendar-event.model';
 
 const daysCounterTitleColor = '#18515E';
 
@@ -106,18 +106,18 @@ export class CalendarEventsColor {
     public static dayoff = '#EB5757';
     public static workout = '#219653';
 
-    public static getColor(type: CalendarEventsType) {
+    public static getColor(type: CalendarEventType) {
         switch (type) {
-            case CalendarEventsType.Vacation:
+            case CalendarEventType.Vacation:
                 return CalendarEventsColor.vacation;
 
-            case CalendarEventsType.Sickleave:
+            case CalendarEventType.Sickleave:
                 return CalendarEventsColor.sickLeave;
 
-            case CalendarEventsType.Dayoff:
+            case CalendarEventType.Dayoff:
                 return CalendarEventsColor.dayoff;
 
-            case CalendarEventsType.Workout:
+            case CalendarEventType.Workout:
                 return CalendarEventsColor.workout;
 
             default:

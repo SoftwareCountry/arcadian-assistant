@@ -5,7 +5,6 @@ import { StyledText } from '../override/styled-text';
 import { calendarStyles, calendarIntervalStyles, CalendarEventsColor } from './styles';
 import { DayModel, WeekModel, IntervalsModel, IntervalModel, IntervalType, CalendarSelection } from '../reducers/calendar/calendar.model';
 import { StartInterval, EndInterval, Interval } from './calendar-page-interval';
-import { CalendarEventsType } from '../reducers/calendar/calendar-events.model';
 import { WeekDay, WeekDayCircle, WeekDayTouchable } from './calendar-page-weekday';
 import { IntervalBoundary } from './calendar-page-interval-boundary';
 

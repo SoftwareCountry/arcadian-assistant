@@ -1,6 +1,6 @@
 import { Moment } from 'moment';
 import { Employee } from '../organization/employee.model';
-import { CalendarEvents } from './calendar-events.model';
+import { CalendarEvent } from './calendar-event.model';
 
 export interface ConfirmClaimSickLeave {
     type: 'CONFIRM-CLAIM-SICK-LEAVE';
@@ -14,10 +14,10 @@ export const confirmSickLeave = (employeeId: string, startDate: Moment, endDate:
 export interface CompleteSickLeave {
     type: 'COMPLETE-SICK-LEAVE';
     employeeId: string;
-    calendarEvent: CalendarEvents;
+    calendarEvent: CalendarEvent;
 }
 
-export const completeSickLeave = (employeeId: string, calendarEvent: CalendarEvents): CompleteSickLeave => ({ type: 'COMPLETE-SICK-LEAVE', employeeId, calendarEvent });
+export const completeSickLeave = (employeeId: string, calendarEvent: CalendarEvent): CompleteSickLeave => ({ type: 'COMPLETE-SICK-LEAVE', employeeId, calendarEvent });
 
 export interface ConfirmProlongSickLeave {
     type: 'CONFIRM-PROLONG-SICK-LEAVE';
