@@ -88,8 +88,15 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
             const firstChild = currentDepartmentNode.children != null ? currentDepartmentNode.children[0] : null;
             currentDepartmentNode = firstChild;
         }    
+        // console.log(newDepartmentIdsBranch);
+    }
 
-        console.log(newDepartmentIdsBranch);
+    public treeRecurseAndAdd(department: DepartmentsTreeNode, departments: DepartmentsTreeNode[]) {
+        departments.push(department);
+        var children = department.children;
+        if (children !== null) {
+            children.forEach(child => this.treeRecurseAndAdd(child, departments));    
+        }
     }
 
     public render() {
@@ -98,35 +105,67 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
         if (this.props.departmentIdsBranch != null) {
             indexFor3Level = children.indexOf(children.filter(department => department.departmentId === this.props.departmentIdsBranch[1])[0]);
             // console.log('index: ' + indexFor3Level);
+        } else {
+            return <ScrollView style={{ backgroundColor: '#fff' }} />;
         }
         
-        return <ScrollView style={{ backgroundColor: '#fff' }}>
-            <EmployeeCardWithAvatar 
-                employee={this.props.departmentsTree.root.head}
-                departmentAbbreviation={this.props.departmentsTree.root.departmentAbbreviation}
-            />
-            {/* <DepartmentsHScrollableList 
-                departmentsTree={this.props.departmentsTree} 
-                treeLevel={0}
-                departmentsTreeNodes={[this.props.departmentsTree.root]} 
-                employees={[this.props.departmentsTree.root.head]} 
-            /> */}
-            <DepartmentsHScrollableList 
-                departmentsTree={this.props.departmentsTree} 
-                treeLevel={1}
-                departmentsTreeNodes={this.props.departmentsTree.root.children} 
-                headDepartment={this.props.departmentsTree.root}
-            />
+        var heads: DepartmentsTreeNode[] = [];
+        var flattenDepartmentsNodes: DepartmentsTreeNode[] = []; 
+        this.treeRecurseAndAdd(this.props.departmentsTree.root, flattenDepartmentsNodes);
 
-            {
-                indexFor3Level != null ? <DepartmentsHScrollableList
-                    departmentsTree={this.props.departmentsTree}
-                    treeLevel={2}
-                    departmentsTreeNodes={this.props.departmentsTree.root.children[indexFor3Level].children}
-                    headDepartment={this.props.departmentsTree.root.children[indexFor3Level]}
-                /> : null
+        this.props.departmentIdsBranch.map((departmentId) => {
+            if (departmentId === this.props.departmentsTree.root.departmentId) {
+                heads.push(this.props.departmentsTree.root);
+            } else {
+                heads.push(flattenDepartmentsNodes.filter(departmentNode => departmentNode.departmentId === departmentId)[0]);
             }
-        </ScrollView>;
+        });
+
+        return <ScrollView style={{ backgroundColor: '#fff' }}>
+        <EmployeeCardWithAvatar 
+            employee={this.props.departmentsTree.root.head}
+            departmentAbbreviation={this.props.departmentsTree.root.departmentAbbreviation}
+        />
+        {
+            heads.map((head) => (
+                <DepartmentsHScrollableList
+                    departmentsTree={this.props.departmentsTree}
+                    treeLevel={heads.indexOf(head) + 1}
+                    departmentsTreeNodes={head.children}
+                    headDepartment={head}
+                    key={head.departmentId}
+                />
+            )) 
+        }
+    </ScrollView>;
+
+        // return <ScrollView style={{ backgroundColor: '#fff' }}>
+        //     <EmployeeCardWithAvatar 
+        //         employee={this.props.departmentsTree.root.head}
+        //         departmentAbbreviation={this.props.departmentsTree.root.departmentAbbreviation}
+        //     />
+        //     {/* <DepartmentsHScrollableList 
+        //         departmentsTree={this.props.departmentsTree} 
+        //         treeLevel={0}
+        //         departmentsTreeNodes={[this.props.departmentsTree.root]} 
+        //         employees={[this.props.departmentsTree.root.head]} 
+        //     /> */}
+        //     <DepartmentsHScrollableList 
+        //         departmentsTree={this.props.departmentsTree} 
+        //         treeLevel={1}
+        //         departmentsTreeNodes={this.props.departmentsTree.root.children} 
+        //         headDepartment={this.props.departmentsTree.root}
+        //     />
+
+        //     {
+        //         indexFor3Level != null ? <DepartmentsHScrollableList
+        //             departmentsTree={this.props.departmentsTree}
+        //             treeLevel={2}
+        //             departmentsTreeNodes={this.props.departmentsTree.root.children[indexFor3Level].children}
+        //             headDepartment={this.props.departmentsTree.root.children[indexFor3Level]}
+        //         /> : null
+        //     }
+        // </ScrollView>;
     }
 }
 
