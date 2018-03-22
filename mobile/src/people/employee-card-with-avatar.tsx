@@ -12,6 +12,8 @@ interface EmployeeCardWithAvatarProps {
     employees?: Employee[];
     leftNeighbor?: Employee;
     rightNeighbor?: Employee;
+    treeLevel?: number;
+    stretchToFitScreen?: boolean;
 }
 
 export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProps> {
@@ -66,9 +68,10 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
           ).start();
   
         const employees = this.props.employees;
-        const calcultatedHeight = Dimensions.get('screen').height - 90 - 194;
-        console.log('Calculated height: ' + calcultatedHeight);
+        
         if (employees != null) {
+            const calcultatedHeight =  this.props.stretchToFitScreen ? Dimensions.get('screen').height - 90 * this.props.treeLevel - 119 : 90; 
+            // console.log('Tree level: ' + this.props.treeLevel + ' Calculated height: ' + calcultatedHeight);
             const filteredEmployees = employees.filter((emp) => emp.employeeId !== this.props.chiefId);
             return (
                 <View style={{ backgroundColor: '#abfcba', width: Dimensions.get('window').width, height: calcultatedHeight, overflow: 'hidden', borderTopWidth: 1, borderColor: 'rgba(0, 0, 0, 0.15)' }}>
@@ -80,7 +83,7 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
             );
         } else {
             return (
-                <Animated.View style={{ width: Dimensions.get('window').width, height: 90, overflow: 'hidden', borderTopWidth: 1, borderColor: 'rgba(0, 0, 0, 0.15)' }}>
+                <Animated.View style={{ width: Dimensions.get('window').width, height: 90, flex: 0, overflow: 'hidden', borderTopWidth: 1, borderColor: 'rgba(0, 0, 0, 0.15)' }}>
                     <Animated.View style={{ position: 'absolute', top: (90 - 44) * 0.5, left: -44 * 0.5, opacity: neighboursAvatarsVisibility ? fadeInAnim : fadeOutAnim }}>
                         { this.props.leftNeighbor ? <Avatar photo={this.props.leftNeighbor.photo} style={{ width: 44, height: 44 }} /> : null }
                     </Animated.View>

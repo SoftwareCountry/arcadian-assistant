@@ -13,6 +13,7 @@ interface DepartmentsHScrollableListProps {
     treeLevel?: number;
     departmentsTreeNodes?: DepartmentsTreeNode[];
     headDepartment: DepartmentsTreeNode;
+    topOffset?: number;
 }
 
 interface DepartmentsHScrollableListDispatchProps {
@@ -33,6 +34,7 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
     private employeeCards: EmployeeCardWithAvatar[];
     private animatedValue: Animated.Value;
     private buttonText: Text;
+    private currentPage: number;
 
     /* constructor() {
         super();
@@ -61,13 +63,15 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
     public onMomentumScrollEnd(event: any) {
         var offset = event.nativeEvent.contentOffset;
         if (offset) {
-            var page = Math.round(offset.x / Dimensions.get('window').width) + 1;
-            if (page > this.employeeCards.length) {
+            // var page = Math.round(offset.x / Dimensions.get('window').width) + 1;
+            this.currentPage = Math.round(offset.x / Dimensions.get('window').width) + 1;
+            if (this.currentPage > this.employeeCards.length) {
                 this.props.requestEmployeesForDepartment(this.props.headDepartment.departmentId);
+                this.props.updateDepartmentIdsTree(this.props.treeLevel, 'subordinates');
             } else {
-                const visibleCard: EmployeeCardWithAvatar = this.employeeCards[page - 1];
+                const visibleCard: EmployeeCardWithAvatar = this.employeeCards[this.currentPage - 1];
                 visibleCard.revealNeighboursAvatars(true);
-                const visibleDepartment = this.props.headDepartment.children[page - 1];
+                const visibleDepartment = this.props.headDepartment.children[this.currentPage - 1];
                 this.props.updateDepartmentIdsTree(this.props.treeLevel, visibleDepartment.departmentId);
                 this.props.requestEmployeesForDepartment(visibleDepartment.departmentId);
             }
@@ -101,6 +105,7 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
                     subDepartments != null ? subDepartments.map(subDepartment => <EmployeeCardWithAvatar 
                         employee={subDepartment.head}
                         departmentAbbreviation={subDepartment.departmentAbbreviation} 
+                        treeLevel={this.props.treeLevel}
                         leftNeighbor={(subDepartments.indexOf(subDepartment) > 0 && subDepartments.length > 1) ? subDepartments[subDepartments.indexOf(subDepartment) - 1].head : null } 
                         rightNeighbor={(subDepartments.indexOf(subDepartment) < subDepartments.length - 1 && subDepartments.length > 1) ? subDepartments[subDepartments.indexOf(subDepartment) + 1].head : null} 
                         ref={(employeeCard) => { 
@@ -116,7 +121,9 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
                     (subordinates != null) ? 
                         <EmployeeCardWithAvatar 
                             employees={subordinates} 
-                            chiefId={headDepartment.departmentChiefId} 
+                            chiefId={headDepartment.departmentChiefId}
+                            treeLevel={this.props.treeLevel} 
+                            stretchToFitScreen={subDepartments === null || this.currentPage > subDepartments.length}
                         /> 
                             : null
                 }
