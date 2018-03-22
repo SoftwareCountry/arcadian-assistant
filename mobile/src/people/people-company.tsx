@@ -1,6 +1,6 @@
 import React from 'react';
 import { Action } from 'redux';
-import { connect, Dispatch } from 'react-redux';
+import { connect, Dispatch, MapStateToProps, MapDispatchToPropsFunction } from 'react-redux';
 import { View, Text, ScrollView, Dimensions, Animated } from 'react-native';
 
 import { EmployeesList } from './employees-list';
@@ -13,6 +13,7 @@ import { DepartmentsTree } from './departments/departments-tree';
 import { DepartmentsTreeNode } from './departments/departments-tree-node';
 import { EmployeeMap, EmployeesStore } from '../reducers/organization/employees.reducer';
 import { EmployeeCardWithAvatar } from './employee-card-with-avatar';
+import { PeopleActions, requestEmployeesForDepartment, updateDepartmentIdsTree } from '../reducers/people/people.action';
 
 interface PeopleCompanyProps {
     routeName: string;
@@ -20,6 +21,16 @@ interface PeopleCompanyProps {
     departmentsTree: DepartmentsTree;
     departmentIdsBranch?: string[];
 }
+
+interface PeopleCompanyDispatchProps {
+    updateDepartmentIdsTree: (index: number, departmentId: string) => void;
+}
+
+const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
+    updateDepartmentIdsTree: (index: number, departmentId: string) => { 
+        dispatch(updateDepartmentIdsTree(index, departmentId)); 
+    },
+});
 
 const mapStateToProps = (state: AppState): PeopleCompanyProps => ({
     routeName: 'Company',
@@ -64,17 +75,29 @@ function childrenNodes(headDeaprtment: Department, departments: Department[], em
     return nodes;
 }
 
-export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps> {
-    public render() {
-        console.log('Head department: ' + this.props.headDepartment.name);
-        // this.props.departmentsTree.root.children.values('head')
-        console.log(this.props.departmentsTree.root.children.map(a => a.head));
+export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & PeopleCompanyDispatchProps> {
+    public componentWillMount () {
+        const newDepartmentIdsBranch = [];
+        var currentDepartmentNode = this.props.departmentsTree.root;
+        var index = 0;
 
+        while (currentDepartmentNode) {
+            console.log(currentDepartmentNode.departmentAbbreviation + '/' + currentDepartmentNode.departmentId);
+            newDepartmentIdsBranch.push(currentDepartmentNode.departmentId);
+            this.props.updateDepartmentIdsTree(index++, currentDepartmentNode.departmentId);
+            const firstChild = currentDepartmentNode.children != null ? currentDepartmentNode.children[0] : null;
+            currentDepartmentNode = firstChild;
+        }    
+
+        console.log(newDepartmentIdsBranch);
+    }
+
+    public render() {
         const { children } = this.props.departmentsTree.root;
         var indexFor3Level = null;
         if (this.props.departmentIdsBranch != null) {
-            indexFor3Level = children.indexOf(children.filter(department => department.departmentId === this.props.departmentIdsBranch[0])[0]);
-            console.log('index: ' + indexFor3Level);
+            indexFor3Level = children.indexOf(children.filter(department => department.departmentId === this.props.departmentIdsBranch[1])[0]);
+            // console.log('index: ' + indexFor3Level);
         }
         
         return <ScrollView style={{ backgroundColor: '#fff' }}>
@@ -90,7 +113,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps> {
             /> */}
             <DepartmentsHScrollableList 
                 departmentsTree={this.props.departmentsTree} 
-                treeLevel={0}
+                treeLevel={1}
                 departmentsTreeNodes={this.props.departmentsTree.root.children} 
                 headDepartment={this.props.departmentsTree.root}
             />
@@ -98,7 +121,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps> {
             {
                 indexFor3Level != null ? <DepartmentsHScrollableList
                     departmentsTree={this.props.departmentsTree}
-                    treeLevel={1}
+                    treeLevel={2}
                     departmentsTreeNodes={this.props.departmentsTree.root.children[indexFor3Level].children}
                     headDepartment={this.props.departmentsTree.root.children[indexFor3Level]}
                 /> : null
@@ -107,4 +130,4 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps> {
     }
 }
 
-export const PeopleCompany = connect(mapStateToProps)(PeopleCompanyImpl);
+export const PeopleCompany = connect(mapStateToProps, mapDispatchToProps)(PeopleCompanyImpl);

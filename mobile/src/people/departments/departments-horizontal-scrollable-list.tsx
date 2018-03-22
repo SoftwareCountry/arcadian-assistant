@@ -55,7 +55,7 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
 
     public componentDidMount() {
         // this.animate.bind(this, Easing.bounce);
-        this.props.updateDepartmentIdsTree(this.props.treeLevel, this.props.departmentsTreeNodes[0].departmentId);
+        //this.props.updateDepartmentIdsTree(this.props.treeLevel, this.props.departmentsTreeNodes[0].departmentId);
     }
 
     public onMomentumScrollEnd(event: any) {
@@ -69,6 +69,7 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
                 visibleCard.revealNeighboursAvatars(true);
                 const visibleDepartment = this.props.headDepartment.children[page - 1];
                 this.props.updateDepartmentIdsTree(this.props.treeLevel, visibleDepartment.departmentId);
+                this.props.requestEmployeesForDepartment(visibleDepartment.departmentId);
             }
         }
     }
@@ -86,10 +87,6 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
         const subDepartments = headDepartment != null && headDepartment.children != null ? headDepartment.children : null;
         const subordinates = headDepartment != null && headDepartment.subordinates != null ? headDepartment.subordinates : null;
 
-        if (subordinates != null) {
-            // this.props.requestEmployeesForDepartment(this.props.headDepartment.departmentId);
-        }
-        
         const isScrollEnabled = subDepartments != null ? subDepartments.length > 1 : false;
 
         return <View>
@@ -116,7 +113,6 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
                 }
                 
                 {
-                    // (this.props.subordinates != null && this.props.departmentsTreeNodes[0].parent != null) ? 
                     (subordinates != null) ? 
                         <EmployeeCardWithAvatar 
                             employees={subordinates} 
