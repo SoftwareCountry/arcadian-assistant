@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 import { CalendarActions, CalendarSelectionModeType, CalendarSelectionMode } from './calendar.action';
-import { DayModel, WeekModel, IntervalsModel, CalendarSelection } from './calendar.model';
+import { DayModel, WeekModel, IntervalsModel, CalendarSelection, IntervalModel, ExtractedIntervals } from './calendar.model';
 import moment from 'moment';
 import { CalendarWeeksBuilder } from './calendar-weeks-builder';
 import { CalendarIntervalsBuilder } from './calendar-intervals-builder';
@@ -25,6 +25,7 @@ export interface CalendarEventsState extends
     SelectionSubState {
         weeks: WeekModel[];
         disableCalendarActionsButtonGroup: boolean;
+        intervalsBySingleDaySelection: ExtractedIntervals;
 }
 
 const createInitState = (): CalendarEventsState => {
@@ -48,12 +49,15 @@ const createInitState = (): CalendarEventsState => {
         interval: null
     };
 
+    const defaultExtractedIntervals = new ExtractedIntervals(null);
+
     return {
         weeks: weeks,
         intervals: null,
         disableCalendarDaysBefore: null,
         disableCalendarActionsButtonGroup: true,
-        selection: defaultSelection
+        selection: defaultSelection,
+        intervalsBySingleDaySelection: defaultExtractedIntervals
     };
 };
 
@@ -106,6 +110,17 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
             return {
                 ...state,
                 ...selectionState
+            };
+        case 'INTERVALS-BY-SINGLE-DAY-SELECTION':
+            const intervalsBySingleDay = state.intervals
+                ? state.intervals.get(state.selection.single.day.date)
+                : null;
+
+            const extractedIntervals = new ExtractedIntervals(intervalsBySingleDay);
+
+            return {
+                ...state,
+                intervalsBySingleDaySelection: extractedIntervals
             };
         default:
             return state;

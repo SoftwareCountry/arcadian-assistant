@@ -149,7 +149,7 @@ export const calendarIntervalStyles = StyleSheet.create({
     boundary: {
         zIndex: intervalBoundaryZIndex
     },
-    draft: {
+    selection: {
         opacity: 0.6
     }
 });

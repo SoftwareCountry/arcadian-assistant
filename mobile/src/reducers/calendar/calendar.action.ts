@@ -2,6 +2,13 @@ import { CalendarEvents } from './calendar-events.model';
 import { DayModel } from './calendar.model';
 import { SickLeaveActions } from './sick-leave.action';
 
+export interface LoadCalendarEvents {
+    type: 'LOAD-CALENDAR-EVENTS';
+    employeeId: string;
+}
+
+export const loadCalendarEvents = (employeeId: string): LoadCalendarEvents => ({ type: 'LOAD-CALENDAR-EVENTS', employeeId });
+
 export interface LoadCalendarEventsFinished {
     type: 'LOAD-CALENDAR-EVENTS-FINISHED';
     calendarEvents: CalendarEvents[];
@@ -44,6 +51,13 @@ export interface CalendarSelectionMode {
 
 export const calendarSelectionMode = (selectionMode: CalendarSelectionModeType, color: string = null): CalendarSelectionMode => ({ type: 'CALENDAR-SELECTION-MODE', selectionMode, color });
 
+export interface IntervalsBySingleDaySelection {
+    type: 'INTERVALS-BY-SINGLE-DAY-SELECTION';
+}
+
+export const intervalsBySingleDaySelection = (): IntervalsBySingleDaySelection => ({ type: 'INTERVALS-BY-SINGLE-DAY-SELECTION' });
+
 export type CalendarActions = LoadCalendarEventsFinished | CalendarEventCreated |
     SelectCalendarDay | SelectCalendarMonth |
-    CalendarSelectionMode;
+    CalendarSelectionMode |
+    IntervalsBySingleDaySelection;

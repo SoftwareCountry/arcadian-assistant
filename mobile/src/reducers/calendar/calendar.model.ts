@@ -12,15 +12,19 @@ export interface WeekModel {
     weekIndex: number;
 }
 
-export type IntervalType = 'startInterval' | 'interval' | 'endInterval' | 'intervalFullBoundary' | 'intervalLeftBoundary' | 'intervalRightBoundary';
+export enum IntervalType {
+    StartInterval = 'StartInterval',
+    Interval = 'Interval',
+    EndInterval = 'EndInterval',
+    IntervalFullBoundary = 'IntervalFullBoundary',
+    IntervalLeftBoundary = 'IntervalLeftBoundary',
+    IntervalRightBoundary =  'IntervalRightBoundary'
+}
 
 export interface IntervalModel {
     intervalType: IntervalType;
-    eventType: CalendarEventsType;
-    startDate: moment.Moment;
-    endDate: moment.Moment;
+    calendarEvent: CalendarEvents;
     boundary: boolean;
-    draft: boolean;
 }
 
 type IntervalsModelDictionary = {
@@ -81,4 +85,18 @@ export interface IntervalSelection {
 export interface CalendarSelection {
     single: SingleSelection;
     interval: IntervalSelection;
+}
+
+export class ExtractedIntervals {
+    public readonly vacation: IntervalModel;
+    public readonly dayoff: IntervalModel;
+    public readonly sickleave: IntervalModel;
+
+    constructor(intervals: IntervalModel[]) {
+        if (intervals) {
+            this.vacation = intervals.find(x => x.calendarEvent.type === CalendarEventsType.Vacation);
+            this.dayoff = intervals.find(x => x.calendarEvent.type === CalendarEventsType.Dayoff || x.calendarEvent.type === CalendarEventsType.Workout);
+            this.sickleave = intervals.find(x => x.calendarEvent.type === CalendarEventsType.Sickleave);
+        }
+    }
 }

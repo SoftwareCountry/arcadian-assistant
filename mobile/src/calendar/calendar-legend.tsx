@@ -46,7 +46,7 @@ class CalendarLegendImpl extends Component<CalendarLegendProps> {
             return [];
         }
 
-        return (intervals.get(selectedDay.date) || []).map(interval => interval.eventType);
+        return (intervals.get(selectedDay.date) || []).map(interval => interval.calendarEvent.type);
     }
 }
 

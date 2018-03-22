@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { ClaimSickLeaveEventDialog } from './claim-sick-leave-event-dialog';
 import { ConfirmSickLeaveEventDialog } from './confirm-sick-leave-event-dialog';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
+import { EditSickLeaveEventDialog } from './edit-sick-leave-event-dialog';
 
 interface EventDialogProps {
     dialogType: EventDialogType;
@@ -20,6 +21,8 @@ export class EventDialog extends Component<EventDialogProps> {
                 return <ClaimSickLeaveEventDialog />;
             case EventDialogType.ConfirmStartDateSickLeave:
                 return <ConfirmSickLeaveEventDialog />;
+            case EventDialogType.EditSickLeave:
+                return <EditSickLeaveEventDialog />;
             default:
                 return null;
         }

@@ -21,10 +21,10 @@ describe('CalendarIntervalsBuilder', () => {
 
         const intervals = intervalsModel.get(date);
 
-        expect(intervals[0].eventType).toBe(event.type);
-        expect(intervals[0].intervalType).toBe('intervalFullBoundary');
-        expect(intervals[0].startDate).toBe(event.dates.startDate);
-        expect(intervals[0].endDate).toBe(event.dates.endDate);
+        expect(intervals[0].calendarEvent.type).toBe(event.type);
+        expect(intervals[0].intervalType).toBe(IntervalType.IntervalFullBoundary);
+        expect(intervals[0].calendarEvent.dates.startDate).toBe(event.dates.startDate);
+        expect(intervals[0].calendarEvent.dates.endDate).toBe(event.dates.endDate);
         expect(intervals[0].boundary).toBeTruthy();
     });
 
@@ -47,37 +47,37 @@ describe('CalendarIntervalsBuilder', () => {
         const one = moment({ day: 1, month: 0, year: 2018 });
         let intervals = intervalsModel.get(one);
 
-        expect(intervals[0].eventType).toBe(event.type);
-        expect(intervals[0].intervalType).toBe('startInterval');
-        expect(intervals[0].startDate).toBe(event.dates.startDate);
-        expect(intervals[0].endDate).toBe(event.dates.endDate);
+        expect(intervals[0].calendarEvent.type).toBe(event.type);
+        expect(intervals[0].intervalType).toBe(IntervalType.StartInterval);
+        expect(intervals[0].calendarEvent.dates.startDate).toBe(event.dates.startDate);
+        expect(intervals[0].calendarEvent.dates.endDate).toBe(event.dates.endDate);
         expect(intervals[0].boundary).toBeFalsy();
 
         const two = moment({ day: 2, month: 0, year: 2018 });
         intervals = intervalsModel.get(two);
 
-        expect(intervals[0].eventType).toBe(event.type);
-        expect(intervals[0].intervalType).toBe('interval');
-        expect(intervals[0].startDate).toBe(event.dates.startDate);
-        expect(intervals[0].endDate).toBe(event.dates.endDate);
+        expect(intervals[0].calendarEvent.type).toBe(event.type);
+        expect(intervals[0].intervalType).toBe(IntervalType.Interval);
+        expect(intervals[0].calendarEvent.dates.startDate).toBe(event.dates.startDate);
+        expect(intervals[0].calendarEvent.dates.endDate).toBe(event.dates.endDate);
         expect(intervals[0].boundary).toBeFalsy();
 
         const three = moment({ day: 3, month: 0, year: 2018 });
         intervals = intervalsModel.get(three);
 
-        expect(intervals[0].eventType).toBe(event.type);
-        expect(intervals[0].intervalType).toBe('interval');
-        expect(intervals[0].startDate).toBe(event.dates.startDate);
-        expect(intervals[0].endDate).toBe(event.dates.endDate);
+        expect(intervals[0].calendarEvent.type).toBe(event.type);
+        expect(intervals[0].intervalType).toBe(IntervalType.Interval);
+        expect(intervals[0].calendarEvent.dates.startDate).toBe(event.dates.startDate);
+        expect(intervals[0].calendarEvent.dates.endDate).toBe(event.dates.endDate);
         expect(intervals[0].boundary).toBeFalsy();
 
         const four = moment({ day: 4, month: 0, year: 2018 });
         intervals = intervalsModel.get(four);
 
-        expect(intervals[0].eventType).toBe(event.type);
-        expect(intervals[0].intervalType).toBe('endInterval');
-        expect(intervals[0].startDate).toBe(event.dates.startDate);
-        expect(intervals[0].endDate).toBe(event.dates.endDate);
+        expect(intervals[0].calendarEvent.type).toBe(event.type);
+        expect(intervals[0].intervalType).toBe(IntervalType.EndInterval);
+        expect(intervals[0].calendarEvent.dates.startDate).toBe(event.dates.startDate);
+        expect(intervals[0].calendarEvent.dates.endDate).toBe(event.dates.endDate);
         expect(intervals[0].boundary).toBeFalsy();
     });
 
@@ -115,42 +115,42 @@ describe('CalendarIntervalsBuilder', () => {
         let intervals = intervalsModel.get(moment({ day: 1, month: 0, year: 2018 }));
 
         expect(intervals.length).toBe(1);
-        expect(intervals[0].intervalType).toBe('startInterval');
-        expect(intervals[0].eventType).toBe(CalendarEventsType.Vacation);
-        expect(intervals[0].startDate).toBe(event1.dates.startDate);
-        expect(intervals[0].endDate).toBe(event1.dates.endDate);
+        expect(intervals[0].intervalType).toBe(IntervalType.StartInterval);
+        expect(intervals[0].calendarEvent.type).toBe(CalendarEventsType.Vacation);
+        expect(intervals[0].calendarEvent.dates.startDate).toBe(event1.dates.startDate);
+        expect(intervals[0].calendarEvent.dates.endDate).toBe(event1.dates.endDate);
 
         intervals = intervalsModel.get(moment({ day: 2, month: 0, year: 2018 }));
 
         expect(intervals.length).toBe(2);
-        expect(intervals[0].intervalType).toBe('interval');
-        expect(intervals[0].eventType).toBe(CalendarEventsType.Vacation);
-        expect(intervals[0].startDate).toBe(event1.dates.startDate);
-        expect(intervals[0].endDate).toBe(event1.dates.endDate);
-        expect(intervals[1].intervalType).toBe('startInterval');
-        expect(intervals[1].eventType).toBe(CalendarEventsType.Sickleave);
-        expect(intervals[1].startDate).toBe(event2.dates.startDate);
-        expect(intervals[1].endDate).toBe(event2.dates.endDate);
+        expect(intervals[0].intervalType).toBe(IntervalType.Interval);
+        expect(intervals[0].calendarEvent.type).toBe(CalendarEventsType.Vacation);
+        expect(intervals[0].calendarEvent.dates.startDate).toBe(event1.dates.startDate);
+        expect(intervals[0].calendarEvent.dates.endDate).toBe(event1.dates.endDate);
+        expect(intervals[1].intervalType).toBe(IntervalType.StartInterval);
+        expect(intervals[1].calendarEvent.type).toBe(CalendarEventsType.Sickleave);
+        expect(intervals[1].calendarEvent.dates.startDate).toBe(event2.dates.startDate);
+        expect(intervals[1].calendarEvent.dates.endDate).toBe(event2.dates.endDate);
 
         intervals = intervalsModel.get(moment({ day: 3, month: 0, year: 2018 }));
 
         expect(intervals.length).toBe(2);
-        expect(intervals[0].intervalType).toBe('endInterval');
-        expect(intervals[0].eventType).toBe(CalendarEventsType.Vacation);
-        expect(intervals[0].startDate).toBe(event1.dates.startDate);
-        expect(intervals[0].endDate).toBe(event1.dates.endDate);
-        expect(intervals[1].intervalType).toBe('interval');
-        expect(intervals[1].eventType).toBe(CalendarEventsType.Sickleave);
-        expect(intervals[1].startDate).toBe(event2.dates.startDate);
-        expect(intervals[1].endDate).toBe(event2.dates.endDate);
+        expect(intervals[0].intervalType).toBe(IntervalType.EndInterval);
+        expect(intervals[0].calendarEvent.type).toBe(CalendarEventsType.Vacation);
+        expect(intervals[0].calendarEvent.dates.startDate).toBe(event1.dates.startDate);
+        expect(intervals[0].calendarEvent.dates.endDate).toBe(event1.dates.endDate);
+        expect(intervals[1].intervalType).toBe(IntervalType.Interval);
+        expect(intervals[1].calendarEvent.type).toBe(CalendarEventsType.Sickleave);
+        expect(intervals[1].calendarEvent.dates.startDate).toBe(event2.dates.startDate);
+        expect(intervals[1].calendarEvent.dates.endDate).toBe(event2.dates.endDate);
 
         intervals = intervalsModel.get(moment({ day: 4, month: 0, year: 2018 }));
 
         expect(intervals.length).toBe(1);
-        expect(intervals[0].intervalType).toBe('endInterval');
-        expect(intervals[0].eventType).toBe(CalendarEventsType.Sickleave);
-        expect(intervals[0].startDate).toBe(event2.dates.startDate);
-        expect(intervals[0].endDate).toBe(event2.dates.endDate);
+        expect(intervals[0].intervalType).toBe(IntervalType.EndInterval);
+        expect(intervals[0].calendarEvent.type).toBe(CalendarEventsType.Sickleave);
+        expect(intervals[0].calendarEvent.dates.startDate).toBe(event2.dates.startDate);
+        expect(intervals[0].calendarEvent.dates.endDate).toBe(event2.dates.endDate);
     });
 
     it('should append calendar events to existing model', () => {
@@ -197,114 +197,24 @@ describe('CalendarIntervalsBuilder', () => {
 
         let intervals = intervalsModel.get(moment({ day: 1, month: 0, year: 2018 }));
 
-        expect(intervals[1].intervalType).toBe('startInterval');
-        expect(intervals[1].eventType).toBe(CalendarEventsType.Vacation);
-        expect(intervals[1].startDate).toBe(event3.dates.startDate);
-        expect(intervals[1].endDate).toBe(event3.dates.endDate);
+        expect(intervals[1].intervalType).toBe(IntervalType.StartInterval);
+        expect(intervals[1].calendarEvent.type).toBe(CalendarEventsType.Vacation);
+        expect(intervals[1].calendarEvent.dates.startDate).toBe(event3.dates.startDate);
+        expect(intervals[1].calendarEvent.dates.endDate).toBe(event3.dates.endDate);
 
         intervals = intervalsModel.get(moment({ day: 2, month: 0, year: 2018 }));
 
-        expect(intervals[2].intervalType).toBe('interval');
-        expect(intervals[2].eventType).toBe(CalendarEventsType.Vacation);
-        expect(intervals[2].startDate).toBe(event3.dates.startDate);
-        expect(intervals[2].endDate).toBe(event3.dates.endDate);
+        expect(intervals[2].intervalType).toBe(IntervalType.Interval);
+        expect(intervals[2].calendarEvent.type).toBe(CalendarEventsType.Vacation);
+        expect(intervals[2].calendarEvent.dates.startDate).toBe(event3.dates.startDate);
+        expect(intervals[2].calendarEvent.dates.endDate).toBe(event3.dates.endDate);
 
         intervals = intervalsModel.get(moment({ day: 3, month: 0, year: 2018 }));
 
-        expect(intervals[2].intervalType).toBe('endInterval');
-        expect(intervals[2].eventType).toBe(CalendarEventsType.Vacation);
-        expect(intervals[2].startDate).toBe(event3.dates.startDate);
-        expect(intervals[2].endDate).toBe(event3.dates.endDate);
-    });
-
-    it ('should build intervals as draft', () => {
-        const date1 = moment({ day: 1, month: 0, year: 2018 });
-
-        const event1 = new CalendarEvents();
-        event1.calendarEventId = '1';
-        event1.type = CalendarEventsType.Vacation;
-        event1.dates = new DatesInterval();
-        event1.dates.startDate = moment(date1);
-        event1.dates.endDate = moment(date1);
-        event1.dates.endDate.add(2, 'days');
-
-        const builder = new CalendarIntervalsBuilder();
-        const intervalsModel = builder.buildIntervals([event1], { draft: true });
-
-        let intervals = intervalsModel.get(moment({ day: 1, month: 0, year: 2018 }));
-
-        expect(intervals[0].intervalType).toBe('startInterval');
-        expect(intervals[0].eventType).toBe(CalendarEventsType.Vacation);
-        expect(intervals[0].startDate).toBe(event1.dates.startDate);
-        expect(intervals[0].endDate).toBe(event1.dates.endDate);
-        expect(intervals[0].endDate).toBeTruthy();
-
-        intervals = intervalsModel.get(moment({ day: 2, month: 0, year: 2018 }));
-
-        expect(intervals[0].intervalType).toBe('interval');
-        expect(intervals[0].eventType).toBe(CalendarEventsType.Vacation);
-        expect(intervals[0].startDate).toBe(event1.dates.startDate);
-        expect(intervals[0].endDate).toBe(event1.dates.endDate);
-        expect(intervals[0].endDate).toBeTruthy();
-
-        intervals = intervalsModel.get(moment({ day: 3, month: 0, year: 2018 }));
-
-        expect(intervals[0].intervalType).toBe('endInterval');
-        expect(intervals[0].eventType).toBe(CalendarEventsType.Vacation);
-        expect(intervals[0].startDate).toBe(event1.dates.startDate);
-        expect(intervals[0].endDate).toBe(event1.dates.endDate);
-        expect(intervals[0].endDate).toBeTruthy();
-    });
-
-    it ('should append as draft', () => {
-        const date1 = moment({ day: 1, month: 0, year: 2018 });
-
-        const event1 = new CalendarEvents();
-        event1.calendarEventId = '1';
-        event1.type = CalendarEventsType.Vacation;
-        event1.dates = new DatesInterval();
-        event1.dates.startDate = moment(date1);
-        event1.dates.endDate = moment(date1);
-        event1.dates.endDate.add(2, 'days');
-
-        const builder = new CalendarIntervalsBuilder();
-        const intervalsModel = builder.buildIntervals([event1]);
-
-        const date2 = moment({ day: 1, month: 0, year: 2018 });
-
-        const event2 = new CalendarEvents();
-        event2.calendarEventId = '2';
-        event2.type = CalendarEventsType.Vacation;
-        event2.dates = new DatesInterval();
-        event2.dates.startDate = moment(date2);
-        event2.dates.endDate = moment(date2);
-        event2.dates.endDate.add(2, 'days');
-
-        builder.appendCalendarEvents(intervalsModel, [event1]);
-
-        let intervals = intervalsModel.get(moment({ day: 1, month: 0, year: 2018 }));
-
-        expect(intervals[1].intervalType).toBe('startInterval');
-        expect(intervals[1].eventType).toBe(CalendarEventsType.Vacation);
-        expect(intervals[1].startDate).toBe(event1.dates.startDate);
-        expect(intervals[1].endDate).toBe(event1.dates.endDate);
-        expect(intervals[1].endDate).toBeTruthy();
-
-        intervals = intervalsModel.get(moment({ day: 2, month: 0, year: 2018 }));
-
-        expect(intervals[1].intervalType).toBe('interval');
-        expect(intervals[1].eventType).toBe(CalendarEventsType.Vacation);
-        expect(intervals[1].startDate).toBe(event1.dates.startDate);
-        expect(intervals[1].endDate).toBe(event1.dates.endDate);
-        expect(intervals[1].endDate).toBeTruthy();
-
-        intervals = intervalsModel.get(moment({ day: 3, month: 0, year: 2018 }));
-
-        expect(intervals[1].intervalType).toBe('endInterval');
-        expect(intervals[1].eventType).toBe(CalendarEventsType.Vacation);
-        expect(intervals[1].startDate).toBe(event1.dates.startDate);
-        expect(intervals[1].endDate).toBe(event1.dates.endDate);
-        expect(intervals[1].endDate).toBeTruthy();
+        expect(intervals[2].intervalType).toBe(IntervalType.EndInterval);
+        expect(intervals[2].calendarEvent.type).toBe(CalendarEventsType.Vacation);
+        expect(intervals[2].calendarEvent.dates.startDate).toBe(event3.dates.startDate);
+        expect(intervals[2].calendarEvent.dates.endDate).toBe(event3.dates.endDate);
     });
 
     describe('dayoff', () => {
@@ -330,10 +240,10 @@ describe('CalendarIntervalsBuilder', () => {
                     const intervals = intervalsModel.get(moment({ day: 1, month: 0, year: 2018 }));
 
                     expect(intervals.length).toBe(1);
-                    expect(intervals[0].intervalType).toBe('intervalLeftBoundary');
-                    expect(intervals[0].eventType).toBe(testedEventType);
-                    expect(intervals[0].startDate).toBe(event1.dates.startDate);
-                    expect(intervals[0].endDate).toBe(event1.dates.endDate);
+                    expect(intervals[0].intervalType).toBe(IntervalType.IntervalFullBoundary);
+                    expect(intervals[0].calendarEvent.type).toBe(testedEventType);
+                    expect(intervals[0].calendarEvent.dates.startDate).toBe(event1.dates.startDate);
+                    expect(intervals[0].calendarEvent.dates.endDate).toBe(event1.dates.endDate);
                     expect(intervals[0].boundary).toBeTruthy();
                 });
 
@@ -356,10 +266,10 @@ describe('CalendarIntervalsBuilder', () => {
                     const intervals = intervalsModel.get(moment({ day: 1, month: 0, year: 2018 }));
 
                     expect(intervals.length).toBe(1);
-                    expect(intervals[0].intervalType).toBe('intervalRightBoundary');
-                    expect(intervals[0].eventType).toBe(testedEventType);
-                    expect(intervals[0].startDate).toBe(event1.dates.startDate);
-                    expect(intervals[0].endDate).toBe(event1.dates.endDate);
+                    expect(intervals[0].intervalType).toBe(IntervalType.IntervalRightBoundary);
+                    expect(intervals[0].calendarEvent.type).toBe(testedEventType);
+                    expect(intervals[0].calendarEvent.dates.startDate).toBe(event1.dates.startDate);
+                    expect(intervals[0].calendarEvent.dates.endDate).toBe(event1.dates.endDate);
                     expect(intervals[0].boundary).toBeTruthy();
                 });
 
@@ -382,10 +292,10 @@ describe('CalendarIntervalsBuilder', () => {
                     const intervals = intervalsModel.get(moment({ day: 1, month: 0, year: 2018 }));
 
                     expect(intervals.length).toBe(1);
-                    expect(intervals[0].intervalType).toBe('intervalFullBoundary');
-                    expect(intervals[0].eventType).toBe(testedEventType);
-                    expect(intervals[0].startDate).toBe(event1.dates.startDate);
-                    expect(intervals[0].endDate).toBe(event1.dates.endDate);
+                    expect(intervals[0].intervalType).toBe(IntervalType.IntervalFullBoundary);
+                    expect(intervals[0].calendarEvent.type).toBe(testedEventType);
+                    expect(intervals[0].calendarEvent.dates.startDate).toBe(event1.dates.startDate);
+                    expect(intervals[0].calendarEvent.dates.endDate).toBe(event1.dates.endDate);
                     expect(intervals[0].boundary).toBeTruthy();
                 });
             });
