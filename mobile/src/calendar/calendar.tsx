@@ -4,11 +4,11 @@ import { AppState } from '../reducers/app.reducer';
 import { OnSelectedDayCallback } from './calendar-page';
 import { CalendarPager } from './calendar-pager';
 import { CalendarActions, selectCalendarDay, selectCalendarMonth } from '../reducers/calendar/calendar.action';
-import { WeekModel, DayModel, IntervalsModel, CalendarSelection } from '../reducers/calendar/calendar.model';
+import { WeekModel, DayModel, CalendarSelection, ReadOnlyIntervalsModel } from '../reducers/calendar/calendar.model';
 
 interface CalendarProps {
     weeks: WeekModel[];
-    intervals: IntervalsModel;
+    intervals: ReadOnlyIntervalsModel;
     selection: CalendarSelection;
     disableCalendarDaysBefore: DayModel;
 }

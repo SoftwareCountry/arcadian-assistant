@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 import { CalendarActions, CalendarSelectionModeType, CalendarSelectionMode } from './calendar.action';
-import { DayModel, WeekModel, IntervalsModel, CalendarSelection, IntervalModel, ExtractedIntervals } from './calendar.model';
+import { DayModel, WeekModel, IntervalsModel, CalendarSelection, IntervalModel, ExtractedIntervals, ReadOnlyIntervalsModel } from './calendar.model';
 import moment from 'moment';
 import { CalendarWeeksBuilder } from './calendar-weeks-builder';
 import { CalendarEvents } from './calendar-events.model';
@@ -8,7 +8,7 @@ import { singleDaySelectionReducer, intervalSelectionReducer } from './calendar-
 import { calendarSelectionModeReducer } from './calendar-selection-mode.reducer';
 
 export interface IntervalsSubState {
-    intervals: IntervalsModel;
+    intervals: ReadOnlyIntervalsModel;
 }
 
 export interface DisableDaysCalendarDaysBeforeSubState {
@@ -70,12 +70,12 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
 
             return {
                 ...state,
-                intervals: intervals,
+                intervals: intervals.asReadOnly(),
                 disableCalendarActionsButtonGroup: false
             };
         case 'CALENDAR-EVENT-CREATED':
             const intervalsWithNewEvent = state.intervals
-                ? state.intervals.copy()
+                ? state.intervals.copyIntervalsModel()
                 : new IntervalsModel();
 
             const calendarEvents = new CalendarEvents([action.calendarEvent]);
@@ -84,7 +84,7 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
 
             return {
                 ...state,
-                intervals: intervalsWithNewEvent
+                intervals: intervalsWithNewEvent.asReadOnly()
             };
         case 'SELECT-CALENDAR-DAY':
             const singleDayState = singleDaySelectionReducer(state, action);

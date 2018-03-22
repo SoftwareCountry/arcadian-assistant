@@ -3,7 +3,7 @@ import moment, { Moment } from 'moment';
 import { View, StyleSheet, LayoutChangeEvent, PixelRatio } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { calendarStyles, calendarIntervalStyles, CalendarEventsColor } from './styles';
-import { DayModel, WeekModel, IntervalsModel, IntervalModel, IntervalType, CalendarSelection } from '../reducers/calendar/calendar.model';
+import { DayModel, WeekModel, IntervalModel, IntervalType, CalendarSelection, ReadOnlyIntervalsModel } from '../reducers/calendar/calendar.model';
 import { StartInterval, EndInterval, Interval } from './calendar-page-interval';
 import { WeekDay, WeekDayCircle, WeekDayTouchable } from './calendar-page-weekday';
 import { IntervalBoundary } from './calendar-page-interval-boundary';
@@ -17,7 +17,7 @@ interface CalendarPageDefaultProps {
 interface CalendarPageProps {
     weeks: WeekModel[];
     onSelectedDay: OnSelectedDayCallback;
-    intervals?: IntervalsModel;
+    intervals?: ReadOnlyIntervalsModel;
     selection?: CalendarSelection;
     disableBefore?: DayModel;
 }

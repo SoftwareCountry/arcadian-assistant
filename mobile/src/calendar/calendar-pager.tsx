@@ -4,10 +4,10 @@ import { calendarStyles } from './styles';
 import { View, TouchableOpacity } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { CalendarPage, OnSelectedDayCallback } from './calendar-page';
-import { WeekModel, IntervalsModel, DayModel, CalendarSelection } from '../reducers/calendar/calendar.model';
+import { WeekModel, DayModel, CalendarSelection, ReadOnlyIntervalsModel } from '../reducers/calendar/calendar.model';
 
 interface CalendarDefaultProps {
-    intervals?: IntervalsModel;
+    intervals?: ReadOnlyIntervalsModel;
     selection?: CalendarSelection;
     disableBefore?: DayModel;
 }
