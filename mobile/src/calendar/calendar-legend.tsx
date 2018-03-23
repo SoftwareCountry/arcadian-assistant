@@ -14,7 +14,7 @@ interface CalendarLegendProps {
 
 const mapStateToProps = (state: AppState): CalendarLegendProps => ({
     intervals: state.calendar.calendarEvents.intervals,
-    selectedDay: state.calendar.calendarEvents.selectedCalendarDay
+    selectedDay: state.calendar.calendarEvents.selection.single.day
 });
 
 class CalendarLegendImpl extends Component<CalendarLegendProps> {
@@ -46,7 +46,7 @@ class CalendarLegendImpl extends Component<CalendarLegendProps> {
             return [];
         }
 
-        return (intervals.get(selectedDay.date) || []).map(interval => interval.eventType);
+        return (intervals.get(selectedDay.date) || []).map(interval => interval.calendarEvent.type);
     }
 }
 

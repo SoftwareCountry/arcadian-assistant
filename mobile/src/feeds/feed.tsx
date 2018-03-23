@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableHighlight, StyleSheet, Platform, Text, View, Image, LayoutChangeEvent } from 'react-native';
+import { TouchableHighlight, StyleSheet, Platform, Text, View, Image, LayoutChangeEvent, TouchableOpacity } from 'react-native';
 import { LayoutEvent } from 'react-navigation';
 
 import { Avatar } from '../people/avatar';
@@ -7,10 +7,12 @@ import { Feed } from '../reducers/feeds/feed.model';
 import { feedStyles as styles } from './styles';
 import { Employee } from '../reducers/organization/employee.model';
 import { StyledText } from '../override/styled-text';
+import { Dispatch, connect } from 'react-redux';
 
 interface FeedListItemProps {
     message: Feed;
     employee: Employee;
+    onAvatarClicked: (e: Employee) => void;
 }
 
 interface FeedListItemState {
@@ -45,7 +47,9 @@ export class FeedListItem extends React.Component<FeedListItemProps, FeedListIte
             <TouchableHighlight>
                 <View style={styles.layout}>
                     <View style={imgContainerStyle} onLayout={this.onAvatarContainerLayout}>
-                        <Avatar photo={photo} />
+                        <TouchableOpacity onPress = {this.onAvatarClicked} style={styles.touchableOpacityContainer}>
+                            <Avatar photo={photo} />
+                        </TouchableOpacity>
                     </View>
                     <View style={styles.info}>
                         <StyledText style={styles.title}>{employeeName}</StyledText>
@@ -67,4 +71,5 @@ export class FeedListItem extends React.Component<FeedListItemProps, FeedListIte
             avatarHeight: Math.max(layout.height, layout.width)
         });
     }
+    private onAvatarClicked = () => this.props.onAvatarClicked(this.props.employee);
 }

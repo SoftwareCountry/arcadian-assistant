@@ -1,10 +1,23 @@
-import { IntervalsModel, IntervalModel } from './calendar.model';
+import { IntervalsModel, IntervalModel, IntervalType } from './calendar.model';
 import moment from 'moment';
-import { CalendarEventsType } from './calendar-events.model';
+import { CalendarEventsType, CalendarEvents, DatesInterval } from './calendar-events.model';
+import { Moment } from 'moment';
 
 describe('IntervalsModel', () => {
+    let calendarEvent: CalendarEvents;
+    let date: Moment;
+
+    beforeEach(() => {
+        calendarEvent = new CalendarEvents();
+        calendarEvent.type = CalendarEventsType.Workout;
+        calendarEvent.dates = new DatesInterval();
+        calendarEvent.dates.startDate = date;
+        calendarEvent.dates.endDate = date;
+
+        date = moment();
+    });
+
     it('should generate string key with "DD-MM-YYYY" format', () => {
-        const date = moment();
         const key = IntervalsModel.generateKey(date);
         expect(key).toBe(date.format('DD-MM-YYYY'));
     });
@@ -12,14 +25,11 @@ describe('IntervalsModel', () => {
     describe('set', () => {
         it('should create new array and put element, if there is no such key', () => {
             const intervalsModel = new IntervalsModel();
-            const date = moment();
+
             const intervalModel: IntervalModel = {
-                intervalType: 'startInterval',
-                eventType: CalendarEventsType.AdditionalWork,
-                startDate: date,
-                endDate: date,
-                boundary: true,
-                draft: false
+                intervalType: IntervalType.StartInterval,
+                calendarEvent: calendarEvent,
+                boundary: true
             };
 
             intervalsModel.set(date, intervalModel);
@@ -35,12 +45,9 @@ describe('IntervalsModel', () => {
             const key = moment();
 
             const intervalModel: IntervalModel = {
-                intervalType: 'startInterval',
-                eventType: CalendarEventsType.AdditionalWork,
-                startDate: key,
-                endDate: key,
-                boundary: true,
-                draft: false
+                intervalType: IntervalType.StartInterval,
+                calendarEvent: calendarEvent,
+                boundary: true
             };
 
             intervalsModel.set(key, intervalModel);
@@ -48,12 +55,9 @@ describe('IntervalsModel', () => {
             const existingArray = intervalsModel.get(key);
 
             const intervalModel2: IntervalModel = {
-                intervalType: 'startInterval',
-                eventType: CalendarEventsType.AdditionalWork,
-                startDate: key,
-                endDate: key,
-                boundary: true,
-                draft: false
+                intervalType: IntervalType.StartInterval,
+                calendarEvent: calendarEvent,
+                boundary: true
             };
 
             intervalsModel.set(key, intervalModel2);
@@ -68,21 +72,16 @@ describe('IntervalsModel', () => {
 
     it('should get undefined, if there is no such key', () => {
         const intervalsModel = new IntervalsModel();
-        const date = moment();
         const array = intervalsModel.get(date);
         expect(array).toBeUndefined();
     });
 
     it('should get elements by key', () => {
         const intervalsModel = new IntervalsModel();
-        const date = moment();
         const intervalModel: IntervalModel = {
-            intervalType: 'startInterval',
-            eventType: CalendarEventsType.AdditionalWork,
-            startDate: date,
-            endDate: date,
-            boundary: true,
-            draft: false
+            intervalType: IntervalType.StartInterval,
+            calendarEvent: calendarEvent,
+            boundary: true
         };
 
         intervalsModel.set(date, intervalModel);
@@ -100,33 +99,30 @@ describe('IntervalsModel', () => {
         let intervalsModel: IntervalsModel;
 
         beforeEach(() => {
+            let copiedCalendarEvent = new CalendarEvents();
+            copiedCalendarEvent.type = CalendarEventsType.Workout;
+            copiedCalendarEvent.dates = new DatesInterval();
+            copiedCalendarEvent.dates.startDate = date;
+            copiedCalendarEvent.dates.endDate = date;
+
             intervalsModel = new IntervalsModel();
 
             const startInterval: IntervalModel = {
-                intervalType: 'startInterval',
-                eventType: CalendarEventsType.SickLeave,
-                startDate: startDate,
-                endDate: endDate,
-                boundary: false,
-                draft: false
+                intervalType: IntervalType.StartInterval,
+                calendarEvent: copiedCalendarEvent,
+                boundary: false
             };
 
             const interval: IntervalModel = {
-                intervalType: 'interval',
-                eventType: CalendarEventsType.SickLeave,
-                startDate: startDate,
-                endDate: endDate,
-                boundary: false,
-                draft: false
+                intervalType: IntervalType.Interval,
+                calendarEvent: copiedCalendarEvent,
+                boundary: false
             };
 
             const endInterval: IntervalModel = {
-                intervalType: 'endInterval',
-                eventType: CalendarEventsType.SickLeave,
-                startDate: startDate,
-                endDate: endDate,
-                boundary: false,
-                draft: false
+                intervalType: IntervalType.EndInterval,
+                calendarEvent: copiedCalendarEvent,
+                boundary: false
             };
 
             intervalsModel.set(startDate, startInterval);

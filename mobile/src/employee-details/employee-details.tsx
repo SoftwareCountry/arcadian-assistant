@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView, Linking, TouchableOpacity } from 'react-native';
+import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView, Linking, TouchableOpacity, ViewStyle } from 'react-native';
 
-import { layoutStyles, contentStyles, tileStyles, contactStyles } from './styles';
-import { Chevron } from './chevron';
+import { layoutStyles, contentStyles, tileStyles, contactStyles } from '../profile/styles';
+import { Chevron } from '../profile/chevron';
 import { Avatar } from '../people/avatar';
-import { TopNavBar } from '../topNavBar/top-nav-bar';
+import { TopNavBar } from '../navigation/top-nav-bar';
 import { AppState } from '../reducers/app.reducer';
 import { UserInfoState } from '../reducers/user/user-info.reducer';
 import { Department } from '../reducers/organization/department.model';
@@ -13,14 +13,17 @@ import { Department } from '../reducers/organization/department.model';
 import { StyledText } from '../override/styled-text';
 import { Employee } from '../reducers/organization/employee.model';
 import { ApplicationIcon } from '../override/application-icon';
+import { layoutStylesForEmployeeDetailsScreen } from './styles';
 
-interface ProfileProps {
+interface EmployeeDetailsProps {
     employee: Employee;
     department: Department;
+    layoutStylesChevronPlaceholder: ViewStyle;
+
 }
 const TileSeparator = () => <View style = {tileStyles.separator}></View>;
 
-export class Profile extends Component<ProfileProps> {
+export class EmployeeDetails extends Component<EmployeeDetailsProps> {
     public render() {
         const { employee, department } = this.props;
 
@@ -33,7 +36,7 @@ export class Profile extends Component<ProfileProps> {
 
         return (
                 <View style={layoutStyles.container}>
-                    <View style={layoutStyles.chevronPlaceholder}></View>
+                    <View style={this.props.layoutStylesChevronPlaceholder}></View>
                     <View>
                         <Chevron />
                         <View style={layoutStyles.avatarContainer}>

@@ -1,25 +1,30 @@
-import { dataMember, required } from 'santee-dcts';
+import { dataMember, required, deserialize } from 'santee-dcts';
 import { Moment } from 'moment';
+import moment from 'moment';
 
 export enum CalendarEventsType {
     Vacation = 'Vacation',
-    SickLeave = 'Sick Leave',
+    Sickleave = 'Sickleave',
     Dayoff = 'Dayoff',
-    AdditionalWork = 'Additional Work'
+    Workout = 'Workout'
 }
 
 export enum CalendarEventStatus {
     Requested = 'Requested',
-    Approved = 'Approved',
+    Completed = 'Completed',
     Cancelled = 'Cancelled'
 }
 
 export class DatesInterval {
-    @dataMember()
+    @dataMember({
+        customDeserializer: (value: string) => moment(value)
+    })
     @required()
     public startDate: Moment;
 
-    @dataMember()
+    @dataMember({
+        customDeserializer: (value: string) => moment(value)
+    })
     @required()
     public endDate: Moment;
 
@@ -41,7 +46,9 @@ export class CalendarEvents {
     @required()
     public type: CalendarEventsType;
 
-    @dataMember()
+    @dataMember({
+        customDeserializer: (value: Object) => deserialize(value, DatesInterval)
+    })
     @required()
     public dates: DatesInterval;
 

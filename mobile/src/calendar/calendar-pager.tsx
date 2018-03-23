@@ -4,11 +4,11 @@ import { calendarStyles } from './styles';
 import { View, TouchableOpacity } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { CalendarPage, OnSelectedDayCallback } from './calendar-page';
-import { WeekModel, IntervalsModel, DayModel } from '../reducers/calendar/calendar.model';
+import { WeekModel, IntervalsModel, DayModel, CalendarSelection } from '../reducers/calendar/calendar.model';
 
 interface CalendarDefaultProps {
     intervals?: IntervalsModel;
-    selectedDay?: DayModel;
+    selection?: CalendarSelection;
     disableBefore?: DayModel;
 }
 
@@ -27,7 +27,6 @@ interface CalendarState {
 export class CalendarPager extends Component<CalendarProps, CalendarState> {
     public static defaultProps: CalendarDefaultProps = {
         intervals: null,
-        selectedDay: null,
         disableBefore: null
     };
 
@@ -72,8 +71,8 @@ export class CalendarPager extends Component<CalendarProps, CalendarState> {
                 </TouchableOpacity>
             </View>
             <CalendarPage
-                selectedDay={this.props.selectedDay}
                 onSelectedDay={this.props.onSelectedDay}
+                selection={this.props.selection}
                 weeks={this.props.weeks}
                 intervals={this.props.intervals}
                 disableBefore={this.props.disableBefore} />

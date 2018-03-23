@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, BackHandler } from 'react-native';
+import { StyleSheet, View, BackHandler, Linking } from 'react-native';
 
 import { RootNavigator } from './tabbar/tab-navigator';
 import { AppState, storeFactory } from './reducers/app.reducer';
@@ -9,13 +9,29 @@ import { loadDepartments } from './reducers/organization/organization.action';
 import { loadFeeds } from './reducers/feeds/feeds.action';
 import { Employee } from './reducers/organization/employee.model';
 import { loadUser } from './reducers/user/user.action';
+import { AddListener, createReduxBoundAddListener } from 'react-navigation-redux-helpers';
 
 interface AppProps {
   dispatch: Dispatch<any>;
   nav: NavigationState;
+  reduxNavKey: string;
 }
 
 export class App extends Component<AppProps> {
+
+  private addListener: AddListener;
+
+  public componentWillMount() {
+    this.addListener = createReduxBoundAddListener(this.props.reduxNavKey);
+  }
+
+  public render() {
+    return <RootNavigator navigation={addNavigationHelpers({
+      dispatch: this.props.dispatch as any,
+      state: this.props.nav,
+      addListener: this.addListener
+    })} />;
+  }
 
   public componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', this.onBackPress );
@@ -30,13 +46,6 @@ export class App extends Component<AppProps> {
     BackHandler.removeEventListener('hardwareBackPress', this.onBackPress);
   }
 
-  public render() {
-    return <RootNavigator navigation={addNavigationHelpers({
-      dispatch: this.props.dispatch as any,
-      state: this.props.nav
-    })} />;
-  }
-
   private onBackPress = () => {
     const { dispatch, nav } = this.props;
     if (nav.index === 0) {
@@ -49,17 +58,8 @@ export class App extends Component<AppProps> {
 }
 
 const mapStateToProps = (state: AppState) => ({
-  nav: state.nav
+  nav: state.nav,
+  reduxNavKey: state.navigationMiddlewareKey
 });
 
-const AppWithNavigationState = connect(mapStateToProps)(App);
-
-export class Root extends Component<{}> {
-  public render() {
-    return (
-      <Provider store={storeFactory()}>
-        <AppWithNavigationState/>
-      </Provider>
-    );
-  }
-}
+export const AppWithNavigationState = connect(mapStateToProps)(App);

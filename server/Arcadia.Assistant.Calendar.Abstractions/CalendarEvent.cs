@@ -8,11 +8,14 @@
 
         public string Status { get; }
 
-        public CalendarEvent(string eventId, DatesPeriod dates, string status)
+        public string Type { get; }
+
+        public CalendarEvent(string eventId, string type, DatesPeriod dates, string status)
         {
             this.EventId = eventId;
             this.Dates = dates;
             this.Status = status;
+            this.Type = type;
         }
     }
 }

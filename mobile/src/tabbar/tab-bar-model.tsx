@@ -1,11 +1,11 @@
 import { TabNavigatorConfig, NavigationRouteConfigMap } from 'react-navigation';
 import React from 'react';
 import { FeedsScreen } from '../feeds/feeds-screen';
-import { PeopleScreen } from '../people/people-screen';
 import { HelpdeskScreen } from '../helpdesk/helpdesk-screen';
 import { CalendarScreen } from '../calendar/calendar-screen';
 import { ProfileScreen } from '../profile/profile-screen';
 import { TabNavigationOptionsFactory } from '../tabbar/tab-navigation-options-factory';
+import { PeopleScreen } from '../people/people-screen';
 
 const navOptionsFactory = new TabNavigationOptionsFactory();
 
@@ -20,11 +20,6 @@ const tabbarModel: NavigationRouteConfigMap = {
         screen: PeopleScreen,
         path: '/people',
         navigationOptions: navOptionsFactory.create('People', 'people')
-    },
-    Helpdesk: {
-        screen: HelpdeskScreen,
-        path: '/helpdesk',
-        navigationOptions: navOptionsFactory.create('Helpdesk', 'helpdesk')
     },
     Calendar: {
         screen: CalendarScreen,

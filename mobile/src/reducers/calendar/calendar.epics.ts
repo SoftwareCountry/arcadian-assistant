@@ -1,19 +1,38 @@
-import { UserActions, LoadUserEmployeeFinished } from '../user/user.action';
+import { LoadUserEmployeeFinished } from '../user/user.action';
 import { ActionsObservable } from 'redux-observable';
 import { Observable } from 'rxjs/Observable';
-import { ajaxGetJSON } from 'rxjs/observable/dom/AjaxObservable';
-import { apiUrl } from '../const';
 import { deserializeArray } from 'santee-dcts';
-import { loadCalendarEventsFinished } from './calendar.action';
+import { loadCalendarEventsFinished, CalendarEventCreated, IntervalsBySingleDaySelection, intervalsBySingleDaySelection, SelectCalendarDay, LoadCalendarEventsFinished, LoadCalendarEvents, loadCalendarEvents } from './calendar.action';
 import { loadFailedError } from '../errors/errors.action';
-import { CalendarEvents, CalendarEventsType, CalendarEventStatus, DatesInterval } from './calendar-events.model';
-import moment from 'moment';
+import { CalendarEvents, CalendarEventStatus, CalendarEventsType } from './calendar-events.model';
+import { closeEventDialog } from './event-dialog/event-dialog.action';
+import { AppState } from 'react-native';
+import { DependenciesContainer } from '../app.reducer';
 
-export const loadCalendarEventsFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>) =>
+export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, state: AppState, deps: DependenciesContainer) =>
     action$.ofType('LOAD-USER-EMPLOYEE-FINISHED')
-        .switchMap(x =>
-            ajaxGetJSON(`${apiUrl}/employees/${x.employee.employeeId}/events`).map((obj: Object[]) => deserializeArray(obj, CalendarEvents))
+        .map(x => loadCalendarEvents(x.employee.employeeId))
+        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+
+export const loadCalendarEventsFinishedEpic$ = (action$: ActionsObservable<LoadCalendarEventsFinished>, state: AppState, deps: DependenciesContainer) =>
+    action$.ofType('LOAD-CALENDAR-EVENTS-FINISHED')
+        .map(x => closeEventDialog());
+
+export const loadCalendarEventsEpic$ = (action$: ActionsObservable<LoadCalendarEvents>, state: AppState, deps: DependenciesContainer) =>
+    action$.ofType('LOAD-CALENDAR-EVENTS')
+        .switchMap(x => deps.apiClient
+            .getJSON(`/employees/${x.employeeId}/events`)
+            .map((obj: Object[]) => deserializeArray(obj, CalendarEvents))
         )
         .map(x => loadCalendarEventsFinished(x))
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
+export const calendarEventCreatedEpic$ = (action$: ActionsObservable<CalendarEventCreated>) =>
+    action$.ofType('CALENDAR-EVENT-CREATED')
+        .map(x => closeEventDialog());
+
+export const intervalsBySingleDaySelectionEpic$ = (action$: ActionsObservable<SelectCalendarDay | LoadCalendarEventsFinished | CalendarEventCreated>) =>
+    action$.filter(x => x.type === 'SELECT-CALENDAR-DAY'
+            || x.type === 'LOAD-CALENDAR-EVENTS-FINISHED'
+            || x.type === 'CALENDAR-EVENT-CREATED')
+        .map(x => intervalsBySingleDaySelection());
