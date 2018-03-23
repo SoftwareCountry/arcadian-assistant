@@ -6,7 +6,6 @@ import { connect, Dispatch, MapStateToProps, MapDispatchToPropsFunction } from '
 import { WithBackButtonProps, mapBackButtonDispatchToProps } from '../layout/back-button-dispatcher';
 import { TicketTemplate } from '../reducers/helpdesk/ticket-template.model';
 import { loadTicketTemplates } from '../reducers/helpdesk/tickets.actions';
-import { EmployeeCardWithAvatar } from '../people/employee-card-with-avatar';
 
 interface HelpdeskScreenProps {
     ticketTemplates: TicketTemplate[];
