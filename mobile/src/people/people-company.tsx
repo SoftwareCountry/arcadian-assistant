@@ -13,7 +13,7 @@ import { DepartmentsTree } from './departments/departments-tree';
 import { DepartmentsTreeNode } from './departments/departments-tree-node';
 import { EmployeeMap, EmployeesStore } from '../reducers/organization/employees.reducer';
 import { EmployeeCardWithAvatar } from './employee-card-with-avatar';
-import { PeopleActions, requestEmployeesForDepartment, updateDepartmentIdsTree } from '../reducers/people/people.action';
+import { PeopleActions, updateDepartmentIdsTree } from '../reducers/people/people.action';
 
 interface PeopleCompanyProps {
     routeName: string;

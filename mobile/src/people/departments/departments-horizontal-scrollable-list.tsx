@@ -6,7 +6,8 @@ import { EmployeeCardWithAvatar } from '../employee-card-with-avatar';
 import { DepartmentsTree } from './departments-tree';
 import { DepartmentsTreeNode } from './departments-tree-node';
 import { Employee } from '../../reducers/organization/employee.model';
-import { PeopleActions, requestEmployeesForDepartment, updateDepartmentIdsTree } from '../../reducers/people/people.action';
+import { PeopleActions, updateDepartmentIdsTree } from '../../reducers/people/people.action';
+import { loadEmployeesForDepartment } from '../../reducers/organization/organization.action';
 
 interface DepartmentsHScrollableListProps {
     departmentsTree: DepartmentsTree;
@@ -23,7 +24,7 @@ interface DepartmentsHScrollableListDispatchProps {
 
 const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
     requestEmployeesForDepartment: (departmentId: string) => { 
-        dispatch(requestEmployeesForDepartment(departmentId)); 
+        dispatch(loadEmployeesForDepartment(departmentId)); 
     },
     updateDepartmentIdsTree: (index: number, departmentId: string) => { 
         dispatch(updateDepartmentIdsTree(index, departmentId)); 

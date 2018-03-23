@@ -19,7 +19,7 @@ import { SecuredApiClient } from '../auth/secured-api-client';
 import config from '../config';
 import { OAuthProcess } from '../auth/oauth-process';
 import { createReactNavigationReduxMiddleware, createReduxBoundAddListener } from 'react-navigation-redux-helpers';
-import { PeopleState, peopleReducer, peopleEpics } from './people/people.reducer';
+import { PeopleState, peopleReducer  } from './people/people.reducer';
 
 export interface AppState {
     helpdesk: HelpdeskState;
@@ -34,7 +34,7 @@ export interface AppState {
     people: PeopleState;
 }
 
-const rootEpic = combineEpics(helpdeskEpics as any, organizationEpics as any, errorsEpics as any, userEpics as any, feedsEpics as any, calendarEpics as any, peopleEpics as any);
+const rootEpic = combineEpics(helpdeskEpics as any, organizationEpics as any, errorsEpics as any, userEpics as any, feedsEpics as any, calendarEpics as any);
 
 const reducers = combineReducers<AppState>({
     helpdesk: helpdeskReducer,
