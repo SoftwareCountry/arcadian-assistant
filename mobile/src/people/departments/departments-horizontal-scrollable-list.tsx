@@ -79,6 +79,7 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
                 horizontal 
                 pagingEnabled 
                 scrollEnabled={isScrollEnabled} 
+                showsHorizontalScrollIndicator={false}
                 onMomentumScrollEnd={this.onMomentumScrollEnd.bind(this)}
                 onScrollBeginDrag={this.onScrollBeginDrag.bind(this)}
             >
