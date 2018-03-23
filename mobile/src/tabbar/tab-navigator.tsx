@@ -13,6 +13,7 @@ const tabNavigatorConfig: TabNavigatorConfig = {
         showIcon: true,
     },
     animationEnabled: false,
+    swipeEnabled: false,
     lazy: true
 };
 
