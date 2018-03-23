@@ -36,25 +36,6 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
     private buttonText: Text;
     private currentPage: number;
 
-    /* constructor() {
-        super();
-        this.animatedValue = new Animated.Value(0);
-        this.state = { buttonText: '' };
-    }
- */
-/*     public animate(easing) {
-        this.refs['id4'].setNativeProps({ text: 'Another Text' });
-        this.animatedValue.setValue(0);
-        Animated.timing(
-            this.animatedValue,
-            {
-                toValue: 1,
-                duration: 1000,
-                easing
-            }
-        ).start();
-    } */
-
     public componentDidMount() {
         // this.animate.bind(this, Easing.bounce);
         //this.props.updateDepartmentIdsTree(this.props.treeLevel, this.props.departmentsTreeNodes[0].departmentId);
@@ -63,7 +44,6 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
     public onMomentumScrollEnd(event: any) {
         var offset = event.nativeEvent.contentOffset;
         if (offset) {
-            // var page = Math.round(offset.x / Dimensions.get('window').width) + 1;
             this.currentPage = Math.round(offset.x / Dimensions.get('window').width) + 1;
             if (this.currentPage > this.employeeCards.length) {
                 this.props.requestEmployeesForDepartment(this.props.headDepartment.departmentId);

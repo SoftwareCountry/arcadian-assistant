@@ -1,7 +1,5 @@
 import { Employee } from '../../reducers/organization/employee.model';
 import { EmployeeMap } from '../../reducers/organization/employees.reducer';
-import { Iterable } from 'immutable';
-
 import { Department } from '../../reducers/organization/department.model';
 
 export class DepartmentsTreeNode {

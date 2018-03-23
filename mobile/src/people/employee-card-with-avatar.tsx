@@ -55,7 +55,7 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
             this.state.fadeInAnim,
             {
               toValue: 1,
-              duration: 3000,
+              duration: 1000,
             }
           ).start();
   
@@ -63,7 +63,7 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
               this.state.fadeOutAnim,
               {
                 toValue: 0,
-                duration: 2000,
+                duration: 1000,
               }
           ).start();
   
@@ -72,9 +72,18 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
         if (employees != null) {
             const calcultatedHeight =  this.props.stretchToFitScreen ? Dimensions.get('screen').height - 90 * this.props.treeLevel - 119 : 90; 
             // console.log('Tree level: ' + this.props.treeLevel + ' Calculated height: ' + calcultatedHeight);
+            const { layout } = styles;
+            const layoutFlattenStyle = StyleSheet.flatten([
+                layout,
+                {
+                    width: Dimensions.get('window').width,
+                    height: calcultatedHeight,
+                    backgroundColor: '#abfcba'
+                }
+            ]);
             const filteredEmployees = employees.filter((emp) => emp.employeeId !== this.props.chiefId);
             return (
-                <View style={{ backgroundColor: '#abfcba', width: Dimensions.get('window').width, height: calcultatedHeight, overflow: 'hidden', borderTopWidth: 1, borderColor: 'rgba(0, 0, 0, 0.15)' }}>
+                <View style={layoutFlattenStyle}>
                 <FlatList
                     data={filteredEmployees}
                     keyExtractor={this.keyExtractor}
@@ -82,23 +91,61 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
                 </View> 
             );
         } else {
+            const { 
+                layout,
+                innerLayout, 
+                avatarContainer, 
+                avatarOuterFrame, 
+                avatarImage, 
+                info,
+                name,
+                baseText,
+                depabbText,
+                neighborAvatarContainer, 
+                neighborAvatarImage } = styles;
+
+            const layoutFlattenStyle = StyleSheet.flatten([
+                layout,
+                {
+                    width: Dimensions.get('window').width
+                }
+            ]);
+
+            const neighborTop = ((StyleSheet.flatten(layout).height as number) - (StyleSheet.flatten(neighborAvatarContainer).height as number)) * 0.5;
+            const leftNeighborX = - (StyleSheet.flatten(neighborAvatarContainer).height as number) * 0.5;
+            const rightNeighborX = Dimensions.get('window').width - (StyleSheet.flatten(neighborAvatarContainer).height as number) * 0.5;
+            const opacityValue = neighboursAvatarsVisibility ? fadeInAnim : fadeOutAnim;
+
+            const leftNeighborFlattenStyle = StyleSheet.flatten([
+                neighborAvatarContainer,
+                {
+                    top: neighborTop,
+                    left: leftNeighborX
+                }]);
+            const rightNeighborFlattenStyle = StyleSheet.flatten([
+                neighborAvatarContainer,
+                {
+                    top: neighborTop,
+                    left: rightNeighborX
+                }]);
+
             return (
-                <Animated.View style={{ width: Dimensions.get('window').width, height: 90, flex: 0, overflow: 'hidden', borderTopWidth: 1, borderColor: 'rgba(0, 0, 0, 0.15)' }}>
-                    <Animated.View style={{ position: 'absolute', top: (90 - 44) * 0.5, left: -44 * 0.5, opacity: neighboursAvatarsVisibility ? fadeInAnim : fadeOutAnim }}>
-                        { this.props.leftNeighbor ? <Avatar photo={this.props.leftNeighbor.photo} style={{ width: 44, height: 44 }} /> : null }
+                <Animated.View style={layoutFlattenStyle}>
+                    <Animated.View style={{...leftNeighborFlattenStyle, opacity: opacityValue}}>
+                        { this.props.leftNeighbor ? <Avatar photo={this.props.leftNeighbor.photo} /> : null }
                     </Animated.View>
-                    <View style={styles.layout}>
-                        <View style={styles.avatarContainer}>
-                            <Avatar photo={photo} style={{ width: 56, height: 56 }} />
+                    <View style={innerLayout}>
+                        <View style={avatarContainer}>
+                            <Avatar photo={photo} style={avatarOuterFrame} />
                         </View>
-                        <View style={styles.info}>
-                            <StyledText style={styles.name}>{employee.name}</StyledText>
-                            <StyledText style={styles.baseText}>{employee.position}</StyledText>
-                            <StyledText style={styles.depabbText}>{this.props.departmentAbbreviation}</StyledText>
+                        <View style={info}>
+                            <StyledText style={name}>{employee.name}</StyledText>
+                            <StyledText style={baseText}>{employee.position}</StyledText>
+                            <StyledText style={depabbText}>{this.props.departmentAbbreviation}</StyledText>
                         </View>
                     </View>
-                    <Animated.View style={{ position: 'absolute', top: (90 - 44) * 0.5, left: (Dimensions.get('window').width - 44 * 0.5 ), opacity: neighboursAvatarsVisibility ? fadeInAnim : fadeOutAnim}}>
-                        { this.props.rightNeighbor ? <Avatar photo={this.props.rightNeighbor.photo} style={{ width: 44, height: 44 }} /> : null }
+                    <Animated.View style={{...rightNeighborFlattenStyle, opacity: opacityValue}}>
+                        { this.props.rightNeighbor ? <Avatar photo={this.props.rightNeighbor.photo} /> : null }
                     </Animated.View>
                 </Animated.View>
             );
@@ -109,15 +156,15 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
 
     private renderItem = (itemInfo: ListRenderItemInfo<Employee>) => {
         const { item } = itemInfo;
-
+        const { innerLayout, avatarContainer, avatarOuterFrame, avatarImage, info, name, baseText } = tinyStyles;
         return (
-            <View style={tinyStyles.layout} key={item.employeeId}>
-                <View style={tinyStyles.avatarContainer}>
-                    <Avatar photo={item.photo} style={tinyStyles.avatarOuterFrame} imageStyle={tinyStyles.avatarImage} />
+            <View style={innerLayout} key={item.employeeId}>
+                <View style={avatarContainer}>
+                    <Avatar photo={item.photo} style={avatarOuterFrame} imageStyle={avatarImage} />
                 </View>
-                <View style={tinyStyles.info}>
-                    <StyledText style={tinyStyles.name}>{item.name}, </StyledText>
-                    <StyledText style={tinyStyles.baseText}>{item.position}</StyledText>
+                <View style={info}>
+                    <StyledText style={name}>{item.name}, </StyledText>
+                    <StyledText style={baseText}>{item.position}</StyledText>
                 </View>
             </View>
         );

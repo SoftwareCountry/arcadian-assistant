@@ -56,6 +56,13 @@ export const employeesListItemStyles = StyleSheet.create({
 
 export const companyItemStyles = StyleSheet.create({
     layout: {
+        height: 90, 
+        flex: 0, 
+        overflow: 'hidden', 
+        borderTopWidth: 1, 
+        borderColor: 'rgba(0, 0, 0, 0.15)'
+    },
+    innerLayout: {
         height: 90,
         flex: 1,
         flexDirection: 'row',
@@ -99,11 +106,29 @@ export const companyItemStyles = StyleSheet.create({
         fontFamily: 'Helvetica-Light',
         fontSize: 15,
         paddingBottom: 2
+    },
+    neighborAvatarContainer: {
+        width: 44,
+        height: 44,
+        position: 'absolute'
+    },
+    neighborAvatarOuterFrame: {
+        borderWidth: 1
+    },
+    neighborAvatarImage: {
+        borderWidth: 2
     }
 });
 
 export const companyTinyItemStyles = StyleSheet.create({
     layout: {
+        height: 90, 
+        flex: 0, 
+        overflow: 'hidden', 
+        borderTopWidth: 1, 
+        borderColor: 'rgba(0, 0, 0, 0.15)'
+    },
+    innerLayout: {
         height: 38,
         flex: 1,
         flexDirection: 'row',
