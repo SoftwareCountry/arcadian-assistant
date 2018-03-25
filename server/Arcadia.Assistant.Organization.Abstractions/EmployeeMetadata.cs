@@ -40,6 +40,26 @@
 
         public int? YearsServed => CalculateYearsFromDate(this.HireDate, this.FireDate);
 
+        public int? AgeAt(DateTime date)
+        {
+            return CalculateYearsFromDate(this.BirthDate, date);
+        }
+
+        public int? YearsServedAt(DateTime date)
+        {
+            DateTime toDate;
+            if (this.FireDate == null)
+            {
+                toDate = date;
+            }
+            else
+            {
+                toDate = date > this.FireDate ? this.FireDate.Value : date;
+            }
+
+            return CalculateYearsFromDate(toDate);
+        }
+
         private static int? CalculateYearsFromDate(DateTime? fromDate, DateTime? toDate = null)
         {
             if (fromDate == null)
