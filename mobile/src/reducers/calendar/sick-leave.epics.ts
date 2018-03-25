@@ -1,7 +1,7 @@
 import { ActionsObservable } from 'redux-observable';
 import { CompleteSickLeave, ConfirmClaimSickLeave } from './sick-leave.action';
 import { AppState, DependenciesContainer } from '../app.reducer';
-import { CalendarEventStatus, CalendarEvents, CalendarEventsType } from './calendar-events.model';
+import { CalendarEventStatus, CalendarEvent, CalendarEventType } from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
 import { calendarEventCreated, loadCalendarEvents } from './calendar.action';
 import { loadFailedError } from '../errors/errors.action';
@@ -11,9 +11,9 @@ import { closeEventDialog } from './event-dialog/event-dialog.action';
 export const sickLeaveSavedEpic$ = (action$: ActionsObservable<ConfirmClaimSickLeave>, state: AppState, deps: DependenciesContainer) =>
     action$.ofType('CONFIRM-CLAIM-SICK-LEAVE')
         .flatMap(x => {
-            const calendarEvents = new CalendarEvents();
+            const calendarEvents = new CalendarEvent();
 
-            calendarEvents.type = CalendarEventsType.Sickleave;
+            calendarEvents.type = CalendarEventType.Sickleave;
 
             calendarEvents.dates = {
                 startDate: x.startDate,
@@ -28,7 +28,7 @@ export const sickLeaveSavedEpic$ = (action$: ActionsObservable<ConfirmClaimSickL
                 `/employees/${x.employeeId}/events`,
                 calendarEvents,
                 { 'Content-Type': 'application/json' }
-            ).map(obj => deserialize(obj.response, CalendarEvents));
+            ).map(obj => deserialize(obj.response, CalendarEvent));
         })
         .map(x => calendarEventCreated(x))
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));

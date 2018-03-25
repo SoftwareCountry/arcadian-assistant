@@ -1,6 +1,7 @@
-import { CalendarEvents } from './calendar-events.model';
+import { CalendarEvent } from './calendar-event.model';
 import { DayModel } from './calendar.model';
 import { SickLeaveActions } from './sick-leave.action';
+import { CalendarEvents } from './calendar-events.model';
 
 export interface LoadCalendarEvents {
     type: 'LOAD-CALENDAR-EVENTS';
@@ -11,17 +12,17 @@ export const loadCalendarEvents = (employeeId: string): LoadCalendarEvents => ({
 
 export interface LoadCalendarEventsFinished {
     type: 'LOAD-CALENDAR-EVENTS-FINISHED';
-    calendarEvents: CalendarEvents[];
+    calendarEvents: CalendarEvents;
 }
 
-export const loadCalendarEventsFinished = (calendarEvents: CalendarEvents[]): LoadCalendarEventsFinished => ({ type: 'LOAD-CALENDAR-EVENTS-FINISHED', calendarEvents });
+export const loadCalendarEventsFinished = (calendarEvents: CalendarEvents): LoadCalendarEventsFinished => ({ type: 'LOAD-CALENDAR-EVENTS-FINISHED', calendarEvents });
 
 export interface CalendarEventCreated {
     type: 'CALENDAR-EVENT-CREATED';
-    calendarEvent: CalendarEvents;
+    calendarEvent: CalendarEvent;
 }
 
-export const calendarEventCreated = (calendarEvent: CalendarEvents): CalendarEventCreated => ({ type: 'CALENDAR-EVENT-CREATED', calendarEvent });
+export const calendarEventCreated = (calendarEvent: CalendarEvent): CalendarEventCreated => ({ type: 'CALENDAR-EVENT-CREATED', calendarEvent });
 
 export interface SelectCalendarDay {
     type: 'SELECT-CALENDAR-DAY';

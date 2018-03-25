@@ -1,25 +1,26 @@
 import { calendarEventsReducer, CalendarEventsState } from './calendar-events.reducer';
 import { loadCalendarEventsFinished, calendarEventCreated, selectCalendarDay, calendarSelectionMode, CalendarSelectionModeType } from './calendar.action';
-import { CalendarEvents, DatesInterval, CalendarEventStatus, CalendarEventsType } from './calendar-events.model';
+import { CalendarEvent, DatesInterval, CalendarEventStatus, CalendarEventType } from './calendar-event.model';
 import moment from 'moment';
 import { DayModel } from './calendar.model';
+import { CalendarEvents } from './calendar-events.model';
 
 describe('calendar events reducer', () => {
     describe('when load calendar events finished', () => {
         let state: CalendarEventsState;
-        let calendarEvent: CalendarEvents;
+        let calendarEvent: CalendarEvent;
 
         beforeEach(() => {
-            calendarEvent = new CalendarEvents();
+            calendarEvent = new CalendarEvent();
 
             calendarEvent.calendarEventId = '1';
             calendarEvent.dates = new DatesInterval();
             calendarEvent.dates.startDate = moment();
             calendarEvent.dates.endDate = moment(calendarEvent.dates.startDate);
             calendarEvent.status = CalendarEventStatus.Requested;
-            calendarEvent.type = CalendarEventsType.Sickleave;
+            calendarEvent.type = CalendarEventType.Sickleave;
 
-            const action = loadCalendarEventsFinished([calendarEvent]);
+            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]));
             state = calendarEventsReducer(undefined, action);
         });
 
@@ -44,17 +45,17 @@ describe('calendar events reducer', () => {
 
     describe('when calendar event created', () => {
         let state: CalendarEventsState;
-        let calendarEvent: CalendarEvents;
+        let calendarEvent: CalendarEvent;
 
         beforeEach(() => {
-            calendarEvent = new CalendarEvents();
+            calendarEvent = new CalendarEvent();
 
             calendarEvent.calendarEventId = '1';
             calendarEvent.dates = new DatesInterval();
             calendarEvent.dates.startDate = moment();
             calendarEvent.dates.endDate = moment(calendarEvent.dates.startDate);
             calendarEvent.status = CalendarEventStatus.Requested;
-            calendarEvent.type = CalendarEventsType.Sickleave;
+            calendarEvent.type = CalendarEventType.Sickleave;
 
             const action = calendarEventCreated(calendarEvent);
             state = calendarEventsReducer(undefined, action);

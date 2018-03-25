@@ -4,10 +4,11 @@ import { Observable } from 'rxjs/Observable';
 import { deserializeArray } from 'santee-dcts';
 import { loadCalendarEventsFinished, CalendarEventCreated, IntervalsBySingleDaySelection, intervalsBySingleDaySelection, SelectCalendarDay, LoadCalendarEventsFinished, LoadCalendarEvents, loadCalendarEvents } from './calendar.action';
 import { loadFailedError } from '../errors/errors.action';
-import { CalendarEvents, CalendarEventStatus, CalendarEventsType } from './calendar-events.model';
+import { CalendarEvent, CalendarEventStatus, CalendarEventType } from './calendar-event.model';
 import { closeEventDialog } from './event-dialog/event-dialog.action';
 import { AppState } from 'react-native';
 import { DependenciesContainer } from '../app.reducer';
+import { CalendarEvents } from './calendar-events.model';
 
 export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, state: AppState, deps: DependenciesContainer) =>
     action$.ofType('LOAD-USER-EMPLOYEE-FINISHED')
@@ -22,7 +23,8 @@ export const loadCalendarEventsEpic$ = (action$: ActionsObservable<LoadCalendarE
     action$.ofType('LOAD-CALENDAR-EVENTS')
         .switchMap(x => deps.apiClient
             .getJSON(`/employees/${x.employeeId}/events`)
-            .map((obj: Object[]) => deserializeArray(obj, CalendarEvents))
+            .map((obj: Object[]) => deserializeArray(obj, CalendarEvent))
+            .map(calendarEvents => new CalendarEvents(calendarEvents))
         )
         .map(x => loadCalendarEventsFinished(x))
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));

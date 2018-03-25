@@ -1,5 +1,5 @@
 import moment, { Moment } from 'moment';
-import { CalendarEvents, CalendarEventsType } from './calendar-events.model';
+import { CalendarEvent, CalendarEventType, CalendarEventStatus } from './calendar-event.model';
 
 export interface DayModel {
     date: Moment;
@@ -23,15 +23,20 @@ export enum IntervalType {
 
 export interface IntervalModel {
     intervalType: IntervalType;
-    calendarEvent: CalendarEvents;
+    calendarEvent: CalendarEvent;
     boundary: boolean;
+}
+
+export interface ReadOnlyIntervalsModel {
+    get(date: Moment): IntervalModel[] | undefined;
+    copy(): IntervalsModel;
 }
 
 type IntervalsModelDictionary = {
     [dateKey: string]: IntervalModel[];
 };
 
-export class IntervalsModel {
+export class IntervalsModel implements ReadOnlyIntervalsModel {
     constructor(
         private readonly intervalsDictionary: IntervalsModelDictionary = {}
     ) { }
@@ -94,9 +99,9 @@ export class ExtractedIntervals {
 
     constructor(intervals: IntervalModel[]) {
         if (intervals) {
-            this.vacation = intervals.find(x => x.calendarEvent.type === CalendarEventsType.Vacation);
-            this.dayoff = intervals.find(x => x.calendarEvent.type === CalendarEventsType.Dayoff || x.calendarEvent.type === CalendarEventsType.Workout);
-            this.sickleave = intervals.find(x => x.calendarEvent.type === CalendarEventsType.Sickleave);
+            this.vacation = intervals.find(x => x.calendarEvent.type === CalendarEventType.Vacation);
+            this.dayoff = intervals.find(x => x.calendarEvent.type === CalendarEventType.Dayoff || x.calendarEvent.type === CalendarEventType.Workout);
+            this.sickleave = intervals.find(x => x.calendarEvent.type === CalendarEventType.Sickleave);
         }
     }
 }
