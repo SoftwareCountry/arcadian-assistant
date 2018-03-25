@@ -46,7 +46,7 @@
                 return this.NotFound();
             }
 
-            var events = await employee.Calendar.Ask<GetCalendarEvents.Response>(GetCalendarEvents.Instance, this.timeoutSettings.Timeout, token);
+            var events = await employee.Calendar.CalendarActor.Ask<GetCalendarEvents.Response>(GetCalendarEvents.Instance, this.timeoutSettings.Timeout, token);
             var eventModels = events.Events
                 .Select(x => new CalendarEventsWithIdModel(x.EventId, x.Type, x.Dates, x.Status));
 
@@ -66,7 +66,7 @@
                 return this.NotFound();
             }
 
-            var requestedEvent = await this.GetCalendarEventOrDefaultAsync(employee.Calendar, eventId, token);
+            var requestedEvent = await this.GetCalendarEventOrDefaultAsync(employee.Calendar.CalendarActor, eventId, token);
 
             if (requestedEvent == null)
             {
@@ -102,7 +102,7 @@
             }
 
             var calendarEvent = new CalendarEvent(newId, model.Type, model.Dates, model.Status);
-            var eventCreationResponse = await this.UpsertEventAsync(employee.Calendar, calendarEvent, token);
+            var eventCreationResponse = await this.UpsertEventAsync(employee.Calendar.CalendarActor, calendarEvent, token);
 
             switch (eventCreationResponse)
             {
@@ -138,14 +138,14 @@
                 return this.NotFound();
             }
 
-            var existingEvent = await this.GetCalendarEventOrDefaultAsync(employee.Calendar, eventId, token);
+            var existingEvent = await this.GetCalendarEventOrDefaultAsync(employee.Calendar.CalendarActor, eventId, token);
             if (existingEvent == null)
             {
                 return this.NotFound();
             }
 
             var calendarEvent = new CalendarEvent(eventId, model.Type, model.Dates, model.Status);
-            var response = await this.UpsertEventAsync(employee.Calendar, calendarEvent, token);
+            var response = await this.UpsertEventAsync(employee.Calendar.CalendarActor, calendarEvent, token);
 
             switch (response)
             {

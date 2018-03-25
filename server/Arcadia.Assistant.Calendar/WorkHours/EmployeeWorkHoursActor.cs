@@ -7,6 +7,7 @@
 
     using Akka.Actor;
 
+    using Arcadia.Assistant.Calendar.Abstractions.Messages;
     using Arcadia.Assistant.Calendar.WorkHours.Events;
 
     public class EmployeeWorkHoursActor : CalendarEventsStorageBase
@@ -46,6 +47,20 @@
                     break;
                 case WorkHoursChangeIsRejected ev:
                     this.OnChangeRejected(ev);
+                    break;
+            }
+        }
+
+        protected override void OnCommand(object message)
+        {
+            switch (message)
+            {
+                case GetWorkHoursCredit _:
+                    this.Sender.Tell(new GetWorkHoursCredit.Response(this.hoursCredit));
+                    break;
+
+                default:
+                    base.OnCommand(message);
                     break;
             }
         }

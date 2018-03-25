@@ -6,11 +6,14 @@
     using Akka.Actor;
 
     using Arcadia.Assistant.Calendar.Abstractions;
+    using Arcadia.Assistant.Calendar.Abstractions.Messages;
     using Arcadia.Assistant.Calendar.Vacations.Events;
 
     public class EmployeeVacationsActor : CalendarEventsStorageBase
     {
         public override string PersistenceId { get; }
+
+        private int vacationsCredit = 28;
 
         public EmployeeVacationsActor(string employeeId)
             : base(employeeId)
@@ -39,6 +42,20 @@
                     this.OnVacationRequested(e);
                     onUpsert(this.EventsById[eventId]);
                 });
+        }
+
+        protected override void OnCommand(object message)
+        {
+            switch (message)
+            {
+                case GetVacationsCredit _:
+                    this.Sender.Tell(new GetVacationsCredit.Response(this.vacationsCredit));
+                    break;
+
+                default:
+                    base.OnCommand(message);
+                    break;
+            }
         }
 
         protected override void UpdateCalendarEvent(CalendarEvent oldEvent, CalendarEvent newEvent, OnSuccessfulUpsertCallback onUpsert)

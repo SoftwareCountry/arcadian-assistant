@@ -21,13 +21,7 @@
 
         private readonly IActorRef employeeFeed;
 
-        private readonly IActorRef calendar;
-
-        private readonly IActorRef vacationsActor;
-
-        private readonly IActorRef workHoursActor;
-
-        private readonly IActorRef sickLeavesActor;
+        private readonly EmployeeCalendarContainer calendar;
 
         public EmployeeActor(EmployeeStoredInformation storedInformation)
         {
@@ -39,11 +33,13 @@
             var employeeFeedId = $"employee-feed-{this.employeeMetadata.EmployeeId}";
             this.employeeFeed = Context.ActorOf(FeedActor.CreateProps(employeeFeedId), "feed");
 
-            this.vacationsActor = Context.ActorOf(EmployeeVacationsActor.CreateProps(this.employeeMetadata.EmployeeId), "vacations");
-            this.sickLeavesActor = Context.ActorOf(EmployeeSickLeaveActor.CreateProps(this.employeeMetadata.EmployeeId), "sick-leaves");
-            this.workHoursActor = Context.ActorOf(EmployeeWorkHoursActor.CreateProps(this.employeeMetadata.EmployeeId), "work-hours");
+            var vacationsActor = Context.ActorOf(EmployeeVacationsActor.CreateProps(this.employeeMetadata.EmployeeId), "vacations");
+            var sickLeavesActor = Context.ActorOf(EmployeeSickLeaveActor.CreateProps(this.employeeMetadata.EmployeeId), "sick-leaves");
+            var workHoursActor = Context.ActorOf(EmployeeWorkHoursActor.CreateProps(this.employeeMetadata.EmployeeId), "work-hours");
 
-            this.calendar = Context.ActorOf(EmployeeCalendarActor.CreateProps(this.vacationsActor, this.workHoursActor, this.sickLeavesActor));
+            var calendarActor = Context.ActorOf(EmployeeCalendarActor.CreateProps(vacationsActor, workHoursActor, sickLeavesActor));
+
+            this.calendar = new EmployeeCalendarContainer(vacationsActor, workHoursActor, sickLeavesActor, calendarActor);
         }
 
         protected override void OnReceive(object message)
