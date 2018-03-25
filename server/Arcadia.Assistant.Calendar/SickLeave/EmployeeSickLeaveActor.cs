@@ -3,6 +3,8 @@
     using System;
     using System.Linq;
 
+    using Akka.Actor;
+
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.SickLeave.Events;
 
@@ -15,6 +17,11 @@
         }
 
         public override string PersistenceId { get; }
+
+        public static Props CreateProps(string employeeId)
+        {
+            return Props.Create(() => new EmployeeSickLeaveActor(employeeId));
+        }
 
         protected override void OnRecover(object message)
         {
@@ -130,7 +137,7 @@
         {
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
-                var dates = new DatesPeriod(calendarEvent.Dates.StartDate, calendarEvent.Dates.EndDate);
+                var dates = new DatesPeriod(calendarEvent.Dates.StartDate, message.EndDate);
                 this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, dates, calendarEvent.Status);
             }
         }

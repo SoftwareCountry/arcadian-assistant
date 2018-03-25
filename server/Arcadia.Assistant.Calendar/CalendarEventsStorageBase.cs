@@ -40,23 +40,23 @@
                     break;
 
                 case UpsertCalendarEvent cmd when cmd.Event.EventId == null:
-                    this.Sender.Tell(new UpsertCalendarEvent.Error(new ArgumentNullException(nameof(cmd.Event.EventId))));
+                    this.Sender.Tell(new UpsertCalendarEvent.Error(new ArgumentNullException(nameof(cmd.Event.EventId)).Message));
                     break;
 
                 //insert
                 case UpsertCalendarEvent cmd when !this.EventsById.ContainsKey(cmd.Event.EventId):
                     try
                     {
-                        if (cmd.Event.EventId != this.GetInitialStatus())
+                        if (cmd.Event.Status != this.GetInitialStatus())
                         {
-                            throw new Exception($"Event {cmd.Event.EventId}. Initial status must be {cmd.Event.Status}");
+                            throw new Exception($"Event {cmd.Event.EventId}. Initial status must be {this.GetInitialStatus()}");
                         }
 
                         this.InsertCalendarEvent(cmd.Event, this.OnSuccessfulUpsert);
                     }
                     catch (Exception ex)
                     {
-                        this.Sender.Tell(new UpsertCalendarEvent.Error(ex));
+                        this.Sender.Tell(new UpsertCalendarEvent.Error(ex.Message));
                     }
                     break;
 
@@ -73,7 +73,7 @@
                     }
                     catch (Exception ex)
                     {
-                        this.Sender.Tell(new UpsertCalendarEvent.Error(ex));
+                        this.Sender.Tell(new UpsertCalendarEvent.Error(ex.Message));
                     }
                     break;
 

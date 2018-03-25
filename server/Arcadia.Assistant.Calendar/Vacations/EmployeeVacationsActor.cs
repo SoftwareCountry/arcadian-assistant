@@ -3,6 +3,8 @@
     using System;
     using System.Linq;
 
+    using Akka.Actor;
+
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Vacations.Events;
 
@@ -14,6 +16,11 @@
             : base(employeeId)
         {
             this.PersistenceId = $"employee-vacations-{this.EmployeeId}";
+        }
+
+        public static Props CreateProps(string employeeId)
+        {
+            return Props.Create(() => new EmployeeVacationsActor(employeeId));
         }
 
         protected override void InsertCalendarEvent(CalendarEvent calendarEvent, OnSuccessfulUpsertCallback onUpsert)

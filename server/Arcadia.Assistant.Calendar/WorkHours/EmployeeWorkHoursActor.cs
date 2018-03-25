@@ -5,6 +5,8 @@
     using Arcadia.Assistant.Calendar.Abstractions;
     using System.Linq;
 
+    using Akka.Actor;
+
     using Arcadia.Assistant.Calendar.WorkHours.Events;
 
     public class EmployeeWorkHoursActor : CalendarEventsStorageBase
@@ -19,6 +21,11 @@
             : base(employeeId)
         {
             this.PersistenceId = $"employee-workhours-{this.EmployeeId}";
+        }
+
+        public static Props CreateProps(string employeeId)
+        {
+            return Props.Create(() => new EmployeeWorkHoursActor(employeeId));
         }
 
         public override string PersistenceId { get; }

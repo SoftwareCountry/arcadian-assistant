@@ -94,7 +94,6 @@
             }
 
             var newId = Guid.NewGuid().ToString();
-
             var employee = await this.GetEmployeeOrDefaultAsync(employeeId, token);
 
             if (employee == null)
@@ -114,7 +113,7 @@
                     return this.AcceptedAtAction(nameof(this.Get), new { eventId = responseObject.CalendarEventId }, responseObject);
 
                 case UpsertCalendarEvent.Error error:
-                    return this.BadRequest(error.Exception.Message);
+                    return this.BadRequest(error.Message);
                 
                 default:
                     return this.StatusCode(StatusCodes.Status500InternalServerError);
@@ -154,7 +153,7 @@
                     return this.NoContent();
 
                 case UpsertCalendarEvent.Error error:
-                    return this.BadRequest(error.Exception.Message);
+                    return this.BadRequest(error.Message);
 
                 default:
                     return this.StatusCode(StatusCodes.Status500InternalServerError);

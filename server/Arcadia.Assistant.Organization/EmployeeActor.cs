@@ -5,6 +5,9 @@
     using Akka.Actor;
 
     using Arcadia.Assistant.Calendar;
+    using Arcadia.Assistant.Calendar.SickLeave;
+    using Arcadia.Assistant.Calendar.Vacations;
+    using Arcadia.Assistant.Calendar.WorkHours;
     using Arcadia.Assistant.Feeds;
     using Arcadia.Assistant.Images;
     using Arcadia.Assistant.Organization.Abstractions;
@@ -20,6 +23,12 @@
 
         private readonly IActorRef calendar;
 
+        private readonly IActorRef vacationsActor;
+
+        private readonly IActorRef workHoursActor;
+
+        private readonly IActorRef sickLeavesActor;
+
         public EmployeeActor(EmployeeStoredInformation storedInformation)
         {
             this.employeeMetadata = storedInformation.Metadata;
@@ -30,7 +39,11 @@
             var employeeFeedId = $"employee-feed-{this.employeeMetadata.EmployeeId}";
             this.employeeFeed = Context.ActorOf(FeedActor.CreateProps(employeeFeedId), "feed");
 
-            this.calendar = Context.ActorOf(EmployeeCalendarActor.CreateProps(this.employeeMetadata.EmployeeId));
+            this.vacationsActor = Context.ActorOf(EmployeeVacationsActor.CreateProps(this.employeeMetadata.EmployeeId), "vacations");
+            this.sickLeavesActor = Context.ActorOf(EmployeeSickLeaveActor.CreateProps(this.employeeMetadata.EmployeeId), "sick-leaves");
+            this.workHoursActor = Context.ActorOf(EmployeeWorkHoursActor.CreateProps(this.employeeMetadata.EmployeeId), "work-hours");
+
+            this.calendar = Context.ActorOf(EmployeeCalendarActor.CreateProps(this.vacationsActor, this.workHoursActor, this.sickLeavesActor));
         }
 
         protected override void OnReceive(object message)
