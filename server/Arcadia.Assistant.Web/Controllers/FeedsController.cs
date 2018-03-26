@@ -53,13 +53,12 @@
             }
 
             var feedsActor = this.actorFactory.ActorSelection(this.pathsBuilder.Get("shared-feeds"));
-            var sharedFeeds = 
-                await feedsActor.Ask<SharedFeedsActor.GetFeeds.Response>(new SharedFeedsActor.GetFeeds(employee.Metadata.EmployeeId), timeout, token);
-
-            //we should display information from common feeds
-            var feeds = new[] { sharedFeeds.System, sharedFeeds.News };
+            var feeds = 
+                await feedsActor.Ask<GetFeeds.Response>(new GetFeeds(employee.Metadata.EmployeeId), timeout, token);
 
             var responsesTasks = feeds
+                .Feeds
+                .Values
                 .Select(x => x.Ask<GetMessages.Response>(new GetMessages(fromDate, toDate), timeout, token));
 
             var respones = await Task.WhenAll(responsesTasks);
