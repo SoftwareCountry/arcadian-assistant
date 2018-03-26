@@ -1,16 +1,14 @@
-import React, { Component } from 'react';
-import { Animated, Easing, View, Text, ScrollView, Dimensions, TouchableOpacity, ScrollResponderEvent } from 'react-native';
+import React, { Component, SyntheticEvent } from 'react';
+import { Animated, Easing, View, Text, ScrollView, Dimensions, TouchableOpacity, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { AppState } from '../../reducers/app.reducer';
 import { connect, Dispatch, MapStateToProps, MapDispatchToPropsFunction } from 'react-redux';
 import { EmployeeCardWithAvatar } from '../employee-card-with-avatar';
-import { DepartmentsTree } from './departments-tree';
 import { DepartmentsTreeNode } from './departments-tree-node';
 import { Employee } from '../../reducers/organization/employee.model';
 import { PeopleActions, updateDepartmentIdsTree } from '../../reducers/people/people.action';
 import { loadEmployeesForDepartment } from '../../reducers/organization/organization.action';
 
 interface DepartmentsHScrollableListProps {
-    departmentsTree: DepartmentsTree;
     treeLevel?: number;
     departmentsTreeNodes?: DepartmentsTreeNode[];
     headDepartment: DepartmentsTreeNode;
@@ -19,15 +17,15 @@ interface DepartmentsHScrollableListProps {
 
 interface DepartmentsHScrollableListDispatchProps {
     requestEmployeesForDepartment: (departmentId: string) => void;
-    updateDepartmentIdsTree: (index: number, departmentId: string) => void;
+    updateDepartmentIdsTree: (index: number, department: DepartmentsTreeNode) => void;
 }
 
 const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
     requestEmployeesForDepartment: (departmentId: string) => { 
         dispatch(loadEmployeesForDepartment(departmentId)); 
     },
-    updateDepartmentIdsTree: (index: number, departmentId: string) => { 
-        dispatch(updateDepartmentIdsTree(index, departmentId)); 
+    updateDepartmentIdsTree: (index: number, department: DepartmentsTreeNode) => { 
+        dispatch(updateDepartmentIdsTree(index, department)); 
     },
 });
 
@@ -39,27 +37,41 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
 
     public componentDidMount() {
         // this.animate.bind(this, Easing.bounce);
-        //this.props.updateDepartmentIdsTree(this.props.treeLevel, this.props.departmentsTreeNodes[0].departmentId);
+        if (this.props.departmentsTreeNodes !== null) {
+            this.props.requestEmployeesForDepartment(this.props.departmentsTreeNodes[0].departmentId);
+        }
     }
 
-    public onMomentumScrollEnd(event: any) {
+    public onMomentumScrollEnd(event: NativeSyntheticEvent<NativeScrollEvent>) {
         var offset = event.nativeEvent.contentOffset;
         if (offset) {
             this.currentPage = Math.round(offset.x / Dimensions.get('window').width) + 1;
             if (this.currentPage > this.employeeCards.length) {
                 this.props.requestEmployeesForDepartment(this.props.headDepartment.departmentId);
-                this.props.updateDepartmentIdsTree(this.props.treeLevel, 'subordinates');
+                // const stubDN: DepartmentsTreeNode = {
+                //     departmentAbbreviation: null,
+                //     departmentChiefId: this.props.headDepartment.head.employeeId,
+                //     head: this.props.headDepartment.head,
+                //     parent: null,
+                //     children: null,
+                //     subordinates: null,
+                //     departmentId: 'subordinates'
+                // };
+                // this.props.updateDepartmentIdsTree(this.props.treeLevel, stubDN);
             } else {
                 const visibleCard: EmployeeCardWithAvatar = this.employeeCards[this.currentPage - 1];
                 visibleCard.revealNeighboursAvatars(true);
                 const visibleDepartment = this.props.headDepartment.children[this.currentPage - 1];
-                this.props.updateDepartmentIdsTree(this.props.treeLevel, visibleDepartment.departmentId);
+                this.props.updateDepartmentIdsTree(this.props.treeLevel, visibleDepartment);
                 this.props.requestEmployeesForDepartment(visibleDepartment.departmentId);
+                if (visibleDepartment.children !== null && visibleDepartment.children.length > 0) {
+                    this.props.requestEmployeesForDepartment(visibleDepartment.children[0].departmentId);
+                }
             }
         }
     }
 
-    public onScrollBeginDrag(event: any) {
+    public onScrollBeginDrag(event: NativeSyntheticEvent<NativeScrollEvent>) {
         this.employeeCards.forEach(card => {
             card.revealNeighboursAvatars(false);
         });
