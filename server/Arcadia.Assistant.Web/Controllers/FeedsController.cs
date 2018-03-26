@@ -10,6 +10,7 @@
     using Arcadia.Assistant.Feeds;
     using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.Web.Configuration;
+    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -33,12 +34,20 @@
         [Route("messages")]
         [HttpGet]
         [ProducesResponseType(typeof(Message[]), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAllMessages(CancellationToken token)
+        public async Task<IActionResult> GetAllMessages([FromQuery] DateTime? from, [FromQuery] DateTime? to, CancellationToken token)
         {
             var timeout = this.timeoutSettings.Timeout;
 
             var feedsActor = this.actorFactory.ActorSelection(this.pathsBuilder.Get("shared-feeds"));
-            var sharedFeeds = await feedsActor.Ask<SharedFeedsActor.GetFeeds.Response>(SharedFeedsActor.GetFeeds.Instance, timeout, token);
+            SharedFeedsActor.GetFeeds.Response sharedFeeds = null;
+
+            var query = new FeedsQuery();
+            if (from.HasValue && to.HasValue) {
+                query = query.InDateRange(from.Value, to.Value);
+                sharedFeeds = await feedsActor.Ask<SharedFeedsActor.GetFeeds.Response>(query, timeout, token);
+            } else {
+                sharedFeeds = await feedsActor.Ask<SharedFeedsActor.GetFeeds.Response>(SharedFeedsActor.GetFeeds.Instance, timeout, token);
+            }
 
             //we should display information from common feeds
             var feeds = new[] { sharedFeeds.System, sharedFeeds.News };
