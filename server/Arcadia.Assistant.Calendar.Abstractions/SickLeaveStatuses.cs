@@ -2,11 +2,11 @@
 {
     public static class SickLeaveStatuses
     {
-        public static string Requested = "Requested";
+        public const string Requested = "Requested";
 
-        public static string Cancelled = "Cancelled";
+        public const string Cancelled = "Cancelled";
 
-        public static string Completed = "Completed";
+        public const string Completed = "Completed";
 
         public static readonly string[] All = { Requested, Completed, Cancelled};
     }

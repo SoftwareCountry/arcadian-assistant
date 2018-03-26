@@ -10,9 +10,9 @@
 
         public IActorRef Feed { get; }
 
-        public IActorRef Calendar { get; }
+        public EmployeeCalendarContainer Calendar { get; }
 
-        public EmployeeContainer(EmployeeMetadata metadata, IActorRef actor, IActorRef feed, IActorRef calendar)
+        public EmployeeContainer(EmployeeMetadata metadata, IActorRef actor, IActorRef feed, EmployeeCalendarContainer calendar)
         {
             this.Metadata = metadata;
             this.Actor = actor;

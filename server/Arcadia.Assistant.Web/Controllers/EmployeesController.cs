@@ -6,6 +6,8 @@
 
     using Akka.Actor;
 
+    using Arcadia.Assistant.Calendar.Abstractions.Messages;
+
     using Microsoft.AspNetCore.Mvc;
 
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
@@ -73,14 +75,27 @@
         private async Task<EmployeeModel[]> LoadEmployeesAsync(EmployeesQuery query, CancellationToken token)
         {
             var employees = await this.employeesSearch.Search(query, token);
+
             var tasks = employees.Select(
                 async x =>
                     {
                         var employee = EmployeeModel.FromMetadata(x.Metadata);
                         var photo = await x.Actor.Ask<GetPhoto.Response>(GetPhoto.Instance, this.timeoutSettings.Timeout, token);
+
+                        var vacationsCredit = await x
+                            .Calendar
+                            .VacationsActor
+                            .Ask<GetVacationsCredit.Response>(GetVacationsCredit.Instance, this.timeoutSettings.Timeout, token);
+
+                        var workhoursCredit = await x
+                            .Calendar
+                            .WorkHoursActor
+                            .Ask<GetWorkHoursCredit.Response>(GetWorkHoursCredit.Instance, this.timeoutSettings.Timeout, token);
+
                         employee.Photo = photo.Photo;
-                        employee.HoursCredit = 12;
-                        employee.VacationDaysLeft = 28;
+                        employee.HoursCredit = workhoursCredit.WorkHoursCredit;
+                        employee.VacationDaysLeft = vacationsCredit.VacationsCredit;
+
                         return employee;
                     });
 
