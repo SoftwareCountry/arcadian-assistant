@@ -1,6 +1,6 @@
 import { EventDialogActions, OpenEventDialog, closeEventDialog } from './event-dialog.action';
 import { ActionsObservable } from 'redux-observable';
-import { calendarSelectionMode, CalendarSelectionModeType, intervalsBySingleDaySelection } from '../calendar.action';
+import { calendarSelectionMode, CalendarSelectionModeType, intervalsBySingleDaySelection, disableCalendarSelection } from '../calendar.action';
 import { CalendarEventsColor } from '../../../calendar/styles';
 import { EventDialogType } from './event-dialog-type.model';
 
@@ -15,6 +15,9 @@ export const openEventDialogEpic$ = (action$: ActionsObservable<EventDialogActio
                 case EventDialogType.ConfirmStartDateSickLeave:
                     return calendarSelectionMode(CalendarSelectionModeType.Interval, CalendarEventsColor.sickLeave);
 
+                case EventDialogType.EditSickLeave:
+                    return disableCalendarSelection(true);
+
                 default:
                     return calendarSelectionMode(CalendarSelectionModeType.SingleDay);
             }
@@ -22,5 +25,9 @@ export const openEventDialogEpic$ = (action$: ActionsObservable<EventDialogActio
         });
 
 export const closeEventDialogEpic$ = (action$: ActionsObservable<EventDialogActions>) =>
-    action$.filter(x => x.type === 'CLOSE-EVENT-DIALOG')
+    action$.ofType('CLOSE-EVENT-DIALOG')
         .map(x => calendarSelectionMode(CalendarSelectionModeType.SingleDay, null));
+
+export const enableCalendarSelectionAfterCloseEventDialogEpic$ = (action$: ActionsObservable<EventDialogActions>) =>
+    action$.ofType('CLOSE-EVENT-DIALOG')
+        .map(x => disableCalendarSelection(false));

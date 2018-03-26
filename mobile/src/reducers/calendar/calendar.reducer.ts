@@ -4,7 +4,7 @@ import { loadUserEmployeeFinishedEpic$, calendarEventCreatedEpic$, intervalsBySi
 import { DaysCountersState, daysCountersReducer } from './days-counters.reducer';
 import { calendarEventsReducer, CalendarEventsState } from './calendar-events.reducer';
 import { EventDialogState, eventDialogReducer } from './event-dialog/event-dialog.reducer';
-import { openEventDialogEpic$, closeEventDialogEpic$ } from './event-dialog/event-dialog.epics';
+import { openEventDialogEpic$, closeEventDialogEpic$, enableCalendarSelectionAfterCloseEventDialogEpic$ } from './event-dialog/event-dialog.epics';
 import { sickLeaveSavedEpic$, sickLeaveCompletedEpic$ } from './sick-leave.epics';
 
 export interface CalendarState {
@@ -22,7 +22,8 @@ export const calendarEpics = combineEpics(
     sickLeaveCompletedEpic$ as any,
     intervalsBySingleDaySelectionEpic$ as any,
     openEventDialogEpic$ as any,
-    closeEventDialogEpic$ as any);
+    closeEventDialogEpic$ as any,
+    enableCalendarSelectionAfterCloseEventDialogEpic$ as any);
 
 export const calendarReducer = combineReducers<CalendarState>({
     daysCounters: daysCountersReducer,
