@@ -57,7 +57,7 @@
                 toDate = date > this.FireDate ? this.FireDate.Value : date;
             }
 
-            return CalculateYearsFromDate(toDate);
+            return CalculateYearsFromDate(this.HireDate, toDate);
         }
 
         private static int? CalculateYearsFromDate(DateTime? fromDate, DateTime? toDate = null)

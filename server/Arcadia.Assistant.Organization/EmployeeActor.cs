@@ -31,7 +31,7 @@
             this.photo.Tell(new PhotoActor.SetSource(storedInformation.Photo));
 
             var employeeFeedId = $"employee-feed-{this.employeeMetadata.EmployeeId}";
-            this.employeeFeed = Context.ActorOf(FeedActor.CreateProps(employeeFeedId), "feed");
+            this.employeeFeed = Context.ActorOf(PersistentFeedActor.CreateProps(employeeFeedId), "feed");
 
             var vacationsActor = Context.ActorOf(EmployeeVacationsActor.CreateProps(this.employeeMetadata.EmployeeId), "vacations");
             var sickLeavesActor = Context.ActorOf(EmployeeSickLeaveActor.CreateProps(this.employeeMetadata.EmployeeId), "sick-leaves");
@@ -71,13 +71,13 @@
             if (informationMetadata.Position != this.employeeMetadata.Position)
             {
                 var text = $"{informationMetadata.Name} is now {informationMetadata.Position}";
-                this.employeeFeed.Tell(new FeedActor.PostMessage(new Message(Guid.NewGuid(), informationMetadata.EmployeeId, "Employee position has changed", text, DateTimeOffset.Now)));
+                this.employeeFeed.Tell(new PersistentFeedActor.PostMessage(new Message(Guid.NewGuid(), informationMetadata.EmployeeId, "Employee position has changed", text, DateTimeOffset.Now)));
             }
 
             if (informationMetadata.Name != this.employeeMetadata.Name)
             {
                 var text = $"From now on, {this.employeeMetadata.Name} is to be known as {informationMetadata.Name}";
-                this.employeeFeed.Tell(new FeedActor.PostMessage(new Message(Guid.NewGuid(), informationMetadata.EmployeeId, "Employee name has changed", text, DateTimeOffset.Now)));
+                this.employeeFeed.Tell(new PersistentFeedActor.PostMessage(new Message(Guid.NewGuid(), informationMetadata.EmployeeId, "Employee name has changed", text, DateTimeOffset.Now)));
             }
 
             //TODO: department id change handler

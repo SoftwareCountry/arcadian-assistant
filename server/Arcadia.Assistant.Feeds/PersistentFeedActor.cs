@@ -1,15 +1,19 @@
 ﻿namespace Arcadia.Assistant.Feeds
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
     using Akka.Actor;
     using Akka.Persistence;
-    public class FeedActor : UntypedPersistentActor
+
+    using Arcadia.Assistant.Feeds.Messages;
+
+    public class PersistentFeedActor : UntypedPersistentActor
     {
         private readonly List<Message> messagesList = new List<Message>();
 
-        public FeedActor(string feedName)
+        public PersistentFeedActor(string feedName)
         {
             this.PersistenceId = feedName;
         }
@@ -35,7 +39,7 @@
                     this.Persist(newEvent, this.MessagePosted);
                     break;
 
-                case GetMessages _:
+                case GetMessages msg:
                     this.Sender.Tell(new GetMessages.Response(this.messagesList));
 
                     break;
@@ -67,19 +71,6 @@
             }
         }
 
-        public sealed class GetMessages
-        {
-            public sealed class Response
-            {
-                public Response(IEnumerable<Message> messages)
-                {
-                    this.Messages = messages.ToList();
-                }
-
-                public IReadOnlyCollection<Message> Messages { get; }
-            }
-        }
-
-        public static Props CreateProps(string feedId) => Props.Create(() => new FeedActor(feedId));
+        public static Props CreateProps(string feedId) => Props.Create(() => new PersistentFeedActor(feedId));
     }
 }
