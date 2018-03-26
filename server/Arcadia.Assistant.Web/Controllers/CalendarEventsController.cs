@@ -46,7 +46,7 @@
                 return this.NotFound();
             }
 
-            var events = await employee.Calendar.Ask<GetCalendarEvents.Response>(GetCalendarEvents.Instance, this.timeoutSettings.Timeout, token);
+            var events = await employee.Calendar.CalendarActor.Ask<GetCalendarEvents.Response>(GetCalendarEvents.Instance, this.timeoutSettings.Timeout, token);
             var eventModels = events.Events
                 .Select(x => new CalendarEventsWithIdModel(x.EventId, x.Type, x.Dates, x.Status));
 
@@ -66,7 +66,7 @@
                 return this.NotFound();
             }
 
-            var requestedEvent = await this.GetCalendarEventOrDefaultAsync(employee.Calendar, eventId, token);
+            var requestedEvent = await this.GetCalendarEventOrDefaultAsync(employee.Calendar.CalendarActor, eventId, token);
 
             if (requestedEvent == null)
             {
@@ -94,7 +94,6 @@
             }
 
             var newId = Guid.NewGuid().ToString();
-
             var employee = await this.GetEmployeeOrDefaultAsync(employeeId, token);
 
             if (employee == null)
@@ -103,7 +102,7 @@
             }
 
             var calendarEvent = new CalendarEvent(newId, model.Type, model.Dates, model.Status);
-            var eventCreationResponse = await this.UpsertEventAsync(employee.Calendar, calendarEvent, token);
+            var eventCreationResponse = await this.UpsertEventAsync(employee.Calendar.CalendarActor, calendarEvent, token);
 
             switch (eventCreationResponse)
             {
@@ -114,7 +113,7 @@
                     return this.AcceptedAtAction(nameof(this.Get), new { eventId = responseObject.CalendarEventId }, responseObject);
 
                 case UpsertCalendarEvent.Error error:
-                    return this.BadRequest(error.Exception.Message);
+                    return this.BadRequest(error.Message);
                 
                 default:
                     return this.StatusCode(StatusCodes.Status500InternalServerError);
@@ -125,6 +124,7 @@
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> Update(string employeeId, string eventId, [FromBody] CalendarEventsModel model, CancellationToken token)
         {
             if (!this.ModelState.IsValid)
@@ -139,14 +139,19 @@
                 return this.NotFound();
             }
 
-            var existingEvent = await this.GetCalendarEventOrDefaultAsync(employee.Calendar, eventId, token);
+            var existingEvent = await this.GetCalendarEventOrDefaultAsync(employee.Calendar.CalendarActor, eventId, token);
             if (existingEvent == null)
             {
                 return this.NotFound();
             }
 
+            if (existingEvent.Type != model.Type)
+            {
+                return this.StatusCode(StatusCodes.Status409Conflict, "Calendar types are not compatible");
+            }
+
             var calendarEvent = new CalendarEvent(eventId, model.Type, model.Dates, model.Status);
-            var response = await this.UpsertEventAsync(employee.Calendar, calendarEvent, token);
+            var response = await this.UpsertEventAsync(employee.Calendar.CalendarActor, calendarEvent, token);
 
             switch (response)
             {
@@ -154,7 +159,7 @@
                     return this.NoContent();
 
                 case UpsertCalendarEvent.Error error:
-                    return this.BadRequest(error.Exception.Message);
+                    return this.BadRequest(error.Message);
 
                 default:
                     return this.StatusCode(StatusCodes.Status500InternalServerError);

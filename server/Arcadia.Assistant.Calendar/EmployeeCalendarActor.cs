@@ -3,61 +3,56 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     using Akka.Actor;
-    using Akka.Persistence;
 
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
 
-    public class EmployeeCalendarActor : UntypedPersistentActor, ILogReceive
+    /// <summary>
+    /// Aggregate calendar actor, just forwards calls to proper actors
+    /// </summary>
+    public class EmployeeCalendarActor : UntypedActor, ILogReceive
     {
-        private readonly string employeeId;
+        private readonly IActorRef vacationsActor;
 
-        private Dictionary<string, CalendarEvent> eventsById = new Dictionary<string, CalendarEvent>();
+        private readonly IActorRef workHoursActor;
 
-        public override string PersistenceId { get; }
+        private readonly IActorRef sickLeavesActor;
 
-        public EmployeeCalendarActor(string employeeId)
+        public EmployeeCalendarActor(IActorRef vacationsActor, IActorRef workHoursActor, IActorRef sickLeavesActor)
         {
-            this.employeeId = employeeId;
-            this.PersistenceId = $"employee-calendar-{this.employeeId}";
+            this.vacationsActor = vacationsActor;
+            this.workHoursActor = workHoursActor;
+            this.sickLeavesActor = sickLeavesActor;
         }
 
-        protected override void OnCommand(object message)
+        public static Props CreateProps(IActorRef vacationsActor, IActorRef workHoursActor, IActorRef sickLeavesActor)
+        {
+            return Props.Create(() => new EmployeeCalendarActor(vacationsActor, workHoursActor, sickLeavesActor));
+        }
+
+        protected override void OnReceive(object message)
         {
             switch (message)
             {
-                case GetCalendarEvents _:
-                    this.Sender.Tell(new GetCalendarEvents.Response(this.eventsById.Values.ToList()));
-                    break;
-
-                case GetCalendarEvent request when !this.eventsById.ContainsKey(request.EventId):
-                    this.Sender.Tell(new GetCalendarEvent.Response.NotFound());
+                case GetCalendarEvents request:
+                    this.FindAllCalendarEvents(request).PipeTo(this.Sender);
                     break;
 
                 case GetCalendarEvent request:
-                    this.Sender.Tell(new GetCalendarEvent.Response.Found(this.eventsById[request.EventId]));
+                    this.FindSpecificCalendarEvent(request).PipeTo(this.Sender);
                     break;
 
                 case UpsertCalendarEvent cmd when cmd.Event.EventId == null:
-                    this.Sender.Tell(new UpsertCalendarEvent.Error(new ArgumentNullException(nameof(cmd.Event.EventId))));
+                    this.Sender.Tell(new UpsertCalendarEvent.Error(new ArgumentNullException(nameof(cmd.Event.EventId)).Message));
                     break;
 
-                //insert
-                case UpsertCalendarEvent cmd when !this.eventsById.ContainsKey(cmd.Event.EventId):
-                    var newEvent = new CalendarEvent(cmd.Event.EventId, cmd.Event.Type, cmd.Event.Dates, CalendarEventStatuses.Requested);
-
-                    //this.Persist();
-
-                    this.eventsById[cmd.Event.EventId] = newEvent;
-                    this.Sender.Tell(new UpsertCalendarEvent.Success(newEvent));
-                    break;
-
-                //update
                 case UpsertCalendarEvent cmd:
-                    this.eventsById[cmd.Event.EventId] = cmd.Event;
-                    this.Sender.Tell(new UpsertCalendarEvent.Success(cmd.Event));
+                    var actor = this.GetActoryByEventType(cmd.Event.Type);
+                    actor.Forward(cmd);
                     break;
 
                 default:
@@ -66,14 +61,56 @@
             }
         }
 
-        protected override void OnRecover(object message)
+        private async Task<List<T>> GetActorResponses<T>(object request)
         {
+            var responses = new List<T>();
+            responses.Add(await this.sickLeavesActor.Ask<T>(request));
+            responses.Add(await this.vacationsActor.Ask<T>(request));
+            responses.Add(await this.workHoursActor.Ask<T>(request));
 
+            return responses;
         }
 
-        public static Props CreateProps(string employeeId)
+        private async Task<GetCalendarEvents.Response> FindAllCalendarEvents(GetCalendarEvents request)
         {
-            return Props.Create(() => new EmployeeCalendarActor(employeeId));
+            var responses = await this.GetActorResponses<GetCalendarEvents.Response>(request);
+
+            return new GetCalendarEvents.Response(responses.SelectMany(x => x.Events).ToList());
+        }
+
+        private async Task<GetCalendarEvent.Response> FindSpecificCalendarEvent(GetCalendarEvent request)
+        {
+            var responses = await this.GetActorResponses<GetCalendarEvent.Response>(request);
+
+            var result = responses.OfType<GetCalendarEvent.Response.Found>().FirstOrDefault()?.Event;
+            if (result == null)
+            {
+                return new GetCalendarEvent.Response.NotFound();
+            }
+            else
+            {
+                return new GetCalendarEvent.Response.Found(result);
+            }
+        }
+
+
+        private IActorRef GetActoryByEventType(string calendarEventType)
+        {
+            switch (calendarEventType)
+            {
+                case CalendarEventTypes.Workout:
+                case CalendarEventTypes.Dayoff:
+                    return this.workHoursActor;
+
+                case CalendarEventTypes.Vacation:
+                    return this.vacationsActor;
+
+                case CalendarEventTypes.Sickleave:
+                    return this.sickLeavesActor;
+
+                default:
+                    return ActorRefs.Nobody;
+            }
         }
     }
 }
