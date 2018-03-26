@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { CalendarActionButton } from './calendar-action-button';
-import { IntervalModel } from '../reducers/calendar/calendar.model';
+import { IntervalModel, ReadOnlyIntervalsModel } from '../reducers/calendar/calendar.model';
 import { CalendarEventsColor } from './styles';
 
 interface SickLeaveActionButtonProps {
+    allIntervals: ReadOnlyIntervalsModel;
     interval: IntervalModel;
     disabled: boolean;
     claim: () => void;
@@ -12,8 +13,14 @@ interface SickLeaveActionButtonProps {
 
 export class SickLeaveActionButton extends Component<SickLeaveActionButtonProps> {
     public render() {
+        const { interval, allIntervals } = this.props;
+
+        const disableWhenRequested = !interval 
+            && allIntervals 
+            && allIntervals.metadata.calendarEvents.some(x => x.isSickLeave && x.isRequested);
+
         return (
-            <CalendarActionButton title={this.title} borderColor={CalendarEventsColor.sickLeave} onPress={this.onSickLeaveAction} disabled={this.props.disabled} />
+            <CalendarActionButton title={this.title} borderColor={CalendarEventsColor.sickLeave} onPress={this.onSickLeaveAction} disabled={this.props.disabled || disableWhenRequested} />
         );
     }
 

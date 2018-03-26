@@ -1,5 +1,6 @@
 import moment, { Moment } from 'moment';
 import { CalendarEvent, CalendarEventType, CalendarEventStatus } from './calendar-event.model';
+import { IntervalsMetadata, ReadOnlyIntervalsMetadata } from './calendar-intervals-metadata.model';
 
 export interface DayModel {
     date: Moment;
@@ -28,6 +29,8 @@ export interface IntervalModel {
 }
 
 export interface ReadOnlyIntervalsModel {
+    readonly metadata: ReadOnlyIntervalsMetadata;
+
     get(date: Moment): IntervalModel[] | undefined;
     copy(): IntervalsModel;
 }
@@ -38,7 +41,8 @@ type IntervalsModelDictionary = {
 
 export class IntervalsModel implements ReadOnlyIntervalsModel {
     constructor(
-        private readonly intervalsDictionary: IntervalsModelDictionary = {}
+        private readonly intervalsDictionary: IntervalsModelDictionary = {},
+        public readonly intervalsMetadata: IntervalsMetadata = new IntervalsMetadata([])
     ) { }
 
     public set(date: Moment, interval: IntervalModel) {
@@ -58,6 +62,10 @@ export class IntervalsModel implements ReadOnlyIntervalsModel {
         return this.intervalsDictionary[dateKey];
     }
 
+    public get metadata(): ReadOnlyIntervalsMetadata {
+        return this.intervalsMetadata;
+    }
+
     public copy(): IntervalsModel {
         const copiedDictionary = { ...this.intervalsDictionary };
 
@@ -69,7 +77,9 @@ export class IntervalsModel implements ReadOnlyIntervalsModel {
                 : copiedDictionary[key];
         }
 
-        return new IntervalsModel(copiedDictionary);
+        const compiedMetadata = this.metadata.copy();
+
+        return new IntervalsModel(copiedDictionary, compiedMetadata);
     }
 
     public static generateKey(date: Moment): string {
