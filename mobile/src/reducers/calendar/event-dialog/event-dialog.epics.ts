@@ -27,7 +27,3 @@ export const openEventDialogEpic$ = (action$: ActionsObservable<EventDialogActio
 export const closeEventDialogEpic$ = (action$: ActionsObservable<EventDialogActions>) =>
     action$.ofType('CLOSE-EVENT-DIALOG')
         .map(x => calendarSelectionMode(CalendarSelectionModeType.SingleDay, null));
-
-export const enableCalendarSelectionAfterCloseEventDialogEpic$ = (action$: ActionsObservable<EventDialogActions>) =>
-    action$.ofType('CLOSE-EVENT-DIALOG')
-        .map(x => disableCalendarSelection(false));
