@@ -140,14 +140,19 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
 
             if (deps.length - 1 < action.index) {
                 deps.push(action.departmentId);
+                deps = [].concat(deps);
             } else {
-                deps[action.index] = action.departmentId;
-                deps = deps.slice(0, action.index + 1);
-                var currentDepartmentNodeU = deps[action.index].children != null ? deps[action.index].children[0] : null;
-                while (currentDepartmentNodeU) {
-                    deps.push(currentDepartmentNodeU);
-                    const firstChild = currentDepartmentNodeU.children != null ? currentDepartmentNodeU.children[0] : null;
-                    currentDepartmentNodeU = firstChild;
+                if (action.departmentId.departmentId === 'subordinates') {
+                    deps = deps.filter((dep, depIndex) => depIndex < action.index);
+                } else {
+                    deps[action.index] = action.departmentId;
+                    deps = deps.filter((dep, depIndex) => depIndex < (action.index + 1));
+                    var currentDepartmentNodeU = deps[action.index].children != null ? deps[action.index].children[0] : null;
+                    while (currentDepartmentNodeU) {
+                        deps.push(currentDepartmentNodeU);
+                        const firstChild = currentDepartmentNodeU.children != null ? currentDepartmentNodeU.children[0] : null;
+                        currentDepartmentNodeU = firstChild;
+                    }
                 }
             }
             return {...state, departmentsBranch: deps};

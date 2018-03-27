@@ -54,7 +54,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps> {
             }
         });
 
-        return <ScrollView style={{ backgroundColor: '#fff' }}>
+        return <ScrollView style={{ backgroundColor: '#fff', flex: 1 }}>
             <EmployeeCardWithAvatar
                 employee={this.props.departmentsTree.root.head}
                 departmentAbbreviation={this.props.departmentsTree.root.departmentAbbreviation}

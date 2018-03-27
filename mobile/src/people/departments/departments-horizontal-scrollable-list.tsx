@@ -48,16 +48,16 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
             this.currentPage = Math.round(offset.x / Dimensions.get('window').width) + 1;
             if (this.currentPage > this.employeeCards.length) {
                 this.props.requestEmployeesForDepartment(this.props.headDepartment.departmentId);
-                // const stubDN: DepartmentsTreeNode = {
-                //     departmentAbbreviation: null,
-                //     departmentChiefId: this.props.headDepartment.head.employeeId,
-                //     head: this.props.headDepartment.head,
-                //     parent: null,
-                //     children: null,
-                //     subordinates: null,
-                //     departmentId: 'subordinates'
-                // };
-                // this.props.updateDepartmentIdsTree(this.props.treeLevel, stubDN);
+                const stubDN: DepartmentsTreeNode = {
+                    departmentAbbreviation: null,
+                    departmentChiefId: this.props.headDepartment.head.employeeId,
+                    head: this.props.headDepartment.head,
+                    parent: null,
+                    children: null,
+                    subordinates: null,
+                    departmentId: 'subordinates'
+                };
+                this.props.updateDepartmentIdsTree(this.props.treeLevel, stubDN);
             } else {
                 const visibleCard: EmployeeCardWithAvatar = this.employeeCards[this.currentPage - 1];
                 visibleCard.revealNeighboursAvatars(true);
@@ -84,13 +84,10 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
         const subDepartments = headDepartment != null && headDepartment.children != null ? headDepartment.children : null;
         const subordinates = headDepartment != null && headDepartment.subordinates != null ? headDepartment.subordinates : null;
 
-        const isScrollEnabled = subDepartments != null ? subDepartments.length > 1 : false;
-
         return <View>
             <Animated.ScrollView 
                 horizontal 
                 pagingEnabled 
-                scrollEnabled={isScrollEnabled} 
                 showsHorizontalScrollIndicator={false}
                 onMomentumScrollEnd={this.onMomentumScrollEnd.bind(this)}
                 onScrollBeginDrag={this.onScrollBeginDrag.bind(this)}

@@ -56,8 +56,8 @@ export const employeesListItemStyles = StyleSheet.create({
 
 export const companyItemStyles = StyleSheet.create({
     layout: {
+        flex: 2, 
         height: 90, 
-        flex: 0, 
         overflow: 'hidden', 
         borderTopWidth: 1, 
         borderColor: 'rgba(0, 0, 0, 0.15)'

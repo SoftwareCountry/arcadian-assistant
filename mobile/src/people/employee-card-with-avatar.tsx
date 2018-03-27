@@ -77,7 +77,7 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
                 layout,
                 {
                     width: Dimensions.get('window').width,
-                    height: calcultatedHeight
+                    flex: 4
                 }
             ]);
             const filteredEmployees = employees.filter((emp) => emp.employeeId !== this.props.chiefId);
