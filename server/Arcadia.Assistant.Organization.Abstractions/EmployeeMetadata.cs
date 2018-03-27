@@ -14,9 +14,9 @@
 
         public string EmployeeId { get; }
 
-        public string Name { get; }
+        public string Name { get; set; }
 
-        public string Email { get; }
+        public string Email { get; set; }
 
         public string RoomNumber { get; set; }
 
@@ -39,6 +39,26 @@
         public int? Age => CalculateYearsFromDate(this.BirthDate);
 
         public int? YearsServed => CalculateYearsFromDate(this.HireDate, this.FireDate);
+
+        public int? AgeAt(DateTime date)
+        {
+            return CalculateYearsFromDate(this.BirthDate, date);
+        }
+
+        public int? YearsServedAt(DateTime date)
+        {
+            DateTime toDate;
+            if (this.FireDate == null)
+            {
+                toDate = date;
+            }
+            else
+            {
+                toDate = date > this.FireDate ? this.FireDate.Value : date;
+            }
+
+            return CalculateYearsFromDate(this.HireDate, toDate);
+        }
 
         private static int? CalculateYearsFromDate(DateTime? fromDate, DateTime? toDate = null)
         {
