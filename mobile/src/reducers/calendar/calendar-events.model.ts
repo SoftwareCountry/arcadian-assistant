@@ -55,6 +55,8 @@ export class CalendarEvents {
 
                 start.add(1, 'days');
             }
+
+            intervalsModel.intervalsMetadata.addCalendarEvent(calendarEvent);
         }
 
         return intervalsModel;

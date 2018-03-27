@@ -54,4 +54,20 @@ export class CalendarEvent {
     @dataMember()
     @required()
     public status: CalendarEventStatus;
+
+    public get isRequested(): boolean {
+        return this.status === CalendarEventStatus.Requested;
+    }
+
+    public get isCompleted(): boolean {
+        return this.status === CalendarEventStatus.Completed;
+    }
+
+    public get isCancelled(): boolean {
+        return this.status === CalendarEventStatus.Cancelled;
+    }
+
+    public get isSickLeave(): boolean {
+        return this.type === CalendarEventType.Sickleave;
+    }
 }
