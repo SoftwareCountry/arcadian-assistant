@@ -6,10 +6,16 @@ import { Observable } from 'rxjs/Observable';
 import { loadFailedError } from '../errors/errors.action';
 import { Feed } from './feed.model';
 import { AppState, DependenciesContainer } from '../app.reducer';
+import moment from 'moment';
+
+const pagingPeriodDays = 10;
 
 export const loadFeedsEpic$ = (action$: ActionsObservable<fAction.LoadFeeds>, appState: AppState, deps: DependenciesContainer) =>
     action$.ofType('LOAD_FEEDS')
-        .switchMap(x => deps.apiClient.getJSON(`/feeds/messages`))
+        .switchMap(x => {
+            const fromDate = moment().subtract(pagingPeriodDays, 'days'); //show news from 10 days before.
+            return deps.apiClient.getJSON(`/feeds/messages?fromDate=${fromDate.format('YYYY-MM-DD')}`);
+        })
         .map(x => deserializeArray(x as any, Feed))
         .map(x => fAction.loadFeedsFinished(x))
         .catch(e => Observable.of(loadFailedError(e.message)));
