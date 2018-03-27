@@ -77,9 +77,9 @@ export class IntervalsModel implements ReadOnlyIntervalsModel {
                 : copiedDictionary[key];
         }
 
-        const compiedMetadata = this.metadata.copy();
+        const copiedMetadata = this.metadata.copy();
 
-        return new IntervalsModel(copiedDictionary, compiedMetadata);
+        return new IntervalsModel(copiedDictionary, copiedMetadata);
     }
 
     public static generateKey(date: Moment): string {

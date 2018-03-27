@@ -59,7 +59,7 @@ export class CalendarEvent {
         return this.status === CalendarEventStatus.Requested;
     }
 
-    public get isCompeted(): boolean {
+    public get isCompleted(): boolean {
         return this.status === CalendarEventStatus.Completed;
     }
 
