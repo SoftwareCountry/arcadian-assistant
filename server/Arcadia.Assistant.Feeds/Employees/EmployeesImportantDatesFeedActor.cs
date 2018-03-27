@@ -28,10 +28,10 @@
             switch (message)
             {
                 case GetMessages msg:
-                    var today = DateTimeOffset.UtcNow.Date;
+                    var today = DateTime.UtcNow.Date;
 
                     var toDate = msg.ToDate ?? today;
-                    var fromDate = msg.FromDate ?? DateTimeOffset.UtcNow.Date;
+                    var fromDate = msg.FromDate ?? DateTime.UtcNow.Date;
 
                     if (toDate > today)
                     {

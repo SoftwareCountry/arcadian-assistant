@@ -3,17 +3,20 @@
     using System;
 
     using Akka.Actor;
+    using Akka.Persistence;
 
     using Arcadia.Assistant.Calendar;
     using Arcadia.Assistant.Calendar.SickLeave;
     using Arcadia.Assistant.Calendar.Vacations;
     using Arcadia.Assistant.Calendar.WorkHours;
     using Arcadia.Assistant.Feeds;
+    using Arcadia.Assistant.Feeds.Messages;
     using Arcadia.Assistant.Images;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
+    using Arcadia.Assistant.Organization.Events;
 
-    public class EmployeeActor : UntypedActor
+    public class EmployeeActor : UntypedPersistentActor, ILogReceive
     {
         private EmployeeMetadata employeeMetadata;
 
@@ -26,6 +29,7 @@
         public EmployeeActor(EmployeeStoredInformation storedInformation)
         {
             this.employeeMetadata = storedInformation.Metadata;
+            this.PersistenceId = $"employee-info-{Uri.EscapeDataString(this.employeeMetadata.EmployeeId)}";
 
             this.photo = Context.ActorOf(Props.Create(() => new PhotoActor()), "photo");
             this.photo.Tell(new PhotoActor.SetSource(storedInformation.Photo));
@@ -42,7 +46,9 @@
             this.calendar = new EmployeeCalendarContainer(vacationsActor, workHoursActor, sickLeavesActor, calendarActor);
         }
 
-        protected override void OnReceive(object message)
+        public override string PersistenceId { get; }
+
+        protected override void OnCommand(object message)
         {
             switch (message)
             {
@@ -66,23 +72,71 @@
             }
         }
 
+        protected override void OnRecover(object message)
+        {
+            switch (message)
+            {
+                case EmployeeChangedDepartment ev:
+                    break;
+
+                case EmployeeChangedName ev:
+                    this.OnEmployeeNameChange(ev);
+                    break;
+
+                case EmployeeChangedPosition ev:
+                    this.OnEmployeePositionChange(ev);
+                    break;
+            }
+        }
+
         private void UpdateEmployeeMetadata(EmployeeMetadata informationMetadata)
         {
             if (informationMetadata.Position != this.employeeMetadata.Position)
             {
-                var text = $"{informationMetadata.Name} is now {informationMetadata.Position}";
-                this.employeeFeed.Tell(new PersistentFeedActor.PostMessage(new Message(Guid.NewGuid(), informationMetadata.EmployeeId, "Employee position has changed", text, DateTimeOffset.Now)));
+                var ev = new EmployeeChangedPosition()
+                    {
+                        EmployeeId = this.employeeMetadata.EmployeeId,
+                        NewPosition = informationMetadata.Position,
+                        OldPosition = this.employeeMetadata.Position,
+                        TimeStamp = DateTimeOffset.UtcNow
+                    };
+                this.Persist(ev, this.OnEmployeePositionChange);
+                this.employeeMetadata.Position = ev.NewPosition;
             }
 
             if (informationMetadata.Name != this.employeeMetadata.Name)
             {
-                var text = $"From now on, {this.employeeMetadata.Name} is to be known as {informationMetadata.Name}";
-                this.employeeFeed.Tell(new PersistentFeedActor.PostMessage(new Message(Guid.NewGuid(), informationMetadata.EmployeeId, "Employee name has changed", text, DateTimeOffset.Now)));
+                var ev = new EmployeeChangedName()
+                    {
+                        EmployeeId = this.employeeMetadata.EmployeeId,
+                        NewName = informationMetadata.Name,
+                        OldName = this.employeeMetadata.Name,
+                        TimeStamp = DateTimeOffset.UtcNow
+                    };
+
+                this.Persist(ev, this.OnEmployeeNameChange);
+                this.employeeMetadata.Name = informationMetadata.Name;
             }
 
-            //TODO: department id change handler
+            if (informationMetadata.DepartmentId != this.employeeMetadata.DepartmentId)
+            {
+                //TODO: department id change handler
+                this.employeeMetadata.DepartmentId = informationMetadata.DepartmentId;
+            }
 
             this.employeeMetadata = informationMetadata;
+        }
+
+        private void OnEmployeePositionChange(EmployeeChangedPosition ev)
+        {
+            var text = $"{this.employeeMetadata.Name} is now {ev.NewPosition} (previously, {ev.OldPosition})";
+            this.employeeFeed.Tell(new PostMessage(new Message(Guid.NewGuid(), this.employeeMetadata.EmployeeId, "Employee position has changed", text, DateTime.UtcNow)));
+        }
+
+        private void OnEmployeeNameChange(EmployeeChangedName ev)
+        {
+            var text = $"From now on, {ev.OldName} is to be known as {ev.NewName}";
+            this.employeeFeed.Tell(new PostMessage(new Message(Guid.NewGuid(), this.employeeMetadata.EmployeeId, "Employee name has changed", text, DateTime.UtcNow)));
         }
 
         public class GetEmployeeInfo

@@ -33,7 +33,7 @@
             this.feedsById.Add(BirthdaysFeedId, birthdayFeed);
             this.feedsById.Add(AnniverseriesFeedId, anniverseriesFeed);
 
-            systemFeed.Tell(new PersistentFeedActor.PostMessage(new Message(Guid.NewGuid(), "557", "System is up", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus tempor blandit velit in sollicitudin. Nulla. ", DateTimeOffset.Now)));
+            systemFeed.Tell(new PostMessage(new Message(Guid.NewGuid(), "557", "System is up", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus tempor blandit velit in sollicitudin. Nulla. ", DateTime.UtcNow)));
         }
 
         protected override void OnReceive(object message)
@@ -44,20 +44,10 @@
                     this.Sender.Tell(new GetFeeds.Response(this.feedsById));
                     break;
 
-                case RequestDepartmentFeed request:
-                    var feedId = this.GenerateDepartmentFeedId(request.DepartmentId);
-                    this.Sender.Tell();
-                    break;
-
                 default:
                     this.Unhandled(message);
                     break;
             }
-        }
-
-        private string GenerateDepartmentFeedId(string departmentId)
-        {
-            return $"department-feed-{Uri.EscapeDataString(departmentId)}";
         }
     }
 }

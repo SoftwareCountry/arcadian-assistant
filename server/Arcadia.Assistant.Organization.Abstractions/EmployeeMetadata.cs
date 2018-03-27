@@ -14,9 +14,9 @@
 
         public string EmployeeId { get; }
 
-        public string Name { get; }
+        public string Name { get; set; }
 
-        public string Email { get; }
+        public string Email { get; set; }
 
         public string RoomNumber { get; set; }
 

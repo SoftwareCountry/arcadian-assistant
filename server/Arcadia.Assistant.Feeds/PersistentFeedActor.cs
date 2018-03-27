@@ -1,9 +1,5 @@
 ﻿namespace Arcadia.Assistant.Feeds
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
     using Akka.Actor;
     using Akka.Persistence;
 
@@ -11,11 +7,12 @@
 
     public class PersistentFeedActor : UntypedPersistentActor
     {
-        private readonly List<Message> messagesList = new List<Message>();
+        private readonly IActorRef internalFeed;
 
         public PersistentFeedActor(string feedName)
         {
             this.PersistenceId = feedName;
+            this.internalFeed = Context.ActorOf(Props.Create(() => new FeedActor()));
         }
 
         public override string PersistenceId { get; }
@@ -40,8 +37,11 @@
                     break;
 
                 case GetMessages msg:
-                    this.Sender.Tell(new GetMessages.Response(this.messagesList));
+                    this.internalFeed.Forward(msg);
+                    break;
 
+                default:
+                    this.Unhandled(cmd);
                     break;
             }
         }
@@ -58,17 +58,7 @@
 
         private void MessagePosted(MessageIsPostedToFeedEvent e)
         {
-            this.messagesList.Add(new Message(e.MessageId, e.EmployeeId, e.Title, e.Text, e.PostedDate));
-        }
-
-        public sealed class PostMessage
-        {
-            public Message Message { get; }
-
-            public PostMessage(Message message)
-            {
-                this.Message = message;
-            }
+            this.internalFeed.Tell(new PostMessage(new Message(e.MessageId, e.EmployeeId, e.Title, e.Text, e.PostedDate)));
         }
 
         public static Props CreateProps(string feedId) => Props.Create(() => new PersistentFeedActor(feedId));
