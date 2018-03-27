@@ -11,7 +11,7 @@ export interface IntervalsSubState {
     intervals: ReadOnlyIntervalsModel;
 }
 
-export interface DisableDaysCalendarDaysBeforeSubState {
+export interface DisableCalendarDaysBeforeSubState {
     disableCalendarDaysBefore: DayModel;
 }
 
@@ -21,7 +21,7 @@ export interface SelectionSubState {
 
 export interface CalendarEventsState extends
     IntervalsSubState,
-    DisableDaysCalendarDaysBeforeSubState,
+    DisableCalendarDaysBeforeSubState,
     SelectionSubState {
         weeks: WeekModel[];
         disableCalendarActionsButtonGroup: boolean;

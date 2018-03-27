@@ -1,7 +1,7 @@
-import { CalendarEventsState, IntervalsSubState, SelectionSubState, DisableDaysCalendarDaysBeforeSubState } from './calendar-events.reducer';
+import { CalendarEventsState, IntervalsSubState, SelectionSubState, DisableCalendarDaysBeforeSubState } from './calendar-events.reducer';
 import { CalendarSelectionMode, CalendarSelectionModeType } from './calendar.action';
 
-interface CalendarSelectionModeSubState extends SelectionSubState, DisableDaysCalendarDaysBeforeSubState { }
+interface CalendarSelectionModeSubState extends SelectionSubState, DisableCalendarDaysBeforeSubState { }
 
 export const calendarSelectionModeReducer = (state: CalendarEventsState, action: CalendarSelectionMode): CalendarSelectionModeSubState | null => {
     if (action.selectionMode === CalendarSelectionModeType.SingleDay) {
