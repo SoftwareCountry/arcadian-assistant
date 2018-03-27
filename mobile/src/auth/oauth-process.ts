@@ -24,7 +24,7 @@ export class OAuthProcess {
 
     private readonly refreshTokenSource: Subject<RefreshTokenRequest> = new Subject<RefreshTokenRequest>();
  
-    private readonly authenticationStateSource = new BehaviorSubject<AuthenticationState>(notAuthenticatedInstance);
+    private readonly authenticationStateSource = new ReplaySubject<AuthenticationState>(1);
 
     private readonly accessCodeSubscription: Subscription;
 
@@ -131,7 +131,11 @@ export class OAuthProcess {
         }
     }
 
-    private getPeriodicalRefreshTokens(request: RefreshTokenRequest) {
+    private getPeriodicalRefreshTokens(request: RefreshTokenRequest): Observable<string> {
+        if (request === null) {
+            return Observable.of(null);
+        }
+
         const scheduledEmition = Observable.interval(this.refreshIntervalSeconds * 1000).map(() => request.tokenValue);
         if (request.immediateRefresh) {
             return Observable.concat( Observable.of(request.tokenValue), scheduledEmition);
