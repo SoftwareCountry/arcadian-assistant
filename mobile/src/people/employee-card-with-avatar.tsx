@@ -28,21 +28,21 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
     }
 
     public componentDidMount() {
-        // Animated.timing(
-        //   this.state.fadeInAnim,
-        //   {
-        //     toValue: 1,
-        //     duration: 3000,
-        //   }
-        // ).start();
+        Animated.timing(
+          this.state.fadeInAnim,
+          {
+            toValue: 0.7,
+            duration: 1000,
+          }
+        ).start();
 
-        // Animated.timing(
-        //     this.state.fadeOutAnim,
-        //     {
-        //       toValue: 0,
-        //       duration: 2000,
-        //     }
-        // ).start();
+        Animated.timing(
+            this.state.fadeOutAnim,
+            {
+              toValue: 0,
+              duration: 500,
+            }
+        ).start();
     }
 
     public render() {
@@ -51,22 +51,6 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
         const { fadeInAnim, fadeOutAnim } = this.state;
         const photo = employee ? employee.photo : null;
 
-        Animated.timing(
-            this.state.fadeInAnim,
-            {
-              toValue: 1,
-              duration: 1000,
-            }
-          ).start();
-  
-        Animated.timing(
-              this.state.fadeOutAnim,
-              {
-                toValue: 0,
-                duration: 1000,
-              }
-          ).start();
-  
         const employees = this.props.employees;
         
         if (employees != null) {
