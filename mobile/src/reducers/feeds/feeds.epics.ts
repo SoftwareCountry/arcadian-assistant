@@ -8,10 +8,12 @@ import { Feed } from './feed.model';
 import { AppState, DependenciesContainer } from '../app.reducer';
 import moment from 'moment';
 
+const pagingPeriodDays = 10;
+
 export const loadFeedsEpic$ = (action$: ActionsObservable<fAction.LoadFeeds>, appState: AppState, deps: DependenciesContainer) =>
     action$.ofType('LOAD_FEEDS')
         .switchMap(x => {
-            const fromDate = moment().subtract(10, 'days'); //show news from 10 days before
+            const fromDate = moment().subtract(pagingPeriodDays, 'days'); //show news from 10 days before.
             return deps.apiClient.getJSON(`/feeds/messages?fromDate=${fromDate.format('YYYY-MM-DD')}`);
         })
         .map(x => deserializeArray(x as any, Feed))
