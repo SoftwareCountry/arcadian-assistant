@@ -1,7 +1,6 @@
 import React, { Component, SyntheticEvent } from 'react';
 import { Animated, Easing, View, Text, ScrollView, Dimensions, TouchableOpacity, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { AppState } from '../../reducers/app.reducer';
-import { connect, Dispatch, MapStateToProps, MapDispatchToPropsFunction } from 'react-redux';
 import { EmployeeCardWithAvatar } from '../employee-card-with-avatar';
 import { DepartmentsTreeNode } from './departments-tree-node';
 import { Employee } from '../../reducers/organization/employee.model';
@@ -13,23 +12,11 @@ interface DepartmentsHScrollableListProps {
     departmentsTreeNodes?: DepartmentsTreeNode[];
     headDepartment: DepartmentsTreeNode;
     topOffset?: number;
-}
-
-interface DepartmentsHScrollableListDispatchProps {
     requestEmployeesForDepartment: (departmentId: string) => void;
     updateDepartmentIdsTree: (index: number, department: DepartmentsTreeNode) => void;
 }
 
-const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
-    requestEmployeesForDepartment: (departmentId: string) => { 
-        dispatch(loadEmployeesForDepartment(departmentId)); 
-    },
-    updateDepartmentIdsTree: (index: number, department: DepartmentsTreeNode) => { 
-        dispatch(updateDepartmentIdsTree(index, department)); 
-    },
-});
-
-export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScrollableListProps & DepartmentsHScrollableListDispatchProps> {
+export class DepartmentsHScrollableList extends Component<DepartmentsHScrollableListProps> {
     private employeeCards: EmployeeCardWithAvatar[];
     private animatedValue: Animated.Value;
     private buttonText: Text;
@@ -122,5 +109,3 @@ export class DepartmentsHScrollableListImpl extends Component<DepartmentsHScroll
         </View>;
     }
 }
-
-export const DepartmentsHScrollableList = connect(null, mapDispatchToProps)(DepartmentsHScrollableListImpl);

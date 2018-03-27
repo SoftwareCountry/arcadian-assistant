@@ -10,6 +10,8 @@ import { DepartmentsHScrollableList } from './departments/departments-horizontal
 import { DepartmentsTree } from './departments/departments-tree';
 import { DepartmentsTreeNode } from './departments/departments-tree-node';
 import { EmployeeCardWithAvatar } from './employee-card-with-avatar';
+import { PeopleActions, updateDepartmentIdsTree } from '../reducers/people/people.action';
+import { loadEmployeesForDepartment } from '../reducers/organization/organization.action';
 
 interface PeopleCompanyProps {
     routeName: string;
@@ -25,7 +27,21 @@ const mapStateToProps = (state: AppState): PeopleCompanyProps => ({
     departmentsBranch: state.people.departmentsBranch
 });
 
-export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps> {
+interface PeopleCompanyDispatchProps {
+    requestEmployeesForDepartment: (departmentId: string) => void;
+    updateDepartmentIdsTree: (index: number, department: DepartmentsTreeNode) => void;
+}
+
+const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
+    requestEmployeesForDepartment: (departmentId: string) => { 
+        dispatch(loadEmployeesForDepartment(departmentId)); 
+    },
+    updateDepartmentIdsTree: (index: number, department: DepartmentsTreeNode) => { 
+        dispatch(updateDepartmentIdsTree(index, department)); 
+    },
+});
+
+export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & PeopleCompanyDispatchProps> {
     public treeRecurseAndAdd(department: DepartmentsTreeNode, departments: DepartmentsTreeNode[]) {
         departments.push(department);
         var children = department.children;
@@ -67,6 +83,8 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps> {
                         departmentsTreeNodes={head.children}
                         headDepartment={head}
                         key={head.departmentId}
+                        updateDepartmentIdsTree={this.props.updateDepartmentIdsTree}
+                        requestEmployeesForDepartment={this.props.requestEmployeesForDepartment}
                     />
                 ))
             }
@@ -74,4 +92,4 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps> {
     }
 }
 
-export const PeopleCompany = connect(mapStateToProps)(PeopleCompanyImpl);
+export const PeopleCompany = connect(mapStateToProps, mapDispatchToProps)(PeopleCompanyImpl);
