@@ -1,5 +1,5 @@
 import { ActionsObservable } from 'redux-observable';
-import { CompleteSickLeave, ConfirmClaimSickLeave } from './sick-leave.action';
+import { CompleteSickLeave, ConfirmClaimSickLeave, ConfirmProlongSickLeave } from './sick-leave.action';
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { CalendarEventStatus, CalendarEvent, CalendarEventType } from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
@@ -40,6 +40,22 @@ export const sickLeaveCompletedEpic$ = (action$: ActionsObservable<CompleteSickL
             const requestBody = {...x.calendarEvent};
 
             requestBody.status = CalendarEventStatus.Completed;
+
+            return deps.apiClient.put(
+                `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
+                requestBody,
+                { 'Content-Type': 'application/json' }
+            ).map(() => loadCalendarEvents(x.employeeId));
+        })
+        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+
+export const sickLeaveProlongedEpic$ = (action$: ActionsObservable<ConfirmProlongSickLeave>, state: AppState, deps: DependenciesContainer) =>
+    action$.ofType('CONFIRM-PROLONG-SICK-LEAVE')
+        .flatMap(x => {
+
+            const requestBody = {...x.calendarEvent};
+
+            requestBody.dates.endDate = x.prolongedEndDate;
 
             return deps.apiClient.put(
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
