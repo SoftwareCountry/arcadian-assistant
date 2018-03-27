@@ -71,7 +71,7 @@ const mapStateToProps = (state: AppState): EditSickLeaveEventDialogProps => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): EditSickLeaveEventDialogDispatchProps => ({
-    prolong: () => { /* TBD next PR */ },
+    prolong: () => { dispatch(openEventDialog(EventDialogType.ProlongSickLeave)); },
     closeDialog: () => { dispatch(closeEventDialog()); },
     completeSickLeave: (employeeId: string, calendarEvent: CalendarEvent) => { dispatch(completeSickLeave(employeeId, calendarEvent)); }
 });
