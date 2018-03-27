@@ -15,12 +15,10 @@ export class SickLeaveActionButton extends Component<SickLeaveActionButtonProps>
     public render() {
         const { interval, allIntervals } = this.props;
 
-        const disableWhenRequested = !interval 
-            && allIntervals 
-            && allIntervals.metadata.calendarEvents.some(x => x.isSickLeave && x.isRequested);
+        const disableCalendarAction = this.disableCalendarAction();
 
         return (
-            <CalendarActionButton title={this.title} borderColor={CalendarEventsColor.sickLeave} onPress={this.onSickLeaveAction} disabled={this.props.disabled || disableWhenRequested} />
+            <CalendarActionButton title={this.title} borderColor={CalendarEventsColor.sickLeave} onPress={this.onSickLeaveAction} disabled={this.props.disabled || disableCalendarAction} />
         );
     }
 
@@ -36,6 +34,18 @@ export class SickLeaveActionButton extends Component<SickLeaveActionButtonProps>
         } else {
             this.props.edit();
         }
+    }
+
+    private disableCalendarAction(): boolean {
+        const { interval, allIntervals } = this.props;
+
+        const disableWhenRequested = !interval
+            && allIntervals
+            && allIntervals.metadata.calendarEvents.some(x => x.isSickLeave && x.isRequested);
+
+        const disableWhenCompleted = interval && interval.calendarEvent.isCompleted;
+
+        return disableWhenRequested || disableWhenCompleted;
     }
 }
 
