@@ -1,4 +1,4 @@
-import { ConvertHoursCreditToDays } from './convert-hours-credit-to-days';
+import { ConvertHoursCreditToDays } from '../convert-hours-credit-to-days';
 
 describe('convert hours credit to days', () => {
 

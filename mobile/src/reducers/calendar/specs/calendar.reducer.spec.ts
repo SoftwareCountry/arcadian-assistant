@@ -1,8 +1,8 @@
-import { ConvertHoursCreditToDays } from './convert-hours-credit-to-days';
+import { ConvertHoursCreditToDays } from '../convert-hours-credit-to-days';
 import moment from 'moment';
-import { loadUserEmployeeFinished } from '../user/user.action';
-import { Employee } from '../organization/employee.model';
-import { daysCountersReducer } from './days-counters.reducer';
+import { loadUserEmployeeFinished } from '../../user/user.action';
+import { Employee } from '../../organization/employee.model';
+import { daysCountersReducer } from '../days-counters.reducer';
 
 describe('calendar action', () => {
     describe('calculate days counters', () => {

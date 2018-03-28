@@ -1,9 +1,9 @@
-import { calendarEventsReducer, CalendarEventsState } from './calendar-events.reducer';
-import { loadCalendarEventsFinished, calendarEventCreated, selectCalendarDay, calendarSelectionMode, CalendarSelectionModeType, disableCalendarSelection, selectIntervalsBySingleDaySelection, disableSelectIntervalsBySingleDaySelection } from './calendar.action';
-import { CalendarEvent, DatesInterval, CalendarEventStatus, CalendarEventType } from './calendar-event.model';
+import { calendarEventsReducer, CalendarEventsState } from '../calendar-events.reducer';
+import { loadCalendarEventsFinished, calendarEventCreated, selectCalendarDay, calendarSelectionMode, CalendarSelectionModeType, disableCalendarSelection, selectIntervalsBySingleDaySelection, disableSelectIntervalsBySingleDaySelection } from '../calendar.action';
+import { CalendarEvent, DatesInterval, CalendarEventStatus, CalendarEventType } from '../calendar-event.model';
 import moment from 'moment';
-import { DayModel, IntervalType } from './calendar.model';
-import { CalendarEvents } from './calendar-events.model';
+import { DayModel, IntervalType } from '../calendar.model';
+import { CalendarEvents } from '../calendar-events.model';
 
 describe('calendar events reducer', () => {
     describe('when load calendar events finished', () => {
