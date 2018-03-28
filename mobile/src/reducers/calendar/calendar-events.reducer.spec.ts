@@ -115,11 +115,23 @@ describe('calendar events reducer', () => {
     describe('when calendar selection mode is interval', () => {
         let state: CalendarEventsState;
         let color: string;
+        let startDay: DayModel;
+
+        beforeEach(() => {
+            startDay = {
+                date:  moment(),
+                today: true,
+                belongsToCurrentMonth: true
+            };
+
+            const action = selectCalendarDay(startDay);
+            state = calendarEventsReducer(undefined, action);
+        });
 
         beforeEach(() => {
             color = '#abc';
             const action = calendarSelectionMode(CalendarSelectionModeType.Interval, color);
-            state = calendarEventsReducer(undefined, action);
+            state = calendarEventsReducer(state, action);
         });
 
         it('should have start day which is single selection day', () => {
@@ -139,24 +151,28 @@ describe('calendar events reducer', () => {
         });
 
         describe('when calendar day selected', () => {
-            let day: DayModel;
+            let endDay: DayModel;
 
             beforeEach(() => {
-                day = {
-                    date: moment(),
+                const date = moment(startDay.date);
+
+                date.add(2, 'days');
+
+                endDay = {
+                    date: date,
                     today: true,
                     belongsToCurrentMonth: true
                 };
-                const action = selectCalendarDay(day);
+                const action = selectCalendarDay(endDay);
                 state = calendarEventsReducer(state, action);
             });
 
-            it('should set single selection', () => {
-                expect(state.selection.single.day).toBe(day);
+            it('should not change single day selection', () => {
+                expect(state.selection.single.day).toBe(startDay);
             });
 
             it('should set end day of interval selection', () => {
-                expect(state.selection.interval.endDay).toBe(day);
+                expect(state.selection.interval.endDay).toBe(endDay);
             });
         });
     });

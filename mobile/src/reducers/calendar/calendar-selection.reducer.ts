@@ -24,9 +24,7 @@ export const intervalSelectionReducer = (state: CalendarEventsState, action: Sel
     if (state.selection.interval) {
         return {
             selection: {
-                single: {
-                    day: action.day
-                },
+                ...state.selection,
                 interval: {
                     ...state.selection.interval,
                     endDay: action.day
