@@ -42,9 +42,8 @@
             switch (message)
             {
                 case RefreshOrganizationInformation _:
-                    
-                    this.employees.Tell(EmployeesActor.RefreshEmployees.Instance);
-                    this.Become(this.RefreshingEmployees);
+                    this.departmentsStorage.Tell(DepartmentsStorage.LoadHeadDepartment.Instance);
+                    this.Become(this.RefreshingDepartments);
                     break;
 
                 case DepartmentsQuery query:
@@ -74,9 +73,8 @@
             switch (message)
             {
                 case EmployeesActor.RefreshEmployees.Finished _:
-                    this.logger.Info("Employees info is refreshed, refreshing departments...");
-                    this.departmentsStorage.Tell(DepartmentsStorage.LoadHeadDepartment.Instance);
-                    this.Become(this.RefreshingDepartments);
+                    this.logger.Info("Employees info is refreshed");
+                    this.Become(this.DefaultState());
                     break;
 
                 case Status.Failure error:
@@ -103,8 +101,9 @@
                     break;
 
                 case DepartmentActor.RefreshDepartmentInfo.Finished _:
-                    this.logger.Info("Organization structure is loaded");
-                    this.Become(this.DefaultState());
+                    this.logger.Info("Organization structure is loaded, loading employees");
+                    this.employees.Tell(EmployeesActor.RefreshEmployees.Instance);
+                    this.Become(this.RefreshingEmployees);
                     break;
 
                 case Status.Failure error:

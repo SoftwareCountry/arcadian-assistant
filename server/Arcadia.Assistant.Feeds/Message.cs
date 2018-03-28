@@ -12,9 +12,9 @@
 
         public string Text { get; }
 
-        public DateTimeOffset DatePosted { get; }
+        public DateTime DatePosted { get; }
 
-        public Message(Guid messageId, string employeeId, string title, string text, DateTimeOffset datePosted)
+        public Message(Guid messageId, string employeeId, string title, string text, DateTime datePosted)
         {
             this.Title = title;
             this.Text = text;
