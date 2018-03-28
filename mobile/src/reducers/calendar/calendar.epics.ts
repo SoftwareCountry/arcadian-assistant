@@ -2,8 +2,10 @@ import { LoadUserEmployeeFinished } from '../user/user.action';
 import { ActionsObservable, ofType } from 'redux-observable';
 import { Observable } from 'rxjs/Observable';
 import { deserializeArray } from 'santee-dcts';
-// tslint:disable-next-line:max-line-length
-import { loadCalendarEventsFinished, CalendarEventCreated, SelectIntervalsBySingleDaySelection, selectIntervalsBySingleDaySelection, SelectCalendarDay, LoadCalendarEventsFinished, LoadCalendarEvents, loadCalendarEvents, CalendarSelectionMode, disableCalendarSelection, DisableCalendarSelection, disableSelectIntervalsBySingleDaySelection, CalendarSelectionModeType, DisableSelectIntervalsBySingleDaySelection } from './calendar.action';
+import { 
+    loadCalendarEventsFinished, CalendarEventCreated, SelectIntervalsBySingleDaySelection, selectIntervalsBySingleDaySelection, SelectCalendarDay, LoadCalendarEventsFinished, LoadCalendarEvents, loadCalendarEvents, 
+    CalendarSelectionMode, disableCalendarSelection, DisableCalendarSelection, disableSelectIntervalsBySingleDaySelection, CalendarSelectionModeType, DisableSelectIntervalsBySingleDaySelection 
+} from './calendar.action';
 import { loadFailedError } from '../errors/errors.action';
 import { CalendarEvent, CalendarEventStatus, CalendarEventType } from './calendar-event.model';
 import { closeEventDialog, CloseEventDialog } from './event-dialog/event-dialog.action';
@@ -47,20 +49,13 @@ export const calendarSelectionModeEpic$ = (action$: ActionsObservable<CalendarSe
 
 export const disableCalendarSelectionEpic$ = (action$: ActionsObservable<DisableCalendarSelection>) =>
     action$.ofType('DISABLE-CALENDAR-SELECTION')
-        .map(x => {
-            if (x.disable) {
-                return disableSelectIntervalsBySingleDaySelection(true);
-            }
+        .filter(x => x.disable)
+        .map(x => disableSelectIntervalsBySingleDaySelection(true));
 
-            switch (x.selectionMode) {
-                case CalendarSelectionModeType.SingleDay:
-                    return disableSelectIntervalsBySingleDaySelection(false);
-                case CalendarSelectionModeType.Interval:
-                    return disableSelectIntervalsBySingleDaySelection(true);
-                default:
-                    throw new Error(`Unknown selection mode: ${x.selectionMode}`);
-            }
-        });
+export const enableCalendarSelectionEpic$ = (action$: ActionsObservable<DisableCalendarSelection>) =>
+    action$.ofType('DISABLE-CALENDAR-SELECTION')
+        .filter(x => !x.disable)
+        .map(x => disableSelectIntervalsBySingleDaySelection(x.selectionMode === CalendarSelectionModeType.Interval));
 
 export const enableSelectIntervalsBySingleDaySelectionEpic$ = (action$: ActionsObservable<DisableSelectIntervalsBySingleDaySelection>) =>
     action$.ofType('DISABLE-SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION')
