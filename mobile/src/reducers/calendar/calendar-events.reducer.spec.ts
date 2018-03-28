@@ -1,5 +1,5 @@
 import { calendarEventsReducer, CalendarEventsState } from './calendar-events.reducer';
-import { loadCalendarEventsFinished, calendarEventCreated, selectCalendarDay, calendarSelectionMode, CalendarSelectionModeType, disableCalendarSelection, intervalsBySingleDaySelection } from './calendar.action';
+import { loadCalendarEventsFinished, calendarEventCreated, selectCalendarDay, calendarSelectionMode, CalendarSelectionModeType, disableCalendarSelection, intervalsBySingleDaySelection, disableIntervalsBySingleDaySelection } from './calendar.action';
 import { CalendarEvent, DatesInterval, CalendarEventStatus, CalendarEventType } from './calendar-event.model';
 import moment from 'moment';
 import { DayModel, IntervalType } from './calendar.model';
@@ -267,6 +267,55 @@ describe('calendar events reducer', () => {
         it('should return intervals by single day selection', () => {
             expect(state.intervalsBySingleDaySelection.sickleave).toBeDefined();
             expect(state.intervalsBySingleDaySelection.sickleave.calendarEvent).toBe(calendarEvent);
+        });
+    });
+
+    describe('when select intervals by single selection is disabled', () => {
+        let state: CalendarEventsState;
+        let calendarEvent: CalendarEvent;
+        let day: DayModel;
+
+        beforeEach(() => {
+            calendarEvent = new CalendarEvent();
+
+            calendarEvent.calendarEventId = '1';
+            calendarEvent.dates = new DatesInterval();
+            calendarEvent.dates.startDate = moment();
+            calendarEvent.dates.endDate = moment(calendarEvent.dates.startDate);
+
+            calendarEvent.dates.endDate.add(2, 'days');
+
+            calendarEvent.status = CalendarEventStatus.Requested;
+            calendarEvent.type = CalendarEventType.Sickleave;
+
+            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]));
+            state = calendarEventsReducer(undefined, action);
+        });
+
+        beforeEach(() => {
+            day = {
+                date: calendarEvent.dates.startDate,
+                today: true,
+                belongsToCurrentMonth: true
+            };
+            const action = selectCalendarDay(day);
+            state = calendarEventsReducer(state, action);
+        });
+
+        beforeEach(() => {
+            const action = disableIntervalsBySingleDaySelection(true);
+            state = calendarEventsReducer(state, action);
+        });
+
+        beforeEach(() => {
+            const action = intervalsBySingleDaySelection();
+            state = calendarEventsReducer(state, action);
+        });
+
+        it('should not return intervals', () => {
+            expect(state.intervalsBySingleDaySelection.sickleave).toBeUndefined();
+            expect(state.intervalsBySingleDaySelection.vacation).toBeUndefined();
+            expect(state.intervalsBySingleDaySelection.dayoff).toBeUndefined();
         });
     });
 });
