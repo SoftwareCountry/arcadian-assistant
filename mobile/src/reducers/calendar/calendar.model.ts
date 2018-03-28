@@ -1,5 +1,6 @@
 import moment, { Moment } from 'moment';
-import { CalendarEvents, CalendarEventsType } from './calendar-events.model';
+import { CalendarEvent, CalendarEventType, CalendarEventStatus } from './calendar-event.model';
+import { IntervalsMetadata, ReadOnlyIntervalsMetadata } from './calendar-intervals-metadata.model';
 
 export interface DayModel {
     date: Moment;
@@ -23,17 +24,25 @@ export enum IntervalType {
 
 export interface IntervalModel {
     intervalType: IntervalType;
-    calendarEvent: CalendarEvents;
+    calendarEvent: CalendarEvent;
     boundary: boolean;
+}
+
+export interface ReadOnlyIntervalsModel {
+    readonly metadata: ReadOnlyIntervalsMetadata;
+
+    get(date: Moment): IntervalModel[] | undefined;
+    copy(): IntervalsModel;
 }
 
 type IntervalsModelDictionary = {
     [dateKey: string]: IntervalModel[];
 };
 
-export class IntervalsModel {
+export class IntervalsModel implements ReadOnlyIntervalsModel {
     constructor(
-        private readonly intervalsDictionary: IntervalsModelDictionary = {}
+        private readonly intervalsDictionary: IntervalsModelDictionary = {},
+        public readonly intervalsMetadata: IntervalsMetadata = new IntervalsMetadata([])
     ) { }
 
     public set(date: Moment, interval: IntervalModel) {
@@ -53,6 +62,10 @@ export class IntervalsModel {
         return this.intervalsDictionary[dateKey];
     }
 
+    public get metadata(): ReadOnlyIntervalsMetadata {
+        return this.intervalsMetadata;
+    }
+
     public copy(): IntervalsModel {
         const copiedDictionary = { ...this.intervalsDictionary };
 
@@ -64,7 +77,9 @@ export class IntervalsModel {
                 : copiedDictionary[key];
         }
 
-        return new IntervalsModel(copiedDictionary);
+        const copiedMetadata = this.metadata.copy();
+
+        return new IntervalsModel(copiedDictionary, copiedMetadata);
     }
 
     public static generateKey(date: Moment): string {
@@ -94,9 +109,9 @@ export class ExtractedIntervals {
 
     constructor(intervals: IntervalModel[]) {
         if (intervals) {
-            this.vacation = intervals.find(x => x.calendarEvent.type === CalendarEventsType.Vacation);
-            this.dayoff = intervals.find(x => x.calendarEvent.type === CalendarEventsType.Dayoff || x.calendarEvent.type === CalendarEventsType.Workout);
-            this.sickleave = intervals.find(x => x.calendarEvent.type === CalendarEventsType.Sickleave);
+            this.vacation = intervals.find(x => x.calendarEvent.type === CalendarEventType.Vacation);
+            this.dayoff = intervals.find(x => x.calendarEvent.type === CalendarEventType.Dayoff || x.calendarEvent.type === CalendarEventType.Workout);
+            this.sickleave = intervals.find(x => x.calendarEvent.type === CalendarEventType.Sickleave);
         }
     }
 }

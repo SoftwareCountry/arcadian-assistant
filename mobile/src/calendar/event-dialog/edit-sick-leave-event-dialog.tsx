@@ -7,14 +7,14 @@ import { connect } from 'react-redux';
 import { EventDialogActions, closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { DayModel, IntervalModel, ExtractedIntervals } from '../../reducers/calendar/calendar.model';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
-import { CalendarEventsType, CalendarEvents } from '../../reducers/calendar/calendar-events.model';
+import { CalendarEventType, CalendarEvent } from '../../reducers/calendar/calendar-event.model';
 import { completeSickLeave } from '../../reducers/calendar/sick-leave.action';
 import { Employee } from '../../reducers/organization/employee.model';
 import { Moment } from 'moment';
 
 interface EditSickLeaveEventDialogDispatchProps {
     prolong: () => void;
-    completeSickLeave: (employeeId: string, calendarEvent: CalendarEvents) => void;
+    completeSickLeave: (employeeId: string, calendarEvent: CalendarEvent) => void;
     closeDialog: () => void;
 }
 
@@ -73,7 +73,7 @@ const mapStateToProps = (state: AppState): EditSickLeaveEventDialogProps => ({
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): EditSickLeaveEventDialogDispatchProps => ({
     prolong: () => { /* TBD next PR */ },
     closeDialog: () => { dispatch(closeEventDialog()); },
-    completeSickLeave: (employeeId: string, calendarEvent: CalendarEvents) => { dispatch(completeSickLeave(employeeId, calendarEvent)); }
+    completeSickLeave: (employeeId: string, calendarEvent: CalendarEvent) => { dispatch(completeSickLeave(employeeId, calendarEvent)); }
 });
 
 export const EditSickLeaveEventDialog = connect(mapStateToProps, mapDispatchToProps)(EditSickLeaveEventDialogImpl);

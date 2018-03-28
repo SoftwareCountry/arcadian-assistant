@@ -22,16 +22,16 @@ import { createReactNavigationReduxMiddleware, createReduxBoundAddListener } fro
 import { PeopleState, peopleReducer  } from './people/people.reducer';
 
 export interface AppState {
-    helpdesk: HelpdeskState;
-    organization: OrganizationState;
+    helpdesk?: HelpdeskState;
+    organization?: OrganizationState;
     
-    nav: NavigationState;
+    nav?: NavigationState;
     navigationMiddlewareKey: string;
 
-    userInfo: UserInfoState;
-    feeds: FeedsState;
-    calendar: CalendarState;
-    people: PeopleState;
+    userInfo?: UserInfoState;
+    feeds?: FeedsState;
+    calendar?: CalendarState;
+    people?: PeopleState;
 }
 
 const rootEpic = combineEpics(helpdeskEpics as any, organizationEpics as any, errorsEpics as any, userEpics as any, feedsEpics as any, calendarEpics as any);
@@ -62,5 +62,5 @@ export const storeFactory = (oauthProcess: OAuthProcess, ) => {
 
     const reactNavigationMiddleware = createReactNavigationReduxMiddleware<AppState>(navigationMiddlewareKey, (state) => state.nav);
 
-    return createStore(reducers, { navigationMiddlewareKey }, applyMiddleware(epicMiddleware, reactNavigationMiddleware));
+    return createStore<AppState>(reducers, { navigationMiddlewareKey }, applyMiddleware(epicMiddleware, reactNavigationMiddleware));
 };

@@ -1,15 +1,15 @@
 import { IntervalsModel, IntervalModel, IntervalType } from './calendar.model';
 import moment from 'moment';
-import { CalendarEventsType, CalendarEvents, DatesInterval } from './calendar-events.model';
+import { CalendarEventType, CalendarEvent, DatesInterval } from './calendar-event.model';
 import { Moment } from 'moment';
 
 describe('IntervalsModel', () => {
-    let calendarEvent: CalendarEvents;
+    let calendarEvent: CalendarEvent;
     let date: Moment;
 
     beforeEach(() => {
-        calendarEvent = new CalendarEvents();
-        calendarEvent.type = CalendarEventsType.Workout;
+        calendarEvent = new CalendarEvent();
+        calendarEvent.type = CalendarEventType.Workout;
         calendarEvent.dates = new DatesInterval();
         calendarEvent.dates.startDate = date;
         calendarEvent.dates.endDate = date;
@@ -99,8 +99,8 @@ describe('IntervalsModel', () => {
         let intervalsModel: IntervalsModel;
 
         beforeEach(() => {
-            let copiedCalendarEvent = new CalendarEvents();
-            copiedCalendarEvent.type = CalendarEventsType.Workout;
+            let copiedCalendarEvent = new CalendarEvent();
+            copiedCalendarEvent.type = CalendarEventType.Workout;
             copiedCalendarEvent.dates = new DatesInterval();
             copiedCalendarEvent.dates.startDate = date;
             copiedCalendarEvent.dates.endDate = date;

@@ -27,11 +27,11 @@
 
         public class Error : Response
         {
-            public Exception Exception { get; }
+            public string Message { get; }
 
-            public Error(Exception exception)
+            public Error(string message)
             {
-                this.Exception = exception;
+                this.Message = message;
             }
         }
     }

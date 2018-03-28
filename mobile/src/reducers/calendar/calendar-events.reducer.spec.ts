@@ -1,25 +1,26 @@
 import { calendarEventsReducer, CalendarEventsState } from './calendar-events.reducer';
-import { loadCalendarEventsFinished, calendarEventCreated, selectCalendarDay, calendarSelectionMode, CalendarSelectionModeType } from './calendar.action';
-import { CalendarEvents, DatesInterval, CalendarEventStatus, CalendarEventsType } from './calendar-events.model';
+import { loadCalendarEventsFinished, calendarEventCreated, selectCalendarDay, calendarSelectionMode, CalendarSelectionModeType, disableCalendarSelection } from './calendar.action';
+import { CalendarEvent, DatesInterval, CalendarEventStatus, CalendarEventType } from './calendar-event.model';
 import moment from 'moment';
 import { DayModel } from './calendar.model';
+import { CalendarEvents } from './calendar-events.model';
 
 describe('calendar events reducer', () => {
     describe('when load calendar events finished', () => {
         let state: CalendarEventsState;
-        let calendarEvent: CalendarEvents;
+        let calendarEvent: CalendarEvent;
 
         beforeEach(() => {
-            calendarEvent = new CalendarEvents();
+            calendarEvent = new CalendarEvent();
 
             calendarEvent.calendarEventId = '1';
             calendarEvent.dates = new DatesInterval();
             calendarEvent.dates.startDate = moment();
             calendarEvent.dates.endDate = moment(calendarEvent.dates.startDate);
             calendarEvent.status = CalendarEventStatus.Requested;
-            calendarEvent.type = CalendarEventsType.Sickleave;
+            calendarEvent.type = CalendarEventType.Sickleave;
 
-            const action = loadCalendarEventsFinished([calendarEvent]);
+            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]));
             state = calendarEventsReducer(undefined, action);
         });
 
@@ -44,17 +45,17 @@ describe('calendar events reducer', () => {
 
     describe('when calendar event created', () => {
         let state: CalendarEventsState;
-        let calendarEvent: CalendarEvents;
+        let calendarEvent: CalendarEvent;
 
         beforeEach(() => {
-            calendarEvent = new CalendarEvents();
+            calendarEvent = new CalendarEvent();
 
             calendarEvent.calendarEventId = '1';
             calendarEvent.dates = new DatesInterval();
             calendarEvent.dates.startDate = moment();
             calendarEvent.dates.endDate = moment(calendarEvent.dates.startDate);
             calendarEvent.status = CalendarEventStatus.Requested;
-            calendarEvent.type = CalendarEventsType.Sickleave;
+            calendarEvent.type = CalendarEventType.Sickleave;
 
             const action = calendarEventCreated(calendarEvent);
             state = calendarEventsReducer(undefined, action);
@@ -139,7 +140,7 @@ describe('calendar events reducer', () => {
 
         describe('when calendar day selected', () => {
             let day: DayModel;
-    
+
             beforeEach(() => {
                 day = {
                     date: moment(),
@@ -149,13 +150,79 @@ describe('calendar events reducer', () => {
                 const action = selectCalendarDay(day);
                 state = calendarEventsReducer(state, action);
             });
-    
+
             it('should set single selection', () => {
                 expect(state.selection.single.day).toBe(day);
             });
 
             it('should set end day of interval selection', () => {
                 expect(state.selection.interval.endDay).toBe(day);
+            });
+        });
+    });
+
+    describe('when calendar selection is disabled', () => {
+        let state: CalendarEventsState;
+        let day: DayModel;
+
+        beforeEach(() => {
+            const action = disableCalendarSelection(true);
+            state = calendarEventsReducer(undefined, action);
+        });
+
+        beforeEach(() => {
+            const date = moment();
+            const dateMonth = date.month();
+
+            date.add(2, 'days');
+
+            day = {
+                date: moment(),
+                today: false,
+                belongsToCurrentMonth: dateMonth === date.month()
+            };
+        });
+
+        it('should disable calendar selection', () => {
+            expect(state.disableSelection).toBeTruthy();
+        });
+
+        describe('when calendar selection mode is single day', () => {
+            beforeEach(() => {
+                const action = calendarSelectionMode(CalendarSelectionModeType.SingleDay);
+                state = calendarEventsReducer(state, action);
+            });
+
+            describe('when calendar day selected', () => {
+                beforeEach(() => {
+                    const action = selectCalendarDay(day);
+                    state = calendarEventsReducer(state, action);
+                });
+
+                it('should not change single selection', () => {
+                    expect(state.selection.single.day).not.toBe(day);
+                });
+            });
+        });
+
+        describe('when calendar selection mode is interval', () => {
+            let color: string;
+
+            beforeEach(() => {
+                color = '#abc';
+                const action = calendarSelectionMode(CalendarSelectionModeType.Interval, color);
+                state = calendarEventsReducer(state, action);
+            });
+
+            describe('when calendar day selected', () => {
+                beforeEach(() => {
+                    const action = selectCalendarDay(day);
+                    state = calendarEventsReducer(state, action);
+                });
+
+                it('should not change end day of interval selection', () => {
+                    expect(state.selection.interval.endDay).not.toBe(day);
+                });
             });
         });
     });

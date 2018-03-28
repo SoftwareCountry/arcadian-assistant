@@ -1,9 +1,11 @@
 import { CalendarEventsState, IntervalsSubState, SelectionSubState } from './calendar-events.reducer';
 import { SelectCalendarDay, CalendarSelectionModeType } from './calendar.action';
-import { CalendarEvents, CalendarEventsType, DatesInterval, CalendarEventStatus } from './calendar-events.model';
-import { CalendarIntervalsBuilder } from './calendar-intervals-builder';
 
 export const singleDaySelectionReducer = (state: CalendarEventsState, action: SelectCalendarDay): SelectionSubState | null => {
+    if (state.disableSelection) {
+        return null;
+    }
+
     return {
         selection: {
             ...state.selection,
@@ -15,6 +17,10 @@ export const singleDaySelectionReducer = (state: CalendarEventsState, action: Se
 };
 
 export const intervalSelectionReducer = (state: CalendarEventsState, action: SelectCalendarDay): SelectionSubState | null => {
+    if (state.disableSelection) {
+        return null;
+    }
+
     if (state.selection.interval) {
         return {
             selection: {
