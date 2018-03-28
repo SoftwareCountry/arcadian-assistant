@@ -1,6 +1,6 @@
 import { EventDialogActions, OpenEventDialog, closeEventDialog } from './event-dialog.action';
 import { ActionsObservable } from 'redux-observable';
-import { calendarSelectionMode, CalendarSelectionModeType, selectIntervalsBySingleDaySelection, disableSelectIntervalsBySingleDaySelection, disableCalendarSelection } from '../calendar.action';
+import { calendarSelectionMode, CalendarSelectionModeType, selectIntervalsBySingleDaySelection, disableSelectIntervalsBySingleDaySelection, disableCalendarSelection, DisableSelectIntervalsBySingleDaySelection } from '../calendar.action';
 import { CalendarEventsColor } from '../../../calendar/styles';
 import { EventDialogType } from './event-dialog-type.model';
 
@@ -34,3 +34,8 @@ export const closeEventDialogEpic$ = (action$: ActionsObservable<EventDialogActi
 export const enableIntervalsBySingleSelectionEpic$ = (action$: ActionsObservable<EventDialogActions>) =>
     action$.ofType('CLOSE-EVENT-DIALOG')
         .map(x => disableSelectIntervalsBySingleDaySelection(false));
+
+export const enableSelectionIntervalsBySingleDaySelectionEpic$ = (action$: ActionsObservable<DisableSelectIntervalsBySingleDaySelection>) =>
+        action$.ofType('DISABLE-SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION')
+            .filter(x => !x.disable)
+            .map(x => selectIntervalsBySingleDaySelection());

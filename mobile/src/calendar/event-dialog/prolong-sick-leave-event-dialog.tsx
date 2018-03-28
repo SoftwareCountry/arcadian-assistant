@@ -54,7 +54,7 @@ export class ProlongSickLeaveEventDialogImpl extends Component<ProlongSickLeaveE
     }
 
     private onCancelClick = () => {
-        this.props.closeDialog();
+        this.props.back();
     }
 
     private onAcceptClick = () => {
@@ -94,7 +94,7 @@ const mapStateToProps = (state: AppState): ProlongSickLeaveEventDialogProps => (
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ProlongSickLeaveEventDialogDispatchProps => ({
     back: () => { dispatch(openEventDialog(EventDialogType.EditSickLeave)); },
     confirmProlong: (employeeId: string, calendarEvent: CalendarEvent, prolongedEndDate: Moment) => { dispatch(confirmProlongSickLeave(employeeId, calendarEvent, prolongedEndDate)); },
-    closeDialog: () => { dispatch(closeEventDialog()); },
+    closeDialog: () => { dispatch(closeEventDialog()); }
 });
 
 export const ProlongSickLeaveEventDialog = connect(mapStateToProps, mapDispatchToProps)(ProlongSickLeaveEventDialogImpl);

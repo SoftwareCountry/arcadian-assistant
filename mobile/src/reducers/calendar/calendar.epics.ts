@@ -6,7 +6,7 @@ import { loadCalendarEventsFinished, CalendarEventCreated, SelectIntervalsBySing
     disableCalendarSelection } from './calendar.action';
 import { loadFailedError } from '../errors/errors.action';
 import { CalendarEvent, CalendarEventStatus, CalendarEventType } from './calendar-event.model';
-import { closeEventDialog } from './event-dialog/event-dialog.action';
+import { closeEventDialog, CloseEventDialog } from './event-dialog/event-dialog.action';
 import { AppState } from 'react-native';
 import { DependenciesContainer } from '../app.reducer';
 import { CalendarEvents } from './calendar-events.model';
