@@ -8,7 +8,7 @@ import { confirmProlongSickLeave } from '../../reducers/calendar/sick-leave.acti
 import { connect, Dispatch } from 'react-redux';
 import { Employee } from '../../reducers/organization/employee.model';
 import { Moment } from 'moment';
-import { intervalsBySingleDaySelection } from '../../reducers/calendar/calendar.action';
+import { selectIntervalsBySingleDaySelection } from '../../reducers/calendar/calendar.action';
 import { CalendarEvent } from '../../reducers/calendar/calendar-event.model';
 
 interface ProlongSickLeaveEventDialogDispatchProps {
@@ -86,7 +86,7 @@ export class ProlongSickLeaveEventDialogImpl extends Component<ProlongSickLeaveE
 }
 
 const mapStateToProps = (state: AppState): ProlongSickLeaveEventDialogProps => ({
-    intervalsBySingleDaySelection: state.calendar.calendarEvents.intervalsBySingleDaySelection,
+    intervalsBySingleDaySelection: state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection,
     intervalSelection: state.calendar.calendarEvents.selection.interval,
     userEmployee: state.userInfo.employee
 });

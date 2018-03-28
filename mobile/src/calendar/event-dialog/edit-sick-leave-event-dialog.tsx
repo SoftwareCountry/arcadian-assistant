@@ -66,7 +66,7 @@ class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogPro
 }
 
 const mapStateToProps = (state: AppState): EditSickLeaveEventDialogProps => ({
-    intervals: state.calendar.calendarEvents.intervalsBySingleDaySelection,
+    intervals: state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection,
     userEmployee: state.userInfo.employee
 });
 

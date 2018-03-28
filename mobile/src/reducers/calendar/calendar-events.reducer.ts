@@ -25,8 +25,8 @@ export interface CalendarEventsState extends
     SelectionSubState {
         weeks: WeekModel[];
         disableCalendarActionsButtonGroup: boolean;
-        intervalsBySingleDaySelection: ExtractedIntervals;
-        disableIntervalsBySingleDaySelection: boolean;
+        selectedIntervalsBySingleDaySelection: ExtractedIntervals;
+        disableSelectIntervalsBySingleDaySelection: boolean;
         disableSelection: boolean;
 }
 
@@ -59,8 +59,8 @@ const createInitState = (): CalendarEventsState => {
         disableCalendarDaysBefore: null,
         disableCalendarActionsButtonGroup: true,
         selection: defaultSelection,
-        intervalsBySingleDaySelection: defaultExtractedIntervals,
-        disableIntervalsBySingleDaySelection: false,
+        selectedIntervalsBySingleDaySelection: defaultExtractedIntervals,
+        disableSelectIntervalsBySingleDaySelection: false,
         disableSelection: false
     };
 };
@@ -118,8 +118,8 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 ...state,
                 ...selectionState
             };
-        case 'INTERVALS-BY-SINGLE-DAY-SELECTION':
-            if (state.disableIntervalsBySingleDaySelection) {
+        case 'SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION':
+            if (state.disableSelectIntervalsBySingleDaySelection) {
                 return state;
             }
 
@@ -131,17 +131,17 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
 
             return {
                 ...state,
-                intervalsBySingleDaySelection: extractedIntervals
+                selectedIntervalsBySingleDaySelection: extractedIntervals
             };
         case 'DISABLE-CALENDAR-SELECTION':
             return {
                 ...state,
                 disableSelection: action.disable
             };
-        case 'DISABLE-INTERVALS-BY-SINGLE-DAY-SELECTION': 
+        case 'DISABLE-SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION': 
             return {
                 ...state,
-                disableIntervalsBySingleDaySelection: action.disable
+                disableSelectIntervalsBySingleDaySelection: action.disable
             };
         default:
             return state;

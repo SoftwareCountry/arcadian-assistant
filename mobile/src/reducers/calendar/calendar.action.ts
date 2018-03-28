@@ -52,11 +52,11 @@ export interface CalendarSelectionMode {
 
 export const calendarSelectionMode = (selectionMode: CalendarSelectionModeType, color: string = null): CalendarSelectionMode => ({ type: 'CALENDAR-SELECTION-MODE', selectionMode, color });
 
-export interface IntervalsBySingleDaySelection {
-    type: 'INTERVALS-BY-SINGLE-DAY-SELECTION';
+export interface SelectIntervalsBySingleDaySelection {
+    type: 'SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION';
 }
 
-export const intervalsBySingleDaySelection = (): IntervalsBySingleDaySelection => ({ type: 'INTERVALS-BY-SINGLE-DAY-SELECTION' });
+export const selectIntervalsBySingleDaySelection = (): SelectIntervalsBySingleDaySelection => ({ type: 'SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION' });
 
 export interface DisableCalendarSelection {
     type: 'DISABLE-CALENDAR-SELECTION';
@@ -65,13 +65,13 @@ export interface DisableCalendarSelection {
 
 export const disableCalendarSelection = (disable: boolean): DisableCalendarSelection => ({ type: 'DISABLE-CALENDAR-SELECTION', disable });
 
-export interface DisableIntervalsBySingleDaySelection {
-    type: 'DISABLE-INTERVALS-BY-SINGLE-DAY-SELECTION';
+export interface DisableSelectIntervalsBySingleDaySelection {
+    type: 'DISABLE-SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION';
     disable: boolean;
 }
 
-export const disableIntervalsBySingleDaySelection = (disable: boolean): DisableIntervalsBySingleDaySelection => ({ type: 'DISABLE-INTERVALS-BY-SINGLE-DAY-SELECTION', disable });
+export const disableSelectIntervalsBySingleDaySelection = (disable: boolean): DisableSelectIntervalsBySingleDaySelection => ({ type: 'DISABLE-SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION', disable });
 
 export type CalendarActions = LoadCalendarEventsFinished | CalendarEventCreated |
     SelectCalendarDay | SelectCalendarMonth |
-    CalendarSelectionMode | IntervalsBySingleDaySelection | DisableCalendarSelection | DisableIntervalsBySingleDaySelection;
+    CalendarSelectionMode | SelectIntervalsBySingleDaySelection | DisableCalendarSelection | DisableSelectIntervalsBySingleDaySelection;

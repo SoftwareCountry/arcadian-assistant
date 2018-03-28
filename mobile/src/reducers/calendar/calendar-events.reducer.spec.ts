@@ -1,5 +1,5 @@
 import { calendarEventsReducer, CalendarEventsState } from './calendar-events.reducer';
-import { loadCalendarEventsFinished, calendarEventCreated, selectCalendarDay, calendarSelectionMode, CalendarSelectionModeType, disableCalendarSelection, intervalsBySingleDaySelection, disableIntervalsBySingleDaySelection } from './calendar.action';
+import { loadCalendarEventsFinished, calendarEventCreated, selectCalendarDay, calendarSelectionMode, CalendarSelectionModeType, disableCalendarSelection, selectIntervalsBySingleDaySelection, disableSelectIntervalsBySingleDaySelection } from './calendar.action';
 import { CalendarEvent, DatesInterval, CalendarEventStatus, CalendarEventType } from './calendar-event.model';
 import moment from 'moment';
 import { DayModel, IntervalType } from './calendar.model';
@@ -260,13 +260,13 @@ describe('calendar events reducer', () => {
         });
 
         beforeEach(() => {
-            const action = intervalsBySingleDaySelection();
+            const action = selectIntervalsBySingleDaySelection();
             state = calendarEventsReducer(state, action);
         });
 
         it('should return intervals by single day selection', () => {
-            expect(state.intervalsBySingleDaySelection.sickleave).toBeDefined();
-            expect(state.intervalsBySingleDaySelection.sickleave.calendarEvent).toBe(calendarEvent);
+            expect(state.selectedIntervalsBySingleDaySelection.sickleave).toBeDefined();
+            expect(state.selectedIntervalsBySingleDaySelection.sickleave.calendarEvent).toBe(calendarEvent);
         });
     });
 
@@ -303,19 +303,19 @@ describe('calendar events reducer', () => {
         });
 
         beforeEach(() => {
-            const action = disableIntervalsBySingleDaySelection(true);
+            const action = disableSelectIntervalsBySingleDaySelection(true);
             state = calendarEventsReducer(state, action);
         });
 
         beforeEach(() => {
-            const action = intervalsBySingleDaySelection();
+            const action = selectIntervalsBySingleDaySelection();
             state = calendarEventsReducer(state, action);
         });
 
         it('should not return intervals', () => {
-            expect(state.intervalsBySingleDaySelection.sickleave).toBeUndefined();
-            expect(state.intervalsBySingleDaySelection.vacation).toBeUndefined();
-            expect(state.intervalsBySingleDaySelection.dayoff).toBeUndefined();
+            expect(state.selectedIntervalsBySingleDaySelection.sickleave).toBeUndefined();
+            expect(state.selectedIntervalsBySingleDaySelection.vacation).toBeUndefined();
+            expect(state.selectedIntervalsBySingleDaySelection.dayoff).toBeUndefined();
         });
     });
 });
