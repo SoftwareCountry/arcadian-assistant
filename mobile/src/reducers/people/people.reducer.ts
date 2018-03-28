@@ -26,11 +26,11 @@ export interface PeopleState {
 
 const initState: PeopleState = {
     headDepartment: null,
-    departments: null,
-    departmentsHeads: null,
-    employees: null,
-    departmentsHeadsIds: null,
-    departmentsBranch: null,
+    departments: [],
+    departmentsHeads: [],
+    employees: [],
+    departmentsHeadsIds: [],
+    departmentsBranch: [],
     departmentsTree: null
 };
 
@@ -58,17 +58,17 @@ function onlyUnique(value: string, index: number, self: string[]) {
 
 function childrenNodes(headDeaprtment: Department, departments: Department[], employees: Employee[]) {
     var nodes: DepartmentsTreeNode[] = [];
-    const sublings = departments.filter((subDepartment) => subDepartment.parentDepartmentId === headDeaprtment.departmentId);
-    sublings.forEach(department => {
+    const siblings = departments.filter((subDepartment) => subDepartment.parentDepartmentId === headDeaprtment.departmentId);
+    siblings.forEach(department => {
         const employee: Employee = employees.filter((emp) => emp.employeeId === department.chiefId)[0];
-        const subSublings = departments.filter((subDepartment) => subDepartment.parentDepartmentId === department.departmentId);
+        const subSiblings = departments.filter((subDepartment) => subDepartment.parentDepartmentId === department.departmentId);
         nodes.push({
             departmentId: department.departmentId,
             departmentAbbreviation: department.abbreviation,
             departmentChiefId: department.chiefId,
             head: employee,
             parent: headDeaprtment,
-            children: subSublings.length > 0 ? childrenNodes(department, departments, employees) : null,
+            children: subSiblings.length > 0 ? childrenNodes(department, departments, employees) : null,
             subordinates: employees.filter((emp) => emp.departmentId === department.departmentId)
         });
     });
@@ -80,32 +80,20 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
     switch (action.type) {
         case 'LOAD_EMPLOYEE_FINISHED':
             var heads = state.departmentsHeads;
-            if (heads === null) {
-                heads = [];
-            }
+
             if (state.departmentsHeadsIds.indexOf(action.employee.employeeId) > -1 && heads.filter((employee) => employee.employeeId === action.employee.employeeId).length === 0) {
                 heads.push(action.employee);
                 // console.log(action.employee);
             } else {
                 if (heads.length === state.departmentsHeadsIds.length) {
-                    var employees: Employee[];
-                    if (state.employees === null) {
-                        employees = [];
+                    var employees = state.employees;
+                    if (employees.filter((employee) => employee.employeeId === action.employee.employeeId).length === 0 && state.departmentsHeads.filter((employee) => employee.employeeId === action.employee.employeeId).length === 0) {
                         employees.push(action.employee);
                     } else {
-                        employees = state.employees;
-                        if (employees.filter((employee) => employee.employeeId === action.employee.employeeId).length === 0 && state.departmentsHeads.filter((employee) => employee.employeeId === action.employee.employeeId).length === 0) {
-                            employees.push(action.employee);
-                        } else {
-                            return {...state};
-                        }
+                        return { ...state };
                     }
+
                     const departmentsTree = departmentsTreeFor(state.departments, state.departmentsHeads.concat(employees));
-                    employees.map((employee) => {
-                       if (employee.employeeId === '140') {
-                           console.log('check duplicates!');
-                       } 
-                    });
                     return {...state, departmentsTree: departmentsTree, employees: employees};
                 } else {
                     return {...state};
@@ -134,9 +122,6 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
             return {...state, departments: action.departments, headDepartment: headDepartment, departmentsHeadsIds: headsIds};        
         case 'UPDATE-DEPARTMENT-IDS-TREE':
             var deps = state.departmentsBranch;
-            if (deps === null) {
-                deps = [];
-            }
 
             if (deps.length - 1 < action.index) {
                 deps.push(action.departmentId);
