@@ -16,7 +16,7 @@ export const openEventDialogEpic$ = (action$: ActionsObservable<EventDialogActio
                     return calendarSelectionMode(CalendarSelectionModeType.Interval, CalendarEventsColor.sickLeave);
 
                 case EventDialogType.EditSickLeave:
-                    return disableCalendarSelection(true);
+                    return disableCalendarSelection(true, CalendarSelectionModeType.SingleDay);
 
                 case EventDialogType.ProlongSickLeave:
                     return calendarSelectionMode(CalendarSelectionModeType.Interval, CalendarEventsColor.sickLeave);
@@ -30,12 +30,3 @@ export const openEventDialogEpic$ = (action$: ActionsObservable<EventDialogActio
 export const closeEventDialogEpic$ = (action$: ActionsObservable<EventDialogActions>) =>
     action$.ofType('CLOSE-EVENT-DIALOG')
         .map(x => calendarSelectionMode(CalendarSelectionModeType.SingleDay));
-
-export const enableIntervalsBySingleSelectionEpic$ = (action$: ActionsObservable<EventDialogActions>) =>
-    action$.ofType('CLOSE-EVENT-DIALOG')
-        .map(x => disableSelectIntervalsBySingleDaySelection(false));
-
-export const enableSelectionIntervalsBySingleDaySelectionEpic$ = (action$: ActionsObservable<DisableSelectIntervalsBySingleDaySelection>) =>
-        action$.ofType('DISABLE-SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION')
-            .filter(x => !x.disable)
-            .map(x => selectIntervalsBySingleDaySelection());

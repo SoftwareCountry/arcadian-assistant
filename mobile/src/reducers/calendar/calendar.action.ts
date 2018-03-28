@@ -1,5 +1,5 @@
 import { CalendarEvent } from './calendar-event.model';
-import { DayModel } from './calendar.model';
+import { DayModel, CalendarSelection } from './calendar.model';
 import { SickLeaveActions } from './sick-leave.action';
 import { CalendarEvents } from './calendar-events.model';
 
@@ -61,9 +61,11 @@ export const selectIntervalsBySingleDaySelection = (): SelectIntervalsBySingleDa
 export interface DisableCalendarSelection {
     type: 'DISABLE-CALENDAR-SELECTION';
     disable: boolean;
+    selectionMode: CalendarSelectionModeType;
 }
 
-export const disableCalendarSelection = (disable: boolean): DisableCalendarSelection => ({ type: 'DISABLE-CALENDAR-SELECTION', disable });
+export const disableCalendarSelection = (disable: boolean, selectionMode: CalendarSelectionModeType): DisableCalendarSelection => 
+    ({ type: 'DISABLE-CALENDAR-SELECTION', disable, selectionMode });
 
 export interface DisableSelectIntervalsBySingleDaySelection {
     type: 'DISABLE-SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION';

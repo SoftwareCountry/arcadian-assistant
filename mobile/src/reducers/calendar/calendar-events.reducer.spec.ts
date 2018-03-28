@@ -166,7 +166,7 @@ describe('calendar events reducer', () => {
         let day: DayModel;
 
         beforeEach(() => {
-            const action = disableCalendarSelection(true);
+            const action = disableCalendarSelection(true, CalendarSelectionModeType.SingleDay);
             state = calendarEventsReducer(undefined, action);
         });
 
