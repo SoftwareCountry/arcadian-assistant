@@ -57,8 +57,9 @@ function onlyUnique(value: string, index: number, self: string[]) {
 }
 
 function childrenNodes(headDeaprtment: Department, departments: Department[], employees: Employee[]) {
-    var nodes: DepartmentsTreeNode[] = [];
+    const nodes: DepartmentsTreeNode[] = [];
     const siblings = departments.filter((subDepartment) => subDepartment.parentDepartmentId === headDeaprtment.departmentId);
+
     siblings.forEach(department => {
         const employee: Employee = employees.find((emp) => emp.employeeId === department.chiefId);
         const subSiblings = departments.filter((subDepartment) => subDepartment.parentDepartmentId === department.departmentId);
@@ -79,13 +80,13 @@ function childrenNodes(headDeaprtment: Department, departments: Department[], em
 export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions | LoadEmployeeFinished | LoadDepartmentsFinished) => {
     switch (action.type) {
         case 'LOAD_EMPLOYEE_FINISHED':
-            var heads = state.departmentsHeads;
+            const heads = state.departmentsHeads;
 
             if (state.departmentsHeadsIds.indexOf(action.employee.employeeId) > -1 && !heads.find((employee) => employee.employeeId === action.employee.employeeId)) {
                 heads.push(action.employee);
             } else {
                 if (heads.length === state.departmentsHeadsIds.length) {
-                    var employees = state.employees;
+                    const employees = state.employees;
                     if (!employees.find((employee) => employee.employeeId === action.employee.employeeId) && !state.departmentsHeads.find((employee) => employee.employeeId === action.employee.employeeId)) {
                         employees.push(action.employee);
                     } else {
@@ -101,9 +102,9 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
 
             if (heads.length === state.departmentsHeadsIds.length) {
                 const departmentsTree = departmentsTreeFor(state.departments, state.employees ? state.departmentsHeads.concat(state.employees) : state.departmentsHeads);
-                var currentDepartmentNode = departmentsTree.root;
-                var index = 0;
-                var initDeps = [];
+                let currentDepartmentNode = departmentsTree.root;
+                const index = 0;
+                const initDeps = [];
 
                 while (currentDepartmentNode) {
                     initDeps.push(currentDepartmentNode);
@@ -120,7 +121,7 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
             const headDepartment = action.departments.find((department) => department.isHeadDepartment === true);
             return {...state, departments: action.departments, headDepartment: headDepartment, departmentsHeadsIds: headsIds};        
         case 'UPDATE-DEPARTMENT-IDS-TREE':
-            var deps = state.departmentsBranch;
+            let deps = state.departmentsBranch;
 
             if (deps.length - 1 < action.index) {
                 deps = [...deps, action.departmentId];
@@ -130,7 +131,7 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
                 } else {
                     deps[action.index] = action.departmentId;
                     deps = deps.filter((dep, depIndex) => depIndex < (action.index + 1));
-                    var currentDepartmentNodeU = deps[action.index].children != null ? deps[action.index].children[0] : null;
+                    let currentDepartmentNodeU = deps[action.index].children != null ? deps[action.index].children[0] : null;
                     while (currentDepartmentNodeU) {
                         deps.push(currentDepartmentNodeU);
                         const firstChild = currentDepartmentNodeU.children != null ? currentDepartmentNodeU.children[0] : null;

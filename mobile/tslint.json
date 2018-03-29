@@ -44,7 +44,7 @@
     "no-unsafe-finally": true,
     "no-unused-expression": false,
     "no-use-before-declare": true,
-    "no-var-keyword": false,
+    "no-var-keyword": true,
     "radix": true,
     "restrict-plus-operands": false,
     "switch-default": false,
