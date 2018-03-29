@@ -33,6 +33,6 @@ export const openEventDialogEpic$ = (action$: ActionsObservable<EventDialogActio
             Array.isArray(x) ? Observable.from(x) : Observable.of(x)
         );
 
-export const closeEventDialogEpic$ = (action$: ActionsObservable<EventDialogActions | CalendarActions>) =>
+export const closeEventDialogEpic$ = (action$: ActionsObservable<EventDialogActions>) =>
     action$.ofType('CLOSE-EVENT-DIALOG')
         .map(x => calendarSelectionMode(CalendarSelectionModeType.SingleDay));
