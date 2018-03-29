@@ -6,6 +6,7 @@ import { ConfirmSickLeaveEventDialog } from './confirm-sick-leave-event-dialog';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
 import { EditSickLeaveEventDialog } from './edit-sick-leave-event-dialog';
 import { ProlongSickLeaveEventDialog } from './prolong-sick-leave-event-dialog';
+import { RequestVacationEventDialog } from './request-vacation-event-dialog';
 
 interface EventDialogProps {
     dialogType: EventDialogType;
@@ -30,6 +31,8 @@ export class EventDialog extends Component<EventDialogProps> {
                 return <EditSickLeaveEventDialog />;
             case EventDialogType.ProlongSickLeave:
                 return <ProlongSickLeaveEventDialog />;
+            case EventDialogType.RequestVacaltion:
+                return <RequestVacationEventDialog />;
             default:
                 throw new Error(`There isn't event dialog implementation for ${this.props.dialogType}`);
         }

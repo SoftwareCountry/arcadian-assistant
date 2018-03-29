@@ -2,5 +2,9 @@ export enum EventDialogType {
     ClaimSickLeave = 'ClaimSickLeave',
     ConfirmStartDateSickLeave = 'ConfirmStartDateSickLeave',
     EditSickLeave = 'EditSickLeave',
-    ProlongSickLeave = 'ProlongSickLeave'
+    ProlongSickLeave = 'ProlongSickLeave',
+
+    RequestVacaltion = 'RequestVacaltion',
+    ConfirmStartDateVacation = 'ConfirmStartDateVacation',
+    EditVacaltion = 'EditVacaltion',
 }

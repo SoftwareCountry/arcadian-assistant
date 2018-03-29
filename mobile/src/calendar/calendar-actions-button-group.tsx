@@ -24,6 +24,10 @@ interface ActionButtonsGroupDispatchProps {
         claim: () => void;
         edit: () => void;
     };
+    vacationActions: {
+        request: () => void
+        edit: () => void
+    };
 }
 
 export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & ActionButtonsGroupDispatchProps> {
@@ -32,16 +36,26 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & A
 
         return (
             <View style={calendarActionsStyles.container}>
-                <VacationActionButton interval={intervalsBySingleDaySelection.vacation} disabled={this.props.disableActionButtons} />
+                <VacationActionButton
+                    allIntervals={allIntervals}
+                    interval={intervalsBySingleDaySelection.vacation}
+                    disabled={this.props.disableActionButtons}
+                    {...this.props.vacationActions} />
 
                 <CalendarActionButtonSeparator />
 
-                <DayoffActionButton interval={intervalsBySingleDaySelection.dayoff} disabled={this.props.disableActionButtons} />
+                <DayoffActionButton
+                    interval={intervalsBySingleDaySelection.dayoff}
+                    disabled={this.props.disableActionButtons} />
 
                 <CalendarActionButtonSeparator />
 
-                <SickLeaveActionButton allIntervals={allIntervals} interval={intervalsBySingleDaySelection.sickleave} disabled={this.props.disableActionButtons} {...this.props.sickLeaveActions} />
-                
+                <SickLeaveActionButton
+                    allIntervals={allIntervals}
+                    interval={intervalsBySingleDaySelection.sickleave}
+                    disabled={this.props.disableActionButtons}
+                    {...this.props.sickLeaveActions} />
+
                 <CalendarActionButtonSeparator />
             </View>
         );
@@ -54,10 +68,14 @@ const mapStateToProps = (state: AppState): ActionButtonGroupProps => ({
     disableActionButtons: state.calendar.calendarEvents.disableCalendarActionsButtonGroup
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>) => ({
+const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>): ActionButtonsGroupDispatchProps => ({
     sickLeaveActions: {
         claim: () => { dispatch(openEventDialog(EventDialogType.ClaimSickLeave)); },
         edit: () => { dispatch(openEventDialog(EventDialogType.EditSickLeave)); },
+    },
+    vacationActions: {
+        request: () => { dispatch(openEventDialog(EventDialogType.RequestVacaltion)); },
+        edit: () => { dispatch(openEventDialog(EventDialogType.EditVacaltion)); }
     }
 });
 

@@ -70,4 +70,8 @@ export class CalendarEvent {
     public get isSickLeave(): boolean {
         return this.type === CalendarEventType.Sickleave;
     }
+
+    public get isVacation(): boolean {
+        return this.type === CalendarEventType.Vacation;
+    }
 }
