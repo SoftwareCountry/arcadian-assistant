@@ -55,7 +55,6 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
         
         if (employees != null) {
             const calcultatedHeight =  this.props.stretchToFitScreen ? Dimensions.get('screen').height - 90 * this.props.treeLevel - 119 : 90; 
-            // console.log('Tree level: ' + this.props.treeLevel + ' Calculated height: ' + calcultatedHeight);
             const { layout } = styles;
             const layoutFlattenStyle = StyleSheet.flatten([
                 layout,

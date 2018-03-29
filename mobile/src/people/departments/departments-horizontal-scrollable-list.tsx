@@ -30,7 +30,7 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
     }
 
     public onMomentumScrollEnd(event: NativeSyntheticEvent<NativeScrollEvent>) {
-        var offset = event.nativeEvent.contentOffset;
+        const offset = event.nativeEvent.contentOffset;
         if (offset) {
             this.currentPage = Math.round(offset.x / Dimensions.get('window').width) + 1;
             if (this.currentPage > this.employeeCards.length) {

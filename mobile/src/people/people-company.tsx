@@ -44,7 +44,7 @@ const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
 export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & PeopleCompanyDispatchProps> {
     public treeRecurseAndAdd(department: DepartmentsTreeNode, departments: DepartmentsTreeNode[]) {
         departments.push(department);
-        var children = department.children;
+        const children = department.children;
         if (children !== null) {
             children.forEach(child => this.treeRecurseAndAdd(child, departments));
         }
@@ -57,12 +57,11 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
             return <ScrollView style={{ backgroundColor: '#fff' }} />;
         }
 
-        var heads: DepartmentsTreeNode[] = [];
-        var flattenDepartmentsNodes: DepartmentsTreeNode[] = [];
+        const heads: DepartmentsTreeNode[] = [];
+        const flattenDepartmentsNodes: DepartmentsTreeNode[] = [];
         this.treeRecurseAndAdd(this.props.departmentsTree.root, flattenDepartmentsNodes);
 
         this.props.departmentsBranch.map((department) => {
-            console.log('TREE head ' + department.departmentId);
             if (department.departmentId === this.props.departmentsTree.root.departmentId) {
                 heads.push(this.props.departmentsTree.root);
             } else if (department.departmentId !== 'subordinates') {
