@@ -29,41 +29,6 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
         }
     }
 
-    public onMomentumScrollEnd(event: NativeSyntheticEvent<NativeScrollEvent>) {
-        var offset = event.nativeEvent.contentOffset;
-        if (offset) {
-            this.currentPage = Math.round(offset.x / Dimensions.get('window').width) + 1;
-            if (this.currentPage > this.employeeCards.length) {
-                this.props.requestEmployeesForDepartment(this.props.headDepartment.departmentId);
-                const stubDN: DepartmentsTreeNode = {
-                    departmentAbbreviation: null,
-                    departmentChiefId: this.props.headDepartment.head.employeeId,
-                    head: this.props.headDepartment.head,
-                    parent: null,
-                    children: null,
-                    subordinates: null,
-                    departmentId: 'subordinates'
-                };
-                this.props.updateDepartmentIdsTree(this.props.treeLevel, stubDN);
-            } else {
-                const visibleCard: EmployeeCardWithAvatar = this.employeeCards[this.currentPage - 1];
-                visibleCard.revealNeighboursAvatars(true);
-                const visibleDepartment = this.props.headDepartment.children[this.currentPage - 1];
-                this.props.updateDepartmentIdsTree(this.props.treeLevel, visibleDepartment);
-                this.props.requestEmployeesForDepartment(visibleDepartment.departmentId);
-                if (visibleDepartment.children !== null && visibleDepartment.children.length > 0) {
-                    this.props.requestEmployeesForDepartment(visibleDepartment.children[0].departmentId);
-                }
-            }
-        }
-    }
-
-    public onScrollBeginDrag(event: NativeSyntheticEvent<NativeScrollEvent>) {
-        this.employeeCards.forEach(card => {
-            card.revealNeighboursAvatars(false);
-        });
-    }
-
     public render() {
         this.employeeCards = [];
         
@@ -76,8 +41,8 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                 horizontal 
                 pagingEnabled 
                 showsHorizontalScrollIndicator={false}
-                onMomentumScrollEnd={this.onMomentumScrollEnd.bind(this)}
-                onScrollBeginDrag={this.onScrollBeginDrag.bind(this)}
+                onMomentumScrollEnd={this.onMomentumScrollEnd}
+                onScrollBeginDrag={this.onScrollBeginDrag}
             >
                 {
                     subDepartments != null ? subDepartments.map(subDepartment => <EmployeeCardWithAvatar 
@@ -107,5 +72,40 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                 }
             </Animated.ScrollView>
         </View>;
+    }
+
+    private onMomentumScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+        var offset = event.nativeEvent.contentOffset;
+        if (offset) {
+            this.currentPage = Math.round(offset.x / Dimensions.get('window').width) + 1;
+            if (this.currentPage > this.employeeCards.length) {
+                this.props.requestEmployeesForDepartment(this.props.headDepartment.departmentId);
+                const stubDN: DepartmentsTreeNode = {
+                    departmentAbbreviation: null,
+                    departmentChiefId: this.props.headDepartment.head.employeeId,
+                    head: this.props.headDepartment.head,
+                    parent: null,
+                    children: null,
+                    subordinates: null,
+                    departmentId: 'subordinates'
+                };
+                this.props.updateDepartmentIdsTree(this.props.treeLevel, stubDN);
+            } else {
+                const visibleCard: EmployeeCardWithAvatar = this.employeeCards[this.currentPage - 1];
+                visibleCard.revealNeighboursAvatars(true);
+                const visibleDepartment = this.props.headDepartment.children[this.currentPage - 1];
+                this.props.updateDepartmentIdsTree(this.props.treeLevel, visibleDepartment);
+                this.props.requestEmployeesForDepartment(visibleDepartment.departmentId);
+                if (visibleDepartment.children !== null && visibleDepartment.children.length > 0) {
+                    this.props.requestEmployeesForDepartment(visibleDepartment.children[0].departmentId);
+                }
+            }
+        }
+    }
+
+    private onScrollBeginDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+        this.employeeCards.forEach(card => {
+            card.revealNeighboursAvatars(false);
+        });
     }
 }

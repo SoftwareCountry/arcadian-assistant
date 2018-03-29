@@ -36,7 +36,7 @@ const initState: PeopleState = {
 
 function departmentsTreeFor(departments: Department[], employees: Employee[]) {
     const topLevelDepartment: Department = departments.find((department) => department.isHeadDepartment === true);
-    const topLevelEmployee: Employee = employees.filter((employee) => employee.employeeId === topLevelDepartment.chiefId)[0];
+    const topLevelEmployee: Employee = employees.find((employee) => employee.employeeId === topLevelDepartment.chiefId);
     const departmentsTree: DepartmentsTree = {
         root: {
             departmentId: topLevelDepartment.departmentId,
@@ -83,7 +83,6 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
 
             if (state.departmentsHeadsIds.indexOf(action.employee.employeeId) > -1 && !heads.find((employee) => employee.employeeId === action.employee.employeeId)) {
                 heads.push(action.employee);
-                // console.log(action.employee);
             } else {
                 if (heads.length === state.departmentsHeadsIds.length) {
                     var employees = state.employees;
