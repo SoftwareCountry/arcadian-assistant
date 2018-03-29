@@ -65,7 +65,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
             if (department.departmentId === this.props.departmentsTree.root.departmentId) {
                 heads.push(this.props.departmentsTree.root);
             } else if (department.departmentId !== 'subordinates') {
-                heads.push(flattenDepartmentsNodes.filter(departmentNode => departmentNode.departmentId === department.departmentId)[0]);
+                heads.push(flattenDepartmentsNodes.find(departmentNode => departmentNode.departmentId === department.departmentId));
             }
         });
 

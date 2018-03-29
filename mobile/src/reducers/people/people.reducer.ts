@@ -36,7 +36,7 @@ const initState: PeopleState = {
 
 function departmentsTreeFor(departments: Department[], employees: Employee[]) {
     const topLevelDepartment: Department = departments.find((department) => department.isHeadDepartment === true);
-    const topLevelEmployee: Employee = employees.filter((employee) => employee.employeeId === topLevelDepartment.chiefId)[0];
+    const topLevelEmployee: Employee = employees.find((employee) => employee.employeeId === topLevelDepartment.chiefId);
     const departmentsTree: DepartmentsTree = {
         root: {
             departmentId: topLevelDepartment.departmentId,
