@@ -1,5 +1,5 @@
 import { CalendarEvent } from './calendar-event.model';
-import { DayModel } from './calendar.model';
+import { DayModel, CalendarSelection } from './calendar.model';
 import { SickLeaveActions } from './sick-leave.action';
 import { CalendarEvents } from './calendar-events.model';
 
@@ -52,19 +52,28 @@ export interface CalendarSelectionMode {
 
 export const calendarSelectionMode = (selectionMode: CalendarSelectionModeType, color: string = null): CalendarSelectionMode => ({ type: 'CALENDAR-SELECTION-MODE', selectionMode, color });
 
-export interface IntervalsBySingleDaySelection {
-    type: 'INTERVALS-BY-SINGLE-DAY-SELECTION';
+export interface SelectIntervalsBySingleDaySelection {
+    type: 'SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION';
 }
 
-export const intervalsBySingleDaySelection = (): IntervalsBySingleDaySelection => ({ type: 'INTERVALS-BY-SINGLE-DAY-SELECTION' });
+export const selectIntervalsBySingleDaySelection = (): SelectIntervalsBySingleDaySelection => ({ type: 'SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION' });
 
 export interface DisableCalendarSelection {
     type: 'DISABLE-CALENDAR-SELECTION';
     disable: boolean;
+    selectionMode: CalendarSelectionModeType;
 }
 
-export const disableCalendarSelection = (disable: boolean): DisableCalendarSelection => ({ type: 'DISABLE-CALENDAR-SELECTION', disable });
+export const disableCalendarSelection = (disable: boolean, selectionMode: CalendarSelectionModeType): DisableCalendarSelection => 
+    ({ type: 'DISABLE-CALENDAR-SELECTION', disable, selectionMode });
+
+export interface DisableSelectIntervalsBySingleDaySelection {
+    type: 'DISABLE-SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION';
+    disable: boolean;
+}
+
+export const disableSelectIntervalsBySingleDaySelection = (disable: boolean): DisableSelectIntervalsBySingleDaySelection => ({ type: 'DISABLE-SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION', disable });
 
 export type CalendarActions = LoadCalendarEventsFinished | CalendarEventCreated |
     SelectCalendarDay | SelectCalendarMonth |
-    CalendarSelectionMode | IntervalsBySingleDaySelection | DisableCalendarSelection;
+    CalendarSelectionMode | SelectIntervalsBySingleDaySelection | DisableCalendarSelection | DisableSelectIntervalsBySingleDaySelection;

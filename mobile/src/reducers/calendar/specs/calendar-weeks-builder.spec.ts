@@ -1,6 +1,6 @@
-import { WeekModel } from './calendar.model';
+import { WeekModel } from '../calendar.model';
 import moment from 'moment';
-import { CalendarWeeksBuilder } from './calendar-weeks-builder';
+import { CalendarWeeksBuilder } from '../calendar-weeks-builder';
 
 describe('calendarWeeksBuilder', () => {
     describe('fillWeekWithPrevMonthDays', () => {

@@ -66,12 +66,12 @@ class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogPro
 }
 
 const mapStateToProps = (state: AppState): EditSickLeaveEventDialogProps => ({
-    intervals: state.calendar.calendarEvents.intervalsBySingleDaySelection,
+    intervals: state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection,
     userEmployee: state.userInfo.employee
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): EditSickLeaveEventDialogDispatchProps => ({
-    prolong: () => { /* TBD next PR */ },
+    prolong: () => { dispatch(openEventDialog(EventDialogType.ProlongSickLeave)); },
     closeDialog: () => { dispatch(closeEventDialog()); },
     completeSickLeave: (employeeId: string, calendarEvent: CalendarEvent) => { dispatch(completeSickLeave(employeeId, calendarEvent)); }
 });
