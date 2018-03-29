@@ -161,5 +161,10 @@ export const companyTinyItemStyles = StyleSheet.create({
     name: {
         fontFamily: 'Helvetica-Light',
         fontSize: 11,
+    },
+    neighborAvatarContainer: {
+        width: 44,
+        height: 44,
+        position: 'absolute'
     }
 });
