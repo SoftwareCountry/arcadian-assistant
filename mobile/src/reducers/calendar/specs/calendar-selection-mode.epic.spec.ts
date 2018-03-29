@@ -10,7 +10,7 @@ describe('calendarSelectionModeEpic', () => {
         const action$ = ActionsObservable.of(calendarSelectionMode(mode, '#abc'));
 
         calendarSelectionModeEpic$(action$).subscribe(x => {
-            expect(x).toEqual(disableCalendarSelection(false, mode));
+            expect(x).toEqual(disableCalendarSelection(false));
             done();
         });
     });

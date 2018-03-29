@@ -4,7 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import { deserializeArray } from 'santee-dcts';
 import { 
     loadCalendarEventsFinished, CalendarEventCreated, SelectIntervalsBySingleDaySelection, selectIntervalsBySingleDaySelection, SelectCalendarDay, LoadCalendarEventsFinished, LoadCalendarEvents, loadCalendarEvents, 
-    CalendarSelectionMode, disableCalendarSelection, DisableCalendarSelection, disableSelectIntervalsBySingleDaySelection, CalendarSelectionModeType, DisableSelectIntervalsBySingleDaySelection 
+    CalendarSelectionMode, disableCalendarSelection, DisableCalendarSelection, CalendarSelectionModeType
 } from './calendar.action';
 import { loadFailedError } from '../errors/errors.action';
 import { CalendarEvent, CalendarEventStatus, CalendarEventType } from './calendar-event.model';
@@ -45,19 +45,4 @@ export const intervalsBySingleDaySelectionEpic$ = (action$: ActionsObservable<Se
 
 export const calendarSelectionModeEpic$ = (action$: ActionsObservable<CalendarSelectionMode>) =>
     action$.ofType('CALENDAR-SELECTION-MODE')
-        .map(x => disableCalendarSelection(false, x.selectionMode));
-
-export const disableCalendarSelectionEpic$ = (action$: ActionsObservable<DisableCalendarSelection>) =>
-    action$.ofType('DISABLE-CALENDAR-SELECTION')
-        .filter(x => x.disable)
-        .map(x => disableSelectIntervalsBySingleDaySelection(true));
-
-export const enableCalendarSelectionEpic$ = (action$: ActionsObservable<DisableCalendarSelection>) =>
-    action$.ofType('DISABLE-CALENDAR-SELECTION')
-        .filter(x => !x.disable)
-        .map(x => disableSelectIntervalsBySingleDaySelection(x.selectionMode === CalendarSelectionModeType.Interval));
-
-export const enableSelectIntervalsBySingleDaySelectionEpic$ = (action$: ActionsObservable<DisableSelectIntervalsBySingleDaySelection>) =>
-    action$.ofType('DISABLE-SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION')
-        .filter(x => !x.disable)
-        .map(x => selectIntervalsBySingleDaySelection());
+        .map(x => disableCalendarSelection(false));
