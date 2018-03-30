@@ -84,6 +84,9 @@ export class OAuthProcess {
             this.refreshTokenSource.next( { immediateRefresh: true, tokenValue: value });
         }
     }
+    public async logout() {
+        this.forgetUser();
+    }
 
     public dispose() {
         this.accessCodeSubscription.unsubscribe();
