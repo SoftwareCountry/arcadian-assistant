@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Animated, Easing, View, Image, Dimensions, StyleSheet, FlatList, ListRenderItemInfo } from 'react-native';
+import { Animated, Easing, View, Image, Dimensions, StyleSheet, FlatList, ListRenderItemInfo, TouchableOpacity } from 'react-native';
 import { Avatar } from './avatar';
 import { Employee } from '../reducers/organization/employee.model';
 import { StyledText } from '../override/styled-text';
@@ -14,6 +14,7 @@ interface EmployeeCardWithAvatarProps {
     rightNeighbor?: Employee;
     treeLevel?: number;
     stretchToFitScreen?: boolean;
+    onItemClicked: (e: Employee) => void;
 }
 
 export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProps> {
@@ -74,24 +75,26 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
         const rightNeighborFlattenStyle = StyleSheet.flatten([neighborAvatarContainer, {top: neighborTop, left: rightNeighborX}]);
 
         return (
-            <Animated.View style={layoutFlattenStyle}>
-                <Animated.View style={{...leftNeighborFlattenStyle, opacity: opacityValue}}>
-                    { this.props.leftNeighbor ? <Avatar photo={this.props.leftNeighbor.photo} /> : null }
-                </Animated.View>
-                <View style={innerLayout}>
-                    <View style={avatarContainer}>
-                        <Avatar photo={photo} style={avatarOuterFrame} />
+            <TouchableOpacity onPress={this.onItemClicked}>
+                <Animated.View style={layoutFlattenStyle}>
+                    <Animated.View style={{ ...leftNeighborFlattenStyle, opacity: opacityValue }}>
+                        {this.props.leftNeighbor ? <Avatar photo={this.props.leftNeighbor.photo} /> : null}
+                    </Animated.View>
+                    <View style={innerLayout}>
+                        <View style={avatarContainer}>
+                            <Avatar photo={photo} style={avatarOuterFrame} />
+                        </View>
+                        <View style={info}>
+                            <StyledText style={name}>{employee.name}</StyledText>
+                            <StyledText style={baseText}>{employee.position}</StyledText>
+                            <StyledText style={depabbText}>{this.props.departmentAbbreviation}</StyledText>
+                        </View>
                     </View>
-                    <View style={info}>
-                        <StyledText style={name}>{employee.name}</StyledText>
-                        <StyledText style={baseText}>{employee.position}</StyledText>
-                        <StyledText style={depabbText}>{this.props.departmentAbbreviation}</StyledText>
-                    </View>
-                </View>
-                <Animated.View style={{...rightNeighborFlattenStyle, opacity: opacityValue}}>
-                    { this.props.rightNeighbor ? <Avatar photo={this.props.rightNeighbor.photo} /> : null }
+                    <Animated.View style={{ ...rightNeighborFlattenStyle, opacity: opacityValue }}>
+                        {this.props.rightNeighbor ? <Avatar photo={this.props.rightNeighbor.photo} /> : null}
+                    </Animated.View>
                 </Animated.View>
-            </Animated.View>
+            </TouchableOpacity>
         );
     }
 
@@ -129,4 +132,6 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
             </View>
         );
     }
+
+    private onItemClicked = () => this.props.onItemClicked(this.props.employee);
 }

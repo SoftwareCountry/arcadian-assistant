@@ -6,6 +6,7 @@ import { DepartmentsTreeNode } from './departments-tree-node';
 import { Employee } from '../../reducers/organization/employee.model';
 import { PeopleActions, updateDepartmentIdsTree } from '../../reducers/people/people.action';
 import { loadEmployeesForDepartment } from '../../reducers/organization/organization.action';
+import { openEmployeeDetailsAction } from '../../employee-details/employee-details-dispatcher';
 
 interface DepartmentsHScrollableListProps {
     treeLevel?: number;
@@ -14,6 +15,7 @@ interface DepartmentsHScrollableListProps {
     topOffset?: number;
     requestEmployeesForDepartment: (departmentId: string) => void;
     updateDepartmentIdsTree: (index: number, department: DepartmentsTreeNode) => void;
+    onItemClicked: (e: Employee) => void;
 }
 
 export class DepartmentsHScrollableList extends Component<DepartmentsHScrollableListProps> {
@@ -57,6 +59,7 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                             }
                         }} 
                         key={subDepartment.departmentId} 
+                        onItemClicked={this.props.onItemClicked}
                     />) : null
                 }
                 
@@ -67,6 +70,7 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                             chiefId={headDepartment.departmentChiefId}
                             treeLevel={this.props.treeLevel} 
                             stretchToFitScreen={subDepartments === null || this.currentPage > subDepartments.length}
+                            onItemClicked={this.props.onItemClicked}
                         /> 
                             : null
                 }

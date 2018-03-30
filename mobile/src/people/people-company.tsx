@@ -12,6 +12,8 @@ import { DepartmentsTreeNode } from './departments/departments-tree-node';
 import { EmployeeCardWithAvatar } from './employee-card-with-avatar';
 import { PeopleActions, updateDepartmentIdsTree } from '../reducers/people/people.action';
 import { loadEmployeesForDepartment } from '../reducers/organization/organization.action';
+import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
+import { Employee } from '../reducers/organization/employee.model';
 
 interface PeopleCompanyProps {
     routeName: string;
@@ -30,6 +32,7 @@ const mapStateToProps = (state: AppState): PeopleCompanyProps => ({
 interface PeopleCompanyDispatchProps {
     requestEmployeesForDepartment: (departmentId: string) => void;
     updateDepartmentIdsTree: (index: number, department: DepartmentsTreeNode) => void;
+    onItemClicked: (employee: Employee) => void;
 }
 
 const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
@@ -38,6 +41,9 @@ const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
     },
     updateDepartmentIdsTree: (index: number, department: DepartmentsTreeNode) => { 
         dispatch(updateDepartmentIdsTree(index, department)); 
+    },
+    onItemClicked: (employee: Employee) => {
+        dispatch( openEmployeeDetailsAction(employee));
     },
 });
 
@@ -74,6 +80,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
                 employee={this.props.departmentsTree.root.head}
                 departmentAbbreviation={this.props.departmentsTree.root.departmentAbbreviation}
                 treeLevel={0}
+                onItemClicked = {this.props.onItemClicked}
             />
             {
                 heads.map((head) => (
@@ -84,6 +91,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
                         key={head.departmentId}
                         updateDepartmentIdsTree={this.props.updateDepartmentIdsTree}
                         requestEmployeesForDepartment={this.props.requestEmployeesForDepartment}
+                        onItemClicked = {this.props.onItemClicked}
                     />
                 ))
             }
