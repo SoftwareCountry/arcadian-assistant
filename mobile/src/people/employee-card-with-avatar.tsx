@@ -121,17 +121,23 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
         const { item } = itemInfo;
         const { innerLayout, avatarContainer, avatarOuterFrame, avatarImage, info, name, baseText } = tinyStyles;
         return (
-            <View style={innerLayout} key={item.employeeId}>
-                <View style={avatarContainer}>
-                    <Avatar photo={item.photo} style={avatarOuterFrame} imageStyle={avatarImage} />
+            <TouchableOpacity onPress={() => this.onLowestLevelItemClicked(itemInfo.index)}>
+                <View style={innerLayout} key={item.employeeId}>
+                    <View style={avatarContainer}>
+                        <Avatar photo={item.photo} style={avatarOuterFrame} imageStyle={avatarImage} />
+                    </View>
+                    <View style={info}>
+                        <StyledText style={name}>{item.name}, </StyledText>
+                        <StyledText style={baseText}>{item.position}</StyledText>
+                    </View>
                 </View>
-                <View style={info}>
-                    <StyledText style={name}>{item.name}, </StyledText>
-                    <StyledText style={baseText}>{item.position}</StyledText>
-                </View>
-            </View>
+            </TouchableOpacity>
         );
     }
 
     private onItemClicked = () => this.props.onItemClicked(this.props.employee);
+    private onLowestLevelItemClicked = (itemId: number) => {
+        const filteredEmployees = this.props.employees.filter((emp) => emp.employeeId !== this.props.chiefId);
+        this.props.onItemClicked(filteredEmployees[itemId]);
+    }
 }
