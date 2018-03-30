@@ -61,19 +61,11 @@ export const selectIntervalsBySingleDaySelection = (): SelectIntervalsBySingleDa
 export interface DisableCalendarSelection {
     type: 'DISABLE-CALENDAR-SELECTION';
     disable: boolean;
-    selectionMode: CalendarSelectionModeType;
 }
 
-export const disableCalendarSelection = (disable: boolean, selectionMode: CalendarSelectionModeType): DisableCalendarSelection => 
-    ({ type: 'DISABLE-CALENDAR-SELECTION', disable, selectionMode });
-
-export interface DisableSelectIntervalsBySingleDaySelection {
-    type: 'DISABLE-SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION';
-    disable: boolean;
-}
-
-export const disableSelectIntervalsBySingleDaySelection = (disable: boolean): DisableSelectIntervalsBySingleDaySelection => ({ type: 'DISABLE-SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION', disable });
+export const disableCalendarSelection = (disable: boolean): DisableCalendarSelection => 
+    ({ type: 'DISABLE-CALENDAR-SELECTION', disable });
 
 export type CalendarActions = LoadCalendarEventsFinished | CalendarEventCreated |
     SelectCalendarDay | SelectCalendarMonth |
-    CalendarSelectionMode | SelectIntervalsBySingleDaySelection | DisableCalendarSelection | DisableSelectIntervalsBySingleDaySelection;
+    CalendarSelectionMode | SelectIntervalsBySingleDaySelection | DisableCalendarSelection;

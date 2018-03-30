@@ -26,7 +26,6 @@ export interface CalendarEventsState extends
         weeks: WeekModel[];
         disableCalendarActionsButtonGroup: boolean;
         selectedIntervalsBySingleDaySelection: ExtractedIntervals;
-        disableSelectIntervalsBySingleDaySelection: boolean;
         disableSelection: boolean;
 }
 
@@ -60,7 +59,6 @@ const createInitState = (): CalendarEventsState => {
         disableCalendarActionsButtonGroup: true,
         selection: defaultSelection,
         selectedIntervalsBySingleDaySelection: defaultExtractedIntervals,
-        disableSelectIntervalsBySingleDaySelection: false,
         disableSelection: false
     };
 };
@@ -119,10 +117,6 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 ...selectionState
             };
         case 'SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION':
-            if (state.disableSelectIntervalsBySingleDaySelection) {
-                return state;
-            }
-
             const intervalsBySingleDay = state.intervals
                 ? state.intervals.get(state.selection.single.day.date)
                 : null;
@@ -137,11 +131,6 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
             return {
                 ...state,
                 disableSelection: action.disable
-            };
-        case 'DISABLE-SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION': 
-            return {
-                ...state,
-                disableSelectIntervalsBySingleDaySelection: action.disable
             };
         default:
             return state;
