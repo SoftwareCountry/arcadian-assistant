@@ -22,4 +22,8 @@ export class Department {
     @dataMember()
     @required({ nullable: true })
     public chiefId: string;
+
+    @dataMember()
+    @required({ nullable: true })
+    public isHeadDepartment: boolean;
 }
