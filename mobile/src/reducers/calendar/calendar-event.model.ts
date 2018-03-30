@@ -11,7 +11,9 @@ export enum CalendarEventType {
 export enum CalendarEventStatus {
     Requested = 'Requested',
     Completed = 'Completed',
-    Cancelled = 'Cancelled'
+    Cancelled = 'Cancelled',
+    Approved = 'Approved',
+    Rejected = 'Rejected'
 }
 
 export class DatesInterval {

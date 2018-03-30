@@ -7,4 +7,5 @@ export enum EventDialogType {
     RequestVacaltion = 'RequestVacaltion',
     ConfirmStartDateVacation = 'ConfirmStartDateVacation',
     EditVacaltion = 'EditVacaltion',
+    CancelVacation = 'CancelVacation'
 }

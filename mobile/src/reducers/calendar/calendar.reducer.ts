@@ -6,7 +6,7 @@ import { calendarEventsReducer, CalendarEventsState } from './calendar-events.re
 import { EventDialogState, eventDialogReducer } from './event-dialog/event-dialog.reducer';
 import { openEventDialogEpic$, closeEventDialogEpic$ } from './event-dialog/event-dialog.epics';
 import { sickLeaveSavedEpic$, sickLeaveCompletedEpic$, sickLeaveProlongedEpic$ } from './sick-leave.epics';
-import { vacationSavedEpic$ } from './vacation.epics';
+import { vacationSavedEpic$, vacationCanceledEpic$ } from './vacation.epics';
 
 export interface CalendarState {
     daysCounters: DaysCountersState;
@@ -23,6 +23,7 @@ export const calendarEpics = combineEpics(
     sickLeaveCompletedEpic$ as any,
     sickLeaveProlongedEpic$ as any,
     vacationSavedEpic$ as any,
+    vacationCanceledEpic$ as any,
     intervalsBySingleDaySelectionEpic$ as any,
     openEventDialogEpic$ as any,
     closeEventDialogEpic$ as any,
