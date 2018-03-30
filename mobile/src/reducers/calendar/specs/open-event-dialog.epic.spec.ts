@@ -1,6 +1,6 @@
 import 'rxjs';
-import { ActionsObservable } from 'redux-observable';
-import { openEventDialog } from '../event-dialog/event-dialog.action';
+import { ActionsObservable, ofType } from 'redux-observable';
+import { openEventDialog, OpenEventDialog } from '../event-dialog/event-dialog.action';
 import { EventDialogType } from '../event-dialog/event-dialog-type.model';
 import { CalendarSelectionModeType, calendarSelectionMode, disableCalendarSelection } from '../calendar.action';
 import { openEventDialogEpic$ } from '../event-dialog/event-dialog.epics';
@@ -30,13 +30,28 @@ describe('openEventDialogEpic', () => {
     });
 
     describe('when edit sickleave', () => {
-        it('should disable single selection mode', (done) => {
-            const action$ = ActionsObservable.of(openEventDialog(EventDialogType.EditSickLeave));
+        let action$: ActionsObservable<OpenEventDialog>;
 
-            openEventDialogEpic$(action$).subscribe(x => {
-                expect(x).toEqual(disableCalendarSelection(true, CalendarSelectionModeType.SingleDay));
-                done();
-            });
+        beforeEach(() => {
+            action$ = ActionsObservable.of(openEventDialog(EventDialogType.EditSickLeave));
+        });
+
+        it('should select single selection mode', (done) => {
+            openEventDialogEpic$(action$)
+                .filter(x => x.type === 'CALENDAR-SELECTION-MODE')
+                .subscribe(x => {
+                    expect(x).toEqual(calendarSelectionMode(CalendarSelectionModeType.SingleDay));
+                    done();
+                });
+        });
+
+        it('should disable selection mode', (done) => {
+            openEventDialogEpic$(action$)
+                .filter(x => x.type === 'DISABLE-CALENDAR-SELECTION')
+                .subscribe(x => {
+                    expect(x).toEqual(disableCalendarSelection(true));
+                    done();
+                });
         });
     });
 

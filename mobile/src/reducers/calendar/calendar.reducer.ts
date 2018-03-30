@@ -1,9 +1,6 @@
 import { combineReducers } from 'redux';
 import { combineEpics } from 'redux-observable';
-import {
-    loadUserEmployeeFinishedEpic$, calendarEventCreatedEpic$, intervalsBySingleDaySelectionEpic$, loadCalendarEventsEpic$, calendarSelectionModeEpic$, loadCalendarEventsFinishedEpic$, 
-    disableCalendarSelectionEpic$, enableSelectIntervalsBySingleDaySelectionEpic$, enableCalendarSelectionEpic$
-} from './calendar.epics';
+import { loadUserEmployeeFinishedEpic$, calendarEventCreatedEpic$, intervalsBySingleDaySelectionEpic$, loadCalendarEventsEpic$, loadCalendarEventsFinishedEpic$, calendarSelectionModeEpic$ } from './calendar.epics';
 import { DaysCountersState, daysCountersReducer } from './days-counters.reducer';
 import { calendarEventsReducer, CalendarEventsState } from './calendar-events.reducer';
 import { EventDialogState, eventDialogReducer } from './event-dialog/event-dialog.reducer';
@@ -29,10 +26,7 @@ export const calendarEpics = combineEpics(
     intervalsBySingleDaySelectionEpic$ as any,
     openEventDialogEpic$ as any,
     closeEventDialogEpic$ as any,
-    calendarSelectionModeEpic$ as any,
-    disableCalendarSelectionEpic$ as any,
-    enableCalendarSelectionEpic$ as any,
-    enableSelectIntervalsBySingleDaySelectionEpic$ as any);
+    calendarSelectionModeEpic$ as any);
 
 export const calendarReducer = combineReducers<CalendarState>({
     daysCounters: daysCountersReducer,
