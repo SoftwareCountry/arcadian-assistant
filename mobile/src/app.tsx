@@ -29,7 +29,7 @@ export class App extends Component<AppProps> {
   }
 
   public render() {
-    if (this.props.authentication.isAuthenticated === true) {
+    if (this.props.authentication.isAuthenticated) {
       return <RootNavigator navigation={addNavigationHelpers({
         dispatch: this.props.dispatch as any,
         state: this.props.nav,
