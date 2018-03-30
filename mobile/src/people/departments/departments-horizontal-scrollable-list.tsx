@@ -6,7 +6,6 @@ import { DepartmentsTreeNode } from './departments-tree-node';
 import { Employee } from '../../reducers/organization/employee.model';
 import { PeopleActions, updateDepartmentIdsTree } from '../../reducers/people/people.action';
 import { loadEmployeesForDepartment } from '../../reducers/organization/organization.action';
-import { openEmployeeDetailsAction } from '../../employee-details/employee-details-dispatcher';
 
 interface DepartmentsHScrollableListProps {
     treeLevel?: number;
