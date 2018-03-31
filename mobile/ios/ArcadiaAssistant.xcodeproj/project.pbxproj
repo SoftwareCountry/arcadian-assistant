@@ -43,6 +43,7 @@
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
 		606D98637C5B4C85807A3DC2 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9D0E06A9EA5049CDB5E05544 /* Ionicons.ttf */; };
 		61B9B1DA61AD4A00AE3C0756 /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F502F4A152D443EEA4BB3D8D /* Foundation.ttf */; };
+		6C7847939C66492B8494A02A /* libRNSFAuthenticationSession.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 880BD520E7A34417A5BDEC02 /* libRNSFAuthenticationSession.a */; };
 		7358F3161E524B11AAD7B636 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 97F364A02A7149BEB21F7974 /* SimpleLineIcons.ttf */; };
 		74D5FD73372940918720CC45 /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2285D8CB7B094200A90098E2 /* FontAwesome.ttf */; };
 		76A999E8B4C04EB3BF90DC10 /* CenturyGothic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 219623B79BDA4FD9AE07B41C /* CenturyGothic.ttf */; };
@@ -251,6 +252,13 @@
 			remoteGlobalIDString = 3D3CD9181DE5FBD800167DC4;
 			remoteInfo = "jschelpers-tvOS";
 		};
+		5DA8874C206AC468004EADEE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CE2E218B837D4A99AF9B8046 /* RNSFAuthenticationSession.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RNSFAuthenticationSession;
+		};
 		5E9157321DD0AC6500FF2AA8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */;
@@ -409,11 +417,13 @@
 		7D16B1941FAC70DF00B0892E /* Zocial.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Zocial.ttf; sourceTree = "<group>"; };
 		8070C9BF504549C88161DD60 /* RNVectorIcons.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNVectorIcons.xcodeproj; path = "../node_modules/react-native-vector-icons/RNVectorIcons.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
+		880BD520E7A34417A5BDEC02 /* libRNSFAuthenticationSession.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNSFAuthenticationSession.a; sourceTree = "<group>"; };
 		8C7B05C4BD90420B8B507F44 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
 		97F364A02A7149BEB21F7974 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
 		9D0E06A9EA5049CDB5E05544 /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
 		B20DFF6B416A4019B861B7CD /* aa-iconfont.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "aa-iconfont.ttf"; path = "../assets/fonts/aa-iconfont.ttf"; sourceTree = "<group>"; };
+		CE2E218B837D4A99AF9B8046 /* RNSFAuthenticationSession.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNSFAuthenticationSession.xcodeproj; path = "../node_modules/react-native-sf-authentication-session/ios/RNSFAuthenticationSession.xcodeproj"; sourceTree = "<group>"; };
 		D4FEAF4C9AB442BA9F7F2F7E /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
 		D7D5DEC77FEF41C8B1CBEF03 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
 		F502F4A152D443EEA4BB3D8D /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
@@ -446,6 +456,7 @@
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
 				04D48817D67B4DC79DBCFFE9 /* libRNVectorIcons.a in Frameworks */,
+				6C7847939C66492B8494A02A /* libRNSFAuthenticationSession.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -590,6 +601,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		5DA88749206AC468004EADEE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5DA8874D206AC468004EADEE /* libRNSFAuthenticationSession.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		5E91572E1DD0AC6500FF2AA8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -631,6 +650,7 @@
 			isa = PBXGroup;
 			children = (
 				4ECB6F36DF22428DBA874C87 /* libRNVectorIcons.a */,
+				880BD520E7A34417A5BDEC02 /* libRNSFAuthenticationSession.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -659,6 +679,7 @@
 				00C302DF1ABCB9EE00DB3ED1 /* RCTVibration.xcodeproj */,
 				139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */,
 				8070C9BF504549C88161DD60 /* RNVectorIcons.xcodeproj */,
+				CE2E218B837D4A99AF9B8046 /* RNSFAuthenticationSession.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -895,6 +916,10 @@
 					ProjectRef = 146833FF1AC3E56700842450 /* React.xcodeproj */;
 				},
 				{
+					ProductGroup = 5DA88749206AC468004EADEE /* Products */;
+					ProjectRef = CE2E218B837D4A99AF9B8046 /* RNSFAuthenticationSession.xcodeproj */;
+				},
+				{
 					ProductGroup = 7D5924F91FAC6E440030A1A9 /* Products */;
 					ProjectRef = 8070C9BF504549C88161DD60 /* RNVectorIcons.xcodeproj */;
 				},
@@ -1069,6 +1094,13 @@
 			fileType = archive.ar;
 			path = libjschelpers.a;
 			remoteRef = 3DAD3EAE1DF850E9000B6D8A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		5DA8874D206AC468004EADEE /* libRNSFAuthenticationSession.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNSFAuthenticationSession.a;
+			remoteRef = 5DA8874C206AC468004EADEE /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */ = {
@@ -1360,12 +1392,14 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/react-native-sf-authentication-session/ios",
 				);
 				INFOPLIST_FILE = ArcadiaAssistantTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
@@ -1388,12 +1422,14 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/react-native-sf-authentication-session/ios",
 				);
 				INFOPLIST_FILE = ArcadiaAssistantTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
@@ -1419,6 +1455,7 @@
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
 					"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS",
+					"$(SRCROOT)/../node_modules/react-native-sf-authentication-session/ios",
 				);
 				INFOPLIST_FILE = ArcadiaAssistant/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1447,6 +1484,7 @@
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
 					"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS",
+					"$(SRCROOT)/../node_modules/react-native-sf-authentication-session/ios",
 				);
 				INFOPLIST_FILE = ArcadiaAssistant/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1478,11 +1516,13 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/react-native-sf-authentication-session/ios",
 				);
 				INFOPLIST_FILE = "ArcadiaAssistant-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
@@ -1512,11 +1552,13 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/react-native-sf-authentication-session/ios",
 				);
 				INFOPLIST_FILE = "ArcadiaAssistant-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
@@ -1547,6 +1589,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.ArcadiaAssistant-tvOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1571,6 +1614,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.ArcadiaAssistant-tvOSTests";
