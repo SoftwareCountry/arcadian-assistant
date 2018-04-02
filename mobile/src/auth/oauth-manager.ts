@@ -8,8 +8,7 @@ export class OAuthManager {
 
         const authorizationUrl = `${endpoint}/oauth2/authorize`;
         const tokenUrl = `${endpoint}/oauth2/token`;
-        const logoutUrl = `${endpoint}/oauth2/logout`;
 
-        return new OAuthProcess(clientId, authorizationUrl, tokenUrl, logoutUrl, redirectUri, new RefreshTokenFilesystemStorage());
+        return new OAuthProcess(clientId, authorizationUrl, tokenUrl, redirectUri, new RefreshTokenFilesystemStorage());
     }
 }
