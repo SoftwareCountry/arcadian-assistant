@@ -24,8 +24,7 @@ const initState: AuthState = {
 
 export const authReducer = (state: AuthState = initState, action: AuthActions): AuthState => {
     switch (action.type) {
-        case 'START-LOGIN-PROCESS':
-        case 'FINISH-LOGIN-PROCESS':
+        case 'USER-LOGGED-IN':
             return {
                 ...state,
                 authInfo: {
@@ -33,7 +32,7 @@ export const authReducer = (state: AuthState = initState, action: AuthActions): 
                 }
             };
         case 'START-LOGOUT-PROCESS':
-        case 'FINISH-LOGOUT-PROCESS':
+        case 'USER-LOGGED-OUT':
             return {
                 ...state,
                 authInfo: {

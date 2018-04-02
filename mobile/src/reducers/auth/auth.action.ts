@@ -10,16 +10,16 @@ export interface StartLogoutProcess {
 
 export const startLogoutProcess = (): StartLogoutProcess => ({ type: 'START-LOGOUT-PROCESS' });
 
-export interface FinishLoginProcess {
-    type: 'FINISH-LOGIN-PROCESS';
+export interface UserLoggedIn {
+    type: 'USER-LOGGED-IN';
 }
 
-export const finishLoginProcess = (): FinishLoginProcess => ({ type: 'FINISH-LOGIN-PROCESS' });
+export const userLoggedIn = (): UserLoggedIn => ({ type: 'USER-LOGGED-IN' });
 
-export interface FinishLogoutProcess {
-    type: 'FINISH-LOGOUT-PROCESS';
+export interface UserLoggedOut {
+    type: 'USER-LOGGED-OUT';
 }
 
-export const finishLogoutProcess = (): FinishLogoutProcess => ({ type: 'FINISH-LOGOUT-PROCESS' });
+export const userLoggedOut = (): UserLoggedOut => ({ type: 'USER-LOGGED-OUT' });
 
-export type AuthActions = StartLoginProcess | StartLogoutProcess | FinishLoginProcess | FinishLogoutProcess;
+export type AuthActions = StartLoginProcess | StartLogoutProcess | UserLoggedIn | UserLoggedOut;
