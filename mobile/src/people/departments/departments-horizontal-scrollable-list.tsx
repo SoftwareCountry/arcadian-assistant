@@ -14,6 +14,7 @@ interface DepartmentsHScrollableListProps {
     topOffset?: number;
     requestEmployeesForDepartment: (departmentId: string) => void;
     updateDepartmentIdsTree: (index: number, department: DepartmentsTreeNode) => void;
+    onItemClicked: (e: Employee) => void;
 }
 
 export class DepartmentsHScrollableList extends Component<DepartmentsHScrollableListProps> {
@@ -57,6 +58,7 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                             }
                         }} 
                         key={subDepartment.departmentId} 
+                        onItemClicked={this.props.onItemClicked}
                     />) : null
                 }
                 
@@ -67,6 +69,7 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                             chiefId={headDepartment.departmentChiefId}
                             treeLevel={this.props.treeLevel} 
                             stretchToFitScreen={subDepartments === null || this.currentPage > subDepartments.length}
+                            onItemClicked={this.props.onItemClicked}
                         /> 
                             : null
                 }
