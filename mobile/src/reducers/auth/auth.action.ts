@@ -1,13 +1,25 @@
-export interface PressLogIn {
-    type: 'PRESS-LOG-IN';
+export interface StartLoginProcess {
+    type: 'START-LOGIN-PROCESS';
 }
 
-export const pressLogIn = (): PressLogIn => ({ type: 'PRESS-LOG-IN'});
+export const startLoginProcess = (): StartLoginProcess => ({ type: 'START-LOGIN-PROCESS'});
 
-export interface PressLogOut {
-    type: 'PRESS-LOG-OUT';
+export interface StartLogoutProcess {
+    type: 'START-LOGOUT-PROCESS';
 }
 
-export const pressLogOut = (): PressLogOut => ({ type: 'PRESS-LOG-OUT' });
+export const startLogoutProcess = (): StartLogoutProcess => ({ type: 'START-LOGOUT-PROCESS' });
 
-export type AuthActions = PressLogIn | PressLogOut;
+export interface FinishLoginProcess {
+    type: 'FINISH-LOGIN-PROCESS';
+}
+
+export const finishLoginProcess = (): FinishLoginProcess => ({ type: 'FINISH-LOGIN-PROCESS' });
+
+export interface FinishLogoutProcess {
+    type: 'FINISH-LOGOUT-PROCESS';
+}
+
+export const finishLogoutProcess = (): FinishLogoutProcess => ({ type: 'FINISH-LOGOUT-PROCESS' });
+
+export type AuthActions = StartLoginProcess | StartLogoutProcess | FinishLoginProcess | FinishLogoutProcess;

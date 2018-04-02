@@ -3,14 +3,14 @@ import {  View, Button, Image, Text } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { AppState } from '../reducers/app.reducer';
 import { Dispatch, connect } from 'react-redux';
-import { AuthActions, pressLogIn } from '../reducers/auth/auth.action';
+import { AuthActions, startLoginProcess } from '../reducers/auth/auth.action';
 import { welcomeScreenStyles, welcomeScreenColor } from './styles';
 
 interface AuthDispatchProps {
     onloginClicked: () => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<AuthActions>): AuthDispatchProps => ({
-    onloginClicked: () => { dispatch(pressLogIn()); }
+    onloginClicked: () => { dispatch(startLoginProcess()); }
 });
 
 class WelcomeScreenImpl extends React.Component<AuthDispatchProps> {

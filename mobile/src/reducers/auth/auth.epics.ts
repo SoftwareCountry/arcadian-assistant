@@ -1,26 +1,23 @@
 import { ActionsObservable, ofType, combineEpics } from 'redux-observable';
 import { Observable } from 'rxjs/Observable';
 import { DependenciesContainer, AppState } from '../app.reducer';
-import { PressLogIn, PressLogOut, pressLogIn, pressLogOut } from '../auth/auth.action';
+import { StartLoginProcess, StartLogoutProcess, startLoginProcess, startLogoutProcess, finishLoginProcess, finishLogoutProcess } from '../auth/auth.action';
 
-export const pressLogInEpic$ = (action$: ActionsObservable<PressLogIn>, state: AppState, dep: DependenciesContainer) =>
-    action$.ofType('PRESS-LOG-IN')
-        .do(x => {
-            dep.oauthProcess.login();
-        }).ignoreElements();
+export const startLoginProcessEpic$ = (action$: ActionsObservable<StartLoginProcess>, state: AppState, dep: DependenciesContainer) =>
+    action$.ofType('START-LOGIN-PROCESS')
+        .do(x => dep.oauthProcess.login())
+        .ignoreElements();
 
-export const pressLogOutEpic$ = (action$: ActionsObservable<PressLogOut>, state: AppState, dep: DependenciesContainer) =>
-    action$.ofType('PRESS-LOG-OUT')
-        .do(x => {
-            dep.oauthProcess.logout();
-
-        }).ignoreElements();
+export const startLogoutProcessEpic$ = (action$: ActionsObservable<StartLogoutProcess>, state: AppState, dep: DependenciesContainer) =>
+    action$.ofType('START-LOGOUT-PROCESS')
+        .do(x => dep.oauthProcess.logout())
+        .ignoreElements();
 
 export const listenerAuthStateEpic$ = (action$: ActionsObservable<any>, state: AppState, dep: DependenciesContainer) =>
     dep.oauthProcess.authenticationState.map(x => {
-        if (x.isAuthenticated === true) {
-           return pressLogIn();
+        if (x.isAuthenticated) {
+           return finishLoginProcess();
         } else {
-           return pressLogOut();
+           return finishLogoutProcess();
         } 
     });

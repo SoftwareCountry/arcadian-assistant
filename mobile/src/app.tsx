@@ -29,16 +29,18 @@ export class App extends Component<AppProps> {
   }
 
   public render() {
-    if (this.props.authentication.isAuthenticated) {
+    if (!this.props.authentication.authInfo) {
+      return <SplashScreen />;
+    }
+
+    if (this.props.authentication.authInfo.isAuthenticated) {
       return <RootNavigator navigation={addNavigationHelpers({
         dispatch: this.props.dispatch as any,
         state: this.props.nav,
         addListener: this.addListener
       })} />;
-    } else if (this.props.authentication.isAuthenticated === false) {
-      return <WelcomeScreen />;
     } else {
-      return <SplashScreen />;
+      return <WelcomeScreen />;
     }
   }
 

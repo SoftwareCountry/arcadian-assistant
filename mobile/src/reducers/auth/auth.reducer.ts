@@ -1,34 +1,44 @@
 import { Reducer } from 'redux';
 import { combineEpics } from 'redux-observable';
-import { pressLogInEpic$, pressLogOutEpic$, listenerAuthStateEpic$ } from './auth.epics';
+import { startLoginProcessEpic$, startLogoutProcessEpic$, listenerAuthStateEpic$ } from './auth.epics';
 import { AuthActions } from './auth.action';
 import { AuthenticationState } from '../../auth/authentication-state';
 
 export const authEpics$ = combineEpics(
-    pressLogInEpic$ as any,
-    pressLogOutEpic$ as any,
+    startLoginProcessEpic$ as any,
+    startLogoutProcessEpic$ as any,
     listenerAuthStateEpic$ as any
 );
 
+export interface AuthInfo {
+    isAuthenticated: boolean;
+}
+
 export interface AuthState {
-    isAuthenticated: boolean | null;
+    authInfo: AuthInfo | null;
 }
 
 const initState: AuthState = {
-   isAuthenticated: null
+    authInfo: null,
 };
 
 export const authReducer = (state: AuthState = initState, action: AuthActions): AuthState => {
     switch (action.type) {
-        case 'PRESS-LOG-IN':
+        case 'START-LOGIN-PROCESS':
+        case 'FINISH-LOGIN-PROCESS':
             return {
                 ...state,
-                isAuthenticated: true
+                authInfo: {
+                    isAuthenticated: true
+                }
             };
-        case 'PRESS-LOG-OUT':
+        case 'START-LOGOUT-PROCESS':
+        case 'FINISH-LOGOUT-PROCESS':
             return {
                 ...state,
-                isAuthenticated: false
+                authInfo: {
+                    isAuthenticated: false
+                }
             };
         default:
             return state;

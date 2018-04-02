@@ -10,7 +10,7 @@ import { View, SafeAreaView, TouchableOpacity, Image } from 'react-native';
 import { Employee } from '../reducers/organization/employee.model';
 import { chevronColor, profileScreenStyles, layoutStyles } from './styles';
 import { EmployeeDetails } from '../employee-details/employee-details';
-import { AuthActions, pressLogOut } from '../reducers/auth/auth.action';
+import { AuthActions, startLogoutProcess } from '../reducers/auth/auth.action';
  
 interface ProfileScreenProps {
     employee: Employee;
@@ -26,7 +26,7 @@ interface AuthDispatchProps {
     onlogoutClicked: () => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<AuthActions>): AuthDispatchProps => ({
-    onlogoutClicked: () => { dispatch(pressLogOut()); }
+    onlogoutClicked: () => { dispatch(startLogoutProcess()); }
 });
 
 class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps> {

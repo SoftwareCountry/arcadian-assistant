@@ -34,7 +34,7 @@ export interface AppState {
     calendar?: CalendarState;
     people?: PeopleState;
 
-     authentication: AuthState;  
+    authentication?: AuthState;  
 }
 
 const rootEpic = combineEpics(helpdeskEpics as any, organizationEpics as any, errorsEpics as any, userEpics as any, feedsEpics as any, calendarEpics as any, authEpics$ as any);
@@ -68,5 +68,5 @@ export const storeFactory = (oauthProcess: OAuthProcess, ) => {
 
     const reactNavigationMiddleware = createReactNavigationReduxMiddleware<AppState>(navigationMiddlewareKey, (state) => state.nav);
 
-    return createStore<AppState>(reducers, { navigationMiddlewareKey } as AppState, applyMiddleware(epicMiddleware, reactNavigationMiddleware));
+    return createStore<AppState>(reducers, { navigationMiddlewareKey }, applyMiddleware(epicMiddleware, reactNavigationMiddleware));
 };
