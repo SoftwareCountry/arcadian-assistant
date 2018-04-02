@@ -77,7 +77,12 @@ export class OAuthProcess {
         if (!value) {
             console.debug('Refresh token is not found in storage, opening login page...');
             //no refresh token is stored
-            await this.loginRequest.openLoginPage(false); //TODO: catch exception
+            try {
+                const authorizationCodeResponseUrl = await this.loginRequest.openLoginPage(true);
+                this.handleAuthorizationCodeResponse(authorizationCodeResponseUrl);
+            } catch (e) {
+                console.warn('Error occurred on login page', e);
+            }
         } else {
             console.debug('Using refresh token from the application storage');
             //request refresh            

@@ -1,5 +1,6 @@
-import { Linking } from 'react-native';
 import { OauthError } from './oauth-error';
+import { BrowserLogin } from './browser-login';
+import uuid from 'uuid/v1';
 
 interface AuthorizationCodeRequestParams {
     clientId: string;
@@ -19,12 +20,12 @@ interface AuthorizationCodeRequestParams {
 
 export class LoginRequest {
 
-    private readonly csrfSecret = 'random_uuid'; //TODO: make uuid call
+    private readonly csrfSecret = uuid();
 
     constructor(private clientId: string, private redirectUri: string, private authorizationUrl: string) {
     }
 
-    public openLoginPage(forceLogin = false) {
+    public async openLoginPage(forceLogin = false): Promise<string> {
         let params: AuthorizationCodeRequestParams = {
             clientId: this.clientId,
             responseType: 'code',
@@ -39,7 +40,9 @@ export class LoginRequest {
         }
 
         const url = this.getAuthorizationUrl(this.authorizationUrl, params);
-        return Linking.openURL(url);
+
+        const code =  await BrowserLogin.getAuthorizationCode(url, this.redirectUri);
+        return code;
     }
 
     public getAuthorizationCodeFromResponse(responseUrl: string) {

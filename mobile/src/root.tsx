@@ -29,8 +29,8 @@ export class Root extends Component<{}> {
       this.oauthProcess.login().catch(console.error);
       //this.oauthProcess.authenticationState.forEach(console.log);
   
-      Linking.addEventListener('url', this.onApplicaitonLinkOpened);
-      Linking.getInitialURL().then(url => this.onApplicaitonLinkOpened( { url } ));
+      //Linking.addEventListener('url', this.onApplicaitonLinkOpened);
+      //Linking.getInitialURL().then(url => this.onApplicaitonLinkOpened( { url } ));
     }
   
     public render() {
@@ -47,8 +47,7 @@ export class Root extends Component<{}> {
       if (this.oauthProcess) {
         this.oauthProcess.dispose();
       }
-    }
-  
+    }  
   
     private onApplicaitonLinkOpened = (e: {url: string}) => {
       const dl = new DeepLinking(this.oauthProcess);
