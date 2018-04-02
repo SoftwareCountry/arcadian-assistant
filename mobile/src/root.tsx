@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import { DeepLinking } from './navigation/deep-linking';
 import { OAuthManager } from './auth/oauth-manager';
 import { OAuthProcess } from './auth/oauth-process';
-import { Linking } from 'react-native';
 import { Provider } from 'react-redux';
 import { storeFactory } from './reducers/app.reducer';
 import { AppWithNavigationState } from './app';
@@ -28,9 +26,6 @@ export class Root extends Component<{}> {
 
       this.oauthProcess.login().catch(console.error);
       //this.oauthProcess.authenticationState.forEach(console.log);
-  
-      //Linking.addEventListener('url', this.onApplicaitonLinkOpened);
-      //Linking.getInitialURL().then(url => this.onApplicaitonLinkOpened( { url } ));
     }
   
     public render() {
@@ -41,16 +36,9 @@ export class Root extends Component<{}> {
       );
     }
   
-    public componentWillUnmount() { 
-      Linking.removeEventListener('url', this.onApplicaitonLinkOpened);
-  
+    public componentWillUnmount() {  
       if (this.oauthProcess) {
         this.oauthProcess.dispose();
       }
-    }  
-  
-    private onApplicaitonLinkOpened = (e: {url: string}) => {
-      const dl = new DeepLinking(this.oauthProcess);
-      dl.openUrl(e.url);
     }
   }
