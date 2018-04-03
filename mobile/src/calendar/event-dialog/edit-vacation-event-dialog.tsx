@@ -23,15 +23,20 @@ interface EditVacationEventDialogProps {
 
 class EditVacationEventDialogImpl extends Component<EditVacationEventDialogProps & EditVacationEventDialogDispatchProps> {
     public render() {
+        const { intervals: { vacation } } = this.props;
+
+        const disableChange = vacation.calendarEvent.isApproved;
+
         return <EventDialogBase
                     title={'Cancel or change your vacation'}
                     text={this.text}
                     icon={'vacation'}
-                    cancelLabel={'Change'}
-                    acceptLabel={'Cancel'}
-                    onActionPress={this.cancelVacation}
-                    onCancelPress={this.changeVacation}
-                    onClosePress={this.closeDialog} />;
+                    cancelLabel={'Cancel'}
+                    acceptLabel={'Change'}
+                    onActionPress={this.changeVacation}
+                    onCancelPress={this.cancelVacation}
+                    onClosePress={this.closeDialog}
+                    disableAccept={disableChange} />;
     }
 
     private cancelVacation = () => {
