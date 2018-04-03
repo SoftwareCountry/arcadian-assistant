@@ -34,11 +34,11 @@ export class EventDialog extends Component<EventDialogProps> {
             case EventDialogType.ProlongSickLeave:
                 return <ProlongSickLeaveEventDialog />;
 
-            case EventDialogType.RequestVacaltion:
+            case EventDialogType.RequestVacation:
                 return <RequestVacationEventDialog />;
             case EventDialogType.ConfirmStartDateVacation:
                 return <ConfirmVacationEventDialog />;
-            case EventDialogType.EditVacaltion:
+            case EventDialogType.EditVacation:
                 return <EditVacationEventDialog />;
             default:
                 throw new Error(`There isn't event dialog implementation for ${this.props.dialogType}`);

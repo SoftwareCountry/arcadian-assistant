@@ -61,7 +61,7 @@ const mapStateToProps = (state: AppState): ClaimVacationEventDialogProps => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ClaimVacationEventDialogDispatchProps => ({
-    back: () => { dispatch(openEventDialog(EventDialogType.RequestVacaltion)); },
+    back: () => { dispatch(openEventDialog(EventDialogType.RequestVacation)); },
     confirmVacation: (employeeId: string, startDate: Moment, endDate: Moment) => { dispatch(confirmVacation(employeeId, startDate, endDate)); },
     closeDialog: () => { dispatch(closeEventDialog()); }
 });

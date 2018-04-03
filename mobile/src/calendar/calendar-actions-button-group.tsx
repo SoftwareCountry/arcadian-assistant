@@ -74,8 +74,8 @@ const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>): ActionButtonsG
         edit: () => { dispatch(openEventDialog(EventDialogType.EditSickLeave)); },
     },
     vacationActions: {
-        request: () => { dispatch(openEventDialog(EventDialogType.RequestVacaltion)); },
-        edit: () => { dispatch(openEventDialog(EventDialogType.EditVacaltion)); }
+        request: () => { dispatch(openEventDialog(EventDialogType.RequestVacation)); },
+        edit: () => { dispatch(openEventDialog(EventDialogType.EditVacation)); }
     }
 });
 
