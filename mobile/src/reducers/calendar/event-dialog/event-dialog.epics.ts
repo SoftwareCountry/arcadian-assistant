@@ -1,6 +1,6 @@
 import { EventDialogActions, OpenEventDialog, closeEventDialog } from './event-dialog.action';
 import { ActionsObservable } from 'redux-observable';
-import { calendarSelectionMode, CalendarSelectionModeType, selectIntervalsBySingleDaySelection, disableCalendarSelection, CalendarActions } from '../calendar.action';
+import { calendarSelectionMode, CalendarSelectionModeType, selectIntervalsBySingleDaySelection, disableCalendarSelection, CalendarActions, disableSelectIntervalsBySingleDaySelection } from '../calendar.action';
 import { CalendarEventsColor } from '../../../calendar/styles';
 import { EventDialogType } from './event-dialog-type.model';
 import { Observable } from 'rxjs';
@@ -31,6 +31,12 @@ export const openEventDialogEpic$ = (action$: ActionsObservable<EventDialogActio
                 case EventDialogType.EditVacation:
                     return [calendarSelectionMode(CalendarSelectionModeType.SingleDay), disableCalendarSelection(true)];
 
+                case EventDialogType.ChangeVacationStartDate:
+                    return [calendarSelectionMode(CalendarSelectionModeType.SingleDay), disableSelectIntervalsBySingleDaySelection(true)];
+                
+                case EventDialogType.ChangeVacationEndDate:
+                    return [calendarSelectionMode(CalendarSelectionModeType.Interval, CalendarEventsColor.vacation)];
+
                 default:
                     return calendarSelectionMode(CalendarSelectionModeType.SingleDay);
             }
@@ -41,4 +47,8 @@ export const openEventDialogEpic$ = (action$: ActionsObservable<EventDialogActio
 
 export const closeEventDialogEpic$ = (action$: ActionsObservable<EventDialogActions>) =>
     action$.ofType('CLOSE-EVENT-DIALOG')
-        .map(x => calendarSelectionMode(CalendarSelectionModeType.SingleDay));
+        .flatMap(x => Observable.of<CalendarActions>(
+            calendarSelectionMode(CalendarSelectionModeType.SingleDay),
+            disableSelectIntervalsBySingleDaySelection(false),
+            selectIntervalsBySingleDaySelection()
+        ));

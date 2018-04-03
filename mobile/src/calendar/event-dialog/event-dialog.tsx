@@ -9,6 +9,8 @@ import { ProlongSickLeaveEventDialog } from './prolong-sick-leave-event-dialog';
 import { RequestVacationEventDialog } from './request-vacation-event-dialog';
 import { ConfirmVacationEventDialog } from './confirm-vaction-event-dialog';
 import { EditVacationEventDialog } from './edit-vacation-event-dialog';
+import { ChangeVacationStartDateEventDialog } from './change-vacation-start-date-event-dialog';
+import { ChangeVacationEndDateEventDialog } from './change-vacation-end-date-event-dialog';
 
 interface EventDialogProps {
     dialogType: EventDialogType;
@@ -40,6 +42,10 @@ export class EventDialog extends Component<EventDialogProps> {
                 return <ConfirmVacationEventDialog />;
             case EventDialogType.EditVacation:
                 return <EditVacationEventDialog />;
+            case EventDialogType.ChangeVacationStartDate:
+                return <ChangeVacationStartDateEventDialog />;
+            case EventDialogType.ChangeVacationEndDate:
+                return <ChangeVacationEndDateEventDialog />;
             default:
                 throw new Error(`There isn't event dialog implementation for ${this.props.dialogType}`);
         }
