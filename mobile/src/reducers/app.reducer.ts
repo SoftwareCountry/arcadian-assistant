@@ -20,6 +20,7 @@ import config from '../config';
 import { OAuthProcess } from '../auth/oauth-process';
 import { createReactNavigationReduxMiddleware, createReduxBoundAddListener } from 'react-navigation-redux-helpers';
 import { PeopleState, peopleReducer  } from './people/people.reducer';
+import { authEpics$, authReducer, AuthState } from './auth/auth.reducer';
 
 export interface AppState {
     helpdesk?: HelpdeskState;
@@ -32,9 +33,11 @@ export interface AppState {
     feeds?: FeedsState;
     calendar?: CalendarState;
     people?: PeopleState;
+
+    authentication?: AuthState;  
 }
 
-const rootEpic = combineEpics(helpdeskEpics as any, organizationEpics as any, errorsEpics as any, userEpics as any, feedsEpics as any, calendarEpics as any);
+const rootEpic = combineEpics(helpdeskEpics as any, organizationEpics as any, errorsEpics as any, userEpics as any, feedsEpics as any, calendarEpics as any, authEpics$ as any);
 
 const reducers = combineReducers<AppState>({
     helpdesk: helpdeskReducer,
@@ -44,17 +47,20 @@ const reducers = combineReducers<AppState>({
     userInfo: userInfoReducer,
     feeds: feedsReducer,
     calendar: calendarReducer,
-    people: peopleReducer
+    people: peopleReducer,
+    authentication: authReducer,
+
 });
 
 export interface DependenciesContainer {
     apiClient: SecuredApiClient;
+    oauthProcess: OAuthProcess;
 }
 
 export type AppEpic<T extends Action> = Epic<T, AppState, DependenciesContainer>;
 
 export const storeFactory = (oauthProcess: OAuthProcess, ) => {
-    const dependencies: DependenciesContainer = { apiClient: new SecuredApiClient(config.apiUrl, oauthProcess.authenticationState as any ) };
+    const dependencies: DependenciesContainer = { apiClient: new SecuredApiClient(config.apiUrl,  oauthProcess.authenticationState as any ), oauthProcess: oauthProcess };
     const options = { dependencies };
     const epicMiddleware = createEpicMiddleware(rootEpic, options);
 
