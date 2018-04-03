@@ -4,7 +4,6 @@ import { Avatar } from '../people/avatar';
 import { Employee } from '../reducers/organization/employee.model';
 import { employeesListItemStyles as styles } from './styles';
 import { StyledText } from '../override/styled-text';
-import { Dispatch, connect } from 'react-redux';
 
 interface EmployeesListItemProps {
     employee: Employee;

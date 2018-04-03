@@ -1,23 +1,102 @@
 import React from 'react';
 import { Action } from 'redux';
-import { connect, Dispatch } from 'react-redux';
-import { View } from 'react-native';
+import { connect, Dispatch, MapStateToProps, MapDispatchToPropsFunction } from 'react-redux';
+import { View, Text, ScrollView, Dimensions, Animated } from 'react-native';
 
 import { EmployeesList } from './employees-list';
+import { Department } from '../reducers/organization/department.model';
 import { AppState } from '../reducers/app.reducer';
+import { DepartmentsHScrollableList } from './departments/departments-horizontal-scrollable-list';
+import { DepartmentsTree } from './departments/departments-tree';
+import { DepartmentsTreeNode } from './departments/departments-tree-node';
+import { EmployeeCardWithAvatar } from './employee-card-with-avatar';
+import { PeopleActions, updateDepartmentIdsTree } from '../reducers/people/people.action';
+import { loadEmployeesForDepartment } from '../reducers/organization/organization.action';
+import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
+import { Employee } from '../reducers/organization/employee.model';
 
 interface PeopleCompanyProps {
     routeName: string;
+    headDepartment: Department;
+    departmentsTree: DepartmentsTree;
+    departmentsBranch?: DepartmentsTreeNode[];
 }
 
 const mapStateToProps = (state: AppState): PeopleCompanyProps => ({
-    routeName: 'Company'
+    routeName: 'Company',
+    headDepartment: state.people.headDepartment,
+    departmentsTree: state.people.departmentsTree,
+    departmentsBranch: state.people.departmentsBranch
 });
 
-export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps> {  
+interface PeopleCompanyDispatchProps {
+    requestEmployeesForDepartment: (departmentId: string) => void;
+    updateDepartmentIdsTree: (index: number, department: DepartmentsTreeNode) => void;
+    onItemClicked: (employee: Employee) => void;
+}
+
+const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
+    requestEmployeesForDepartment: (departmentId: string) => { 
+        dispatch(loadEmployeesForDepartment(departmentId)); 
+    },
+    updateDepartmentIdsTree: (index: number, department: DepartmentsTreeNode) => { 
+        dispatch(updateDepartmentIdsTree(index, department)); 
+    },
+    onItemClicked: (employee: Employee) => {
+        dispatch( openEmployeeDetailsAction(employee));
+    },
+});
+
+export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & PeopleCompanyDispatchProps> {
+    public treeRecurseAndAdd(department: DepartmentsTreeNode, departments: DepartmentsTreeNode[]) {
+        departments.push(department);
+        const children = department.children;
+        if (children !== null) {
+            children.forEach(child => this.treeRecurseAndAdd(child, departments));
+        }
+    }
+
     public render() {
-        return <View style={{flex: 1, backgroundColor: '#fff'}}/>;
+        const { children } = this.props.departmentsTree.root;
+
+        if (this.props.departmentsBranch === null) {
+            return <ScrollView style={{ backgroundColor: '#fff' }} />;
+        }
+
+        const heads: DepartmentsTreeNode[] = [];
+        const flattenDepartmentsNodes: DepartmentsTreeNode[] = [];
+        this.treeRecurseAndAdd(this.props.departmentsTree.root, flattenDepartmentsNodes);
+
+        for (const department of this.props.departmentsBranch) {
+            if (department.departmentId === this.props.departmentsTree.root.departmentId) {
+                heads.push(this.props.departmentsTree.root);
+            } else if (department.departmentId !== 'subordinates') {
+                heads.push(flattenDepartmentsNodes.find(departmentNode => departmentNode.departmentId === department.departmentId));
+            }
+        }
+
+        return <ScrollView style={{ backgroundColor: '#fff', flex: 1 }}>
+            <EmployeeCardWithAvatar
+                employee={this.props.departmentsTree.root.head}
+                departmentAbbreviation={this.props.departmentsTree.root.departmentAbbreviation}
+                treeLevel={0}
+                onItemClicked = {this.props.onItemClicked}
+            />
+            {
+                heads.map((head) => (
+                    <DepartmentsHScrollableList
+                        treeLevel={heads.indexOf(head) + 1}
+                        departmentsTreeNodes={head.children}
+                        headDepartment={head}
+                        key={head.departmentId}
+                        updateDepartmentIdsTree={this.props.updateDepartmentIdsTree}
+                        requestEmployeesForDepartment={this.props.requestEmployeesForDepartment}
+                        onItemClicked = {this.props.onItemClicked}
+                    />
+                ))
+            }
+        </ScrollView>;
     }
 }
 
-export const PeopleCompany = connect(mapStateToProps)(PeopleCompanyImpl);
+export const PeopleCompany = connect(mapStateToProps, mapDispatchToProps)(PeopleCompanyImpl);

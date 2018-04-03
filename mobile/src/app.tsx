@@ -10,15 +10,18 @@ import { loadFeeds } from './reducers/feeds/feeds.action';
 import { Employee } from './reducers/organization/employee.model';
 import { loadUser } from './reducers/user/user.action';
 import { AddListener, createReduxBoundAddListener } from 'react-navigation-redux-helpers';
+import { WelcomeScreen } from './welcome-screen/welcome-screen';
+import { AuthState } from './reducers/auth/auth.reducer';
+import { SplashScreen } from './splash-screen/splash-screen';
 
 interface AppProps {
   dispatch: Dispatch<any>;
   nav: NavigationState;
   reduxNavKey: string;
+  authentication: AuthState;
 }
 
 export class App extends Component<AppProps> {
-
   private addListener: AddListener;
 
   public componentWillMount() {
@@ -26,11 +29,19 @@ export class App extends Component<AppProps> {
   }
 
   public render() {
-    return <RootNavigator navigation={addNavigationHelpers({
-      dispatch: this.props.dispatch as any,
-      state: this.props.nav,
-      addListener: this.addListener
-    })} />;
+    if (!this.props.authentication.authInfo) {
+      return <SplashScreen />;
+    }
+
+    if (this.props.authentication.authInfo.isAuthenticated) {
+      return <RootNavigator navigation={addNavigationHelpers({
+        dispatch: this.props.dispatch as any,
+        state: this.props.nav,
+        addListener: this.addListener
+      })} />;
+    } else {
+      return <WelcomeScreen />;
+    }
   }
 
   public componentDidMount() {
@@ -59,7 +70,8 @@ export class App extends Component<AppProps> {
 
 const mapStateToProps = (state: AppState) => ({
   nav: state.nav,
-  reduxNavKey: state.navigationMiddlewareKey
+  reduxNavKey: state.navigationMiddlewareKey,
+  authentication: state.authentication,
 });
 
 export const AppWithNavigationState = connect(mapStateToProps)(App);
