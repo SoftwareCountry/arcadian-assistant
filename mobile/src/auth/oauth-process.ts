@@ -7,7 +7,6 @@ import { Subscription } from 'rxjs/Subscription';
 import { LoginRequest } from './login-request';
 import { RefreshTokenStorage } from './refresh-token-storage';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { LogoutRequest } from './logout-request';
 import { NotAuthenticatedState, AuthenticationState } from './authentication-state';
 
 //https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-protocols-oauth-code
@@ -30,20 +29,16 @@ export class OAuthProcess {
 
     private readonly loginRequest: LoginRequest;
 
-    private readonly logoutRequest: LogoutRequest;
-
     private readonly accessCodeRequest: AccessCodeRequest;
 
     constructor(
         clientId: string,
         authorizationUrl: string,
         tokenUrl: string,
-        logoutUrl: string,
         redirectUri: string,
         private readonly refreshTokenStorage: RefreshTokenStorage) {        
 
         this.loginRequest = new LoginRequest(clientId, redirectUri, authorizationUrl);
-        this.logoutRequest = new LogoutRequest(logoutUrl);
         this.accessCodeRequest = new AccessCodeRequest(clientId, redirectUri, tokenUrl);
 
         const accessCodeResponse = this.authorizationCode
@@ -77,7 +72,12 @@ export class OAuthProcess {
         if (!value) {
             console.debug('Refresh token is not found in storage, opening login page...');
             //no refresh token is stored
-            await this.loginRequest.openLoginPage(false); //TODO: catch exception
+            try {
+                const authorizationCodeResponseUrl = await this.loginRequest.openLoginPage(true);
+                this.handleAuthorizationCodeResponse(authorizationCodeResponseUrl);
+            } catch (e) {
+                console.warn('Error occurred on login page', e);
+            }
         } else {
             console.debug('Using refresh token from the application storage');
             //request refresh            
@@ -95,7 +95,6 @@ export class OAuthProcess {
     public async forgetUser() {
         await this.storeRefreshToken(null);
         this.refreshTokenSource.next(null);
-        //await this.logoutRequest.perform();
     }
 
     private onNewTokenObtained(tokenResponse: TokenResponse) {
