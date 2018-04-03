@@ -52,8 +52,8 @@
             {
                 var departments = await context
                     .Department
-                    .Where(x => (x.ParentDepartmentId == id) && (x.Id != id))
-                    .Where(x => (x.IsDelete != true) && (x.Employee.Count(y => y.IsWorking) > 0))
+                    .Where(x => (x.ParentDepartmentId == id) && (x.Id != id)) //TODO: deal with empty departments
+                    .Where(x => (x.IsDelete != true))
                     .Select(this.mapDepartment)
                     .ToListAsync();
 
