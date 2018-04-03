@@ -14,4 +14,4 @@ export interface CloseEventDialog {
 
 export const closeEventDialog = (): CloseEventDialog => ({ type: 'CLOSE-EVENT-DIALOG' });
 
-export type EventDialogActions = OpenEventDialog | CloseEventDialog | SickLeaveActions;
+export type EventDialogActions = OpenEventDialog | CloseEventDialog;

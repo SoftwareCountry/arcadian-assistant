@@ -11,7 +11,9 @@ export enum CalendarEventType {
 export enum CalendarEventStatus {
     Requested = 'Requested',
     Completed = 'Completed',
-    Cancelled = 'Cancelled'
+    Cancelled = 'Cancelled',
+    Approved = 'Approved',
+    Rejected = 'Rejected'
 }
 
 export class DatesInterval {
@@ -69,5 +71,9 @@ export class CalendarEvent {
 
     public get isSickLeave(): boolean {
         return this.type === CalendarEventType.Sickleave;
+    }
+
+    public get isVacation(): boolean {
+        return this.type === CalendarEventType.Vacation;
     }
 }

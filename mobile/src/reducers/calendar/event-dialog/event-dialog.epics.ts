@@ -17,13 +17,19 @@ export const openEventDialogEpic$ = (action$: ActionsObservable<EventDialogActio
                     return calendarSelectionMode(CalendarSelectionModeType.Interval, CalendarEventsColor.sickLeave);
 
                 case EventDialogType.EditSickLeave:
-                    return [
-                        calendarSelectionMode(CalendarSelectionModeType.SingleDay),
-                        disableCalendarSelection(true)
-                    ];
+                    return [calendarSelectionMode(CalendarSelectionModeType.SingleDay), disableCalendarSelection(true)];
 
                 case EventDialogType.ProlongSickLeave:
                     return calendarSelectionMode(CalendarSelectionModeType.Interval, CalendarEventsColor.sickLeave);
+
+                case EventDialogType.RequestVacation:
+                    return calendarSelectionMode(CalendarSelectionModeType.SingleDay);
+
+                case EventDialogType.ConfirmStartDateVacation:
+                    return calendarSelectionMode(CalendarSelectionModeType.Interval, CalendarEventsColor.vacation);
+
+                case EventDialogType.EditVacation:
+                    return [calendarSelectionMode(CalendarSelectionModeType.SingleDay), disableCalendarSelection(true)];
 
                 default:
                     return calendarSelectionMode(CalendarSelectionModeType.SingleDay);
