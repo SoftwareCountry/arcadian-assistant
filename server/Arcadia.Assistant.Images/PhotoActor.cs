@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Runtime.ExceptionServices;
     using System.Security.Cryptography;
 
     using Akka.Actor;
@@ -26,6 +27,7 @@
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
+        [HandleProcessCorruptedStateExceptions]
         protected override void OnReceive(object message)
         {
             switch (message)
