@@ -2,7 +2,7 @@ import { LoadUserEmployeeFinished } from '../user/user.action';
 import { ActionsObservable, ofType } from 'redux-observable';
 import { Observable } from 'rxjs/Observable';
 import { deserializeArray } from 'santee-dcts';
-import { 
+import {
     loadCalendarEventsFinished, CalendarEventCreated, SelectIntervalsBySingleDaySelection, selectIntervalsBySingleDaySelection, SelectCalendarDay, LoadCalendarEventsFinished, LoadCalendarEvents, loadCalendarEvents, 
     CalendarSelectionMode, disableCalendarSelection, DisableCalendarSelection, CalendarSelectionModeType
 } from './calendar.action';
