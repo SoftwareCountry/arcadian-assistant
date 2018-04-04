@@ -35,7 +35,7 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
         
         const { headDepartment } = this.props;
         const subDepartments = headDepartment != null && headDepartment.children != null ? headDepartment.children : null;
-        const subordinates = headDepartment != null && headDepartment.subordinates != null ? headDepartment.subordinates : null;
+        const subordinates = headDepartment != null && headDepartment.subordinates != null ? headDepartment.subordinates.filter((emp) => emp.employeeId !== headDepartment.departmentChiefId) : null;
 
         return <View>
             <Animated.ScrollView 
@@ -63,7 +63,7 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                 }
                 
                 {
-                    (subordinates != null) ? 
+                    (subordinates != null && subordinates.length > 0) ? 
                         <EmployeeCardWithAvatar 
                             employees={subordinates} 
                             chiefId={headDepartment.departmentChiefId}
