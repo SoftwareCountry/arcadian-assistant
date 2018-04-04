@@ -46,7 +46,7 @@
                                         : Sex.Undefined
                         })
                     {
-                        Photo = x.Image,
+                        Photo = x.Id != 777 ? x.Image : null, //TODO: deal with the bad image
                     })
                     .ToListAsync();
                 return new LoadAllEmployees.Response(employees);

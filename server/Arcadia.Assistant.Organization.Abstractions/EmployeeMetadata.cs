@@ -72,7 +72,8 @@
             }
 
             var years = toDate.Value.Year - fromDate.Value.Year;
-            if (toDate.Value.DayOfYear < fromDate.Value.DayOfYear)
+
+            if ((fromDate.Value.Month > toDate.Value.Month) || ((fromDate.Value.Month == toDate.Value.Month) && (fromDate.Value.Day > toDate.Value.Day)))
             {
                 years = years - 1;
             }
