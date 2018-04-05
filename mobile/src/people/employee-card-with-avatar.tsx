@@ -50,8 +50,7 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
         const employees = this.props.employees;
         
         if (employees != null) {
-            const filteredEmployees = employees.filter((emp) => emp.employeeId !== this.props.chiefId);
-            return this.lowestLevelEmployeesList(filteredEmployees);
+            return this.lowestLevelEmployeesList(employees);
         } else {
             return this.standardEmployeeCard();
         }
