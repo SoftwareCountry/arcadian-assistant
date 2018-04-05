@@ -60,8 +60,11 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     private renderItem = (itemInfo: ListRenderItemInfo<Feed>) => {
         const { item } = itemInfo;
         const employee: Employee = this.props.employees.employeesById.get(item.employeeId);
-
-        return <FeedListItem message={item} employee={employee} onAvatarClicked={this.props.onAvatarClicked} />;
+        if (!employee) {
+            return <FeedListItem message={item} employee={null} onAvatarClicked={this.props.onAvatarClicked}/>;
+        } else {
+            return <FeedListItem message={item} employee={employee} onAvatarClicked={this.props.onAvatarClicked}/>;
+        }
     }
 }
 

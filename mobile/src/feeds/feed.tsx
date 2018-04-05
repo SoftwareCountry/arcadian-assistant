@@ -30,10 +30,7 @@ export class FeedListItem extends React.Component<FeedListItemProps, FeedListIte
     public render() {
         const message = this.props.message;
         const employee = this.props.employee;
-
-        const employeeName = employee ? employee.name : message.title;
         const photo = employee ? employee.photo : null;
-
         const formattedDate = message.datePosted.format('MMMM D, YYYY');
 
         const imgContainerStyle = StyleSheet.flatten([
@@ -42,17 +39,22 @@ export class FeedListItem extends React.Component<FeedListItemProps, FeedListIte
                 ? { height: this.state.avatarHeight }
                 : {}
         ]);
+        const isDisabledClick = (this.props.employee) ? false : true;
+
+        const avatarContent = isDisabledClick ?
+            <Avatar photo={photo} /> :
+            <TouchableOpacity onPress={this.onAvatarClicked} style={styles.touchableOpacityContainer} >
+                <Avatar photo={photo} />
+            </TouchableOpacity> ;
 
         return (
-            <TouchableHighlight>
+            <View>
                 <View style={styles.layout}>
                     <View style={imgContainerStyle} onLayout={this.onAvatarContainerLayout}>
-                        <TouchableOpacity onPress = {this.onAvatarClicked} style={styles.touchableOpacityContainer}>
-                            <Avatar photo={photo} />
-                        </TouchableOpacity>
+                        {avatarContent}
                     </View>
                     <View style={styles.info}>
-                        <StyledText style={styles.title}>{employeeName}</StyledText>
+                        <StyledText style={styles.title}>{this.props.message.title}</StyledText>
                         <StyledText>
                             <Text style={styles.to}>@Arcadians</Text>
                             <Text style={styles.text}>, {this.props.message.text}</Text>
@@ -61,7 +63,7 @@ export class FeedListItem extends React.Component<FeedListItemProps, FeedListIte
                         <StyledText style={styles.date}>{formattedDate}</StyledText>
                     </View>
                 </View>
-            </TouchableHighlight>
+            </View>
         );
     }
 
@@ -71,5 +73,7 @@ export class FeedListItem extends React.Component<FeedListItemProps, FeedListIte
             avatarHeight: Math.max(layout.height, layout.width)
         });
     }
-    private onAvatarClicked = () => this.props.onAvatarClicked(this.props.employee);
+    private onAvatarClicked = () => {
+        this.props.onAvatarClicked(this.props.employee);
+    }
 }
