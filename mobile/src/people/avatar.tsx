@@ -27,6 +27,11 @@ export interface AvatarProps {
     useDefaultForEmployeesList?: boolean;
 }
 
+// tslint:disable-next-line:no-var-requires
+const employeesListAvatarRect = require('./employeesListAvatarRect.png');
+// tslint:disable-next-line:no-var-requires
+const arcadiaIcon = require('./arcadia-icon.png');
+
 interface AvatarState {
     borderRadius?: number;
     size?: number;
@@ -54,7 +59,7 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
         const mimeType = this.validateMimeType(this.props.photo);
         const photoBase64 = this.validateEncodedImage(this.props.photo);
 
-        const defaultPhoto = this.props.useDefaultForEmployeesList ? require('./employeesListAvatarRect.png') : require('./arcadia-icon.png');
+        const defaultPhoto = this.props.useDefaultForEmployeesList ? employeesListAvatarRect : arcadiaIcon;
         const image = !mimeType || !photoBase64 ? defaultPhoto : { uri: mimeType + photoBase64 };
 
         const outerFrameFlattenStyle = StyleSheet.flatten([
