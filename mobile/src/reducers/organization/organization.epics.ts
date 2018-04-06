@@ -37,7 +37,7 @@ export const loadEmployeesForDepartmentEpic$ = (action$: ActionsObservable<LoadE
     action$.ofType('LOAD_EMPLOYEES_FOR_DEPARTMENT')
         .groupBy(x => x.departmentId)
         .map(x =>
-            x.switchMap(y => 
+            x.debounceTime(10000).switchMap(y => 
                 deps.apiClient.getJSON(`/employees?departmentId=${x.key}`).map(obj => deserializeArray(obj as any, Employee))))
         .mergeAll()
         .flatMap(x => x.map(loadEmployeeFinished))
