@@ -5,17 +5,17 @@ import { switchDayoffTypeStyles } from './styles';
 import { CalendarEventsColor } from '../styles';
 import { IntervalType } from '../../reducers/calendar/calendar.model';
 
-interface SwitchDayoffTypeProps {
+interface SelectorDayoffDurationProps {
     onIntervalTypeSelected: (selectedType: IntervalType) => void;
     isWorkout: boolean;
 }
 
-interface SwitchDayoffTypeState {
+interface SelectorDayoffDurationState {
     containerHeight: number;
 }
 
-export class SwitchDayoffType extends Component<SwitchDayoffTypeProps, SwitchDayoffTypeState> {
-    constructor(props: SwitchDayoffTypeProps) {
+export class SelectorDayoffDuration extends Component<SelectorDayoffDurationProps, SelectorDayoffDurationState> {
+    constructor(props: SelectorDayoffDurationProps) {
         super(props);
         this.state = {
             containerHeight: 0

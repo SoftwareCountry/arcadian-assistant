@@ -7,7 +7,7 @@ import { EventDialogActions, closeEventDialog, openEventDialog } from '../../red
 import { DayModel, IntervalType } from '../../reducers/calendar/calendar.model';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
 import { Moment } from 'moment';
-import { SwitchDayoffType } from './switch-dayoff-type';
+import { SelectorDayoffDuration } from './selector-dayoff-duration';
 import { HoursCreditCounter } from '../../reducers/calendar/days-counters.model';
 import { confirmProcessDayoff } from '../../reducers/calendar/dayoff.action';
 import { Employee } from '../../reducers/organization/employee.model';
@@ -52,7 +52,7 @@ class ConfirmDayoffEventDialogImpl extends Component<ConfirmDayoffEventDialogPro
                     onActionPress={this.onAcceptClick}
                     onCancelPress={this.onCancelClick}
                     onClosePress={this.onCloseClick}>
-                        <SwitchDayoffType onIntervalTypeSelected={this.onDayoffTypeSelected} isWorkout={this.props.hoursCredit.isWorkout} />
+                        <SelectorDayoffDuration onIntervalTypeSelected={this.onDayoffTypeSelected} isWorkout={this.props.hoursCredit.isWorkout} />
                 </EventDialogBase>;
     }
 
