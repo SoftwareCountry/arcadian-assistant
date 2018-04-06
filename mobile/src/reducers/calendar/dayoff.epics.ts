@@ -7,6 +7,7 @@ import { calendarEventCreated } from './calendar.action';
 import { Observable } from 'rxjs';
 import { loadFailedError } from '../errors/errors.action';
 import { IntervalType } from './calendar.model';
+import { IntervalTypeConverter } from './interval-type-converter';
 
 export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff>, state: AppState, deps: DependenciesContainer) =>
     action$.ofType('CONFIRM-PROCESS-DAYOFF')
@@ -19,18 +20,14 @@ export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff
             calendarEvents.dates.startDate = x.date;
             calendarEvents.dates.endDate = x.date;
 
-            calendarEvents.status = CalendarEventStatus.Requested;
+            const hours = IntervalTypeConverter.intervalTypeToHours(x.intervalType);
 
-            if (x.intervalType === IntervalType.IntervalLeftBoundary) {
-                calendarEvents.dates.startWorkingHour = 0;
-                calendarEvents.dates.finishWorkingHour = 4;
-            } else if (x.intervalType === IntervalType.IntervalRightBoundary) {
-                calendarEvents.dates.startWorkingHour = 4;
-                calendarEvents.dates.finishWorkingHour = 8;
-            } else if (x.intervalType === IntervalType.IntervalFullBoundary) {
-                calendarEvents.dates.startWorkingHour = 0;
-                calendarEvents.dates.finishWorkingHour = 8;
+            if (hours) {
+                calendarEvents.dates.startWorkingHour = hours.startHour;
+                calendarEvents.dates.finishWorkingHour = hours.finishHour;
             }
+
+            calendarEvents.status = CalendarEventStatus.Requested;
 
             return deps.apiClient.post(
                 `/employees/${x.employeeId}/events`,
