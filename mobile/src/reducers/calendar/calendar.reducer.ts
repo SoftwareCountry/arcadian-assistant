@@ -7,6 +7,7 @@ import { EventDialogState, eventDialogReducer } from './event-dialog/event-dialo
 import { openEventDialogEpic$, closeEventDialogEpic$ } from './event-dialog/event-dialog.epics';
 import { sickLeaveSavedEpic$, sickLeaveCompletedEpic$, sickLeaveProlongedEpic$ } from './sick-leave.epics';
 import { vacationSavedEpic$, vacationCanceledEpic$, vacationChangedEpic$ } from './vacation.epics';
+import { dayoffSavedEpic$ } from './dayoff.epics';
 
 export interface CalendarState {
     daysCounters: DaysCountersState;
@@ -25,6 +26,7 @@ export const calendarEpics = combineEpics(
     vacationSavedEpic$ as any,
     vacationCanceledEpic$ as any,
     vacationChangedEpic$ as any,
+    dayoffSavedEpic$ as any,
     intervalsBySingleDaySelectionEpic$ as any,
     openEventDialogEpic$ as any,
     closeEventDialogEpic$ as any,

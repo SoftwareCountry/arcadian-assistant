@@ -33,10 +33,15 @@ export const openEventDialogEpic$ = (action$: ActionsObservable<EventDialogActio
 
                 case EventDialogType.ChangeVacationStartDate:
                     return [calendarSelectionMode(CalendarSelectionModeType.SingleDay), disableSelectIntervalsBySingleDaySelection(true)];
-                
+
                 case EventDialogType.ChangeVacationEndDate:
                     return [calendarSelectionMode(CalendarSelectionModeType.Interval, CalendarEventsColor.vacation)];
 
+                case EventDialogType.ProcessDayoff:
+                    return calendarSelectionMode(CalendarSelectionModeType.SingleDay);
+
+                case EventDialogType.ConfirmDayoffStartDate:
+                    return disableCalendarSelection(true);
                 default:
                     return calendarSelectionMode(CalendarSelectionModeType.SingleDay);
             }

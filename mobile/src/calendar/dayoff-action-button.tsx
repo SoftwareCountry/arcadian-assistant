@@ -2,17 +2,31 @@ import React, { Component } from 'react';
 import { CalendarActionButton } from './calendar-action-button';
 import { IntervalModel } from '../reducers/calendar/calendar.model';
 import { CalendarEventsColor } from './styles';
+import { HoursCreditCounter } from '../reducers/calendar/days-counters.model';
+import { connect } from 'react-redux';
+import { AppState } from '../reducers/app.reducer';
 
-interface DayoffActionButtonProps {
-    interval: IntervalModel;
-    disabled: boolean;
-    // TODO: pass needed dispatch actions
+interface DayoffActionButtonMapToStateProps {
+    hoursCredit: HoursCreditCounter;
 }
 
-export class DayoffActionButton extends Component<DayoffActionButtonProps> {
+interface DayoffActionButtonOwnProps {
+    interval: IntervalModel;
+    disabled: boolean;
+    process: () => void;
+    edit: () => void;
+}
+
+type DayoffActionButtonProps = DayoffActionButtonOwnProps & DayoffActionButtonMapToStateProps;
+
+export class DayoffActionButtonImpl extends Component<DayoffActionButtonProps> {
     public render() {
         return (
-            <CalendarActionButton title={this.title} borderColor={CalendarEventsColor.dayoff} onPress={this.onDayoffAction} disabled={this.props.disabled} />
+            <CalendarActionButton
+                title={this.title}
+                borderColor={CalendarEventsColor.dayoff}
+                onPress={this.onDayoffAction}
+                disabled={this.props.disabled} />
         );
     }
 
@@ -23,7 +37,18 @@ export class DayoffActionButton extends Component<DayoffActionButtonProps> {
     }
 
     public onDayoffAction = () => {
-        // TODO: do something
+        if (!this.props.interval && this.props.hoursCredit.hours !== 0) {
+            this.props.process();
+        }
     }
 }
 
+const mapStateToProps = (state: AppState, ownProps: DayoffActionButtonOwnProps): DayoffActionButtonProps => ({
+    hoursCredit: state.calendar.daysCounters.hoursCredit,
+    interval: ownProps.interval,
+    disabled: ownProps.disabled,
+    process: ownProps.process,
+    edit: ownProps.edit
+});
+
+export const DayoffActionButton = connect(mapStateToProps)(DayoffActionButtonImpl);

@@ -11,6 +11,8 @@ import { ConfirmVacationEventDialog } from './confirm-vaction-event-dialog';
 import { EditVacationEventDialog } from './edit-vacation-event-dialog';
 import { ChangeVacationStartDateEventDialog } from './change-vacation-start-date-event-dialog';
 import { ChangeVacationEndDateEventDialog } from './change-vacation-end-date-event-dialog';
+import { ProcessDayoffEventDialog } from './process-dayoff-event-dialog';
+import { ConfirmDayoffEventDialog } from './confirm-dayoff-event-dialog';
 
 interface EventDialogProps {
     dialogType: EventDialogType;
@@ -46,6 +48,11 @@ export class EventDialog extends Component<EventDialogProps> {
                 return <ChangeVacationStartDateEventDialog />;
             case EventDialogType.ChangeVacationEndDate:
                 return <ChangeVacationEndDateEventDialog />;
+
+            case EventDialogType.ProcessDayoff:
+                return <ProcessDayoffEventDialog />;
+            case EventDialogType.ConfirmDayoffStartDate:
+                return <ConfirmDayoffEventDialog />;
             default:
                 throw new Error(`There isn't event dialog implementation for ${this.props.dialogType}`);
         }

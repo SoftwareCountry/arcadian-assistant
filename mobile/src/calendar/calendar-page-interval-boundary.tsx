@@ -46,7 +46,8 @@ export class IntervalBoundary extends Component<IntervalBoundaryProps> {
                 position: 'absolute',
                 bottom: 0,
                 right: 0
-            }
+            },
+            this.props.circleStyle
         ]);
 
         const boundaries = boundary === 'full'
