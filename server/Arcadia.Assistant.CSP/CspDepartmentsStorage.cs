@@ -1,6 +1,7 @@
 ﻿namespace Arcadia.Assistant.CSP
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Threading.Tasks;
@@ -18,6 +19,8 @@
         {
             this.contextFactory = contextFactory;
         }
+
+        private const int ArcadiaCompanyId = 154;
 
         private readonly Expression<Func<Department, DepartmentInfo>> mapDepartment =
             x =>
@@ -62,6 +65,50 @@
 
                 return new LoadChildDepartments.Response(departments);
             }
+        }
+
+        protected override async Task<LoadAllDepartments.Response> GetAllDepartments()
+        {
+            using (var context = this.contextFactory())
+            {
+                var arcEmployees = context.Employee.FromSql(CspEmployeesInfoStorage.ArcadianEmployeeQuery);
+
+                var allDepartments = await context
+                    .Department
+                    .Where(x => (x.IsDelete != true) && (x.CompanyId == ArcadiaCompanyId))
+                    .Join(arcEmployees, o => o.ChiefId, i => i.Id, (d, e) => d)
+                    .Select(this.mapDepartment)
+                    .ToListAsync();
+
+                var head = allDepartments.FirstOrDefault(x => x.IsHeadDepartment);                
+                var filteredDepartments = GetDescendants(allDepartments, head, new HashSet<string>());
+
+                return new LoadAllDepartments.Response(filteredDepartments);
+            }
+        }
+
+        /// <param name="node">Node for which descandants are requested</param>
+        /// <param name="processedIds">a hashset with processed department ids to prevent stackoverflow</param>
+        /// <param name="allDepartments">all possible departments</param>
+        private static List<DepartmentInfo> GetDescendants(
+            IReadOnlyCollection<DepartmentInfo> allDepartments,
+            DepartmentInfo node,
+            HashSet<string> processedIds)
+        {
+            var children = allDepartments
+                .Where(x => (x.ParentDepartmentId == node.DepartmentId) && !processedIds.Contains(node.DepartmentId))
+                .ToList();
+
+            processedIds.UnionWith(children.Select(x => x.DepartmentId));
+
+            var descendants = new List<DepartmentInfo>();
+
+            foreach (var child in children)
+            {
+                descendants.AddRange(GetDescendants(allDepartments, child, processedIds));
+            }
+
+            return descendants;
         }
     }
 }

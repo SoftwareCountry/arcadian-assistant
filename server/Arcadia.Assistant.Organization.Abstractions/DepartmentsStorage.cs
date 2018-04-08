@@ -21,6 +21,10 @@
                     this.GetChildDepartments(request.DepartmentId).PipeTo(this.Sender);
                     break;
 
+                case LoadAllDepartments _:
+                    this.GetAllDepartments().PipeTo(this.Sender);
+                    break;
+
                 default:
                     this.Unhandled(message);
                     break;
@@ -30,6 +34,8 @@
         protected abstract Task<LoadHeadDepartment.Response> GetHeadDepartment();
 
         protected abstract Task<LoadChildDepartments.Response> GetChildDepartments(string departmentId);
+
+        protected abstract Task<LoadAllDepartments.Response> GetAllDepartments();
 
         public static Props GetProps => Context.DI().Props<DepartmentsStorage>();
 
@@ -56,6 +62,21 @@
             {
                 this.DepartmentId = departmentId;
             }
+
+            public class Response
+            {
+                public IReadOnlyCollection<DepartmentInfo> Departments { get; }
+
+                public Response(IReadOnlyCollection<DepartmentInfo> departments)
+                {
+                    this.Departments = departments;
+                }
+            }
+        }
+
+        public class LoadAllDepartments
+        {
+            public static LoadAllDepartments Instance = new LoadAllDepartments();
 
             public class Response
             {
