@@ -96,12 +96,12 @@
             HashSet<string> processedIds)
         {
             var children = allDepartments
-                .Where(x => (x.ParentDepartmentId == node.DepartmentId) && !processedIds.Contains(node.DepartmentId))
+                .Where(x => (x.ParentDepartmentId == node.DepartmentId) && !processedIds.Contains(x.DepartmentId))
                 .ToList();
 
             processedIds.UnionWith(children.Select(x => x.DepartmentId));
 
-            var descendants = new List<DepartmentInfo>();
+            var descendants = new List<DepartmentInfo>(children);
 
             foreach (var child in children)
             {
