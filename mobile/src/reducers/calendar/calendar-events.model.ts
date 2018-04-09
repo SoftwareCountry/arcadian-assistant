@@ -1,6 +1,7 @@
 import { CalendarEvent, CalendarEventType } from './calendar-event.model';
 import { IntervalsModel, IntervalType, ReadOnlyIntervalsModel, IntervalModel } from './calendar.model';
 import moment from 'moment';
+import { IntervalTypeConverter } from './interval-type-converter';
 
 export class CalendarEvents {
 
@@ -75,18 +76,12 @@ export class CalendarEvents {
     private getBoundaryType(calendarEvent: CalendarEvent): IntervalType | null {
         const { startWorkingHour, finishWorkingHour } = calendarEvent.dates;
 
-        if (0 <= startWorkingHour && finishWorkingHour <= 4) {
-            return IntervalType.IntervalLeftBoundary;
+        const intervalType = IntervalTypeConverter.hoursToIntervalType(startWorkingHour, finishWorkingHour);
+
+        if (!intervalType) {
+            return null;
         }
 
-        if (4 <= startWorkingHour && finishWorkingHour <= 8) {
-            return IntervalType.IntervalRightBoundary;
-        }
-
-        if (0 <= startWorkingHour && finishWorkingHour <= 8) {
-            return IntervalType.IntervalFullBoundary;
-        }
-
-        return null;
+        return intervalType;
     }
 }
