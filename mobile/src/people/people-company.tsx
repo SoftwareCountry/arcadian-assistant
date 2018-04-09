@@ -16,19 +16,22 @@ import { openEmployeeDetailsAction } from '../employee-details/employee-details-
 import { Employee } from '../reducers/organization/employee.model';
 import { StyledText } from '../override/styled-text';
 import { employeesListStyles as styles } from './styles';
+import { EmployeesStore } from '../reducers/organization/employees.reducer';
 
 interface PeopleCompanyProps {
     routeName: string;
     headDepartment: Department;
     departmentsTree: DepartmentsTree;
     departmentsBranch?: DepartmentsTreeNode[];
+    employees: EmployeesStore;
 }
 
 const mapStateToProps = (state: AppState): PeopleCompanyProps => ({
     routeName: 'Company',
     headDepartment: state.people.headDepartment,
     departmentsTree: state.people.departmentsTree,
-    departmentsBranch: state.people.departmentsBranch
+    departmentsBranch: state.people.departmentsBranch,
+    employees: state.organization.employees
 });
 
 interface PeopleCompanyDispatchProps {
@@ -81,7 +84,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
 
         return <ScrollView style={{ backgroundColor: '#fff', flex: 1 }}>
             <EmployeeCardWithAvatar
-                employee={this.props.departmentsTree.root.head}
+                employee={this.props.employees.employeesById.get(this.props.departmentsTree.root.departmentChiefId)}
                 departmentAbbreviation={this.props.departmentsTree.root.departmentAbbreviation}
                 treeLevel={0}
                 onItemClicked = {this.props.onItemClicked}
@@ -92,6 +95,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
                         treeLevel={heads.indexOf(head) + 1}
                         departmentsTreeNodes={head.children}
                         headDepartment={head}
+                        employees={this.props.employees}
                         key={head.departmentId}
                         updateDepartmentIdsTree={this.props.updateDepartmentIdsTree}
                         requestEmployeesForDepartment={this.props.requestEmployeesForDepartment}
