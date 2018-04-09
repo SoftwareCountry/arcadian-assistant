@@ -37,7 +37,7 @@ export class DayoffActionButtonImpl extends Component<DayoffActionButtonProps> {
     }
 
     public onDayoffAction = () => {
-        if (!this.props.interval && this.props.hoursCredit.hours !== 0) {
+        if (!this.props.interval) {
             this.props.process();
         }
     }
