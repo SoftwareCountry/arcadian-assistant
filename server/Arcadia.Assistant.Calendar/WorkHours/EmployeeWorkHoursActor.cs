@@ -16,7 +16,7 @@
         /// Positive values means that these days must be worked out.
         /// Negative means that these can be taked as days off
         /// </summary>
-        private int hoursCredit = -17;
+        private int hoursCredit = 0;
 
         public EmployeeWorkHoursActor(string employeeId)
             : base(employeeId)
