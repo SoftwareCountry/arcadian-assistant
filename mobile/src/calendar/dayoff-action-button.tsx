@@ -19,6 +19,11 @@ interface DayoffActionButtonOwnProps {
 
 type DayoffActionButtonProps = DayoffActionButtonOwnProps & DayoffActionButtonMapToStateProps;
 
+interface DayoffCase {
+    disableCalendatButton: boolean;
+    action: () => void;
+}
+
 export class DayoffActionButton extends Component<DayoffActionButtonProps> {
     public render() {
         const disableCalendarAction = this.disableCalendarAction();
@@ -39,29 +44,31 @@ export class DayoffActionButton extends Component<DayoffActionButtonProps> {
     }
 
     public onDayoffAction = () => {
-        const { interval, process, edit } = this.props;
+        const dayoffCase = this.dayoffCases();
 
-        if (!interval) {
-            process();
+        if (!dayoffCase) {
             return;
         }
 
-        if (interval && interval.calendarEvent.isApproved) {
-            edit();
-        }
+        dayoffCase.action();
     }
 
     private disableCalendarAction() {
-        const { interval } = this.props;
+        const dayoffCase = this.dayoffCases();
+        return !dayoffCase || dayoffCase.disableCalendatButton;
+    }
+
+    private dayoffCases(): DayoffCase | null {
+        const { interval, process, edit } = this.props;
 
         if (!interval) {
-            return false;
+            return { disableCalendatButton: false, action: process };
         }
 
-        if (interval && interval.calendarEvent.isApproved) {
-            return false;
+        if (interval && !interval.calendarEvent.isApproved) {
+            return { disableCalendatButton: false, action: edit };
         }
 
-        return true;
+        return null;
     }
 }
