@@ -14,6 +14,8 @@ import { PeopleActions, updateDepartmentIdsTree } from '../reducers/people/peopl
 import { loadEmployeesForDepartment } from '../reducers/organization/organization.action';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 import { Employee } from '../reducers/organization/employee.model';
+import { StyledText } from '../override/styled-text';
+import { employeesListStyles as styles } from './styles';
 
 interface PeopleCompanyProps {
     routeName: string;
@@ -57,11 +59,13 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
     }
 
     public render() {
-        const { children } = this.props.departmentsTree.root;
-
-        if (this.props.departmentsBranch === null) {
-            return <ScrollView style={{ backgroundColor: '#fff' }} />;
+        if (this.props.departmentsBranch === null || this.props.departmentsTree === null) {
+            return <View style={styles.loadingContainer}>
+                        <StyledText style={styles.loadingText}>Loading...</StyledText>
+                    </View>;
         }
+
+        const { children } = this.props.departmentsTree.root;
 
         const heads: DepartmentsTreeNode[] = [];
         const flattenDepartmentsNodes: DepartmentsTreeNode[] = [];
