@@ -1,9 +1,9 @@
 import { ActionsObservable } from 'redux-observable';
-import { ConfirmProcessDayoff } from './dayoff.action';
+import { ConfirmProcessDayoff, CancelDayoff } from './dayoff.action';
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { CalendarEvent, CalendarEventType, CalendarEventStatus, DatesInterval } from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
-import { calendarEventCreated } from './calendar.action';
+import { calendarEventCreated, loadCalendarEvents } from './calendar.action';
 import { Observable } from 'rxjs';
 import { loadFailedError } from '../errors/errors.action';
 import { IntervalType } from './calendar.model';
@@ -36,4 +36,19 @@ export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff
             ).map(obj => deserialize(obj.response, CalendarEvent));
         })
         .map(x => calendarEventCreated(x))
+        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+
+export const dayoffCanceledEpic$ = (action$: ActionsObservable<CancelDayoff>, state: AppState, deps: DependenciesContainer) =>
+    action$.ofType('CANCEL-DAYOFF')
+        .flatMap(x => {
+            const requestBody = {...x.calendarEvent};
+
+            requestBody.status = CalendarEventStatus.Cancelled;
+
+            return deps.apiClient.put(
+                `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
+                requestBody,
+                { 'Content-Type': 'application/json' }
+            ).map(obj => loadCalendarEvents(x.employeeId));
+        })
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));

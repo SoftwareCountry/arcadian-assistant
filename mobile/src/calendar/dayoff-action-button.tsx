@@ -21,12 +21,14 @@ type DayoffActionButtonProps = DayoffActionButtonOwnProps & DayoffActionButtonMa
 
 export class DayoffActionButtonImpl extends Component<DayoffActionButtonProps> {
     public render() {
+        const disableCalendarAction = this.disableCalendarAction();
+
         return (
             <CalendarActionButton
                 title={this.title}
                 borderColor={CalendarEventsColor.dayoff}
                 onPress={this.onDayoffAction}
-                disabled={this.props.disabled} />
+                disabled={this.props.disabled || disableCalendarAction} />
         );
     }
 
@@ -37,9 +39,30 @@ export class DayoffActionButtonImpl extends Component<DayoffActionButtonProps> {
     }
 
     public onDayoffAction = () => {
-        if (!this.props.interval) {
-            this.props.process();
+        const { interval, process, edit } = this.props;
+
+        if (!interval) {
+            process();
+            return;
         }
+
+        if (interval && interval.calendarEvent.isApproved) {
+            edit();
+        }
+    }
+
+    private disableCalendarAction() {
+        const { interval } = this.props;
+
+        if (!interval) {
+            return false;
+        }
+
+        if (interval && interval.calendarEvent.isApproved) {
+            return false;
+        }
+
+        return true;
     }
 }
 

@@ -42,6 +42,10 @@ export const openEventDialogEpic$ = (action$: ActionsObservable<EventDialogActio
 
                 case EventDialogType.ConfirmDayoffStartDate:
                     return disableCalendarSelection(true);
+
+                case EventDialogType.EditDayoff:
+                    return [disableCalendarSelection(true)];
+
                 default:
                     return calendarSelectionMode(CalendarSelectionModeType.SingleDay);
             }
