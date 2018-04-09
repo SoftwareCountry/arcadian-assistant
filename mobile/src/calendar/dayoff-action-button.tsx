@@ -19,7 +19,7 @@ interface DayoffActionButtonOwnProps {
 
 type DayoffActionButtonProps = DayoffActionButtonOwnProps & DayoffActionButtonMapToStateProps;
 
-export class DayoffActionButtonImpl extends Component<DayoffActionButtonProps> {
+export class DayoffActionButton extends Component<DayoffActionButtonProps> {
     public render() {
         const disableCalendarAction = this.disableCalendarAction();
 
@@ -65,13 +65,3 @@ export class DayoffActionButtonImpl extends Component<DayoffActionButtonProps> {
         return true;
     }
 }
-
-const mapStateToProps = (state: AppState, ownProps: DayoffActionButtonOwnProps): DayoffActionButtonProps => ({
-    hoursCredit: state.calendar.daysCounters.hoursCredit,
-    interval: ownProps.interval,
-    disabled: ownProps.disabled,
-    process: ownProps.process,
-    edit: ownProps.edit
-});
-
-export const DayoffActionButton = connect(mapStateToProps)(DayoffActionButtonImpl);
