@@ -34,12 +34,14 @@ export class SickLeaveActionButton extends Component<SickLeaveActionButtonProps>
     }
 
     public onSickLeaveAction = () => {
-        if (!this.props.interval) {
-            this.props.claim();
-        } else if (this.props.interval.calendarEvent.isApproved) {
-            this.props.edit();
+        const { interval, claim, edit, cancel } = this.props;
+
+        if (!interval) {
+            claim();
+        } else if (interval.calendarEvent.isApproved) {
+            edit();
         } else {
-            this.props.cancel();
+            cancel();
         }
     }
 
