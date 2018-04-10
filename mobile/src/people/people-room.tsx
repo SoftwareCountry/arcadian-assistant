@@ -11,15 +11,11 @@ import { openEmployeeDetailsAction } from '../employee-details/employee-details-
 interface PeopleRoomProps {
     employees: EmployeesStore;
     userEmployee: Employee;
-    employeesPredicate: (employee: Employee) => boolean;
 }
 
 const mapStateToProps = (state: AppState): PeopleRoomProps => ({
     employees: state.organization.employees,
-    userEmployee: state.userInfo.employee,
-    employeesPredicate: (employee: Employee) => {
-        return state.userInfo.employee && employee.roomNumber === state.userInfo.employee.roomNumber;
-    }
+    userEmployee: state.userInfo.employee
 });
 
 interface EmployeesListDispatchProps {
@@ -37,8 +33,8 @@ export class PeopleRoomImpl extends React.Component<PeopleRoomProps & EmployeesL
             return true;
         }
 
-        const employees = this.props.employees.employeesById.filter(this.props.employeesPredicate);
-        const nextEmployees = nextProps.employees.employeesById.filter(this.props.employeesPredicate);
+        const employees = this.props.employees.employeesById.filter(this.employeesPredicate);
+        const nextEmployees = nextProps.employees.employeesById.filter(this.employeesPredicate);
 
         if (!employees.equals(nextEmployees)) {
             return true;
@@ -48,7 +44,11 @@ export class PeopleRoomImpl extends React.Component<PeopleRoomProps & EmployeesL
     }
 
     public render() {
-        return <EmployeesList employees={this.props.employees.employeesById.toArray().filter(this.props.employeesPredicate)} onItemClicked = {this.props.onItemClicked}/>;
+        return <EmployeesList employees={this.props.employees.employeesById.toArray().filter(this.employeesPredicate)} onItemClicked = {this.props.onItemClicked}/>;
+    }
+
+    private employeesPredicate = (employee: Employee) => {
+        return this.props.userEmployee && employee.roomNumber === this.props.userEmployee.roomNumber;
     }
 }
 
