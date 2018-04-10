@@ -85,7 +85,7 @@ const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>): ActionButtonsG
     },
     dayoff: {
         process: () => { dispatch(openEventDialog(EventDialogType.ProcessDayoff)); },
-        edit: () => { /* TBD */}
+        edit: () => { dispatch(openEventDialog(EventDialogType.EditDayoff)); }
     }
 });
 
