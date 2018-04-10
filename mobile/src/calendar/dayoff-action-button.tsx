@@ -6,18 +6,12 @@ import { HoursCreditCounter } from '../reducers/calendar/days-counters.model';
 import { connect } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 
-interface DayoffActionButtonMapToStateProps {
-    hoursCredit: HoursCreditCounter;
-}
-
-interface DayoffActionButtonOwnProps {
+interface DayoffActionButtonProps {
     interval: IntervalModel;
     disabled: boolean;
     process: () => void;
     edit: () => void;
 }
-
-type DayoffActionButtonProps = DayoffActionButtonOwnProps & DayoffActionButtonMapToStateProps;
 
 interface DayoffCase {
     disableCalendatButton: boolean;
