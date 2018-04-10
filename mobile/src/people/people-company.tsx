@@ -8,7 +8,7 @@ import { Department } from '../reducers/organization/department.model';
 import { AppState } from '../reducers/app.reducer';
 import { DepartmentsHScrollableList } from './departments/departments-horizontal-scrollable-list';
 import { DepartmentsTree } from './departments/departments-tree';
-import { DepartmentsTreeNode } from './departments/departments-tree-node';
+import { DepartmentsTreeNode, stubIdForSubordinates } from './departments/departments-tree-node';
 import { EmployeeCardWithAvatar } from './employee-card-with-avatar';
 import { PeopleActions, updateDepartmentIdsTree } from '../reducers/people/people.action';
 import { loadEmployeesForDepartment } from '../reducers/organization/organization.action';
@@ -77,7 +77,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
         for (const department of this.props.departmentsBranch) {
             if (department.departmentId === this.props.departmentsTree.root.departmentId) {
                 heads.push(this.props.departmentsTree.root);
-            } else if (department.departmentId !== 'subordinates') {
+            } else if (department.departmentId !== stubIdForSubordinates) {
                 heads.push(flattenDepartmentsNodes.find(departmentNode => departmentNode.departmentId === department.departmentId));
             }
         }

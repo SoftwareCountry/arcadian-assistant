@@ -12,7 +12,7 @@ import { PeopleActions } from './people.action';
 import { EmployeeMap } from '../organization/employees.reducer';
 import { Department } from '../organization/department.model';
 import { DepartmentsTree } from '../../people/departments/departments-tree';
-import { DepartmentsTreeNode } from '../../people/departments/departments-tree-node';
+import { DepartmentsTreeNode, stubIdForSubordinates } from '../../people/departments/departments-tree-node';
 
 export interface PeopleState {
     headDepartment: Department;
@@ -93,7 +93,7 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
             if (deps.length - 1 < action.index) {
                 deps = [...deps, action.departmentId];
             } else {
-                if (action.departmentId.departmentId === 'subordinates') {
+                if (action.departmentId.departmentId === stubIdForSubordinates) {
                     deps = deps.filter((dep, depIndex) => depIndex < action.index);
                 } else {
                     deps[action.index] = action.departmentId;

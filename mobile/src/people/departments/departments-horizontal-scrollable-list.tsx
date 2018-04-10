@@ -2,7 +2,7 @@ import React, { Component, SyntheticEvent } from 'react';
 import { Animated, Easing, View, Text, ScrollView, Dimensions, TouchableOpacity, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { AppState } from '../../reducers/app.reducer';
 import { EmployeeCardWithAvatar } from '../employee-card-with-avatar';
-import { DepartmentsTreeNode } from './departments-tree-node';
+import { DepartmentsTreeNode, stubIdForSubordinates } from './departments-tree-node';
 import { Employee } from '../../reducers/organization/employee.model';
 import { PeopleActions, updateDepartmentIdsTree } from '../../reducers/people/people.action';
 import { loadEmployeesForDepartment } from '../../reducers/organization/organization.action';
@@ -158,7 +158,7 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                     departmentChiefId: this.props.headDepartment.departmentChiefId,
                     parent: null,
                     children: null,
-                    departmentId: 'subordinates'
+                    departmentId: stubIdForSubordinates
                 };
                 this.props.updateDepartmentIdsTree(this.props.treeLevel, stubDN);
             } else {
