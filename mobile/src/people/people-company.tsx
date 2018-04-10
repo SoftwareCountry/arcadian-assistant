@@ -99,7 +99,10 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
                         key={head.departmentId}
                         updateDepartmentIdsTree={this.props.updateDepartmentIdsTree}
                         requestEmployeesForDepartment={this.props.requestEmployeesForDepartment}
-                        onItemClicked = {this.props.onItemClicked}
+                        onItemClicked={this.props.onItemClicked}
+                        employeesPredicate={(employee: Employee) => { 
+                            return employee.departmentId === head.departmentId;
+                        }}
                     />
                 ))
             }

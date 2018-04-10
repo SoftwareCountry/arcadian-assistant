@@ -17,6 +17,7 @@ interface DepartmentsHScrollableListProps {
     requestEmployeesForDepartment: (departmentId: string) => void;
     updateDepartmentIdsTree: (index: number, department: DepartmentsTreeNode) => void;
     onItemClicked: (e: Employee) => void;
+    employeesPredicate: (employee: Employee) => boolean;
 }
 
 export class DepartmentsHScrollableList extends Component<DepartmentsHScrollableListProps> {
@@ -24,73 +25,38 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
     private animatedValue: Animated.Value;
     private buttonText: Text;
     private currentPage: number = null;
+    private forceComponentRender = false;
 
     public componentDidMount() {
-        // this.animate.bind(this, Easing.bounce);
         if (this.props.departmentsTreeNodes !== null) {
             this.props.requestEmployeesForDepartment(this.props.departmentsTreeNodes[0].departmentId);
         }
     }
 
     public shouldComponentUpdate(nextProps: DepartmentsHScrollableListProps) {
-        if (this.currentPage > this.employeeCards.length) {
-            const { headDepartment } = this.props;
-            const subDepartments = headDepartment != null && headDepartment.children != null ? headDepartment.children : null;
+        if (this.forceComponentRender) {
+            this.forceComponentRender = false;
+            return true;
+        } else if (this.employeeCards.length > 0 && this.currentPage !== null && this.currentPage <= this.employeeCards.length) {
+            const visibleCard: EmployeeCardWithAvatar = this.employeeCards[this.currentPage - 1];
+            const currentEmployeeRef = this.props.employees.employeesById.get(visibleCard.props.employee.employeeId);
+            const nextEmployeeRef = nextProps.employees.employeesById.get(visibleCard.props.employee.employeeId);
 
-            if (this.props.employees.employeeIdsByDepartment.has(headDepartment.departmentId) && this.props.employees.employeeIdsByDepartment.get(headDepartment.departmentId).size > 0) {
-                const subordinates = this.props.employees.employeeIdsByDepartment.get(headDepartment.departmentId).map(x => this.props.employees.employeesById.get(x))
-                    .toArray().filter((emp) => emp.employeeId !== headDepartment.departmentChiefId);
-                
-                const nextEmployees = nextProps.employees.employeeIdsByDepartment.get(headDepartment.departmentId).map(x => this.props.employees.employeesById.get(x))
-                .toArray();
-        
-                for (const employee of nextEmployees) {
-                    const employeeId = employee.employeeId;
-                    const currentEmployeeRef = subordinates.find((emp) => emp.employeeId === employeeId);
-                    const nextEmployeeRef = nextProps.employees.employeesById.get(employeeId);            
-        
-                    if (currentEmployeeRef !== nextEmployeeRef && employeeId !== headDepartment.departmentChiefId) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
+            if (currentEmployeeRef !== nextEmployeeRef) {
+                return true;
+            } else {
+                return false;
             }
         } else {
-            if (this.employeeCards.length > 0 && this.currentPage !== null) {
-                const visibleCard: EmployeeCardWithAvatar = this.employeeCards[this.currentPage - 1];
-                const currentEmployeeRef = this.props.employees.employeesById.get(visibleCard.props.employee.employeeId);
-                const nextEmployeeRef = nextProps.employees.employeesById.get(visibleCard.props.employee.employeeId);
-    
-                if (currentEmployeeRef !== nextEmployeeRef) {
-                    return true;
-                } else {
-                    return false;
-                }
+            const employees = this.props.employees.employeesById.filter(this.props.employeesPredicate);
+            const nextEmployees = nextProps.employees.employeesById.filter(this.props.employeesPredicate);
+
+            if (!employees.equals(nextEmployees)) {
+                return true;
             } else {
-                const { headDepartment } = this.props;
-
-                const predicate = (employee: Employee) => {
-                    return employee.departmentId === headDepartment.departmentId;
-                };
-        
-                const nextEmployees = nextProps.employees.employeesById.toArray().filter(predicate);
-        
-                for (const employee of nextEmployees) {
-                    const employeeId = employee.employeeId;
-                    const currentEmployeeRef = this.props.employees.employeesById.get(employeeId);
-                    const nextEmployeeRef = nextProps.employees.employeesById.get(employeeId);            
-        
-                    if (currentEmployeeRef !== nextEmployeeRef) {
-                        return true;
-                    }
-                }
-
                 return false;
             }
         }
-
-        return false;
     }
 
     public render() {
@@ -101,8 +67,9 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
         let subordinates;
         
         if (this.props.employees.employeeIdsByDepartment.has(headDepartment.departmentId) && this.props.employees.employeeIdsByDepartment.get(headDepartment.departmentId).size > 0) {
-            subordinates = this.props.employees.employeeIdsByDepartment.get(headDepartment.departmentId).map(x => this.props.employees.employeesById.get(x))
-            .toArray().filter((emp) => emp.employeeId !== headDepartment.departmentChiefId);
+            subordinates = this.props.employees.employeeIdsByDepartment.get(headDepartment.departmentId)
+                            .filter((employeeId) => employeeId !== headDepartment.departmentChiefId)
+                            .map(x => this.props.employees.employeesById.get(x)).toArray();
         } else {
             subordinates = null;
         }
@@ -151,6 +118,8 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
         const offset = event.nativeEvent.contentOffset;
         if (offset) {
             this.currentPage = Math.round(offset.x / Dimensions.get('window').width) + 1;
+            this.forceComponentRender = true;
+
             if (this.currentPage > this.employeeCards.length) {
                 this.props.requestEmployeesForDepartment(this.props.headDepartment.departmentId);
                 const stubDN: DepartmentsTreeNode = {
