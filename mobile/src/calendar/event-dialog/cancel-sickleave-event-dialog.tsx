@@ -4,13 +4,11 @@ import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base'
 import { AppState } from '../../reducers/app.reducer';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { EventDialogActions, closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
-import { DayModel, IntervalModel, ExtractedIntervals } from '../../reducers/calendar/calendar.model';
-import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
-import { CalendarEventType, CalendarEvent } from '../../reducers/calendar/calendar-event.model';
-import { completeSickLeave, cancelSickLeave } from '../../reducers/calendar/sick-leave.action';
+import { EventDialogActions, closeEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
+import { ExtractedIntervals } from '../../reducers/calendar/calendar.model';
+import { CalendarEvent } from '../../reducers/calendar/calendar-event.model';
+import { cancelSickLeave } from '../../reducers/calendar/sick-leave.action';
 import { Employee } from '../../reducers/organization/employee.model';
-import { Moment } from 'moment';
 
 interface CancelSickLeaveEventDialogDispatchProps {
     cancelSickLeave: (employeeId: string, calendarEvent: CalendarEvent) => void;
