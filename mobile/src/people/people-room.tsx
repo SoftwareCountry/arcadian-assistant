@@ -11,11 +11,15 @@ import { openEmployeeDetailsAction } from '../employee-details/employee-details-
 interface PeopleRoomProps {
     employees: EmployeesStore;
     userEmployee: Employee;
+    employeesPredicate: (employee: Employee) => boolean;
 }
 
 const mapStateToProps = (state: AppState): PeopleRoomProps => ({
     employees: state.organization.employees,
-    userEmployee: state.userInfo.employee
+    userEmployee: state.userInfo.employee,
+    employeesPredicate: (employee: Employee) => {
+        return state.userInfo.employee && employee.roomNumber === state.userInfo.employee.roomNumber;
+    }
 });
 
 interface EmployeesListDispatchProps {
@@ -33,31 +37,18 @@ export class PeopleRoomImpl extends React.Component<PeopleRoomProps & EmployeesL
             return true;
         }
 
-        const predicate = (employee: Employee) => {
-            return this.props.userEmployee && employee.roomNumber === this.props.userEmployee.roomNumber;
-        };
+        const employees = this.props.employees.employeesById.filter(this.props.employeesPredicate);
+        const nextEmployees = nextProps.employees.employeesById.filter(this.props.employeesPredicate);
 
-        const nextEmployees = nextProps.employees.employeesById.toArray().filter(predicate);
-
-        for (const employee of nextEmployees) {
-            const employeeId = employee.employeeId;
-            const currentEmployeeRef = this.props.employees.employeesById.get(employeeId);
-            const nextEmployeeRef = nextProps.employees.employeesById.get(employeeId);            
-
-            if (currentEmployeeRef !== nextEmployeeRef) {
-                return true;
-            }
+        if (!employees.equals(nextEmployees)) {
+            return true;
+        } else {
+            return false;
         }
-
-        return false;
     }
 
     public render() {
-        const predicate = (employee: Employee) => {
-            return this.props.userEmployee && employee.roomNumber === this.props.userEmployee.roomNumber;
-        };
-
-        return <EmployeesList employees={this.props.employees.employeesById.toArray().filter(predicate)} onItemClicked = {this.props.onItemClicked}/>;
+        return <EmployeesList employees={this.props.employees.employeesById.toArray().filter(this.props.employeesPredicate)} onItemClicked = {this.props.onItemClicked}/>;
     }
 }
 

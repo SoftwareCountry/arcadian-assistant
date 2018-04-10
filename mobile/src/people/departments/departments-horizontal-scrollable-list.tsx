@@ -120,8 +120,8 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                         employee={this.props.employees.employeesById.get(subDepartment.departmentChiefId)}
                         departmentAbbreviation={subDepartment.departmentAbbreviation} 
                         treeLevel={this.props.treeLevel}
-                        // leftNeighbor={(subDepartments.indexOf(subDepartment) > 0 && subDepartments.length > 1) ? subDepartments[subDepartments.indexOf(subDepartment) - 1].head : null } 
-                        // rightNeighbor={(subDepartments.indexOf(subDepartment) < subDepartments.length - 1 && subDepartments.length > 1) ? subDepartments[subDepartments.indexOf(subDepartment) + 1].head : null} 
+                        leftNeighbor={(subDepartments.indexOf(subDepartment) > 0 && subDepartments.length > 1) ? this.props.employees.employeesById.get(subDepartments[subDepartments.indexOf(subDepartment) - 1].departmentChiefId) : null } 
+                        rightNeighbor={(subDepartments.indexOf(subDepartment) < subDepartments.length - 1 && subDepartments.length > 1) ? this.props.employees.employeesById.get(subDepartments[subDepartments.indexOf(subDepartment) + 1].departmentChiefId) : null} 
                         ref={(employeeCard) => { 
                             if ( employeeCard != null ) {
                                 this.employeeCards.push(employeeCard);
