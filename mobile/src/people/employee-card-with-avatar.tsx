@@ -59,6 +59,8 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
     private standardEmployeeCard = () => {
         const employee = this.props.employee;
         const photo = employee ? employee.photo : null;
+        const eName = employee ? employee.name : null;
+        const ePosition = employee ? employee.position : null;
         const { fadeInAnim, fadeOutAnim } = this.state;
         const neighboursAvatarsVisibility = this.state.isNeighboursAvatarsVisible;
         const {layout, innerLayout, avatarContainer, avatarOuterFrame, avatarImage, info, name, baseText, depabbText, neighborAvatarContainer, neighborAvatarImage } = styles;
@@ -84,8 +86,8 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
                             <Avatar photo={photo} style={avatarOuterFrame} />
                         </View>
                         <View style={info}>
-                            <StyledText style={name}>{employee.name}</StyledText>
-                            <StyledText style={baseText}>{employee.position}</StyledText>
+                            <StyledText style={name}>{eName}</StyledText>
+                            <StyledText style={baseText}>{ePosition}</StyledText>
                             <StyledText style={depabbText}>{this.props.departmentAbbreviation}</StyledText>
                         </View>
                     </View>

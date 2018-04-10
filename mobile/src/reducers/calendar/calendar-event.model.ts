@@ -80,4 +80,8 @@ export class CalendarEvent {
     public get isVacation(): boolean {
         return this.type === CalendarEventType.Vacation;
     }
+
+    public get isWorkout(): boolean {
+        return this.type === CalendarEventType.Workout;
+    }
 }

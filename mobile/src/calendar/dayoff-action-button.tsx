@@ -19,14 +19,21 @@ interface DayoffActionButtonOwnProps {
 
 type DayoffActionButtonProps = DayoffActionButtonOwnProps & DayoffActionButtonMapToStateProps;
 
-export class DayoffActionButtonImpl extends Component<DayoffActionButtonProps> {
+interface DayoffCase {
+    disableCalendatButton: boolean;
+    action: () => void;
+}
+
+export class DayoffActionButton extends Component<DayoffActionButtonProps> {
     public render() {
+        const disableCalendarAction = this.disableCalendarAction();
+
         return (
             <CalendarActionButton
                 title={this.title}
                 borderColor={CalendarEventsColor.dayoff}
                 onPress={this.onDayoffAction}
-                disabled={this.props.disabled} />
+                disabled={this.props.disabled || disableCalendarAction} />
         );
     }
 
@@ -37,18 +44,31 @@ export class DayoffActionButtonImpl extends Component<DayoffActionButtonProps> {
     }
 
     public onDayoffAction = () => {
-        if (!this.props.interval) {
-            this.props.process();
+        const dayoffCase = this.dayoffCases();
+
+        if (!dayoffCase) {
+            return;
         }
+
+        dayoffCase.action();
+    }
+
+    private disableCalendarAction() {
+        const dayoffCase = this.dayoffCases();
+        return !dayoffCase || dayoffCase.disableCalendatButton;
+    }
+
+    private dayoffCases(): DayoffCase | null {
+        const { interval, process, edit } = this.props;
+
+        if (!interval) {
+            return { disableCalendatButton: false, action: process };
+        }
+
+        if (interval && !interval.calendarEvent.isApproved) {
+            return { disableCalendatButton: false, action: edit };
+        }
+
+        return null;
     }
 }
-
-const mapStateToProps = (state: AppState, ownProps: DayoffActionButtonOwnProps): DayoffActionButtonProps => ({
-    hoursCredit: state.calendar.daysCounters.hoursCredit,
-    interval: ownProps.interval,
-    disabled: ownProps.disabled,
-    process: ownProps.process,
-    edit: ownProps.edit
-});
-
-export const DayoffActionButton = connect(mapStateToProps)(DayoffActionButtonImpl);

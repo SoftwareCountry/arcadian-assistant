@@ -13,6 +13,7 @@ import { ChangeVacationStartDateEventDialog } from './change-vacation-start-date
 import { ChangeVacationEndDateEventDialog } from './change-vacation-end-date-event-dialog';
 import { ProcessDayoffEventDialog } from './process-dayoff-event-dialog';
 import { ConfirmDayoffEventDialog } from './confirm-dayoff-event-dialog';
+import { EditDayoffEventDialog } from './edit-dayoff-event-dialog';
 import { CancelSickLeaveEventDialog } from './cancel-sickleave-event-dialog';
 
 interface EventDialogProps {
@@ -56,6 +57,9 @@ export class EventDialog extends Component<EventDialogProps> {
                 return <ProcessDayoffEventDialog />;
             case EventDialogType.ConfirmDayoffStartDate:
                 return <ConfirmDayoffEventDialog />;
+            case EventDialogType.EditDayoff:
+                return <EditDayoffEventDialog />;
+
             default:
                 throw new Error(`There isn't event dialog implementation for ${this.props.dialogType}`);
         }
