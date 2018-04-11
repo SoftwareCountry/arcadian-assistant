@@ -80,8 +80,15 @@
                     .Select(this.mapDepartment)
                     .ToListAsync();
 
-                var head = allDepartments.FirstOrDefault(x => x.IsHeadDepartment);                
-                var filteredDepartments = GetDescendants(allDepartments, head, new HashSet<string>());
+                var head = allDepartments.FirstOrDefault(x => x.IsHeadDepartment);
+
+                var filteredDepartments = new List<DepartmentInfo>();
+
+                if (head != null)
+                {
+                    filteredDepartments.Add(head);
+                    filteredDepartments.AddRange(GetDescendants(allDepartments, head, new HashSet<string>()));
+                }
 
                 return new LoadAllDepartments.Response(filteredDepartments);
             }
