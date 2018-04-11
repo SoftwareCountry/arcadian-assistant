@@ -12,8 +12,6 @@ import { Employee } from './employee.model';
 import { Observable } from 'rxjs/Observable';
 import { loadFailedError } from '../errors/errors.action';
 
-const debounceTimeMilliseconds = 10000;
-
 export const loadEmployeeEpic$ = (action$: ActionsObservable<LoadEmployee>, state: AppState, deps: DependenciesContainer ) =>
     action$.ofType('LOAD_EMPLOYEE')
         .groupBy(x => x.employeeId)
@@ -39,7 +37,7 @@ export const loadEmployeesForDepartmentEpic$ = (action$: ActionsObservable<LoadE
     action$.ofType('LOAD_EMPLOYEES_FOR_DEPARTMENT')
         .groupBy(x => x.departmentId)
         .map(x =>
-            x.debounceTime(debounceTimeMilliseconds).switchMap(y => 
+            x.switchMap(y => 
                 deps.apiClient.getJSON(`/employees?departmentId=${x.key}`).map(obj => deserializeArray(obj as any, Employee))))
         .mergeAll()
         .flatMap(x => x.map(loadEmployeeFinished))
