@@ -39,7 +39,7 @@
             switch (message)
             {
                 case RefreshDepartmentInfo newInfo when newInfo.Department.DepartmentId == this.departmentInfo.DepartmentId:
-                    this.StartRefreshing(newInfo.Department);
+                    this.StartRefreshing(newInfo.Department, this.Sender);
 
                     break;
 
@@ -53,7 +53,7 @@
             }
         }
 
-        private void StartRefreshing(DepartmentInfo newDepartmentInfo)
+        private void StartRefreshing(DepartmentInfo newDepartmentInfo, IActorRef requestor)
         {
             this.departmentInfo = newDepartmentInfo;
 
@@ -64,18 +64,24 @@
                 //this.employees.Tell(new EmployeesActor.FindEmployee(newInfo.Department.ChiefId));
             }
 
-            this.RefreshHead();
+            this.RefreshHead(requestor);
         }
 
-        private void RefreshHead()
+        private void RefreshHead(IActorRef requestor)
         {
+            var requestors = new List<IActorRef>() { requestor };
+
             void RefreshingHead(object message)
             {
                 switch (message)
                 {
                     case EmployeesQuery.Response queryResult:
                         this.head = queryResult.Employees.FirstOrDefault();
-                        this.RefreshEmployees();
+                        this.RefreshEmployees(requestors);
+                        break;
+
+                    case RefreshDepartmentInfo newInfo when newInfo.Department.DepartmentId == this.departmentInfo.DepartmentId:
+                        requestors.Add(this.Sender);
                         break;
 
                     default:
@@ -88,7 +94,7 @@
             this.Become(RefreshingHead);
         }
 
-        private void RefreshEmployees()
+        private void RefreshEmployees(List<IActorRef> requestors)
         {
             void RefreshingEmployees(object message)
             {
@@ -98,8 +104,11 @@
                         this.employees.Clear();
                         this.employees.AddRange(queryResult.Employees);
 
-                        this.Stash.UnstashAll();
-                        this.Become(this.OnReceive);
+                        this.Become(this.RefreshFinished(requestors));
+                        break;
+
+                    case RefreshDepartmentInfo newInfo when newInfo.Department.DepartmentId == this.departmentInfo.DepartmentId:
+                        requestors.Add(this.Sender);
                         break;
 
                     default:

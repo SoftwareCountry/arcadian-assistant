@@ -41,6 +41,10 @@
                     Context.ActorOf(Props.Create(() => new DepartmentsSearch(query, this.departmentActorsById, this.Sender)));
                     break;
 
+                case DepartmentActor.RefreshDepartmentInfo.Finished _:
+                    //ignore for now
+                    break;
+
                 default:
                     this.Unhandled(message);
                     break;
@@ -55,6 +59,13 @@
 
         private void RefreshingDepartments(object message, List<IActorRef> actorsToRespondAboutRefreshing)
         {
+            void OnRefreshFinish(object onFinishMessage)
+            {
+                actorsToRespondAboutRefreshing.ForEach(x => x.Tell(onFinishMessage));
+                this.Stash.UnstashAll();
+                this.UnbecomeStacked();
+            }
+
             switch (message)
             {
                 case RefreshDepartments _:
@@ -66,7 +77,7 @@
                     this.RecreateDepartments(departments.Departments);
                     OnRefreshFinish(RefreshDepartments.Finished.Instance);
                     break;
-
+                
                 case Status.Failure e:
                     OnRefreshFinish(e);
                     break;
@@ -74,13 +85,6 @@
                 default:
                     this.Stash.Stash();
                     break;
-            }
-
-            void OnRefreshFinish(object onFinishMessage)
-            {
-                actorsToRespondAboutRefreshing.ForEach(x => x.Tell(onFinishMessage));
-                this.Stash.UnstashAll();
-                this.UnbecomeStacked();
             }
         }
 
