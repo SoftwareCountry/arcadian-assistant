@@ -7,6 +7,8 @@
     {
         public string DepartmentId { get; private set; }
 
+        public string AscendantDepartmentId { get; private set; }
+
         public string EmployeeId { get; private set; }
 
         public string RoomNumber { get; private set; }
@@ -22,6 +24,13 @@
         public static EmployeesQuery Create()
         {
             return new EmployeesQuery();
+        }
+
+        public EmployeesQuery SubordinateForDepartment(string departmentId)
+        {
+            var obj = this.Clone();
+            obj.AscendantDepartmentId = departmentId;
+            return obj;
         }
 
         public EmployeesQuery ForDepartment(string departmentId)
@@ -77,6 +86,7 @@
         {
             var newObj = new EmployeesQuery();
             newObj.DepartmentId = this.DepartmentId;
+            newObj.AscendantDepartmentId = this.AscendantDepartmentId;
             newObj.EmployeeId = this.EmployeeId;
             newObj.RoomNumber = this.RoomNumber;
             newObj.BirthDate = this.BirthDate;

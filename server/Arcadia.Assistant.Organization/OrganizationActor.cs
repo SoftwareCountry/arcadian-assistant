@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.Linq;
 
     using Akka.Actor;
@@ -13,20 +12,18 @@
 
     public class OrganizationActor : UntypedActor, ILogReceive, IWithUnboundedStash
     {
-        private readonly IActorRef departmentsStorage;
-
-        private readonly IActorRef employees;
+        private readonly IActorRef employeesActor;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
-        private (string departmentId, IActorRef actor) headDepartment;
+        private readonly IActorRef departmentsActor;
 
         public IStash Stash { get; set; }
 
         public OrganizationActor()
         {
-            this.departmentsStorage = Context.ActorOf(DepartmentsStorage.GetProps, "departments-storage");
-            this.employees = Context.ActorOf(EmployeesActor.GetProps(), "employees");
+            this.employeesActor = Context.ActorOf(EmployeesActor.GetProps(), "employees");
+            this.departmentsActor = Context.ActorOf(DepartmentsActor.GetProps(this.employeesActor), "departments");
 
             //TODO: make interval configurable
             Context.System.Scheduler.ScheduleTellRepeatedly(
@@ -42,18 +39,17 @@
             switch (message)
             {
                 case RefreshOrganizationInformation _:
-                    this.departmentsStorage.Tell(DepartmentsStorage.LoadHeadDepartment.Instance);
-                    this.Become(this.RefreshingDepartments);
+                    this.employeesActor.Tell(EmployeesActor.RefreshEmployees.Instance);
+                    this.Become(this.RefreshingEmployees);
+
                     break;
 
                 case DepartmentsQuery query:
-                    var requesters = new[] { this.Sender };
-                    //TODO: null reference exception possible
-                    Context.ActorOf(Props.Create(() => new DepartmentsSearch(this.headDepartment.actor, requesters, query)));
+                    this.departmentsActor.Forward(query);
                     break;
 
                 case EmployeesQuery query:
-                    this.employees.Forward(query);
+                    this.employeesActor.Forward(query);
                     break;
 
                 default:
@@ -74,7 +70,13 @@
             {
                 case EmployeesActor.RefreshEmployees.Finished _:
                     this.logger.Info("Employees info is refreshed");
-                    this.Become(this.DefaultState());
+                    //this.departmentsStorage.Tell(DepartmentsStorage.LoadAllDepartments.Instance);
+
+                    this.departmentsActor.Tell(DepartmentsActor.RefreshDepartments.Instance);
+
+                    //this.departmentsStorage.Tell(DepartmentsStorage.LoadHeadDepartment.Instance);
+                    this.Become(this.RefreshingDepartments);
+
                     break;
 
                 case Status.Failure error:
@@ -95,15 +97,10 @@
         {
             switch (message)
             {
-                case DepartmentsStorage.LoadHeadDepartment.Response response:
-                    this.RecreateHeadDepartment(response.Department);
-                    this.headDepartment.actor.Tell(new DepartmentActor.RefreshDepartmentInfo(response.Department));
-                    break;
+                case DepartmentsActor.RefreshDepartments.Finished _:
+                    this.logger.Info("Organization structure is loaded");
+                    this.Become(this.DefaultState());
 
-                case DepartmentActor.RefreshDepartmentInfo.Finished _:
-                    this.logger.Info("Organization structure is loaded, loading employees");
-                    this.employees.Tell(EmployeesActor.RefreshEmployees.Instance);
-                    this.Become(this.RefreshingEmployees);
                     break;
 
                 case Status.Failure error:
@@ -117,24 +114,6 @@
                 default:
                     this.Stash.Stash();
                     break;
-            }
-        }
-
-        private void RecreateHeadDepartment(DepartmentInfo department)
-        {
-            if ((this.headDepartment.actor != null) && (this.headDepartment.departmentId != department.DepartmentId))
-            {
-                this.logger.Info($"Head department changed. Recreating the hierarchy...");
-
-                this.headDepartment.actor.Tell(PoisonPill.Instance);
-                this.headDepartment.actor = null;
-            }
-
-            if ((this.headDepartment.actor == null))
-            {
-                var props = DepartmentActor.GetProps(department, this.departmentsStorage, this.employees);
-                var departmentActor = Context.ActorOf(props, Uri.EscapeDataString(department.DepartmentId));
-                this.headDepartment = (department.DepartmentId, departmentActor);
             }
         }
 

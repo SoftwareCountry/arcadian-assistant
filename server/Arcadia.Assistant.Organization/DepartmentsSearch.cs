@@ -4,40 +4,26 @@
 
     using Akka.Actor;
 
-    using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
-    /// <summary>
-    /// Makes a search across root and all child departments, 
-    /// then sends <c>OrganizationRequests.RequestDepartments.Response</c> message to all <c>requesters</c>, 
-    /// then kills itself.
-    /// </summary>
-    public class DepartmentsSearch : UntypedActor
+    public class DepartmentsSearch : UntypedActor, ILogReceive
     {
-        private readonly DepartmentsQuery query;
+        private readonly DepartmentsQuery departmentsQuery;
 
-        private readonly HashSet<IActorRef> requesters;
+        private readonly IReadOnlyDictionary<string, IActorRef> departments;
 
-        private readonly HashSet<IActorRef> actorsToReply = new HashSet<IActorRef>();
+        private readonly IActorRef requestor;
 
-        private readonly HashSet<DepartmentsQuery.DepartmentFinding> findings = new HashSet<DepartmentsQuery.DepartmentFinding>();
+        private readonly HashSet<IActorRef> actorsToRespond = new HashSet<IActorRef>();
 
-        public DepartmentsSearch(IActorRef searchRootDepartment, IEnumerable<IActorRef> requesters, DepartmentsQuery query)
+        private readonly List<DepartmentsQuery.DepartmentFinding> departmentFindings = new List<DepartmentsQuery.DepartmentFinding>();
+
+        public DepartmentsSearch(DepartmentsQuery departmentsQuery, IReadOnlyDictionary<string, IActorRef> departments, IActorRef requestor)
         {
-            this.query = query;
-
-            this.requesters = new HashSet<IActorRef>(requesters);
-
-            if ((this.requesters.Count == 0) || (searchRootDepartment == null))
-            {
-                this.Become(this.SearchCompleted);
-                this.Self.Tell(SearchFinished.Instance);
-            }
-            else
-            {
-                this.actorsToReply.Add(searchRootDepartment);
-                this.Self.Tell(StartSearch.Instance);
-            }
+            this.departmentsQuery = departmentsQuery;
+            this.departments = departments;
+            this.requestor = requestor;
+            this.Self.Tell(new StartSearch());
         }
 
         protected override void OnReceive(object message)
@@ -45,43 +31,16 @@
             switch (message)
             {
                 case StartSearch _:
-                    foreach (var actorRef in this.actorsToReply)
-                    {
-                        actorRef.Tell(DepartmentActor.GetDepartmentInfo.Instance);
-                    }
-
-                    this.Become(this.GatheringDepartments);
+                    var prefilteredDepartments = this.PrefilterDepartments();
+                    this.RequestDepartmentsInfo(prefilteredDepartments);
                     break;
 
-                default:
-                    this.Unhandled(message);
-                    break;
-            }
-        }
+                case DepartmentActor.GetDepartmentInfo.Result info:
+                    this.actorsToRespond.Remove(info.DepartmentActor);
 
-        private void GatheringDepartments(object message)
-        {
-            switch (message)
-            {
-                case DepartmentActor.GetDepartmentInfo.Result result:
+                    this.departmentFindings.Add(new DepartmentsQuery.DepartmentFinding(info.Department, info.DepartmentActor));
 
-
-                    this.findings.Add(new DepartmentsQuery.DepartmentFinding(result.Department, result.DepartmentActor));
-
-                    foreach (var actor in result.Children)
-                    {
-                        this.actorsToReply.Add(actor);
-                        actor.Tell(DepartmentActor.GetDepartmentInfo.Instance);
-                    }
-
-                    this.actorsToReply.Remove(this.Sender);
-
-                    if (this.actorsToReply.Count == 0)
-                    {
-                        this.FilterFindings();
-                        this.Self.Tell(SearchFinished.Instance);
-                        this.Become(this.SearchCompleted);
-                    }
+                    this.CheckIfSearchFinished();
 
                     break;
 
@@ -91,44 +50,72 @@
             }
         }
 
-        private void FilterFindings()
+        private void RequestDepartmentsInfo(IEnumerable<IActorRef> prefilteredDepartments)
         {
-            if (!this.query.ShouldLoadAllDepartments)
+            this.actorsToRespond.UnionWith(prefilteredDepartments);
+
+            foreach (var actorRef in this.actorsToRespond)
             {
-                this.findings.RemoveWhere(x => x.Department.DepartmentId != this.query.DepartmentId);
+                actorRef.Tell(DepartmentActor.GetDepartmentInfo.Instance);
+            }
+
+            this.CheckIfSearchFinished();
+        }
+
+        private void CheckIfSearchFinished()
+        {
+            if (this.actorsToRespond.Count == 0)
+            {
+                var filteredDepartments = this.PostfilterDepartments();
+                this.FinishSearch(filteredDepartments);
             }
         }
 
-        private void SearchCompleted(object message)
+        private IReadOnlyCollection<DepartmentsQuery.DepartmentFinding> PostfilterDepartments()
         {
-            switch (message)
-            {
-                case SearchFinished _:
-                    //reply back to requester
-
-                    foreach (var requester in this.requesters)
-                    {
-                        requester.Tell(new DepartmentsQuery.Response(this.findings));
-                    }
-
-                    Context.Stop(this.Self);
-
-                    break;
-
-                default:
-                    this.Unhandled(message);
-                    break;
-            }
+            return this.departmentFindings;
         }
+
+        private HashSet<IActorRef> PrefilterDepartments()
+        {
+            //first, id-based filter
+            var prefilteredDepartments = new HashSet<IActorRef>(this.departments.Values);
+
+            if (this.departmentsQuery.DepartmentId != null)
+            {
+                if (this.departments.TryGetValue(this.departmentsQuery.DepartmentId, out var department))
+                {
+                    prefilteredDepartments.IntersectWith(new [] { department });
+                }
+                else
+                {
+                    prefilteredDepartments.Clear();
+                }
+            }
+
+            return prefilteredDepartments;
+        }
+
+        private void FinishSearch(IReadOnlyCollection<DepartmentsQuery.DepartmentFinding> findings)
+        {
+            this.requestor.Tell(new DepartmentsQuery.Response(findings));
+            Context.Stop(this.Self);
+        }
+
+        /*
+        private void GetDescendants(string departmentId)
+        {
+            var children = this.departments
+                .Where(x => x.Department.ParentDepartmentId == node)
+                .ToList();
+
+            children.AddRange(children.SelectMany(child => GetDescendants(child.Department.DepartmentId, allDepartmentFindings)));
+
+            return children;
+        }*/
 
         private class StartSearch
         {
-            public static readonly StartSearch Instance = new StartSearch();
-        }
-
-        private class SearchFinished
-        {
-            public static readonly SearchFinished Instance = new SearchFinished();
         }
     }
 }

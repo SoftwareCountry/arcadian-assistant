@@ -11,6 +11,13 @@
 
         public string DepartmentId { get; private set; }
 
+        public string AscendantDepartmentId { get; private set; }
+
+        public static DepartmentsQuery Create()
+        {
+            return new DepartmentsQuery();
+        }
+
         public DepartmentsQuery WithId(string departmentId)
         {
             var newObject = this.CloneTypewise();
@@ -18,10 +25,18 @@
             return newObject;
         }
 
+        public DepartmentsQuery DescendantOf(string departmentId)
+        {
+            var newObject = this.CloneTypewise();
+            newObject.AscendantDepartmentId = departmentId;
+            return newObject;
+        }
+
         private DepartmentsQuery CloneTypewise()
         {
             var copy = new DepartmentsQuery();
             copy.DepartmentId = this.DepartmentId;
+            copy.AscendantDepartmentId = this.AscendantDepartmentId;
             return copy;
         }
 
