@@ -35,7 +35,7 @@ export class CalendarEvents {
                     calendarEvent: calendarEvent,
                     boundary: true
                 });
-
+                intervalsModel.intervalsMetadata.addCalendarEvent(calendarEvent);
                 continue;
             }
 
@@ -71,6 +71,8 @@ export class CalendarEvents {
             calendarEvent: calendarEvent,
             boundary: true
         });
+
+        intervalsModel.intervalsMetadata.addCalendarEvent(calendarEvent);
     }
 
     private getBoundaryType(calendarEvent: CalendarEvent): IntervalType | null {

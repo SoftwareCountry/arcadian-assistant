@@ -3,7 +3,7 @@ import { WeekModel, IntervalsModel, IntervalModel, IntervalType } from '../calen
 import { CalendarEvent, CalendarEventType, DatesInterval } from '../calendar-event.model';
 import { CalendarEvents } from '../calendar-events.model';
 
-describe('CalendarIntervalsBuilder', () => {
+describe('CalendarEvents', () => {
     it('should build interval boundary if startDate and endDate is the same', () => {
         const event = new CalendarEvent();
 
@@ -216,6 +216,45 @@ describe('CalendarIntervalsBuilder', () => {
         expect(intervals[2].calendarEvent.type).toBe(CalendarEventType.Vacation);
         expect(intervals[2].calendarEvent.dates.startDate).toBe(event3.dates.startDate);
         expect(intervals[2].calendarEvent.dates.endDate).toBe(event3.dates.endDate);
+    });
+
+    it('should fill metadata', () => {
+        const date1 = moment({ day: 1, month: 0, year: 2018 });
+
+        const event1 = new CalendarEvent();
+        event1.calendarEventId = '1';
+        event1.type = CalendarEventType.Vacation;
+        event1.dates = new DatesInterval();
+        event1.dates.startDate = moment(date1);
+        event1.dates.endDate = moment(date1);
+        event1.dates.endDate.add(2, 'days');
+
+        const date2 = moment({ day: 2, month: 0, year: 2018 });
+
+        const event2 = new CalendarEvent();
+        event2.calendarEventId = '2';
+        event2.type = CalendarEventType.Sickleave;
+        event2.dates = new DatesInterval();
+        event2.dates.startDate = moment(date2);
+        event2.dates.endDate = moment(date2);
+        event2.dates.endDate.add(2, 'days');
+
+        const date3 = moment({ day: 2, month: 0, year: 2018 });
+
+        const event3 = new CalendarEvent();
+        event3.calendarEventId = '3';
+        event3.type = CalendarEventType.Sickleave;
+        event3.dates = new DatesInterval();
+        event3.dates.startDate = moment(date3);
+        event3.dates.endDate = moment(date3);
+
+        const calendarEvents = new CalendarEvents([event1, event2, event3]);
+        const intervalsModel = calendarEvents.buildIntervalsModel();
+
+        expect(intervalsModel.metadata.calendarEvents.length).toBe(3);
+        expect(intervalsModel.metadata.calendarEvents.find(x => x === event1)).toBe(event1);
+        expect(intervalsModel.metadata.calendarEvents.find(x => x === event2)).toBe(event2);
+        expect(intervalsModel.metadata.calendarEvents.find(x => x === event3)).toBe(event3);
     });
 
     describe('dayoff', () => {
