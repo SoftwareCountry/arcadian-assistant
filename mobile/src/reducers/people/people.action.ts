@@ -1,14 +1,9 @@
-import { User } from '../user/user.model';
-import { Employee } from '../organization/employee.model';
-import { EmployeeMap } from '../organization/employees.reducer';
-import { DepartmentsTreeNode } from '../../people/departments/departments-tree-node';
-
-export interface UpdateDepartmentIdsTree {
-    type: 'UPDATE-DEPARTMENT-IDS-TREE';
+export interface UpdateDepartmentsBranch {
+    type: 'UPDATE-DEPARTMENTS-BRANCH';
     index: number;
-    departmentId: DepartmentsTreeNode;
+    departmentId: string;
 }
 
-export const updateDepartmentIdsTree = (index: number, departmentId: DepartmentsTreeNode): UpdateDepartmentIdsTree => ({ type: 'UPDATE-DEPARTMENT-IDS-TREE', index, departmentId });
+export const updateDepartmentsBranch = (index: number, departmentId: string): UpdateDepartmentsBranch => ({ type: 'UPDATE-DEPARTMENTS-BRANCH', index, departmentId });
 
-export type PeopleActions = UpdateDepartmentIdsTree;
+export type PeopleActions = UpdateDepartmentsBranch;
