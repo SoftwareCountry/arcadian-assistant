@@ -1,18 +1,24 @@
 ﻿namespace Arcadia.Assistant.Calendar.Abstractions
 {
-    using System;
-    using System.Linq;
+    using System.Collections.Generic;
 
-    public static class CalendarEventStatuses
+    public class CalendarEventStatuses
     {
-        public const string Requested = "Requested";
+        private static readonly IReadOnlyDictionary<string, string[]> StatusesByType = new Dictionary<string, string[]>()
+            {
+                { CalendarEventTypes.Dayoff, WorkHoursChangeStatuses.All },
+                { CalendarEventTypes.Workout, WorkHoursChangeStatuses.All },
+                { CalendarEventTypes.Sickleave, SickLeaveStatuses.All },
+                { CalendarEventTypes.Vacation, SickLeaveStatuses.All }
+            };
 
-        public const string Approved = "Approved";
-
-        public const string Cancelled = "Cancelled";
-
-        public static readonly string[] All = { Requested, Approved, Cancelled };
-
-        public static bool IsKnownStatus(string x) => All.Contains(x, StringComparer.InvariantCultureIgnoreCase);
+        public string[] AllForType(string type)
+        {
+            if (StatusesByType.TryGetValue(type, out var statuses))
+            {
+                return statuses;
+            }
+            return new string[0];
+        }
     }
 }

@@ -42,6 +42,14 @@
                 case SickLeaveIsProlonged ev:
                     this.OnSickLeaveProlonged(ev);
                     break;
+
+                case SickLeaveIsRejected ev:
+                    this.OnSickLeaveRejected(ev);
+                    break;
+
+                case SickLeaveIsApproved ev:
+                    this.OnSickleaveApproved(ev);
+                    break;
             }
         }
 
@@ -100,6 +108,22 @@
                             TimeStamp = DateTimeOffset.Now
                         }, this.OnSickLeaveCompleted);
                         break;
+
+                    case SickLeaveStatuses.Approved:
+                        this.Persist(new SickLeaveIsApproved()
+                            {
+                                EventId = newEvent.EventId,
+                                TimeStamp = DateTimeOffset.Now
+                            }, this.OnSickleaveApproved);
+                        break;
+
+                    case SickLeaveStatuses.Rejected:
+                        this.Persist(new SickLeaveIsRejected()
+                            {
+                                EventId = newEvent.EventId,
+                                TimeStamp = DateTimeOffset.Now
+                            }, this.OnSickLeaveRejected);
+                        break;
                 }
             }
 
@@ -143,6 +167,22 @@
         }
 
         private void OnSickLeaveCancelled(SickLeaveIsCancelled message)
+        {
+            if (this.EventsById.ContainsKey(message.EventId))
+            {
+                this.EventsById.Remove(message.EventId);
+            }
+        }
+
+        private void OnSickleaveApproved(SickLeaveIsApproved message)
+        {
+            if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
+            {
+                this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, SickLeaveStatuses.Approved);
+            }
+        }
+
+        private void OnSickLeaveRejected(SickLeaveIsRejected message)
         {
             if (this.EventsById.ContainsKey(message.EventId))
             {
