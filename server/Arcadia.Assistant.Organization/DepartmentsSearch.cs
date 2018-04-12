@@ -1,6 +1,7 @@
 ﻿namespace Arcadia.Assistant.Organization
 {
     using System.Collections.Generic;
+    using System.Linq;
 
     using Akka.Actor;
 
@@ -66,14 +67,26 @@
         {
             if (this.actorsToRespond.Count == 0)
             {
-                var filteredDepartments = this.PostfilterDepartments();
+                var filteredDepartments = this.PostfilterDepartments().ToList();
                 this.FinishSearch(filteredDepartments);
             }
         }
 
-        private IReadOnlyCollection<DepartmentsQuery.DepartmentFinding> PostfilterDepartments()
+        private IEnumerable<DepartmentsQuery.DepartmentFinding> PostfilterDepartments()
         {
-            return this.departmentFindings;
+            IEnumerable<DepartmentsQuery.DepartmentFinding> result = this.departmentFindings;
+
+            if (this.departmentsQuery.AscendantDepartmentId != null)
+            {
+                result = GetDescendants(this.departmentsQuery.AscendantDepartmentId, result);
+            }
+
+            if (this.departmentsQuery.DepartmentId != null)
+            {
+                result = result.Where(x => x.Department.DepartmentId == this.departmentsQuery.DepartmentId);
+            }
+
+            return result;
         }
 
         private HashSet<IActorRef> PrefilterDepartments()
@@ -81,7 +94,10 @@
             //first, id-based filter
             var prefilteredDepartments = new HashSet<IActorRef>(this.departments.Values);
 
-            if (this.departmentsQuery.DepartmentId != null)
+            //the second condition needed because in case of ascendant being specified,
+            //final result depends on the whole department branch
+            if ((this.departmentsQuery.DepartmentId != null) 
+                && (this.departmentsQuery.AscendantDepartmentId == null)) 
             {
                 if (this.departments.TryGetValue(this.departmentsQuery.DepartmentId, out var department))
                 {
@@ -102,17 +118,18 @@
             Context.Stop(this.Self);
         }
 
-        /*
-        private void GetDescendants(string departmentId)
+        private static List<DepartmentsQuery.DepartmentFinding> GetDescendants(
+            string departmentId,
+            IEnumerable<DepartmentsQuery.DepartmentFinding> allDepartments)
         {
-            var children = this.departments
-                .Where(x => x.Department.ParentDepartmentId == node)
+            var children = allDepartments
+                .Where(x => x.Department.ParentDepartmentId == departmentId)
                 .ToList();
 
-            children.AddRange(children.SelectMany(child => GetDescendants(child.Department.DepartmentId, allDepartmentFindings)));
+            children.AddRange(children.SelectMany(child => GetDescendants(child.Department.DepartmentId, allDepartments)));
 
             return children;
-        }*/
+        }
 
         private class StartSearch
         {
