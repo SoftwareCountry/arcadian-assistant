@@ -1,6 +1,7 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -45,6 +46,7 @@
         public async Task<IActionResult> GetAllMessages([FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, CancellationToken token)
         {
             var timeout = this.timeoutSettings.Timeout;
+            var today = DateTime.Today;
 
             var employee = await this.userEmployeeSearch.FindOrDefault(this.User, token);
             if (employee == null)
@@ -59,10 +61,12 @@
             var responsesTasks = feeds
                 .Feeds
                 .Values
-                .Select(x => x.Ask<GetMessages.Response>(new GetMessages(fromDate, toDate), timeout, token));
+                .Select(x => x.Ask<GetMessages.Response>(new GetMessages(fromDate ?? today, toDate ?? today), timeout, token));
 
             var respones = await Task.WhenAll(responsesTasks);
-            var messages = respones.SelectMany(x => x.Messages).OrderByDescending(x => x.DatePosted);
+            var messages = respones.SelectMany(x => x.Messages)
+                .Distinct(Message.MessageIdComparer)
+                .OrderByDescending(x => x.DatePosted);
 
             return this.Ok(messages);
         }

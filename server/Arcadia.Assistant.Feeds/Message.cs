@@ -1,6 +1,7 @@
 ﻿namespace Arcadia.Assistant.Feeds
 {
     using System;
+    using System.Collections.Generic;
 
     public class Message
     {
@@ -22,5 +23,23 @@
             this.MessageId = messageId;
             this.EmployeeId = employeeId;
         }
+
+        private sealed class MessageIdEqualityComparer : IEqualityComparer<Message>
+        {
+            public bool Equals(Message x, Message y)
+            {
+                if (ReferenceEquals(x, y)) return true;
+                if (ReferenceEquals(x, null)) return false;
+                if (ReferenceEquals(y, null)) return false;
+                return x.MessageId.Equals(y.MessageId);
+            }
+
+            public int GetHashCode(Message obj)
+            {
+                return obj.MessageId.GetHashCode();
+            }
+        }
+
+        public static IEqualityComparer<Message> MessageIdComparer { get; } = new MessageIdEqualityComparer();
     }
 }

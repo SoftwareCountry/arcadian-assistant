@@ -33,7 +33,7 @@
             this.feedsById.Add(BirthdaysFeedId, birthdayFeed);
             this.feedsById.Add(AnniverseriesFeedId, anniverseriesFeed);
 
-            systemFeed.Tell(new PostMessage(new Message(Guid.NewGuid(), "557", "System is up", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus tempor blandit velit in sollicitudin. Nulla. ", DateTime.UtcNow)));
+            systemFeed.Tell(new PostMessage(new Message(Guid.NewGuid(), null, "System is up", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus tempor blandit velit in sollicitudin. Nulla. ", DateTime.UtcNow)));
         }
 
         protected override void OnReceive(object message)
