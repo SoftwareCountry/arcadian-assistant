@@ -13,12 +13,8 @@
         {
             switch (message)
             {
-                case LoadHeadDepartment _:
-                    this.GetHeadDepartment().PipeTo(this.Sender);
-                    break;
-
-                case LoadChildDepartments request:
-                    this.GetChildDepartments(request.DepartmentId).PipeTo(this.Sender);
+                case LoadAllDepartments _:
+                    this.GetAllDepartments().PipeTo(this.Sender);
                     break;
 
                 default:
@@ -27,35 +23,13 @@
             }
         }
 
-        protected abstract Task<LoadHeadDepartment.Response> GetHeadDepartment();
-
-        protected abstract Task<LoadChildDepartments.Response> GetChildDepartments(string departmentId);
+        protected abstract Task<LoadAllDepartments.Response> GetAllDepartments();
 
         public static Props GetProps => Context.DI().Props<DepartmentsStorage>();
 
-        public class LoadHeadDepartment
+        public class LoadAllDepartments
         {
-            public static readonly LoadHeadDepartment Instance = new LoadHeadDepartment();
-
-            public class Response
-            {
-                public DepartmentInfo Department { get; }
-
-                public Response(DepartmentInfo department)
-                {
-                    this.Department = department;
-                }
-            }
-        }
-
-        public class LoadChildDepartments
-        {
-            public string DepartmentId { get; }
-
-            public LoadChildDepartments(string departmentId)
-            {
-                this.DepartmentId = departmentId;
-            }
+            public static LoadAllDepartments Instance = new LoadAllDepartments();
 
             public class Response
             {

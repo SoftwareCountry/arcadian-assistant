@@ -12,7 +12,7 @@
     {
         private readonly HashSet<IActorRef> requesters;
 
-        private readonly HashSet<IActorRef> actorsToReply;
+        private readonly HashSet<IActorRef> employeeActorsToReply;
 
         private readonly List<EmployeeContainer> results = new List<EmployeeContainer>();
 
@@ -24,7 +24,7 @@
 
         public EmployeeSearch(IEnumerable<IActorRef> allEmployees, IEnumerable<IActorRef> requesters, EmployeesQuery query)
         {
-            this.actorsToReply = new HashSet<IActorRef>(allEmployees);
+            this.employeeActorsToReply = new HashSet<IActorRef>(allEmployees);
             this.requesters = new HashSet<IActorRef>(requesters);
             this.query = query;
 
@@ -36,14 +36,23 @@
             switch (message)
             {
                 case StartSearch:
-                    foreach (var actorRef in this.actorsToReply)
+
+                    foreach (var actorRef in this.employeeActorsToReply)
                     {
                         actorRef.Tell(EmployeeActor.GetEmployeeInfo.Instance);
                     }
 
-                    if ((this.requesters.Count == 0) || (this.actorsToReply.Count == 0))
+                    if ((this.requesters.Count == 0) || (this.employeeActorsToReply.Count == 0))
                     {
                         this.Self.Tell(SearchFinished);
+                    }
+                    else
+                    {
+                        if (this.query.AscendantDepartmentId != null)
+                        {
+                            var departmentQuery = new DepartmentsQuery();
+                            //TODO: work in progress
+                        }
                     }
 
                     break;
@@ -55,9 +64,9 @@
                         this.results.Add(response.Employee);
                     }
 
-                    this.actorsToReply.Remove(response.Employee.Actor);
+                    this.employeeActorsToReply.Remove(response.Employee.Actor);
 
-                    if (this.actorsToReply.Count == 0)
+                    if (this.employeeActorsToReply.Count == 0)
                     {
                         this.Self.Tell(SearchFinished);
                     }
