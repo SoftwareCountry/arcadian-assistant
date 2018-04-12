@@ -8,6 +8,10 @@
 
         public const string Completed = "Completed";
 
-        public static readonly string[] All = { Requested, Completed, Cancelled};
+        public const string Approved = "Approved";
+
+        public const string Rejected = "Rejected";
+
+        public static readonly string[] All = { Requested, Completed, Cancelled, Approved, Rejected };
     }
 }
