@@ -33,7 +33,7 @@
             switch (message)
             {
                 case RefreshDepartments _:
-                    this.departmentsStorage.Tell(new DepartmentsStorage.LoadAllDepartments());
+                    this.departmentsStorage.Tell(DepartmentsStorage.LoadAllDepartments.Instance);
                     this.BecomeStacked(this.DepartmentsLoadRequested(this.Sender));
                     break;
 
