@@ -35,7 +35,7 @@
             }
 
             var msg = $"Congratulations with Anniversery! {employee.YearsServedAt(date)} years served!";
-            return new Message(Guid.NewGuid(), employee.EmployeeId, title, msg, date);
+            return new Message($"employee-anniversery-{employee.EmployeeId}-at-{date}", employee.EmployeeId, title, msg, date);
         }
     }
 }

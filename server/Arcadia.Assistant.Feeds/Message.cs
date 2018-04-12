@@ -5,7 +5,7 @@
 
     public class Message
     {
-        public Guid MessageId { get; }
+        public string MessageId { get; }
 
         public string EmployeeId { get; }
 
@@ -15,7 +15,7 @@
 
         public DateTime DatePosted { get; }
 
-        public Message(Guid messageId, string employeeId, string title, string text, DateTime datePosted)
+        public Message(string messageId, string employeeId, string title, string text, DateTime datePosted)
         {
             this.Title = title;
             this.Text = text;

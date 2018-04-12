@@ -7,7 +7,7 @@
     public sealed class MessageIsPostedToFeedEvent
     {
         [DataMember]
-        public Guid MessageId { get; set; }
+        public string MessageId { get; set; }
 
         [DataMember]
         public string EmployeeId { get; set; }

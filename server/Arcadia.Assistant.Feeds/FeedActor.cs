@@ -9,6 +9,8 @@
 
     public class FeedActor : UntypedActor
     {
+        public static Props GetProps () => Props.Create(() => new FeedActor());
+
         private readonly List<Message> messagesList = new List<Message>();
 
         protected override void OnReceive(object cmd)

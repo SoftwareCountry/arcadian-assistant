@@ -34,8 +34,7 @@
             this.photo = Context.ActorOf(Props.Create(() => new PhotoActor()), "photo");
             this.photo.Tell(new PhotoActor.SetSource(storedInformation.Photo));
 
-            var employeeFeedId = $"employee-feed-{this.employeeMetadata.EmployeeId}";
-            this.employeeFeed = Context.ActorOf(PersistentFeedActor.CreateProps(employeeFeedId), "feed");
+            this.employeeFeed = Context.ActorOf(FeedActor.GetProps(), "feed");
 
             var vacationsActor = Context.ActorOf(EmployeeVacationsActor.CreateProps(this.employeeMetadata.EmployeeId), "vacations");
             var sickLeavesActor = Context.ActorOf(EmployeeSickLeaveActor.CreateProps(this.employeeMetadata.EmployeeId), "sick-leaves");
@@ -129,14 +128,16 @@
 
         private void OnEmployeePositionChange(EmployeeChangedPosition ev)
         {
+            var messageId = $"employee-position-change-{ev.EmployeeId}-{ev.TimeStamp}";
             var text = $"{this.employeeMetadata.Name} is now {ev.NewPosition} (previously, {ev.OldPosition})";
-            this.employeeFeed.Tell(new PostMessage(new Message(Guid.NewGuid(), this.employeeMetadata.EmployeeId, "Employee position has changed", text, DateTime.UtcNow)));
+            this.employeeFeed.Tell(new PostMessage(new Message(messageId, this.employeeMetadata.EmployeeId, "Employee position has changed", text, ev.TimeStamp.UtcDateTime)));
         }
 
         private void OnEmployeeNameChange(EmployeeChangedName ev)
         {
+            var messageId = $"employee-name-change-{ev.EmployeeId}-{ev.TimeStamp}";
             var text = $"From now on, {ev.OldName} is to be known as {ev.NewName}";
-            this.employeeFeed.Tell(new PostMessage(new Message(Guid.NewGuid(), this.employeeMetadata.EmployeeId, "Employee name has changed", text, DateTime.UtcNow)));
+            this.employeeFeed.Tell(new PostMessage(new Message(messageId, this.employeeMetadata.EmployeeId, "Employee name has changed", text, ev.TimeStamp.UtcDateTime)));
         }
 
         public class GetEmployeeInfo
