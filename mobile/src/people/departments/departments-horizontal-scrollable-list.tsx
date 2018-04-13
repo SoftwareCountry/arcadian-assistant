@@ -3,8 +3,6 @@ import { Animated, Easing, View, Text, ScrollView, Dimensions, TouchableOpacity,
 import { AppState } from '../../reducers/app.reducer';
 import { EmployeeCardWithAvatar } from '../employee-card-with-avatar';
 import { Employee } from '../../reducers/organization/employee.model';
-import { PeopleActions, updateDepartmentsBranch } from '../../reducers/people/people.action';
-import { loadEmployeesForDepartment } from '../../reducers/organization/organization.action';
 import { EmployeesStore } from '../../reducers/organization/employees.reducer';
 import { Department } from '../../reducers/organization/department.model';
 
@@ -74,9 +72,6 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
         let subordinates;
         
         if (this.props.employees.employeeIdsByDepartment.has(headDepartmentId) && this.props.employees.employeeIdsByDepartment.get(headDepartmentId).size > 0) {
-            // subordinates = this.props.employees.employeeIdsByDepartment.get(headDepartmentId)
-            //                 .filter((employeeId) => employeeId !== headDepartmentChiefId)
-            //                 .map(x => this.props.employees.employeesById.get(x)).toArray();
             subordinates = this.props.employees.employeesById.filter(this.props.employeesPredicate).toArray();
         } else {
             subordinates = null;
@@ -131,14 +126,6 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
 
             if (this.currentPage > this.employeeCards.length) {
                 this.props.requestEmployeesForDepartment(this.props.headDepartmentId);
-                // const stubDN: DepartmentsTreeNode = {
-                //     departmentAbbreviation: null,
-                //     departmentChiefId: this.props.headDepartment.departmentChiefId,
-                //     parent: null,
-                //     children: null,
-                //     departmentId: stubIdForSubordinates
-                // };
-                // this.props.updateDepartmentIdsTree(this.props.treeLevel, stubDN);
             } else {
                 const visibleCard: EmployeeCardWithAvatar = this.employeeCards[this.currentPage - 1];
                 visibleCard.revealNeighboursAvatars(true);
@@ -146,7 +133,7 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                 this.props.updateDepartmentsBranch(this.props.treeLevel, visibleDepartment.departmentId);
                 this.props.requestEmployeesForDepartment(visibleDepartment.departmentId);
                 const childDepartment = this.props.departments.find(department => department.parentDepartmentId === visibleDepartment.departmentId);
-                if (childDepartment !== null) {
+                if (childDepartment !== undefined) {
                     this.props.requestEmployeesForDepartment(childDepartment.departmentId);
                 }
             }
