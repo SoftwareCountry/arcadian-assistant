@@ -36,7 +36,7 @@
                     this.RequestDepartmentsInfo(prefilteredDepartments);
                     break;
 
-                case DepartmentActor.GetDepartmentInfo.Result info:
+                case GetDepartmentInfo.Result info:
                     this.actorsToRespond.Remove(info.DepartmentActor);
 
                     this.departmentFindings.Add(new DepartmentsQuery.DepartmentFinding(info.Department, info.DepartmentActor));
@@ -57,7 +57,7 @@
 
             foreach (var actorRef in this.actorsToRespond)
             {
-                actorRef.Tell(DepartmentActor.GetDepartmentInfo.Instance);
+                actorRef.Tell(GetDepartmentInfo.Instance);
             }
 
             this.CheckIfSearchFinished();

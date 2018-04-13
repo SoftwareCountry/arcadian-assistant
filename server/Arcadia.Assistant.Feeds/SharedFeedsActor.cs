@@ -16,7 +16,7 @@
 
         private const string BirthdaysFeedId = "birthdays-feed";
 
-        private const string AnniverseriesFeedId = "anniverseries-feed";
+        private const string AnniversariesFeedId = "anniversaries-feed";
 
         private readonly Dictionary<string, IActorRef> feedsById = new Dictionary<string, IActorRef>();
 
@@ -26,14 +26,14 @@
             var systemFeed = Context.ActorOf(Props.Create(() => new PersistentFeedActor(SystemFeedId)), SystemFeedId);
 
             var birthdayFeed = Context.ActorOf(EmployeesBirthdaysFeedActor.CreateProps(organization), BirthdaysFeedId);
-            var anniverseriesFeed = Context.ActorOf(EmployeesAnniverseriesFeedActor.CreateProps(organization), AnniverseriesFeedId);
+            var anniversariesFeed = Context.ActorOf(EmployeesAnniversariesFeedActor.CreateProps(organization), AnniversariesFeedId);
 
             this.feedsById.Add(NewsFeedId, newsFeed);
             this.feedsById.Add(SystemFeedId, systemFeed);
             this.feedsById.Add(BirthdaysFeedId, birthdayFeed);
-            this.feedsById.Add(AnniverseriesFeedId, anniverseriesFeed);
+            this.feedsById.Add(AnniversariesFeedId, anniversariesFeed);
 
-            systemFeed.Tell(new PostMessage(new Message(Guid.NewGuid(), "557", "System is up", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus tempor blandit velit in sollicitudin. Nulla. ", DateTime.UtcNow)));
+            systemFeed.Tell(new PostMessage(new Message(Guid.NewGuid().ToString(), null, "System is up", "System has started", DateTime.UtcNow)));
         }
 
         protected override void OnReceive(object message)

@@ -30,8 +30,8 @@
                 case GetMessages msg:
                     var today = DateTime.UtcNow.Date;
 
-                    var toDate = msg.ToDate ?? today;
-                    var fromDate = msg.FromDate ?? DateTime.UtcNow.Date;
+                    var toDate = msg.ToDate;
+                    var fromDate = msg.FromDate;
 
                     if (toDate > today)
                     {
