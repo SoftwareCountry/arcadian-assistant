@@ -26,12 +26,12 @@
             var systemFeed = Context.ActorOf(Props.Create(() => new PersistentFeedActor(SystemFeedId)), SystemFeedId);
 
             var birthdayFeed = Context.ActorOf(EmployeesBirthdaysFeedActor.CreateProps(organization), BirthdaysFeedId);
-            var anniverseriesFeed = Context.ActorOf(EmployeesAnniversariesFeedActor.CreateProps(organization), AnniversariesFeedId);
+            var anniversariesFeed = Context.ActorOf(EmployeesAnniversariesFeedActor.CreateProps(organization), AnniversariesFeedId);
 
             this.feedsById.Add(NewsFeedId, newsFeed);
             this.feedsById.Add(SystemFeedId, systemFeed);
             this.feedsById.Add(BirthdaysFeedId, birthdayFeed);
-            this.feedsById.Add(AnniversariesFeedId, anniverseriesFeed);
+            this.feedsById.Add(AnniversariesFeedId, anniversariesFeed);
 
             systemFeed.Tell(new PostMessage(new Message(Guid.NewGuid().ToString(), null, "System is up", "System has started", DateTime.UtcNow)));
         }
