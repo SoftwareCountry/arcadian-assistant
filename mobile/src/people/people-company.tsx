@@ -18,7 +18,6 @@ import { EmployeesStore } from '../reducers/organization/employees.reducer';
 
 interface PeopleCompanyProps {
     routeName: string;
-    headDepartment: Department;
     departmentsBranch?: Department[];
     employees: EmployeesStore;
     departments?: Department[];
@@ -27,7 +26,6 @@ interface PeopleCompanyProps {
 
 const mapStateToProps = (state: AppState): PeopleCompanyProps => ({
     routeName: 'Company',
-    headDepartment: state.people.headDepartment,
     departmentsBranch: state.people.departmentsBranch.length > 0 ? state.people.departmentsBranch : null,
     employees: state.organization.employees,
     departments: state.people.departments,

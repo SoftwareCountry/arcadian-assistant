@@ -11,20 +11,12 @@ import { PeopleActions } from './people.action';
 import { Department } from '../organization/department.model';
 
 export interface PeopleState {
-    headDepartment: Department;
     departments: Department[];
-    departmentsHeads: Employee[];
-    employees: Employee[];
-    departmentsHeadsIds: string[];
     departmentsBranch: Department[];
 }
 
 const initState: PeopleState = {
-    headDepartment: null,
     departments: [],
-    departmentsHeads: [],
-    employees: [],
-    departmentsHeadsIds: [],
     departmentsBranch: []
 };
 
@@ -35,9 +27,7 @@ function onlyUnique(value: string, index: number, self: string[]) {
 export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions | LoadEmployeeFinished | LoadDepartmentsFinished) => {
     switch (action.type) {
         case 'LOAD-DEPARTMENTS-FINISHED':
-            const headsIds = action.departments.map(department => department.chiefId).filter(onlyUnique);
-            const headDepartment = action.departments.find((department) => department.isHeadDepartment === true);
-            return {...state, departments: action.departments, headDepartment: headDepartment, departmentsHeadsIds: headsIds};        
+            return {...state, departments: action.departments};        
         case 'UPDATE-DEPARTMENTS-BRANCH':
             let deps: Department[] = [];
             let currentDepartment = state.departments.find(department => department.departmentId === action.departmentId);
