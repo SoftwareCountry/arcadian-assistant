@@ -34,7 +34,7 @@ const mapStateToProps = (state: AppState): PeopleCompanyProps => ({
 
 interface PeopleCompanyDispatchProps {
     requestEmployeesForDepartment: (departmentId: string) => void;
-    updateDepartmentsBranch: (index: number, departmentId: string) => void;
+    updateDepartmentsBranch: (departmentId: string) => void;
     onItemClicked: (employee: Employee) => void;
 }
 
@@ -42,8 +42,8 @@ const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
     requestEmployeesForDepartment: (departmentId: string) => { 
         dispatch(loadEmployeesForDepartment(departmentId)); 
     },
-    updateDepartmentsBranch: (index: number, departmentId: string) => { 
-        dispatch(updateDepartmentsBranch(index, departmentId)); 
+    updateDepartmentsBranch: (departmentId: string) => { 
+        dispatch(updateDepartmentsBranch(departmentId)); 
     },
     onItemClicked: (employee: Employee) => {
         dispatch( openEmployeeDetailsAction(employee));

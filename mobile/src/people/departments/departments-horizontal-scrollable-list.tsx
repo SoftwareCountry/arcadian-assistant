@@ -15,13 +15,14 @@ interface DepartmentsHScrollableListProps {
     employees?: EmployeesStore;
     topOffset?: number;
     requestEmployeesForDepartment: (departmentId: string) => void;
-    updateDepartmentsBranch: (index: number, departmentId: string) => void;
+    updateDepartmentsBranch: (departmentId: string) => void;
     onItemClicked: (e: Employee) => void;
     employeesPredicate: (employee: Employee) => boolean;
 }
 
 interface AAScrollViewComponent extends Component {
     scrollTo(y?: number | { x?: number; y?: number; animated?: boolean }, x?: number, animated?: boolean): void;
+    scrollToEnd(): void;
 }
 
 export class DepartmentsHScrollableList extends Component<DepartmentsHScrollableListProps> {
@@ -30,15 +31,15 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
     private animatedValue: Animated.Value;
     private currentPage: number = null;
     private forceComponentRender = false;
+    private manualScrollMode = true;
 
     public componentDidMount() {
         if (this.props.focusOnDepartmentWithId !== null) {
             this.props.requestEmployeesForDepartment(this.props.focusOnDepartmentWithId);
-            if (this.props.focusOnDepartmentWithId !== null) {
-                const focusedDepartment = this.props.departments.find(department => department.departmentId === this.props.focusOnDepartmentWithId);
-                const indexOfFocusedDepartment = this.props.departments.indexOf(focusedDepartment);
-                this.scrollView.scrollTo({x: Dimensions.get('window').width * indexOfFocusedDepartment, y: 0, animated: true});
-            }
+            const focusedDepartment = this.props.departments.find(department => department.departmentId === this.props.focusOnDepartmentWithId);
+            const indexOfFocusedDepartment = this.props.departments.indexOf(focusedDepartment);
+            this.manualScrollMode = false;
+            this.scrollView.scrollTo({ x: Dimensions.get('window').width * indexOfFocusedDepartment, y: 0, animated: true });
         }
     }
 
@@ -130,11 +131,20 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
 
             if (this.currentPage > this.employeeCards.length) {
                 this.props.requestEmployeesForDepartment(this.props.headDepartmentId);
+                if (this.manualScrollMode) {
+                    this.props.updateDepartmentsBranch(this.props.headDepartmentId);
+                } else {
+                    this.manualScrollMode = true;
+                }
             } else {
                 const visibleCard: EmployeeCardWithAvatar = this.employeeCards[this.currentPage - 1];
                 visibleCard.revealNeighboursAvatars(true);
                 const visibleDepartment = this.props.departments[this.currentPage - 1];
-                this.props.updateDepartmentsBranch(this.props.treeLevel, visibleDepartment.departmentId);
+                if (this.manualScrollMode) {
+                    this.props.updateDepartmentsBranch(visibleDepartment.departmentId);
+                } else {
+                    this.manualScrollMode = true;
+                }
                 this.props.requestEmployeesForDepartment(visibleDepartment.departmentId);
                 const childDepartment = this.props.departments.find(department => department.parentDepartmentId === visibleDepartment.departmentId);
                 if (childDepartment !== undefined) {
