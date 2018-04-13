@@ -55,35 +55,8 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
         // Branch for current employee
         let userFocusedDepartmentsBranch: Department[] = [];
 
-        if (this.props.departments && this.props.departments.length > 0) {
-
-            if (this.props.departmentsBranch !== null) {
+        if (this.props.departments && this.props.departments.length > 0 && this.props.departmentsBranch !== null) {
                 userFocusedDepartmentsBranch = userFocusedDepartmentsBranch.concat(this.props.departmentsBranch);
-            } else {
-                // Fill up branch from current employee department to the top one
-                let currentDepartment = this.props.departments.find(department => department.departmentId === this.props.employee.departmentId);
-                // let currentDepartment = this.props.departments.find(department => department.departmentId === '45');
-
-                while (currentDepartment) {
-                    userFocusedDepartmentsBranch.push(currentDepartment);
-                    const parent = this.props.departments.find(department => department.departmentId === currentDepartment.parentDepartmentId) != null ? this.props.departments.find(department => department.departmentId === currentDepartment.parentDepartmentId) : null;
-                    currentDepartment = parent;
-                }
-
-                userFocusedDepartmentsBranch.reverse();
-
-                // Fill up branch from current employee department to the bottom one
-                currentDepartment = this.props.departments.find(department => department.parentDepartmentId === this.props.employee.departmentId);
-                // currentDepartment = this.props.departments.find(department => department.parentDepartmentId === '45');
-
-                while (currentDepartment) {
-                    userFocusedDepartmentsBranch.push(currentDepartment);
-                    const child = this.props.departments.find(department => department.parentDepartmentId === currentDepartment.departmentId) != null ? this.props.departments.find(department => department.parentDepartmentId === currentDepartment.departmentId) : null;
-                    currentDepartment = child;
-                }
-
-                console.log(userFocusedDepartmentsBranch);
-            }
         } else {
             return <View style={styles.loadingContainer}>
                         <StyledText style={styles.loadingText}>Loading...</StyledText>

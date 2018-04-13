@@ -6,49 +6,63 @@ import { ActionsObservable } from 'redux-observable';
 
 import { User } from '../user/user.model';
 import { Employee } from '../organization/employee.model';
-import { OrganizationActions, loadEmployeesForDepartment, loadEmployeesForRoom, LoadDepartmentsFinished, LoadEmployeeFinished } from '../organization/organization.action';
+import { OrganizationActions, loadEmployeesForDepartment, loadEmployeesForRoom, LoadDepartmentsFinished } from '../organization/organization.action';
 import { PeopleActions } from './people.action';
 import { Department } from '../organization/department.model';
+import { LoadUserEmployeeFinished } from '../user/user.action';
 
 export interface PeopleState {
     departments: Department[];
     departmentsBranch: Department[];
+    currentFocusedDepartmentId: string;
 }
 
 const initState: PeopleState = {
     departments: [],
-    departmentsBranch: []
+    departmentsBranch: [],
+    currentFocusedDepartmentId: null
 };
 
 function onlyUnique(value: string, index: number, self: string[]) { 
     return self.indexOf(value) === index;
 }
 
-export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions | LoadEmployeeFinished | LoadDepartmentsFinished) => {
+function departmentsBranchFromDepartmentWithId(departmentId: string, departments: Department[]) {
+    let deps: Department[] = [];
+    let department = departments.find(d => d.departmentId === departmentId);
+
+    while (department) {
+        deps.push(department);
+        const parent = departments.find(d => d.departmentId === department.parentDepartmentId) != null ?
+            departments.find(d => d.departmentId === department.parentDepartmentId) : null;
+        department = parent;
+    }
+
+    deps.reverse();
+
+    department = departments.find(d => d.parentDepartmentId === departmentId);
+
+    while (department) {
+        deps.push(department);
+        const child = departments.find(d => d.parentDepartmentId === department.departmentId) != null ?
+            departments.find(d => d.parentDepartmentId === department.departmentId) : null;
+        department = child;
+    }
+
+    return deps;
+}
+
+export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions | LoadUserEmployeeFinished | LoadDepartmentsFinished) => {
     switch (action.type) {
+        case 'LOAD-USER-EMPLOYEE-FINISHED': {
+            // Init Departments Branch focused on current user's departments
+            return {...state, currentFocusedDepartmentId: action.employee.departmentId, departmentsBranch: departmentsBranchFromDepartmentWithId(action.employee.departmentId, state.departments)};
+        }
         case 'LOAD-DEPARTMENTS-FINISHED':
             return {...state, departments: action.departments};        
-        case 'UPDATE-DEPARTMENTS-BRANCH':
-            let deps: Department[] = [];
-            let currentDepartment = state.departments.find(department => department.departmentId === action.departmentId);
-
-            while (currentDepartment) {
-                deps.push(currentDepartment);
-                const parent = state.departments.find(department => department.departmentId === currentDepartment.parentDepartmentId) != null ? state.departments.find(department => department.departmentId === currentDepartment.parentDepartmentId) : null;
-                currentDepartment = parent;
-            }
-
-            deps.reverse();
-
-            currentDepartment = state.departments.find(department => department.parentDepartmentId === action.departmentId);
-
-            while (currentDepartment) {
-                deps.push(currentDepartment);
-                const child = state.departments.find(department => department.parentDepartmentId === currentDepartment.departmentId) != null ? state.departments.find(department => department.parentDepartmentId === currentDepartment.departmentId) : null;
-                currentDepartment = child;
-            }
-
-            return {...state, departmentsBranch: deps};
+        case 'UPDATE-DEPARTMENTS-BRANCH': {
+            return {...state, departmentsBranch: departmentsBranchFromDepartmentWithId(action.departmentId, state.departments)};
+        }
         default:
             return state;
     }
