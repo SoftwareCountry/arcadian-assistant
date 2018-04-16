@@ -14,6 +14,7 @@ import { ChangeVacationEndDateEventDialog } from './change-vacation-end-date-eve
 import { ProcessDayoffEventDialog } from './process-dayoff-event-dialog';
 import { ConfirmDayoffEventDialog } from './confirm-dayoff-event-dialog';
 import { EditDayoffEventDialog } from './edit-dayoff-event-dialog';
+import { CancelSickLeaveEventDialog } from './cancel-sickleave-event-dialog';
 
 interface EventDialogProps {
     dialogType: EventDialogType;
@@ -38,6 +39,8 @@ export class EventDialog extends Component<EventDialogProps> {
                 return <EditSickLeaveEventDialog />;
             case EventDialogType.ProlongSickLeave:
                 return <ProlongSickLeaveEventDialog />;
+            case EventDialogType.CancelSickLeave:
+                return <CancelSickLeaveEventDialog />;
 
             case EventDialogType.RequestVacation:
                 return <RequestVacationEventDialog />;

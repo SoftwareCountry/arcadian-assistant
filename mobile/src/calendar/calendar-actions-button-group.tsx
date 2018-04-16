@@ -24,6 +24,7 @@ interface ActionButtonsGroupDispatchProps {
     sickLeaveActions: {
         claim: () => void;
         edit: () => void;
+        cancel: () => void;
     };
     vacationActions: {
         request: () => void
@@ -78,6 +79,7 @@ const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>): ActionButtonsG
     sickLeaveActions: {
         claim: () => { dispatch(openEventDialog(EventDialogType.ClaimSickLeave)); },
         edit: () => { dispatch(openEventDialog(EventDialogType.EditSickLeave)); },
+        cancel: () => { dispatch(openEventDialog(EventDialogType.CancelSickLeave)); }
     },
     vacationActions: {
         request: () => { dispatch(openEventDialog(EventDialogType.RequestVacation)); },
