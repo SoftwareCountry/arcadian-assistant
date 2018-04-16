@@ -13,7 +13,6 @@ export class Feed {
     public messageId: string;
 
     @dataMember()
-    @required()
     public employeeId: string;
 
     @dataMember()
