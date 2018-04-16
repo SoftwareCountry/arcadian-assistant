@@ -2,18 +2,25 @@ import { Action } from 'redux';
 import { Feed } from './feed.model';
 import moment, { Moment } from 'moment';
 
-export enum FeedsPullingMode {
-    OldFeeds = 'OldFeeds',
-    NewFeeds = 'NewFeeds',
-}
 export interface LoadFeeds extends Action {
     type: 'LOAD_FEEDS';
-    toDate: Moment;
-    fromDate: Moment;
-    pullingMode: FeedsPullingMode;
 }
 
-export const loadFeeds = (toDate: Moment, fromDate: Moment, pullingMode: FeedsPullingMode): LoadFeeds => ({ type: 'LOAD_FEEDS', toDate, fromDate, pullingMode });
+export const loadFeeds = (): LoadFeeds => ({ type: 'LOAD_FEEDS' });
+
+export interface FetchNewFeeds extends Action {
+    type: 'FETCH_NEW_FEEDS';
+    upBoundaryDate: Moment;
+}
+
+export const fetchNewFeeds = (upBoundaryDate: Moment): FetchNewFeeds => ({ type: 'FETCH_NEW_FEEDS', upBoundaryDate });
+
+export interface FetchOldFeeds extends Action {
+    type: 'FETCH_OLD_FEEDS';
+    downBoundaryDate: Moment;
+}
+
+export const fetchOldFeeds = (downBoundaryDate: Moment): FetchOldFeeds => ({ type: 'FETCH_OLD_FEEDS', downBoundaryDate });
 
 export interface LoadFeedsFinished extends Action {
     type: 'LOAD_FEEDS_FINISHED';
@@ -36,4 +43,4 @@ export const changeBoundaryDates = (toDate: Moment, fromDate: Moment): ChangeBou
 
 
 export type FeedsActions =
-    LoadFeeds | LoadFeedsFinished | ChangeBoundaryDates ;
+    LoadFeeds | LoadFeedsFinished | ChangeBoundaryDates | FetchNewFeeds | FetchOldFeeds;

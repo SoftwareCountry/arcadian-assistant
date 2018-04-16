@@ -13,7 +13,7 @@ import { FeedListItem } from './feed';
 import { screenStyles as styles } from './styles';
 import { StyledText } from '../override/styled-text';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
-import { loadFeeds, FeedsPullingMode } from '../reducers/feeds/feeds.action';
+import { loadFeeds, fetchNewFeeds, fetchOldFeeds } from '../reducers/feeds/feeds.action';
 import { FeedsById } from '../reducers/feeds/feeds.reducer';
 import { Moment } from 'moment';
 
@@ -28,8 +28,8 @@ interface FeedsScreenProps {
 
 interface FeedScreenDispatchProps {
     onAvatarClicked: (employee: Employee) => void;
-    loadOldFeeds: (toDate: Moment, fromDate: Moment, pullingMode: FeedsPullingMode) => void;
-    loadNewFeeds: (toDate: Moment, fromDate: Moment, pullingMode: FeedsPullingMode) => void;
+       fetchNewFeeds: (upBoundaryDate: Moment) => void;
+       fetchOldFeeds: (downBoundaryDate: Moment) => void;
 }
 
 const mapStateToProps = (state: AppState): FeedsScreenProps => ({
@@ -41,8 +41,8 @@ const mapStateToProps = (state: AppState): FeedsScreenProps => ({
 
 const mapDispatchToProps = (dispatch: Dispatch<any>): FeedScreenDispatchProps => ({
     onAvatarClicked: (employee: Employee) => dispatch(openEmployeeDetailsAction(employee)),
-    loadOldFeeds: (toDate: Moment, fromDate: Moment, pullingMode: FeedsPullingMode) => dispatch(loadFeeds(toDate, fromDate, pullingMode)),
-    loadNewFeeds: (toDate: Moment, fromDate: Moment, pullingMode: FeedsPullingMode) => dispatch(loadFeeds(toDate, fromDate, pullingMode)),
+    fetchNewFeeds: (upBoundaryDate: Moment) => dispatch(fetchNewFeeds(upBoundaryDate)),
+    fetchOldFeeds: (downBoundaryDate: Moment) => dispatch(fetchOldFeeds(downBoundaryDate)),
 });
 
 
@@ -112,10 +112,10 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     }
 
     private endReached = () => {
-        this.props.loadOldFeeds(this.props.toDate, this.props.fromDate, FeedsPullingMode.OldFeeds);
+        this.props.fetchOldFeeds(this.props.fromDate);
     }
     private onRefresh = () => {
-        this.props.loadNewFeeds(this.props.toDate, this.props.fromDate, FeedsPullingMode.NewFeeds);
+        this.props.fetchNewFeeds(this.props.toDate);
     }
 }
 
