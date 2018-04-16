@@ -13,26 +13,38 @@ import { FeedListItem } from './feed';
 import { screenStyles as styles } from './styles';
 import { StyledText } from '../override/styled-text';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
+import { loadFeeds, FeedsPullingMode } from '../reducers/feeds/feeds.action';
+import { FeedsById } from '../reducers/feeds/feeds.reducer';
+import { Moment } from 'moment';
 
 const navBar = new TopNavBar('Feeds');
 
 interface FeedsScreenProps {
-    feeds: Feed[];
+    feeds: FeedsById;
     employees: EmployeesStore;
+    toDate: Moment;
+    fromDate: Moment;
 }
 
 interface FeedScreenDispatchProps {
     onAvatarClicked: (employee: Employee) => void;
+    loadOldFeeds: (toDate: Moment, fromDate: Moment, pullingMode: FeedsPullingMode) => void;
+    loadNewFeeds: (toDate: Moment, fromDate: Moment, pullingMode: FeedsPullingMode) => void;
 }
 
 const mapStateToProps = (state: AppState): FeedsScreenProps => ({
-    feeds: state.feeds,
-    employees: state.organization.employees
+    feeds: state.feeds.feeds,
+    employees: state.organization.employees,
+    toDate: state.feeds.toDate,
+    fromDate: state.feeds.fromDate
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<any>): FeedScreenDispatchProps => ({
-    onAvatarClicked: (employee: Employee) => dispatch( openEmployeeDetailsAction(employee))
+    onAvatarClicked: (employee: Employee) => dispatch(openEmployeeDetailsAction(employee)),
+    loadOldFeeds: (toDate: Moment, fromDate: Moment, pullingMode: FeedsPullingMode) => dispatch(loadFeeds(toDate, fromDate, pullingMode)),
+    loadNewFeeds: (toDate: Moment, fromDate: Moment, pullingMode: FeedsPullingMode) => dispatch(loadFeeds(toDate, fromDate, pullingMode)),
 });
+
 
 class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenDispatchProps> {
     public static navigationOptions = navBar.configurate();
@@ -44,7 +56,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
             return true;
         }
 
-        for (const feed of nextProps.feeds) {
+        for (const feed of nextProps.feeds.toArray()) {
             const employeeId = feed.employeeId;
             const currentEmployeeRef = this.props.employees.employeesById.get(employeeId);
             const nextEmployeeRef = nextProps.employees.employeesById.get(employeeId);            
@@ -58,14 +70,22 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     }
 
     public render() {
+
+        const feeds = this.sortedFeeds();
+
         return (
             <FlatList
                 style={styles.view}
                 keyExtractor={this.keyExtractor}
                 ItemSeparatorComponent={this.itemSeparator}
-                data={this.props.feeds}
+                data={feeds}
                 extraData={this.props.employees}
-                renderItem={this.renderItem} />
+                renderItem={this.renderItem}
+                onEndReached={this.endReached}
+                onEndReachedThreshold={0}
+                refreshing={false}
+                onRefresh={this.onRefresh}
+            />
         );
     }
 
@@ -77,14 +97,25 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
         return <View style={styles.separator}></View>;
     }
 
+    private sortedFeeds() {
+        return this.props.feeds.toArray().sort((x, y) => y.datePosted.valueOf() - x.datePosted.valueOf());
+    }
+
     private renderItem = (itemInfo: ListRenderItemInfo<Feed>) => {
         const { item } = itemInfo;
         const employee: Employee = this.props.employees.employeesById.get(item.employeeId);
         if (!employee) {
-            return <FeedListItem message={item} employee={null} onAvatarClicked={this.props.onAvatarClicked}/>;
+            return <FeedListItem message={item} employee={null} onAvatarClicked={this.props.onAvatarClicked} />;
         } else {
-            return <FeedListItem message={item} employee={employee} onAvatarClicked={this.props.onAvatarClicked}/>;
+            return <FeedListItem message={item} employee={employee} onAvatarClicked={this.props.onAvatarClicked} />;
         }
+    }
+
+    private endReached = () => {
+        this.props.loadOldFeeds(this.props.toDate, this.props.fromDate, FeedsPullingMode.OldFeeds);
+    }
+    private onRefresh = () => {
+        this.props.loadNewFeeds(this.props.toDate, this.props.fromDate, FeedsPullingMode.NewFeeds);
     }
 }
 
