@@ -12,6 +12,7 @@ interface DepartmentsHScrollableListProps {
     headDepartmentChiefId?: string;
     departments?: Department[];
     focusOnDepartmentWithId?: string;
+    currentFocusedDepartmentId?: string;
     employees?: EmployeesStore;
     topOffset?: number;
     requestEmployeesForDepartment: (departmentId: string) => void;
@@ -37,7 +38,12 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
         if (this.props.focusOnDepartmentWithId !== null) {
             this.props.requestEmployeesForDepartment(this.props.focusOnDepartmentWithId);
             const focusedDepartment = this.props.departments.find(department => department.departmentId === this.props.focusOnDepartmentWithId);
-            const indexOfFocusedDepartment = this.props.departments.indexOf(focusedDepartment);
+            let indexOfFocusedDepartment: number;
+            if (focusedDepartment.parentDepartmentId === this.props.currentFocusedDepartmentId) {
+                indexOfFocusedDepartment = this.props.departments.length;
+            } else {
+                indexOfFocusedDepartment = this.props.departments.indexOf(focusedDepartment);
+            }
             this.manualScrollMode = false;
             this.scrollView.scrollTo({ x: Dimensions.get('window').width * indexOfFocusedDepartment, y: 0, animated: true });
         }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import { connect, Dispatch } from 'react-redux';
 import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView, Linking, TouchableOpacity, ViewStyle } from 'react-native';
 
 import { layoutStyles, contentStyles, tileStyles, contactStyles } from '../profile/styles';
@@ -14,6 +14,7 @@ import { StyledText } from '../override/styled-text';
 import { Employee } from '../reducers/organization/employee.model';
 import { ApplicationIcon } from '../override/application-icon';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
+import { openCompanyAction } from './employee-details-dispatcher';
 
 interface EmployeeDetailsProps {
     employee: Employee;
@@ -23,7 +24,14 @@ interface EmployeeDetailsProps {
 }
 const TileSeparator = () => <View style = {tileStyles.separator}></View>;
 
-export class EmployeeDetails extends Component<EmployeeDetailsProps> {
+interface EmployeeDetailsDispatchProps {
+    onCompanyClicked: (departmentId: string) => void;
+}
+const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchProps => ({
+    onCompanyClicked: (departmentId: string) => dispatch( openCompanyAction(departmentId))
+});
+
+export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
     public render() {
         const { employee, department } = this.props;
 
@@ -80,25 +88,29 @@ export class EmployeeDetails extends Component<EmployeeDetailsProps> {
                 label: employee.birthDate.format('MMMM D'),
                 icon: 'birthday',
                 style: StyleSheet.flatten([tileStyles.icon]),
-                size: 30
+                size: 30,
+                payload: null
             },
             {
                 label: employee.hireDate.format('YYYY-D-MM'),
                 icon: 'handshake',
                 style: StyleSheet.flatten([tileStyles.icon]),
-                size: 20
+                size: 20,
+                payload: null
             },
             {
                 label: `Room ${employee.roomNumber}`,
                 icon: 'office',
                 style: StyleSheet.flatten([tileStyles.icon]),
-                size: 25
+                size: 25,
+                payload: null
             },
             {
                 label: 'Organization',
                 icon: 'org_structure',
                 style: StyleSheet.flatten([tileStyles.icon]),
-                size: 28
+                size: 28,
+                payload: employee.departmentId
             }
         ];
         const lastIndex = tilesData.length - 1;
@@ -106,12 +118,22 @@ export class EmployeeDetails extends Component<EmployeeDetailsProps> {
         return tilesData.map((tile, index) => (
             <React.Fragment key={tile.label}>
             <View style={tileStyles.container}>
-                <View style={tileStyles.tile}>
+            {
+                tile.payload !== null ?
+                    <TouchableOpacity onPress={this.openCompany}>
+                    <View style={tileStyles.tile}>
+                        <View style={tileStyles.iconContainer}>
+                            <ApplicationIcon name={tile.icon} size={tile.size} style={tile.style} />
+                        </View>
+                        <StyledText style={tileStyles.text}>{tile.label}</StyledText>
+                    </View></TouchableOpacity>
+                : <View style={tileStyles.tile}>
                     <View style={tileStyles.iconContainer}>
                         <ApplicationIcon name={tile.icon} size={tile.size} style={tile.style} />
                     </View>
                     <StyledText style={tileStyles.text}>{tile.label}</StyledText>
                 </View>
+            }
             </View>
             {
                 lastIndex !== index ? <TileSeparator key = {`${tile.label}-${index}`} /> : null
@@ -156,4 +178,10 @@ export class EmployeeDetails extends Component<EmployeeDetailsProps> {
     private openLink(url: string) {
         return () => Linking.openURL(url).catch(err => console.error(err));
     }
+
+    private openCompany = () => {
+        return this.props.onCompanyClicked(this.props.employee.departmentId);
+    }
 }
+
+export const EmployeeDetails = connect(null, mapDispatchToProps)(EmployeeDetailsImpl);

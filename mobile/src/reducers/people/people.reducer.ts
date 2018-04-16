@@ -28,7 +28,7 @@ function onlyUnique(value: string, index: number, self: string[]) {
 }
 
 function departmentsBranchFromDepartmentWithId(departmentId: string, departments: Department[]) {
-    let deps: Department[] = [];
+    const deps: Department[] = [];
     let department = departments.find(d => d.departmentId === departmentId);
 
     while (department) {
@@ -52,8 +52,15 @@ function departmentsBranchFromDepartmentWithId(departmentId: string, departments
     return deps;
 }
 
-export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions | LoadUserEmployeeFinished | LoadDepartmentsFinished) => {
+export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions | NavigationAction | LoadUserEmployeeFinished | LoadDepartmentsFinished) => {
     switch (action.type) {
+        case 'Navigation/NAVIGATE':
+            if (action.routeName === 'Company') {
+                const { departmentId } = action.params;
+                return {...state, currentFocusedDepartmentId: departmentId, departmentsBranch: departmentsBranchFromDepartmentWithId(departmentId, state.departments)};
+            } else {
+                return state;
+            }
         case 'LOAD-USER-EMPLOYEE-FINISHED': {
             // Init Departments Branch focused on current user's departments
             return {...state, currentFocusedDepartmentId: action.employee.departmentId, departmentsBranch: departmentsBranchFromDepartmentWithId(action.employee.departmentId, state.departments)};

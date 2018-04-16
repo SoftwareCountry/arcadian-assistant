@@ -22,6 +22,7 @@ interface PeopleCompanyProps {
     employees: EmployeesStore;
     departments?: Department[];
     employee?: Employee;
+    currentFocusedDepartmentId?: string;
 }
 
 const mapStateToProps = (state: AppState): PeopleCompanyProps => ({
@@ -29,7 +30,8 @@ const mapStateToProps = (state: AppState): PeopleCompanyProps => ({
     departmentsBranch: state.people.departmentsBranch.length > 0 ? state.people.departmentsBranch : null,
     employees: state.organization.employees,
     departments: state.people.departments,
-    employee: state.userInfo.employee
+    employee: state.userInfo.employee,
+    currentFocusedDepartmentId: state.people.currentFocusedDepartmentId
 });
 
 interface PeopleCompanyDispatchProps {
@@ -78,6 +80,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
                         headDepartmentId={head.departmentId}
                         headDepartmentChiefId={head.chiefId}
                         focusOnDepartmentWithId={(index + 1) < userFocusedDepartmentsBranch.length ? userFocusedDepartmentsBranch[index + 1].departmentId : null}
+                        currentFocusedDepartmentId={this.props.currentFocusedDepartmentId}
                         employees={this.props.employees}
                         key={head.departmentId}
                         updateDepartmentsBranch={this.props.updateDepartmentsBranch}
