@@ -56,8 +56,12 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
     switch (action.type) {
         case 'Navigation/NAVIGATE':
             if (action.routeName === 'Company') {
-                const { departmentId } = action.params;
-                return {...state, currentFocusedDepartmentId: departmentId, departmentsBranch: departmentsBranchFromDepartmentWithId(departmentId, state.departments)};
+                if (action.params === undefined) {
+                    return {...state, departmentsBranch: departmentsBranchFromDepartmentWithId(state.currentFocusedDepartmentId, state.departments)};
+                } else {
+                    const { departmentId } = action.params;
+                    return {...state, currentFocusedDepartmentId: departmentId, departmentsBranch: departmentsBranchFromDepartmentWithId(departmentId, state.departments)};
+                }
             } else {
                 return state;
             }
