@@ -29,4 +29,12 @@ export interface ConfirmProlongSickLeave {
 export const confirmProlongSickLeave = (employeeId: string, calendarEvent: CalendarEvent, prolongedEndDate: Moment): ConfirmProlongSickLeave => 
     ({ type: 'CONFIRM-PROLONG-SICK-LEAVE', employeeId, calendarEvent, prolongedEndDate });
 
-export type SickLeaveActions =  ConfirmClaimSickLeave | CompleteSickLeave | ConfirmProlongSickLeave;
+export interface CancelSickLeave {
+    type: 'CANCEL-SICK-LEAVE';
+    employeeId: string;
+    calendarEvent: CalendarEvent;
+}
+
+export const cancelSickLeave = (employeeId: string, calendarEvent: CalendarEvent): CancelSickLeave => ({ type: 'CANCEL-SICK-LEAVE', employeeId, calendarEvent });
+
+export type SickLeaveActions =  ConfirmClaimSickLeave | CompleteSickLeave | ConfirmProlongSickLeave | CancelSickLeave;
