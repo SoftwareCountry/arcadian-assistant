@@ -98,7 +98,9 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     }
 
     private sortedFeeds() {
-        return this.props.feeds.toArray().sort((x, y) => y.datePosted.valueOf() - x.datePosted.valueOf());
+        return this.props.feeds.toArray().sort((x, y) => { 
+            return ((y.datePosted.valueOf() - x.datePosted.valueOf()) || (Number(y.employeeId) - Number(x.employeeId)));
+        });
     }
 
     private renderItem = (itemInfo: ListRenderItemInfo<Feed>) => {
