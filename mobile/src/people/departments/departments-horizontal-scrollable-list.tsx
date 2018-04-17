@@ -53,6 +53,8 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
         if (this.forceComponentRender) {
             this.forceComponentRender = false;
             return true;
+        } else if (this.props.currentFocusedDepartmentId !== nextProps.currentFocusedDepartmentId) {
+            return true;
         } else if (this.employeeCards.length > 0 && this.currentPage !== null && this.currentPage <= this.employeeCards.length) {
             const visibleCard: EmployeeCardWithAvatar = this.employeeCards[this.currentPage - 1];
             const currentEmployeeRef = this.props.employees.employeesById.get(visibleCard.props.employee.employeeId);
