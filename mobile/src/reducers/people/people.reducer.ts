@@ -10,17 +10,20 @@ import { OrganizationActions, loadEmployeesForDepartment, loadEmployeesForRoom, 
 import { PeopleActions } from './people.action';
 import { Department } from '../organization/department.model';
 import { LoadUserEmployeeFinished } from '../user/user.action';
+import { DepartmentsListStateDescriptor } from '../../people/departments/departments-horizontal-scrollable-list';
 
 export interface PeopleState {
     departments: Department[];
     departmentsBranch: Department[];
     currentFocusedDepartmentId: string;
+    departmentsLists: DepartmentsListStateDescriptor[];
 }
 
 const initState: PeopleState = {
     departments: [],
     departmentsBranch: [],
-    currentFocusedDepartmentId: null
+    currentFocusedDepartmentId: null,
+    departmentsLists: []
 };
 
 function onlyUnique(value: string, index: number, self: string[]) { 
@@ -29,16 +32,27 @@ function onlyUnique(value: string, index: number, self: string[]) {
 
 function departmentsBranchFromDepartmentWithId(departmentId: string, departments: Department[]) {
     const deps: Department[] = [];
+    const depsLists: DepartmentsListStateDescriptor[] = [];
+
     let department = departments.find(d => d.departmentId === departmentId);
 
     while (department) {
         deps.push(department);
+        
         const parent = departments.find(d => d.departmentId === department.parentDepartmentId) != null ?
             departments.find(d => d.departmentId === department.parentDepartmentId) : null;
+
+        if (parent !== null) {
+            depsLists.push({currentPage: departments.filter(d => d.parentDepartmentId === department.parentDepartmentId).indexOf(department)});
+        }
+
         department = parent;
     }
 
     deps.reverse();
+    // Toppest Head
+    depsLists.push({currentPage: 0});
+    depsLists.reverse();
 
     department = departments.find(d => d.parentDepartmentId === departmentId);
 
@@ -46,10 +60,15 @@ function departmentsBranchFromDepartmentWithId(departmentId: string, departments
         deps.push(department);
         const child = departments.find(d => d.parentDepartmentId === department.departmentId) != null ?
             departments.find(d => d.parentDepartmentId === department.departmentId) : null;
+
+        if (child !== null) {
+            depsLists.push({currentPage: departments.filter(d => d.parentDepartmentId === department.departmentId).indexOf(child)});
+        }
+    
         department = child;
     }
 
-    return deps;
+    return {departmentsLineup: deps, departmentsLists: depsLists};
 }
 
 export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions | NavigationAction | LoadUserEmployeeFinished | LoadDepartmentsFinished) => {
@@ -57,22 +76,26 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
         case 'Navigation/NAVIGATE':
             if (action.routeName === 'Company') {
                 if (action.params === undefined) {
-                    return {...state, departmentsBranch: departmentsBranchFromDepartmentWithId(state.currentFocusedDepartmentId, state.departments)};
+                    const depsAndMeta = departmentsBranchFromDepartmentWithId(state.currentFocusedDepartmentId, state.departments);
+                    return {...state, departmentsBranch: depsAndMeta.departmentsLineup, departmentsLists: depsAndMeta.departmentsLists};
                 } else {
                     const { departmentId } = action.params;
-                    return {...state, currentFocusedDepartmentId: departmentId, departmentsBranch: departmentsBranchFromDepartmentWithId(departmentId, state.departments)};
+                    const depsAndMeta = departmentsBranchFromDepartmentWithId(departmentId, state.departments);
+                    return {...state, currentFocusedDepartmentId: departmentId, departmentsBranch: depsAndMeta.departmentsLineup, departmentsLists: depsAndMeta.departmentsLists};
                 }
             } else {
                 return state;
             }
         case 'LOAD-USER-EMPLOYEE-FINISHED': {
             // Init Departments Branch focused on current user's departments
-            return {...state, currentFocusedDepartmentId: action.employee.departmentId, departmentsBranch: departmentsBranchFromDepartmentWithId(action.employee.departmentId, state.departments)};
+            const depsAndMeta = departmentsBranchFromDepartmentWithId(action.employee.departmentId, state.departments);
+            return {...state, currentFocusedDepartmentId: action.employee.departmentId, departmentsBranch: depsAndMeta.departmentsLineup, departmentsLists: depsAndMeta.departmentsLists};
         }
         case 'LOAD-DEPARTMENTS-FINISHED':
             return {...state, departments: action.departments};        
         case 'UPDATE-DEPARTMENTS-BRANCH': {
-            return {...state, departmentsBranch: departmentsBranchFromDepartmentWithId(action.departmentId, state.departments)};
+            const depsAndMeta = departmentsBranchFromDepartmentWithId(action.departmentId, state.departments);
+            return {...state, departmentsBranch: depsAndMeta.departmentsLineup, departmentsLists: depsAndMeta.departmentsLists};
         }
         default:
             return state;

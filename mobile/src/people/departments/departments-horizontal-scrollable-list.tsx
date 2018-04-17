@@ -11,6 +11,7 @@ interface DepartmentsHScrollableListProps {
     headDepartmentId?: string;
     headDepartmentChiefId?: string;
     departments?: Department[];
+    departmentsLists?: DepartmentsListStateDescriptor;
     focusOnDepartmentWithId?: string;
     currentFocusedDepartmentId?: string;
     employees?: EmployeesStore;
@@ -26,6 +27,12 @@ interface AAScrollViewComponent extends Component {
     scrollToEnd(): void;
 }
 
+export interface DepartmentsListStateDescriptor {
+    currentPage: number;
+    // forceComponentRender: boolean;
+    // manualScrollMode: boolean;
+}
+
 export class DepartmentsHScrollableList extends Component<DepartmentsHScrollableListProps> {
     private scrollView: AAScrollViewComponent;
     private employeeCards: EmployeeCardWithAvatar[];
@@ -34,26 +41,11 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
     private forceComponentRender = false;
     private manualScrollMode = true;
 
-    public componentDidMount() {
-        if (this.props.focusOnDepartmentWithId !== null) {
-            this.props.requestEmployeesForDepartment(this.props.focusOnDepartmentWithId);
-            const focusedDepartment = this.props.departments.find(department => department.departmentId === this.props.focusOnDepartmentWithId);
-            let indexOfFocusedDepartment: number;
-            if (focusedDepartment.parentDepartmentId === this.props.currentFocusedDepartmentId) {
-                indexOfFocusedDepartment = this.props.departments.length;
-            } else {
-                indexOfFocusedDepartment = this.props.departments.indexOf(focusedDepartment);
-            }
-            this.manualScrollMode = false;
-            this.scrollView.scrollTo({ x: Dimensions.get('window').width * indexOfFocusedDepartment, y: 0, animated: true });
-        }
-    }
-
     public shouldComponentUpdate(nextProps: DepartmentsHScrollableListProps) {
         if (this.forceComponentRender) {
             this.forceComponentRender = false;
             return true;
-        } else if (this.props.currentFocusedDepartmentId !== nextProps.currentFocusedDepartmentId) {
+        } else if (this.props.departmentsLists !== nextProps.departmentsLists) {
             return true;
         } else if (this.employeeCards.length > 0 && this.currentPage !== null && this.currentPage <= this.employeeCards.length) {
             const visibleCard: EmployeeCardWithAvatar = this.employeeCards[this.currentPage - 1];
@@ -93,7 +85,8 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
         return <View>
             <ScrollView 
                 horizontal 
-                pagingEnabled 
+                pagingEnabled
+                contentOffset={{x: Dimensions.get('window').width * (this.props.departmentsLists !== undefined ? this.props.departmentsLists.currentPage : 0), y: 0}}
                 showsHorizontalScrollIndicator={false}
                 onMomentumScrollEnd={this.onMomentumScrollEnd}
                 onScrollBeginDrag={this.onScrollBeginDrag}
@@ -119,7 +112,7 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                 {
                     (subordinates != null && subordinates.length > 0) ? 
                         <EmployeeCardWithAvatar 
-                            employees={subordinates} 
+                            employees={subordinates.sort()} 
                             chiefId={headDepartmentChiefId}
                             treeLevel={this.props.treeLevel} 
                             stretchToFitScreen={subDepartments === null || this.currentPage > subDepartments.length}

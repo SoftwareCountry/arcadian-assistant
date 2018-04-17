@@ -6,7 +6,7 @@ import { View, Text, ScrollView, Dimensions, Animated } from 'react-native';
 import { EmployeesList } from './employees-list';
 import { Department } from '../reducers/organization/department.model';
 import { AppState } from '../reducers/app.reducer';
-import { DepartmentsHScrollableList } from './departments/departments-horizontal-scrollable-list';
+import { DepartmentsHScrollableList, DepartmentsListStateDescriptor } from './departments/departments-horizontal-scrollable-list';
 import { EmployeeCardWithAvatar } from './employee-card-with-avatar';
 import { PeopleActions, updateDepartmentsBranch } from '../reducers/people/people.action';
 import { loadEmployeesForDepartment } from '../reducers/organization/organization.action';
@@ -23,6 +23,7 @@ interface PeopleCompanyProps {
     departments?: Department[];
     employee?: Employee;
     currentFocusedDepartmentId?: string;
+    departmentLists?: DepartmentsListStateDescriptor[];
 }
 
 const mapStateToProps = (state: AppState): PeopleCompanyProps => ({
@@ -31,7 +32,8 @@ const mapStateToProps = (state: AppState): PeopleCompanyProps => ({
     employees: state.organization.employees,
     departments: state.people.departments,
     employee: state.userInfo.employee,
-    currentFocusedDepartmentId: state.people.currentFocusedDepartmentId
+    currentFocusedDepartmentId: state.people.currentFocusedDepartmentId,
+    departmentLists: state.people.departmentsLists
 });
 
 interface PeopleCompanyDispatchProps {
@@ -77,6 +79,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
                     <DepartmentsHScrollableList
                         treeLevel={index + 1}
                         departments={this.props.departments.filter(department => department.parentDepartmentId === head.departmentId)}
+                        departmentsLists={this.props.departmentLists[index + 1]}
                         headDepartmentId={head.departmentId}
                         headDepartmentChiefId={head.chiefId}
                         focusOnDepartmentWithId={(index + 1) < userFocusedDepartmentsBranch.length ? userFocusedDepartmentsBranch[index + 1].departmentId : null}
