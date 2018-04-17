@@ -6,15 +6,11 @@
 
     public sealed class GetMessages
     {
-        public DateTime? FromDate { get; set; }
+        public DateTime FromDate { get; }
 
-        public DateTime? ToDate { get; set; }
+        public DateTime ToDate { get; }
 
-        public GetMessages()
-        {
-        }
-
-        public GetMessages(DateTime? fromDate, DateTime? toDate)
+        public GetMessages(DateTime fromDate, DateTime toDate)
         {
             this.FromDate = fromDate;
             this.ToDate = toDate;

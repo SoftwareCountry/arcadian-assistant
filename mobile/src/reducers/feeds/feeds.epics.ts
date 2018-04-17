@@ -22,4 +22,4 @@ export const loadFeedsEpic$ = (action$: ActionsObservable<fAction.LoadFeeds>, ap
 
 export const loadFeedsFinishedEpic$ = (action$: ActionsObservable<fAction.LoadFeedsFinished>) =>
     action$.ofType('LOAD_FEEDS_FINISHED')
-        .flatMap(x => x.feeds.map(feed => oAction.loadEmployee(feed.employeeId)));
+        .flatMap(x => x.feeds.filter(y => y.employeeId !== null).map(feed => oAction.loadEmployee(feed.employeeId)));

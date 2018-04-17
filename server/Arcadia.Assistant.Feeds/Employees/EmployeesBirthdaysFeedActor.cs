@@ -28,7 +28,7 @@
         {
             var title = employee.Name;
             var text = $"{employee.Name} turns {employee.AgeAt(date)}! Happy Birthday!";
-            var message = new Message(Guid.NewGuid(), employee.EmployeeId, title, text, date);
+            var message = new Message($"employee-birthday-{employee.EmployeeId}-at-{date}", employee.EmployeeId, title, text, date);
 
             return message;
         }
