@@ -37,26 +37,10 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
     private scrollView: AAScrollViewComponent;
     private employeeCards: EmployeeCardWithAvatar[];
     private animatedValue: Animated.Value;
-    private currentPage: number = null;
-    private forceComponentRender = false;
-    private manualScrollMode = true;
 
     public shouldComponentUpdate(nextProps: DepartmentsHScrollableListProps) {
-        if (this.forceComponentRender) {
-            this.forceComponentRender = false;
+        if (this.props.departmentsLists !== nextProps.departmentsLists) {
             return true;
-        } else if (this.props.departmentsLists !== nextProps.departmentsLists) {
-            return true;
-        } else if (this.employeeCards.length > 0 && this.currentPage !== null && this.currentPage <= this.employeeCards.length) {
-            const visibleCard: EmployeeCardWithAvatar = this.employeeCards[this.currentPage - 1];
-            const currentEmployeeRef = this.props.employees.employeesById.get(visibleCard.props.employee.employeeId);
-            const nextEmployeeRef = nextProps.employees.employeesById.get(visibleCard.props.employee.employeeId);
-
-            if (currentEmployeeRef !== nextEmployeeRef) {
-                return true;
-            } else {
-                return false;
-            }
         } else {
             const employees = this.props.employees.employeesById.filter(this.props.employeesPredicate);
             const nextEmployees = nextProps.employees.employeesById.filter(this.props.employeesPredicate);
@@ -115,7 +99,7 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                             employees={subordinates.sort()} 
                             chiefId={headDepartmentChiefId}
                             treeLevel={this.props.treeLevel} 
-                            stretchToFitScreen={subDepartments === null || this.currentPage > subDepartments.length}
+                            stretchToFitScreen={subDepartments === null || (this.props.departmentsLists !== undefined ? this.props.departmentsLists.currentPage > subDepartments.length : true)}
                             onItemClicked={this.props.onItemClicked}
                         /> 
                             : null
@@ -127,25 +111,17 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
     private onMomentumScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
         const offset = event.nativeEvent.contentOffset;
         if (offset) {
-            this.currentPage = Math.round(offset.x / Dimensions.get('window').width) + 1;
-            this.forceComponentRender = true;
+            const currentPage = Math.round(offset.x / Dimensions.get('window').width) + 1;
 
-            if (this.currentPage > this.employeeCards.length) {
+            if (currentPage > this.employeeCards.length) {
                 this.props.requestEmployeesForDepartment(this.props.headDepartmentId);
-                if (this.manualScrollMode) {
-                    this.props.updateDepartmentsBranch(this.props.headDepartmentId);
-                } else {
-                    this.manualScrollMode = true;
-                }
+                this.props.updateDepartmentsBranch(this.props.headDepartmentId);
             } else {
-                const visibleCard: EmployeeCardWithAvatar = this.employeeCards[this.currentPage - 1];
+                const visibleCard: EmployeeCardWithAvatar = this.employeeCards[currentPage - 1];
                 visibleCard.revealNeighboursAvatars(true);
-                const visibleDepartment = this.props.departments[this.currentPage - 1];
-                if (this.manualScrollMode) {
-                    this.props.updateDepartmentsBranch(visibleDepartment.departmentId);
-                } else {
-                    this.manualScrollMode = true;
-                }
+                const visibleDepartment = this.props.departments[currentPage - 1];
+
+                this.props.updateDepartmentsBranch(visibleDepartment.departmentId);
                 this.props.requestEmployeesForDepartment(visibleDepartment.departmentId);
                 const childDepartment = this.props.departments.find(department => department.parentDepartmentId === visibleDepartment.departmentId);
                 if (childDepartment !== undefined) {
