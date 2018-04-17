@@ -23,18 +23,10 @@ const initState: FeedsState = {
 export const feedsReducer: Reducer<FeedsState> = (state = initState, action: FeedsActions) => {
     switch (action.type) {
         case 'LOAD_FEEDS':
-            return {
-                ...state
-            };
         case 'FETCH_NEW_FEEDS':
-            return {
-                ...state,
-                toDate: action.upBoundaryDate
-            };
         case 'FETCH_OLD_FEEDS':
             return {
-                ...state,
-                fromDate: action.downBoundaryDate
+                ...state
             };
         case 'LOAD_FEEDS_FINISHED':
 

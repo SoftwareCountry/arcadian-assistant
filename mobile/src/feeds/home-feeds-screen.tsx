@@ -28,8 +28,8 @@ interface FeedsScreenProps {
 
 interface FeedScreenDispatchProps {
     onAvatarClicked: (employee: Employee) => void;
-       fetchNewFeeds: (upBoundaryDate: Moment) => void;
-       fetchOldFeeds: (downBoundaryDate: Moment) => void;
+       fetchNewFeeds: () => void;
+       fetchOldFeeds: () => void;
 }
 
 const mapStateToProps = (state: AppState): FeedsScreenProps => ({
@@ -41,8 +41,8 @@ const mapStateToProps = (state: AppState): FeedsScreenProps => ({
 
 const mapDispatchToProps = (dispatch: Dispatch<any>): FeedScreenDispatchProps => ({
     onAvatarClicked: (employee: Employee) => dispatch(openEmployeeDetailsAction(employee)),
-    fetchNewFeeds: (upBoundaryDate: Moment) => dispatch(fetchNewFeeds(upBoundaryDate)),
-    fetchOldFeeds: (downBoundaryDate: Moment) => dispatch(fetchOldFeeds(downBoundaryDate)),
+    fetchNewFeeds: () => dispatch(fetchNewFeeds()),
+    fetchOldFeeds: () => dispatch(fetchOldFeeds()),
 });
 
 
@@ -112,10 +112,10 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     }
 
     private endReached = () => {
-        this.props.fetchOldFeeds(this.props.fromDate);
+        this.props.fetchOldFeeds();
     }
     private onRefresh = () => {
-        this.props.fetchNewFeeds(this.props.toDate);
+        this.props.fetchNewFeeds();
     }
 }
 

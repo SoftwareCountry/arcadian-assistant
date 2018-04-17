@@ -10,17 +10,15 @@ export const loadFeeds = (): LoadFeeds => ({ type: 'LOAD_FEEDS' });
 
 export interface FetchNewFeeds extends Action {
     type: 'FETCH_NEW_FEEDS';
-    upBoundaryDate: Moment;
 }
 
-export const fetchNewFeeds = (upBoundaryDate: Moment): FetchNewFeeds => ({ type: 'FETCH_NEW_FEEDS', upBoundaryDate });
+export const fetchNewFeeds = (): FetchNewFeeds => ({ type: 'FETCH_NEW_FEEDS' });
 
 export interface FetchOldFeeds extends Action {
     type: 'FETCH_OLD_FEEDS';
-    downBoundaryDate: Moment;
 }
 
-export const fetchOldFeeds = (downBoundaryDate: Moment): FetchOldFeeds => ({ type: 'FETCH_OLD_FEEDS', downBoundaryDate });
+export const fetchOldFeeds = (): FetchOldFeeds => ({ type: 'FETCH_OLD_FEEDS' });
 
 export interface LoadFeedsFinished extends Action {
     type: 'LOAD_FEEDS_FINISHED';
