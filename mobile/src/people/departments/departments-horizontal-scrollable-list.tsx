@@ -22,7 +22,7 @@ interface DepartmentsHScrollableListProps {
     employeesPredicate: (employee: Employee) => boolean;
 }
 
-interface AAScrollViewComponent extends Component {
+interface ScrollViewComponent extends Component {
     scrollTo(y?: number | { x?: number; y?: number; animated?: boolean }, x?: number, animated?: boolean): void;
     scrollToEnd(): void;
 }
@@ -34,7 +34,7 @@ export interface DepartmentsListStateDescriptor {
 }
 
 export class DepartmentsHScrollableList extends Component<DepartmentsHScrollableListProps> {
-    private scrollView: AAScrollViewComponent;
+    private scrollView: ScrollViewComponent;
     private employeeCards: EmployeeCardWithAvatar[];
     private animatedValue: Animated.Value;
 
@@ -74,7 +74,7 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                 showsHorizontalScrollIndicator={false}
                 onMomentumScrollEnd={this.onMomentumScrollEnd}
                 onScrollBeginDrag={this.onScrollBeginDrag}
-                ref={ref => this.scrollView = ref as AAScrollViewComponent}
+                ref={ref => this.scrollView = ref as ScrollViewComponent}
             >
                 {
                     subDepartments != null ? subDepartments.map((subDepartment, index) => <EmployeeCardWithAvatar 
