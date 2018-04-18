@@ -38,7 +38,7 @@ class ChangeVacationEndDateEventDialogImpl extends Component<ChangeVacationEndDa
                     icon={'vacation'}
                     cancelLabel={'Back'}
                     acceptLabel={'Confirm'}
-                    onActionPress={this.confirmEndDateChange}
+                    onAcceptPress={this.confirmEndDateChange}
                     onCancelPress={this.back}
                     onClosePress={this.closeDialog}
                     disableAccept={disableAccept} />;

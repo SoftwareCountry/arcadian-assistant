@@ -27,7 +27,7 @@ class EditDayoffEventDialogImpl extends Component<EditDayoffEventDialogProps & E
                     icon={'dayoff'}
                     cancelLabel={'Back'}
                     acceptLabel={'Cancel'}
-                    onActionPress={this.onAcceptClick}
+                    onAcceptPress={this.onAcceptClick}
                     onCancelPress={this.onCancelClick}
                     onClosePress={this.onCloseClick} />;
     }

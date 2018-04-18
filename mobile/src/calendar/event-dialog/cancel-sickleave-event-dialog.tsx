@@ -28,7 +28,7 @@ class CancelSickLeaveEventDialogImpl extends Component<CancelSickLeaveEventDialo
                     icon={'sick_leave'}
                     cancelLabel={'Back'}
                     acceptLabel={'Cancel'}
-                    onActionPress={this.acceptAction}
+                    onAcceptPress={this.acceptAction}
                     onCancelPress={this.cancelAction}
                     onClosePress={this.closeDialog} />;
     }

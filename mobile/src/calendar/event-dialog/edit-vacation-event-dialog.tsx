@@ -33,7 +33,7 @@ class EditVacationEventDialogImpl extends Component<EditVacationEventDialogProps
                     icon={'vacation'}
                     cancelLabel={'Cancel'}
                     acceptLabel={'Change'}
-                    onActionPress={this.changeVacation}
+                    onAcceptPress={this.changeVacation}
                     onCancelPress={this.cancelVacation}
                     onClosePress={this.closeDialog}
                     disableAccept={disableChange} />;

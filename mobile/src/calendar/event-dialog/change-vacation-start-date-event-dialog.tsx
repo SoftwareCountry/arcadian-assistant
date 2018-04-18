@@ -27,7 +27,7 @@ class ChangeVacationStartDateEventDialogImpl extends Component<ChangeVacationSta
                     icon={'vacation'}
                     cancelLabel={'Back'}
                     acceptLabel={'Confirm'}
-                    onActionPress={this.confirmStartDateChange}
+                    onAcceptPress={this.confirmStartDateChange}
                     onCancelPress={this.back}
                     onClosePress={this.closeDialog} />;
     }

@@ -16,7 +16,7 @@ interface EventDialogBaseProps extends EventDialogBaseDefaultProps {
     cancelLabel: string;
     acceptLabel: string;
     onCancelPress: () => void;
-    onActionPress: () => void;
+    onAcceptPress: () => void;
     onClosePress: () => void;
 }
 
@@ -76,6 +76,6 @@ export class EventDialogBase extends Component<EventDialogBaseProps> {
     }
 
     private accept = () => {
-        this.props.onActionPress();
+        this.props.onAcceptPress();
     }
 }

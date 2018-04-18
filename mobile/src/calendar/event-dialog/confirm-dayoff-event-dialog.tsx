@@ -49,7 +49,7 @@ class ConfirmDayoffEventDialogImpl extends Component<ConfirmDayoffEventDialogPro
                     icon={'dayoff'}
                     cancelLabel={'Back'}
                     acceptLabel={'Confirm'}
-                    onActionPress={this.onAcceptClick}
+                    onAcceptPress={this.onAcceptClick}
                     onCancelPress={this.onCancelClick}
                     onClosePress={this.onCloseClick}>
                         <SelectorDayoffDuration onIntervalTypeSelected={this.onDayoffTypeSelected} isWorkout={this.props.hoursCredit.isWorkout} />

@@ -31,7 +31,7 @@ class ConfirmSickLeaveEventDialogImpl extends Component<ClaimSickLeaveEventDialo
                     icon={'sick_leave'} 
                     cancelLabel={'Back'}
                     acceptLabel={'Confirm'}
-                    onActionPress={this.acceptAction}
+                    onAcceptPress={this.acceptAction}
                     onCancelPress={this.cancelAction}
                     onClosePress={this.closeDialog}
                     disableAccept={!this.props.endDay} />;
