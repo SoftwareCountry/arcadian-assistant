@@ -28,8 +28,8 @@ interface FeedsScreenProps {
 
 interface FeedScreenDispatchProps {
     onAvatarClicked: (employee: Employee) => void;
-       fetchNewFeeds: () => void;
-       fetchOldFeeds: () => void;
+    fetchNewFeeds: () => void;
+    fetchOldFeeds: () => void;
 }
 
 const mapStateToProps = (state: AppState): FeedsScreenProps => ({
@@ -56,17 +56,14 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
             return true;
         }
 
-        for (const feed of nextProps.feeds.toArray()) {
+        const nothingChanged = nextProps.feeds.every((feed) => {
             const employeeId = feed.employeeId;
             const currentEmployeeRef = this.props.employees.employeesById.get(employeeId);
-            const nextEmployeeRef = nextProps.employees.employeesById.get(employeeId);            
-
-            if (currentEmployeeRef !== nextEmployeeRef) {
-                return true;
-            }
-        }
-
-        return false;
+            const nextEmployeeRef = nextProps.employees.employeesById.get(employeeId);
+            return currentEmployeeRef === nextEmployeeRef;
+        });
+   
+        return !nothingChanged;
     }
 
     public render() {
