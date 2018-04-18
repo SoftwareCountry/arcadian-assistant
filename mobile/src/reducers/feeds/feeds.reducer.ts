@@ -2,7 +2,7 @@ import { Reducer } from 'redux';
 import { combineEpics } from 'redux-observable';
 import { Feed } from './feed.model';
 import { FeedsActions } from './feeds.action';
-import { loadFeedsEpic$, loadFeedsFinishedEpic$, pagingPeriodDays, fetchNewFeedsEpic$, fetchOldFeedsEpic$ } from './feeds.epics';
+import { loadFeedsFinishedEpic$, pagingPeriodDays, fetchNewFeedsEpic$, fetchOldFeedsEpic$ } from './feeds.epics';
 import moment, { Moment } from 'moment';
 import { Map } from 'immutable';
 
@@ -22,7 +22,6 @@ const initState: FeedsState = {
 
 export const feedsReducer: Reducer<FeedsState> = (state = initState, action: FeedsActions) => {
     switch (action.type) {
-        case 'LOAD_FEEDS':
         case 'FETCH_NEW_FEEDS':
         case 'FETCH_OLD_FEEDS':
             return {
@@ -52,7 +51,6 @@ export const feedsReducer: Reducer<FeedsState> = (state = initState, action: Fee
 };
 
 export const feedsEpics = combineEpics(
-    loadFeedsEpic$ as any,
     loadFeedsFinishedEpic$ as any,
     fetchNewFeedsEpic$ as any,
     fetchOldFeedsEpic$ as any

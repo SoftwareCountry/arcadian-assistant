@@ -62,7 +62,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
             const nextEmployeeRef = nextProps.employees.employeesById.get(employeeId);
             return currentEmployeeRef === nextEmployeeRef;
         });
-   
+
         return !nothingChanged;
     }
 
@@ -95,8 +95,8 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     }
 
     private sortedFeeds() {
-        return this.props.feeds.toArray().sort((x, y) => { 
-            return ((y.datePosted.valueOf() - x.datePosted.valueOf()) || (Number(y.employeeId) - Number(x.employeeId)));
+        return this.props.feeds.toArray().sort((x, y) => {
+            return ((y.datePosted.valueOf() - x.datePosted.valueOf()) || (y.employeeId < x.employeeId ? -1 : 1));
         });
     }
 
