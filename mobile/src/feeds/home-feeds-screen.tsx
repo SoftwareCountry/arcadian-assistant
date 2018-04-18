@@ -13,7 +13,7 @@ import { FeedListItem } from './feed';
 import { screenStyles as styles } from './styles';
 import { StyledText } from '../override/styled-text';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
-import { loadFeeds, fetchNewFeeds, fetchOldFeeds } from '../reducers/feeds/feeds.action';
+import { fetchNewFeeds, fetchOldFeeds } from '../reducers/feeds/feeds.action';
 import { FeedsById } from '../reducers/feeds/feeds.reducer';
 import { Moment } from 'moment';
 
@@ -64,6 +64,10 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
         });
 
         return !nothingChanged;
+    }
+
+    public componentDidMount() {
+        this.props.fetchNewFeeds();
     }
 
     public render() {

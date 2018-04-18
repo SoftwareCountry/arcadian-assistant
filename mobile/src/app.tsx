@@ -50,7 +50,6 @@ export class App extends Component<AppProps> {
     //initial state
     this.props.dispatch(loadUser());
     this.props.dispatch(loadDepartments());
-    this.props.dispatch(fetchNewFeeds());
   }
 
   public componentWillUnmount() {

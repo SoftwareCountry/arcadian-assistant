@@ -2,12 +2,6 @@ import { Action } from 'redux';
 import { Feed } from './feed.model';
 import moment, { Moment } from 'moment';
 
-export interface LoadFeeds extends Action {
-    type: 'LOAD_FEEDS';
-}
-
-export const loadFeeds = (): LoadFeeds => ({ type: 'LOAD_FEEDS' });
-
 export interface FetchNewFeeds extends Action {
     type: 'FETCH_NEW_FEEDS';
 }
@@ -41,4 +35,4 @@ export const changeBoundaryDates = (toDate: Moment, fromDate: Moment): ChangeBou
 
 
 export type FeedsActions =
-    LoadFeeds | LoadFeedsFinished | ChangeBoundaryDates | FetchNewFeeds | FetchOldFeeds;
+    LoadFeedsFinished | ChangeBoundaryDates | FetchNewFeeds | FetchOldFeeds;
