@@ -6,3 +6,8 @@ export const openEmployeeDetailsAction = (employee: Employee) => NavigationActio
     routeName: 'CurrentProfile',
     params: {employee},
 });
+
+export const openCompanyAction = (departmentId: string) => NavigationActions.navigate({
+    routeName: 'Company',
+    params: {departmentId},
+});

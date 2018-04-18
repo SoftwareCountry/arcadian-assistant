@@ -6,107 +6,101 @@ import { ActionsObservable } from 'redux-observable';
 
 import { User } from '../user/user.model';
 import { Employee } from '../organization/employee.model';
-import { OrganizationActions, loadEmployeesForDepartment, loadEmployeesForRoom, LoadDepartmentsFinished, LoadEmployeeFinished } from '../organization/organization.action';
-import { UserActions, LoadUserEmployeeFinished } from '../user/user.action';
+import { OrganizationActions, loadEmployeesForDepartment, loadEmployeesForRoom, LoadDepartmentsFinished } from '../organization/organization.action';
 import { PeopleActions } from './people.action';
-import { EmployeeMap } from '../organization/employees.reducer';
 import { Department } from '../organization/department.model';
-import { DepartmentsTree } from '../../people/departments/departments-tree';
-import { DepartmentsTreeNode, stubIdForSubordinates } from '../../people/departments/departments-tree-node';
+import { LoadUserEmployeeFinished } from '../user/user.action';
+import { DepartmentsListStateDescriptor } from '../../people/departments/departments-horizontal-scrollable-list';
 
 export interface PeopleState {
-    headDepartment: Department;
     departments: Department[];
-    departmentsHeads: Employee[];
-    employees: Employee[];
-    departmentsHeadsIds: string[];
-    departmentsBranch: DepartmentsTreeNode[];
-    departmentsTree: DepartmentsTree;
+    departmentsBranch: Department[];
+    currentFocusedDepartmentId: string;
+    departmentsLists: DepartmentsListStateDescriptor[];
 }
 
 const initState: PeopleState = {
-    headDepartment: null,
     departments: [],
-    departmentsHeads: [],
-    employees: [],
-    departmentsHeadsIds: [],
     departmentsBranch: [],
-    departmentsTree: null
+    currentFocusedDepartmentId: null,
+    departmentsLists: []
 };
-
-function shortDepartmentsTreeFor(departments: Department[]) {
-    const topLevelDepartment: Department = departments.find((department) => department.isHeadDepartment === true);
-    const departmentsTree: DepartmentsTree = {
-        root: {
-            departmentId: topLevelDepartment.departmentId,
-            departmentAbbreviation: topLevelDepartment.abbreviation,
-            departmentChiefId: topLevelDepartment.chiefId,
-            parent: null,
-            children: shortChildrenNodes(topLevelDepartment, departments)
-        }
-    };
-
-    return departmentsTree;
-}
 
 function onlyUnique(value: string, index: number, self: string[]) { 
     return self.indexOf(value) === index;
 }
 
-function shortChildrenNodes(headDeaprtment: Department, departments: Department[]) {
-    const nodes: DepartmentsTreeNode[] = [];
-    const siblings = departments.filter((subDepartment) => subDepartment.parentDepartmentId === headDeaprtment.departmentId);
+function departmentsBranchFromDepartmentWithId(departmentId: string, departments: Department[], focusOnEmployeesList?: boolean) {
+    const deps: Department[] = [];
+    const depsLists: DepartmentsListStateDescriptor[] = [];
 
-    siblings.forEach(department => {
-        const subSiblings = departments.filter((subDepartment) => subDepartment.parentDepartmentId === department.departmentId);
-        nodes.push({
-            departmentId: department.departmentId,
-            departmentAbbreviation: department.abbreviation,
-            departmentChiefId: department.chiefId,
-            parent: headDeaprtment,
-            children: subSiblings.length > 0 ? shortChildrenNodes(department, departments) : null
-        });
-    });
+    let department = departments.find(d => d.departmentId === departmentId);
 
-    return nodes;
+    while (department) {
+        deps.push(department);
+        
+        const parent = departments.find(d => d.departmentId === department.parentDepartmentId) != null ?
+            departments.find(d => d.departmentId === department.parentDepartmentId) : null;
+
+        if (parent !== null) {
+            depsLists.push({currentPage: departments.filter(d => d.parentDepartmentId === department.parentDepartmentId).indexOf(department)});
+        }
+
+        department = parent;
+    }
+
+    deps.reverse();
+    // Toppest Head
+    depsLists.push({currentPage: 0});
+    depsLists.reverse();
+
+    if (focusOnEmployeesList) {
+        return {departmentsLineup: deps, departmentsLists: depsLists};
+    }
+
+    department = departments.find(d => d.parentDepartmentId === departmentId);
+
+    while (department) {
+        deps.push(department);
+        const child = departments.find(d => d.parentDepartmentId === department.departmentId) != null ?
+            departments.find(d => d.parentDepartmentId === department.departmentId) : null;
+
+        if (child !== null) {
+            depsLists.push({currentPage: departments.filter(d => d.parentDepartmentId === department.departmentId).indexOf(child)});
+        }
+    
+        department = child;
+    }
+
+    return {departmentsLineup: deps, departmentsLists: depsLists};
 }
 
-export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions | LoadEmployeeFinished | LoadDepartmentsFinished) => {
+export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions | NavigationAction | LoadUserEmployeeFinished | LoadDepartmentsFinished) => {
     switch (action.type) {
-        case 'LOAD-DEPARTMENTS-FINISHED':
-            const headsIds = action.departments.map(department => department.chiefId).filter(onlyUnique);
-            const headDepartment = action.departments.find((department) => department.isHeadDepartment === true);
-            const departmentsTree = shortDepartmentsTreeFor(action.departments);
-            let currentDepartmentNode = departmentsTree.root;
-            const index = 0;
-            const initDeps = [];
-
-            while (currentDepartmentNode) {
-                initDeps.push(currentDepartmentNode);
-                const firstChild = currentDepartmentNode.children != null ? currentDepartmentNode.children[0] : null;
-                currentDepartmentNode = firstChild;
-            }
-            return {...state, departments: action.departments, headDepartment: headDepartment, departmentsHeadsIds: headsIds, departmentsTree: departmentsTree, departmentsBranch: initDeps};        
-        case 'UPDATE-DEPARTMENT-IDS-TREE':
-            let deps = state.departmentsBranch;
-
-            if (deps.length - 1 < action.index) {
-                deps = [...deps, action.departmentId];
-            } else {
-                if (action.departmentId.departmentId === stubIdForSubordinates) {
-                    deps = deps.filter((dep, depIndex) => depIndex < action.index);
+        case 'Navigation/NAVIGATE':
+            if (action.routeName === 'Company') {
+                if (action.params === undefined) {
+                    const depsAndMeta = departmentsBranchFromDepartmentWithId(state.currentFocusedDepartmentId, state.departments);
+                    return {...state, departmentsBranch: depsAndMeta.departmentsLineup, departmentsLists: depsAndMeta.departmentsLists};
                 } else {
-                    deps[action.index] = action.departmentId;
-                    deps = deps.filter((dep, depIndex) => depIndex < (action.index + 1));
-                    let currentDepartmentNodeU = deps[action.index].children != null ? deps[action.index].children[0] : null;
-                    while (currentDepartmentNodeU) {
-                        deps.push(currentDepartmentNodeU);
-                        const firstChild = currentDepartmentNodeU.children != null ? currentDepartmentNodeU.children[0] : null;
-                        currentDepartmentNodeU = firstChild;
-                    }
+                    const { departmentId } = action.params;
+                    const depsAndMeta = departmentsBranchFromDepartmentWithId(departmentId, state.departments);
+                    return {...state, currentFocusedDepartmentId: departmentId, departmentsBranch: depsAndMeta.departmentsLineup, departmentsLists: depsAndMeta.departmentsLists};
                 }
+            } else {
+                return state;
             }
-            return {...state, departmentsBranch: deps};
+        case 'LOAD-USER-EMPLOYEE-FINISHED': {
+            // Init Departments Branch focused on current user's departments
+            const depsAndMeta = departmentsBranchFromDepartmentWithId(action.employee.departmentId, state.departments);
+            return {...state, currentFocusedDepartmentId: action.employee.departmentId, departmentsBranch: depsAndMeta.departmentsLineup, departmentsLists: depsAndMeta.departmentsLists};
+        }
+        case 'LOAD-DEPARTMENTS-FINISHED':
+            return {...state, departments: action.departments};        
+        case 'UPDATE-DEPARTMENTS-BRANCH': {
+            const depsAndMeta = departmentsBranchFromDepartmentWithId(action.departmentId, state.departments, action.focusOnEmployeesList);
+            return {...state, departmentsBranch: depsAndMeta.departmentsLineup, departmentsLists: depsAndMeta.departmentsLists};
+        }
         default:
             return state;
     }
