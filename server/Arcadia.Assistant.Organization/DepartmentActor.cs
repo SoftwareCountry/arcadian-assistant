@@ -9,6 +9,7 @@
     using Akka.Event;
     using Akka.Util.Internal;
 
+    using Arcadia.Assistant.Feeds;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
@@ -22,6 +23,8 @@
 
         private readonly List<EmployeeContainer> employees = new List<EmployeeContainer>();
 
+        private readonly IActorRef feed;
+
         private EmployeeContainer head;
 
 //        private EmployeeContainer headEmployee;
@@ -32,6 +35,8 @@
         {
             this.departmentInfo = departmentInfo;
             this.organizationEmployeesActor = organizationEmployeesActor;
+            this.feed = Context.ActorOf(Props.Create(() => new DepartmentFeedActor()));
+            this.RefreshFeedsInformation();
         }
 
         protected override void OnReceive(object message)
@@ -125,8 +130,15 @@
         {
             refreshRequesters.ForEach(x => x.Tell(RefreshDepartmentInfo.Finished.Instance));
 
+            this.RefreshFeedsInformation();
+
             this.Stash.UnstashAll();
             return this.OnReceive;
+        }
+
+        private void RefreshFeedsInformation()
+        {
+            this.feed.Tell(new DepartmentFeedActor.AssignInformation(this.employees.Select(x => x.Feed), this.departmentInfo));
         }
 
         public static Props GetProps(DepartmentInfo department, IActorRef organizationEmployeesActor) =>

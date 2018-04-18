@@ -12,19 +12,19 @@
     {
         private string feedName = string.Empty;
 
-        private List<IActorRef> employees = new List<IActorRef>();
+        private List<IActorRef> employeeFeeds = new List<IActorRef>();
 
         protected override void OnReceive(object message)
         {
             switch (message)
             {
                 case GetMessages request:
-                    Context.ActorOf(AggregateMessagesActor.GetProps(this.employees, request, this.Sender));
+                    Context.ActorOf(AggregateMessagesActor.GetProps(this.employeeFeeds, request, this.Sender));
                     break;
 
                 case AssignInformation information:
                     this.feedName = information.DepartmentInfo.Name;
-                    this.employees = information.EmployeesActors.ToList();
+                    this.employeeFeeds = information.EmployeesFeeds.ToList();
                     break;
             }
         }
@@ -33,11 +33,11 @@
         {
             public DepartmentInfo DepartmentInfo { get; }
 
-            public IEnumerable<IActorRef> EmployeesActors { get; }
+            public IEnumerable<IActorRef> EmployeesFeeds { get; }
 
-            public AssignInformation(IEnumerable<IActorRef> employeesActors, DepartmentInfo departmentInfo)
+            public AssignInformation(IEnumerable<IActorRef> employeesFeeds, DepartmentInfo departmentInfo)
             {
-                this.EmployeesActors = employeesActors;
+                this.EmployeesFeeds = employeesFeeds;
                 this.DepartmentInfo = departmentInfo;
             }
         }
