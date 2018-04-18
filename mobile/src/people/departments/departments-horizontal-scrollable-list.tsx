@@ -17,7 +17,7 @@ interface DepartmentsHScrollableListProps {
     employees?: EmployeesStore;
     topOffset?: number;
     requestEmployeesForDepartment: (departmentId: string) => void;
-    updateDepartmentsBranch: (departmentId: string) => void;
+    updateDepartmentsBranch: (departmentId: string, focusOnEmployeesLust?: boolean) => void;
     onItemClicked: (e: Employee) => void;
     employeesPredicate: (employee: Employee) => boolean;
 }
@@ -70,7 +70,7 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
             <ScrollView 
                 horizontal 
                 pagingEnabled
-                contentOffset={{x: Dimensions.get('window').width * (this.props.departmentsLists !== undefined ? this.props.departmentsLists.currentPage : 0), y: 0}}
+                contentOffset={{x: Dimensions.get('window').width * (this.props.departmentsLists !== undefined ? this.props.departmentsLists.currentPage : departments.length), y: 0}}
                 showsHorizontalScrollIndicator={false}
                 onMomentumScrollEnd={this.onMomentumScrollEnd}
                 onScrollBeginDrag={this.onScrollBeginDrag}
@@ -115,7 +115,7 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
 
             if (currentPage > this.employeeCards.length) {
                 this.props.requestEmployeesForDepartment(this.props.headDepartmentId);
-                this.props.updateDepartmentsBranch(this.props.headDepartmentId);
+                this.props.updateDepartmentsBranch(this.props.headDepartmentId, true);
             } else {
                 const visibleCard: EmployeeCardWithAvatar = this.employeeCards[currentPage - 1];
                 visibleCard.revealNeighboursAvatars(true);

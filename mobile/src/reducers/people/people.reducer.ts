@@ -30,7 +30,7 @@ function onlyUnique(value: string, index: number, self: string[]) {
     return self.indexOf(value) === index;
 }
 
-function departmentsBranchFromDepartmentWithId(departmentId: string, departments: Department[]) {
+function departmentsBranchFromDepartmentWithId(departmentId: string, departments: Department[], focusOnEmployeesList?: boolean) {
     const deps: Department[] = [];
     const depsLists: DepartmentsListStateDescriptor[] = [];
 
@@ -53,6 +53,10 @@ function departmentsBranchFromDepartmentWithId(departmentId: string, departments
     // Toppest Head
     depsLists.push({currentPage: 0});
     depsLists.reverse();
+
+    if (focusOnEmployeesList) {
+        return {departmentsLineup: deps, departmentsLists: depsLists};
+    }
 
     department = departments.find(d => d.parentDepartmentId === departmentId);
 
@@ -94,7 +98,7 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
         case 'LOAD-DEPARTMENTS-FINISHED':
             return {...state, departments: action.departments};        
         case 'UPDATE-DEPARTMENTS-BRANCH': {
-            const depsAndMeta = departmentsBranchFromDepartmentWithId(action.departmentId, state.departments);
+            const depsAndMeta = departmentsBranchFromDepartmentWithId(action.departmentId, state.departments, action.focusOnEmployeesList);
             return {...state, departmentsBranch: depsAndMeta.departmentsLineup, departmentsLists: depsAndMeta.departmentsLists};
         }
         default:
