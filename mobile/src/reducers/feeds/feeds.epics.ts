@@ -6,7 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import { loadFailedError } from '../errors/errors.action';
 import { Feed } from './feed.model';
 import { AppState, DependenciesContainer } from '../app.reducer';
-import moment, { Moment } from 'moment';
+import moment from 'moment';
 import { changeBoundaryDates } from './feeds.action';
 import { MiddlewareAPI } from 'redux';
 

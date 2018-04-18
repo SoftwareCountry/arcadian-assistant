@@ -3,7 +3,7 @@ import { combineEpics } from 'redux-observable';
 import { Feed } from './feed.model';
 import { FeedsActions } from './feeds.action';
 import { loadFeedsFinishedEpic$, pagingPeriodDays, fetchNewFeedsEpic$, fetchOldFeedsEpic$ } from './feeds.epics';
-import moment, { Moment } from 'moment';
+import { Moment } from 'moment';
 import { Map } from 'immutable';
 
 export type FeedsById = Map<string, Feed>;

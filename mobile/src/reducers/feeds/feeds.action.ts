@@ -1,6 +1,6 @@
 import { Action } from 'redux';
 import { Feed } from './feed.model';
-import moment, { Moment } from 'moment';
+import { Moment } from 'moment';
 
 export interface FetchNewFeeds extends Action {
     type: 'FETCH_NEW_FEEDS';
