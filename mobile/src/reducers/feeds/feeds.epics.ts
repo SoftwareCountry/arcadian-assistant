@@ -7,17 +7,36 @@ import { loadFailedError } from '../errors/errors.action';
 import { Feed } from './feed.model';
 import { AppState, DependenciesContainer } from '../app.reducer';
 import moment from 'moment';
+import { changeBoundaryDates } from './feeds.action';
+import { MiddlewareAPI } from 'redux';
 
-const pagingPeriodDays = 10;
+export const pagingPeriodDays = 10;
 
-export const loadFeedsEpic$ = (action$: ActionsObservable<fAction.LoadFeeds>, appState: AppState, deps: DependenciesContainer) =>
-    action$.ofType('LOAD_FEEDS')
+export const fetchNewFeedsEpic$ = (action$: ActionsObservable<fAction.FetchNewFeeds>, appState: MiddlewareAPI<AppState>, deps: DependenciesContainer) =>
+    action$.ofType('FETCH_NEW_FEEDS')
         .switchMap(x => {
-            const fromDate = moment().subtract(pagingPeriodDays, 'days'); //show news from 10 days before.
-            return deps.apiClient.getJSON(`/feeds/messages?fromDate=${fromDate.format('YYYY-MM-DD')}`);
+            const toDate = moment();
+            const fromDate = appState.getState().feeds.toDate ? appState.getState().feeds.toDate : moment().subtract(pagingPeriodDays, 'days');
+            return deps.apiClient.getJSON(`/feeds/messages?fromDate=${fromDate.format('YYYY-MM-DD')}&toDate=${toDate.format('YYYY-MM-DD')}`)
+                .map((y) => ({ fromDate: appState.getState().feeds.fromDate, toDate: toDate, payload: y }));
         })
-        .map(x => deserializeArray(x as any, Feed))
-        .map(x => fAction.loadFeedsFinished(x))
+        .flatMap(x => {
+            return Observable.concat(Observable.of(fAction.changeBoundaryDates(x.toDate, x.fromDate)), Observable.of(fAction.loadFeedsFinished(deserializeArray(x.payload as any, Feed))));
+        })
+        .catch(e => Observable.of(loadFailedError(e.message)));
+
+export const fetchOldFeedsEpic$ = (action$: ActionsObservable<fAction.FetchOldFeeds>, appState: MiddlewareAPI<AppState>, deps: DependenciesContainer) =>
+    action$.ofType('FETCH_OLD_FEEDS')
+        .switchMap(x => {
+            const toDate = appState.getState().feeds.fromDate ? appState.getState().feeds.fromDate : moment();
+            const fromDate = appState.getState().feeds.fromDate ? appState.getState().feeds.fromDate.clone().subtract(pagingPeriodDays, 'days') : moment().subtract(pagingPeriodDays, 'days');
+
+            return deps.apiClient.getJSON(`/feeds/messages?fromDate=${fromDate.format('YYYY-MM-DD')}&toDate=${toDate.format('YYYY-MM-DD')}`)
+                .map((y) => ({ fromDate: fromDate, toDate: appState.getState().feeds.toDate, payload: y }));
+        })
+        .flatMap(x => {
+            return Observable.concat(Observable.of(fAction.changeBoundaryDates(x.toDate, x.fromDate)), Observable.of(fAction.loadFeedsFinished(deserializeArray(x.payload as any, Feed))));
+        })
         .catch(e => Observable.of(loadFailedError(e.message)));
 
 export const loadFeedsFinishedEpic$ = (action$: ActionsObservable<fAction.LoadFeedsFinished>) =>

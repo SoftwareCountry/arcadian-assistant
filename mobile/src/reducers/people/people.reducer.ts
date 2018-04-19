@@ -59,16 +59,14 @@ function departmentsBranchFromDepartmentWithId(departmentId: string, departments
     }
 
     department = departments.find(d => d.parentDepartmentId === departmentId);
-
+    
     while (department) {
         deps.push(department);
+        depsLists.push({currentPage: departments.filter(d => d.parentDepartmentId === department.parentDepartmentId).indexOf(department)});
+
         const child = departments.find(d => d.parentDepartmentId === department.departmentId) != null ?
             departments.find(d => d.parentDepartmentId === department.departmentId) : null;
 
-        if (child !== null) {
-            depsLists.push({currentPage: departments.filter(d => d.parentDepartmentId === department.departmentId).indexOf(child)});
-        }
-    
         department = child;
     }
 
