@@ -15,6 +15,7 @@ import { Employee } from '../reducers/organization/employee.model';
 import { ApplicationIcon } from '../override/application-icon';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
 import { openCompanyAction } from './employee-details-dispatcher';
+import { loadCalendarEvents } from '../reducers/calendar/calendar.action';
 
 interface EmployeeDetailsProps {
     employee: Employee;
@@ -26,12 +27,17 @@ const TileSeparator = () => <View style = {tileStyles.separator}></View>;
 
 interface EmployeeDetailsDispatchProps {
     onCompanyClicked: (departmentId: string) => void;
+    loadCalendarEvents: (employeeId: string) => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchProps => ({
-    onCompanyClicked: (departmentId: string) => dispatch( openCompanyAction(departmentId))
+    onCompanyClicked: (departmentId: string) => dispatch( openCompanyAction(departmentId)),
+    loadCalendarEvents: (employeeId: string) => dispatch(loadCalendarEvents(employeeId))
 });
 
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
+    public componentDidMount() {
+        this.props.loadCalendarEvents(this.props.employee.employeeId);
+    }
     public render() {
         const { employee, department } = this.props;
 
