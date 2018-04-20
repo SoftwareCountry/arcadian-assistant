@@ -33,7 +33,7 @@ export class ProlongSickLeaveEventDialogImpl extends Component<ProlongSickLeaveE
                     icon={'sick_leave'}
                     cancelLabel={'Back'}
                     acceptLabel={'Confirm'}
-                    onActionPress={this.onAcceptClick}
+                    onAcceptPress={this.onAcceptClick}
                     onCancelPress={this.onCancelClick}
                     onClosePress={this.onCloseClick}
                     disableAccept={disableAccept} />;

@@ -24,7 +24,7 @@ class ProcessDayoffEventDialogImpl extends Component<ProcessDayoffEventDialogPro
                     icon={'dayoff'}
                     cancelLabel={'Back'}
                     acceptLabel={'Confirm'}
-                    onActionPress={this.onAcceptClick}
+                    onAcceptPress={this.onAcceptClick}
                     onCancelPress={this.onCancelClick}
                     onClosePress={this.onCloseClick} />;
     }

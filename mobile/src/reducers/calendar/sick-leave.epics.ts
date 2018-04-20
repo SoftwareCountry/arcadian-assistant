@@ -55,7 +55,10 @@ export const sickLeaveProlongedEpic$ = (action$: ActionsObservable<ConfirmProlon
 
             const requestBody = {...x.calendarEvent};
 
-            requestBody.dates.endDate = x.prolongedEndDate;
+            requestBody.dates = {
+                ...x.calendarEvent.dates,
+                endDate: x.prolongedEndDate
+            };
 
             return deps.apiClient.put(
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,

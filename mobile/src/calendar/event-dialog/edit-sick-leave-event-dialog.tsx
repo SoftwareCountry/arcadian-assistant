@@ -31,7 +31,7 @@ class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogPro
                     icon={'sick_leave'}
                     cancelLabel={'Prolong'}
                     acceptLabel={'Complete'}
-                    onActionPress={this.acceptAction}
+                    onAcceptPress={this.acceptAction}
                     onCancelPress={this.cancelAction}
                     onClosePress={this.closeDialog} />;
     }
