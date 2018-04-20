@@ -6,6 +6,7 @@ import { CalendarWeeksBuilder } from './calendar-weeks-builder';
 import { CalendarEvents } from './calendar-events.model';
 import { singleDaySelectionReducer, intervalSelectionReducer } from './calendar-selection.reducer';
 import { calendarSelectionModeReducer } from './calendar-selection-mode.reducer';
+import { CalendarEvent } from './calendar-event.model';
 
 export interface IntervalsSubState {
     intervals: ReadOnlyIntervalsModel;
@@ -19,9 +20,14 @@ export interface SelectionSubState {
     selection: CalendarSelection;
 }
 
+export interface EventsMapSubState {
+    events: Map<string, CalendarEvent[]>;
+}
+
 export interface CalendarEventsState extends
     IntervalsSubState,
     DisableCalendarDaysBeforeSubState,
+    EventsMapSubState,
     SelectionSubState {
         weeks: WeekModel[];
         disableCalendarActionsButtonGroup: boolean;
@@ -56,6 +62,7 @@ const createInitState = (): CalendarEventsState => {
     return {
         weeks: weeks,
         intervals: null,
+        events: new Map(),
         disableCalendarDaysBefore: null,
         disableCalendarActionsButtonGroup: true,
         selection: defaultSelection,
@@ -72,10 +79,15 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
         case 'LOAD-CALENDAR-EVENTS-FINISHED':
             const intervals = action.calendarEvents.buildIntervalsModel();
 
+            let {events} = state;
+
+            events.set(action.employeeId, action.calendarEvents.calendarEvents);
+
             return {
                 ...state,
                 intervals: intervals,
-                disableCalendarActionsButtonGroup: false
+                disableCalendarActionsButtonGroup: false,
+                events: events
             };
         case 'CALENDAR-EVENT-CREATED':
             let intervalsWithNewEvent = state.intervals

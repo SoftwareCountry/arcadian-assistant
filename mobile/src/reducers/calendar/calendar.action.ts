@@ -13,9 +13,10 @@ export const loadCalendarEvents = (employeeId: string): LoadCalendarEvents => ({
 export interface LoadCalendarEventsFinished {
     type: 'LOAD-CALENDAR-EVENTS-FINISHED';
     calendarEvents: CalendarEvents;
+    employeeId: string;
 }
 
-export const loadCalendarEventsFinished = (calendarEvents: CalendarEvents): LoadCalendarEventsFinished => ({ type: 'LOAD-CALENDAR-EVENTS-FINISHED', calendarEvents });
+export const loadCalendarEventsFinished = (calendarEvents: CalendarEvents, employeeId?: string): LoadCalendarEventsFinished => ({ type: 'LOAD-CALENDAR-EVENTS-FINISHED', calendarEvents, employeeId });
 
 export interface CalendarEventCreated {
     type: 'CALENDAR-EVENT-CREATED';

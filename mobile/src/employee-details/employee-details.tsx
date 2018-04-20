@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect, Dispatch } from 'react-redux';
-import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView, Linking, TouchableOpacity, ViewStyle } from 'react-native';
+import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView, FlatList, ListRenderItemInfo, Linking, TouchableOpacity, ViewStyle, Dimensions } from 'react-native';
 
 import { layoutStyles, contentStyles, tileStyles, contactStyles } from '../profile/styles';
 import { Chevron } from '../profile/chevron';
@@ -16,13 +16,21 @@ import { ApplicationIcon } from '../override/application-icon';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
 import { openCompanyAction } from './employee-details-dispatcher';
 import { loadCalendarEvents } from '../reducers/calendar/calendar.action';
+import { CalendarEvent, CalendarEventType } from '../reducers/calendar/calendar-event.model';
+import { eventDialogTextDateFormat } from '../calendar/event-dialog/event-dialog-base';
 
 interface EmployeeDetailsProps {
-    employee: Employee;
+    employee?: Employee;
     department: Department;
-    layoutStylesChevronPlaceholder: ViewStyle;
-
+    layoutStylesChevronPlaceholder?: ViewStyle;
+    events?: Map<string, CalendarEvent[]>;
 }
+
+const mapStateToProps = (state: AppState, props: EmployeeDetailsProps): EmployeeDetailsProps => ({
+    department: props.department,
+    events: state.calendar.calendarEvents.events
+});
+
 const TileSeparator = () => <View style = {tileStyles.separator}></View>;
 
 interface EmployeeDetailsDispatchProps {
@@ -35,6 +43,13 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchPro
 });
 
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
+    private eventTypeToGlyphIcon = new Map([
+        [CalendarEventType.Dayoff, 'dayoff'],
+        [CalendarEventType.Vacation, 'vacation'],
+        [CalendarEventType.Sickleave, 'sick_leave'],
+        [CalendarEventType.Workout, 'workout']
+    ]);
+
     public componentDidMount() {
         this.props.loadCalendarEvents(this.props.employee.employeeId);
     }
@@ -47,6 +62,8 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
         const tiles = this.getTiles(employee);
         const contacts = this.getContacts(employee);
+
+        const events = this.props.events.get(employee.employeeId);
 
         return (
                 <View style={layoutStyles.container}>
@@ -78,8 +95,37 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                                 {contacts}
                             </View>
                         </View>
+
+                        {
+                            (events !== undefined && events.length > 0) ? 
+                            <FlatList
+                                data={events}
+                                keyExtractor={this.keyExtractor}
+                                renderItem={this.renderItem} /> : null
+                        }
+
                     </View>
                     </ScrollView>
+                </View>
+        );
+    }
+
+    private keyExtractor = (item: CalendarEvent) => item.calendarEventId;
+
+    private renderItem = (itemInfo: ListRenderItemInfo<CalendarEvent>) => {
+        const { item } = itemInfo;
+        const { eventsContainer, eventRow, eventIcon, eventTitle } = layoutStylesForEmployeeDetailsScreen;
+
+        const eventsContainerFlattened = StyleSheet.flatten([
+            eventsContainer, {width: Dimensions.get('window').width}
+        ]);
+
+        return (
+                <View style={eventsContainerFlattened} key={item.calendarEventId}>
+                    <View style={eventRow}>
+                        <ApplicationIcon name={this.eventTypeToGlyphIcon.get(item.type)} style={eventIcon} />
+                        <StyledText style={eventTitle}>{item.type} starts on {item.dates.startDate.format(eventDialogTextDateFormat)} and completes on {item.dates.endDate.format(eventDialogTextDateFormat)} ({item.status})</StyledText>
+                    </View>
                 </View>
         );
     }
@@ -190,4 +236,4 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
     }
 }
 
-export const EmployeeDetails = connect(null, mapDispatchToProps)(EmployeeDetailsImpl);
+export const EmployeeDetails = connect(mapStateToProps, mapDispatchToProps)(EmployeeDetailsImpl);
