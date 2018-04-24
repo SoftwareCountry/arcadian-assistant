@@ -29,9 +29,12 @@ export const loadCalendarEventsEpic$ = (action$: ActionsObservable<LoadCalendarE
             x.switchMap(y =>
                 deps.apiClient.getJSON(`/employees/${x.key}/events`)
                     .map(obj => deserializeArray(obj as any, CalendarEvent))
-                    .map(calendarEvents => new CalendarEvents(calendarEvents, x.key))))
+                    .map(calendarEvents => new CalendarEvents(calendarEvents)))
+                    .map(z => { 
+                        return {events: z, employeeId: x.key};
+                    }))
         .mergeAll()
-        .map(x => loadCalendarEventsFinished(x, x.employeeId))
+        .map(x => loadCalendarEventsFinished(x.events, x.employeeId))
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
 export const calendarEventCreatedEpic$ = (action$: ActionsObservable<CalendarEventCreated>) =>

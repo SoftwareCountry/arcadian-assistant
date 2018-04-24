@@ -5,7 +5,7 @@ import { IntervalTypeConverter } from './interval-type-converter';
 
 export class CalendarEvents {
 
-    constructor(public readonly calendarEvents: CalendarEvent[], public readonly employeeId?: string) {}
+    constructor(public readonly calendarEvents: CalendarEvent[]) {}
 
     public buildIntervalsModel(): IntervalsModel {
         const intervalsModel = new IntervalsModel();

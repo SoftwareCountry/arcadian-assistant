@@ -85,21 +85,6 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
                     const depsAndMeta = departmentsBranchFromDepartmentWithId(departmentId, state.departments);
                     return {...state, currentFocusedDepartmentId: departmentId, departmentsBranch: depsAndMeta.departmentsLineup, departmentsLists: depsAndMeta.departmentsLists};
                 }
-            } else if (action.routeName === 'CurrentProfile') {
-                /*
-                    {
-                        "calendarEventId": "a8cc5361-9b63-46d0-bee1-83d16a8d7f62",
-                        "type": "Vacation",
-                        "dates": {
-                            "startDate": "2018-04-17T21:00:00Z",
-                            "endDate": "2018-04-27T21:00:00Z",
-                            "startWorkingHour": 0,
-                            "finishWorkingHour": 8
-                        },
-                        "status": "Requested"
-                    }
-                */
-                return state;
             } else {
                 return state;
             }

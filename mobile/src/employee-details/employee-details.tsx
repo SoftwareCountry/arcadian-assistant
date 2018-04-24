@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect, Dispatch } from 'react-redux';
-import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView, FlatList, ListRenderItemInfo, Linking, TouchableOpacity, ViewStyle, Dimensions } from 'react-native';
+import { Map } from 'immutable';
+import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView, Linking, TouchableOpacity, ViewStyle, Dimensions } from 'react-native';
 
 import { layoutStyles, contentStyles, tileStyles, contactStyles } from '../profile/styles';
 import { Chevron } from '../profile/chevron';
@@ -16,8 +17,9 @@ import { ApplicationIcon } from '../override/application-icon';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
 import { openCompanyAction } from './employee-details-dispatcher';
 import { loadCalendarEvents } from '../reducers/calendar/calendar.action';
-import { CalendarEvent, CalendarEventType } from '../reducers/calendar/calendar-event.model';
+import { CalendarEvent } from '../reducers/calendar/calendar-event.model';
 import { eventDialogTextDateFormat } from '../calendar/event-dialog/event-dialog-base';
+import { EmployeeDetailsEventsList } from './employee-details-events-list';
 
 interface EmployeeDetailsProps {
     employee?: Employee;
@@ -43,13 +45,6 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchPro
 });
 
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
-    private eventTypeToGlyphIcon = new Map([
-        [CalendarEventType.Dayoff, 'dayoff'],
-        [CalendarEventType.Vacation, 'vacation'],
-        [CalendarEventType.Sickleave, 'sick_leave'],
-        [CalendarEventType.Workout, 'workout']
-    ]);
-
     public componentDidMount() {
         this.props.loadCalendarEvents(this.props.employee.employeeId);
     }
@@ -98,34 +93,11 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
                         {
                             (events !== undefined && events.length > 0) ? 
-                            <FlatList
-                                data={events}
-                                keyExtractor={this.keyExtractor}
-                                renderItem={this.renderItem} /> : null
+                            <EmployeeDetailsEventsList events={events} /> : null
                         }
 
                     </View>
                     </ScrollView>
-                </View>
-        );
-    }
-
-    private keyExtractor = (item: CalendarEvent) => item.calendarEventId;
-
-    private renderItem = (itemInfo: ListRenderItemInfo<CalendarEvent>) => {
-        const { item } = itemInfo;
-        const { eventsContainer, eventRow, eventIcon, eventTitle } = layoutStylesForEmployeeDetailsScreen;
-
-        const eventsContainerFlattened = StyleSheet.flatten([
-            eventsContainer, {width: Dimensions.get('window').width}
-        ]);
-
-        return (
-                <View style={eventsContainerFlattened} key={item.calendarEventId}>
-                    <View style={eventRow}>
-                        <ApplicationIcon name={this.eventTypeToGlyphIcon.get(item.type)} style={eventIcon} />
-                        <StyledText style={eventTitle}>{item.type} starts on {item.dates.startDate.format(eventDialogTextDateFormat)} and completes on {item.dates.endDate.format(eventDialogTextDateFormat)} ({item.status})</StyledText>
-                    </View>
                 </View>
         );
     }
