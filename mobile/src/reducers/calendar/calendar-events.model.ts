@@ -5,7 +5,7 @@ import { IntervalTypeConverter } from './interval-type-converter';
 
 export class CalendarEvents {
 
-    constructor(public readonly calendarEvents: CalendarEvent[]) {}
+    constructor(private readonly calendarEvents: CalendarEvent[]) {}
 
     public buildIntervalsModel(): IntervalsModel {
         const intervalsModel = new IntervalsModel();
@@ -17,6 +17,10 @@ export class CalendarEvents {
 
     public appendToIntervalsModel(existingModel: IntervalsModel) {
         this.insertCalendarEvents(existingModel);
+    }
+
+    public all() {
+        return this.calendarEvents;
     }
 
     private insertCalendarEvents(intervalsModel: IntervalsModel) {
