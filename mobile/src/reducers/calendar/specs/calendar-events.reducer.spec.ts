@@ -22,7 +22,6 @@ describe('calendar events reducer', () => {
         });
 
         beforeEach(() => {
-            const employeeId = '1';
             calendarEvent = new CalendarEvent();
             calendarEvent.calendarEventId = '1';
             calendarEvent.dates = new DatesInterval();
@@ -31,7 +30,7 @@ describe('calendar events reducer', () => {
             calendarEvent.status = CalendarEventStatus.Requested;
             calendarEvent.type = CalendarEventType.Sickleave;
 
-            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employeeId);
+            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employee.employeeId);
             state = calendarEventsReducer(state, action);
         });
 
@@ -270,7 +269,6 @@ describe('calendar events reducer', () => {
         
 
         beforeEach(() => {
-            const employeeId = '1';
             calendarEvent = new CalendarEvent();
 
             calendarEvent.calendarEventId = '1';
@@ -283,7 +281,7 @@ describe('calendar events reducer', () => {
             calendarEvent.status = CalendarEventStatus.Requested;
             calendarEvent.type = CalendarEventType.Sickleave;
 
-            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employeeId);
+            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employee.employeeId);
             state = calendarEventsReducer(state, action);
         });
 
@@ -323,7 +321,6 @@ describe('calendar events reducer', () => {
         });
 
         beforeEach(() => {
-            const employeeId = '1';
             calendarEvent = new CalendarEvent();
 
             calendarEvent.calendarEventId = '1';
@@ -336,7 +333,7 @@ describe('calendar events reducer', () => {
             calendarEvent.status = CalendarEventStatus.Requested;
             calendarEvent.type = CalendarEventType.Sickleave;
 
-            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employeeId);
+            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employee.employeeId);
             state = calendarEventsReducer(state, action);
         });
 
