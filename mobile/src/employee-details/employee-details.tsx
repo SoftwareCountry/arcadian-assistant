@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect, Dispatch } from 'react-redux';
 import { Map } from 'immutable';
-import moment, { Moment } from 'moment';
 import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView, Linking, TouchableOpacity, ViewStyle, Dimensions } from 'react-native';
 
 import { layoutStyles, contentStyles, tileStyles, contactStyles } from '../profile/styles';
@@ -33,10 +32,7 @@ interface EmployeeDetailsProps {
 const mapStateToProps = (state: AppState, props: EmployeeDetailsProps): EmployeeDetailsProps => ({
     department: props.department,
     events: state.calendar.calendarEvents.events,
-    eventsPredicate: (event: CalendarEvent) => {
-        const now = moment().local(true);
-        return event.dates.endDate.isSameOrAfter(now);
-    }
+    eventsPredicate: state.calendar.calendarEvents.eventsPredicate
 });
 
 const TileSeparator = () => <View style = {tileStyles.separator}></View>;
