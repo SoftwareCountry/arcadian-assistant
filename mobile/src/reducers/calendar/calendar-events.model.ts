@@ -4,7 +4,6 @@ import moment from 'moment';
 import { IntervalTypeConverter } from './interval-type-converter';
 
 export class CalendarEvents {
-
     constructor(private readonly calendarEvents: CalendarEvent[]) {}
 
     public buildIntervalsModel(): IntervalsModel {
@@ -19,7 +18,7 @@ export class CalendarEvents {
         this.insertCalendarEvents(existingModel);
     }
 
-    public all() {
+    public get all(): CalendarEvent[] {
         return this.calendarEvents;
     }
 

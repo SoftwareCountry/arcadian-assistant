@@ -86,7 +86,7 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
             let newState: CalendarEventsState;
             let {events} = state;
 
-            events = events.set(action.employeeId, action.calendarEvents.all());
+            events = events.set(action.employeeId, action.calendarEvents.all);
             
             newState = {
                 ...state,
