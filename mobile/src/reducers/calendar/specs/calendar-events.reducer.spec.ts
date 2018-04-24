@@ -4,15 +4,26 @@ import { CalendarEvent, DatesInterval, CalendarEventStatus, CalendarEventType } 
 import moment from 'moment';
 import { DayModel, IntervalType } from '../calendar.model';
 import { CalendarEvents } from '../calendar-events.model';
+import { Employee } from '../../organization/employee.model';
+import { loadUserEmployeeFinished } from '../../user/user.action';
 
 describe('calendar events reducer', () => {
     describe('when load calendar events finished', () => {
         let state: CalendarEventsState;
         let calendarEvent: CalendarEvent;
+        let employee: Employee;
 
         beforeEach(() => {
-            calendarEvent = new CalendarEvent();
+            employee = new Employee();
+            employee.employeeId = '1';
 
+            const action = loadUserEmployeeFinished(employee);
+            state = calendarEventsReducer(undefined, action);
+        });
+
+        beforeEach(() => {
+            const employeeId = '1';
+            calendarEvent = new CalendarEvent();
             calendarEvent.calendarEventId = '1';
             calendarEvent.dates = new DatesInterval();
             calendarEvent.dates.startDate = moment();
@@ -20,8 +31,8 @@ describe('calendar events reducer', () => {
             calendarEvent.status = CalendarEventStatus.Requested;
             calendarEvent.type = CalendarEventType.Sickleave;
 
-            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]));
-            state = calendarEventsReducer(undefined, action);
+            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employeeId);
+            state = calendarEventsReducer(state, action);
         });
 
         it('should have intervals', () => {
@@ -247,8 +258,19 @@ describe('calendar events reducer', () => {
         let state: CalendarEventsState;
         let calendarEvent: CalendarEvent;
         let day: DayModel;
+        let employee: Employee;
 
         beforeEach(() => {
+            employee = new Employee();
+            employee.employeeId = '1';
+
+            const action = loadUserEmployeeFinished(employee);
+            state = calendarEventsReducer(undefined, action);
+        });
+        
+
+        beforeEach(() => {
+            const employeeId = '1';
             calendarEvent = new CalendarEvent();
 
             calendarEvent.calendarEventId = '1';
@@ -261,8 +283,8 @@ describe('calendar events reducer', () => {
             calendarEvent.status = CalendarEventStatus.Requested;
             calendarEvent.type = CalendarEventType.Sickleave;
 
-            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]));
-            state = calendarEventsReducer(undefined, action);
+            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employeeId);
+            state = calendarEventsReducer(state, action);
         });
 
         beforeEach(() => {
@@ -290,8 +312,18 @@ describe('calendar events reducer', () => {
         let state: CalendarEventsState;
         let calendarEvent: CalendarEvent;
         let day: DayModel;
+        let employee: Employee;
 
         beforeEach(() => {
+            employee = new Employee();
+            employee.employeeId = '1';
+
+            const action = loadUserEmployeeFinished(employee);
+            state = calendarEventsReducer(undefined, action);
+        });
+
+        beforeEach(() => {
+            const employeeId = '1';
             calendarEvent = new CalendarEvent();
 
             calendarEvent.calendarEventId = '1';
@@ -304,8 +336,8 @@ describe('calendar events reducer', () => {
             calendarEvent.status = CalendarEventStatus.Requested;
             calendarEvent.type = CalendarEventType.Sickleave;
 
-            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]));
-            state = calendarEventsReducer(undefined, action);
+            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employeeId);
+            state = calendarEventsReducer(state, action);
         });
 
         beforeEach(() => {
