@@ -65,7 +65,11 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         const contacts = this.getContacts(employee);
 
 
-        const events = this.props.events.get(employee.employeeId).filter(this.props.eventsPredicate);
+        let events = this.props.events.get(employee.employeeId);
+
+        if (events !== undefined) {
+            events = events.filter(this.props.eventsPredicate);
+        }
 
         return (
                 <View style={layoutStyles.container}>
