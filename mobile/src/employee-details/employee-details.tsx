@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect, Dispatch } from 'react-redux';
 import { Map } from 'immutable';
+import moment, { Moment } from 'moment';
 import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView, Linking, TouchableOpacity, ViewStyle, Dimensions } from 'react-native';
 
 import { layoutStyles, contentStyles, tileStyles, contactStyles } from '../profile/styles';
@@ -26,11 +27,16 @@ interface EmployeeDetailsProps {
     department: Department;
     layoutStylesChevronPlaceholder?: ViewStyle;
     events?: Map<string, CalendarEvent[]>;
+    eventsPredicate?: (event: CalendarEvent) => boolean;
 }
 
 const mapStateToProps = (state: AppState, props: EmployeeDetailsProps): EmployeeDetailsProps => ({
     department: props.department,
-    events: state.calendar.calendarEvents.events
+    events: state.calendar.calendarEvents.events,
+    eventsPredicate: (event: CalendarEvent) => {
+        const now = moment().local(true);
+        return event.dates.endDate.isSameOrAfter(now);
+    }
 });
 
 const TileSeparator = () => <View style = {tileStyles.separator}></View>;
@@ -58,7 +64,8 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         const tiles = this.getTiles(employee);
         const contacts = this.getContacts(employee);
 
-        const events = this.props.events.get(employee.employeeId);
+
+        const events = this.props.events.get(employee.employeeId).filter(this.props.eventsPredicate);
 
         return (
                 <View style={layoutStyles.container}>
