@@ -1,4 +1,5 @@
 import { Reducer } from 'redux';
+import { Map } from 'immutable';
 import { CalendarActions, CalendarSelectionModeType, CalendarSelectionMode } from './calendar.action';
 import { DayModel, WeekModel, IntervalsModel, CalendarSelection, IntervalModel, ExtractedIntervals, ReadOnlyIntervalsModel } from './calendar.model';
 import moment from 'moment';
@@ -6,6 +7,8 @@ import { CalendarWeeksBuilder } from './calendar-weeks-builder';
 import { CalendarEvents } from './calendar-events.model';
 import { singleDaySelectionReducer, intervalSelectionReducer } from './calendar-selection.reducer';
 import { calendarSelectionModeReducer } from './calendar-selection-mode.reducer';
+import { CalendarEvent } from './calendar-event.model';
+import { UserActions } from '../user/user.action';
 
 export interface IntervalsSubState {
     intervals: ReadOnlyIntervalsModel;
@@ -19,9 +22,16 @@ export interface SelectionSubState {
     selection: CalendarSelection;
 }
 
+export interface EventsMapSubState {
+    events: Map<string, CalendarEvent[]>;
+    userEmployeeId: string;
+    eventsPredicate: (event: CalendarEvent) => boolean;
+}
+
 export interface CalendarEventsState extends
     IntervalsSubState,
     DisableCalendarDaysBeforeSubState,
+    EventsMapSubState,
     SelectionSubState {
         weeks: WeekModel[];
         disableCalendarActionsButtonGroup: boolean;
@@ -56,6 +66,12 @@ const createInitState = (): CalendarEventsState => {
     return {
         weeks: weeks,
         intervals: null,
+        events: Map<string, CalendarEvent[]>(),
+        userEmployeeId: null,
+        eventsPredicate: (event: CalendarEvent) => {
+            const now = moment().local(true);
+            return event.dates.endDate.isSameOrAfter(now);
+        },
         disableCalendarDaysBefore: null,
         disableCalendarActionsButtonGroup: true,
         selection: defaultSelection,
@@ -67,16 +83,32 @@ const createInitState = (): CalendarEventsState => {
 
 const initState = createInitState();
 
-export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = initState, action: CalendarActions) => {
+export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = initState, action: CalendarActions | UserActions) => {
     switch (action.type) {
+        case 'LOAD-USER-EMPLOYEE-FINISHED':
+            return {...state, userEmployeeId: action.employee.employeeId};
         case 'LOAD-CALENDAR-EVENTS-FINISHED':
-            const intervals = action.calendarEvents.buildIntervalsModel();
+            let newState: CalendarEventsState;
+            let {events} = state;
 
-            return {
+            events = events.set(action.employeeId, action.calendarEvents.all);
+            
+            newState = {
                 ...state,
-                intervals: intervals,
-                disableCalendarActionsButtonGroup: false
+                events: events
             };
+
+            if (action.employeeId === state.userEmployeeId) {
+                const intervals = action.calendarEvents.buildIntervalsModel();
+
+                newState = {
+                    ...newState,
+                    intervals: intervals,
+                    disableCalendarActionsButtonGroup: false,
+                };
+            }
+
+            return newState;
         case 'CALENDAR-EVENT-CREATED':
             let intervalsWithNewEvent = state.intervals
                 ? state.intervals.copy()

@@ -16,6 +16,7 @@ describe('intervalsBySingleDaySelectionEpic', () => {
             belongsToCurrentMonth: true
         };
 
+        const employeeId = '1';
         const loadedCalendarEvent = new CalendarEvent();
 
         loadedCalendarEvent.calendarEventId = '1';
@@ -38,7 +39,7 @@ describe('intervalsBySingleDaySelectionEpic', () => {
 
         action$ = new ActionsObservable(Observable.concat(
             Observable.of(selectCalendarDay(day)),
-            Observable.of(loadCalendarEventsFinished(new CalendarEvents([loadedCalendarEvent]))),
+            Observable.of(loadCalendarEventsFinished(new CalendarEvents([loadedCalendarEvent]), employeeId)),
             Observable.of(calendarEventCreated(createdCalendarEvent))
         ));
     });

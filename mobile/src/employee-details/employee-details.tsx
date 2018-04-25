@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect, Dispatch } from 'react-redux';
-import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView, Linking, TouchableOpacity, ViewStyle } from 'react-native';
+import { Map } from 'immutable';
+import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView, Linking, TouchableOpacity, ViewStyle, Dimensions } from 'react-native';
 
 import { layoutStyles, contentStyles, tileStyles, contactStyles } from '../profile/styles';
 import { Chevron } from '../profile/chevron';
@@ -15,23 +16,40 @@ import { Employee } from '../reducers/organization/employee.model';
 import { ApplicationIcon } from '../override/application-icon';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
 import { openCompanyAction } from './employee-details-dispatcher';
+import { loadCalendarEvents } from '../reducers/calendar/calendar.action';
+import { CalendarEvent } from '../reducers/calendar/calendar-event.model';
+import { eventDialogTextDateFormat } from '../calendar/event-dialog/event-dialog-base';
+import { EmployeeDetailsEventsList } from './employee-details-events-list';
 
 interface EmployeeDetailsProps {
-    employee: Employee;
+    employee?: Employee;
     department: Department;
-    layoutStylesChevronPlaceholder: ViewStyle;
-
+    layoutStylesChevronPlaceholder?: ViewStyle;
+    events?: Map<string, CalendarEvent[]>;
+    eventsPredicate?: (event: CalendarEvent) => boolean;
 }
+
+const mapStateToProps = (state: AppState, props: EmployeeDetailsProps): EmployeeDetailsProps => ({
+    department: props.department,
+    events: state.calendar.calendarEvents.events,
+    eventsPredicate: state.calendar.calendarEvents.eventsPredicate
+});
+
 const TileSeparator = () => <View style = {tileStyles.separator}></View>;
 
 interface EmployeeDetailsDispatchProps {
     onCompanyClicked: (departmentId: string) => void;
+    loadCalendarEvents: (employeeId: string) => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchProps => ({
-    onCompanyClicked: (departmentId: string) => dispatch( openCompanyAction(departmentId))
+    onCompanyClicked: (departmentId: string) => dispatch( openCompanyAction(departmentId)),
+    loadCalendarEvents: (employeeId: string) => dispatch(loadCalendarEvents(employeeId))
 });
 
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
+    public componentDidMount() {
+        this.props.loadCalendarEvents(this.props.employee.employeeId);
+    }
     public render() {
         const { employee, department } = this.props;
 
@@ -41,6 +59,13 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
         const tiles = this.getTiles(employee);
         const contacts = this.getContacts(employee);
+
+
+        let events = this.props.events.get(employee.employeeId);
+
+        if (events !== undefined) {
+            events = events.filter(this.props.eventsPredicate);
+        }
 
         return (
                 <View style={layoutStyles.container}>
@@ -72,6 +97,12 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                                 {contacts}
                             </View>
                         </View>
+
+                        {
+                            (events !== undefined && events.length > 0) ? 
+                            <EmployeeDetailsEventsList events={events} /> : null
+                        }
+
                     </View>
                     </ScrollView>
                 </View>
@@ -184,4 +215,4 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
     }
 }
 
-export const EmployeeDetails = connect(null, mapDispatchToProps)(EmployeeDetailsImpl);
+export const EmployeeDetails = connect(mapStateToProps, mapDispatchToProps)(EmployeeDetailsImpl);

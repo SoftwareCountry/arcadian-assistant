@@ -24,12 +24,17 @@ export const loadCalendarEventsFinishedEpic$ = (action$: ActionsObservable<LoadC
 
 export const loadCalendarEventsEpic$ = (action$: ActionsObservable<LoadCalendarEvents>, state: AppState, deps: DependenciesContainer) =>
     action$.ofType('LOAD-CALENDAR-EVENTS')
-        .switchMap(x => deps.apiClient
-            .getJSON(`/employees/${x.employeeId}/events`)
-            .map((obj: Object[]) => deserializeArray(obj, CalendarEvent))
-            .map(calendarEvents => new CalendarEvents(calendarEvents))
-        )
-        .map(x => loadCalendarEventsFinished(x))
+        .groupBy(x => x.employeeId)
+        .map(x =>
+            x.switchMap(y =>
+                deps.apiClient.getJSON(`/employees/${x.key}/events`)
+                    .map(obj => deserializeArray(obj as any, CalendarEvent))
+                    .map(calendarEvents => new CalendarEvents(calendarEvents)))
+                    .map(z => { 
+                        return {events: z, employeeId: x.key};
+                    }))
+        .mergeAll()
+        .map(x => loadCalendarEventsFinished(x.events, x.employeeId))
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
 export const calendarEventCreatedEpic$ = (action$: ActionsObservable<CalendarEventCreated>) =>
