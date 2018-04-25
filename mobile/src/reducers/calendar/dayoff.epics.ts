@@ -1,5 +1,5 @@
 import { ActionsObservable } from 'redux-observable';
-import { ConfirmProcessDayoff, CancelDayoff } from './dayoff.action';
+import { ConfirmProcessDayoff, CancelDayoff, ApproveDayoff } from './dayoff.action';
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { CalendarEvent, CalendarEventType, CalendarEventStatus, DatesInterval } from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
@@ -44,6 +44,21 @@ export const dayoffCanceledEpic$ = (action$: ActionsObservable<CancelDayoff>, st
             const requestBody = {...x.calendarEvent};
 
             requestBody.status = CalendarEventStatus.Cancelled;
+
+            return deps.apiClient.put(
+                `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
+                requestBody,
+                { 'Content-Type': 'application/json' }
+            ).map(obj => loadCalendarEvents(x.employeeId));
+        })
+        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+
+export const dayoffApprovedEpic$ = (action$: ActionsObservable<ApproveDayoff>, state: AppState, deps: DependenciesContainer) =>
+    action$.ofType('APPROVE-DAYOFF')
+        .flatMap(x => {
+            const requestBody = { ...x.calendarEvent };
+
+            requestBody.status = CalendarEventStatus.Approved;
 
             return deps.apiClient.put(
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,

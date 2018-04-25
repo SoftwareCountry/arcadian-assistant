@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Map } from 'immutable';
-import { View, Text, StyleSheet, FlatList, ListRenderItemInfo, ViewStyle, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ListRenderItemInfo, ViewStyle, Dimensions, TouchableOpacity } from 'react-native';
 
 import { StyledText } from '../override/styled-text';
 import { ApplicationIcon } from '../override/application-icon';
@@ -43,6 +43,10 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
                     <View style={eventRow}>
                         <ApplicationIcon name={this.eventTypeToGlyphIcon.get(item.type)} style={eventIcon} />
                         <StyledText style={eventTitle}>{item.type} starts on {item.dates.startDate.format(eventDialogTextDateFormat)} and completes on {item.dates.endDate.format(eventDialogTextDateFormat)} ({item.status})</StyledText>
+                        <View style={{ paddingLeft: 10, flexDirection: 'column', alignItems: 'center' }}>
+                            <TouchableOpacity><Text style={{ fontSize: 9, color: 'green' }}>APPROVE</Text></TouchableOpacity>
+                            <TouchableOpacity><Text style={{ fontSize: 9, color: 'red' }}>REJECT</Text></TouchableOpacity>
+                        </View>
                     </View>
                 </View>
         );

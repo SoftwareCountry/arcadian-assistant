@@ -1,5 +1,5 @@
 import { AppState, DependenciesContainer } from '../app.reducer';
-import { ConfirmClaimVacation, CancelVacation, ConfirmVacationChange } from './vacation.action';
+import { ConfirmClaimVacation, CancelVacation, ConfirmVacationChange, ApproveVacation } from './vacation.action';
 import { ActionsObservable } from 'redux-observable';
 import { CalendarEvent, CalendarEventType, CalendarEventStatus } from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
@@ -63,5 +63,20 @@ export const vacationChangedEpic$ = (action$: ActionsObservable<ConfirmVacationC
                 requestBody,
                 { 'Content-Type': 'application/json' }
             ).map(() => loadCalendarEvents(x.employeeId));
+        })
+        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+
+export const vacationApprovedEpic$ = (action$: ActionsObservable<ApproveVacation>, state: AppState, deps: DependenciesContainer) =>
+    action$.ofType('APPROVE-VACATION')
+        .flatMap(x => {
+            const requestBody = { ...x.calendarEvent };
+
+            requestBody.status = CalendarEventStatus.Approved;
+
+            return deps.apiClient.put(
+                `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
+                requestBody,
+                { 'Content-Type': 'application/json' }
+            ).map(obj => loadCalendarEvents(x.employeeId));
         })
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
