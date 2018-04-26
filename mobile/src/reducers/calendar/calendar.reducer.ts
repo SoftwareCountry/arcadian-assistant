@@ -5,9 +5,9 @@ import { DaysCountersState, daysCountersReducer } from './days-counters.reducer'
 import { calendarEventsReducer, CalendarEventsState } from './calendar-events.reducer';
 import { EventDialogState, eventDialogReducer } from './event-dialog/event-dialog.reducer';
 import { openEventDialogEpic$, closeEventDialogEpic$ } from './event-dialog/event-dialog.epics';
-import { sickLeaveSavedEpic$, sickLeaveCompletedEpic$, sickLeaveProlongedEpic$, sickLeaveCanceledEpic$ } from './sick-leave.epics';
-import { vacationSavedEpic$, vacationCanceledEpic$, vacationChangedEpic$ } from './vacation.epics';
-import { dayoffSavedEpic$, dayoffCanceledEpic$ } from './dayoff.epics';
+import { sickLeaveSavedEpic$, sickLeaveCompletedEpic$, sickLeaveProlongedEpic$, sickLeaveCanceledEpic$, sickLeaveApprovedEpic$, sickLeaveRejectedEpic$ } from './sick-leave.epics';
+import { vacationSavedEpic$, vacationCanceledEpic$, vacationChangedEpic$, vacationApprovedEpic$, vacationRejectedEpic$ } from './vacation.epics';
+import { dayoffSavedEpic$, dayoffCanceledEpic$, dayoffApprovedEpic$, dayoffRejectedEpic$ } from './dayoff.epics';
 
 export interface CalendarState {
     daysCounters: DaysCountersState;
@@ -24,11 +24,17 @@ export const calendarEpics = combineEpics(
     sickLeaveCompletedEpic$ as any,
     sickLeaveProlongedEpic$ as any,
     sickLeaveCanceledEpic$ as any,
+    sickLeaveApprovedEpic$ as any,
+    sickLeaveRejectedEpic$ as any,
     vacationSavedEpic$ as any,
     vacationCanceledEpic$ as any,
     vacationChangedEpic$ as any,
+    vacationApprovedEpic$ as any,
+    vacationRejectedEpic$ as any,
     dayoffSavedEpic$ as any,
     dayoffCanceledEpic$ as any,
+    dayoffApprovedEpic$ as any,
+    dayoffRejectedEpic$ as any,
     intervalsBySingleDaySelectionEpic$ as any,
     openEventDialogEpic$ as any,
     closeEventDialogEpic$ as any,

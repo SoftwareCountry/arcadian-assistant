@@ -26,6 +26,14 @@ export interface ApproveVacation {
 
 export const approveVacation = (employeeId: string, calendarEvent: CalendarEvent): ApproveVacation => ({ type: 'APPROVE-VACATION', calendarEvent, employeeId });
 
+export interface RejectVacation {
+    type: 'REJECT-VACATION';
+    employeeId: string;
+    calendarEvent: CalendarEvent;
+}
+
+export const rejectVacation = (employeeId: string, calendarEvent: CalendarEvent): RejectVacation => ({ type: 'REJECT-VACATION', calendarEvent, employeeId });
+
 export interface ConfirmVacationChange {
     type: 'CONFIRM-VACATION-CHANGE';
     employeeId: string;
