@@ -16,13 +16,10 @@ import { Employee } from '../reducers/organization/employee.model';
 import { ApplicationIcon } from '../override/application-icon';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
 import { openCompanyAction } from './employee-details-dispatcher';
-import { loadCalendarEvents } from '../reducers/calendar/calendar.action';
-import { approveVacation, rejectVacation } from '../reducers/calendar/vacation.action';
+import { loadCalendarEvents, CalendarEventReject, calendarEventApprove, calendarEventReject } from '../reducers/calendar/calendar.action';
 import { CalendarEvent } from '../reducers/calendar/calendar-event.model';
 import { eventDialogTextDateFormat } from '../calendar/event-dialog/event-dialog-base';
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
-import { approveDayoff, rejectDayoff } from '../reducers/calendar/dayoff.action';
-import { approveSickLeave, rejectSickLeave } from '../reducers/calendar/sick-leave.action';
 
 interface EmployeeDetailsProps {
     employee?: Employee;
@@ -43,22 +40,14 @@ const TileSeparator = () => <View style = {tileStyles.separator}></View>;
 interface EmployeeDetailsDispatchProps {
     onCompanyClicked: (departmentId: string) => void;
     loadCalendarEvents: (employeeId: string) => void;
-    approveVacation: (employeeId: string, calendarEvent: CalendarEvent) => void;
-    rejectVacation: (employeeId: string, calendarEvent: CalendarEvent) => void;
-    approveDayoff: (employeeId: string, calendarEvent: CalendarEvent) => void;
-    rejectDayoff: (employeeId: string, calendarEvent: CalendarEvent) => void;
-    approveSickLeave: (employeeId: string, calendarEvent: CalendarEvent) => void;
-    rejectSickLeave: (employeeId: string, calendarEvent: CalendarEvent) => void;
+    approveAction: (employeeId: string, calendarEvent: CalendarEvent) => void;
+    rejectAction: (employeeId: string, calendarEvent: CalendarEvent) => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchProps => ({
     onCompanyClicked: (departmentId: string) => dispatch( openCompanyAction(departmentId)),
     loadCalendarEvents: (employeeId: string) => dispatch(loadCalendarEvents(employeeId)),
-    approveVacation: (employeeId: string, calendarEvent: CalendarEvent) => dispatch(approveVacation(employeeId, calendarEvent)),
-    rejectVacation: (employeeId: string, calendarEvent: CalendarEvent) => dispatch(rejectVacation(employeeId, calendarEvent)),
-    approveDayoff: (employeeId: string, calendarEvent: CalendarEvent) => dispatch(approveDayoff(employeeId, calendarEvent)),
-    rejectDayoff: (employeeId: string, calendarEvent: CalendarEvent) => dispatch(rejectDayoff(employeeId, calendarEvent)),
-    approveSickLeave: (employeeId: string, calendarEvent: CalendarEvent) => dispatch(approveSickLeave(employeeId, calendarEvent)),
-    rejectSickLeave: (employeeId: string, calendarEvent: CalendarEvent) => dispatch(rejectSickLeave(employeeId, calendarEvent))
+    approveAction: (employeeId: string, calendarEvent: CalendarEvent) => dispatch(calendarEventApprove(employeeId, calendarEvent)),
+    rejectAction: (employeeId: string, calendarEvent: CalendarEvent) => dispatch(calendarEventReject(employeeId, calendarEvent)),
 });
 
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
@@ -118,12 +107,8 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                             <EmployeeDetailsEventsList 
                                 events={events} 
                                 employeeId={employee.employeeId}
-                                approveVacation={this.props.approveVacation} 
-                                rejectVacation={this.props.rejectVacation} 
-                                approveDayoff={this.props.approveDayoff} 
-                                rejectDayoff={this.props.rejectDayoff} 
-                                approveSickLeave={this.props.approveSickLeave} 
-                                rejectSickLeave={this.props.rejectSickLeave} 
+                                approveAction={this.props.approveAction} 
+                                rejectAction={this.props.rejectAction}
                             /> : null
                         }
 

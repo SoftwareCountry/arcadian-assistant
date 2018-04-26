@@ -1,5 +1,5 @@
 import { ActionsObservable } from 'redux-observable';
-import { CompleteSickLeave, ConfirmClaimSickLeave, ConfirmProlongSickLeave, CancelSickLeave, ApproveSickLeave, RejectSickLeave } from './sick-leave.action';
+import { CompleteSickLeave, ConfirmClaimSickLeave, ConfirmProlongSickLeave, CancelSickLeave } from './sick-leave.action';
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { CalendarEventStatus, CalendarEvent, CalendarEventType } from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
@@ -81,35 +81,5 @@ export const sickLeaveCanceledEpic$ = (action$: ActionsObservable<CancelSickLeav
                 requestBody,
                 { 'Content-Type': 'application/json' }
             ).map(() => loadCalendarEvents(x.employeeId));
-        })
-        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
-
-export const sickLeaveApprovedEpic$ = (action$: ActionsObservable<ApproveSickLeave>, state: AppState, deps: DependenciesContainer) =>
-    action$.ofType('APPROVE-SICK-LEAVE')
-        .flatMap(x => {
-            const requestBody = { ...x.calendarEvent };
-
-            requestBody.status = CalendarEventStatus.Approved;
-
-            return deps.apiClient.put(
-                `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
-                requestBody,
-                { 'Content-Type': 'application/json' }
-            ).map(obj => loadCalendarEvents(x.employeeId));
-        })
-        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
-
-export const sickLeaveRejectedEpic$ = (action$: ActionsObservable<RejectSickLeave>, state: AppState, deps: DependenciesContainer) =>
-    action$.ofType('REJECT-SICK-LEAVE')
-        .flatMap(x => {
-            const requestBody = { ...x.calendarEvent };
-
-            requestBody.status = CalendarEventStatus.Rejected;
-
-            return deps.apiClient.put(
-                `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
-                requestBody,
-                { 'Content-Type': 'application/json' }
-            ).map(obj => loadCalendarEvents(x.employeeId));
         })
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));

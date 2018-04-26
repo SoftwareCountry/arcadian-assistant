@@ -27,19 +27,3 @@ export const cancelDayoff = (
     employeeId: string,
     calendarEvent: CalendarEvent
 ): CancelDayoff => ({ type: 'CANCEL-DAYOFF', employeeId, calendarEvent });
-
-export interface ApproveDayoff {
-    type: 'APPROVE-DAYOFF';
-    employeeId: string;
-    calendarEvent: CalendarEvent;
-}
-
-export const approveDayoff = (employeeId: string, calendarEvent: CalendarEvent): ApproveDayoff => ({ type: 'APPROVE-DAYOFF', calendarEvent, employeeId });
-
-export interface RejectDayoff {
-    type: 'REJECT-DAYOFF';
-    employeeId: string;
-    calendarEvent: CalendarEvent;
-}
-
-export const rejectDayoff = (employeeId: string, calendarEvent: CalendarEvent): RejectDayoff => ({ type: 'REJECT-DAYOFF', calendarEvent, employeeId });

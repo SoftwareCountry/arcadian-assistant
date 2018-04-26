@@ -4,7 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import { deserializeArray } from 'santee-dcts';
 import {
     loadCalendarEventsFinished, CalendarEventCreated, SelectIntervalsBySingleDaySelection, selectIntervalsBySingleDaySelection, SelectCalendarDay, LoadCalendarEventsFinished, LoadCalendarEvents, loadCalendarEvents, 
-    CalendarSelectionMode, disableCalendarSelection, DisableCalendarSelection, CalendarSelectionModeType
+    CalendarSelectionMode, disableCalendarSelection, DisableCalendarSelection, CalendarSelectionModeType, CalendarEventApprove, CalendarEventReject
 } from './calendar.action';
 import { loadFailedError } from '../errors/errors.action';
 import { CalendarEvent, CalendarEventStatus, CalendarEventType } from './calendar-event.model';
@@ -51,3 +51,33 @@ export const intervalsBySingleDaySelectionEpic$ = (action$: ActionsObservable<Se
 export const calendarSelectionModeEpic$ = (action$: ActionsObservable<CalendarSelectionMode>) =>
     action$.ofType('CALENDAR-SELECTION-MODE')
         .map(x => disableCalendarSelection(false));
+
+export const calendarEventApprovedEpic$ = (action$: ActionsObservable<CalendarEventApprove>, state: AppState, deps: DependenciesContainer) =>
+    action$.ofType('CALENDAR-EVENT-APPROVE')
+        .flatMap(x => {
+            const requestBody = { ...x.calendarEvent };
+
+            requestBody.status = CalendarEventStatus.Approved;
+
+            return deps.apiClient.put(
+                `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
+                requestBody,
+                { 'Content-Type': 'application/json' }
+            ).map(obj => loadCalendarEvents(x.employeeId));
+        })
+        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+
+export const calendarEventRejectedEpic$ = (action$: ActionsObservable<CalendarEventReject>, state: AppState, deps: DependenciesContainer) =>
+    action$.ofType('CALENDAR-EVENT-REJECT')
+        .flatMap(x => {
+            const requestBody = { ...x.calendarEvent };
+
+            requestBody.status = CalendarEventStatus.Rejected;
+
+            return deps.apiClient.put(
+                `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
+                requestBody,
+                { 'Content-Type': 'application/json' }
+            ).map(obj => loadCalendarEvents(x.employeeId));
+        })
+        .catch((e: Error) => Observable.of(loadFailedError(e.message)));

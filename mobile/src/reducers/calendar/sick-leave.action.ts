@@ -37,20 +37,4 @@ export interface CancelSickLeave {
 
 export const cancelSickLeave = (employeeId: string, calendarEvent: CalendarEvent): CancelSickLeave => ({ type: 'CANCEL-SICK-LEAVE', employeeId, calendarEvent });
 
-export interface ApproveSickLeave {
-    type: 'APPROVE-SICK-LEAVE';
-    employeeId: string;
-    calendarEvent: CalendarEvent;
-}
-
-export const approveSickLeave = (employeeId: string, calendarEvent: CalendarEvent): ApproveSickLeave => ({ type: 'APPROVE-SICK-LEAVE', calendarEvent, employeeId });
-
-export interface RejectSickLeave {
-    type: 'REJECT-SICK-LEAVE';
-    employeeId: string;
-    calendarEvent: CalendarEvent;
-}
-
-export const rejectSickLeave = (employeeId: string, calendarEvent: CalendarEvent): RejectSickLeave => ({ type: 'REJECT-SICK-LEAVE', calendarEvent, employeeId });
-
-export type SickLeaveActions =  ConfirmClaimSickLeave | CompleteSickLeave | ConfirmProlongSickLeave | CancelSickLeave | ApproveSickLeave | RejectSickLeave;
+export type SickLeaveActions =  ConfirmClaimSickLeave | CompleteSickLeave | ConfirmProlongSickLeave | CancelSickLeave;

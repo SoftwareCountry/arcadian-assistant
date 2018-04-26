@@ -25,6 +25,22 @@ export interface CalendarEventCreated {
 
 export const calendarEventCreated = (calendarEvent: CalendarEvent): CalendarEventCreated => ({ type: 'CALENDAR-EVENT-CREATED', calendarEvent });
 
+export interface CalendarEventApprove {
+    type: 'CALENDAR-EVENT-APPROVE';
+    employeeId: string;
+    calendarEvent: CalendarEvent;
+}
+
+export const calendarEventApprove = (employeeId: string, calendarEvent: CalendarEvent): CalendarEventApprove => ({ type: 'CALENDAR-EVENT-APPROVE', calendarEvent, employeeId });
+
+export interface CalendarEventReject {
+    type: 'CALENDAR-EVENT-REJECT';
+    employeeId: string;
+    calendarEvent: CalendarEvent;
+}
+
+export const calendarEventReject = (employeeId: string, calendarEvent: CalendarEvent): CalendarEventReject => ({ type: 'CALENDAR-EVENT-REJECT', calendarEvent, employeeId });
+
 export interface SelectCalendarDay {
     type: 'SELECT-CALENDAR-DAY';
     day: DayModel;
@@ -76,4 +92,4 @@ export const disableSelectIntervalsBySingleDaySelection = (disable: boolean): Di
 
 export type CalendarActions = LoadCalendarEventsFinished | CalendarEventCreated |
     SelectCalendarDay | SelectCalendarMonth |
-    CalendarSelectionMode | SelectIntervalsBySingleDaySelection | DisableCalendarSelection | DisableSelectIntervalsBySingleDaySelection;
+    CalendarSelectionMode | SelectIntervalsBySingleDaySelection | DisableCalendarSelection | DisableSelectIntervalsBySingleDaySelection | CalendarEventApprove | CalendarEventReject;

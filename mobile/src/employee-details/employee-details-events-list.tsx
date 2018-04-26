@@ -11,12 +11,8 @@ import { eventDialogTextDateFormat } from '../calendar/event-dialog/event-dialog
 interface EmployeeDetailsEventsListProps {
     events: CalendarEvent[];
     employeeId: string;
-    approveVacation: (employeeId: string, calendarEvent: CalendarEvent) => void;
-    rejectVacation: (employeeId: string, calendarEvent: CalendarEvent) => void;
-    approveDayoff: (employeeId: string, calendarEvent: CalendarEvent) => void;
-    rejectDayoff: (employeeId: string, calendarEvent: CalendarEvent) => void;
-    approveSickLeave: (employeeId: string, calendarEvent: CalendarEvent) => void;
-    rejectSickLeave: (employeeId: string, calendarEvent: CalendarEvent) => void;
+    approveAction: (employeeId: string, calendarEvent: CalendarEvent) => void;
+    rejectAction: (employeeId: string, calendarEvent: CalendarEvent) => void;
 }
 
 export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsListProps> {
@@ -61,18 +57,10 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
 
     private updateCalendarEvent(calendarEventId: string, status: CalendarEventStatus) {
         const event = this.props.events.find(e => e.calendarEventId === calendarEventId);
-        if (event.type === CalendarEventType.Vacation && status === CalendarEventStatus.Approved) {
-            this.props.approveVacation(this.props.employeeId, event);
-        } else if (event.type === CalendarEventType.Vacation && status === CalendarEventStatus.Rejected) {
-            this.props.rejectVacation(this.props.employeeId, event);
-        } else if (event.type === CalendarEventType.Dayoff && status === CalendarEventStatus.Approved) {
-            this.props.approveDayoff(this.props.employeeId, event);
-        } else if (event.type === CalendarEventType.Dayoff && status === CalendarEventStatus.Rejected) {
-            this.props.rejectDayoff(this.props.employeeId, event);
-        } else if (event.type === CalendarEventType.Sickleave && status === CalendarEventStatus.Approved) {
-            this.props.approveSickLeave(this.props.employeeId, event);
-        } else if (event.type === CalendarEventType.Sickleave && status === CalendarEventStatus.Rejected) {
-            this.props.rejectSickLeave(this.props.employeeId, event);
+        if (status === CalendarEventStatus.Approved) {
+            this.props.approveAction(this.props.employeeId, event);
+        } else if (status === CalendarEventStatus.Rejected) {
+            this.props.rejectAction(this.props.employeeId, event);
         }
     }
 }
