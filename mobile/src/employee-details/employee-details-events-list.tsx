@@ -47,14 +47,25 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
                         <ApplicationIcon name={this.eventTypeToGlyphIcon.get(item.type)} style={eventIcon} />
                         <StyledText style={eventTitle}>{item.type} starts on {item.dates.startDate.format(eventDialogTextDateFormat)} and completes on {item.dates.endDate.format(eventDialogTextDateFormat)} ({item.status})</StyledText>
                         {
-                            (this.props.events.find(e => e.calendarEventId === item.calendarEventId).status === CalendarEventStatus.Requested) ? <View style={{ paddingLeft: 10, flexDirection: 'column', alignItems: 'center' }}>
-                            <TouchableOpacity onPress={() => this.updateCalendarEvent(item.calendarEventId, CalendarEventStatus.Approved)}><Text style={{ fontSize: 9, color: 'green' }}>APPROVE</Text></TouchableOpacity>
-                            <TouchableOpacity onPress={() => this.updateCalendarEvent(item.calendarEventId, CalendarEventStatus.Rejected)}><Text style={{ fontSize: 9, color: 'red' }}>REJECT</Text></TouchableOpacity>
-                        </View> : null
+                            this.eventManagementControls(item.calendarEventId)
                         }
                     </View>
                 </View>
         );
+    }
+
+    private eventManagementControls(calendarEventId: string) {
+        return (this.props.events.find(e => e.calendarEventId === calendarEventId).status === CalendarEventStatus.Requested) ? 
+        <View style={{ paddingLeft: 10, flexDirection: 'column', alignItems: 'center' }}>
+            <TouchableOpacity 
+                onPress={() => this.updateCalendarEvent(calendarEventId, CalendarEventStatus.Approved)}>
+                <Text style={{ fontSize: 9, color: 'green' }}>APPROVE</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+                onPress={() => this.updateCalendarEvent(calendarEventId, CalendarEventStatus.Rejected)}>
+                    <Text style={{ fontSize: 9, color: 'red' }}>REJECT</Text>
+            </TouchableOpacity>
+        </View> : null;
     }
 
     private updateCalendarEvent(calendarEventId: string, status: CalendarEventStatus) {
