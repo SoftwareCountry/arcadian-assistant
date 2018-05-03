@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { Map } from 'immutable';
-import { View, Text, StyleSheet, FlatList, ListRenderItemInfo, ViewStyle, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ListRenderItemInfo, ViewStyle, Dimensions } from 'react-native';
 
 import { StyledText } from '../override/styled-text';
 import { ApplicationIcon } from '../override/application-icon';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
 import { CalendarEvent, CalendarEventType, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { eventDialogTextDateFormat } from '../calendar/event-dialog/event-dialog-base';
+import { EventManagementToolset } from './event-management-toolset';
 
 interface EmployeeDetailsEventsListProps {
     events: CalendarEvent[];
@@ -45,29 +46,9 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
                     <View style={eventRow}>
                         <ApplicationIcon name={this.eventTypeToGlyphIcon.get(item.type)} style={eventIcon} />
                         <StyledText style={eventTitle}>{item.type} starts on {item.dates.startDate.format(eventDialogTextDateFormat)} and completes on {item.dates.endDate.format(eventDialogTextDateFormat)} ({item.status})</StyledText>
-                        {
-                            this.eventManagementControls(this.props.events.find(e => e.calendarEventId === item.calendarEventId))
-                        }
+                        <EventManagementToolset event={this.props.events.find(e => e.calendarEventId === item.calendarEventId)} employeeId={this.props.employeeId} eventSetNewStatusAction={this.props.eventSetNewStatusAction} />
                     </View>
                 </View>
         );
-    }
-
-    private eventManagementControls(calendarEvent: CalendarEvent) {
-        return (calendarEvent.status === CalendarEventStatus.Requested) ? 
-        <View style={{ paddingLeft: 10, flexDirection: 'column', alignItems: 'center' }}>
-            <TouchableOpacity 
-                onPress={() => this.updateCalendarEvent(calendarEvent, CalendarEventStatus.Approved)}>
-                <Text style={{ fontSize: 9, color: 'green' }}>APPROVE</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-                onPress={() => this.updateCalendarEvent(calendarEvent, CalendarEventStatus.Rejected)}>
-                    <Text style={{ fontSize: 9, color: 'red' }}>REJECT</Text>
-            </TouchableOpacity>
-        </View> : null;
-    }
-
-    private updateCalendarEvent(calendarEvent: CalendarEvent, status: CalendarEventStatus) {
-        this.props.eventSetNewStatusAction(this.props.employeeId, calendarEvent, status);
     }
 }
