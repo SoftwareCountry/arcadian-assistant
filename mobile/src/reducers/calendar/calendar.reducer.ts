@@ -1,6 +1,8 @@
 import { combineReducers } from 'redux';
 import { combineEpics } from 'redux-observable';
-import { loadUserEmployeeFinishedEpic$, calendarEventCreatedEpic$, intervalsBySingleDaySelectionEpic$, loadCalendarEventsEpic$, loadCalendarEventsFinishedEpic$, calendarSelectionModeEpic$, calendarEventApprovedEpic$, calendarEventRejectedEpic$ } from './calendar.epics';
+import { loadUserEmployeeFinishedEpic$, calendarEventCreatedEpic$, intervalsBySingleDaySelectionEpic$, 
+        loadCalendarEventsEpic$, loadCalendarEventsFinishedEpic$, calendarSelectionModeEpic$, 
+        calendarEventSetNewStatusEpic$ } from './calendar.epics';
 import { DaysCountersState, daysCountersReducer } from './days-counters.reducer';
 import { calendarEventsReducer, CalendarEventsState } from './calendar-events.reducer';
 import { EventDialogState, eventDialogReducer } from './event-dialog/event-dialog.reducer';
@@ -8,6 +10,7 @@ import { openEventDialogEpic$, closeEventDialogEpic$ } from './event-dialog/even
 import { sickLeaveSavedEpic$, sickLeaveCompletedEpic$, sickLeaveProlongedEpic$, sickLeaveCanceledEpic$ } from './sick-leave.epics';
 import { vacationSavedEpic$, vacationCanceledEpic$, vacationChangedEpic$ } from './vacation.epics';
 import { dayoffSavedEpic$, dayoffCanceledEpic$ } from './dayoff.epics';
+import { calendarEventSetNewStatus } from './calendar.action';
 
 export interface CalendarState {
     daysCounters: DaysCountersState;
@@ -20,8 +23,7 @@ export const calendarEpics = combineEpics(
     loadCalendarEventsEpic$ as any,
     loadCalendarEventsFinishedEpic$ as any,
     calendarEventCreatedEpic$ as any,
-    calendarEventApprovedEpic$ as any,
-    calendarEventRejectedEpic$ as any,
+    calendarEventSetNewStatusEpic$ as any,
     sickLeaveSavedEpic$ as any,
     sickLeaveCompletedEpic$ as any,
     sickLeaveProlongedEpic$ as any,

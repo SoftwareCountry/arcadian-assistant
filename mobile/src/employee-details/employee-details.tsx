@@ -16,8 +16,8 @@ import { Employee } from '../reducers/organization/employee.model';
 import { ApplicationIcon } from '../override/application-icon';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
 import { openCompanyAction } from './employee-details-dispatcher';
-import { loadCalendarEvents, CalendarEventReject, calendarEventApprove, calendarEventReject } from '../reducers/calendar/calendar.action';
-import { CalendarEvent } from '../reducers/calendar/calendar-event.model';
+import { loadCalendarEvents, calendarEventSetNewStatus } from '../reducers/calendar/calendar.action';
+import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { eventDialogTextDateFormat } from '../calendar/event-dialog/event-dialog-base';
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
 
@@ -40,14 +40,12 @@ const TileSeparator = () => <View style = {tileStyles.separator}></View>;
 interface EmployeeDetailsDispatchProps {
     onCompanyClicked: (departmentId: string) => void;
     loadCalendarEvents: (employeeId: string) => void;
-    approveAction: (employeeId: string, calendarEvent: CalendarEvent) => void;
-    rejectAction: (employeeId: string, calendarEvent: CalendarEvent) => void;
+    eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchProps => ({
     onCompanyClicked: (departmentId: string) => dispatch( openCompanyAction(departmentId)),
     loadCalendarEvents: (employeeId: string) => dispatch(loadCalendarEvents(employeeId)),
-    approveAction: (employeeId: string, calendarEvent: CalendarEvent) => dispatch(calendarEventApprove(employeeId, calendarEvent)),
-    rejectAction: (employeeId: string, calendarEvent: CalendarEvent) => dispatch(calendarEventReject(employeeId, calendarEvent)),
+    eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status))
 });
 
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
@@ -107,8 +105,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                             <EmployeeDetailsEventsList 
                                 events={events} 
                                 employeeId={employee.employeeId}
-                                approveAction={this.props.approveAction} 
-                                rejectAction={this.props.rejectAction}
+                                eventSetNewStatusAction={this.props.eventSetNewStatusAction} 
                             /> : null
                         }
 
