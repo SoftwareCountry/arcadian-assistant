@@ -69,8 +69,8 @@ const createInitState = (): CalendarEventsState => {
         events: Map<string, CalendarEvent[]>(),
         userEmployeeId: null,
         eventsPredicate: (event: CalendarEvent) => {
-            const now = moment().date();
-            return event.dates.endDate.isSameOrAfter(now);
+            const now = moment();
+            return event.dates.endDate.isSameOrAfter(now, 'date');
         },
         disableCalendarDaysBefore: null,
         disableCalendarActionsButtonGroup: true,
