@@ -16,8 +16,8 @@ import { Employee } from '../reducers/organization/employee.model';
 import { ApplicationIcon } from '../override/application-icon';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
 import { openCompanyAction } from './employee-details-dispatcher';
-import { loadCalendarEvents } from '../reducers/calendar/calendar.action';
-import { CalendarEvent } from '../reducers/calendar/calendar-event.model';
+import { loadCalendarEvents, calendarEventSetNewStatus } from '../reducers/calendar/calendar.action';
+import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { eventDialogTextDateFormat } from '../calendar/event-dialog/event-dialog-base';
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
 
@@ -40,10 +40,12 @@ const TileSeparator = () => <View style = {tileStyles.separator}></View>;
 interface EmployeeDetailsDispatchProps {
     onCompanyClicked: (departmentId: string) => void;
     loadCalendarEvents: (employeeId: string) => void;
+    eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchProps => ({
     onCompanyClicked: (departmentId: string) => dispatch( openCompanyAction(departmentId)),
-    loadCalendarEvents: (employeeId: string) => dispatch(loadCalendarEvents(employeeId))
+    loadCalendarEvents: (employeeId: string) => dispatch(loadCalendarEvents(employeeId)),
+    eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status))
 });
 
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
@@ -100,7 +102,11 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
                         {
                             (events !== undefined && events.length > 0) ? 
-                            <EmployeeDetailsEventsList events={events} /> : null
+                            <EmployeeDetailsEventsList 
+                                events={events} 
+                                employeeId={employee.employeeId}
+                                eventSetNewStatusAction={this.props.eventSetNewStatusAction} 
+                            /> : null
                         }
 
                     </View>

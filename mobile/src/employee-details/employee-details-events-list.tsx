@@ -5,11 +5,14 @@ import { View, Text, StyleSheet, FlatList, ListRenderItemInfo, ViewStyle, Dimens
 import { StyledText } from '../override/styled-text';
 import { ApplicationIcon } from '../override/application-icon';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
-import { CalendarEvent, CalendarEventType } from '../reducers/calendar/calendar-event.model';
+import { CalendarEvent, CalendarEventType, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { eventDialogTextDateFormat } from '../calendar/event-dialog/event-dialog-base';
+import { EventManagementToolset } from './event-management-toolset';
 
 interface EmployeeDetailsEventsListProps {
     events: CalendarEvent[];
+    employeeId: string;
+    eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
 }
 
 export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsListProps> {
@@ -43,9 +46,9 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
                     <View style={eventRow}>
                         <ApplicationIcon name={this.eventTypeToGlyphIcon.get(item.type)} style={eventIcon} />
                         <StyledText style={eventTitle}>{item.type} starts on {item.dates.startDate.format(eventDialogTextDateFormat)} and completes on {item.dates.endDate.format(eventDialogTextDateFormat)} ({item.status})</StyledText>
+                        <EventManagementToolset event={this.props.events.find(e => e.calendarEventId === item.calendarEventId)} employeeId={this.props.employeeId} eventSetNewStatusAction={this.props.eventSetNewStatusAction} />
                     </View>
                 </View>
         );
     }
-
 }

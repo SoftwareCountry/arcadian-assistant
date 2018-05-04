@@ -1,4 +1,4 @@
-import { CalendarEvent } from './calendar-event.model';
+import { CalendarEvent, CalendarEventStatus } from './calendar-event.model';
 import { DayModel, CalendarSelection } from './calendar.model';
 import { SickLeaveActions } from './sick-leave.action';
 import { CalendarEvents } from './calendar-events.model';
@@ -24,6 +24,15 @@ export interface CalendarEventCreated {
 }
 
 export const calendarEventCreated = (calendarEvent: CalendarEvent): CalendarEventCreated => ({ type: 'CALENDAR-EVENT-CREATED', calendarEvent });
+
+export interface CalendarEventSetNewStatus {
+    type: 'CALENDAR-EVENT-NEW-STATUS';
+    employeeId: string;
+    calendarEvent: CalendarEvent;
+    status: CalendarEventStatus;
+}
+
+export const calendarEventSetNewStatus = (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus): CalendarEventSetNewStatus => ({ type: 'CALENDAR-EVENT-NEW-STATUS', calendarEvent, employeeId, status });
 
 export interface SelectCalendarDay {
     type: 'SELECT-CALENDAR-DAY';
@@ -76,4 +85,4 @@ export const disableSelectIntervalsBySingleDaySelection = (disable: boolean): Di
 
 export type CalendarActions = LoadCalendarEventsFinished | CalendarEventCreated |
     SelectCalendarDay | SelectCalendarMonth |
-    CalendarSelectionMode | SelectIntervalsBySingleDaySelection | DisableCalendarSelection | DisableSelectIntervalsBySingleDaySelection;
+    CalendarSelectionMode | SelectIntervalsBySingleDaySelection | DisableCalendarSelection | DisableSelectIntervalsBySingleDaySelection | CalendarEventSetNewStatus;
