@@ -109,14 +109,17 @@
 
             var eventsByEmployeeId = new Dictionary<string, IEnumerable<CalendarEvent>>();
 
+            var statuses = new CalendarEventStatuses();
+
             void OnMessage(object message)
             {
                 switch (message)
                 {
                     case GetCalendarEvents.Response response:
-                        if (response.Events.Count > 0)
+                        var pendingEvents = response.Events.Where(x => x.IsPending).ToList();
+                        if (pendingEvents.Count > 0)
                         {
-                            eventsByEmployeeId[response.EmployeeId] = response.Events.ToList();
+                            eventsByEmployeeId[response.EmployeeId] = pendingEvents;
                         }
 
                         calendarActorsToRespond.Remove(this.Sender);

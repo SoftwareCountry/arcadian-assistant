@@ -11,5 +11,7 @@
         public const string Rejected = "Rejected";
 
         public static readonly string[] All = { Requested, Approved, Cancelled, Rejected };
+
+        public static readonly string[] Pending = { Requested };
     }
 }
