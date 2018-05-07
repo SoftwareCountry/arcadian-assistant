@@ -7,11 +7,11 @@
 
     public sealed class DepartmentsQuery : ICloneable
     {
-        public bool ShouldLoadAllDepartments => this.DepartmentId == null;
-
         public string DepartmentId { get; private set; }
 
         public string AscendantDepartmentId { get; private set; }
+
+        public string DepartmentHeadEmployeeId { get; private set; }
 
         public static DepartmentsQuery Create()
         {
@@ -32,11 +32,19 @@
             return newObject;
         }
 
+        public DepartmentsQuery WithHead(string employeeId)
+        {
+            var newObject = this.CloneTypewise();
+            newObject.DepartmentHeadEmployeeId = employeeId;
+            return newObject;
+        }
+
         private DepartmentsQuery CloneTypewise()
         {
             var copy = new DepartmentsQuery();
             copy.DepartmentId = this.DepartmentId;
             copy.AscendantDepartmentId = this.AscendantDepartmentId;
+            copy.DepartmentHeadEmployeeId = this.DepartmentHeadEmployeeId;
             return copy;
         }
 
@@ -47,24 +55,11 @@
 
         public sealed class Response
         {
-            public IReadOnlyCollection<DepartmentFinding> Departments { get; }
+            public IReadOnlyCollection<DepartmentContainer> Departments { get; }
 
-            public Response(IReadOnlyCollection<DepartmentFinding> departments)
+            public Response(IReadOnlyCollection<DepartmentContainer> departments)
             {
                 this.Departments = departments;
-            }
-        }
-
-        public class DepartmentFinding
-        {
-            public DepartmentInfo Department { get; }
-
-            public IActorRef DepartmentActor { get; }
-
-            public DepartmentFinding(DepartmentInfo department, IActorRef departmentActor)
-            {
-                this.Department = department;
-                this.DepartmentActor = departmentActor;
             }
         }
     }

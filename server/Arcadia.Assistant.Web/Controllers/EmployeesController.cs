@@ -59,7 +59,7 @@
             var query = new EmployeesQuery();
             if (!string.IsNullOrWhiteSpace(departmentId))
             {
-                query = query.ForDepartment(departmentId);
+                query = query.ForDepartments(departmentId);
             }
 
             if (!string.IsNullOrWhiteSpace(roomNumber))
