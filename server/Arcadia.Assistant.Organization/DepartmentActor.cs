@@ -35,7 +35,7 @@
         {
             this.departmentInfo = departmentInfo;
             this.organizationEmployeesActor = organizationEmployeesActor;
-            this.feed = Context.ActorOf(Props.Create(() => new DepartmentFeedActor()));
+            this.feed = Context.ActorOf(Props.Create(() => new DepartmentFeedActor(departmentInfo)), "feed");
             this.RefreshFeedsInformation();
         }
 
