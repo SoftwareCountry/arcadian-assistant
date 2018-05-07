@@ -28,7 +28,7 @@
             switch (message)
             {
                 case GetCalendarEvents _:
-                    this.Sender.Tell(new GetCalendarEvents.Response(this.EventsById.Values.ToList()));
+                    this.Sender.Tell(new GetCalendarEvents.Response(this.EmployeeId, this.EventsById.Values.ToList()));
                     break;
 
                 case GetCalendarEvent request when !this.EventsById.ContainsKey(request.EventId):

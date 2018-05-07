@@ -8,10 +8,13 @@
 
         public class Response
         {
+            public string EmployeeId { get; }
+
             public IReadOnlyCollection<CalendarEvent> Events { get; }
 
-            public Response(IReadOnlyCollection<CalendarEvent> events)
+            public Response(string employeeId, IReadOnlyCollection<CalendarEvent> events)
             {
+                this.EmployeeId = employeeId;
                 this.Events = events;
             }
         }
