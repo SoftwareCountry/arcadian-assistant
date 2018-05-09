@@ -16,22 +16,25 @@
     /// </summary>
     public class EmployeeCalendarActor : UntypedActor, ILogReceive
     {
+        private readonly string employeeId;
+
         private readonly IActorRef vacationsActor;
 
         private readonly IActorRef workHoursActor;
 
         private readonly IActorRef sickLeavesActor;
 
-        public EmployeeCalendarActor(IActorRef vacationsActor, IActorRef workHoursActor, IActorRef sickLeavesActor)
+        public EmployeeCalendarActor(string employeeId, IActorRef vacationsActor, IActorRef workHoursActor, IActorRef sickLeavesActor)
         {
+            this.employeeId = employeeId;
             this.vacationsActor = vacationsActor;
             this.workHoursActor = workHoursActor;
             this.sickLeavesActor = sickLeavesActor;
         }
 
-        public static Props CreateProps(IActorRef vacationsActor, IActorRef workHoursActor, IActorRef sickLeavesActor)
+        public static Props CreateProps(string employeeId, IActorRef vacationsActor, IActorRef workHoursActor, IActorRef sickLeavesActor)
         {
-            return Props.Create(() => new EmployeeCalendarActor(vacationsActor, workHoursActor, sickLeavesActor));
+            return Props.Create(() => new EmployeeCalendarActor(employeeId, vacationsActor, workHoursActor, sickLeavesActor));
         }
 
         protected override void OnReceive(object message)
@@ -39,11 +42,11 @@
             switch (message)
             {
                 case GetCalendarEvents request:
-                    this.FindAllCalendarEvents(request).PipeTo(this.Sender);
+                    this.FindAllCalendarEvents(request).PipeTo(this.Sender, this.Self);
                     break;
 
                 case GetCalendarEvent request:
-                    this.FindSpecificCalendarEvent(request).PipeTo(this.Sender);
+                    this.FindSpecificCalendarEvent(request).PipeTo(this.Sender, this.Self);
                     break;
 
                 case UpsertCalendarEvent cmd when cmd.Event.EventId == null:
@@ -75,7 +78,7 @@
         {
             var responses = await this.GetActorResponses<GetCalendarEvents.Response>(request);
 
-            return new GetCalendarEvents.Response(responses.SelectMany(x => x.Events).ToList());
+            return new GetCalendarEvents.Response(this.employeeId, responses.SelectMany(x => x.Events).ToList());
         }
 
         private async Task<GetCalendarEvent.Response> FindSpecificCalendarEvent(GetCalendarEvent request)

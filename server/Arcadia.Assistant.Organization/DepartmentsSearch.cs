@@ -5,6 +5,7 @@
 
     using Akka.Actor;
 
+    using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public class DepartmentsSearch : UntypedActor, ILogReceive
@@ -17,7 +18,7 @@
 
         private readonly HashSet<IActorRef> actorsToRespond = new HashSet<IActorRef>();
 
-        private readonly List<DepartmentsQuery.DepartmentFinding> departmentFindings = new List<DepartmentsQuery.DepartmentFinding>();
+        private readonly List<DepartmentContainer> departmentFindings = new List<DepartmentContainer>();
 
         public DepartmentsSearch(DepartmentsQuery departmentsQuery, IReadOnlyDictionary<string, IActorRef> departments, IActorRef requestor)
         {
@@ -36,10 +37,10 @@
                     this.RequestDepartmentsInfo(prefilteredDepartments);
                     break;
 
-                case GetDepartmentInfo.Result info:
-                    this.actorsToRespond.Remove(info.DepartmentActor);
+                case DepartmentActor.GetDepartmentInfo.Result result:
+                    this.actorsToRespond.Remove(result.Department.DepartmentActor);
 
-                    this.departmentFindings.Add(new DepartmentsQuery.DepartmentFinding(info.Department, info.DepartmentActor));
+                    this.departmentFindings.Add(result.Department);
 
                     this.CheckIfSearchFinished();
 
@@ -57,7 +58,7 @@
 
             foreach (var actorRef in this.actorsToRespond)
             {
-                actorRef.Tell(GetDepartmentInfo.Instance);
+                actorRef.Tell(DepartmentActor.GetDepartmentInfo.Instance);
             }
 
             this.CheckIfSearchFinished();
@@ -72,9 +73,9 @@
             }
         }
 
-        private IEnumerable<DepartmentsQuery.DepartmentFinding> PostfilterDepartments()
+        private IEnumerable<DepartmentContainer> PostfilterDepartments()
         {
-            IEnumerable<DepartmentsQuery.DepartmentFinding> result = this.departmentFindings;
+            IEnumerable<DepartmentContainer> result = this.departmentFindings;
 
             if (this.departmentsQuery.AscendantDepartmentId != null)
             {
@@ -84,6 +85,11 @@
             if (this.departmentsQuery.DepartmentId != null)
             {
                 result = result.Where(x => x.Department.DepartmentId == this.departmentsQuery.DepartmentId);
+            }
+
+            if (this.departmentsQuery.DepartmentHeadEmployeeId != null)
+            {
+                result = result.Where(x => x.Department.ChiefId == this.departmentsQuery.DepartmentHeadEmployeeId);
             }
 
             return result;
@@ -112,15 +118,15 @@
             return prefilteredDepartments;
         }
 
-        private void FinishSearch(IReadOnlyCollection<DepartmentsQuery.DepartmentFinding> findings)
+        private void FinishSearch(IReadOnlyCollection<DepartmentContainer> findings)
         {
             this.requestor.Tell(new DepartmentsQuery.Response(findings));
             Context.Stop(this.Self);
         }
 
-        private static List<DepartmentsQuery.DepartmentFinding> GetDescendants(
+        private static List<DepartmentContainer> GetDescendants(
             string departmentId,
-            IEnumerable<DepartmentsQuery.DepartmentFinding> allDepartments)
+            IEnumerable<DepartmentContainer> allDepartments)
         {
             var children = allDepartments
                 .Where(x => x.Department.ParentDepartmentId == departmentId)

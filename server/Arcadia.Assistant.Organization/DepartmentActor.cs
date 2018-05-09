@@ -35,7 +35,7 @@
         {
             this.departmentInfo = departmentInfo;
             this.organizationEmployeesActor = organizationEmployeesActor;
-            this.feed = Context.ActorOf(Props.Create(() => new DepartmentFeedActor()));
+            this.feed = Context.ActorOf(Props.Create(() => new DepartmentFeedActor(departmentInfo)), "feed");
             this.RefreshFeedsInformation();
         }
 
@@ -49,7 +49,8 @@
                     break;
 
                 case GetDepartmentInfo _:
-                    this.Sender.Tell(new GetDepartmentInfo.Result(this.departmentInfo, this.Self));
+                    var container = new DepartmentContainer(this.departmentInfo, this.Self, this.head, this.employees.ToList());
+                    this.Sender.Tell(new GetDepartmentInfo.Result(container));
                     break;
 
                 default:
@@ -122,7 +123,7 @@
                 }
             }
 
-            this.organizationEmployeesActor.Tell(EmployeesQuery.Create().ForDepartment(this.departmentInfo.DepartmentId));
+            this.organizationEmployeesActor.Tell(EmployeesQuery.Create().ForDepartments(this.departmentInfo.DepartmentId));
             this.Become(RefreshingEmployees);
         }
 
@@ -156,6 +157,22 @@
             public sealed class Finished
             {
                 public static readonly Finished Instance = new Finished();
+            }
+        }
+
+        
+        public sealed class GetDepartmentInfo
+        {
+            public static readonly GetDepartmentInfo Instance = new GetDepartmentInfo();
+
+            public sealed class Result
+            {
+                public DepartmentContainer Department { get; }
+
+                public Result(DepartmentContainer department)
+                {
+                    this.Department = department;
+                }
             }
         }
     }

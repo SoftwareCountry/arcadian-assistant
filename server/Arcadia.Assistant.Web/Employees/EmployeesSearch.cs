@@ -28,7 +28,7 @@
 
         public async Task<IReadOnlyCollection<EmployeeContainer>> Search(EmployeesQuery query, CancellationToken token)
         {
-            var organization = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
+            var organization = this.actorSystem.ActorSelection(this.pathsBuilder.Get(WellKnownActorPaths.Organization));
             var response = await organization.Ask<EmployeesQuery.Response>(query, this.timeoutSettings.Timeout, token);
             return response.Employees;
         }

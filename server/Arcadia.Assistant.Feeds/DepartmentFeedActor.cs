@@ -10,9 +10,14 @@
 
     public class DepartmentFeedActor : UntypedActor
     {
-        private string feedName = string.Empty;
+        private DepartmentInfo departmentInfo;
 
         private List<IActorRef> employeeFeeds = new List<IActorRef>();
+
+        public DepartmentFeedActor(DepartmentInfo departmentInfo)
+        {
+            this.departmentInfo = departmentInfo;
+        }
 
         protected override void OnReceive(object message)
         {
@@ -23,7 +28,7 @@
                     break;
 
                 case AssignInformation information:
-                    this.feedName = information.DepartmentInfo.Name;
+                    this.departmentInfo = information.DepartmentInfo;
                     this.employeeFeeds = information.EmployeesFeeds.ToList();
                     break;
             }

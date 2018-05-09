@@ -40,7 +40,7 @@
             var sickLeavesActor = Context.ActorOf(EmployeeSickLeaveActor.CreateProps(this.employeeMetadata.EmployeeId), "sick-leaves");
             var workHoursActor = Context.ActorOf(EmployeeWorkHoursActor.CreateProps(this.employeeMetadata.EmployeeId), "work-hours");
 
-            var calendarActor = Context.ActorOf(EmployeeCalendarActor.CreateProps(vacationsActor, workHoursActor, sickLeavesActor));
+            var calendarActor = Context.ActorOf(EmployeeCalendarActor.CreateProps(this.employeeMetadata.EmployeeId, vacationsActor, workHoursActor, sickLeavesActor), "all-calendar-events");
 
             this.calendar = new EmployeeCalendarContainer(vacationsActor, workHoursActor, sickLeavesActor, calendarActor);
         }

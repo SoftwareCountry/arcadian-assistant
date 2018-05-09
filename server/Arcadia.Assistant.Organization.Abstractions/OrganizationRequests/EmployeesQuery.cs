@@ -2,10 +2,11 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class EmployeesQuery
     {
-        public string DepartmentId { get; private set; }
+        public IReadOnlyCollection<string> DepartmentIds { get; private set; }
 
         public string AscendantDepartmentId { get; private set; }
 
@@ -33,10 +34,10 @@
             return obj;
         }
 
-        public EmployeesQuery ForDepartment(string departmentId)
+        public EmployeesQuery ForDepartments(params string[] departmentIds)
         {
             var obj = this.Clone();
-            obj.DepartmentId = departmentId;
+            obj.DepartmentIds = new HashSet<string>(departmentIds);
             return obj;
         }
 
@@ -85,7 +86,7 @@
         private EmployeesQuery Clone()
         {
             var newObj = new EmployeesQuery();
-            newObj.DepartmentId = this.DepartmentId;
+            newObj.DepartmentIds = this.DepartmentIds;
             newObj.AscendantDepartmentId = this.AscendantDepartmentId;
             newObj.EmployeeId = this.EmployeeId;
             newObj.RoomNumber = this.RoomNumber;

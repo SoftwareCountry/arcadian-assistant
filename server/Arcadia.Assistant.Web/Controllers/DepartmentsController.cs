@@ -36,7 +36,7 @@
         [ProducesResponseType(typeof(DepartmentInfo[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> All(CancellationToken token)
         {
-            var departments = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
+            var departments = this.actorSystem.ActorSelection(this.pathsBuilder.Get(WellKnownActorPaths.Organization));
             var response = await departments.Ask<DepartmentsQuery.Response>(new DepartmentsQuery(), this.timeoutSettings.Timeout, token);
             return this.Ok(response.Departments.Select(x => x.Department).OrderBy(x => x.DepartmentId).ToArray());
         }
@@ -46,7 +46,7 @@
         [ProducesResponseType(typeof(DepartmentInfo), StatusCodes.Status200OK)]
         public async Task<IActionResult> Get(string departmentId, CancellationToken token)
         {
-            var organization = this.actorSystem.ActorSelection(this.pathsBuilder.Get("organization"));
+            var organization = this.actorSystem.ActorSelection(this.pathsBuilder.Get(WellKnownActorPaths.Organization));
             var response = await organization.Ask<DepartmentsQuery.Response>(new DepartmentsQuery().WithId(departmentId), this.timeoutSettings.Timeout, token);
             return this.Ok(response.Departments.Select(x => x.Department).FirstOrDefault());
         }

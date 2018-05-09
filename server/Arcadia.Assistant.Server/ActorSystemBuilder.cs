@@ -7,6 +7,7 @@
     using Arcadia.Assistant.Feeds;
     using Arcadia.Assistant.Helpdesk;
     using Arcadia.Assistant.Organization;
+    using Arcadia.Assistant.Server.Interop;
 
     public class ActorSystemBuilder
     {
@@ -19,9 +20,9 @@
 
         public ServerActorsCollection AddRootActors()
         {
-            var departments = this.actorSystem.ActorOf(this.actorSystem.DI().Props<OrganizationActor>(), "organization");
-            var helpdesk = this.actorSystem.ActorOf(Props.Create(() => new HelpdeskActor()), "helpdesk");
-            var feeds = this.actorSystem.ActorOf(Props.Create(() => new SharedFeedsActor(departments)), "shared-feeds");
+            var departments = this.actorSystem.ActorOf(this.actorSystem.DI().Props<OrganizationActor>(), WellKnownActorPaths.Organization);
+            var helpdesk = this.actorSystem.ActorOf(Props.Create(() => new HelpdeskActor()), WellKnownActorPaths.Helpdesk);
+            var feeds = this.actorSystem.ActorOf(Props.Create(() => new SharedFeedsActor(departments)), WellKnownActorPaths.SharedFeeds);
 
             return new ServerActorsCollection(departments, helpdesk, feeds);
         }
