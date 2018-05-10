@@ -123,7 +123,7 @@
                 }
             }
 
-            this.organizationEmployeesActor.Tell(EmployeesQuery.Create().ForDepartments(this.departmentInfo.DepartmentId));
+            this.organizationEmployeesActor.Tell(EmployeesQuery.Create().ForDepartment(this.departmentInfo.DepartmentId));
             this.Become(RefreshingEmployees);
         }
 
