@@ -13,11 +13,17 @@ describe('event dialog reducer', () => {
         expect(state.dialogType).toBe(eventTypeDialog);
     });
 
-    it('should return dialog type as null and dayoff type as default when close', () => {
+    it('should return dialog type as null when close', () => {
         const action = closeEventDialog();
         const state = eventDialogReducer(undefined, action);
 
         expect(state.dialogType).toBeNull();
+    });
+
+    it('should return dayoff type as default when close', () => {
+        const action = closeEventDialog();
+        const state = eventDialogReducer(undefined, action);
+
         expect(state.chosenHoursCreditType).toBe(HoursCreditType.DaysOff);
     });
 
