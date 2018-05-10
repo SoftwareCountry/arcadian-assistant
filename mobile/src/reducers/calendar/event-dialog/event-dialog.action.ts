@@ -1,5 +1,6 @@
 import { EventDialogType } from './event-dialog-type.model';
 import { SickLeaveActions } from '../sick-leave.action';
+import { ChosenTypeDayoff } from '../dayoff.action';
 
 export interface OpenEventDialog {
     type: 'OPEN-EVENT-DIALOG';
@@ -14,4 +15,4 @@ export interface CloseEventDialog {
 
 export const closeEventDialog = (): CloseEventDialog => ({ type: 'CLOSE-EVENT-DIALOG' });
 
-export type EventDialogActions = OpenEventDialog | CloseEventDialog;
+export type EventDialogActions = OpenEventDialog | CloseEventDialog | ChosenTypeDayoff;
