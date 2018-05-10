@@ -3,23 +3,38 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Runtime.Serialization;
 
+    [DataContract]
     public class EmployeesQuery
     {
-        public IReadOnlyCollection<string> DepartmentIds { get; private set; }
+        [DataMember]
+        private string[] departmentIds;
 
+        public IReadOnlyCollection<string> DepartmentIds => this.departmentIds;
+
+        [DataMember]
         public string AscendantDepartmentId { get; private set; }
 
+        [DataMember]
         public string EmployeeId { get; private set; }
 
+        [DataMember]
         public string RoomNumber { get; private set; }
 
+        [DataMember]
         public string Sid { get; private set; }
 
+        [DataMember]
         public string Email { get; private set; }
 
+        [DataMember]
+        public string DirectSupervisorId { get; private set; }
+
+        [DataMember]
         public DateQuery BirthDate { get; private set; }
 
+        [DataMember]
         public DateQuery HireDate { get; private set; }
 
         public static EmployeesQuery Create()
@@ -37,7 +52,7 @@
         public EmployeesQuery ForDepartments(params string[] departmentIds)
         {
             var obj = this.Clone();
-            obj.DepartmentIds = departmentIds.Distinct().ToList();
+            obj.departmentIds = departmentIds.Distinct().ToArray();
             return obj;
         }
 
@@ -83,10 +98,17 @@
             return obj;
         }
 
+        public EmployeesQuery SubordinateOf(string employeeId)
+        {
+            var obj = this.Clone();
+            obj.DirectSupervisorId = employeeId;
+            return obj;
+        }
+
         private EmployeesQuery Clone()
         {
             var newObj = new EmployeesQuery();
-            newObj.DepartmentIds = this.DepartmentIds;
+            newObj.departmentIds = this.departmentIds;
             newObj.AscendantDepartmentId = this.AscendantDepartmentId;
             newObj.EmployeeId = this.EmployeeId;
             newObj.RoomNumber = this.RoomNumber;
@@ -94,6 +116,7 @@
             newObj.HireDate = this.HireDate;
             newObj.Sid = this.Sid;
             newObj.Email = this.Email;
+            newObj.DirectSupervisorId = this.DirectSupervisorId;
 
             return newObj;
         }

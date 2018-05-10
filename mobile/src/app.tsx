@@ -46,10 +46,6 @@ export class App extends Component<AppProps> {
 
   public componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', this.onBackPress );
-
-    //initial state
-    this.props.dispatch(loadUser());
-    this.props.dispatch(loadDepartments());
   }
 
   public componentWillUnmount() {
