@@ -92,7 +92,7 @@
 
         private bool CheckFilter(EmployeeMetadata employee)
         {
-            if ((this.query.DepartmentIds != null) && (!this.query.DepartmentIds.Contains(employee.DepartmentId)))
+            if ((this.query.DepartmentId != null) && (employee.DepartmentId != this.query.DepartmentId))
             {
                 return false;
             }
