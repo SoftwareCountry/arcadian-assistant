@@ -3,38 +3,25 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Runtime.Serialization;
 
-    [DataContract]
     public class EmployeesQuery
     {
-        [DataMember]
-        private string[] departmentIds;
+        public string DepartmentId { get; private set; }
 
-        public IReadOnlyCollection<string> DepartmentIds => this.departmentIds;
-
-        [DataMember]
         public string AscendantDepartmentId { get; private set; }
 
-        [DataMember]
         public string EmployeeId { get; private set; }
 
-        [DataMember]
         public string RoomNumber { get; private set; }
 
-        [DataMember]
         public string Sid { get; private set; }
 
-        [DataMember]
         public string Email { get; private set; }
 
-        [DataMember]
         public string DirectSupervisorId { get; private set; }
 
-        [DataMember]
         public DateQuery BirthDate { get; private set; }
 
-        [DataMember]
         public DateQuery HireDate { get; private set; }
 
         public static EmployeesQuery Create()
@@ -49,10 +36,10 @@
             return obj;
         }
 
-        public EmployeesQuery ForDepartments(params string[] departmentIds)
+        public EmployeesQuery ForDepartment(string departmentId)
         {
             var obj = this.Clone();
-            obj.departmentIds = departmentIds.Distinct().ToArray();
+            obj.DepartmentId = departmentId;
             return obj;
         }
 
@@ -108,7 +95,7 @@
         private EmployeesQuery Clone()
         {
             var newObj = new EmployeesQuery();
-            newObj.departmentIds = this.departmentIds;
+            newObj.DepartmentId = this.DepartmentId;
             newObj.AscendantDepartmentId = this.AscendantDepartmentId;
             newObj.EmployeeId = this.EmployeeId;
             newObj.RoomNumber = this.RoomNumber;
