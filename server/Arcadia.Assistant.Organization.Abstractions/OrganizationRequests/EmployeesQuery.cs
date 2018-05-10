@@ -37,7 +37,7 @@
         public EmployeesQuery ForDepartments(params string[] departmentIds)
         {
             var obj = this.Clone();
-            obj.DepartmentIds = departmentIds.Distinct().ToList();
+            obj.DepartmentIds = departmentIds.Distinct().ToArray();
             return obj;
         }
 
