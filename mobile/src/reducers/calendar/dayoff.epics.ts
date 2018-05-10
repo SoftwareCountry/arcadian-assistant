@@ -33,9 +33,9 @@ export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff
                 `/employees/${x.employeeId}/events`,
                 calendarEvents,
                 { 'Content-Type': 'application/json' }
-            ).map(obj => deserialize(obj.response, CalendarEvent));
+            ).map(obj => deserialize(obj.response, CalendarEvent))
+            .map(() => loadCalendarEvents(x.employeeId));
         })
-        .map(x => calendarEventCreated(x))
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
 export const dayoffCanceledEpic$ = (action$: ActionsObservable<CancelDayoff>, state: AppState, deps: DependenciesContainer) =>

@@ -27,9 +27,9 @@ export const vacationSavedEpic$ = (action$: ActionsObservable<ConfirmClaimVacati
                 `/employees/${x.employeeId}/events`,
                 calendarEvents,
                 { 'Content-Type': 'application/json' }
-            ).map(obj => deserialize(obj.response, CalendarEvent));
+            ).map(obj => deserialize(obj.response, CalendarEvent))
+            .map(() => loadCalendarEvents(x.employeeId));
         })
-        .map(x => calendarEventCreated(x))
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
 export const vacationCanceledEpic$ = (action$: ActionsObservable<CancelVacation>, state: AppState, deps: DependenciesContainer) =>
