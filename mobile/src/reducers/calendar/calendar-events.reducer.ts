@@ -109,23 +109,6 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
             }
 
             return newState;
-        case 'CALENDAR-EVENT-CREATED':
-            let intervalsWithNewEvent = state.intervals
-                ? state.intervals.copy()
-                : null;
-
-            const calendarEvents = new CalendarEvents([action.calendarEvent]);
-
-            if (intervalsWithNewEvent) {
-                calendarEvents.appendToIntervalsModel(intervalsWithNewEvent);
-            } else {
-                intervalsWithNewEvent = calendarEvents.buildIntervalsModel();
-            }
-
-            return {
-                ...state,
-                intervals: intervalsWithNewEvent
-            };
         case 'SELECT-CALENDAR-DAY':
             const singleDayState = singleDaySelectionReducer(state, action);
             const intervalState = intervalSelectionReducer(state, action);

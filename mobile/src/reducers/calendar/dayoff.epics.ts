@@ -3,7 +3,7 @@ import { ConfirmProcessDayoff, CancelDayoff } from './dayoff.action';
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { CalendarEvent, CalendarEventType, CalendarEventStatus, DatesInterval } from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
-import { calendarEventCreated, loadCalendarEvents } from './calendar.action';
+import { loadCalendarEvents } from './calendar.action';
 import { Observable } from 'rxjs';
 import { loadFailedError } from '../errors/errors.action';
 import { IntervalType } from './calendar.model';
@@ -33,9 +33,9 @@ export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff
                 `/employees/${x.employeeId}/events`,
                 calendarEvents,
                 { 'Content-Type': 'application/json' }
-            ).map(obj => deserialize(obj.response, CalendarEvent));
+            ).map(obj => deserialize(obj.response, CalendarEvent))
+            .map(() => loadCalendarEvents(x.employeeId));
         })
-        .map(x => calendarEventCreated(x))
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
 export const dayoffCanceledEpic$ = (action$: ActionsObservable<CancelDayoff>, state: AppState, deps: DependenciesContainer) =>
