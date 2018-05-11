@@ -14,12 +14,12 @@ export const loadUserEpic$ = (action$: ActionsObservable<LoadUser>, appState: Ap
     action$.ofType('LOAD-USER')
         .switchMap(x => deps.apiClient.getJSON(`/user`))
         .map(x => deserialize(x, User))
-        .map(x => loadUserFinished(x))
+        .map(x => loadUserFinished(x.employeeId))
         .catch(x => Observable.of(loadFailedError(x.message)));
 
 export const loadUserFinishedEpic$ = (action$: ActionsObservable<LoadUserFinished>, appState: AppState, deps: DependenciesContainer) =>
     action$.ofType('LOAD-USER-FINISHED')
-        .switchMap(x => deps.apiClient.getJSON(`/employees/${x.user.employeeId}`).map(obj => deserialize(obj, Employee)))
+        .switchMap(x => deps.apiClient.getJSON(`/employees/${x.userEmployeeId}`).map(obj => deserialize(obj, Employee)))
         .map(y => loadUserEmployeeFinished(y))
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 

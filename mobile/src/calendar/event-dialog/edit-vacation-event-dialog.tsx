@@ -66,7 +66,7 @@ class EditVacationEventDialogImpl extends Component<EditVacationEventDialogProps
 
 const mapStateToProps = (state: AppState): EditVacationEventDialogProps => ({
     intervals: state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection,
-    userEmployee: state.userInfo.employee
+    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): EditVacationEventDialogDispatchProps => ({

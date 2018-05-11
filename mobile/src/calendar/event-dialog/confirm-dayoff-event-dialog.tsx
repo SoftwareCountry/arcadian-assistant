@@ -89,7 +89,7 @@ class ConfirmDayoffEventDialogImpl extends Component<ConfirmDayoffEventDialogPro
 const mapStateToProps = (state: AppState): ConfirmDayoffEventDialogProps => ({
     startDay: state.calendar.calendarEvents.selection.single.day,
     hoursCredit: state.calendar.daysCounters.hoursCredit,
-    userEmployee: state.userInfo.employee
+    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ConfirmDayoffEventDialogDispatchProps => ({

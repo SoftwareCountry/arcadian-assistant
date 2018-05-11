@@ -16,9 +16,9 @@ interface PeopleDepartmentProps {
 
 const mapStateToProps = (state: AppState): PeopleDepartmentProps => ({
     employees: state.organization.employees,
-    userEmployee: state.userInfo.employee,
+    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId),
     employeesPredicate: (employee: Employee) => {
-        return state.userInfo.employee && employee.departmentId === state.userInfo.employee.departmentId;
+        return state.userInfo.employeeId && employee.departmentId === state.organization.employees.employeesById.get(state.userInfo.employeeId).departmentId;
     }
 });
 interface EmployeesListDispatchProps {

@@ -31,7 +31,7 @@ const mapStateToProps = (state: AppState): PeopleCompanyProps => ({
     departmentsBranch: state.people.departmentsBranch.length > 0 ? state.people.departmentsBranch : null,
     employees: state.organization.employees,
     departments: state.people.departments,
-    employee: state.userInfo.employee,
+    employee: state.organization.employees.employeesById.get(state.userInfo.employeeId),
     currentFocusedDepartmentId: state.people.currentFocusedDepartmentId,
     departmentLists: state.people.departmentsLists
 });

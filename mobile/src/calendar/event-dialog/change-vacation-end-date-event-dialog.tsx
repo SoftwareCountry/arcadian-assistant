@@ -74,7 +74,7 @@ class ChangeVacationEndDateEventDialogImpl extends Component<ChangeVacationEndDa
 }
 
 const mapStateToProps = (state: AppState): ChangeVacationEndDateEventDialogProps => ({
-    userEmployee: state.userInfo.employee,
+    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId),
     interval: state.calendar.calendarEvents.selection.interval,
     intervals: state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection
 });
