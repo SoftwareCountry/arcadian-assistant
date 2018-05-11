@@ -3,7 +3,7 @@ import { ConfirmProcessDayoff, CancelDayoff } from './dayoff.action';
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { CalendarEvent, CalendarEventType, CalendarEventStatus, DatesInterval } from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
-import { calendarEventCreated, loadCalendarEvents } from './calendar.action';
+import { loadCalendarEvents } from './calendar.action';
 import { Observable } from 'rxjs';
 import { loadFailedError } from '../errors/errors.action';
 import { IntervalType } from './calendar.model';
