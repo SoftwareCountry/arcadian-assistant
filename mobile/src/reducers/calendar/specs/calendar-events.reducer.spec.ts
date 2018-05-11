@@ -1,5 +1,5 @@
 import { calendarEventsReducer, CalendarEventsState } from '../calendar-events.reducer';
-import { loadCalendarEventsFinished, calendarEventCreated, selectCalendarDay, calendarSelectionMode, CalendarSelectionModeType, disableCalendarSelection, selectIntervalsBySingleDaySelection, disableSelectIntervalsBySingleDaySelection } from '../calendar.action';
+import { loadCalendarEventsFinished, selectCalendarDay, calendarSelectionMode, CalendarSelectionModeType, disableCalendarSelection, selectIntervalsBySingleDaySelection, disableSelectIntervalsBySingleDaySelection } from '../calendar.action';
 import { CalendarEvent, DatesInterval, CalendarEventStatus, CalendarEventType } from '../calendar-event.model';
 import moment from 'moment';
 import { DayModel, IntervalType } from '../calendar.model';
@@ -47,39 +47,6 @@ describe('calendar events reducer', () => {
 
         it('should enable calendar actions group', () => {
             expect(state.disableCalendarActionsButtonGroup).toBeFalsy();
-        });
-    });
-
-    describe('when calendar event created', () => {
-        let state: CalendarEventsState;
-        let calendarEvent: CalendarEvent;
-
-        beforeEach(() => {
-            calendarEvent = new CalendarEvent();
-
-            calendarEvent.calendarEventId = '1';
-            calendarEvent.dates = new DatesInterval();
-            calendarEvent.dates.startDate = moment();
-            calendarEvent.dates.endDate = moment(calendarEvent.dates.startDate);
-            calendarEvent.status = CalendarEventStatus.Requested;
-            calendarEvent.type = CalendarEventType.Sickleave;
-
-            const action = calendarEventCreated(calendarEvent);
-            state = calendarEventsReducer(undefined, action);
-        });
-
-        it('should append event to intervals', () => {
-            expect(state.intervals).toBeDefined();
-
-            let intervals = state.intervals.get(calendarEvent.dates.startDate);
-
-            expect(intervals.length).toBe(1);
-            expect(intervals[0].calendarEvent.type).toBe(calendarEvent.type);
-
-            intervals = state.intervals.get(calendarEvent.dates.endDate);
-
-            expect(intervals.length).toBe(1);
-            expect(intervals[0].calendarEvent.type).toBe(calendarEvent.type);
         });
     });
 

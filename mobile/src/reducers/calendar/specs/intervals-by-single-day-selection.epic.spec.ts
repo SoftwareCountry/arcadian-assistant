@@ -5,10 +5,10 @@ import { DayModel } from '../calendar.model';
 import { CalendarEvent, DatesInterval, CalendarEventStatus, CalendarEventType } from '../calendar-event.model';
 import { CalendarEvents } from '../calendar-events.model';
 import { intervalsBySingleDaySelectionEpic$ } from '../calendar.epics';
-import { SelectCalendarDay, LoadCalendarEventsFinished, CalendarEventCreated, selectCalendarDay, loadCalendarEventsFinished, calendarEventCreated, selectIntervalsBySingleDaySelection } from '../calendar.action';
+import { SelectCalendarDay, LoadCalendarEventsFinished, selectCalendarDay, loadCalendarEventsFinished, selectIntervalsBySingleDaySelection } from '../calendar.action';
 
 describe('intervalsBySingleDaySelectionEpic', () => {
-    let action$: ActionsObservable<SelectCalendarDay | LoadCalendarEventsFinished | CalendarEventCreated>;
+    let action$: ActionsObservable<SelectCalendarDay | LoadCalendarEventsFinished >;
     beforeEach(() => {
         const day: DayModel = {
             date: moment(),
@@ -39,8 +39,7 @@ describe('intervalsBySingleDaySelectionEpic', () => {
 
         action$ = new ActionsObservable(Observable.concat(
             Observable.of(selectCalendarDay(day)),
-            Observable.of(loadCalendarEventsFinished(new CalendarEvents([loadedCalendarEvent]), employeeId)),
-            Observable.of(calendarEventCreated(createdCalendarEvent))
+            Observable.of(loadCalendarEventsFinished(new CalendarEvents([loadedCalendarEvent]), employeeId))
         ));
     });
 

@@ -2,6 +2,15 @@ import { Moment } from 'moment';
 import { IntervalType } from './calendar.model';
 import { CalendarEvent } from './calendar-event.model';
 
+export interface ChosenTypeDayoff {
+    type: 'CHOSEN-TYPE-DAYOFF';
+    isWorkout: boolean;
+}
+
+export const chosenTypeDayoff = (
+    isWorkout: boolean
+): ChosenTypeDayoff => ({ type: 'CHOSEN-TYPE-DAYOFF', isWorkout });
+
 export interface ConfirmProcessDayoff {
     type: 'CONFIRM-PROCESS-DAYOFF';
     employeeId: string;

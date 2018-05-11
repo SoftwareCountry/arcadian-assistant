@@ -3,7 +3,7 @@ import { ActionsObservable, ofType } from 'redux-observable';
 import { Observable } from 'rxjs/Observable';
 import { deserializeArray } from 'santee-dcts';
 import {
-    loadCalendarEventsFinished, CalendarEventCreated, SelectIntervalsBySingleDaySelection, selectIntervalsBySingleDaySelection, SelectCalendarDay, LoadCalendarEventsFinished, LoadCalendarEvents, loadCalendarEvents, 
+    loadCalendarEventsFinished, SelectIntervalsBySingleDaySelection, selectIntervalsBySingleDaySelection, SelectCalendarDay, LoadCalendarEventsFinished, LoadCalendarEvents, loadCalendarEvents, 
     CalendarSelectionMode, disableCalendarSelection, DisableCalendarSelection, CalendarSelectionModeType, CalendarEventSetNewStatus
 } from './calendar.action';
 import { loadFailedError } from '../errors/errors.action';
@@ -37,15 +37,10 @@ export const loadCalendarEventsEpic$ = (action$: ActionsObservable<LoadCalendarE
         .map(x => loadCalendarEventsFinished(x.events, x.employeeId))
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
-export const calendarEventCreatedEpic$ = (action$: ActionsObservable<CalendarEventCreated>) =>
-    action$.ofType('CALENDAR-EVENT-CREATED')
-        .map(x => closeEventDialog());
-
-export const intervalsBySingleDaySelectionEpic$ = (action$: ActionsObservable<SelectCalendarDay | LoadCalendarEventsFinished | CalendarEventCreated>) =>
+export const intervalsBySingleDaySelectionEpic$ = (action$: ActionsObservable<SelectCalendarDay | LoadCalendarEventsFinished >) =>
     action$.ofType(
             'SELECT-CALENDAR-DAY',
-            'LOAD-CALENDAR-EVENTS-FINISHED',
-            'CALENDAR-EVENT-CREATED'
+            'LOAD-CALENDAR-EVENTS-FINISHED'
         ).map(x => selectIntervalsBySingleDaySelection());
 
 export const calendarSelectionModeEpic$ = (action$: ActionsObservable<CalendarSelectionMode>) =>

@@ -8,9 +8,9 @@ import { DayModel, IntervalType } from '../../reducers/calendar/calendar.model';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
 import { Moment } from 'moment';
 import { SelectorDayoffDuration } from './selector-dayoff-duration';
-import { HoursCreditCounter } from '../../reducers/calendar/days-counters.model';
 import { confirmProcessDayoff } from '../../reducers/calendar/dayoff.action';
 import { Employee } from '../../reducers/organization/employee.model';
+import { HoursCreditType } from '../../reducers/calendar/days-counters.model';
 
 interface ConfirmDayoffEventDialogDispatchProps {
     cancelDialog: () => void;
@@ -20,7 +20,7 @@ interface ConfirmDayoffEventDialogDispatchProps {
 
 interface ConfirmDayoffEventDialogProps {
     startDay: DayModel;
-    hoursCredit: HoursCreditCounter;
+    isWorkout: boolean;
     userEmployee: Employee;
 }
 
@@ -52,7 +52,7 @@ class ConfirmDayoffEventDialogImpl extends Component<ConfirmDayoffEventDialogPro
                     onAcceptPress={this.onAcceptClick}
                     onCancelPress={this.onCancelClick}
                     onClosePress={this.onCloseClick}>
-                        <SelectorDayoffDuration onIntervalTypeSelected={this.onDayoffTypeSelected} isWorkout={this.props.hoursCredit.isWorkout} />
+                        <SelectorDayoffDuration onIntervalTypeSelected={this.onDayoffTypeSelected} isWorkout={this.props.isWorkout} />
                 </EventDialogBase>;
     }
 
@@ -61,12 +61,12 @@ class ConfirmDayoffEventDialogImpl extends Component<ConfirmDayoffEventDialogPro
     }
 
     private onAcceptClick = () => {
-        const { startDay, hoursCredit, confirmDayoff, userEmployee } = this.props;
+        const { startDay, isWorkout, confirmDayoff, userEmployee } = this.props;
 
         confirmDayoff(
             userEmployee.employeeId,
             startDay.date,
-            hoursCredit.isWorkout,
+            isWorkout,
             this.state.selectedIntervalType);
     }
 
@@ -81,19 +81,20 @@ class ConfirmDayoffEventDialogImpl extends Component<ConfirmDayoffEventDialogPro
     public get text(): string {
         const startDate = this.props.startDay.date.format(eventDialogTextDateFormat);
         const intervalTypeToText = this.intervalTypeToText[this.state.selectedIntervalType];
+        const dateType = this.props.isWorkout ? 'workout' : 'dayoff';
 
-        return `Your dayoff starts on ${startDate} and continues for ${intervalTypeToText}`;
+        return `Your ${dateType} starts on ${startDate} and continues for ${intervalTypeToText}`;
     }
 }
 
 const mapStateToProps = (state: AppState): ConfirmDayoffEventDialogProps => ({
     startDay: state.calendar.calendarEvents.selection.single.day,
-    hoursCredit: state.calendar.daysCounters.hoursCredit,
+    isWorkout: state.calendar.eventDialog.chosenHoursCreditType === HoursCreditType.Workout,
     userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ConfirmDayoffEventDialogDispatchProps => ({
-    cancelDialog: () => { dispatch(openEventDialog(EventDialogType.ProcessDayoff)); },
+    cancelDialog: () => { dispatch(openEventDialog(EventDialogType.ChooseTypeDayoff)); },
     confirmDayoff: (
         employeeId: string,
         date: Moment,

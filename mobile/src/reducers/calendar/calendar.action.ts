@@ -18,13 +18,6 @@ export interface LoadCalendarEventsFinished {
 
 export const loadCalendarEventsFinished = (calendarEvents: CalendarEvents, employeeId: string): LoadCalendarEventsFinished => ({ type: 'LOAD-CALENDAR-EVENTS-FINISHED', calendarEvents, employeeId });
 
-export interface CalendarEventCreated {
-    type: 'CALENDAR-EVENT-CREATED';
-    calendarEvent: CalendarEvent;
-}
-
-export const calendarEventCreated = (calendarEvent: CalendarEvent): CalendarEventCreated => ({ type: 'CALENDAR-EVENT-CREATED', calendarEvent });
-
 export interface CalendarEventSetNewStatus {
     type: 'CALENDAR-EVENT-NEW-STATUS';
     employeeId: string;
@@ -83,6 +76,5 @@ export interface DisableSelectIntervalsBySingleDaySelection {
 
 export const disableSelectIntervalsBySingleDaySelection = (disable: boolean): DisableSelectIntervalsBySingleDaySelection => ({ type: 'DISABLE-SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION', disable });
 
-export type CalendarActions = LoadCalendarEventsFinished | CalendarEventCreated |
-    SelectCalendarDay | SelectCalendarMonth |
+export type CalendarActions = LoadCalendarEventsFinished | SelectCalendarDay | SelectCalendarMonth |
     CalendarSelectionMode | SelectIntervalsBySingleDaySelection | DisableCalendarSelection | DisableSelectIntervalsBySingleDaySelection | CalendarEventSetNewStatus;
