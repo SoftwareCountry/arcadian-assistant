@@ -52,7 +52,7 @@ const mapStateToProps = (state: AppState): ProcessDayoffEventDialogProps => ({
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ProcessDayoffEventDialogDispatchProps => ({
     cancelDialog: () => { dispatch(closeEventDialog()); },
-    confirmStartDate: () => { dispatch(openEventDialog(EventDialogType.ConfirmDayoffStartDate)); }
+    confirmStartDate: () => { dispatch(openEventDialog(EventDialogType.ChooseTypeDayoff)); }
 });
 
 export const ProcessDayoffEventDialog = connect(mapStateToProps, mapDispatchToProps)(ProcessDayoffEventDialogImpl);

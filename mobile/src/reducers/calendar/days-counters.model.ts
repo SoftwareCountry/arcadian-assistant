@@ -18,7 +18,7 @@ export class VacationDaysCounter implements DaysCounter  {
     }
 }
 
-enum HoursCreditType {
+export enum HoursCreditType {
     Workout = 'Workout',
     DaysOff = 'DaysOff'
 }
