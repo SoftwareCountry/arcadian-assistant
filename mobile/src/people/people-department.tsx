@@ -14,13 +14,17 @@ interface PeopleDepartmentProps {
     employeesPredicate: (employee: Employee) => boolean;
 }
 
-const mapStateToProps = (state: AppState): PeopleDepartmentProps => ({
-    employees: state.organization.employees,
-    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId),
-    employeesPredicate: (employee: Employee) => {
-        return state.userInfo.employeeId && employee.departmentId === state.organization.employees.employeesById.get(state.userInfo.employeeId).departmentId;
-    }
-});
+const mapStateToProps = (state: AppState): PeopleDepartmentProps => {
+
+    const userEmployee = state.organization.employees.employeesById.get(state.userInfo.employeeId);
+
+    return {
+        employees: state.organization.employees,
+        userEmployee, 
+        employeesPredicate: (employee: Employee) => userEmployee && employee.departmentId === userEmployee.departmentId
+        };
+};
+
 interface EmployeesListDispatchProps {
     onItemClicked: (employee: Employee) => void;
 }
