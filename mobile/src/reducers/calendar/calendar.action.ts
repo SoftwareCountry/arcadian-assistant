@@ -1,7 +1,7 @@
 import { CalendarEvent, CalendarEventStatus } from './calendar-event.model';
 import { DayModel, CalendarSelection } from './calendar.model';
 import { SickLeaveActions } from './sick-leave.action';
-import { CalendarEvents } from './calendar-events.model';
+import { CalendarEvents, PendingRequests } from './calendar-events.model';
 
 export interface LoadCalendarEvents {
     type: 'LOAD-CALENDAR-EVENTS';
@@ -17,6 +17,19 @@ export interface LoadCalendarEventsFinished {
 }
 
 export const loadCalendarEventsFinished = (calendarEvents: CalendarEvents, employeeId: string): LoadCalendarEventsFinished => ({ type: 'LOAD-CALENDAR-EVENTS-FINISHED', calendarEvents, employeeId });
+
+export interface LoadPendingRequests {
+    type: 'LOAD-PENDING-REQUESTS';
+}
+
+export const loadPendingRequests = (): LoadPendingRequests => ({ type: 'LOAD-PENDING-REQUESTS' });
+
+export interface LoadPendingRequestsFinished {
+    type: 'LOAD-PENDING-REQUESTS-FINISHED';
+    requests: PendingRequests;
+}
+
+export const loadPendingRequestsFinished = (requests: PendingRequests): LoadPendingRequestsFinished => ({ type: 'LOAD-PENDING-REQUESTS-FINISHED', requests });
 
 export interface CalendarEventSetNewStatus {
     type: 'CALENDAR-EVENT-NEW-STATUS';
@@ -76,5 +89,5 @@ export interface DisableSelectIntervalsBySingleDaySelection {
 
 export const disableSelectIntervalsBySingleDaySelection = (disable: boolean): DisableSelectIntervalsBySingleDaySelection => ({ type: 'DISABLE-SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION', disable });
 
-export type CalendarActions = LoadCalendarEventsFinished | SelectCalendarDay | SelectCalendarMonth |
+export type CalendarActions = LoadCalendarEventsFinished | LoadPendingRequestsFinished | SelectCalendarDay | SelectCalendarMonth |
     CalendarSelectionMode | SelectIntervalsBySingleDaySelection | DisableCalendarSelection | DisableSelectIntervalsBySingleDaySelection | CalendarEventSetNewStatus;

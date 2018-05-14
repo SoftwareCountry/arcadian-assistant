@@ -1,5 +1,6 @@
 import { dataMember, required, deserialize } from 'santee-dcts';
 import moment, { Moment } from 'moment';
+import { Map } from 'immutable';
 
 export enum CalendarEventType {
     Vacation = 'Vacation',
@@ -7,6 +8,13 @@ export enum CalendarEventType {
     Dayoff = 'Dayoff',
     Workout = 'Workout'
 }
+
+export const eventTypeToGlyphIcon: Map<string, string> = Map([
+    [CalendarEventType.Dayoff, 'dayoff'],
+    [CalendarEventType.Vacation, 'vacation'],
+    [CalendarEventType.Sickleave, 'sick_leave'],
+    [CalendarEventType.Workout, 'dayoff']
+]);
 
 export enum CalendarEventStatus {
     Requested = 'Requested',

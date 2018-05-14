@@ -1,17 +1,17 @@
 import { LoadUserEmployeeFinished } from '../user/user.action';
 import { ActionsObservable, ofType } from 'redux-observable';
 import { Observable } from 'rxjs/Observable';
-import { deserializeArray } from 'santee-dcts';
+import { deserializeArray, deserialize } from 'santee-dcts';
 import {
     loadCalendarEventsFinished, SelectIntervalsBySingleDaySelection, selectIntervalsBySingleDaySelection, SelectCalendarDay, LoadCalendarEventsFinished, LoadCalendarEvents, loadCalendarEvents, 
-    CalendarSelectionMode, disableCalendarSelection, DisableCalendarSelection, CalendarSelectionModeType, CalendarEventSetNewStatus
+    CalendarSelectionMode, disableCalendarSelection, DisableCalendarSelection, CalendarSelectionModeType, CalendarEventSetNewStatus, LoadPendingRequests, loadPendingRequestsFinished
 } from './calendar.action';
 import { loadFailedError } from '../errors/errors.action';
 import { CalendarEvent, CalendarEventStatus, CalendarEventType } from './calendar-event.model';
 import { closeEventDialog, CloseEventDialog } from './event-dialog/event-dialog.action';
 import { AppState } from 'react-native';
 import { DependenciesContainer } from '../app.reducer';
-import { CalendarEvents } from './calendar-events.model';
+import { CalendarEvents, PendingRequests } from './calendar-events.model';
 
 export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, state: AppState, deps: DependenciesContainer) =>
     action$.ofType('LOAD-USER-EMPLOYEE-FINISHED')
@@ -37,6 +37,14 @@ export const loadCalendarEventsEpic$ = (action$: ActionsObservable<LoadCalendarE
         .map(x => loadCalendarEventsFinished(x.events, x.employeeId))
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
+export const loadPendingRequestsEpic$ = (action$: ActionsObservable<LoadPendingRequests>, state: AppState, deps: DependenciesContainer) =>
+        action$.ofType('LOAD-PENDING-REQUESTS')
+            .map(x => deps.apiClient.getJSON(`/pending-requests`)
+            .map(obj => deserialize(obj as any, PendingRequests)))
+            .mergeAll()
+            .map(y => loadPendingRequestsFinished(y))
+            .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+     
 export const intervalsBySingleDaySelectionEpic$ = (action$: ActionsObservable<SelectCalendarDay | LoadCalendarEventsFinished >) =>
     action$.ofType(
             'SELECT-CALENDAR-DAY',

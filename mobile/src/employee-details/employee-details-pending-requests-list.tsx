@@ -1,20 +1,22 @@
 import React, { Component } from 'react';
+import { Map } from 'immutable';
 import { View, Text, StyleSheet, FlatList, ListRenderItemInfo, ViewStyle, Dimensions } from 'react-native';
 
 import { StyledText } from '../override/styled-text';
 import { ApplicationIcon } from '../override/application-icon';
+import { Avatar } from '../people/avatar';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
 import { CalendarEvent, CalendarEventType, eventTypeToGlyphIcon, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { eventDialogTextDateFormat } from '../calendar/event-dialog/event-dialog-base';
 import { EventManagementToolset } from './event-management-toolset';
 
-interface EmployeeDetailsEventsListProps {
+interface EmployeeDetailsPendingRequestsListProps {
     events: CalendarEvent[];
     employeeId: string;
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
 }
 
-export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsListProps> {
+export class EmployeeDetailsPendingRequestsList extends Component<EmployeeDetailsPendingRequestsListProps> {
     public render() {
         return (<FlatList
                     data={this.props.events}
@@ -36,6 +38,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
         return (
                 <View style={eventsContainerFlattened} key={item.calendarEventId}>
                     <View style={eventRow}>
+                        <Avatar />
                         <ApplicationIcon name={eventTypeToGlyphIcon.get(item.type)} style={eventIcon} />
                         <StyledText style={eventTitle}>{item.type} starts on {item.dates.startDate.format(eventDialogTextDateFormat)} and completes on {item.dates.endDate.format(eventDialogTextDateFormat)} ({item.status})</StyledText>
                         <EventManagementToolset event={this.props.events.find(e => e.calendarEventId === item.calendarEventId)} employeeId={this.props.employeeId} eventSetNewStatusAction={this.props.eventSetNewStatusAction} />

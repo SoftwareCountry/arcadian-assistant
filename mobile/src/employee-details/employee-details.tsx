@@ -16,10 +16,11 @@ import { Employee } from '../reducers/organization/employee.model';
 import { ApplicationIcon } from '../override/application-icon';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
 import { openCompanyAction } from './employee-details-dispatcher';
-import { loadCalendarEvents, calendarEventSetNewStatus } from '../reducers/calendar/calendar.action';
+import { loadCalendarEvents, calendarEventSetNewStatus, loadPendingRequests } from '../reducers/calendar/calendar.action';
 import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { eventDialogTextDateFormat } from '../calendar/event-dialog/event-dialog-base';
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
+import { EmployeeDetailsPendingRequestsList } from './employee-details-pending-requests-list';
 
 interface EmployeeDetailsProps {
     employee?: Employee;
@@ -40,16 +41,19 @@ const TileSeparator = () => <View style = {tileStyles.separator}></View>;
 interface EmployeeDetailsDispatchProps {
     onCompanyClicked: (departmentId: string) => void;
     loadCalendarEvents: (employeeId: string) => void;
+    loadPendingRequests: () => void;
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchProps => ({
     onCompanyClicked: (departmentId: string) => dispatch( openCompanyAction(departmentId)),
     loadCalendarEvents: (employeeId: string) => dispatch(loadCalendarEvents(employeeId)),
+    loadPendingRequests: () => dispatch(loadPendingRequests()),
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status))
 });
 
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
     public componentDidMount() {
+        this.props.loadPendingRequests();
         this.props.loadCalendarEvents(this.props.employee.employeeId);
     }
     public render() {
@@ -102,11 +106,18 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
                         {
                             (events !== undefined && events.length > 0) ? 
-                            <EmployeeDetailsEventsList 
-                                events={events} 
-                                employeeId={employee.employeeId}
-                                eventSetNewStatusAction={this.props.eventSetNewStatusAction} 
-                            /> : null
+                            <View>
+                                <EmployeeDetailsPendingRequestsList
+                                    events={events} 
+                                    employeeId={employee.employeeId}
+                                    eventSetNewStatusAction={this.props.eventSetNewStatusAction}
+                                />
+                                <EmployeeDetailsEventsList 
+                                    events={events} 
+                                    employeeId={employee.employeeId}
+                                    eventSetNewStatusAction={this.props.eventSetNewStatusAction} 
+                                />
+                            </View> : null
                         }
 
                     </View>

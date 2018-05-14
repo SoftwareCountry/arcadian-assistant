@@ -1,7 +1,14 @@
+import { dataMember, required } from 'santee-dcts';
 import { CalendarEvent, CalendarEventType } from './calendar-event.model';
 import { IntervalsModel, IntervalType, ReadOnlyIntervalsModel, IntervalModel } from './calendar.model';
 import moment from 'moment';
 import { IntervalTypeConverter } from './interval-type-converter';
+
+export class PendingRequests {
+    @dataMember()
+    @required()
+    public events: Map<string, CalendarEvent[]>;
+}
 
 export class CalendarEvents {
     constructor(private readonly calendarEvents: CalendarEvent[]) {}
