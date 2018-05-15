@@ -28,12 +28,16 @@ interface EmployeeDetailsProps {
     layoutStylesChevronPlaceholder?: ViewStyle;
     events?: Map<string, CalendarEvent[]>;
     eventsPredicate?: (event: CalendarEvent) => boolean;
+    requests?: Map<string, CalendarEvent[]>;
+    requestsPredicate?: (event: CalendarEvent) => boolean;
 }
 
 const mapStateToProps = (state: AppState, props: EmployeeDetailsProps): EmployeeDetailsProps => ({
     department: props.department,
     events: state.calendar.calendarEvents.events,
-    eventsPredicate: state.calendar.calendarEvents.eventsPredicate
+    eventsPredicate: state.calendar.calendarEvents.eventsPredicate,
+    requests: state.calendar.calendarEvents.requests,
+    requestsPredicate: state.calendar.calendarEvents.requestsPredicate
 });
 
 const TileSeparator = () => <View style = {tileStyles.separator}></View>;
@@ -73,6 +77,8 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             events = events.filter(this.props.eventsPredicate);
         }
 
+        let requests = this.props.requests;
+
         return (
                 <View style={layoutStyles.container}>
                     <View style={this.props.layoutStylesChevronPlaceholder}></View>
@@ -105,13 +111,20 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                         </View>
 
                         {
-                            (events !== undefined && events.length > 0) ? 
+                            (requests !== undefined && requests.size > 0) ? 
                             <View>
                                 <EmployeeDetailsPendingRequestsList
                                     events={events} 
+                                    requests={requests}
                                     employeeId={employee.employeeId}
                                     eventSetNewStatusAction={this.props.eventSetNewStatusAction}
                                 />
+                            </View> : null
+                        }
+
+                        {
+                            (events !== undefined && events.length > 0) ? 
+                            <View>
                                 <EmployeeDetailsEventsList 
                                     events={events} 
                                     employeeId={employee.employeeId}

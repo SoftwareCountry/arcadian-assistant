@@ -12,17 +12,28 @@ import { EventManagementToolset } from './event-management-toolset';
 
 interface EmployeeDetailsPendingRequestsListProps {
     events: CalendarEvent[];
+    requests: Map<string, CalendarEvent[]>;
     employeeId: string;
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
 }
 
 export class EmployeeDetailsPendingRequestsList extends Component<EmployeeDetailsPendingRequestsListProps> {
     public render() {
-        return (<FlatList
-                    data={this.props.events}
+        const { requests } = this.props;
+
+        return <View><StyledText>PENDING REQUESTS</StyledText></View>;
+    }
+
+    private pendingRequestsByEmployee = (requests: Map<string, CalendarEvent[]>) => {
+        const requestsGrouped = 
+            requests.forEach((events: CalendarEvent[], key: string) => (
+                <FlatList
+                    data={events}
                     keyExtractor={this.keyExtractor}
                     renderItem={this.renderItem} />
-        );
+            ));
+
+        return <View>{requestsGrouped}</View>;
     }
 
     private keyExtractor = (item: CalendarEvent) => item.calendarEventId;

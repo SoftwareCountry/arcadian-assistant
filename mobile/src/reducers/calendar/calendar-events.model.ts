@@ -1,4 +1,5 @@
 import { dataMember, required } from 'santee-dcts';
+import { Map } from 'immutable';
 import { CalendarEvent, CalendarEventType } from './calendar-event.model';
 import { IntervalsModel, IntervalType, ReadOnlyIntervalsModel, IntervalModel } from './calendar.model';
 import moment from 'moment';
