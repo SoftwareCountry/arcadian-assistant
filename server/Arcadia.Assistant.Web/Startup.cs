@@ -108,7 +108,7 @@
             builder.RegisterInstance(actorSystem).As<IActorRefFactory>();
             builder.RegisterInstance(pathsBuilder).AsSelf();
 
-            builder.RegisterType<EmployeesSearch>().As<IEmployeesSearch>();
+            builder.RegisterType<EmployeesRegistry>().As<IEmployeesRegistry>();
             builder.RegisterType<MockUserEmployeeSearch>().As<IUserEmployeeSearch>();
         }
 
