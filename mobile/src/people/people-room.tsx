@@ -4,18 +4,18 @@ import { connect, Dispatch } from 'react-redux';
 
 import { EmployeesList } from './employees-list';
 import { AppState } from '../reducers/app.reducer';
-import { EmployeeMap } from '../reducers/organization/employees.reducer';
+import { EmployeeMap, EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Employee } from '../reducers/organization/employee.model';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 
 interface PeopleRoomProps {
-    employeesMap: EmployeeMap;
+    employees: EmployeesStore;
     userEmployee: Employee;
 }
 
 const mapStateToProps = (state: AppState): PeopleRoomProps => ({
-    employeesMap: state.organization.employees.employeesById,
-    userEmployee: state.userInfo.employee
+    employees: state.organization.employees,
+    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
 });
 
 interface EmployeesListDispatchProps {
@@ -25,13 +25,30 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeesListDispatchProps
     onItemClicked: (employee: Employee) => dispatch( openEmployeeDetailsAction(employee))
 });
 
-export class PeopleRoomImpl extends React.Component<PeopleRoomProps & EmployeesListDispatchProps> {  
-    public render() {
-        const predicate = (employee: Employee) => {
-            return this.props.userEmployee && employee.roomNumber === this.props.userEmployee.roomNumber;
-        };
+export class PeopleRoomImpl extends React.Component<PeopleRoomProps & EmployeesListDispatchProps> {
+    public shouldComponentUpdate(nextProps: PeopleRoomProps & EmployeesListDispatchProps) {
+        if (this.props.onItemClicked !== nextProps.onItemClicked
+            || this.props.userEmployee !== nextProps.userEmployee
+        ) {
+            return true;
+        }
 
-        return <EmployeesList employees={this.props.employeesMap.toArray().filter(predicate)} onItemClicked = {this.props.onItemClicked}/>;
+        const employees = this.props.employees.employeesById.filter(this.employeesPredicate);
+        const nextEmployees = nextProps.employees.employeesById.filter(this.employeesPredicate);
+
+        if (!employees.equals(nextEmployees)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public render() {
+        return <EmployeesList employees={this.props.employees.employeesById.toArray().filter(this.employeesPredicate)} onItemClicked = {this.props.onItemClicked}/>;
+    }
+
+    private employeesPredicate = (employee: Employee) => {
+        return this.props.userEmployee && employee.roomNumber === this.props.userEmployee.roomNumber;
     }
 }
 

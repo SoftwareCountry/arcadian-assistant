@@ -3,7 +3,7 @@ import { TouchableHighlight, TouchableOpacity, View } from 'react-native';
 import { calendarActionsStyles } from './styles';
 import { CalendarActionButtonSeparator } from './calendar-action-button';
 import { AppState } from '../reducers/app.reducer';
-import { connect } from 'react-redux';
+import { connect, MapStateToPropsParam } from 'react-redux';
 import { IntervalsModel, DayModel, IntervalModel, ExtractedIntervals, ReadOnlyIntervalsModel } from '../reducers/calendar/calendar.model';
 import { VacationActionButton } from './vacation-action-button';
 import { DayoffActionButton } from './dayoff-action-button';
@@ -12,6 +12,7 @@ import { Dispatch } from 'redux';
 import { CalendarActions } from '../reducers/calendar/calendar.action';
 import { openEventDialog } from '../reducers/calendar/event-dialog/event-dialog.action';
 import { EventDialogType } from '../reducers/calendar/event-dialog/event-dialog-type.model';
+import { HoursCreditCounter } from '../reducers/calendar/days-counters.model';
 
 interface ActionButtonGroupProps {
     allIntervals: ReadOnlyIntervalsModel;
@@ -23,9 +24,14 @@ interface ActionButtonsGroupDispatchProps {
     sickLeaveActions: {
         claim: () => void;
         edit: () => void;
+        cancel: () => void;
     };
     vacationActions: {
         request: () => void
+        edit: () => void
+    };
+    dayoff: {
+        process: () => void,
         edit: () => void
     };
 }
@@ -46,7 +52,8 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & A
 
                 <DayoffActionButton
                     interval={intervalsBySingleDaySelection.dayoff}
-                    disabled={this.props.disableActionButtons} />
+                    disabled={this.props.disableActionButtons}
+                    {...this.props.dayoff} />
 
                 <CalendarActionButtonSeparator />
 
@@ -72,10 +79,15 @@ const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>): ActionButtonsG
     sickLeaveActions: {
         claim: () => { dispatch(openEventDialog(EventDialogType.ClaimSickLeave)); },
         edit: () => { dispatch(openEventDialog(EventDialogType.EditSickLeave)); },
+        cancel: () => { dispatch(openEventDialog(EventDialogType.CancelSickLeave)); }
     },
     vacationActions: {
         request: () => { dispatch(openEventDialog(EventDialogType.RequestVacation)); },
         edit: () => { dispatch(openEventDialog(EventDialogType.EditVacation)); }
+    },
+    dayoff: {
+        process: () => { dispatch(openEventDialog(EventDialogType.ProcessDayoff)); },
+        edit: () => { dispatch(openEventDialog(EventDialogType.EditDayoff)); }
     }
 });
 

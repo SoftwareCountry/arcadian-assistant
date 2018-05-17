@@ -52,6 +52,13 @@ const reducers = combineReducers<AppState>({
 
 });
 
+const rootReducer = (state: AppState, action: Action) => {
+    if (action.type === 'USER-LOGGED-OUT') {
+      state = undefined;
+    }
+    return reducers(state, action);
+  };
+
 export interface DependenciesContainer {
     apiClient: SecuredApiClient;
     oauthProcess: OAuthProcess;
@@ -68,5 +75,5 @@ export const storeFactory = (oauthProcess: OAuthProcess, ) => {
 
     const reactNavigationMiddleware = createReactNavigationReduxMiddleware<AppState>(navigationMiddlewareKey, (state) => state.nav);
 
-    return createStore<AppState>(reducers, { navigationMiddlewareKey }, applyMiddleware(epicMiddleware, reactNavigationMiddleware));
+    return createStore<AppState>(rootReducer, { navigationMiddlewareKey }, applyMiddleware(epicMiddleware, reactNavigationMiddleware));
 };

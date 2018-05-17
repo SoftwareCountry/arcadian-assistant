@@ -2,21 +2,57 @@ import { Reducer } from 'redux';
 import { combineEpics } from 'redux-observable';
 import { Feed } from './feed.model';
 import { FeedsActions } from './feeds.action';
-import { loadFeedsEpic$, loadFeedsFinishedEpic$ } from './feeds.epics';
+import { loadFeedsFinishedEpic$, pagingPeriodDays, fetchNewFeedsEpic$, fetchOldFeedsEpic$ } from './feeds.epics';
+import { Moment } from 'moment';
+import { Map } from 'immutable';
 
-export const feedsReducer: Reducer<Feed[]> = (state = [], action: FeedsActions) => {
+export type FeedsById = Map<string, Feed>;
+
+export interface FeedsState {
+    feeds: FeedsById;
+    toDate: Moment;
+    fromDate: Moment;
+}
+
+const initState: FeedsState = {
+    feeds: Map<string, Feed>(),
+    toDate: null,
+    fromDate: null,
+};
+
+export const feedsReducer: Reducer<FeedsState> = (state = initState, action: FeedsActions) => {
     switch (action.type) {
+        case 'FETCH_NEW_FEEDS':
+        case 'FETCH_OLD_FEEDS':
+            return {
+                ...state
+            };
         case 'LOAD_FEEDS_FINISHED':
-            return [...action.feeds];
 
+            let feeds = state.feeds;
+
+            for (const feed of action.feeds) {
+                feeds = feeds.set(feed.messageId, feed);
+            }
+
+            return {
+                ...state,
+                feeds,
+            };
+        case 'CHANGE_BOUNDARY_DATES':
+            return {
+                ...state,
+                toDate: action.toDate,
+                fromDate: action.fromDate,
+            };
         default:
             return state;
     }
 };
 
-export interface FeedsState extends Array<Feed> { }
-
 export const feedsEpics = combineEpics(
-    loadFeedsEpic$ as any,
-    loadFeedsFinishedEpic$ as any
+    loadFeedsFinishedEpic$ as any,
+    fetchNewFeedsEpic$ as any,
+    fetchOldFeedsEpic$ as any
+    
 );

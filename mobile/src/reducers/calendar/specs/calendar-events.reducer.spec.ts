@@ -1,18 +1,25 @@
 import { calendarEventsReducer, CalendarEventsState } from '../calendar-events.reducer';
-import { loadCalendarEventsFinished, calendarEventCreated, selectCalendarDay, calendarSelectionMode, CalendarSelectionModeType, disableCalendarSelection, selectIntervalsBySingleDaySelection } from '../calendar.action';
+import { loadCalendarEventsFinished, selectCalendarDay, calendarSelectionMode, CalendarSelectionModeType, disableCalendarSelection, selectIntervalsBySingleDaySelection, disableSelectIntervalsBySingleDaySelection } from '../calendar.action';
 import { CalendarEvent, DatesInterval, CalendarEventStatus, CalendarEventType } from '../calendar-event.model';
 import moment from 'moment';
 import { DayModel, IntervalType } from '../calendar.model';
 import { CalendarEvents } from '../calendar-events.model';
+import { Employee } from '../../organization/employee.model';
+import { loadUserEmployeeFinished, loadUserFinished } from '../../user/user.action';
 
 describe('calendar events reducer', () => {
     describe('when load calendar events finished', () => {
         let state: CalendarEventsState;
         let calendarEvent: CalendarEvent;
+        let employeeId = '1';
+
+        beforeEach(() => {
+            const action = loadUserFinished(employeeId);
+            state = calendarEventsReducer(undefined, action);
+        });
 
         beforeEach(() => {
             calendarEvent = new CalendarEvent();
-
             calendarEvent.calendarEventId = '1';
             calendarEvent.dates = new DatesInterval();
             calendarEvent.dates.startDate = moment();
@@ -20,8 +27,8 @@ describe('calendar events reducer', () => {
             calendarEvent.status = CalendarEventStatus.Requested;
             calendarEvent.type = CalendarEventType.Sickleave;
 
-            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]));
-            state = calendarEventsReducer(undefined, action);
+            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employeeId);
+            state = calendarEventsReducer(state, action);
         });
 
         it('should have intervals', () => {
@@ -40,39 +47,6 @@ describe('calendar events reducer', () => {
 
         it('should enable calendar actions group', () => {
             expect(state.disableCalendarActionsButtonGroup).toBeFalsy();
-        });
-    });
-
-    describe('when calendar event created', () => {
-        let state: CalendarEventsState;
-        let calendarEvent: CalendarEvent;
-
-        beforeEach(() => {
-            calendarEvent = new CalendarEvent();
-
-            calendarEvent.calendarEventId = '1';
-            calendarEvent.dates = new DatesInterval();
-            calendarEvent.dates.startDate = moment();
-            calendarEvent.dates.endDate = moment(calendarEvent.dates.startDate);
-            calendarEvent.status = CalendarEventStatus.Requested;
-            calendarEvent.type = CalendarEventType.Sickleave;
-
-            const action = calendarEventCreated(calendarEvent);
-            state = calendarEventsReducer(undefined, action);
-        });
-
-        it('should append event to intervals', () => {
-            expect(state.intervals).toBeDefined();
-
-            let intervals = state.intervals.get(calendarEvent.dates.startDate);
-
-            expect(intervals.length).toBe(1);
-            expect(intervals[0].calendarEvent.type).toBe(calendarEvent.type);
-
-            intervals = state.intervals.get(calendarEvent.dates.endDate);
-
-            expect(intervals.length).toBe(1);
-            expect(intervals[0].calendarEvent.type).toBe(calendarEvent.type);
         });
     });
 
@@ -247,6 +221,14 @@ describe('calendar events reducer', () => {
         let state: CalendarEventsState;
         let calendarEvent: CalendarEvent;
         let day: DayModel;
+        let employeeId = '1';
+
+        beforeEach(() => {
+        
+            const action = loadUserFinished(employeeId);
+            state = calendarEventsReducer(undefined, action);
+        });
+        
 
         beforeEach(() => {
             calendarEvent = new CalendarEvent();
@@ -261,8 +243,8 @@ describe('calendar events reducer', () => {
             calendarEvent.status = CalendarEventStatus.Requested;
             calendarEvent.type = CalendarEventType.Sickleave;
 
-            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]));
-            state = calendarEventsReducer(undefined, action);
+            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employeeId);
+            state = calendarEventsReducer(state, action);
         });
 
         beforeEach(() => {
@@ -283,6 +265,61 @@ describe('calendar events reducer', () => {
         it('should return intervals by single day selection', () => {
             expect(state.selectedIntervalsBySingleDaySelection.sickleave).toBeDefined();
             expect(state.selectedIntervalsBySingleDaySelection.sickleave.calendarEvent).toBe(calendarEvent);
+        });
+    });
+
+    describe('when select intervals by single selection is disabled', () => {
+        let state: CalendarEventsState;
+        let calendarEvent: CalendarEvent;
+        let day: DayModel;
+        let employeeId = '1';
+
+        beforeEach(() => {
+            const action = loadUserFinished(employeeId);
+            state = calendarEventsReducer(undefined, action);
+        });
+
+        beforeEach(() => {
+            calendarEvent = new CalendarEvent();
+
+            calendarEvent.calendarEventId = '1';
+            calendarEvent.dates = new DatesInterval();
+            calendarEvent.dates.startDate = moment();
+            calendarEvent.dates.endDate = moment(calendarEvent.dates.startDate);
+
+            calendarEvent.dates.endDate.add(2, 'days');
+
+            calendarEvent.status = CalendarEventStatus.Requested;
+            calendarEvent.type = CalendarEventType.Sickleave;
+
+            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employeeId);
+            state = calendarEventsReducer(state, action);
+        });
+
+        beforeEach(() => {
+            day = {
+                date: calendarEvent.dates.startDate,
+                today: true,
+                belongsToCurrentMonth: true
+            };
+            const action = selectCalendarDay(day);
+            state = calendarEventsReducer(state, action);
+        });
+
+        beforeEach(() => {
+            const action = disableSelectIntervalsBySingleDaySelection(true);
+            state = calendarEventsReducer(state, action);
+        });
+
+        beforeEach(() => {
+            const action = selectIntervalsBySingleDaySelection();
+            state = calendarEventsReducer(state, action);
+        });
+
+        it('should not return intervals', () => {
+            expect(state.selectedIntervalsBySingleDaySelection.sickleave).toBeUndefined();
+            expect(state.selectedIntervalsBySingleDaySelection.vacation).toBeUndefined();
+            expect(state.selectedIntervalsBySingleDaySelection.dayoff).toBeUndefined();
         });
     });
 });

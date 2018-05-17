@@ -1,4 +1,4 @@
-import { CalendarEvent } from './calendar-event.model';
+import { CalendarEvent, CalendarEventStatus } from './calendar-event.model';
 import { DayModel, CalendarSelection } from './calendar.model';
 import { SickLeaveActions } from './sick-leave.action';
 import { CalendarEvents } from './calendar-events.model';
@@ -13,16 +13,19 @@ export const loadCalendarEvents = (employeeId: string): LoadCalendarEvents => ({
 export interface LoadCalendarEventsFinished {
     type: 'LOAD-CALENDAR-EVENTS-FINISHED';
     calendarEvents: CalendarEvents;
+    employeeId: string;
 }
 
-export const loadCalendarEventsFinished = (calendarEvents: CalendarEvents): LoadCalendarEventsFinished => ({ type: 'LOAD-CALENDAR-EVENTS-FINISHED', calendarEvents });
+export const loadCalendarEventsFinished = (calendarEvents: CalendarEvents, employeeId: string): LoadCalendarEventsFinished => ({ type: 'LOAD-CALENDAR-EVENTS-FINISHED', calendarEvents, employeeId });
 
-export interface CalendarEventCreated {
-    type: 'CALENDAR-EVENT-CREATED';
+export interface CalendarEventSetNewStatus {
+    type: 'CALENDAR-EVENT-NEW-STATUS';
+    employeeId: string;
     calendarEvent: CalendarEvent;
+    status: CalendarEventStatus;
 }
 
-export const calendarEventCreated = (calendarEvent: CalendarEvent): CalendarEventCreated => ({ type: 'CALENDAR-EVENT-CREATED', calendarEvent });
+export const calendarEventSetNewStatus = (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus): CalendarEventSetNewStatus => ({ type: 'CALENDAR-EVENT-NEW-STATUS', calendarEvent, employeeId, status });
 
 export interface SelectCalendarDay {
     type: 'SELECT-CALENDAR-DAY';
@@ -66,6 +69,12 @@ export interface DisableCalendarSelection {
 export const disableCalendarSelection = (disable: boolean): DisableCalendarSelection => 
     ({ type: 'DISABLE-CALENDAR-SELECTION', disable });
 
-export type CalendarActions = LoadCalendarEventsFinished | CalendarEventCreated |
-    SelectCalendarDay | SelectCalendarMonth |
-    CalendarSelectionMode | SelectIntervalsBySingleDaySelection | DisableCalendarSelection;
+export interface DisableSelectIntervalsBySingleDaySelection {
+    type: 'DISABLE-SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION';
+    disable: boolean;
+}
+
+export const disableSelectIntervalsBySingleDaySelection = (disable: boolean): DisableSelectIntervalsBySingleDaySelection => ({ type: 'DISABLE-SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION', disable });
+
+export type CalendarActions = LoadCalendarEventsFinished | SelectCalendarDay | SelectCalendarMonth |
+    CalendarSelectionMode | SelectIntervalsBySingleDaySelection | DisableCalendarSelection | DisableSelectIntervalsBySingleDaySelection | CalendarEventSetNewStatus;

@@ -33,7 +33,7 @@ export class ProlongSickLeaveEventDialogImpl extends Component<ProlongSickLeaveE
                     icon={'sick_leave'}
                     cancelLabel={'Back'}
                     acceptLabel={'Confirm'}
-                    onActionPress={this.onAcceptClick}
+                    onAcceptPress={this.onAcceptClick}
                     onCancelPress={this.onCancelClick}
                     onClosePress={this.onCloseClick}
                     disableAccept={disableAccept} />;
@@ -88,7 +88,7 @@ export class ProlongSickLeaveEventDialogImpl extends Component<ProlongSickLeaveE
 const mapStateToProps = (state: AppState): ProlongSickLeaveEventDialogProps => ({
     intervalsBySingleDaySelection: state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection,
     intervalSelection: state.calendar.calendarEvents.selection.interval,
-    userEmployee: state.userInfo.employee
+    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ProlongSickLeaveEventDialogDispatchProps => ({

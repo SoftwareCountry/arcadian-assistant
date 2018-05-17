@@ -1,9 +1,9 @@
 import { CalendarEvent, CalendarEventType } from './calendar-event.model';
 import { IntervalsModel, IntervalType, ReadOnlyIntervalsModel, IntervalModel } from './calendar.model';
 import moment from 'moment';
+import { IntervalTypeConverter } from './interval-type-converter';
 
 export class CalendarEvents {
-
     constructor(private readonly calendarEvents: CalendarEvent[]) {}
 
     public buildIntervalsModel(): IntervalsModel {
@@ -16,6 +16,10 @@ export class CalendarEvents {
 
     public appendToIntervalsModel(existingModel: IntervalsModel) {
         this.insertCalendarEvents(existingModel);
+    }
+
+    public get all(): CalendarEvent[] {
+        return this.calendarEvents;
     }
 
     private insertCalendarEvents(intervalsModel: IntervalsModel) {
@@ -34,7 +38,7 @@ export class CalendarEvents {
                     calendarEvent: calendarEvent,
                     boundary: true
                 });
-
+                intervalsModel.intervalsMetadata.addCalendarEvent(calendarEvent);
                 continue;
             }
 
@@ -70,23 +74,19 @@ export class CalendarEvents {
             calendarEvent: calendarEvent,
             boundary: true
         });
+
+        intervalsModel.intervalsMetadata.addCalendarEvent(calendarEvent);
     }
 
     private getBoundaryType(calendarEvent: CalendarEvent): IntervalType | null {
         const { startWorkingHour, finishWorkingHour } = calendarEvent.dates;
 
-        if (0 <= startWorkingHour && finishWorkingHour <= 4) {
-            return IntervalType.IntervalLeftBoundary;
+        const intervalType = IntervalTypeConverter.hoursToIntervalType(startWorkingHour, finishWorkingHour);
+
+        if (!intervalType) {
+            return null;
         }
 
-        if (4 <= startWorkingHour && finishWorkingHour <= 8) {
-            return IntervalType.IntervalRightBoundary;
-        }
-
-        if (0 <= startWorkingHour && finishWorkingHour <= 8) {
-            return IntervalType.IntervalFullBoundary;
-        }
-
-        return null;
+        return intervalType;
     }
 }

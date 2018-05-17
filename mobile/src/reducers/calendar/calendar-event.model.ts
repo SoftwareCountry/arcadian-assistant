@@ -69,11 +69,19 @@ export class CalendarEvent {
         return this.status === CalendarEventStatus.Cancelled;
     }
 
+    public get isApproved(): boolean {
+        return this.status === CalendarEventStatus.Approved;
+    }
+
     public get isSickLeave(): boolean {
         return this.type === CalendarEventType.Sickleave;
     }
 
     public get isVacation(): boolean {
         return this.type === CalendarEventType.Vacation;
+    }
+
+    public get isWorkout(): boolean {
+        return this.type === CalendarEventType.Workout;
     }
 }

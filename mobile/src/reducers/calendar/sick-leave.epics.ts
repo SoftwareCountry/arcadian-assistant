@@ -1,9 +1,9 @@
 import { ActionsObservable } from 'redux-observable';
-import { CompleteSickLeave, ConfirmClaimSickLeave, ConfirmProlongSickLeave } from './sick-leave.action';
+import { CompleteSickLeave, ConfirmClaimSickLeave, ConfirmProlongSickLeave, CancelSickLeave } from './sick-leave.action';
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { CalendarEventStatus, CalendarEvent, CalendarEventType } from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
-import { calendarEventCreated, loadCalendarEvents } from './calendar.action';
+import { loadCalendarEvents } from './calendar.action';
 import { loadFailedError } from '../errors/errors.action';
 import { Observable } from 'rxjs/Observable';
 import { closeEventDialog } from './event-dialog/event-dialog.action';
@@ -28,9 +28,9 @@ export const sickLeaveSavedEpic$ = (action$: ActionsObservable<ConfirmClaimSickL
                 `/employees/${x.employeeId}/events`,
                 calendarEvents,
                 { 'Content-Type': 'application/json' }
-            ).map(obj => deserialize(obj.response, CalendarEvent));
+            ).map(obj => deserialize(obj.response, CalendarEvent))
+            .map(() => loadCalendarEvents(x.employeeId));
         })
-        .map(x => calendarEventCreated(x))
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
 export const sickLeaveCompletedEpic$ = (action$: ActionsObservable<CompleteSickLeave>, state: AppState, deps: DependenciesContainer) =>
@@ -55,7 +55,26 @@ export const sickLeaveProlongedEpic$ = (action$: ActionsObservable<ConfirmProlon
 
             const requestBody = {...x.calendarEvent};
 
-            requestBody.dates.endDate = x.prolongedEndDate;
+            requestBody.dates = {
+                ...x.calendarEvent.dates,
+                endDate: x.prolongedEndDate
+            };
+
+            return deps.apiClient.put(
+                `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
+                requestBody,
+                { 'Content-Type': 'application/json' }
+            ).map(() => loadCalendarEvents(x.employeeId));
+        })
+        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+
+export const sickLeaveCanceledEpic$ = (action$: ActionsObservable<CancelSickLeave>, state: AppState, deps: DependenciesContainer) =>
+    action$.ofType('CANCEL-SICK-LEAVE')
+        .flatMap(x => {
+
+            const requestBody = {...x.calendarEvent};
+
+            requestBody.status = CalendarEventStatus.Cancelled;
 
             return deps.apiClient.put(
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,

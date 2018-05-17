@@ -18,8 +18,13 @@ export interface CancelVacation {
 
 export const сancelVacation = (employeeId: string, calendarEvent: CalendarEvent): CancelVacation => ({ type: 'CANCEL-VACACTION', calendarEvent, employeeId });
 
-export interface ChangeVacation {
-    type: 'CHANGE-VACACTION';
+export interface ConfirmVacationChange {
+    type: 'CONFIRM-VACATION-CHANGE';
+    employeeId: string;
+    calendarEvent: CalendarEvent;
+    startDate: Moment;
+    endDate: Moment;
 }
 
-export const changeVacation = (): ChangeVacation => ({ type: 'CHANGE-VACACTION' });
+export const confirmVacationChange = (employeeId: string, calendarEvent: CalendarEvent, startDate: Moment, endDate: Moment): ConfirmVacationChange => 
+    ({ type: 'CONFIRM-VACATION-CHANGE', employeeId, calendarEvent, startDate, endDate });

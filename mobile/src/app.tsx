@@ -6,7 +6,7 @@ import { AppState, storeFactory } from './reducers/app.reducer';
 import { connect, Provider, Dispatch } from 'react-redux';
 import { addNavigationHelpers, NavigationState, NavigationActions } from 'react-navigation';
 import { loadDepartments } from './reducers/organization/organization.action';
-import { loadFeeds } from './reducers/feeds/feeds.action';
+import { fetchNewFeeds } from './reducers/feeds/feeds.action';
 import { Employee } from './reducers/organization/employee.model';
 import { loadUser } from './reducers/user/user.action';
 import { AddListener, createReduxBoundAddListener } from 'react-navigation-redux-helpers';
@@ -46,11 +46,6 @@ export class App extends Component<AppProps> {
 
   public componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', this.onBackPress );
-
-    //initial state
-    this.props.dispatch(loadUser());
-    this.props.dispatch(loadDepartments());
-    this.props.dispatch(loadFeeds());
   }
 
   public componentWillUnmount() {

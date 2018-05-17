@@ -31,7 +31,7 @@ class ConfirmSickLeaveEventDialogImpl extends Component<ClaimSickLeaveEventDialo
                     icon={'sick_leave'} 
                     cancelLabel={'Back'}
                     acceptLabel={'Confirm'}
-                    onActionPress={this.acceptAction}
+                    onAcceptPress={this.acceptAction}
                     onCancelPress={this.cancelAction}
                     onClosePress={this.closeDialog}
                     disableAccept={!this.props.endDay} />;
@@ -57,7 +57,7 @@ class ConfirmSickLeaveEventDialogImpl extends Component<ClaimSickLeaveEventDialo
 const mapStateToProps = (state: AppState): ClaimSickLeaveEventDialogProps => ({
     startDay: state.calendar.calendarEvents.selection.interval.startDay,
     endDay: state.calendar.calendarEvents.selection.interval.endDay,
-    userEmployee: state.userInfo.employee
+    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ClaimSickLeaveEventDialogDispatchProps => ({

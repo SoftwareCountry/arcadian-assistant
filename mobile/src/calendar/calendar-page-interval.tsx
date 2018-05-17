@@ -6,6 +6,7 @@ export interface IntervalProps {
     size: number; 
     color: string; 
     style?: ViewStyle;
+    circleStyle?: ViewStyle;
 }
 
 interface HalfIntervalProps extends IntervalProps {

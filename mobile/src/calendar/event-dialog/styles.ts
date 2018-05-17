@@ -81,3 +81,17 @@ export const buttons = StyleSheet.create({
         color: '#18515E'
     }]) as any
 });
+
+export const switchDayoffTypeStyles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+    intervalBoundaries: {
+        flex: 1,
+        flexDirection: 'row'
+    },
+    intervalBoundary: {
+        position: 'relative',
+        left: 0
+    }
+});
