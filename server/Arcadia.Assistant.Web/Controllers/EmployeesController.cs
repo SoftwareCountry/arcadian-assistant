@@ -20,13 +20,13 @@
     [Route("api/employees")]
     public class EmployeesController : Controller
     {
-        private IEmployeesSearch employeesSearch;
+        private IEmployeesRegistry employeesRegistry;
 
         private ITimeoutSettings timeoutSettings;
 
-        public EmployeesController(IEmployeesSearch employeesSearch, ITimeoutSettings timeoutSettings)
+        public EmployeesController(IEmployeesRegistry employeesRegistry, ITimeoutSettings timeoutSettings)
         {
-            this.employeesSearch = employeesSearch;
+            this.employeesRegistry = employeesRegistry;
             this.timeoutSettings = timeoutSettings;
         }
 
@@ -74,7 +74,7 @@
 
         private async Task<EmployeeModel[]> LoadEmployeesAsync(EmployeesQuery query, CancellationToken token)
         {
-            var employees = await this.employeesSearch.Search(query, token);
+            var employees = await this.employeesRegistry.SearchAsync(query, token);
 
             var tasks = employees.Select(
                 async x =>
