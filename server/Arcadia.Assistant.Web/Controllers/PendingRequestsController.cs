@@ -44,7 +44,7 @@
         [ProducesResponseType(typeof(CalendarEventsWithIdByEmployeeModel), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPendingRequestsForUser(CancellationToken token)
         {
-            var user = await this.userEmployeeSearch.FindOrDefault(this.User, token);
+            var user = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, token);
             if (user == null)
             {
                 return this.Forbid();

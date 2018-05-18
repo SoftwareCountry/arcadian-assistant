@@ -19,7 +19,7 @@
             this.employeesRegistry = employeesRegistry;
         }
 
-        public async Task<EmployeeContainer> FindOrDefault(ClaimsPrincipal user, CancellationToken cancellationToken)
+        public async Task<EmployeeContainer> FindOrDefaultAsync(ClaimsPrincipal user, CancellationToken cancellationToken)
         {
             string email;
             var defaultEmail = "alexander.shevnin@arcadia.spb.ru";

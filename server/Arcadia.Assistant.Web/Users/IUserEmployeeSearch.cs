@@ -9,6 +9,6 @@
 
     public interface IUserEmployeeSearch
     {
-        Task<EmployeeContainer> FindOrDefault(ClaimsPrincipal user, CancellationToken cancellationToken);
+        Task<EmployeeContainer> FindOrDefaultAsync(ClaimsPrincipal user, CancellationToken cancellationToken);
     }
 }

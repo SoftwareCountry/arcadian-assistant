@@ -11,13 +11,16 @@
     using Microsoft.AspNetCore.Mvc;
 
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
+    using Arcadia.Assistant.Web.Authorization;
     using Arcadia.Assistant.Web.Configuration;
     using Arcadia.Assistant.Web.Employees;
     using Arcadia.Assistant.Web.Models;
 
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
 
     [Route("api/employees")]
+    [Authorize(Policies.UserIsEmployee)]
     public class EmployeesController : Controller
     {
         private IEmployeesRegistry employeesRegistry;

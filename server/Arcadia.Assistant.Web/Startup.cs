@@ -9,6 +9,9 @@
 
     using Arcadia.Assistant.Configuration;
     using Arcadia.Assistant.Server.Interop;
+    using Arcadia.Assistant.Web.Authorization;
+    using Arcadia.Assistant.Web.Authorization.Handlers;
+    using Arcadia.Assistant.Web.Authorization.Requirements;
     using Arcadia.Assistant.Web.Configuration;
     using Arcadia.Assistant.Web.Employees;
     using Arcadia.Assistant.Web.Infrastructure;
@@ -87,6 +90,11 @@
                             jwtOptions.MetadataAddress = appSettings.Security.OpenIdConfigurationUrl;
                             jwtOptions.Events = new JwtEventsHandler();
                         });
+
+            services
+                .AddAuthorization(options => options.AddPolicy(Policies.UserIsEmployee, policy => policy.Requirements.Add(new UserIsEmployeeRequirement())));
+
+            services.AddScoped<IAuthorizationHandler, UserIsEmployeeHandler>();
         }
 
         // ReSharper disable once UnusedMember.Global

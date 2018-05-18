@@ -24,7 +24,7 @@
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetCurrentUser(CancellationToken token)
         {
-            var userEmployee = await this.userEmployeeSearch.FindOrDefault(this.User, token);
+            var userEmployee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, token);
 
             if (userEmployee == null)
             {
