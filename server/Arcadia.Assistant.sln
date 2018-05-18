@@ -39,9 +39,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Calendar", "Arcadia.Assistant.Calendar\Arcadia.Assistant.Calendar.csproj", "{ECAF9CB2-A6EC-4E07-9D8B-0E5A4174152A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Calendar", "Arcadia.Assistant.Calendar\Arcadia.Assistant.Calendar.csproj", "{ECAF9CB2-A6EC-4E07-9D8B-0E5A4174152A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Calendar.Abstractions", "Arcadia.Assistant.Calendar.Abstractions\Arcadia.Assistant.Calendar.Abstractions.csproj", "{2E85CF39-662F-44F5-89E4-7DC0CCFB3E34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Calendar.Abstractions", "Arcadia.Assistant.Calendar.Abstractions\Arcadia.Assistant.Calendar.Abstractions.csproj", "{2E85CF39-662F-44F5-89E4-7DC0CCFB3E34}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

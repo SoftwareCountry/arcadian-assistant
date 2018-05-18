@@ -22,15 +22,15 @@
     [Route("/api/employees/{employeeId}/events/")]
     public class CalendarEventsController : Controller
     {
-        private readonly IEmployeesSearch employeesSearch;
+        private readonly IEmployeesRegistry employeesRegistry;
 
         private readonly ITimeoutSettings timeoutSettings;
 
 
-        public CalendarEventsController(ITimeoutSettings timeoutSettings, IEmployeesSearch employeesSearch)
+        public CalendarEventsController(ITimeoutSettings timeoutSettings, IEmployeesRegistry employeesRegistry)
         {
             this.timeoutSettings = timeoutSettings;
-            this.employeesSearch = employeesSearch;
+            this.employeesRegistry = employeesRegistry;
         }
 
         [Route("")]
@@ -101,7 +101,7 @@
                 return this.NotFound();
             }
 
-            var calendarEvent = new CalendarEvent(newId, model.Type, model.Dates, model.Status);
+            var calendarEvent = new CalendarEvent(newId, model.Type, model.Dates, model.Status, employee.Metadata.EmployeeId);
             var eventCreationResponse = await this.UpsertEventAsync(employee.Calendar.CalendarActor, calendarEvent, token);
 
             switch (eventCreationResponse)
@@ -150,7 +150,7 @@
                 return this.StatusCode(StatusCodes.Status409Conflict, "Calendar types are not compatible");
             }
 
-            var calendarEvent = new CalendarEvent(eventId, model.Type, model.Dates, model.Status);
+            var calendarEvent = new CalendarEvent(eventId, model.Type, model.Dates, model.Status, employee.Metadata.EmployeeId);
             var response = await this.UpsertEventAsync(employee.Calendar.CalendarActor, calendarEvent, token);
 
             switch (response)
@@ -193,7 +193,7 @@
         private async Task<EmployeeContainer> GetEmployeeOrDefaultAsync(string employeeId, CancellationToken token)
         {
             var query = new EmployeesQuery().WithId(employeeId);
-            var employees = await this.employeesSearch.Search(query, token);
+            var employees = await this.employeesRegistry.SearchAsync(query, token);
 
             return employees.SingleOrDefault();
         }

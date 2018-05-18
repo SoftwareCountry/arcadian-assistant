@@ -10,12 +10,15 @@
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.Server.Interop;
+    using Arcadia.Assistant.Web.Authorization;
     using Arcadia.Assistant.Web.Configuration;
 
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     [Route("/api/departments")]
+    [Authorize(Policies.UserIsEmployee)]
     public class DepartmentsController : Controller
     {
         private readonly IActorRefFactory actorSystem;

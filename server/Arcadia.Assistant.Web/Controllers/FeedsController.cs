@@ -11,13 +11,16 @@
     using Arcadia.Assistant.Feeds;
     using Arcadia.Assistant.Feeds.Messages;
     using Arcadia.Assistant.Server.Interop;
+    using Arcadia.Assistant.Web.Authorization;
     using Arcadia.Assistant.Web.Configuration;
     using Arcadia.Assistant.Web.Users;
 
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     [Route("api/feeds")]
+    [Authorize(Policies.UserIsEmployee)]
     public class FeedsController : Controller
     {
         private readonly IActorRefFactory actorFactory;
@@ -48,7 +51,7 @@
             var timeout = this.timeoutSettings.Timeout;
             var today = DateTime.Today;
 
-            var employee = await this.userEmployeeSearch.FindOrDefault(this.User, token);
+            var employee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, token);
             if (employee == null)
             {
                 return this.Ok(new Message[0]);
