@@ -123,13 +123,10 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
         }
         case 'LOAD-PENDING-REQUESTS-FINISHED': {
             let newState: CalendarEventsState;
-            let { requests } = state;
-
-            requests =  Map(action.requests.events);
 
             newState = {
                 ...state,
-                requests: requests
+                requests: action.requests
             };
 
             return newState;        

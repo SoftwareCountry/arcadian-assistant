@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect, Dispatch } from 'react-redux';
 import { Map } from 'immutable';
-import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView, Linking, TouchableOpacity, ViewStyle, Dimensions } from 'react-native';
+import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView, Linking, TouchableOpacity, ViewStyle, Dimensions, FlatList } from 'react-native';
 
 import { layoutStyles, contentStyles, tileStyles, contactStyles } from '../profile/styles';
 import { Chevron } from '../profile/chevron';
@@ -112,14 +112,22 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
                         {
                             (requests !== undefined && requests.size > 0) ? 
-                            <View>
+                            requests.valueSeq().map((pendingEvents, key) => (
                                 <EmployeeDetailsPendingRequestsList
-                                    events={events} 
-                                    requests={requests}
-                                    employeeId={employee.employeeId}
+                                    key={'692'}
+                                    events={pendingEvents} 
+                                    employeeId={'692'}
                                     eventSetNewStatusAction={this.props.eventSetNewStatusAction}
                                 />
-                            </View> : null
+                            )) : null
+                            // requests.map((pendingEvents, key) => (
+                            //         <EmployeeDetailsPendingRequestsList
+                            //             key={key}
+                            //             events={pendingEvents} 
+                            //             employeeId={key}
+                            //             eventSetNewStatusAction={this.props.eventSetNewStatusAction}
+                            //         />
+                            // )) : null
                         }
 
                         {

@@ -1,3 +1,4 @@
+import { Map } from 'immutable';
 import { CalendarEvent, CalendarEventStatus } from './calendar-event.model';
 import { DayModel, CalendarSelection } from './calendar.model';
 import { SickLeaveActions } from './sick-leave.action';
@@ -26,10 +27,10 @@ export const loadPendingRequests = (): LoadPendingRequests => ({ type: 'LOAD-PEN
 
 export interface LoadPendingRequestsFinished {
     type: 'LOAD-PENDING-REQUESTS-FINISHED';
-    requests: PendingRequests;
+    requests: Map<string, CalendarEvent[]>;
 }
 
-export const loadPendingRequestsFinished = (requests: PendingRequests): LoadPendingRequestsFinished => ({ type: 'LOAD-PENDING-REQUESTS-FINISHED', requests });
+export const loadPendingRequestsFinished = (requests: Map<string, CalendarEvent[]>): LoadPendingRequestsFinished => ({ type: 'LOAD-PENDING-REQUESTS-FINISHED', requests });
 
 export interface CalendarEventSetNewStatus {
     type: 'CALENDAR-EVENT-NEW-STATUS';
