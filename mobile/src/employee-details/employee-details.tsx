@@ -112,11 +112,11 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
                         {
                             (requests !== undefined && requests.size > 0) ? 
-                            requests.valueSeq().map((pendingEvents, key) => (
+                            requests.keySeq().map((key) => (
                                 <EmployeeDetailsPendingRequestsList
-                                    key={'692'}
-                                    events={pendingEvents} 
-                                    employeeId={'692'}
+                                    key={key}
+                                    events={requests.get(key)} 
+                                    employeeId={key}
                                     eventSetNewStatusAction={this.props.eventSetNewStatusAction}
                                 />
                             )) : null
