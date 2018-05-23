@@ -5,6 +5,9 @@ import { StartLoginProcess, StartLogoutProcess, startLoginProcess, startLogoutPr
 import { loadFailedError } from '../errors/errors.action';
 import { loadUser } from '../user/user.action';
 import { loadDepartments } from '../organization/organization.action';
+import { refresh } from '../refresh/refresh.action';
+import { handleHttpErrors } from '../errors/errors.epics';
+import { flatMap, distinctUntilChanged } from 'rxjs/operators';
 
 export const startLoginProcessEpic$ = (action$: ActionsObservable<StartLoginProcess>, state: AppState, dep: DependenciesContainer) =>
     action$.ofType('START-LOGIN-PROCESS')
@@ -18,12 +21,14 @@ export const startLogoutProcessEpic$ = (action$: ActionsObservable<StartLogoutPr
 
 export const listenerAuthStateEpic$ = (action$: ActionsObservable<any>, state: AppState, dep: DependenciesContainer) =>
     dep.oauthProcess.authenticationState
-        .distinctUntilChanged((x, y) => x.isAuthenticated === y.isAuthenticated)
-        .flatMap(x => {
-            if (x.isAuthenticated) {
-                return Observable.concat(Observable.of(userLoggedIn()), Observable.of(loadUser()), Observable.of(loadDepartments()));
-            } else {
-                return Observable.of(userLoggedOut());
-            }
-        })
-        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+        .pipe(
+            handleHttpErrors(),
+            distinctUntilChanged((x, y) => x.isAuthenticated === y.isAuthenticated),
+            flatMap(x => {
+                if (x.isAuthenticated) {
+                    return Observable.concat(Observable.of(userLoggedIn()), Observable.of(refresh()));
+                } else {
+                    return Observable.of(userLoggedOut());
+                }
+            })
+        );
