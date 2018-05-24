@@ -13,7 +13,7 @@
             var container = new ContainerBuilder();
 
             container.RegisterModule(new DatabaseModule(config.GetConnectionString("ArcadiaCSP")));
-            container.RegisterModule<OrganizationModule>();
+            container.RegisterModule(new OrganizationModule(config.GetSection("Mail")));
 
             return container.Build();
         }

@@ -1,18 +1,25 @@
 ﻿using Arcadia.Assistant.Calendar.SickLeave.Events;
 using System;
-using System.Configuration;
-using System.Threading;
 using Akka.Actor;
+using Akka.DI.Core;
 using MimeKit;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Gmail.v1;
-using Google.Apis.Services;
-using Google.Apis.Gmail.v1.Data;
 
 namespace Arcadia.Assistant.Calendar.SickLeave
 {
+    using MailKit.Net.Smtp;
+    using MailKit.Security;
+    using Microsoft.Extensions.Configuration;
+
     public class SendEmailSickLeaveActor : UntypedActor
     {
+        private readonly IConfigurationSection mailConfig;
+        public SendEmailSickLeaveActor(IConfigurationSection mailConfig)
+        {
+            this.mailConfig = mailConfig;
+        }
+
+        public static Props GetProps() => Context.DI().Props<SendEmailSickLeaveActor>();
+
         protected override void OnReceive(object message)
         {
             switch (message)
@@ -23,81 +30,39 @@ namespace Arcadia.Assistant.Calendar.SickLeave
             }
         }
 
-        private static void SendEmail(SickLeaveIsApproved Event)
+        private void SendEmail(SickLeaveIsApproved Event)
         {
-            var clientId = ConfigurationManager.AppSettings["ClientId"];
-            var clientSecret = ConfigurationManager.AppSettings["ClientSecret"];
-            try
-            {
-                var credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    new ClientSecrets
-                    {
-                        ClientId = clientId,
-                        ClientSecret = clientSecret,
-                    },
-                    new[] { GmailService.Scope.GmailCompose },
-                    "user",
-                    CancellationToken.None).Result;
+            var user = mailConfig["SmtpUser"];
+            var pass = mailConfig["SmtpPass"];
 
-                var service = new GmailService(new BaseClientService.Initializer
-                {
-                    HttpClientInitializer = credential,
-                    ApplicationName = "Gmail API",
-                });
-                var body = "Dear Sir/Madam,\nNotify you, that employee " + Event.UserId + @" went on sick leave for " +
-                           Event.TimeStamp.ToString() + "\nYours faithfully,\nTesting team\n\n";
-                service.Users.Messages.Send(createMessageFromMime(CreateMimeMessage("Approved sick leave", body)), "me").Execute();
-            }
-            catch (Exception e)
+            using (var client = new SmtpClient())
             {
-                throw new Exception("Can't send email");
+                var body = "Dear Sir/Madam,\nNotify you, that employee " + Event.UserId +
+                    @" went on sick leave for " +
+                    Event.TimeStamp.ToString() + "\nYours faithfully,\nTesting team\n\n";
+                var message = CreateMimeMessage("Approved sick leave", body);
+
+                client.Connect("smtp.gmail.com", 465, SecureSocketOptions.SslOnConnect);
+                client.Authenticate(user, pass);
+                client.Send(message);
+                client.Disconnect(true);
             }
         }
 
-        private static string Base64UrlEncode(string input)
+        public MimeMessage CreateMimeMessage(String Subject, String Body)
         {
-            var inputBytes = System.Text.Encoding.UTF8.GetBytes(input);
-            return Convert.ToBase64String(inputBytes)
-                .Replace('+', '-')
-                .Replace('/', '_')
-                .Replace("=", "");
-        }
+            var senderName = mailConfig["EmailSenderName"];
+            var senderAddress = mailConfig["EmailSenderAddress"];
+            var receiverName = mailConfig["EmailReceiverName"];
+            var receiverAddress = mailConfig["EmailReceiverAddress"];
 
-        public static Message createMessageFromMime(MimeMessage emailContent)
-        {
-            try
-            {
-                var encodedText = Base64UrlEncode(emailContent.ToString());
-                var message = new Message { Raw = encodedText };
-                return message;
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Problems with buffer during sending email");
-            }
-        }
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(senderName, senderAddress));
+            message.To.Add(new MailboxAddress(receiverName, receiverAddress));
+            message.Subject = Subject;
+            message.Body = new TextPart("plain") { Text = Body };
 
-        public static MimeMessage CreateMimeMessage(String Subject, String Body)
-        {
-            var senderName = ConfigurationManager.AppSettings["EmailSenderName"];
-            var senderAddress = ConfigurationManager.AppSettings["EmailSenderAddress"];
-            var receiverName = ConfigurationManager.AppSettings["EmailReceiverName"];
-            var receiverAddress = ConfigurationManager.AppSettings["EmailReceiverAddress"];
-
-            try
-            {
-                var message = new MimeMessage();
-                message.From.Add(new MailboxAddress(senderName, senderAddress));
-                message.To.Add(new MailboxAddress(receiverName, receiverAddress));
-                message.Subject = Subject;
-                message.Body = new TextPart("plain") { Text = Body };
-
-                return message;
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Problems with creating mime message during sending email");
-            }
+            return message;
         }
     }
 }

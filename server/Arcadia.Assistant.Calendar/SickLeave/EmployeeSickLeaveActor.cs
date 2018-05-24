@@ -179,7 +179,7 @@
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
                 this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, SickLeaveStatuses.Approved);
-                var sendEmail = Context.ActorOf(Props.Create(() => new SendEmailSickLeaveActor()),"sendEmailActor" + DateTime.Now.Ticks);
+                var sendEmail = Context.ActorOf(SendEmailSickLeaveActor.GetProps(),"sendEmailActor" + DateTime.Now.Ticks);
                 sendEmail.Tell(message);
             }
         }
