@@ -153,7 +153,7 @@
             var eventType = message.IsDayoff ? CalendarEventTypes.Dayoff : CalendarEventTypes.Workout;
 
             var datesPeriod = new DatesPeriod(message.Date, message.Date, message.StartHour, message.EndHour);
-            var calendarEvent = new CalendarEvent(message.EventId, eventType, datesPeriod, WorkHoursChangeStatuses.Requested);
+            var calendarEvent = new CalendarEvent(message.EventId, eventType, datesPeriod, WorkHoursChangeStatuses.Requested, this.EmployeeId);
             this.EventsById[message.EventId] = calendarEvent;
         }
 
@@ -185,7 +185,7 @@
             {
                 //Make changes to the counter
                 this.ChangeCounter(calendarEvent.Dates.StartWorkingHour, calendarEvent.Dates.FinishWorkingHour, this.IsCreditingType(calendarEvent.Type));
-                this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, WorkHoursChangeStatuses.Approved);
+                this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, WorkHoursChangeStatuses.Approved, this.EmployeeId);
             }
         }
 

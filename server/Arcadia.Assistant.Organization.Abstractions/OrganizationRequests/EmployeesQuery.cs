@@ -29,13 +29,6 @@
             return new EmployeesQuery();
         }
 
-        public EmployeesQuery SubordinateForDepartment(string departmentId)
-        {
-            var obj = this.Clone();
-            obj.AscendantDepartmentId = departmentId;
-            return obj;
-        }
-
         public EmployeesQuery ForDepartment(string departmentId)
         {
             var obj = this.Clone();
@@ -96,14 +89,12 @@
         {
             var newObj = new EmployeesQuery();
             newObj.DepartmentId = this.DepartmentId;
-            newObj.AscendantDepartmentId = this.AscendantDepartmentId;
             newObj.EmployeeId = this.EmployeeId;
             newObj.RoomNumber = this.RoomNumber;
             newObj.BirthDate = this.BirthDate;
             newObj.HireDate = this.HireDate;
             newObj.Sid = this.Sid;
             newObj.Email = this.Email;
-            newObj.DirectSupervisorId = this.DirectSupervisorId;
 
             return newObj;
         }

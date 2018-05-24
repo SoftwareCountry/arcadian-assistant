@@ -18,7 +18,7 @@ interface ProfileScreenProps {
 }
 
 const mapStateToProps = (state: AppState): ProfileScreenProps => ({
-    employee: state.userInfo.employee,
+    employee: state.organization.employees.employeesById.get(state.userInfo.employeeId),
     departments: state.organization.departments
 });
 

@@ -57,7 +57,7 @@ class ConfirmVacationEventDialogImpl extends Component<ClaimVacationEventDialogP
 const mapStateToProps = (state: AppState): ClaimVacationEventDialogProps => ({
     startDay: state.calendar.calendarEvents.selection.interval.startDay,
     endDay: state.calendar.calendarEvents.selection.interval.endDay,
-    userEmployee: state.userInfo.employee
+    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ClaimVacationEventDialogDispatchProps => ({

@@ -1,13 +1,11 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
     using Akka.Actor;
 
-    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.Web.Configuration;
     using Arcadia.Assistant.Web.Employees;
@@ -46,7 +44,7 @@
         [ProducesResponseType(typeof(CalendarEventsWithIdByEmployeeModel), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPendingRequestsForUser(CancellationToken token)
         {
-            var user = await this.userEmployeeSearch.FindOrDefault(this.User, token);
+            var user = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, token);
             if (user == null)
             {
                 return this.Forbid();

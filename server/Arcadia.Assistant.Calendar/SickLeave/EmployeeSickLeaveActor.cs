@@ -146,14 +146,14 @@
         private void OnSickLeaveRequest(SickLeaveIsRequested message)
         {
             var datesPeriod = new DatesPeriod(message.StartDate, message.EndDate);
-            this.EventsById[message.EventId] = new CalendarEvent(message.EventId, CalendarEventTypes.Sickleave, datesPeriod, SickLeaveStatuses.Requested);
+            this.EventsById[message.EventId] = new CalendarEvent(message.EventId, CalendarEventTypes.Sickleave, datesPeriod, SickLeaveStatuses.Requested, this.EmployeeId);
         }
 
         private void OnSickLeaveCompleted(SickLeaveIsCompleted message)
         {
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
-                this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, SickLeaveStatuses.Completed);
+                this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, SickLeaveStatuses.Completed, this.EmployeeId);
             }
         }
 
@@ -162,7 +162,7 @@
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
                 var dates = new DatesPeriod(calendarEvent.Dates.StartDate, message.EndDate);
-                this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, dates, calendarEvent.Status);
+                this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, dates, calendarEvent.Status, this.EmployeeId);
             }
         }
 
@@ -178,7 +178,7 @@
         {
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
-                this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, SickLeaveStatuses.Approved);
+                this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, SickLeaveStatuses.Approved, this.EmployeeId);
                 var sendEmail = Context.ActorOf(SendEmailSickLeaveActor.GetProps(),"sendEmailActor" + DateTime.Now.Ticks);
                 sendEmail.Tell(message);
             }

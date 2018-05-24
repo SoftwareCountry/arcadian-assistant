@@ -3,7 +3,7 @@ import { ConfirmClaimVacation, CancelVacation, ConfirmVacationChange } from './v
 import { ActionsObservable } from 'redux-observable';
 import { CalendarEvent, CalendarEventType, CalendarEventStatus } from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
-import { calendarEventCreated, loadCalendarEvents } from './calendar.action';
+import { loadCalendarEvents } from './calendar.action';
 import { Observable } from 'rxjs/Observable';
 import { loadFailedError } from '../errors/errors.action';
 
@@ -27,9 +27,9 @@ export const vacationSavedEpic$ = (action$: ActionsObservable<ConfirmClaimVacati
                 `/employees/${x.employeeId}/events`,
                 calendarEvents,
                 { 'Content-Type': 'application/json' }
-            ).map(obj => deserialize(obj.response, CalendarEvent));
+            ).map(obj => deserialize(obj.response, CalendarEvent))
+            .map(() => loadCalendarEvents(x.employeeId));
         })
-        .map(x => calendarEventCreated(x))
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
 export const vacationCanceledEpic$ = (action$: ActionsObservable<CancelVacation>, state: AppState, deps: DependenciesContainer) =>

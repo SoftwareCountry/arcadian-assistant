@@ -88,7 +88,7 @@ export class ProlongSickLeaveEventDialogImpl extends Component<ProlongSickLeaveE
 const mapStateToProps = (state: AppState): ProlongSickLeaveEventDialogProps => ({
     intervalsBySingleDaySelection: state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection,
     intervalSelection: state.calendar.calendarEvents.selection.interval,
-    userEmployee: state.userInfo.employee
+    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ProlongSickLeaveEventDialogDispatchProps => ({

@@ -14,12 +14,15 @@
 
         public bool IsPending { get; }
 
-        public CalendarEvent(string eventId, string type, DatesPeriod dates, string status)
+        public string EmployeeId { get; }
+
+        public CalendarEvent(string eventId, string type, DatesPeriod dates, string status, string employeeId)
         {
             this.EventId = eventId;
             this.Dates = dates;
             this.Status = status;
             this.Type = type;
+            this.EmployeeId = employeeId;
             this.IsPending = new CalendarEventStatuses().PendingForType(type).Contains(status);
         }
     }

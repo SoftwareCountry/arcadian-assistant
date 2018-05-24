@@ -3,7 +3,7 @@ import { ActionsObservable, ofType } from 'redux-observable';
 import { Observable } from 'rxjs/Observable';
 import { deserializeArray } from 'santee-dcts';
 import {
-    loadCalendarEventsFinished, CalendarEventCreated, SelectIntervalsBySingleDaySelection, selectIntervalsBySingleDaySelection, SelectCalendarDay, LoadCalendarEventsFinished, LoadCalendarEvents, loadCalendarEvents, 
+    loadCalendarEventsFinished, SelectIntervalsBySingleDaySelection, selectIntervalsBySingleDaySelection, SelectCalendarDay, LoadCalendarEventsFinished, LoadCalendarEvents, loadCalendarEvents,
     CalendarSelectionMode, disableCalendarSelection, DisableCalendarSelection, CalendarSelectionModeType, CalendarEventSetNewStatus
 } from './calendar.action';
 import { loadFailedError } from '../errors/errors.action';
@@ -12,6 +12,8 @@ import { closeEventDialog, CloseEventDialog } from './event-dialog/event-dialog.
 import { AppState } from 'react-native';
 import { DependenciesContainer } from '../app.reducer';
 import { CalendarEvents } from './calendar-events.model';
+import { handleHttpErrors } from '../errors/errors.epics';
+import { map } from 'rxjs/operators';
 
 export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, state: AppState, deps: DependenciesContainer) =>
     action$.ofType('LOAD-USER-EMPLOYEE-FINISHED')
@@ -28,25 +30,23 @@ export const loadCalendarEventsEpic$ = (action$: ActionsObservable<LoadCalendarE
         .map(x =>
             x.switchMap(y =>
                 deps.apiClient.getJSON(`/employees/${x.key}/events`)
-                    .map(obj => deserializeArray(obj as any, CalendarEvent))
-                    .map(calendarEvents => new CalendarEvents(calendarEvents)))
-                    .map(z => { 
-                        return {events: z, employeeId: x.key};
-                    }))
+                    .pipe(
+                        handleHttpErrors(),
+                        map(obj => deserializeArray(obj as any, CalendarEvent)),
+                        map(calendarEvents => new CalendarEvents(calendarEvents))
+                    )
+            )
+                .map(z => {
+                    return { events: z, employeeId: x.key };
+                }))
         .mergeAll()
-        .map(x => loadCalendarEventsFinished(x.events, x.employeeId))
-        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+        .map(x => loadCalendarEventsFinished(x.events, x.employeeId));
 
-export const calendarEventCreatedEpic$ = (action$: ActionsObservable<CalendarEventCreated>) =>
-    action$.ofType('CALENDAR-EVENT-CREATED')
-        .map(x => closeEventDialog());
-
-export const intervalsBySingleDaySelectionEpic$ = (action$: ActionsObservable<SelectCalendarDay | LoadCalendarEventsFinished | CalendarEventCreated>) =>
+export const intervalsBySingleDaySelectionEpic$ = (action$: ActionsObservable<SelectCalendarDay | LoadCalendarEventsFinished>) =>
     action$.ofType(
-            'SELECT-CALENDAR-DAY',
-            'LOAD-CALENDAR-EVENTS-FINISHED',
-            'CALENDAR-EVENT-CREATED'
-        ).map(x => selectIntervalsBySingleDaySelection());
+        'SELECT-CALENDAR-DAY',
+        'LOAD-CALENDAR-EVENTS-FINISHED'
+    ).map(x => selectIntervalsBySingleDaySelection());
 
 export const calendarSelectionModeEpic$ = (action$: ActionsObservable<CalendarSelectionMode>) =>
     action$.ofType('CALENDAR-SELECTION-MODE')

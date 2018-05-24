@@ -11,7 +11,7 @@
     using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.Web.Configuration;
 
-    public class EmployeesSearch : IEmployeesSearch
+    public class EmployeesRegistry : IEmployeesRegistry
     {
         private readonly IActorRefFactory actorSystem;
 
@@ -19,14 +19,14 @@
 
         private readonly ITimeoutSettings timeoutSettings;
 
-        public EmployeesSearch(IActorRefFactory actorSystem, ActorPathsBuilder pathsBuilder, ITimeoutSettings timeoutSettings)
+        public EmployeesRegistry(IActorRefFactory actorSystem, ActorPathsBuilder pathsBuilder, ITimeoutSettings timeoutSettings)
         {
             this.actorSystem = actorSystem;
             this.pathsBuilder = pathsBuilder;
             this.timeoutSettings = timeoutSettings;
         }
 
-        public async Task<IReadOnlyCollection<EmployeeContainer>> Search(EmployeesQuery query, CancellationToken token)
+        public async Task<IReadOnlyCollection<EmployeeContainer>> SearchAsync(EmployeesQuery query, CancellationToken token)
         {
             var organization = this.actorSystem.ActorSelection(this.pathsBuilder.Get(WellKnownActorPaths.Organization));
             var response = await organization.Ask<EmployeesQuery.Response>(query, this.timeoutSettings.Timeout, token);

@@ -9,6 +9,8 @@ import { singleDaySelectionReducer, intervalSelectionReducer } from './calendar-
 import { calendarSelectionModeReducer } from './calendar-selection-mode.reducer';
 import { CalendarEvent } from './calendar-event.model';
 import { UserActions } from '../user/user.action';
+import { UserInfoState } from '../user/user-info.reducer';
+
 
 export interface IntervalsSubState {
     intervals: ReadOnlyIntervalsModel;
@@ -85,8 +87,8 @@ const initState = createInitState();
 
 export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = initState, action: CalendarActions | UserActions) => {
     switch (action.type) {
-        case 'LOAD-USER-EMPLOYEE-FINISHED':
-            return {...state, userEmployeeId: action.employee.employeeId};
+        case 'LOAD-USER-FINISHED':
+            return {...state, userEmployeeId: action.userEmployeeId};
         case 'LOAD-CALENDAR-EVENTS-FINISHED':
             let newState: CalendarEventsState;
             let {events} = state;
@@ -109,23 +111,6 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
             }
 
             return newState;
-        case 'CALENDAR-EVENT-CREATED':
-            let intervalsWithNewEvent = state.intervals
-                ? state.intervals.copy()
-                : null;
-
-            const calendarEvents = new CalendarEvents([action.calendarEvent]);
-
-            if (intervalsWithNewEvent) {
-                calendarEvents.appendToIntervalsModel(intervalsWithNewEvent);
-            } else {
-                intervalsWithNewEvent = calendarEvents.buildIntervalsModel();
-            }
-
-            return {
-                ...state,
-                intervals: intervalsWithNewEvent
-            };
         case 'SELECT-CALENDAR-DAY':
             const singleDayState = singleDaySelectionReducer(state, action);
             const intervalState = intervalSelectionReducer(state, action);

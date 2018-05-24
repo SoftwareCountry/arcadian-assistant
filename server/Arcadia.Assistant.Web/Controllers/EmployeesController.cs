@@ -11,22 +11,25 @@
     using Microsoft.AspNetCore.Mvc;
 
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
+    using Arcadia.Assistant.Web.Authorization;
     using Arcadia.Assistant.Web.Configuration;
     using Arcadia.Assistant.Web.Employees;
     using Arcadia.Assistant.Web.Models;
 
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
 
     [Route("api/employees")]
+    [Authorize(Policies.UserIsEmployee)]
     public class EmployeesController : Controller
     {
-        private IEmployeesSearch employeesSearch;
+        private IEmployeesRegistry employeesRegistry;
 
         private ITimeoutSettings timeoutSettings;
 
-        public EmployeesController(IEmployeesSearch employeesSearch, ITimeoutSettings timeoutSettings)
+        public EmployeesController(IEmployeesRegistry employeesRegistry, ITimeoutSettings timeoutSettings)
         {
-            this.employeesSearch = employeesSearch;
+            this.employeesRegistry = employeesRegistry;
             this.timeoutSettings = timeoutSettings;
         }
 
@@ -74,7 +77,7 @@
 
         private async Task<EmployeeModel[]> LoadEmployeesAsync(EmployeesQuery query, CancellationToken token)
         {
-            var employees = await this.employeesSearch.Search(query, token);
+            var employees = await this.employeesRegistry.SearchAsync(query, token);
 
             var tasks = employees.Select(
                 async x =>
