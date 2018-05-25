@@ -3,7 +3,7 @@
     using Arcadia.Assistant.DI;
 
     using Autofac;
-
+    using Configuration.Configuration;
     using Microsoft.Extensions.Configuration;
 
     public class DependencyInjection
@@ -13,7 +13,9 @@
             var container = new ContainerBuilder();
 
             container.RegisterModule(new DatabaseModule(config.GetConnectionString("ArcadiaCSP")));
-            container.RegisterModule(new OrganizationModule(config.GetSection("Mail")));
+            container.RegisterModule<OrganizationModule>();
+            var mailSettings = config.Get<AppSettings>().Messaging;
+            container.RegisterModule(new NotificationsModule(mailSettings.Smtp, mailSettings.SickLeave));
 
             return container.Build();
         }

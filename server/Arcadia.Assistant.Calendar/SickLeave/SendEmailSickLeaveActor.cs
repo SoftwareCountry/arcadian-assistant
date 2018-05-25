@@ -6,16 +6,18 @@ using MimeKit;
 
 namespace Arcadia.Assistant.Calendar.SickLeave
 {
+    using Configuration.Configuration;
     using MailKit.Net.Smtp;
     using MailKit.Security;
-    using Microsoft.Extensions.Configuration;
 
     public class SendEmailSickLeaveActor : UntypedActor
     {
-        private readonly IConfigurationSection mailConfig;
-        public SendEmailSickLeaveActor(IConfigurationSection mailConfig)
+        private readonly IEmailSettings mailConfig;
+        private readonly ISmtpSettings smtpConfig;
+        public SendEmailSickLeaveActor(IEmailSettings mailConfig, ISmtpSettings smtpConfig)
         {
             this.mailConfig = mailConfig;
+            this.smtpConfig = smtpConfig;
         }
 
         public static Props GetProps() => Context.DI().Props<SendEmailSickLeaveActor>();
@@ -32,35 +34,24 @@ namespace Arcadia.Assistant.Calendar.SickLeave
 
         private void SendEmail(SickLeaveIsApproved Event)
         {
-            var user = mailConfig["SmtpUser"];
-            var pass = mailConfig["SmtpPass"];
-
             using (var client = new SmtpClient())
             {
-                var body = "Dear Sir/Madam,\nNotify you, that employee " + Event.UserId +
-                    @" went on sick leave for " +
-                    Event.TimeStamp.ToString() + "\nYours faithfully,\nTesting team\n\n";
-                var message = CreateMimeMessage("Approved sick leave", body);
+                var message = CreateMimeMessage(String.Format(mailConfig.Body, Event.UserId, Event.TimeStamp.ToString()));
 
-                client.Connect("smtp.gmail.com", 465, SecureSocketOptions.SslOnConnect);
-                client.Authenticate(user, pass);
+                client.Connect(smtpConfig.Host, smtpConfig.Port, SecureSocketOptions.StartTls);
+                client.Authenticate(smtpConfig.User, smtpConfig.Password);
                 client.Send(message);
                 client.Disconnect(true);
             }
         }
 
-        public MimeMessage CreateMimeMessage(String Subject, String Body)
+        public MimeMessage CreateMimeMessage(string body)
         {
-            var senderName = mailConfig["EmailSenderName"];
-            var senderAddress = mailConfig["EmailSenderAddress"];
-            var receiverName = mailConfig["EmailReceiverName"];
-            var receiverAddress = mailConfig["EmailReceiverAddress"];
-
             var message = new MimeMessage();
-            message.From.Add(new MailboxAddress(senderName, senderAddress));
-            message.To.Add(new MailboxAddress(receiverName, receiverAddress));
-            message.Subject = Subject;
-            message.Body = new TextPart("plain") { Text = Body };
+            message.From.Add(new MailboxAddress("From", mailConfig.NotificationSender));
+            message.To.Add(new MailboxAddress("To", mailConfig.NotificationRecipient));
+            message.Subject = mailConfig.Subject;
+            message.Body = new TextPart("plain") { Text = body };
 
             return message;
         }

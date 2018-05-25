@@ -10,19 +10,20 @@
 
     public class EmployeeSickLeaveActor : CalendarEventsStorageBase
     {
-        public EmployeeSickLeaveActor(string employeeId, IActorRef sendEmail)
+        public EmployeeSickLeaveActor(string employeeId, IActorRef sickLeaveNotifications)
             : base(employeeId)
         {
             this.PersistenceId = $"employee-sickleaves-{this.EmployeeId}";
-            this.sendEmail = sendEmail;
+            this.sickLeaveNotifications = sickLeaveNotifications;
         }
 
         public override string PersistenceId { get; }
-        private readonly IActorRef sendEmail;
 
-        public static Props CreateProps(string employeeId, IActorRef sendEmail)
+        private readonly IActorRef sickLeaveNotifications;
+
+        public static Props CreateProps(string employeeId, IActorRef sickLeaveNotifications)
         {
-            return Props.Create(() => new EmployeeSickLeaveActor(employeeId, sendEmail));
+            return Props.Create(() => new EmployeeSickLeaveActor(employeeId, sickLeaveNotifications));
         }
 
         protected override void OnRecover(object message)
@@ -181,7 +182,7 @@
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
                 this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, SickLeaveStatuses.Approved, this.EmployeeId);
-                sendEmail.Tell(message);
+                sickLeaveNotifications.Tell(message);
             }
         }
 
