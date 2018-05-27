@@ -21,25 +21,28 @@ const intervalBoundaryZIndex = weekDayCircleZIndex + 1;
 const weekDayTouchableZIndex = intervalBoundaryZIndex + 1;
 
 export const calendarStyles = StyleSheet.create({
-    container: {
+    pagerContainer: {
         marginTop: 25,
         marginBottom: 10,
         marginLeft: 8,
         marginRight: 8,
         flex: calendarScreenLayout.calendar.flex,
-        alignSelf: 'stretch'
+        alignSelf: 'stretch',
+        position: 'relative'
+    },
+    swipeableList: {
+        flex: 1,
+        flexDirection: 'row',
+        position: 'absolute'
     },
     today: {
         marginBottom: 10,
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'center'
     },
     todayTitle: {
         fontSize: 16,
         color: daysCounterTitleColor
-    },
-    weeksContainer: {
-        flex: 1
     },
     weeksNames: {
         flex: 1,

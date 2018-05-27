@@ -115,3 +115,14 @@ export class ExtractedIntervals {
         }
     }
 }
+
+export class CalendarPageModel {
+    public readonly pageId: string;
+
+    constructor(
+        public readonly date: Moment,
+        public readonly weeks: WeekModel[]
+    ) {
+        this.pageId = date.format('MMMM YYYY');
+    }
+}
