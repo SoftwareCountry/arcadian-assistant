@@ -1,8 +1,6 @@
 ﻿namespace Arcadia.Assistant.Web
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
 
     using Akka.Actor;
     using Akka.Configuration;
@@ -15,7 +13,6 @@
     using Arcadia.Assistant.Web.Configuration;
     using Arcadia.Assistant.Web.Employees;
     using Arcadia.Assistant.Web.Infrastructure;
-    using Arcadia.Assistant.Web.Models.Calendar;
     using Arcadia.Assistant.Web.Users;
 
     using Autofac;
@@ -26,11 +23,8 @@
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Options;
-    using Microsoft.IdentityModel.Tokens;
 
     using Swashbuckle.AspNetCore.Swagger;
-    using Swashbuckle.AspNetCore.SwaggerGen;
 
     public class Startup
     {
@@ -93,8 +87,6 @@
 
             services
                 .AddAuthorization(options => options.AddPolicy(Policies.UserIsEmployee, policy => policy.Requirements.Add(new UserIsEmployeeRequirement())));
-
-            services.AddScoped<IAuthorizationHandler, UserIsEmployeeHandler>();
         }
 
         // ReSharper disable once UnusedMember.Global
@@ -118,6 +110,11 @@
 
             builder.RegisterType<EmployeesRegistry>().As<IEmployeesRegistry>();
             builder.RegisterType<MockUserEmployeeSearch>().As<IUserEmployeeSearch>();
+
+            builder.RegisterType<UserIsEmployeeHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
+            builder.RegisterType<EmployeePermissionsHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
+
+            builder.RegisterType<PermissionsLoader>().As<IPermissionsLoader>().InstancePerLifetimeScope();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

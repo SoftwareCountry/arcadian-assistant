@@ -38,6 +38,11 @@
 
         public EmployeePermissionsEntry GetPermissions(EmployeeContainer employee)
         {
+            if (employee == null)
+            {
+                return EmployeePermissionsEntry.None;
+            }
+
             var permissions = this.defaultPermission;
             if (this.EmployeePermissions.TryGetValue(employee.Metadata.EmployeeId, out var employeePermissions))
             {
