@@ -10,6 +10,8 @@
 
     public class EmployeeSickLeaveActor : CalendarEventsStorageBase
     {
+        private readonly IActorRef sickLeaveNotifications;
+
         public EmployeeSickLeaveActor(string employeeId, IActorRef sickLeaveNotifications)
             : base(employeeId)
         {
@@ -18,8 +20,6 @@
         }
 
         public override string PersistenceId { get; }
-
-        private readonly IActorRef sickLeaveNotifications;
 
         public static Props CreateProps(string employeeId, IActorRef sickLeaveNotifications)
         {

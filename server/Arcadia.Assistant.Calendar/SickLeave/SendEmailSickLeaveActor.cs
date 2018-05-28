@@ -1,14 +1,13 @@
-﻿using Arcadia.Assistant.Calendar.SickLeave.Events;
-using System;
-using Akka.Actor;
-using Akka.DI.Core;
-using MimeKit;
-
-namespace Arcadia.Assistant.Calendar.SickLeave
+﻿namespace Arcadia.Assistant.Calendar.SickLeave
 {
+    using System;
+    using Akka.Actor;
+    using Akka.DI.Core;
+    using MimeKit;
     using Configuration.Configuration;
     using MailKit.Net.Smtp;
     using MailKit.Security;
+    using Events;
 
     public class SendEmailSickLeaveActor : UntypedActor
     {
