@@ -11,6 +11,7 @@
     using Microsoft.AspNetCore.Mvc;
 
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
+    using Arcadia.Assistant.Security;
     using Arcadia.Assistant.Web.Authorization;
     using Arcadia.Assistant.Web.Configuration;
     using Arcadia.Assistant.Web.Employees;
@@ -23,14 +24,17 @@
     [Authorize(Policies.UserIsEmployee)]
     public class EmployeesController : Controller
     {
-        private IEmployeesRegistry employeesRegistry;
+        private readonly IEmployeesRegistry employeesRegistry;
 
-        private ITimeoutSettings timeoutSettings;
+        private readonly ITimeoutSettings timeoutSettings;
 
-        public EmployeesController(IEmployeesRegistry employeesRegistry, ITimeoutSettings timeoutSettings)
+        private readonly IPermissionsLoader permissionsLoader;
+
+        public EmployeesController(IEmployeesRegistry employeesRegistry, ITimeoutSettings timeoutSettings, IPermissionsLoader permissionsLoader)
         {
             this.employeesRegistry = employeesRegistry;
             this.timeoutSettings = timeoutSettings;
+            this.permissionsLoader = permissionsLoader;
         }
 
         [Route("{employeeId}")]
@@ -77,27 +81,41 @@
 
         private async Task<EmployeeModel[]> LoadEmployeesAsync(EmployeesQuery query, CancellationToken token)
         {
+            var allPermissions = await this.permissionsLoader.LoadAsync(this.User);
+
             var employees = await this.employeesRegistry.SearchAsync(query, token);
 
-            var tasks = employees.Select(
-                async x =>
+            var tasks = employees
+                .Where(x => allPermissions.GetPermissions(x).HasFlag(EmployeePermissionsEntry.ReadEmployeeInfo))
+                .Select(async x =>
                     {
                         var employee = EmployeeModel.FromMetadata(x.Metadata);
+                        var employeePermissions = allPermissions.GetPermissions(x);
+
+                        if (!employeePermissions.HasFlag(EmployeePermissionsEntry.ReadEmployeePhone))
+                        {
+                            employee.MobilePhone = null;
+                        }
+
                         var photo = await x.Actor.Ask<GetPhoto.Response>(GetPhoto.Instance, this.timeoutSettings.Timeout, token);
 
-                        var vacationsCredit = await x
-                            .Calendar
-                            .VacationsActor
-                            .Ask<GetVacationsCredit.Response>(GetVacationsCredit.Instance, this.timeoutSettings.Timeout, token);
+                        if (employeePermissions.HasFlag(EmployeePermissionsEntry.ReadEmployeeVacationsCounter))
+                        {
+                            var vacationsCredit = await x.Calendar
+                                .VacationsActor
+                                .Ask<GetVacationsCredit.Response>(GetVacationsCredit.Instance, this.timeoutSettings.Timeout, token);
+                            employee.VacationDaysLeft = vacationsCredit.VacationsCredit;
+                        }
 
-                        var workhoursCredit = await x
-                            .Calendar
-                            .WorkHoursActor
-                            .Ask<GetWorkHoursCredit.Response>(GetWorkHoursCredit.Instance, this.timeoutSettings.Timeout, token);
+                        if (employeePermissions.HasFlag(EmployeePermissionsEntry.ReadEmployeeDayoffsCounter))
+                        {
+                            var workhoursCredit = await x.Calendar
+                                .WorkHoursActor
+                                .Ask<GetWorkHoursCredit.Response>(GetWorkHoursCredit.Instance, this.timeoutSettings.Timeout, token);
+                            employee.HoursCredit = workhoursCredit.WorkHoursCredit;
+                        }
 
                         employee.Photo = photo.Photo;
-                        employee.HoursCredit = workhoursCredit.WorkHoursCredit;
-                        employee.VacationDaysLeft = vacationsCredit.VacationsCredit;
 
                         return employee;
                     });

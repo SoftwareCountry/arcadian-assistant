@@ -12,25 +12,32 @@
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
+    using Arcadia.Assistant.Web.Authorization;
+    using Arcadia.Assistant.Web.Authorization.Requirements;
     using Arcadia.Assistant.Web.Configuration;
     using Arcadia.Assistant.Web.Employees;
     using Arcadia.Assistant.Web.Models.Calendar;
 
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     [Route("/api/employees/{employeeId}/events/")]
+    [Authorize(Policies.UserIsEmployee)]
     public class CalendarEventsController : Controller
     {
         private readonly IEmployeesRegistry employeesRegistry;
 
+        private readonly IAuthorizationService authorizationService;
+
         private readonly ITimeoutSettings timeoutSettings;
 
 
-        public CalendarEventsController(ITimeoutSettings timeoutSettings, IEmployeesRegistry employeesRegistry)
+        public CalendarEventsController(ITimeoutSettings timeoutSettings, IEmployeesRegistry employeesRegistry, IAuthorizationService authorizationService)
         {
             this.timeoutSettings = timeoutSettings;
             this.employeesRegistry = employeesRegistry;
+            this.authorizationService = authorizationService;
         }
 
         [Route("")]
@@ -44,6 +51,11 @@
             if (employee == null)
             {
                 return this.NotFound();
+            }
+
+            if (!(await this.authorizationService.AuthorizeAsync(this.User, employee, new ReadCalendarEvents())).Succeeded)
+            {
+                return this.Ok(new CalendarEventsWithIdModel[0]);
             }
 
             var events = await employee.Calendar.CalendarActor.Ask<GetCalendarEvents.Response>(GetCalendarEvents.Instance, this.timeoutSettings.Timeout, token);
@@ -64,6 +76,11 @@
             if (employee == null)
             {
                 return this.NotFound();
+            }
+
+            if (!(await this.authorizationService.AuthorizeAsync(this.User, employee, new ReadCalendarEvents())).Succeeded)
+            {
+                return this.Ok(new CalendarEventsWithIdModel[0]);
             }
 
             var requestedEvent = await this.GetCalendarEventOrDefaultAsync(employee.Calendar.CalendarActor, eventId, token);
@@ -99,6 +116,12 @@
             if (employee == null)
             {
                 return this.NotFound();
+            }
+
+
+            if (!(await this.authorizationService.AuthorizeAsync(this.User, employee, new CreateCalendarEvents())).Succeeded)
+            {
+                return this.Forbid();
             }
 
             var calendarEvent = new CalendarEvent(newId, model.Type, model.Dates, model.Status, employee.Metadata.EmployeeId);
@@ -137,6 +160,11 @@
             if (employee == null)
             {
                 return this.NotFound();
+            }
+
+            if (!(await this.authorizationService.AuthorizeAsync(this.User, employee, new ApproveCalendarEvents())).Succeeded)
+            {
+                return this.Forbid();
             }
 
             var existingEvent = await this.GetCalendarEventOrDefaultAsync(employee.Calendar.CalendarActor, eventId, token);
