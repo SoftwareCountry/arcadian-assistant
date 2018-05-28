@@ -51,7 +51,7 @@ const mapStateToProps = (state: AppState): CalendarProps => ({
     disableCalendarDaysBefore: state.calendar.calendarEvents.disableCalendarDaysBefore
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>) => ({
+const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>): CalendarDispatchProps => ({
     selectCalendarDay: (day: DayModel) => { dispatch(selectCalendarDay(day)); },
     nextCalendarPage: () => { dispatch(nextCalendarPage()); },
     prevCalendarPage: () => { dispatch(prevCalendarPage()); }
