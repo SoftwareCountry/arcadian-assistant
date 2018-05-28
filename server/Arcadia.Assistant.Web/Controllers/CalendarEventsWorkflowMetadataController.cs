@@ -3,13 +3,12 @@
 namespace Arcadia.Assistant.Web.Controllers
 {
     using Arcadia.Assistant.Calendar.Abstractions;
-    using Arcadia.Assistant.Web.Authorization;
 
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
 
     [Route("/api/metadata/calendar-workflow")]
-    [Authorize(Policies.UserIsEmployee)]
+    [Authorize]
     public class CalendarEventsWorkflowMetadataController : Controller
     {
         [Route("types")]

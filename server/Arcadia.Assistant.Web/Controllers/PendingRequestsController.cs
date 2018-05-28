@@ -12,10 +12,12 @@
     using Arcadia.Assistant.Web.Models.Calendar;
     using Arcadia.Assistant.Web.Users;
 
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     [Route("api/pending-requests")]
+    [Authorize]
     public class PendingRequestsController : Controller
     {
         private readonly IUserEmployeeSearch userEmployeeSearch;
