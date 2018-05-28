@@ -1,18 +1,18 @@
 ﻿namespace Arcadia.Assistant.Web
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
 
     using Akka.Actor;
     using Akka.Configuration;
 
     using Arcadia.Assistant.Configuration;
     using Arcadia.Assistant.Server.Interop;
+    using Arcadia.Assistant.Web.Authorization;
+    using Arcadia.Assistant.Web.Authorization.Handlers;
+    using Arcadia.Assistant.Web.Authorization.Requirements;
     using Arcadia.Assistant.Web.Configuration;
     using Arcadia.Assistant.Web.Employees;
     using Arcadia.Assistant.Web.Infrastructure;
-    using Arcadia.Assistant.Web.Models.Calendar;
     using Arcadia.Assistant.Web.Users;
 
     using Autofac;
@@ -23,11 +23,8 @@
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Options;
-    using Microsoft.IdentityModel.Tokens;
 
     using Swashbuckle.AspNetCore.Swagger;
-    using Swashbuckle.AspNetCore.SwaggerGen;
 
     public class Startup
     {
@@ -87,6 +84,9 @@
                             jwtOptions.MetadataAddress = appSettings.Security.OpenIdConfigurationUrl;
                             jwtOptions.Events = new JwtEventsHandler();
                         });
+
+            services
+                .AddAuthorization(options => options.AddPolicy(Policies.UserIsEmployee, policy => policy.Requirements.Add(new UserIsEmployeeRequirement())));
         }
 
         // ReSharper disable once UnusedMember.Global
@@ -108,8 +108,13 @@
             builder.RegisterInstance(actorSystem).As<IActorRefFactory>();
             builder.RegisterInstance(pathsBuilder).AsSelf();
 
-            builder.RegisterType<EmployeesSearch>().As<IEmployeesSearch>();
+            builder.RegisterType<EmployeesRegistry>().As<IEmployeesRegistry>();
             builder.RegisterType<MockUserEmployeeSearch>().As<IUserEmployeeSearch>();
+
+            builder.RegisterType<UserIsEmployeeHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
+            builder.RegisterType<EmployeePermissionsHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
+
+            builder.RegisterType<PermissionsLoader>().As<IPermissionsLoader>().InstancePerLifetimeScope();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

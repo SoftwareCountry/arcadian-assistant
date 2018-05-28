@@ -56,11 +56,11 @@ export class Employee {
     public hireDate: Moment;
 
     @dataMember()
-    @required()
+    @required({nullable: true})
     public hoursCredit: number;
 
     @dataMember()
-    @required()
+    @required({nullable: true})
     public vacationDaysLeft: number;
     
     @dataMember()

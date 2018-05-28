@@ -12,14 +12,14 @@
 
     public class MockUserEmployeeSearch : IUserEmployeeSearch
     {
-        private readonly IEmployeesSearch employeesSearch;
+        private readonly IEmployeesRegistry employeesRegistry;
 
-        public MockUserEmployeeSearch(IEmployeesSearch employeesSearch)
+        public MockUserEmployeeSearch(IEmployeesRegistry employeesRegistry)
         {
-            this.employeesSearch = employeesSearch;
+            this.employeesRegistry = employeesRegistry;
         }
 
-        public async Task<EmployeeContainer> FindOrDefault(ClaimsPrincipal user, CancellationToken cancellationToken)
+        public async Task<EmployeeContainer> FindOrDefaultAsync(ClaimsPrincipal user, CancellationToken cancellationToken)
         {
             string email;
             var defaultEmail = "alexander.shevnin@arcadia.spb.ru";
@@ -35,13 +35,13 @@
             }
 
             var query = EmployeesQuery.Create().WithEmail(email);
-            var employees = await this.employeesSearch.Search(query, cancellationToken);
+            var employees = await this.employeesRegistry.SearchAsync(query, cancellationToken);
 
             if (!employees.Any())
             {
                 //TODO: temp measure, before all users are in database
                 query = EmployeesQuery.Create().WithEmail(defaultEmail);
-                employees = await this.employeesSearch.Search(query, cancellationToken);
+                employees = await this.employeesRegistry.SearchAsync(query, cancellationToken);
             }
 
             return employees.SingleOrDefault();

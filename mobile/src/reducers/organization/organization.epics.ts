@@ -11,23 +11,24 @@ import { AppState, AppEpic, DependenciesContainer } from '../app.reducer';
 import { Employee } from './employee.model';
 import { Observable } from 'rxjs/Observable';
 import { loadFailedError } from '../errors/errors.action';
+import { handleHttpErrors } from '../errors/errors.epics';
 
-export const loadEmployeeEpic$ = (action$: ActionsObservable<LoadEmployee>, state: AppState, deps: DependenciesContainer ) =>
+export const loadEmployeeEpic$ = (action$: ActionsObservable<LoadEmployee>, state: AppState, deps: DependenciesContainer) =>
     action$.ofType('LOAD_EMPLOYEE')
         .groupBy(x => x.employeeId)
         .map(x =>
             x.switchMap(y => deps.apiClient.getJSON(`/employees/${y.employeeId}`)).map(obj => deserialize(obj, Employee))
+                .pipe(handleHttpErrors())
         )
         .mergeAll()
-        .map(x => loadEmployeeFinished(x))
-        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+        .map(x => loadEmployeeFinished(x));
 
 export const loadDepartmentsEpic$ = (action$: ActionsObservable<LoadDepartments>, state: AppState, deps: DependenciesContainer) =>
     action$.ofType('LOAD-DEPARTMENTS')
-        .switchMap(x => deps.apiClient.getJSON(`/departments`))
+        .switchMap(x => deps.apiClient.getJSON(`/departments`)
+            .pipe(handleHttpErrors()))
         .map(x => deserializeArray(x as any, Department))
-        .map(x => loadDepartmentsFinished(x))
-        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+        .map(x => loadDepartmentsFinished(x));
 
 export const loadChiefsEpic$ = (action$: ActionsObservable<LoadDepartmentsFinished>) =>
     action$.ofType('LOAD-DEPARTMENTS-FINISHED')
@@ -37,21 +38,21 @@ export const loadEmployeesForDepartmentEpic$ = (action$: ActionsObservable<LoadE
     action$.ofType('LOAD_EMPLOYEES_FOR_DEPARTMENT')
         .groupBy(x => x.departmentId)
         .map(x =>
-            x.switchMap(y => 
-                deps.apiClient.getJSON(`/employees?departmentId=${x.key}`).map(obj => deserializeArray(obj as any, Employee))))
+            x.switchMap(y =>
+                deps.apiClient.getJSON(`/employees?departmentId=${x.key}`).map(obj => deserializeArray(obj as any, Employee))
+                    .pipe(handleHttpErrors())))
         .mergeAll()
-        .flatMap(x => x.map(loadEmployeeFinished))
-        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+        .flatMap(x => x.map(loadEmployeeFinished));
 
 export const loadEmployeesForRoomEpic$ = (action$: ActionsObservable<LoadEmployeesForRoom>, state: AppState, deps: DependenciesContainer) =>
     action$.ofType('LOAD_EMPLOYEES_FOR_ROOM')
         .groupBy(x => x.roomNumber)
         .map(x =>
             x.switchMap(y =>
-                deps.apiClient.getJSON(`/employees?roomNumber=${x.key}`).map(obj => deserializeArray(obj as any, Employee))))
+                deps.apiClient.getJSON(`/employees?roomNumber=${x.key}`).map(obj => deserializeArray(obj as any, Employee))
+                    .pipe(handleHttpErrors())))
         .mergeAll()
-        .flatMap(x => x.map(loadEmployeeFinished))
-        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+        .flatMap(x => x.map(loadEmployeeFinished));
 
 export const loadEmployeesForUserDepartmentEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>) =>
     action$.ofType('LOAD-USER-EMPLOYEE-FINISHED')

@@ -6,10 +6,12 @@
     using Arcadia.Assistant.Web.Models;
     using Arcadia.Assistant.Web.Users;
 
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     [Route("api/user")]
+    [Authorize]
     public class UserController : Controller
     {
         private readonly IUserEmployeeSearch userEmployeeSearch;
@@ -24,7 +26,7 @@
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetCurrentUser(CancellationToken token)
         {
-            var userEmployee = await this.userEmployeeSearch.FindOrDefault(this.User, token);
+            var userEmployee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, token);
 
             if (userEmployee == null)
             {

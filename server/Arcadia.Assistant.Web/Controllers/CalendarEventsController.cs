@@ -12,25 +12,32 @@
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
+    using Arcadia.Assistant.Web.Authorization;
+    using Arcadia.Assistant.Web.Authorization.Requirements;
     using Arcadia.Assistant.Web.Configuration;
     using Arcadia.Assistant.Web.Employees;
     using Arcadia.Assistant.Web.Models.Calendar;
 
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     [Route("/api/employees/{employeeId}/events/")]
+    [Authorize(Policies.UserIsEmployee)]
     public class CalendarEventsController : Controller
     {
-        private readonly IEmployeesSearch employeesSearch;
+        private readonly IEmployeesRegistry employeesRegistry;
+
+        private readonly IAuthorizationService authorizationService;
 
         private readonly ITimeoutSettings timeoutSettings;
 
 
-        public CalendarEventsController(ITimeoutSettings timeoutSettings, IEmployeesSearch employeesSearch)
+        public CalendarEventsController(ITimeoutSettings timeoutSettings, IEmployeesRegistry employeesRegistry, IAuthorizationService authorizationService)
         {
             this.timeoutSettings = timeoutSettings;
-            this.employeesSearch = employeesSearch;
+            this.employeesRegistry = employeesRegistry;
+            this.authorizationService = authorizationService;
         }
 
         [Route("")]
@@ -44,6 +51,11 @@
             if (employee == null)
             {
                 return this.NotFound();
+            }
+
+            if (!(await this.authorizationService.AuthorizeAsync(this.User, employee, new ReadCalendarEvents())).Succeeded)
+            {
+                return this.Ok(new CalendarEventsWithIdModel[0]);
             }
 
             var events = await employee.Calendar.CalendarActor.Ask<GetCalendarEvents.Response>(GetCalendarEvents.Instance, this.timeoutSettings.Timeout, token);
@@ -64,6 +76,11 @@
             if (employee == null)
             {
                 return this.NotFound();
+            }
+
+            if (!(await this.authorizationService.AuthorizeAsync(this.User, employee, new ReadCalendarEvents())).Succeeded)
+            {
+                return this.Ok(new CalendarEventsWithIdModel[0]);
             }
 
             var requestedEvent = await this.GetCalendarEventOrDefaultAsync(employee.Calendar.CalendarActor, eventId, token);
@@ -101,7 +118,13 @@
                 return this.NotFound();
             }
 
-            var calendarEvent = new CalendarEvent(newId, model.Type, model.Dates, model.Status);
+
+            if (!(await this.authorizationService.AuthorizeAsync(this.User, employee, new CreateCalendarEvents())).Succeeded)
+            {
+                return this.Forbid();
+            }
+
+            var calendarEvent = new CalendarEvent(newId, model.Type, model.Dates, model.Status, employee.Metadata.EmployeeId);
             var eventCreationResponse = await this.UpsertEventAsync(employee.Calendar.CalendarActor, calendarEvent, token);
 
             switch (eventCreationResponse)
@@ -139,6 +162,11 @@
                 return this.NotFound();
             }
 
+            if (!(await this.authorizationService.AuthorizeAsync(this.User, employee, new ApproveCalendarEvents())).Succeeded)
+            {
+                return this.Forbid();
+            }
+
             var existingEvent = await this.GetCalendarEventOrDefaultAsync(employee.Calendar.CalendarActor, eventId, token);
             if (existingEvent == null)
             {
@@ -150,7 +178,7 @@
                 return this.StatusCode(StatusCodes.Status409Conflict, "Calendar types are not compatible");
             }
 
-            var calendarEvent = new CalendarEvent(eventId, model.Type, model.Dates, model.Status);
+            var calendarEvent = new CalendarEvent(eventId, model.Type, model.Dates, model.Status, employee.Metadata.EmployeeId);
             var response = await this.UpsertEventAsync(employee.Calendar.CalendarActor, calendarEvent, token);
 
             switch (response)
@@ -193,7 +221,7 @@
         private async Task<EmployeeContainer> GetEmployeeOrDefaultAsync(string employeeId, CancellationToken token)
         {
             var query = new EmployeesQuery().WithId(employeeId);
-            var employees = await this.employeesSearch.Search(query, token);
+            var employees = await this.employeesRegistry.SearchAsync(query, token);
 
             return employees.SingleOrDefault();
         }
