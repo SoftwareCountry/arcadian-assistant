@@ -3,35 +3,50 @@ import { LoadFailedError } from '../errors/errors.action';
 import { Alert } from 'react-native';
 import { startLoginProcess, StartLoginProcess, startLogoutProcess } from '../auth/auth.action';
 import { Observable } from 'rxjs/Observable';
-import { Subject, AjaxError } from 'rxjs';
+import { Subject, AjaxError, pipe } from 'rxjs';
 import { refresh } from '../refresh/refresh.action';
 import { UnaryFunction } from 'rxjs/interfaces';
-import { retryWhen } from 'rxjs/operators';
+import { retryWhen, catchError } from 'rxjs/operators';
 
-export function handleHttpErrors<T>(): UnaryFunction<Observable<T>, Observable<T>> {
+function showAlert(message: string, okButton: () => void, rejectButton: () => void) {
+    Alert.alert(
+        'Error',
+        `${message}`,
+        [{ text: 'Try again', onPress: () => okButton() }, { text: 'Cancel', onPress: () => rejectButton() }]);
+}
+
+function retryWhenErrorOccured<T>(): UnaryFunction<Observable<T>, Observable<T>> {
+    let errorMessage = 'Uknown error occured';
     return retryWhen(errors => {
 
-        return errors.exhaustMap((e: any) => new Promise(resolve => {
-            let message = '';
-
+        return errors.exhaustMap((e: any) => new Promise((resolve, reject) => {
             if (e.status === 401 || e.status === 403) {
-                Alert.alert(
-                    'Error',
-                    'Authentication failed',
-                    [{ text: 'Ok', onPress: () => resolve() }]);
+                errorMessage = 'Authentication failed';
+                showAlert(errorMessage, resolve, () => reject(e));
+
             } else if (e.status === 0) {
-                Alert.alert(
-                    'Error',
-                    `error occurred: ${e}`,
-                    [{ text: 'Try again', onPress: () => resolve() }]);
+                errorMessage = 'Cannot establish a connection to the server';
+                showAlert(errorMessage, resolve, () => reject(e));
             } else {
-                Alert.alert(
-                    'Error',
-                    `error occurred: ${e}`,
-                    [{ text: 'Try again', onPress: () => resolve() }]);
+                errorMessage = `Unknown error occurred ${e}. Please contact administrator`;
+                showAlert(errorMessage, resolve, () => reject(e));
             }
         }));
     });
+}
+
+export function handleHttpErrors<T>(swallowErrors: boolean = true): UnaryFunction<Observable<T>, Observable<T>> {
+    let errorMessage = 'Uknown error occured';
+    if (swallowErrors) {
+        return pipe(
+            retryWhenErrorOccured(),
+            catchError(e => { console.warn(e); return Observable.empty<T>(); })
+        );
+    } else {
+        return pipe(
+            retryWhenErrorOccured()
+        );
+    }
 }
 
 export const loadFailedErrorEpic$ = (action$: ActionsObservable<LoadFailedError>) =>
