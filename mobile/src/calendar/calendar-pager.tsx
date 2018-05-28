@@ -59,18 +59,16 @@ export class CalendarPager extends Component<CalendarPagerProps, CalendarPagerSt
             onPanResponderRelease: (e, gesture) => {
                 if (this.rightToLeftSwipe(gesture)) {
                     canSwipe = false;
-                    this.nextPage();
-                    this.state.offset.setValue({ x: this.state.width - Math.abs(gesture.dx), y: 0 });
-
-                    this.moveToNearestPage(() => {
+                    this.moveToNearestPage(-this.state.width, () => {
+                        this.nextPage();
+                        this.state.offset.setValue({ x: 0, y: 0 });
                         canSwipe = true;
                     });
                 } else if (this.leftToRightSwipe(gesture)) {
                     canSwipe = false;
-                    this.prevPage();
-                    this.state.offset.setValue({ x: -(this.state.width - gesture.dx), y: 0 });
-
-                    this.moveToNearestPage(() => {
+                    this.moveToNearestPage(this.state.width, () => {
+                        this.prevPage();
+                        this.state.offset.setValue({ x: 0, y: 0 });
                         canSwipe = true;
                     });
                 }
@@ -129,14 +127,14 @@ export class CalendarPager extends Component<CalendarPagerProps, CalendarPagerSt
         this.props.onPrevPage();
     }
 
-    private moveToNearestPage(completeCallback: () => void) {
+    private moveToNearestPage(toValue: number, onMoveComplete: () => void) {
         Animated.timing(this.state.offset.x, {
-            toValue: 0,
-            duration: 200,
+            toValue: toValue,
+            duration: 400,
             easing: Easing.linear,
             useNativeDriver: true
         }).start(() => {
-            completeCallback();
+            onMoveComplete();
         });
     }
 
