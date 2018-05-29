@@ -22,7 +22,8 @@ interface CalendarPagerProps extends CalendarPagerDefaultProps {
 interface CalendarPagerState {
     width: number;
     height: number;
-    offset: Animated.ValueXY;
+    coordinates: Animated.ValueXY;
+    canSwipe: boolean;
 }
 
 export class CalendarPager extends Component<CalendarPagerProps, CalendarPagerState> {
@@ -38,38 +39,33 @@ export class CalendarPager extends Component<CalendarPagerProps, CalendarPagerSt
         this.state = {
             width: 0,
             height: 0,
-            offset: new Animated.ValueXY({ x: 0, y: 0 })
+            coordinates: new Animated.ValueXY({ x: 0, y: 0 }),
+            canSwipe: true
         };
     }
 
     public componentWillMount() {
-        let canSwipe = true;
-
         this.panResponder = PanResponder.create({
-            onMoveShouldSetPanResponderCapture: (evt, gestureState) => canSwipe,
+            onMoveShouldSetPanResponderCapture: (evt, gestureState) => this.state.canSwipe,
             onPanResponderMove: Animated.event(
                 [
                     null,
-                    { dx: this.state.offset.x, dy: this.state.offset.y }
+                    { dx: this.state.coordinates.x, dy: this.state.coordinates.y }
                 ]
             ),
             onPanResponderGrant: (e, gesture) => {
-                this.state.offset.extractOffset();
+                this.state.coordinates.extractOffset();
             },
             onPanResponderRelease: (e, gesture) => {
                 if (this.rightToLeftSwipe(gesture)) {
-                    canSwipe = false;
+                    this.setState({ canSwipe: false });
                     this.moveToNearestPage(-this.state.width, () => {
                         this.nextPage();
-                        this.state.offset.setValue({ x: 0, y: 0 });
-                        canSwipe = true;
                     });
                 } else if (this.leftToRightSwipe(gesture)) {
-                    canSwipe = false;
+                    this.setState({ canSwipe: false });
                     this.moveToNearestPage(this.state.width, () => {
                         this.prevPage();
-                        this.state.offset.setValue({ x: 0, y: 0 });
-                        canSwipe = true;
                     });
                 }
             }
@@ -80,7 +76,7 @@ export class CalendarPager extends Component<CalendarPagerProps, CalendarPagerSt
         const [
             translateXProperty,
             translateYProperty
-        ] = this.state.offset.getTranslateTransform() as [{'translateX': Animated.Animated }, {'translateY': Animated.Animated }];
+        ] = this.state.coordinates.getTranslateTransform() as [{'translateX': Animated.Animated }, {'translateY': Animated.Animated }];
 
         const swipeableViewStyles = StyleSheet.flatten([
             calendarStyles.swipeableList,
@@ -128,13 +124,15 @@ export class CalendarPager extends Component<CalendarPagerProps, CalendarPagerSt
     }
 
     private moveToNearestPage(toValue: number, onMoveComplete: () => void) {
-        Animated.timing(this.state.offset.x, {
+        Animated.timing(this.state.coordinates.x, {
             toValue: toValue,
-            duration: 400,
+            duration: 100,
             easing: Easing.linear,
             useNativeDriver: true
         }).start(() => {
             onMoveComplete();
+            this.state.coordinates.setValue({ x: 0, y: 0 });
+            this.setState({ canSwipe: true });
         });
     }
 
