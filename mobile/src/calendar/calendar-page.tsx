@@ -48,7 +48,6 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
     }
 
     public render() {
-        console.log('rendered: ', this.props.pageDate.format('MMMM YYYY'));
 
         const weeksContainerStyles = StyleSheet.flatten([
             {
