@@ -3,11 +3,11 @@ import { connect, Dispatch } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 import { OnSelectedDayCallback } from './calendar-page';
 import { CalendarPager } from './calendar-pager';
-import { CalendarActions, selectCalendarDay, selectCalendarMonth } from '../reducers/calendar/calendar.action';
-import { WeekModel, DayModel, CalendarSelection, ReadOnlyIntervalsModel } from '../reducers/calendar/calendar.model';
+import { CalendarActions, selectCalendarDay, nextCalendarPage, prevCalendarPage } from '../reducers/calendar/calendar.action';
+import { WeekModel, DayModel, CalendarSelection, ReadOnlyIntervalsModel, CalendarPageModel } from '../reducers/calendar/calendar.model';
 
 interface CalendarProps {
-    weeks: WeekModel[];
+    pages: CalendarPageModel[];
     intervals: ReadOnlyIntervalsModel;
     selection: CalendarSelection;
     disableCalendarDaysBefore: DayModel;
@@ -15,18 +15,19 @@ interface CalendarProps {
 
 interface CalendarDispatchProps {
     selectCalendarDay: OnSelectedDayCallback;
-    selectCalendarMonth: (month: number, year: number) => void;
+    nextCalendarPage: () => void;
+    prevCalendarPage: () => void;
 }
 
 export class CalendarImpl extends Component<CalendarProps & CalendarDispatchProps> {
     public render() {
         return <CalendarPager
                     onSelectedDay={this.onSelectedDay}
-                    weeks={this.props.weeks}
+                    pages={this.props.pages}
                     intervals={this.props.intervals}
                     selection={this.props.selection}
-                    onNextMonth={this.onSelectMonth}
-                    onPrevMonth={this.onSelectMonth}
+                    onNextPage={this.onNextPage}
+                    onPrevPage={this.onPrevPage}
                     disableBefore={this.props.disableCalendarDaysBefore} />;
     }
 
@@ -34,21 +35,26 @@ export class CalendarImpl extends Component<CalendarProps & CalendarDispatchProp
         this.props.selectCalendarDay(day);
     }
 
-    private onSelectMonth = (month: number, year: number) => {
-        this.props.selectCalendarMonth(month, year);
+    private onNextPage = () => {
+        this.props.nextCalendarPage();
+    }
+
+    private onPrevPage = () => {
+        this.props.prevCalendarPage();
     }
 }
 
 const mapStateToProps = (state: AppState): CalendarProps => ({
-    weeks: state.calendar.calendarEvents.weeks,
+    pages: state.calendar.calendarEvents.pages,
     intervals: state.calendar.calendarEvents.intervals,
     selection: state.calendar.calendarEvents.selection,
     disableCalendarDaysBefore: state.calendar.calendarEvents.disableCalendarDaysBefore
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>) => ({
+const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>): CalendarDispatchProps => ({
     selectCalendarDay: (day: DayModel) => { dispatch(selectCalendarDay(day)); },
-    selectCalendarMonth: (month: number, year: number) => { dispatch(selectCalendarMonth(month, year)); },
+    nextCalendarPage: () => { dispatch(nextCalendarPage()); },
+    prevCalendarPage: () => { dispatch(prevCalendarPage()); }
 });
 
 export const Calendar = connect(mapStateToProps, mapDispatchToProps)(CalendarImpl);

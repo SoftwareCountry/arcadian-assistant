@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment, PureComponent } from 'react';
 import moment, { Moment } from 'moment';
 import { View, StyleSheet, LayoutChangeEvent, PixelRatio } from 'react-native';
 import { StyledText } from '../override/styled-text';
@@ -15,18 +15,21 @@ interface CalendarPageDefaultProps {
 }
 
 interface CalendarPageProps {
+    pageDate: Moment;
     weeks: WeekModel[];
     onSelectedDay: OnSelectedDayCallback;
     intervals?: ReadOnlyIntervalsModel;
     selection?: CalendarSelection;
     disableBefore?: DayModel;
+    width: number;
+    height: number;
 }
 
 interface CalendarPageState {
     weekHeight: number;
 }
 
-export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarPageProps, CalendarPageState> {
+export class CalendarPage extends PureComponent<CalendarPageDefaultProps & CalendarPageProps, CalendarPageState> {
     public static defaultProps: CalendarPageDefaultProps = {
         hidePrevNextMonthDays: true
     };
@@ -45,10 +48,23 @@ export class CalendarPage extends Component<CalendarPageDefaultProps & CalendarP
     }
 
     public render() {
+
+        const weeksContainerStyles = StyleSheet.flatten([
+            {
+                width: this.props.width,
+                height: this.props.height
+            }
+        ]);
+
         const weeks = this.props.weeks.map(week => this.renderWeek(week));
 
         return (
-            <View style={calendarStyles.weeksContainer}>
+            <View style={weeksContainerStyles}>
+                <View style={calendarStyles.today}>
+                    <StyledText style={calendarStyles.todayTitle}>
+                        {this.props.pageDate.format('MMMM YYYY')}
+                    </StyledText>
+                </View>
                 <View style={calendarStyles.weeksNames}>
                     {
                         this.weekdaysNames.map((weekdayName, index) =>
