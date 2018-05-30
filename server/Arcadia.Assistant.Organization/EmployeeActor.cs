@@ -35,8 +35,8 @@
             this.photo.Tell(new PhotoActor.SetSource(storedInformation.Photo));
 
             this.employeeFeed = Context.ActorOf(FeedActor.GetProps(), "feed");
-
             var sendEmailActor = Context.ActorOf(SendEmailSickLeaveActor.GetProps(), "sendEmail");
+            sendEmailActor.Tell(new SendEmailSickLeaveActor.SetEmployeesActor(Context.Parent));
             var vacationsActor = Context.ActorOf(EmployeeVacationsActor.CreateProps(this.employeeMetadata.EmployeeId), "vacations");
             var sickLeavesActor = Context.ActorOf(EmployeeSickLeaveActor.CreateProps(this.employeeMetadata.EmployeeId, sendEmailActor), "sick-leaves");
             var workHoursActor = Context.ActorOf(EmployeeWorkHoursActor.CreateProps(this.employeeMetadata.EmployeeId), "work-hours");

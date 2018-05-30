@@ -117,7 +117,11 @@
                             {
                                 EventId = newEvent.EventId,
                                 TimeStamp = DateTimeOffset.Now
-                            }, this.OnSickleaveApproved);
+                            }, e =>
+                                {
+                                    this.OnSickleaveApproved(e);
+                                    this.sickLeaveNotifications.Tell(e);
+                                });
                         break;
 
                     case SickLeaveStatuses.Rejected:
@@ -182,7 +186,6 @@
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
                 this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, SickLeaveStatuses.Approved, this.EmployeeId);
-                sickLeaveNotifications.Tell(message);
             }
         }
 

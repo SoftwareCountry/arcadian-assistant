@@ -1,18 +1,27 @@
 ﻿namespace Arcadia.Assistant.Calendar.SickLeave
 {
     using System;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Akka.Actor;
     using Akka.DI.Core;
+    using Akka.Event;
+    using Akka.Util.Internal;
     using MimeKit;
     using Configuration.Configuration;
     using MailKit.Net.Smtp;
     using MailKit.Security;
     using Events;
+    using Organization.Abstractions;
+    using Organization.Abstractions.OrganizationRequests;
 
     public class SendEmailSickLeaveActor : UntypedActor
     {
         private readonly IEmailSettings mailConfig;
         private readonly ISmtpSettings smtpConfig;
+        private readonly ILoggingAdapter logger = Context.GetLogger();
+        private IActorRef employeesActor = null;
+
         public SendEmailSickLeaveActor(IEmailSettings mailConfig, ISmtpSettings smtpConfig)
         {
             this.mailConfig = mailConfig;
@@ -25,22 +34,40 @@
         {
             switch (message)
             {
+                case SickLeaveEmail email:
+                    SendEmail(email, true);
+                    break;
                 case SickLeaveIsApproved ev:
-                    SendEmail(ev);
+                    if (employeesActor != null)
+                    {
+                        employeesActor.Ask(new EmployeesQuery().WithId(ev.UserId))
+                            .ContinueWith(result => new SickLeaveEmail(ev.TimeStamp, result.Result.AsInstanceOf<EmployeesQuery.Response>()), 
+                                TaskContinuationOptions.AttachedToParent & TaskContinuationOptions.ExecuteSynchronously)
+                            .PipeTo(Self);
+                    }
+                    else
+                        logger.Debug("Employees actor ref is not set in sending email actor");
+
+                    break;
+                case SetEmployeesActor actor:
+                    this.employeesActor = actor.employeesActor;
                     break;
             }
         }
 
-        private void SendEmail(SickLeaveIsApproved Event)
+        private void SendEmail(SickLeaveEmail email, bool startTls)
         {
             using (var client = new SmtpClient())
             {
-                var message = CreateMimeMessage(String.Format(mailConfig.Body, Event.UserId, Event.TimeStamp.ToString()));
+                logger.Debug("Sending a sick leave email notification for user {0}", email.GetEmployeeId());
+                var msg = CreateMimeMessage(email.GetBody(mailConfig.Body));
 
-                client.Connect(smtpConfig.Host, smtpConfig.Port, SecureSocketOptions.StartTls);
+                client.Connect(smtpConfig.Host, smtpConfig.Port, startTls ? SecureSocketOptions.StartTls 
+                                                                        : SecureSocketOptions.SslOnConnect);
                 client.Authenticate(smtpConfig.User, smtpConfig.Password);
-                client.Send(message);
+                client.Send(msg);
                 client.Disconnect(true);
+                logger.Debug("Sick leave email notification for user {0} was succesfully sent", email.GetEmployeeId());
             }
         }
 
@@ -53,6 +80,38 @@
             message.Body = new TextPart("plain") { Text = body };
 
             return message;
+        }
+
+        public sealed class SickLeaveEmail
+        {
+            public SickLeaveEmail(DateTimeOffset timeStamp, EmployeesQuery.Response response)
+            {
+                this.timeStamp = timeStamp;
+                this.employee = response.Employees.FirstOrDefault();
+            }
+
+            public string GetBody(string format)
+            {
+                return String.Format(format, employee.Metadata.Name, timeStamp.ToString());
+            }
+
+            public string GetEmployeeId()
+            {
+                return employee.Metadata.EmployeeId;
+            }
+
+            private DateTimeOffset timeStamp { get; }
+            private EmployeeContainer employee { get; }
+        }
+
+        public sealed class SetEmployeesActor
+        {
+            public SetEmployeesActor(IActorRef emplActor)
+            {
+                this.employeesActor = emplActor;
+            }
+
+            public IActorRef employeesActor { get; }
         }
     }
 }
