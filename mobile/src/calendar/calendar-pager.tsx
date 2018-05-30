@@ -33,6 +33,7 @@ export class CalendarPager extends Component<CalendarPagerProps, CalendarPagerSt
     };
 
     private panResponder: PanResponderInstance;
+    private readonly motionThreshold = 20;
 
     constructor(props: CalendarPagerProps) {
         super(props);
@@ -59,14 +60,10 @@ export class CalendarPager extends Component<CalendarPagerProps, CalendarPagerSt
             onPanResponderRelease: (e, gesture) => {
                 if (this.rightToLeftSwipe(gesture)) {
                     this.setState({ canSwipe: false });
-                    this.moveToNearestPage(-this.state.width, () => {
-                        this.nextPage();
-                    });
+                    this.moveToPage(gesture, -this.state.width, () => this.nextPage());
                 } else if (this.leftToRightSwipe(gesture)) {
                     this.setState({ canSwipe: false });
-                    this.moveToNearestPage(this.state.width, () => {
-                        this.prevPage();
-                    });
+                    this.moveToPage(gesture, this.state.width, () => this.prevPage());
                 }
             }
         });
@@ -123,7 +120,25 @@ export class CalendarPager extends Component<CalendarPagerProps, CalendarPagerSt
         this.props.onPrevPage();
     }
 
-    private moveToNearestPage(toValue: number, onMoveComplete: () => void) {
+    private get currentPage(): CalendarPageModel {
+        return this.props.pages[1];
+    }
+
+    private moveToPage(gesture: PanResponderGestureState, toValue: number, onCompleteMove: () => void) {
+        if (this.isThresholdExceeded(gesture)) {
+            this.moveToNearestPage(toValue, () => {
+                onCompleteMove();
+            });
+        } else {
+            this.moveToNearestPage(0);
+        }
+    }
+
+    private isThresholdExceeded(gesture: PanResponderGestureState) {
+        return this.motionThreshold - Math.abs(gesture.dx) <= 0;
+    }
+
+    private moveToNearestPage(toValue: number, onMoveComplete: () => void = () => {}) {
         Animated.timing(this.state.coordinates.x, {
             toValue: toValue,
             duration: 100,
