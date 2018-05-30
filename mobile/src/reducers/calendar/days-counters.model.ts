@@ -14,6 +14,10 @@ export class VacationDaysCounter implements DaysCounter  {
     constructor(public readonly days: number) { }
 
     public toString() {
+        if (this.days == null) {
+            return null;
+        }
+
         return this.days.toString();
     }
 }
@@ -32,6 +36,10 @@ export class HoursCreditCounter implements DaysCounter {
     ) { }
 
     public toString() {
+        if (this.hours == null) {
+            return null;
+        }
+
         if (this.hours === 0) {
             return '0';
         }
