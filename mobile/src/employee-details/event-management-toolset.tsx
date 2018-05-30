@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Image, Text, TouchableOpacity } from 'react-native';
 
 import { CalendarEvent, CalendarEventType, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
+
+// tslint:disable-next-line:no-var-requires
+const closeIcon = require('./close-icon.png');
+// tslint:disable-next-line:no-var-requires
+const tickIcon = require('./tick-icon.png');
 
 interface EventManagementToolsetProps {
     event: CalendarEvent;
@@ -23,11 +28,11 @@ export class EventManagementToolset extends Component<EventManagementToolsetProp
         <View style={{ paddingLeft: 10, flexDirection: 'column', alignItems: 'center' }}>
             <TouchableOpacity 
                 onPress={this.onApprove}>
-                <Text style={{ fontSize: 9, color: 'green' }}>APPROVE</Text>
+                <Image source={tickIcon} style={{ height: 28, width: 28}} />
             </TouchableOpacity>
             <TouchableOpacity 
                 onPress={this.onReject}>
-                    <Text style={{ fontSize: 9, color: 'red' }}>REJECT</Text>
+                    <Image source={closeIcon} style={{ height: 28, width: 28}} />
             </TouchableOpacity>
         </View> : null;
     }

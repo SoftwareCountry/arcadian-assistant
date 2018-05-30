@@ -120,14 +120,6 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                                     eventSetNewStatusAction={this.props.eventSetNewStatusAction}
                                 />
                             )) : null
-                            // requests.map((pendingEvents, key) => (
-                            //         <EmployeeDetailsPendingRequestsList
-                            //             key={key}
-                            //             events={pendingEvents} 
-                            //             employeeId={key}
-                            //             eventSetNewStatusAction={this.props.eventSetNewStatusAction}
-                            //         />
-                            // )) : null
                         }
 
                         {
