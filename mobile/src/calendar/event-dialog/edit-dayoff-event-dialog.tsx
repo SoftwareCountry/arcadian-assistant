@@ -57,7 +57,7 @@ class EditDayoffEventDialogImpl extends Component<EditDayoffEventDialogProps & E
 
 const mapStateToProps = (state: AppState): EditDayoffEventDialogProps => ({
     selectedIntervals: state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection,
-    userEmployee: state.userInfo.employee
+    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): EditDayoffEventDialogDispatchProps => ({

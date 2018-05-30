@@ -39,9 +39,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Calendar", "Arcadia.Assistant.Calendar\Arcadia.Assistant.Calendar.csproj", "{ECAF9CB2-A6EC-4E07-9D8B-0E5A4174152A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Calendar", "Arcadia.Assistant.Calendar\Arcadia.Assistant.Calendar.csproj", "{ECAF9CB2-A6EC-4E07-9D8B-0E5A4174152A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Calendar.Abstractions", "Arcadia.Assistant.Calendar.Abstractions\Arcadia.Assistant.Calendar.Abstractions.csproj", "{2E85CF39-662F-44F5-89E4-7DC0CCFB3E34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Calendar.Abstractions", "Arcadia.Assistant.Calendar.Abstractions\Arcadia.Assistant.Calendar.Abstractions.csproj", "{2E85CF39-662F-44F5-89E4-7DC0CCFB3E34}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Security", "Arcadia.Assistant.Security\Arcadia.Assistant.Security.csproj", "{A9DCBB26-1A32-4E0A-9CEA-1A582E2A013E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -111,6 +113,10 @@ Global
 		{2E85CF39-662F-44F5-89E4-7DC0CCFB3E34}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E85CF39-662F-44F5-89E4-7DC0CCFB3E34}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E85CF39-662F-44F5-89E4-7DC0CCFB3E34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9DCBB26-1A32-4E0A-9CEA-1A582E2A013E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9DCBB26-1A32-4E0A-9CEA-1A582E2A013E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9DCBB26-1A32-4E0A-9CEA-1A582E2A013E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9DCBB26-1A32-4E0A-9CEA-1A582E2A013E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

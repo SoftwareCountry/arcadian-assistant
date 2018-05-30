@@ -147,7 +147,7 @@
         private void OnVacationRequested(VacationIsRequested message)
         {
             var datesPeriod = new DatesPeriod(message.StartDate, message.EndDate);
-            var calendarEvent = new CalendarEvent(message.EventId, CalendarEventTypes.Vacation, datesPeriod, VacationStatuses.Requested);
+            var calendarEvent = new CalendarEvent(message.EventId, CalendarEventTypes.Vacation, datesPeriod, VacationStatuses.Requested, this.EmployeeId);
             this.EventsById[message.EventId] = calendarEvent;
         }
 
@@ -156,7 +156,7 @@
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
                 var newDates = new DatesPeriod(message.StartDate, message.EndDate);
-                this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, newDates, calendarEvent.Status);
+                this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, newDates, calendarEvent.Status, this.EmployeeId);
             }
         }
 
@@ -164,7 +164,7 @@
         {
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
-                this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, VacationStatuses.Approved);
+                this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, VacationStatuses.Approved, this.EmployeeId);
             }
         }
 

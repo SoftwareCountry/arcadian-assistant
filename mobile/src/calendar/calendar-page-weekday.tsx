@@ -97,7 +97,7 @@ interface WeekDayTouchableProps {
 export class WeekDayTouchable extends Component<WeekDayTouchableProps> {
     public render() {
         return (
-            <TouchableOpacity style={calendarStyles.weekDayTouchable} onPressIn={this.onSelectedDay} delayPressIn={0} disabled={this.props.disabled}>
+            <TouchableOpacity style={calendarStyles.weekDayTouchable} onPress={this.onSelectedDay} disabled={this.props.disabled}>
             </TouchableOpacity>
         );
     }

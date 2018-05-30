@@ -1,14 +1,19 @@
 import { Reducer } from 'redux';
 import { Map } from 'immutable';
-import { CalendarActions, CalendarSelectionModeType, CalendarSelectionMode } from './calendar.action';
-import { DayModel, WeekModel, IntervalsModel, CalendarSelection, IntervalModel, ExtractedIntervals, ReadOnlyIntervalsModel } from './calendar.model';
-import moment from 'moment';
+import { CalendarActions, CalendarSelectionModeType, CalendarSelectionMode, NextCalendarPage } from './calendar.action';
+import { DayModel, WeekModel, IntervalsModel, CalendarSelection, IntervalModel, ExtractedIntervals, ReadOnlyIntervalsModel, CalendarPageModel } from './calendar.model';
+import moment, { Moment } from 'moment';
 import { CalendarWeeksBuilder } from './calendar-weeks-builder';
 import { CalendarEvents } from './calendar-events.model';
 import { singleDaySelectionReducer, intervalSelectionReducer } from './calendar-selection.reducer';
 import { calendarSelectionModeReducer } from './calendar-selection-mode.reducer';
 import { CalendarEvent } from './calendar-event.model';
 import { UserActions } from '../user/user.action';
+import { UserInfoState } from '../user/user-info.reducer';
+import { nextCalendarPageReducer } from './next-calendar-page.reducer';
+import { prevCalendarPageReducer } from './prev-calendar-page.reducer';
+import { createCalendarPagesInitState } from './calendar-pages-init-state';
+
 
 export interface IntervalsSubState {
     intervals: ReadOnlyIntervalsModel;
@@ -33,13 +38,17 @@ export interface PendingRequestsSubState {
     requestsPredicate: (event: CalendarEvent) => boolean;
 }
 
+export interface CalendarPagesSubState {
+    pages: CalendarPageModel[];
+}
+
 export interface CalendarEventsState extends
     IntervalsSubState,
     DisableCalendarDaysBeforeSubState,
     EventsMapSubState,
     PendingRequestsSubState,
-    SelectionSubState {
-        weeks: WeekModel[];
+    SelectionSubState,
+    CalendarPagesSubState {
         disableCalendarActionsButtonGroup: boolean;
         selectedIntervalsBySingleDaySelection: ExtractedIntervals;
         disableSelectIntervalsBySingleDaySelection: boolean;
@@ -48,11 +57,15 @@ export interface CalendarEventsState extends
 
 const createInitState = (): CalendarEventsState => {
     const builder = new CalendarWeeksBuilder();
-    const today = moment();
-    const weeks = builder.buildWeeks(today.month(), today.year());
+    const date = moment();
+    const [
+        prevPage,
+        currentPage,
+        nextPage
+     ] = createCalendarPagesInitState(date);
 
     let todayModel: DayModel = null;
-    for (let week of weeks) {
+    for (let week of currentPage.weeks) {
         todayModel = week.days.find(day => day.today);
 
         if (todayModel) {
@@ -70,7 +83,7 @@ const createInitState = (): CalendarEventsState => {
     const defaultExtractedIntervals = new ExtractedIntervals(null);
 
     return {
-        weeks: weeks,
+        pages: [prevPage, currentPage, nextPage],
         intervals: null,
         events: Map<string, CalendarEvent[]>(),
         userEmployeeId: null,
@@ -96,8 +109,8 @@ const initState = createInitState();
 
 export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = initState, action: CalendarActions | UserActions) => {
     switch (action.type) {
-        case 'LOAD-USER-EMPLOYEE-FINISHED':
-            return {...state, userEmployeeId: action.employee.employeeId};
+        case 'LOAD-USER-FINISHED':
+            return {...state, userEmployeeId: action.userEmployeeId};
         case 'LOAD-CALENDAR-EVENTS-FINISHED': {
             let newState: CalendarEventsState;
             let {events} = state;
@@ -140,13 +153,19 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 ...singleDayState,
                 ...intervalState
             };
-        case 'SELECT-CALENDAR-MONTH':
-            const builder = new CalendarWeeksBuilder();
-            const weeks = builder.buildWeeks(action.month, action.year);
+        case 'NEXT-CALENDAR-PAGE':
+            const nextCalendarPageState = nextCalendarPageReducer(state, action);
 
             return {
                 ...state,
-                weeks: weeks
+                ...nextCalendarPageState
+            };
+        case 'PREV-CALENDAR-PAGE':
+            const prevCalendarPageState = prevCalendarPageReducer(state, action);
+
+            return {
+                ...state,
+                ...prevCalendarPageState
             };
         case 'CALENDAR-SELECTION-MODE':
             const selectionState = calendarSelectionModeReducer(state, action);

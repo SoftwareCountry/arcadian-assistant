@@ -9,10 +9,10 @@ export const loadUser = (): LoadUser => ({ type: 'LOAD-USER' });
 
 export interface LoadUserFinished {
     type: 'LOAD-USER-FINISHED';
-    user: User;
+    userEmployeeId: string;
 }
 
-export const loadUserFinished = (user: User): LoadUserFinished => ({ type: 'LOAD-USER-FINISHED', user });
+export const loadUserFinished = (userEmployeeId: string): LoadUserFinished => ({ type: 'LOAD-USER-FINISHED', userEmployeeId });
 
 export interface LoadUserEmployeeFinished {
     type: 'LOAD-USER-EMPLOYEE-FINISHED';

@@ -48,13 +48,17 @@ export interface SelectCalendarDay {
 
 export const selectCalendarDay = (day: DayModel): SelectCalendarDay => ({ type: 'SELECT-CALENDAR-DAY', day });
 
-export interface SelectCalendarMonth {
-    type: 'SELECT-CALENDAR-MONTH';
-    month: number;
-    year: number;
+export interface NextCalendarPage {
+    type: 'NEXT-CALENDAR-PAGE';
 }
 
-export const selectCalendarMonth = (month: number, year: number): SelectCalendarMonth => ({ type: 'SELECT-CALENDAR-MONTH', month, year });
+export const nextCalendarPage = (): NextCalendarPage => ({ type: 'NEXT-CALENDAR-PAGE' });
+
+export interface PrevCalendarPage {
+    type: 'PREV-CALENDAR-PAGE';
+}
+
+export const prevCalendarPage = (): PrevCalendarPage => ({ type: 'PREV-CALENDAR-PAGE' });
 
 export enum CalendarSelectionModeType {
     SingleDay = 'SingleDay',
@@ -90,5 +94,5 @@ export interface DisableSelectIntervalsBySingleDaySelection {
 
 export const disableSelectIntervalsBySingleDaySelection = (disable: boolean): DisableSelectIntervalsBySingleDaySelection => ({ type: 'DISABLE-SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION', disable });
 
-export type CalendarActions = LoadCalendarEventsFinished | LoadPendingRequestsFinished | SelectCalendarDay | SelectCalendarMonth |
+export type CalendarActions = LoadCalendarEventsFinished | LoadPendingRequestsFinished | SelectCalendarDay | NextCalendarPage | PrevCalendarPage |
     CalendarSelectionMode | SelectIntervalsBySingleDaySelection | DisableCalendarSelection | DisableSelectIntervalsBySingleDaySelection | CalendarEventSetNewStatus;

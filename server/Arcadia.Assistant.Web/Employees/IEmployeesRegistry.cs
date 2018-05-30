@@ -7,8 +7,8 @@
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
-    public interface IEmployeesSearch
+    public interface IEmployeesRegistry
     {
-        Task<IReadOnlyCollection<EmployeeContainer>> Search(EmployeesQuery query, CancellationToken token = default(CancellationToken));
+        Task<IReadOnlyCollection<EmployeeContainer>> SearchAsync(EmployeesQuery query, CancellationToken token = default(CancellationToken));
     }
 }

@@ -14,18 +14,22 @@ interface PeopleDepartmentProps {
     employeesPredicate: (employee: Employee) => boolean;
 }
 
-const mapStateToProps = (state: AppState): PeopleDepartmentProps => ({
-    employees: state.organization.employees,
-    userEmployee: state.userInfo.employee,
-    employeesPredicate: (employee: Employee) => {
-        return state.userInfo.employee && employee.departmentId === state.userInfo.employee.departmentId;
-    }
-});
+const mapStateToProps = (state: AppState): PeopleDepartmentProps => {
+
+    const userEmployee = state.organization.employees.employeesById.get(state.userInfo.employeeId);
+
+    return {
+        employees: state.organization.employees,
+        userEmployee,
+        employeesPredicate: (employee: Employee) => userEmployee && employee.departmentId === userEmployee.departmentId
+    };
+};
+
 interface EmployeesListDispatchProps {
     onItemClicked: (employee: Employee) => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeesListDispatchProps => ({
-    onItemClicked: (employee: Employee) => dispatch( openEmployeeDetailsAction(employee))
+    onItemClicked: (employee: Employee) => dispatch(openEmployeeDetailsAction(employee))
 });
 
 export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentProps & EmployeesListDispatchProps> {
@@ -47,7 +51,7 @@ export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentProps 
     }
 
     public render() {
-        return <EmployeesList employees={this.props.employees.employeesById.toArray().filter(this.props.employeesPredicate)} onItemClicked = {this.props.onItemClicked} />;
+        return <EmployeesList employees={this.props.employees.employeesById.toArray().filter(this.props.employeesPredicate)} onItemClicked={this.props.onItemClicked} />;
     }
 }
 

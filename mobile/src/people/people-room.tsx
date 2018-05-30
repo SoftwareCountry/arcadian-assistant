@@ -15,7 +15,7 @@ interface PeopleRoomProps {
 
 const mapStateToProps = (state: AppState): PeopleRoomProps => ({
     employees: state.organization.employees,
-    userEmployee: state.userInfo.employee
+    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
 });
 
 interface EmployeesListDispatchProps {

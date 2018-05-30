@@ -57,7 +57,7 @@ class CancelSickLeaveEventDialogImpl extends Component<CancelSickLeaveEventDialo
 
 const mapStateToProps = (state: AppState): CancelSickLeaveEventDialogProps => ({
     intervals: state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection,
-    userEmployee: state.userInfo.employee
+    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): CancelSickLeaveEventDialogDispatchProps => ({

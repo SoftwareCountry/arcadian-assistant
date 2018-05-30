@@ -5,19 +5,16 @@ import moment from 'moment';
 import { DayModel, IntervalType } from '../calendar.model';
 import { CalendarEvents } from '../calendar-events.model';
 import { Employee } from '../../organization/employee.model';
-import { loadUserEmployeeFinished } from '../../user/user.action';
+import { loadUserEmployeeFinished, loadUserFinished } from '../../user/user.action';
 
 describe('calendar events reducer', () => {
     describe('when load calendar events finished', () => {
         let state: CalendarEventsState;
         let calendarEvent: CalendarEvent;
-        let employee: Employee;
+        let employeeId = '1';
 
         beforeEach(() => {
-            employee = new Employee();
-            employee.employeeId = '1';
-
-            const action = loadUserEmployeeFinished(employee);
+            const action = loadUserFinished(employeeId);
             state = calendarEventsReducer(undefined, action);
         });
 
@@ -30,7 +27,7 @@ describe('calendar events reducer', () => {
             calendarEvent.status = CalendarEventStatus.Requested;
             calendarEvent.type = CalendarEventType.Sickleave;
 
-            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employee.employeeId);
+            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employeeId);
             state = calendarEventsReducer(state, action);
         });
 
@@ -224,13 +221,11 @@ describe('calendar events reducer', () => {
         let state: CalendarEventsState;
         let calendarEvent: CalendarEvent;
         let day: DayModel;
-        let employee: Employee;
+        let employeeId = '1';
 
         beforeEach(() => {
-            employee = new Employee();
-            employee.employeeId = '1';
-
-            const action = loadUserEmployeeFinished(employee);
+        
+            const action = loadUserFinished(employeeId);
             state = calendarEventsReducer(undefined, action);
         });
         
@@ -248,7 +243,7 @@ describe('calendar events reducer', () => {
             calendarEvent.status = CalendarEventStatus.Requested;
             calendarEvent.type = CalendarEventType.Sickleave;
 
-            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employee.employeeId);
+            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employeeId);
             state = calendarEventsReducer(state, action);
         });
 
@@ -277,13 +272,10 @@ describe('calendar events reducer', () => {
         let state: CalendarEventsState;
         let calendarEvent: CalendarEvent;
         let day: DayModel;
-        let employee: Employee;
+        let employeeId = '1';
 
         beforeEach(() => {
-            employee = new Employee();
-            employee.employeeId = '1';
-
-            const action = loadUserEmployeeFinished(employee);
+            const action = loadUserFinished(employeeId);
             state = calendarEventsReducer(undefined, action);
         });
 
@@ -300,7 +292,7 @@ describe('calendar events reducer', () => {
             calendarEvent.status = CalendarEventStatus.Requested;
             calendarEvent.type = CalendarEventType.Sickleave;
 
-            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employee.employeeId);
+            const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employeeId);
             state = calendarEventsReducer(state, action);
         });
 
