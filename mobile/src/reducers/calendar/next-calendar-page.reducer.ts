@@ -13,7 +13,9 @@ export const nextCalendarPageReducer = (state: CalendarEventsState, action: Next
     const lastBuilder = new CalendarWeeksBuilder();
     const lastMonthWeeks = lastBuilder.buildWeeks(lastPageDate.month(), lastPageDate.year());
 
-    const pages = [...state.pages, new CalendarPageModel(lastPageDate, lastMonthWeeks)];
+    const isPageLast = lastPageDate.year() === 9999;
+
+    const pages = [...state.pages, new CalendarPageModel(lastPageDate, lastMonthWeeks, false, isPageLast)];
 
     pages.shift();
 

@@ -13,7 +13,9 @@ export const prevCalendarPageReducer = (state: CalendarEventsState, action: Prev
     const firstBuilder = new CalendarWeeksBuilder();
     const firstMonthWeeks = firstBuilder.buildWeeks(firstPageDate.month(), firstPageDate.year());
 
-    const pages = [new CalendarPageModel(firstPageDate, firstMonthWeeks), ...state.pages];
+    const isPageFirst = firstPageDate.year() === 1993;
+
+    const pages = [new CalendarPageModel(firstPageDate, firstMonthWeeks, isPageFirst), ...state.pages];
 
     pages.pop();
 

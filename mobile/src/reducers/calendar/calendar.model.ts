@@ -121,7 +121,9 @@ export class CalendarPageModel {
 
     constructor(
         public readonly date: Moment,
-        public readonly weeks: WeekModel[]
+        public readonly weeks: WeekModel[],
+        public readonly isPageFirst: boolean = false,
+        public readonly isPageLast: boolean = false
     ) {
         this.pageId = date.format('MMMM YYYY');
     }

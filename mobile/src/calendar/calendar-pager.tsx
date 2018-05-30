@@ -60,10 +60,10 @@ export class CalendarPager extends Component<CalendarPagerProps, CalendarPagerSt
             onPanResponderRelease: (e, gesture) => {
                 if (this.rightToLeftSwipe(gesture)) {
                     this.setState({ canSwipe: false });
-                    this.moveToPage(gesture, -this.state.width, () => this.nextPage());
+                    this.moveToPage(gesture, -this.state.width, () => this.nextPage(), this.currentPage.isPageLast);
                 } else if (this.leftToRightSwipe(gesture)) {
                     this.setState({ canSwipe: false });
-                    this.moveToPage(gesture, this.state.width, () => this.prevPage());
+                    this.moveToPage(gesture, this.state.width, () => this.prevPage(), this.currentPage.isPageFirst);
                 }
             }
         });
@@ -124,8 +124,8 @@ export class CalendarPager extends Component<CalendarPagerProps, CalendarPagerSt
         return this.props.pages[1];
     }
 
-    private moveToPage(gesture: PanResponderGestureState, toValue: number, onCompleteMove: () => void) {
-        if (this.isThresholdExceeded(gesture)) {
+    private moveToPage(gesture: PanResponderGestureState, toValue: number, onCompleteMove: () => void, isFirstOrLast: boolean) {
+        if (this.isThresholdExceeded(gesture) && !isFirstOrLast) {
             this.moveToNearestPage(toValue, () => {
                 onCompleteMove();
             });
