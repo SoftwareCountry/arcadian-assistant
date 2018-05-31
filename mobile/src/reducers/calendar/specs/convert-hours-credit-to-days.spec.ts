@@ -2,6 +2,14 @@ import { ConvertHoursCreditToDays } from '../convert-hours-credit-to-days';
 
 describe('convert hours credit to days', () => {
 
+    it('should return null days, null rest, if hours are null', () => {
+        const converter = new ConvertHoursCreditToDays();
+        const result = converter.convert(null);
+
+        expect(result.days).toBeNull();
+        expect(result.rest).toBeNull();
+    });
+
     it('should return 0 days and empty rest, if hours are 0', () => {
         const converter = new ConvertHoursCreditToDays();
         const result = converter.convert(0);

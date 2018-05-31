@@ -3,6 +3,13 @@ export class ConvertHoursCreditToDays {
     public static readonly fractionSymbol = '½';
 
     public convert(hours: number): ConvertHoursCreditResult {
+        if (hours == null) {
+            return {
+                days: null,
+                rest: null
+            };
+        }
+
         hours = Math.abs(hours);
 
         if (hours === 0) {
