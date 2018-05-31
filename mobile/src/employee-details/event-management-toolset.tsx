@@ -25,14 +25,14 @@ export class EventManagementToolset extends Component<EventManagementToolsetProp
 
     public render() {
         return (this.props.event.status === CalendarEventStatus.Requested) ? 
-        <View style={{ paddingLeft: 10, flexDirection: 'column', alignItems: 'center' }}>
+        <View style={{ marginLeft: 20, width: 72, flexDirection: 'row', justifyContent: 'space-between' }}>
             <TouchableOpacity 
                 onPress={this.onApprove}>
-                <Image source={tickIcon} style={{ height: 28, width: 28}} />
+                <Image source={tickIcon} style={{ height: 28, width: 28 }} />
             </TouchableOpacity>
             <TouchableOpacity 
                 onPress={this.onReject}>
-                    <Image source={closeIcon} style={{ height: 28, width: 28}} />
+                    <Image source={closeIcon} style={{ height: 28, width: 28 }} />
             </TouchableOpacity>
         </View> : null;
     }

@@ -23,13 +23,27 @@ export const layoutStylesForEmployeeDetailsScreen = StyleSheet.create({
         alignItems: 'center'
     },
     eventIcon: {
-        flex: 1,
-        color: '#2FAFCC', 
-        fontSize: 20, 
-        marginRight: 10
+        color: '#333', 
+        fontSize: 16
     },
     eventTitle: {
-        flex: 5,
         fontSize: 12 
+    },
+    eventDetails: {
+        fontSize: 10 
+    },
+    avatarContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: 48,
+        height: 48,
+        alignSelf: 'center' 
+    },
+    avatarOuterFrame: {
+        borderWidth: 1
+    },
+    avatarImage: {
+        borderWidth: 1
     }
 });
