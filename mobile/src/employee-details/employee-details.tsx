@@ -21,9 +21,11 @@ import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calenda
 import { eventDialogTextDateFormat } from '../calendar/event-dialog/event-dialog-base';
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
 import { EmployeeDetailsPendingRequestsList } from './employee-details-pending-requests-list';
+import { EmployeesStore } from '../reducers/organization/employees.reducer';
 
 interface EmployeeDetailsProps {
     employee?: Employee;
+    employees?: EmployeesStore;
     department: Department;
     layoutStylesChevronPlaceholder?: ViewStyle;
     events?: Map<string, CalendarEvent[]>;
@@ -34,6 +36,7 @@ interface EmployeeDetailsProps {
 
 const mapStateToProps = (state: AppState, props: EmployeeDetailsProps): EmployeeDetailsProps => ({
     department: props.department,
+    employees: state.organization.employees,
     events: state.calendar.calendarEvents.events,
     eventsPredicate: state.calendar.calendarEvents.eventsPredicate,
     requests: state.calendar.calendarEvents.requests,
@@ -111,12 +114,17 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                         </View>
 
                         {
+                            (requests !== undefined && requests.size > 0) ? <StyledText style={{ alignSelf: 'center'}}>REQUESTS</StyledText> : null
+                        }
+
+                        {
                             (requests !== undefined && requests.size > 0) ? 
                             requests.keySeq().map((key) => (
                                 <EmployeeDetailsPendingRequestsList
                                     key={key}
                                     events={requests.get(key)} 
                                     employeeId={key}
+                                    employee={this.props.employees.employeesById.get(key)}
                                     eventSetNewStatusAction={this.props.eventSetNewStatusAction}
                                 />
                             )) : null
@@ -125,9 +133,11 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                         {
                             (events !== undefined && events.length > 0) ? 
                             <View>
+                                <StyledText style={{ alignSelf: 'center'}}>MY EVENTS</StyledText>
                                 <EmployeeDetailsEventsList 
                                     events={events} 
                                     employeeId={employee.employeeId}
+                                    employeeName={this.props.employees.employeesById.get(employee.employeeId).name}
                                     eventSetNewStatusAction={this.props.eventSetNewStatusAction} 
                                 />
                             </View> : null

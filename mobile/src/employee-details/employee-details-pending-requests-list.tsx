@@ -9,10 +9,12 @@ import { layoutStylesForEmployeeDetailsScreen } from './styles';
 import { CalendarEvent, CalendarEventType, eventTypeToGlyphIcon, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { eventDialogTextDateFormat, eventDigitsDateFormat } from '../calendar/event-dialog/event-dialog-base';
 import { EventManagementToolset } from './event-management-toolset';
+import { Employee } from '../reducers/organization/employee.model';
 
 interface EmployeeDetailsPendingRequestsListProps {
     events: CalendarEvent[];
     employeeId: string;
+    employee: Employee;
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
 }
 
@@ -45,12 +47,12 @@ export class EmployeeDetailsPendingRequestsList extends Component<EmployeeDetail
                             <ApplicationIcon name={eventTypeToGlyphIcon.get(item.type)} style={eventIcon} />
                         </View>
                         <View style={avatarContainer}>
-                            <Avatar style={avatarOuterFrame} imageStyle={avatarImage} />
+                            <Avatar photo={this.props.employee.photo} style={avatarOuterFrame} imageStyle={avatarImage} />
                         </View>
                     </View>
                         <View style={{ flex: 5 }}>
-                            <StyledText style={eventTitle}>EMPLOYEE NAME</StyledText>
-                            <StyledText style={eventDetails}>requests {item.type}</StyledText>
+                            <StyledText style={eventTitle}>{this.props.employee.name}</StyledText>
+                            <StyledText style={eventDetails}>requests {item.type.toLowerCase()}</StyledText>
                             <StyledText style={eventDetails}>from {item.dates.startDate.format(eventDigitsDateFormat)} to {item.dates.endDate.format(eventDigitsDateFormat)}</StyledText>
                         </View>
                         <EventManagementToolset event={this.props.events.find(e => e.calendarEventId === item.calendarEventId)} employeeId={this.props.employeeId} eventSetNewStatusAction={this.props.eventSetNewStatusAction} />
