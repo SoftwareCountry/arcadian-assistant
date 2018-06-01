@@ -15,5 +15,7 @@
 
         [Required]
         public int Port { get; set; }
+        [Required]
+        public bool UseTls { get; set; }
     }
 }

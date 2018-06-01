@@ -38,7 +38,7 @@
             switch (message)
             {
                 case SickLeaveEmail email:
-                    SendEmail(email, true);
+                    SendEmail(email);
                     break;
                 case SickLeaveIsApproved ev:
                     if (employeesActor != null)
@@ -56,14 +56,14 @@
             }
         }
 
-        private void SendEmail(SickLeaveEmail email, bool startTls)
+        private void SendEmail(SickLeaveEmail email)
         {
             using (var client = new SmtpClient())
             {
                 logger.Debug("Sending a sick leave email notification for user {0}", email.GetEmployeeId());
                 var msg = CreateMimeMessage(email.GetBody(mailConfig.Body));
 
-                client.Connect(smtpConfig.Host, smtpConfig.Port, startTls ? SecureSocketOptions.StartTls 
+                client.Connect(smtpConfig.Host, smtpConfig.Port, smtpConfig.UseTls ? SecureSocketOptions.StartTls 
                                                                         : SecureSocketOptions.SslOnConnect);
                 client.Authenticate(smtpConfig.User, smtpConfig.Password);
                 client.Send(msg);

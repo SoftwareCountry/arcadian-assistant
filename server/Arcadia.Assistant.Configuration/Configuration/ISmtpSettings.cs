@@ -6,5 +6,6 @@
         string Password { get; }
         int Port { get; }
         string Host { get; }
+        bool UseTls { get; }
     }
 }
