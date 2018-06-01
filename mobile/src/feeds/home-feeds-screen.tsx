@@ -68,12 +68,6 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
         return !nothingChanged;
     }
 
-    public componentDidMount() {
-        if (this.props.user) {
-            this.props.fetchNewFeeds();
-        }
-    }
-
     public render() {
 
         const feeds = this.sortedFeeds();
