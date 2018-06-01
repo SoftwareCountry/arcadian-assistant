@@ -13,7 +13,10 @@
             var container = new ContainerBuilder();
 
             container.RegisterModule(new DatabaseModule(config.GetConnectionString("ArcadiaCSP")));
-            container.RegisterModule<OrganizationModule>();
+
+            var organizationSettings = config.Get<AppSettings>().Organization;
+            container.RegisterModule(new OrganizationModule(organizationSettings.RefreshInformation));
+
             var mailSettings = config.Get<AppSettings>().Messaging;
             container.RegisterModule(new NotificationsModule(mailSettings.Smtp, mailSettings.SickLeave));
 

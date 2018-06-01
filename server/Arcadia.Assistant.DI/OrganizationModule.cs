@@ -5,13 +5,21 @@
     using Arcadia.Assistant.Organization.Abstractions;
 
     using Autofac;
+    using Configuration.Configuration;
 
     public class OrganizationModule : Module
     {
+        private readonly IRefreshInformation refreshInformation;
+
+        public OrganizationModule(IRefreshInformation refreshInformation)
+        {
+            this.refreshInformation = refreshInformation;
+        }
+
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<EmployeesActor>().AsSelf();
-            builder.RegisterType<OrganizationActor>().AsSelf();
+            builder.Register(ctx => new OrganizationActor(this.refreshInformation));
 
             builder.RegisterType<DepartmentsStorage>().AsSelf();
 
