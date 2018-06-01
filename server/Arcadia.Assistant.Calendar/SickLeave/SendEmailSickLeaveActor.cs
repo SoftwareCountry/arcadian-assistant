@@ -28,7 +28,10 @@
             this.smtpConfig = smtpConfig;
         }
 
-        public static Props GetProps() => Context.DI().Props<SendEmailSickLeaveActor>();
+        public static Props GetProps()
+        {
+            return Context.DI().Props<SendEmailSickLeaveActor>();
+        }
 
         protected override void OnReceive(object message)
         {
@@ -39,18 +42,16 @@
                     break;
                 case SickLeaveIsApproved ev:
                     if (employeesActor != null)
-                    {
                         employeesActor.Ask(new EmployeesQuery().WithId(ev.UserId))
-                            .ContinueWith(result => new SickLeaveEmail(ev.TimeStamp, result.Result.AsInstanceOf<EmployeesQuery.Response>()), 
+                            .ContinueWith(result => new SickLeaveEmail(ev.TimeStamp, result.Result.AsInstanceOf<EmployeesQuery.Response>()),
                                 TaskContinuationOptions.AttachedToParent & TaskContinuationOptions.ExecuteSynchronously)
                             .PipeTo(Self);
-                    }
                     else
                         logger.Debug("Employees actor ref is not set in sending email actor");
 
                     break;
                 case SetEmployeesActor actor:
-                    this.employeesActor = actor.employeesActor;
+                    employeesActor = actor.employeesActor;
                     break;
             }
         }
@@ -87,12 +88,12 @@
             public SickLeaveEmail(DateTimeOffset timeStamp, EmployeesQuery.Response response)
             {
                 this.timeStamp = timeStamp;
-                this.employee = response.Employees.FirstOrDefault();
+                employee = response.Employees.FirstOrDefault();
             }
 
             public string GetBody(string format)
             {
-                return String.Format(format, employee.Metadata.Name, timeStamp.ToString());
+                return string.Format(format, employee.Metadata.Name, timeStamp.ToString());
             }
 
             public string GetEmployeeId()
@@ -108,7 +109,7 @@
         {
             public SetEmployeesActor(IActorRef emplActor)
             {
-                this.employeesActor = emplActor;
+                employeesActor = emplActor;
             }
 
             public IActorRef employeesActor { get; }
