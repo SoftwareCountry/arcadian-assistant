@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, PixelRatio, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, PixelRatio, TouchableOpacity, GestureResponderEvent } from 'react-native';
 import { calendarStyles, intervalMargin } from './styles';
 import { DayModel } from '../reducers/calendar/calendar.model';
 import { OnSelectedDayCallback } from './calendar-page';
@@ -94,15 +94,35 @@ interface WeekDayTouchableProps {
     disabled: boolean;
 }
 
-export class WeekDayTouchable extends Component<WeekDayTouchableProps> {
-    public render() {
-        return (
-            <TouchableOpacity style={calendarStyles.weekDayTouchable} onPress={this.onSelectedDay} disabled={this.props.disabled}>
-            </TouchableOpacity>
-        );
+// Use native events instead of TouchableOpacity, which uses PanResponder under the hood.
+class WeekDayTouchableHandler {
+    private touchCanceled = false;
+
+    constructor(
+        private readonly onPressUp: () => void
+    ) { }
+
+    public onTouchMove = (event: GestureResponderEvent) => {
+        this.touchCanceled = true;
     }
 
-    private onSelectedDay = () => {
+    public onTouchStart = (event: GestureResponderEvent) => {
+        this.touchCanceled = false;
+    }
+
+    public onTouchEnd = () => {
+        if (!this.touchCanceled) {
+            this.onPressUp();
+        }
+    }
+}
+
+export class WeekDayTouchable extends Component<WeekDayTouchableProps> {
+    private readonly touchableHandler = new WeekDayTouchableHandler(() => {
         this.props.onSelectedDay(this.props.day);
+    });
+
+    public render() {
+        return <View {...this.touchableHandler} style={calendarStyles.weekDayTouchable}></View>;
     }
 }
