@@ -8,4 +8,4 @@ import { Refresh } from './refresh.action';
 
 export const refreshEpic$ = (action$: ActionsObservable<Refresh>) =>
     action$.ofType('REFRESH')
-    .flatMap(x => Observable.concat(Observable.of(loadUser()), Observable.of(loadDepartments())));
+    .flatMap(x => Observable.of(loadUser()));

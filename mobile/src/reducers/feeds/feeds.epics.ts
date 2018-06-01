@@ -13,8 +13,14 @@ import { Alert } from 'react-native';
 import { retryWhen, map } from 'rxjs/operators';
 import { UnaryFunction } from 'rxjs/interfaces';
 import { handleHttpErrors } from '../errors/errors.epics';
+import { LoadUserEmployeeFinished } from '../user/user.action';
 
 export const pagingPeriodDays = 10;
+
+export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, state: AppState, deps: DependenciesContainer) =>
+    action$.ofType('LOAD-USER-EMPLOYEE-FINISHED')
+        .map(x => fAction.fetchNewFeeds())
+        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
 export const fetchNewFeedsEpic$ = (action$: ActionsObservable<fAction.FetchNewFeeds>, appState: MiddlewareAPI<AppState>, deps: DependenciesContainer) =>
     action$.ofType('FETCH_NEW_FEEDS')
