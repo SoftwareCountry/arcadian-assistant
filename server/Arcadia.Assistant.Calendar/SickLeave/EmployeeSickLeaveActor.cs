@@ -10,17 +10,20 @@
 
     public class EmployeeSickLeaveActor : CalendarEventsStorageBase
     {
-        public EmployeeSickLeaveActor(string employeeId)
+        private readonly IActorRef sickLeaveNotifications;
+
+        public EmployeeSickLeaveActor(string employeeId, IActorRef sickLeaveNotifications)
             : base(employeeId)
         {
             this.PersistenceId = $"employee-sickleaves-{this.EmployeeId}";
+            this.sickLeaveNotifications = sickLeaveNotifications;
         }
 
         public override string PersistenceId { get; }
 
-        public static Props CreateProps(string employeeId)
+        public static Props CreateProps(string employeeId, IActorRef sickLeaveNotifications)
         {
-            return Props.Create(() => new EmployeeSickLeaveActor(employeeId));
+            return Props.Create(() => new EmployeeSickLeaveActor(employeeId, sickLeaveNotifications));
         }
 
         protected override void OnRecover(object message)
@@ -114,7 +117,11 @@
                             {
                                 EventId = newEvent.EventId,
                                 TimeStamp = DateTimeOffset.Now
-                            }, this.OnSickleaveApproved);
+                            }, e =>
+                                {
+                                    this.OnSickleaveApproved(e);
+                                    this.sickLeaveNotifications.Tell(e);
+                                });
                         break;
 
                     case SickLeaveStatuses.Rejected:
