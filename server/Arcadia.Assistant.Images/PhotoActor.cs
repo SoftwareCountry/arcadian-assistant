@@ -12,6 +12,8 @@
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     using SixLabors.ImageSharp;
+    using SixLabors.ImageSharp.Processing;
+    using SixLabors.ImageSharp.Processing.Transforms;
 
     public class PhotoActor : UntypedActor
     {
