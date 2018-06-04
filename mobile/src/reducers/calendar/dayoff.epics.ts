@@ -3,7 +3,7 @@ import { ConfirmProcessDayoff, CancelDayoff } from './dayoff.action';
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { CalendarEvent, CalendarEventType, CalendarEventStatus, DatesInterval } from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
-import { loadCalendarEvents } from './calendar.action';
+import { loadCalendarEvents, loadPendingRequests } from './calendar.action';
 import { Observable } from 'rxjs';
 import { loadFailedError } from '../errors/errors.action';
 import { IntervalType } from './calendar.model';
@@ -34,7 +34,10 @@ export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff
                 calendarEvents,
                 { 'Content-Type': 'application/json' }
             ).map(obj => deserialize(obj.response, CalendarEvent))
-            .map(() => loadCalendarEvents(x.employeeId));
+            .flatMap(action => Observable.concat(
+                Observable.of(loadCalendarEvents(x.employeeId)),
+                Observable.of(loadPendingRequests())
+            ));
         })
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
@@ -49,6 +52,9 @@ export const dayoffCanceledEpic$ = (action$: ActionsObservable<CancelDayoff>, st
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
                 requestBody,
                 { 'Content-Type': 'application/json' }
-            ).map(obj => loadCalendarEvents(x.employeeId));
+            ).flatMap(action => Observable.concat(
+                Observable.of(loadCalendarEvents(x.employeeId)),
+                Observable.of(loadPendingRequests())
+            ));
         })
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));

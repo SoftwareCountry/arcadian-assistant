@@ -3,7 +3,7 @@ import { ConfirmClaimVacation, CancelVacation, ConfirmVacationChange } from './v
 import { ActionsObservable } from 'redux-observable';
 import { CalendarEvent, CalendarEventType, CalendarEventStatus } from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
-import { loadCalendarEvents } from './calendar.action';
+import { loadCalendarEvents, loadPendingRequests } from './calendar.action';
 import { Observable } from 'rxjs/Observable';
 import { loadFailedError } from '../errors/errors.action';
 
@@ -28,7 +28,10 @@ export const vacationSavedEpic$ = (action$: ActionsObservable<ConfirmClaimVacati
                 calendarEvents,
                 { 'Content-Type': 'application/json' }
             ).map(obj => deserialize(obj.response, CalendarEvent))
-            .map(() => loadCalendarEvents(x.employeeId));
+            .flatMap(action => Observable.concat(
+                Observable.of(loadCalendarEvents(x.employeeId)),
+                Observable.of(loadPendingRequests())
+            ));
         })
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
@@ -43,7 +46,10 @@ export const vacationCanceledEpic$ = (action$: ActionsObservable<CancelVacation>
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
                 requestBody,
                 { 'Content-Type': 'application/json' }
-            ).map(() => loadCalendarEvents(x.employeeId));
+            ).flatMap(action => Observable.concat(
+                Observable.of(loadCalendarEvents(x.employeeId)),
+                Observable.of(loadPendingRequests())
+            ));
         })
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
@@ -62,6 +68,9 @@ export const vacationChangedEpic$ = (action$: ActionsObservable<ConfirmVacationC
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
                 requestBody,
                 { 'Content-Type': 'application/json' }
-            ).map(() => loadCalendarEvents(x.employeeId));
+            ).flatMap(action => Observable.concat(
+                Observable.of(loadCalendarEvents(x.employeeId)),
+                Observable.of(loadPendingRequests())
+            ));
         })
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));

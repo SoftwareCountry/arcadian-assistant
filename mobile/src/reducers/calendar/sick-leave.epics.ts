@@ -3,7 +3,7 @@ import { CompleteSickLeave, ConfirmClaimSickLeave, ConfirmProlongSickLeave, Canc
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { CalendarEventStatus, CalendarEvent, CalendarEventType } from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
-import { loadCalendarEvents } from './calendar.action';
+import { loadCalendarEvents, loadPendingRequests } from './calendar.action';
 import { loadFailedError } from '../errors/errors.action';
 import { Observable } from 'rxjs/Observable';
 import { closeEventDialog } from './event-dialog/event-dialog.action';
@@ -29,7 +29,10 @@ export const sickLeaveSavedEpic$ = (action$: ActionsObservable<ConfirmClaimSickL
                 calendarEvents,
                 { 'Content-Type': 'application/json' }
             ).map(obj => deserialize(obj.response, CalendarEvent))
-            .map(() => loadCalendarEvents(x.employeeId));
+            .flatMap(action => Observable.concat(
+                Observable.of(loadCalendarEvents(x.employeeId)),
+                Observable.of(loadPendingRequests())
+            ));
         })
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
@@ -45,7 +48,10 @@ export const sickLeaveCompletedEpic$ = (action$: ActionsObservable<CompleteSickL
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
                 requestBody,
                 { 'Content-Type': 'application/json' }
-            ).map(() => loadCalendarEvents(x.employeeId));
+            ).flatMap(action => Observable.concat(
+                Observable.of(loadCalendarEvents(x.employeeId)),
+                Observable.of(loadPendingRequests())
+            ));
         })
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
@@ -64,7 +70,10 @@ export const sickLeaveProlongedEpic$ = (action$: ActionsObservable<ConfirmProlon
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
                 requestBody,
                 { 'Content-Type': 'application/json' }
-            ).map(() => loadCalendarEvents(x.employeeId));
+            ).flatMap(action => Observable.concat(
+                Observable.of(loadCalendarEvents(x.employeeId)),
+                Observable.of(loadPendingRequests())
+            ));
         })
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
@@ -80,6 +89,9 @@ export const sickLeaveCanceledEpic$ = (action$: ActionsObservable<CancelSickLeav
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
                 requestBody,
                 { 'Content-Type': 'application/json' }
-            ).map(() => loadCalendarEvents(x.employeeId));
+            ).flatMap(action => Observable.concat(
+                Observable.of(loadCalendarEvents(x.employeeId)),
+                Observable.of(loadPendingRequests())
+            ));
         })
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));

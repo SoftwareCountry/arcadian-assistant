@@ -5,7 +5,7 @@ import { Map } from 'immutable';
 import { deserializeArray, deserialize } from 'santee-dcts';
 import {
     loadCalendarEventsFinished, SelectIntervalsBySingleDaySelection, selectIntervalsBySingleDaySelection, SelectCalendarDay, LoadCalendarEventsFinished, LoadCalendarEvents, loadCalendarEvents,
-    CalendarSelectionMode, disableCalendarSelection, DisableCalendarSelection, CalendarSelectionModeType, CalendarEventSetNewStatus, LoadPendingRequests, loadPendingRequestsFinished
+    CalendarSelectionMode, disableCalendarSelection, DisableCalendarSelection, CalendarSelectionModeType, CalendarEventSetNewStatus, LoadPendingRequests, loadPendingRequestsFinished, loadPendingRequests
 } from './calendar.action';
 import { loadFailedError } from '../errors/errors.action';
 import { CalendarEvent, CalendarEventStatus, CalendarEventType } from './calendar-event.model';
@@ -79,6 +79,9 @@ export const calendarEventSetNewStatusEpic$ = (action$: ActionsObservable<Calend
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
                 requestBody,
                 { 'Content-Type': 'application/json' }
-            ).map(obj => loadCalendarEvents(x.employeeId));
+            ).flatMap(action => Observable.concat(
+                Observable.of(loadCalendarEvents(x.employeeId)),
+                Observable.of(loadPendingRequests())
+            ));
         })
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
