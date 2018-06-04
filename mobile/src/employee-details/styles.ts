@@ -22,6 +22,25 @@ export const layoutStylesForEmployeeDetailsScreen = StyleSheet.create({
         marginRight: 20, 
         alignItems: 'center'
     },
+    eventLeftIcons: { 
+        height: 48, 
+        width: 86, 
+        marginRight: 8, 
+        flexDirection: 'row', 
+        alignSelf: 'center', 
+        justifyContent: 'space-between' 
+    },
+    eventTypeIconContainer: {
+        backgroundColor: '#D5EFF5', 
+        position: 'absolute', 
+        top: 1, 
+        left: 40, 
+        width: 46, 
+        height: 46, 
+        borderRadius: 23, 
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
     eventIcon: {
         color: '#333', 
         fontSize: 16

@@ -30,7 +30,7 @@ export class EmployeeDetailsPendingRequestsList extends Component<EmployeeDetail
 
     private renderItem = (itemInfo: ListRenderItemInfo<CalendarEvent>) => {
         const { item } = itemInfo;
-        const { eventsContainer, eventRow, eventIcon, eventTitle, eventDetails, avatarContainer, avatarOuterFrame, avatarImage } = layoutStylesForEmployeeDetailsScreen;
+        const { eventsContainer, eventRow, eventLeftIcons, eventTypeIconContainer, eventIcon, eventTitle, eventDetails, avatarContainer, avatarOuterFrame, avatarImage } = layoutStylesForEmployeeDetailsScreen;
 
         const eventsContainerFlattened = StyleSheet.flatten([
             eventsContainer, {width: Dimensions.get('window').width}
@@ -39,11 +39,8 @@ export class EmployeeDetailsPendingRequestsList extends Component<EmployeeDetail
         return (
                 <View style={eventsContainerFlattened} key={item.calendarEventId}>
                     <View style={eventRow}>
-                    <View style={{ height: 48, width: 86, marginRight: 8, flexDirection: 'row', alignSelf: 'center', justifyContent: 'space-between' }}>
-                        <View style={{
-                            backgroundColor: '#D5EFF5', position: 'absolute', top: 1, left: 40, width: 46, height: 46, borderRadius: 23, justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
+                    <View style={eventLeftIcons}>
+                        <View style={eventTypeIconContainer}>
                             <ApplicationIcon name={eventTypeToGlyphIcon.get(item.type)} style={eventIcon} />
                         </View>
                         <View style={avatarContainer}>
@@ -53,7 +50,7 @@ export class EmployeeDetailsPendingRequestsList extends Component<EmployeeDetail
                         <View style={{ flex: 5 }}>
                             <StyledText style={eventTitle}>{this.props.employee.name}</StyledText>
                             <StyledText style={eventDetails}>requests {item.type.toLowerCase()}</StyledText>
-                            <StyledText style={eventDetails}>from {item.dates.startDate.format(eventDigitsDateFormat)} to {item.dates.endDate.format(eventDigitsDateFormat)}</StyledText>
+                            <StyledText style={eventDetails}>{item.descriptionFromTo}</StyledText>
                         </View>
                         <EventManagementToolset event={this.props.events.find(e => e.calendarEventId === item.calendarEventId)} employeeId={this.props.employeeId} eventSetNewStatusAction={this.props.eventSetNewStatusAction} />
                     </View>

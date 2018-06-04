@@ -1,6 +1,7 @@
 import { dataMember, required, deserialize } from 'santee-dcts';
 import moment, { Moment } from 'moment';
 import { Map } from 'immutable';
+import { eventDigitsDateFormat } from '../../calendar/event-dialog/event-dialog-base';
 
 export enum CalendarEventType {
     Vacation = 'Vacation',
@@ -91,5 +92,35 @@ export class CalendarEvent {
 
     public get isWorkout(): boolean {
         return this.type === CalendarEventType.Workout;
+    }
+
+    public get isDayoff(): boolean {
+        return this.type === CalendarEventType.Dayoff;
+    }
+
+    public get whichHalf(): string {
+        let halfDescription: string;
+
+        if (this.dates.startWorkingHour === 0 && this.dates.finishWorkingHour === 4) {
+            halfDescription = ' (first half)';
+        } else if (this.dates.startWorkingHour === 4 && this.dates.finishWorkingHour === 8) {
+            halfDescription = ' (second half)';
+        } else {
+            halfDescription = ' (whole day)';
+        }
+
+        return halfDescription;
+    }
+
+    public get descriptionFromTo(): string {
+        let description: string;
+
+        if (this.isWorkout || this.isDayoff) {
+            description = 'on ' + this.dates.startDate.format(eventDigitsDateFormat) + this.whichHalf;
+        } else {
+            description = 'from ' + this.dates.startDate.format(eventDigitsDateFormat) + ' to ' + this.dates.endDate.format(eventDigitsDateFormat);
+        }
+
+        return description;
     }
 }
