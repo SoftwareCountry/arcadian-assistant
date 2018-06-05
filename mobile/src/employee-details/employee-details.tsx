@@ -59,6 +59,33 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchPro
 });
 
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
+    public shouldComponentUpdate(nextProps: EmployeeDetailsProps & EmployeeDetailsDispatchProps) {
+        const employees = this.props.employees.employeesById;
+        const nextEmployees = nextProps.employees.employeesById;
+        const requests = this.props.requests;
+        const nextRequests = nextProps.requests;
+
+        let valueToReturn = false;
+
+        if (requests !== undefined && requests.size > 0) {
+            if (!employees.equals(nextEmployees)) {
+                requests.keySeq().map((key) => {
+                    if (nextEmployees.has(key)) {
+                        valueToReturn = true;
+                    }
+                });
+            }
+        } else if (!requests.equals(nextRequests)) {
+            valueToReturn = true;
+        }
+                            
+        if (!employees.equals(nextEmployees) && nextEmployees.has(this.props.employee.employeeId)) {
+            valueToReturn = true;
+        }
+
+        return valueToReturn;
+    }
+    
     public componentDidMount() {
         this.props.loadPendingRequests();
         this.props.loadCalendarEvents(this.props.employee.employeeId);
@@ -73,14 +100,13 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         const tiles = this.getTiles(employee);
         const contacts = this.getContacts(employee);
 
-
         let events = this.props.events.get(employee.employeeId);
 
         if (events !== undefined) {
             events = events.filter(this.props.eventsPredicate);
         }
 
-        let requests = this.props.requests;
+        const requests = this.props.requests;
 
         return (
                 <View style={layoutStyles.container}>
