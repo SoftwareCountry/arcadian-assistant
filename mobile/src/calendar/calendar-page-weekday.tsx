@@ -117,7 +117,9 @@ class WeekDayTouchableHandler {
 
 export class WeekDayTouchable extends Component<WeekDayTouchableProps> {
     private readonly touchableHandler = new WeekDayTouchableHandler(() => {
-        this.props.onSelectedDay(this.props.day);
+        if (!this.props.disabled) {
+            this.props.onSelectedDay(this.props.day);
+        }
     });
 
     public render() {
