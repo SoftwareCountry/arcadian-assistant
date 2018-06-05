@@ -28,7 +28,7 @@
 
             Context.System.Scheduler.ScheduleTellRepeatedly(
                 TimeSpan.Zero,
-                TimeSpan.FromMinutes(refreshInformation.Interval),
+                TimeSpan.FromMinutes(refreshInformation.IntervalInMinutes),
                 this.Self,
                 RefreshOrganizationInformation.Instance,
                 this.Self);

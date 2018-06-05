@@ -5,6 +5,6 @@
     public class RefreshInformation : IRefreshInformation
     {
         [Required]
-        public double Interval { get; set; }
+        public double IntervalInMinutes { get; set; }
     }
 }

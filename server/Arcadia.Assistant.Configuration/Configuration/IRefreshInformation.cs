@@ -2,6 +2,6 @@
 {
     public interface IRefreshInformation
     {
-        double Interval { get; set; }
+        double IntervalInMinutes { get; set; }
     }
 }
