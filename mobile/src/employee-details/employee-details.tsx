@@ -65,22 +65,20 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         const requests = this.props.requests;
         const nextRequests = nextProps.requests;
 
-        let valueToReturn = false;
+        let valueToReturn = true;
 
-        if (requests !== undefined && requests.size > 0) {
-            if (!employees.equals(nextEmployees)) {
-                requests.keySeq().map((key) => {
-                    if (nextEmployees.has(key)) {
-                        valueToReturn = true;
-                    }
-                });
-            }
-        } else if (!requests.equals(nextRequests)) {
-            valueToReturn = true;
-        }
-                            
-        if (!employees.equals(nextEmployees) && nextEmployees.has(this.props.employee.employeeId)) {
-            valueToReturn = true;
+        if (!employees.equals(nextEmployees)) {
+            valueToReturn = false;
+
+            let employeesSubset = nextEmployees.filter(employee => {
+                return !employees.has(employee.employeeId);
+            });
+
+            requests.keySeq().map((key) => {
+                if (employeesSubset.has(key)) {
+                    valueToReturn = true;
+                }
+            });
         }
 
         return valueToReturn;

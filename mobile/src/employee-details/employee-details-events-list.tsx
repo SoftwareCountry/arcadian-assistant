@@ -28,7 +28,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
 
     private renderItem = (itemInfo: ListRenderItemInfo<CalendarEvent>) => {
         const { item } = itemInfo;
-        const { eventsContainer, eventRow, eventLeftIcons, eventTypeIconContainer, eventIcon, eventTitle, eventDetails, avatarContainer } = layoutStylesForEmployeeDetailsScreen;
+        const { eventsContainer, eventRow, eventLeftIconsTiny, eventTypeIconContainerTiny, eventIcon, eventTitle, eventDetails, avatarContainer } = layoutStylesForEmployeeDetailsScreen;
 
         const eventsContainerFlattened = StyleSheet.flatten([
             eventsContainer, {width: Dimensions.get('window').width}
@@ -37,15 +37,14 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
         return (
                 <View style={eventsContainerFlattened} key={item.calendarEventId}>
                     <View style={eventRow}>
-                    <View style={eventLeftIcons}>
-                        <View style={eventTypeIconContainer}>
+                    <View style={eventLeftIconsTiny}>
+                        <View style={eventTypeIconContainerTiny}>
                             <ApplicationIcon name={eventTypeToGlyphIcon.get(item.type)} style={eventIcon} />
                         </View>
-                        <View style={avatarContainer}/>
                     </View>
                         <View style={{ flex: 5 }}>
                             <StyledText style={eventTitle}>{this.props.employeeName}</StyledText>
-                            <StyledText style={eventDetails}>requests {item.type.toLowerCase()}</StyledText>
+                            <StyledText style={eventDetails}>{item.descriptionStatus}</StyledText>
                             <StyledText style={eventDetails}>{item.descriptionFromTo}</StyledText>
                         </View>
                         <EventManagementToolset event={this.props.events.find(e => e.calendarEventId === item.calendarEventId)} employeeId={this.props.employeeId} eventSetNewStatusAction={this.props.eventSetNewStatusAction} />

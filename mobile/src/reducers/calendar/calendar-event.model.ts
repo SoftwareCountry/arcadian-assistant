@@ -123,4 +123,17 @@ export class CalendarEvent {
 
         return description;
     }
+
+    public get descriptionStatus(): string {
+        let description: string;
+
+        if (this.isRequested) {
+            description = 'requests ' + this.type.toLowerCase();
+        } else if (this.isApproved) {
+            let prefix = this.dates.endDate.isAfter(moment(), 'date') ? 'has coming ' : 'on ';
+            description = prefix + this.type.toLowerCase();
+        }
+
+        return description;
+    }
 }
