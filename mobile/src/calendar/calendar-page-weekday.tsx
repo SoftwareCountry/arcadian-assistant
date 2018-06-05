@@ -96,22 +96,20 @@ interface WeekDayTouchableProps {
 
 // Use native events instead of TouchableOpacity, which uses PanResponder under the hood.
 class WeekDayTouchableHandler {
-    private touchCanceled = false;
+    private pageX: number;
 
     constructor(
         private readonly onPressUp: () => void
     ) { }
 
-    public onTouchMove = (event: GestureResponderEvent) => {
-        this.touchCanceled = true;
-    }
-
     public onTouchStart = (event: GestureResponderEvent) => {
-        this.touchCanceled = false;
+        this.pageX = event.nativeEvent.pageX;
     }
 
-    public onTouchEnd = () => {
-        if (!this.touchCanceled) {
+    public onTouchEnd = (event: GestureResponderEvent) => {
+        // if we detect a horizontal swipe (x coordinate has been changed between start and end events),
+        // stop pressing to aviod unexpected change selected day
+        if (this.pageX === event.nativeEvent.pageX) {
             this.onPressUp();
         }
     }
