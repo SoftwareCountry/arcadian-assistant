@@ -50,6 +50,7 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
     public render() {
 
         const weeksContainerStyles = StyleSheet.flatten([
+            calendarStyles.weekContainer,
             {
                 width: this.props.width,
                 height: this.props.height

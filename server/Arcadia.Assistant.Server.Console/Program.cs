@@ -1,12 +1,10 @@
 ﻿namespace Arcadia.Assistant.Server.Console
 {
     using System;
-    using System.Diagnostics;
     using System.IO;
     using System.Threading;
 
     using Arcadia.Assistant.Configuration;
-
     using Microsoft.Extensions.Configuration;
 
     internal class Program
@@ -23,8 +21,9 @@
                 .AddHoconContent("akka.conf", "Akka", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .AddCommandLine(args)
+                .AddUserSecrets<Program>()
                 .Build();
-            
+
             using (var app = new Application(config))
             {
                 app.Start();

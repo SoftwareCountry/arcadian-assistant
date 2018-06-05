@@ -43,9 +43,32 @@ describe('calendar action', () => {
                 const state = daysCountersReducer(null, action);
                 expect(state.allVacationDays.title).toEqual(['days', 'of vacation left']);
             });
+
+            it('should render null, if days are null', () => {
+                const employee = new Employee();
+                
+                employee.vacationDaysLeft = null;
+                employee.hoursCredit = null;
+
+                const action = loadUserEmployeeFinished(employee);
+                const state = daysCountersReducer(null, action);
+
+                expect(state.allVacationDays.toString()).toBeNull();
+            });
         });
 
         describe('hours credit counter', () => {
+
+            it('should render null, if hours are null', () => {
+                const employee = new Employee();
+
+                employee.hoursCredit = null;
+
+                const action = loadUserEmployeeFinished(employee);
+                const state = daysCountersReducer(null, action);
+
+                expect(state.hoursCredit.toString()).toBeNull();
+            });
 
             it('should render 0, if hours are 0', () => {
                 const employee = new Employee();

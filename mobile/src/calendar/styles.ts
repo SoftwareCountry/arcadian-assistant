@@ -24,8 +24,6 @@ export const calendarStyles = StyleSheet.create({
     pagerContainer: {
         marginTop: 25,
         marginBottom: 10,
-        marginLeft: 8,
-        marginRight: 8,
         flex: calendarScreenLayout.calendar.flex,
         alignSelf: 'stretch',
         position: 'relative'
@@ -43,6 +41,10 @@ export const calendarStyles = StyleSheet.create({
     todayTitle: {
         fontSize: 16,
         color: daysCounterTitleColor
+    },
+    weekContainer: {
+        paddingLeft: 1,
+        paddingRight: 1
     },
     weeksNames: {
         flex: 1,

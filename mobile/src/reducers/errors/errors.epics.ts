@@ -20,12 +20,10 @@ function retryWhenErrorOccured<T>(isForceLogout: boolean = false): UnaryFunction
     let okButtonTitle = 'Try again';
     let rejectButtonTitle = isForceLogout ? 'Logout' : 'Cancel';
     return retryWhen(errors => {
-
-        return errors.exhaustMap((e: any) => new Promise((resolve, reject) => {
+        return errors.exhaustMap(e => new Promise((resolve, reject) => {
             if (e.status === 401 || e.status === 403) {
                 errorMessage = 'Authentication failed';
-                showAlert(errorMessage, okButtonTitle, rejectButtonTitle,  resolve, () => reject(e));
-
+                showAlert(errorMessage, okButtonTitle, rejectButtonTitle, resolve, () => reject(e));
             } else if (e.status === 0) {
                 errorMessage = 'Cannot establish a connection to the server';
                 showAlert(errorMessage, okButtonTitle, rejectButtonTitle, resolve, () => reject(e));

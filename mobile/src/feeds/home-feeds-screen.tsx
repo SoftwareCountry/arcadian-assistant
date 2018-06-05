@@ -24,6 +24,7 @@ interface FeedsScreenProps {
     employees: EmployeesStore;
     toDate: Moment;
     fromDate: Moment;
+    user: string;
 }
 
 interface FeedScreenDispatchProps {
@@ -36,7 +37,8 @@ const mapStateToProps = (state: AppState): FeedsScreenProps => ({
     feeds: state.feeds.feeds,
     employees: state.organization.employees,
     toDate: state.feeds.toDate,
-    fromDate: state.feeds.fromDate
+    fromDate: state.feeds.fromDate,
+    user: state.userInfo.employeeId,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<any>): FeedScreenDispatchProps => ({
@@ -64,10 +66,6 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
         });
 
         return !nothingChanged;
-    }
-
-    public componentDidMount() {
-        this.props.fetchNewFeeds();
     }
 
     public render() {
@@ -115,7 +113,9 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     }
 
     private endReached = () => {
+        if (this.props.user) {
         this.props.fetchOldFeeds();
+        }
     }
     private onRefresh = () => {
         this.props.fetchNewFeeds();

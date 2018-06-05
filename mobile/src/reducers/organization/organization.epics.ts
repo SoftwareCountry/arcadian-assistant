@@ -62,3 +62,8 @@ export const loadEmployeesForUserDepartmentEpic$ = (action$: ActionsObservable<L
 export const loadEmployeesForUserRoomEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>) =>
     action$.ofType('LOAD-USER-EMPLOYEE-FINISHED')
         .map(x => loadEmployeesForRoom(x.employee.roomNumber));
+
+export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, state: AppState, deps: DependenciesContainer) =>
+    action$.ofType('LOAD-USER-EMPLOYEE-FINISHED')
+        .map(x =>  loadDepartments())
+        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
