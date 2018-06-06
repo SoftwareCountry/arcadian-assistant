@@ -9,6 +9,7 @@
 
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
+    using Configuration.Configuration;
 
     public class OrganizationActor : UntypedActor, ILogReceive, IWithUnboundedStash
     {
@@ -20,15 +21,14 @@
 
         public IStash Stash { get; set; }
 
-        public OrganizationActor()
+        public OrganizationActor(IRefreshInformation refreshInformation)
         {
             this.employeesActor = Context.ActorOf(EmployeesActor.GetProps(), "employees");
             this.departmentsActor = Context.ActorOf(DepartmentsActor.GetProps(this.employeesActor), "departments");
 
-            //TODO: make interval configurable
             Context.System.Scheduler.ScheduleTellRepeatedly(
                 TimeSpan.Zero,
-                TimeSpan.FromMinutes(10),
+                TimeSpan.FromMinutes(refreshInformation.IntervalInMinutes),
                 this.Self,
                 RefreshOrganizationInformation.Instance,
                 this.Self);

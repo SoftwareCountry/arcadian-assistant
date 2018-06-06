@@ -6,5 +6,8 @@
     {
         [Required]
         public MessagingSettings Messaging { get; set; }
+
+        [Required]
+        public OrganizationSettings Organization { get; set; }
     }
 }
