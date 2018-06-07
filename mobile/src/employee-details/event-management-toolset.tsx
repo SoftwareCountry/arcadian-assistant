@@ -2,11 +2,8 @@ import React, { Component } from 'react';
 import { View, Image, Text, TouchableOpacity } from 'react-native';
 
 import { CalendarEvent, CalendarEventType, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
-
-// tslint:disable-next-line:no-var-requires
-const closeIcon = require('./close-icon.png');
-// tslint:disable-next-line:no-var-requires
-const tickIcon = require('./tick-icon.png');
+import { ApplicationIcon } from '../override/application-icon';
+import { layoutStylesForEventManagementToolset } from './styles';
 
 interface EventManagementToolsetProps {
     event: CalendarEvent;
@@ -24,15 +21,15 @@ export class EventManagementToolset extends Component<EventManagementToolsetProp
     }
 
     public render() {
+        const { toolsetContainer, approveIcon, rejectIcon } = layoutStylesForEventManagementToolset;
+
         return (this.props.event.status === CalendarEventStatus.Requested) ? 
-        <View style={{ marginLeft: 20, width: 72, flexDirection: 'row', justifyContent: 'space-between' }}>
-            <TouchableOpacity 
-                onPress={this.onApprove}>
-                <Image source={tickIcon} style={{ height: 28, width: 28 }} />
+        <View style={toolsetContainer}>
+            <TouchableOpacity onPress={this.onApprove}>
+                <ApplicationIcon name={'approve-tick'} style={approveIcon} />
             </TouchableOpacity>
-            <TouchableOpacity 
-                onPress={this.onReject}>
-                    <Image source={closeIcon} style={{ height: 28, width: 28 }} />
+            <TouchableOpacity onPress={this.onReject}>
+                <ApplicationIcon name={'reject-cross'} style={rejectIcon} />
             </TouchableOpacity>
         </View> : null;
     }

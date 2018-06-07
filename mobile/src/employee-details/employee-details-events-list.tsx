@@ -5,7 +5,7 @@ import { StyledText } from '../override/styled-text';
 import { ApplicationIcon } from '../override/application-icon';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
 import { CalendarEvent, CalendarEventType, eventTypeToGlyphIcon, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
-import { eventDialogTextDateFormat, eventDigitsDateFormat } from '../calendar/event-dialog/event-dialog-base';
+import { eventDialogTextDateFormat } from '../calendar/event-dialog/event-dialog-base';
 import { EventManagementToolset } from './event-management-toolset';
 
 interface EmployeeDetailsEventsListProps {
@@ -28,7 +28,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
 
     private renderItem = (itemInfo: ListRenderItemInfo<CalendarEvent>) => {
         const { item } = itemInfo;
-        const { eventsContainer, eventRow, eventLeftIconsTiny, eventTypeIconContainerTiny, eventIcon, eventTitle, eventDetails, avatarContainer } = layoutStylesForEmployeeDetailsScreen;
+        const { eventsContainer, eventRow, eventLeftIconsTiny, eventTypeIconContainerTiny, eventIcon, eventTextContainer, eventTitle, eventDetails, avatarContainer } = layoutStylesForEmployeeDetailsScreen;
 
         const eventsContainerFlattened = StyleSheet.flatten([
             eventsContainer, {width: Dimensions.get('window').width}
@@ -42,7 +42,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
                             <ApplicationIcon name={eventTypeToGlyphIcon.get(item.type)} style={eventIcon} />
                         </View>
                     </View>
-                        <View style={{ flex: 5 }}>
+                        <View style={eventTextContainer}>
                             <StyledText style={eventTitle}>{this.props.employeeName}</StyledText>
                             <StyledText style={eventDetails}>{item.descriptionStatus}</StyledText>
                             <StyledText style={eventDetails}>{item.descriptionFromTo}</StyledText>

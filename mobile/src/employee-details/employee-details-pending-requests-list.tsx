@@ -30,7 +30,7 @@ export class EmployeeDetailsPendingRequestsList extends Component<EmployeeDetail
 
     private renderItem = (itemInfo: ListRenderItemInfo<CalendarEvent>) => {
         const { item } = itemInfo;
-        const { eventsContainer, eventRow, eventLeftIcons, eventTypeIconContainer, eventIcon, eventTitle, eventDetails, avatarContainer, avatarOuterFrame, avatarImage } = layoutStylesForEmployeeDetailsScreen;
+        const { eventsContainer, eventRow, eventLeftIcons, eventTypeIconContainer, eventIcon, eventTextContainer, eventTitle, eventDetails, avatarContainer, avatarOuterFrame, avatarImage } = layoutStylesForEmployeeDetailsScreen;
 
         const eventsContainerFlattened = StyleSheet.flatten([
             eventsContainer, {width: Dimensions.get('window').width}
@@ -47,7 +47,7 @@ export class EmployeeDetailsPendingRequestsList extends Component<EmployeeDetail
                             <Avatar photo={this.props.employee.photo} style={avatarOuterFrame} imageStyle={avatarImage} />
                         </View>
                     </View>
-                        <View style={{ flex: 5 }}>
+                        <View style={eventTextContainer}>
                             <StyledText style={eventTitle}>{this.props.employee.name}</StyledText>
                             <StyledText style={eventDetails}>requests {item.type.toLowerCase()}</StyledText>
                             <StyledText style={eventDetails}>{item.descriptionFromTo}</StyledText>

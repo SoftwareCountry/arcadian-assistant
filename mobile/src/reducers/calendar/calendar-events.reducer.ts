@@ -35,7 +35,6 @@ export interface EventsMapSubState {
 
 export interface PendingRequestsSubState {
     requests: Map<string, CalendarEvent[]>;
-    requestsPredicate: (event: CalendarEvent) => boolean;
 }
 
 export interface CalendarPagesSubState {
@@ -92,10 +91,6 @@ const createInitState = (): CalendarEventsState => {
             return event.dates.endDate.isSameOrAfter(now, 'date');
         },
         requests: Map<string, CalendarEvent[]>(),
-        requestsPredicate: (event: CalendarEvent) => {
-            const now = moment();
-            return event.dates.endDate.isSameOrAfter(now, 'date');
-        },
         disableCalendarDaysBefore: null,
         disableCalendarActionsButtonGroup: true,
         selection: defaultSelection,

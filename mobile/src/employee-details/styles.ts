@@ -64,6 +64,9 @@ export const layoutStylesForEmployeeDetailsScreen = StyleSheet.create({
         color: '#333', 
         fontSize: 16
     },
+    eventTextContainer: {
+        flex: 5 
+    },
     eventTitle: {
         fontSize: 12 
     },
@@ -83,5 +86,22 @@ export const layoutStylesForEmployeeDetailsScreen = StyleSheet.create({
     },
     avatarImage: {
         borderWidth: 1
+    }
+});
+
+export const layoutStylesForEventManagementToolset = StyleSheet.create({
+    toolsetContainer: {
+        marginLeft: 20, 
+        width: 72, 
+        flexDirection: 'row', 
+        justifyContent: 'space-between'
+    },
+    approveIcon: {
+        color: '#3DB1CA', 
+        fontSize: 28
+    },
+    rejectIcon: { 
+        color: '#E7585D', 
+        fontSize: 28 
     }
 });

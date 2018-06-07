@@ -31,7 +31,6 @@ interface EmployeeDetailsProps {
     events?: Map<string, CalendarEvent[]>;
     eventsPredicate?: (event: CalendarEvent) => boolean;
     requests?: Map<string, CalendarEvent[]>;
-    requestsPredicate?: (event: CalendarEvent) => boolean;
 }
 
 const mapStateToProps = (state: AppState, props: EmployeeDetailsProps): EmployeeDetailsProps => ({
@@ -39,8 +38,7 @@ const mapStateToProps = (state: AppState, props: EmployeeDetailsProps): Employee
     employees: state.organization.employees,
     events: state.calendar.calendarEvents.events,
     eventsPredicate: state.calendar.calendarEvents.eventsPredicate,
-    requests: state.calendar.calendarEvents.requests,
-    requestsPredicate: state.calendar.calendarEvents.requestsPredicate
+    requests: state.calendar.calendarEvents.requests
 });
 
 const TileSeparator = () => <View style = {tileStyles.separator}></View>;
@@ -65,23 +63,23 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         const requests = this.props.requests;
         const nextRequests = nextProps.requests;
 
-        let valueToReturn = true;
+        if (!requests.equals(nextRequests)) {
+            return true;
+        }
 
         if (!employees.equals(nextEmployees)) {
-            valueToReturn = false;
-
             let employeesSubset = nextEmployees.filter(employee => {
                 return !employees.has(employee.employeeId);
             });
 
-            requests.keySeq().map((key) => {
-                if (employeesSubset.has(key)) {
-                    valueToReturn = true;
-                }
-            });
+            if (requests.keySeq().some(key => employeesSubset.has(key))) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
         }
-
-        return valueToReturn;
     }
     
     public componentDidMount() {
