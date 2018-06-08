@@ -73,6 +73,7 @@
 		AC1CD46A284D40858BC0A31F /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 64B3870ACAA84AEBAC42A0A6 /* EvilIcons.ttf */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
 		CB02B501F8354425B6ECA252 /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D4FEAF4C9AB442BA9F7F2F7E /* Feather.ttf */; };
+		F796E19C08FF4C1390512289 /* libRNSensitiveInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 020F0ACA7F5049308CF20505 /* libRNSensitiveInfo.a */; };
 		F8DE791E988E4DA5BADF942B /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D5DEC77FEF41C8B1CBEF03 /* MaterialCommunityIcons.ttf */; };
 /* End PBXBuildFile section */
 
@@ -364,6 +365,13 @@
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
 		};
+		8F91398720C55EF400564483 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 18B1051145BD4F19864A2ED0 /* RNSensitiveInfo.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BF8FCF941BFFB184000FCD37;
+			remoteInfo = RNSensitiveInfo;
+		};
 		ADBDB9261DFEBF0700ED6528 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */;
@@ -383,6 +391,7 @@
 		00E356EE1AD99517003FC87E /* ArcadiaAssistantTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ArcadiaAssistantTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* ArcadiaAssistantTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ArcadiaAssistantTests.m; sourceTree = "<group>"; };
+		020F0ACA7F5049308CF20505 /* libRNSensitiveInfo.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNSensitiveInfo.a; sourceTree = "<group>"; };
 		139105B61AF99BAD00B5F7CC /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = "../node_modules/react-native/Libraries/Settings/RCTSettings.xcodeproj"; sourceTree = "<group>"; };
 		139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = "../node_modules/react-native/Libraries/WebSocket/RCTWebSocket.xcodeproj"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* ArcadiaAssistant.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ArcadiaAssistant.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -394,6 +403,7 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ArcadiaAssistant/main.m; sourceTree = "<group>"; };
 		1401C1DA5B97473E844EFD19 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
+		18B1051145BD4F19864A2ED0 /* RNSensitiveInfo.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNSensitiveInfo.xcodeproj; path = "../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo.xcodeproj"; sourceTree = "<group>"; };
 		219623B79BDA4FD9AE07B41C /* CenturyGothic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = CenturyGothic.ttf; path = ../assets/fonts/CenturyGothic.ttf; sourceTree = "<group>"; };
 		2285D8CB7B094200A90098E2 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		29FB9749DEDD47CF96CC34A0 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
@@ -457,6 +467,7 @@
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
 				04D48817D67B4DC79DBCFFE9 /* libRNVectorIcons.a in Frameworks */,
 				6C7847939C66492B8494A02A /* libRNSFAuthenticationSession.a in Frameworks */,
+				F796E19C08FF4C1390512289 /* libRNSensitiveInfo.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -651,6 +662,7 @@
 			children = (
 				4ECB6F36DF22428DBA874C87 /* libRNVectorIcons.a */,
 				880BD520E7A34417A5BDEC02 /* libRNSFAuthenticationSession.a */,
+				020F0ACA7F5049308CF20505 /* libRNSensitiveInfo.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -680,6 +692,7 @@
 				139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */,
 				8070C9BF504549C88161DD60 /* RNVectorIcons.xcodeproj */,
 				CE2E218B837D4A99AF9B8046 /* RNSFAuthenticationSession.xcodeproj */,
+				18B1051145BD4F19864A2ED0 /* RNSensitiveInfo.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -716,6 +729,14 @@
 				00E356EE1AD99517003FC87E /* ArcadiaAssistantTests.xctest */,
 				2D02E47B1E0B4A5D006451C7 /* ArcadiaAssistant-tvOS.app */,
 				2D02E4901E0B4A5D006451C7 /* ArcadiaAssistant-tvOSTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8F91398420C55EF400564483 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8F91398820C55EF400564483 /* libRNSensitiveInfo.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -841,7 +862,6 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = UW8Z95Z285;
 						ProvisioningStyle = Manual;
 					};
 					2D02E47A1E0B4A5D006451C7 = {
@@ -914,6 +934,10 @@
 				{
 					ProductGroup = 146834001AC3E56700842450 /* Products */;
 					ProjectRef = 146833FF1AC3E56700842450 /* React.xcodeproj */;
+				},
+				{
+					ProductGroup = 8F91398420C55EF400564483 /* Products */;
+					ProjectRef = 18B1051145BD4F19864A2ED0 /* RNSensitiveInfo.xcodeproj */;
 				},
 				{
 					ProductGroup = 5DA88749206AC468004EADEE /* Products */;
@@ -1201,6 +1225,13 @@
 			remoteRef = 832341B41AAA6A8300B99B32 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		8F91398820C55EF400564483 /* libRNSensitiveInfo.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNSensitiveInfo.a;
+			remoteRef = 8F91398720C55EF400564483 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1393,12 +1424,14 @@
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
 					"$(SRCROOT)/../node_modules/react-native-sf-authentication-session/ios",
+					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo/**",
 				);
 				INFOPLIST_FILE = ArcadiaAssistantTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
@@ -1423,12 +1456,14 @@
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
 					"$(SRCROOT)/../node_modules/react-native-sf-authentication-session/ios",
+					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo/**",
 				);
 				INFOPLIST_FILE = ArcadiaAssistantTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
@@ -1446,16 +1481,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = UW8Z95Z285;
+				DEVELOPMENT_TEAM = "";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
 					"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS",
 					"$(SRCROOT)/../node_modules/react-native-sf-authentication-session/ios",
+					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo/**",
 				);
 				INFOPLIST_FILE = ArcadiaAssistant/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -1467,8 +1504,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = ru.spb.arcadia.product.assistant.ios;
 				PRODUCT_NAME = ArcadiaAssistant;
-				PROVISIONING_PROFILE = "19148e6b-324b-4a75-865b-a06849e86c70";
-				PROVISIONING_PROFILE_SPECIFIER = ArcadiaAssistantDev;
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -1477,15 +1514,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = UW8Z95Z285;
+				DEVELOPMENT_TEAM = "";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
 					"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS",
 					"$(SRCROOT)/../node_modules/react-native-sf-authentication-session/ios",
+					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo/**",
 				);
 				INFOPLIST_FILE = ArcadiaAssistant/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -1497,8 +1536,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = ru.spb.arcadia.product.assistant.ios;
 				PRODUCT_NAME = ArcadiaAssistant;
-				PROVISIONING_PROFILE = "19148e6b-324b-4a75-865b-a06849e86c70";
-				PROVISIONING_PROFILE_SPECIFIER = ArcadiaAssistantDev;
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
@@ -1519,11 +1558,13 @@
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
 					"$(SRCROOT)/../node_modules/react-native-sf-authentication-session/ios",
+					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo/**",
 				);
 				INFOPLIST_FILE = "ArcadiaAssistant-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
@@ -1555,11 +1596,13 @@
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
 					"$(SRCROOT)/../node_modules/react-native-sf-authentication-session/ios",
+					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo/**",
 				);
 				INFOPLIST_FILE = "ArcadiaAssistant-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
@@ -1592,6 +1635,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.ArcadiaAssistant-tvOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1616,6 +1660,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);

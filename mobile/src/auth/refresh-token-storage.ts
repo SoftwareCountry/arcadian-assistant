@@ -1,7 +1,8 @@
 import { AsyncStorage } from 'react-native';
+import SInfo from 'react-native-sensitive-info';
 
 export interface RefreshTokenStorage {
-    storeToken(refreshToken: string | null) : Promise<void>;
+    storeToken(refreshToken: string | null): Promise<void>;
     getRefreshToken(): Promise<string>;
 }
 
@@ -13,18 +14,28 @@ export class RefreshTokenFilesystemStorage implements RefreshTokenStorage {
         if (this.refreshToken !== null) {
             return this.refreshToken;
         }
-
-        return AsyncStorage.getItem(this.keyName);
+        return SInfo.getItem(this.keyName, {
+            keychainService: 'ArcadiaAssistant',
+            sharedPreferencesName: 'ArcadiaAssistantPreferences',
+        });
     }
 
     public async storeToken(refreshToken: string | null) {
 
         if (!refreshToken) {
             this.refreshToken = null;
-            await AsyncStorage.removeItem(this.keyName);
+            await SInfo.deleteItem(this.keyName, {
+                keychainService: 'ArcadiaAssistant',
+                sharedPreferencesName: 'ArcadiaAssistantPreferences',
+            });
         } else {
             this.refreshToken = refreshToken;
-            await AsyncStorage.setItem(this.keyName, refreshToken);
+            await SInfo.setItem(this.keyName, refreshToken, {
+                keychainService: 'ArcadiaAssistant',
+                kSecAccessControl: 'kSecAccessControlTouchIDCurrentSet',
+                sharedPreferencesName: 'ArcadiaAssistantPreferences',
+                touchID: true,
+            });
         }
     }
 }
