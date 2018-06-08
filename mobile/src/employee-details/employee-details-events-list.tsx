@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, FlatList, ListRenderItemInfo, ViewStyle, Dimensions } from 'react-native';
+import { View, StyleSheet, FlatList, ListRenderItemInfo, Dimensions } from 'react-native';
 
 import { StyledText } from '../override/styled-text';
 import { ApplicationIcon } from '../override/application-icon';
+import { Avatar } from '../people/avatar';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
 import { CalendarEvent, CalendarEventType, eventTypeToGlyphIcon, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
-import { eventDialogTextDateFormat } from '../calendar/event-dialog/event-dialog-base';
 import { EventManagementToolset } from './event-management-toolset';
+import { Employee } from '../reducers/organization/employee.model';
 
 interface EmployeeDetailsEventsListProps {
     events: CalendarEvent[];
-    employeeId: string;
-    employeeName: string;
+    employee: Employee;
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
+    pendingRequestMode?: Boolean;
+    eventManagementEnabled: Boolean;
 }
 
 export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsListProps> {
@@ -28,26 +30,36 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
 
     private renderItem = (itemInfo: ListRenderItemInfo<CalendarEvent>) => {
         const { item } = itemInfo;
-        const { eventsContainer, eventRow, eventLeftIconsTiny, eventTypeIconContainerTiny, eventIcon, eventTextContainer, eventTitle, eventDetails, avatarContainer } = layoutStylesForEmployeeDetailsScreen;
-
+        const { eventsContainer, eventRow, eventLeftIcons, eventTypeIconContainer, eventLeftIconsTiny, eventTypeIconContainerTiny, eventIcon, eventTextContainer, eventTitle, eventDetails, avatarContainer, avatarOuterFrame, avatarImage } = layoutStylesForEmployeeDetailsScreen;
+        
         const eventsContainerFlattened = StyleSheet.flatten([
             eventsContainer, {width: Dimensions.get('window').width}
         ]);
 
+        const secondRowEventDetails = this.props.pendingRequestMode ? 'requests ' + item.type.toLowerCase() : item.descriptionStatus;
+
         return (
                 <View style={eventsContainerFlattened} key={item.calendarEventId}>
                     <View style={eventRow}>
-                    <View style={eventLeftIconsTiny}>
-                        <View style={eventTypeIconContainerTiny}>
+                    <View style={eventLeftIcons}>
+                        <View style={eventTypeIconContainer}>
                             <ApplicationIcon name={eventTypeToGlyphIcon.get(item.type)} style={eventIcon} />
+                        </View>
+                        <View style={avatarContainer}>
+                            <Avatar photo={this.props.employee.photo} style={avatarOuterFrame} imageStyle={avatarImage} />
                         </View>
                     </View>
                         <View style={eventTextContainer}>
-                            <StyledText style={eventTitle}>{this.props.employeeName}</StyledText>
-                            <StyledText style={eventDetails}>{item.descriptionStatus}</StyledText>
+                            <StyledText style={eventTitle}>{this.props.employee.name}</StyledText>
+                            <StyledText style={eventDetails}>{secondRowEventDetails}</StyledText>
                             <StyledText style={eventDetails}>{item.descriptionFromTo}</StyledText>
                         </View>
-                        <EventManagementToolset event={this.props.events.find(e => e.calendarEventId === item.calendarEventId)} employeeId={this.props.employeeId} eventSetNewStatusAction={this.props.eventSetNewStatusAction} />
+                        {
+                            (this.props.pendingRequestMode || this.props.eventManagementEnabled) ? <EventManagementToolset 
+                            event={this.props.events.find(e => e.calendarEventId === item.calendarEventId)} 
+                            employeeId={this.props.employee.employeeId} 
+                            eventSetNewStatusAction={this.props.eventSetNewStatusAction} /> : null
+                        }
                     </View>
                 </View>
         );

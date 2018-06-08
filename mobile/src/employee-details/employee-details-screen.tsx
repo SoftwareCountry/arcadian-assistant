@@ -32,7 +32,12 @@ export class EmployeeDetailsScreenImpl extends Component<EmployeeDetailsProps & 
 
         return employee && department ?
             <SafeAreaView style={profileScreenStyles.profileContainer}>
-                <EmployeeDetails department={department} employee={employee} layoutStylesChevronPlaceholder = {layoutStylesForEmployeeDetailsScreen.chevronPlaceholder}/>
+                <EmployeeDetails 
+                    department={department} 
+                    employee={employee} 
+                    layoutStylesChevronPlaceholder = {layoutStylesForEmployeeDetailsScreen.chevronPlaceholder}
+                    showPendingRequests={false}
+                />
             </SafeAreaView>
             : (
                 <View style={profileScreenStyles.loadingContainer}>

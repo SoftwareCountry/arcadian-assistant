@@ -1,26 +1,21 @@
 import React, { Component } from 'react';
 import { connect, Dispatch } from 'react-redux';
 import { Map } from 'immutable';
-import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView, Linking, TouchableOpacity, ViewStyle, Dimensions, FlatList } from 'react-native';
+import { View, StyleSheet, ScrollView, Linking, TouchableOpacity, ViewStyle } from 'react-native';
 
 import { layoutStyles, contentStyles, tileStyles, contactStyles } from '../profile/styles';
 import { Chevron } from '../profile/chevron';
 import { Avatar } from '../people/avatar';
-import { TopNavBar } from '../navigation/top-nav-bar';
 import { AppState } from '../reducers/app.reducer';
-import { UserInfoState } from '../reducers/user/user-info.reducer';
 import { Department } from '../reducers/organization/department.model';
 
 import { StyledText } from '../override/styled-text';
 import { Employee } from '../reducers/organization/employee.model';
 import { ApplicationIcon } from '../override/application-icon';
-import { layoutStylesForEmployeeDetailsScreen } from './styles';
 import { openCompanyAction } from './employee-details-dispatcher';
 import { loadCalendarEvents, calendarEventSetNewStatus, loadPendingRequests } from '../reducers/calendar/calendar.action';
 import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
-import { eventDialogTextDateFormat } from '../calendar/event-dialog/event-dialog-base';
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
-import { EmployeeDetailsPendingRequestsList } from './employee-details-pending-requests-list';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 
 interface EmployeeDetailsProps {
@@ -31,6 +26,7 @@ interface EmployeeDetailsProps {
     events?: Map<string, CalendarEvent[]>;
     eventsPredicate?: (event: CalendarEvent) => boolean;
     requests?: Map<string, CalendarEvent[]>;
+    showPendingRequests?: Boolean;
 }
 
 const mapStateToProps = (state: AppState, props: EmployeeDetailsProps): EmployeeDetailsProps => ({
@@ -83,7 +79,10 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
     }
     
     public componentDidMount() {
-        this.props.loadPendingRequests();
+        if (this.props.showPendingRequests) {
+            this.props.loadPendingRequests();
+        } 
+        
         this.props.loadCalendarEvents(this.props.employee.employeeId);
     }
     public render() {
@@ -142,12 +141,13 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                         {
                             (requests !== undefined && requests.size > 0) ? 
                             requests.keySeq().map((key) => (
-                                <EmployeeDetailsPendingRequestsList
+                                <EmployeeDetailsEventsList
                                     key={key}
                                     events={requests.get(key)} 
-                                    employeeId={key}
                                     employee={this.props.employees.employeesById.get(key)}
                                     eventSetNewStatusAction={this.props.eventSetNewStatusAction}
+                                    pendingRequestMode
+                                    eventManagementEnabled
                                 />
                             )) : null
                         }
@@ -158,9 +158,9 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                                 <StyledText style={{ alignSelf: 'center'}}>MY EVENTS</StyledText>
                                 <EmployeeDetailsEventsList 
                                     events={events} 
-                                    employeeId={employee.employeeId}
-                                    employeeName={this.props.employees.employeesById.get(employee.employeeId).name}
-                                    eventSetNewStatusAction={this.props.eventSetNewStatusAction} 
+                                    employee={employee}
+                                    eventSetNewStatusAction={this.props.eventSetNewStatusAction}
+                                    eventManagementEnabled={(this.props.requests.has(employee.employeeId))} 
                                 />
                             </View> : null
                         }
