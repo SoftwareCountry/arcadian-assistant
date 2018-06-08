@@ -4292,6 +4292,10 @@ react-native-safe-area-view@^0.7.0:
   dependencies:
     hoist-non-react-statics "^2.3.1"
 
+react-native-sensitive-info@5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-sensitive-info/-/react-native-sensitive-info-5.2.0.tgz#57d1c8b7bee7a6b73bacce6f90d40c072cc76103"
+
 react-native-sf-authentication-session@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/react-native-sf-authentication-session/-/react-native-sf-authentication-session-0.1.1.tgz#a5e215d6ec397aa434038b1e6d8d34c5b692ae70"

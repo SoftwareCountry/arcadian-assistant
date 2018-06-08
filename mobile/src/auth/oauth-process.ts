@@ -68,20 +68,26 @@ export class OAuthProcess {
     }
 
     public async login() {
-        const value = await this.refreshTokenStorage.getRefreshToken();
-        if (!value) {
-            console.debug('Refresh token is not found in storage, opening login page...');
-            //no refresh token is stored
-            try {
-                const authorizationCodeResponseUrl = await this.loginRequest.openLoginPage(true);
-                this.handleAuthorizationCodeResponse(authorizationCodeResponseUrl);
-            } catch (e) {
-                console.warn('Error occurred on login page', e);
+        let value: string = undefined;
+        try {
+            value = await this.refreshTokenStorage.getRefreshToken();
+        } catch (e) {
+            console.warn('Authentication fail with error', e);
+        } finally {
+            if (!value) {
+                console.debug('Refresh token is not found in storage, opening login page...');
+                //no refresh token is stored
+                try {
+                    const authorizationCodeResponseUrl = await this.loginRequest.openLoginPage(true);
+                    this.handleAuthorizationCodeResponse(authorizationCodeResponseUrl);
+                } catch (e) {
+                    console.warn('Error occurred on login page', e);
+                }
+            } else {
+                console.debug('Using refresh token from the application storage');
+                //request refresh            
+                this.refreshTokenSource.next({ immediateRefresh: true, tokenValue: value });
             }
-        } else {
-            console.debug('Using refresh token from the application storage');
-            //request refresh            
-            this.refreshTokenSource.next( { immediateRefresh: true, tokenValue: value });
         }
     }
     public async logout() {
