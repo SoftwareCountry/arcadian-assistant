@@ -162,9 +162,16 @@
                 return this.NotFound();
             }
 
-            var approveStatus = new CalendarEventStatuses().ApproveForType(model.Type);
+            var approvedStatus = new CalendarEventStatuses().ApprovedForType(model.Type);
 
-            if (model.Status == approveStatus && !(await this.authorizationService.AuthorizeAsync(this.User, employee, new ApproveCalendarEvents())).Succeeded)
+            if (model.Status == approvedStatus && !(await this.authorizationService.AuthorizeAsync(this.User, employee, new ApproveCalendarEvents())).Succeeded)
+            {
+                return this.Forbid();
+            }
+
+            var rejectedStatus = new CalendarEventStatuses().RejectedForType(model.Type);
+
+            if (model.Status == rejectedStatus && !(await this.authorizationService.AuthorizeAsync(this.User, employee, new RejectCalendarEvents())).Succeeded)
             {
                 return this.Forbid();
             }

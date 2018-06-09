@@ -13,5 +13,6 @@
         ReadEmployeeCalendarEvents = 1 << 4,
         CreateCalendarEvents = 1 << 5,
         ApproveEmployeeCalendarEvents = 1 << 6,
+        RejectEmployeeCalendarEvents = 1 << 7,
     }
 }

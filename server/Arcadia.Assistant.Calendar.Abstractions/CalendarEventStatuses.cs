@@ -28,6 +28,14 @@
             { CalendarEventTypes.Vacation, SickLeaveStatuses.Approved }
         };
 
+        private static readonly IReadOnlyDictionary<string, string> RejectedStatusByType = new Dictionary<string, string>()
+        {
+            { CalendarEventTypes.Dayoff, WorkHoursChangeStatuses.Rejected },
+            { CalendarEventTypes.Workout, WorkHoursChangeStatuses.Rejected },
+            { CalendarEventTypes.Sickleave, SickLeaveStatuses.Rejected },
+            { CalendarEventTypes.Vacation, SickLeaveStatuses.Rejected }
+        };
+
         public string[] AllForType(string type)
         {
             if (StatusesByType.TryGetValue(type, out var statuses))
@@ -46,9 +54,19 @@
             return new string[0];
         }
 
-        public string ApproveForType(string type)
+        public string ApprovedForType(string type)
         {
             if (ApprovedStatusByType.TryGetValue(type, out var status))
+            {
+                return status;
+            }
+
+            return null;
+        }
+
+        public string RejectedForType(string type)
+        {
+            if (RejectedStatusByType.TryGetValue(type, out var status))
             {
                 return status;
             }
