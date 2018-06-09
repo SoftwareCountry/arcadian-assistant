@@ -58,8 +58,10 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         const nextEmployees = nextProps.employees.employeesById;
         const requests = this.props.requests;
         const nextRequests = nextProps.requests;
+        const events = this.props.events;
+        const nextEvents = nextProps.events;
 
-        if (!requests.equals(nextRequests)) {
+        if (!requests.equals(nextRequests) || !events.equals(nextEvents)) {
             return true;
         }
 
@@ -79,10 +81,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
     }
     
     public componentDidMount() {
-        if (this.props.showPendingRequests) {
-            this.props.loadPendingRequests();
-        } 
-        
+        this.props.loadPendingRequests();
         this.props.loadCalendarEvents(this.props.employee.employeeId);
     }
     public render() {
@@ -101,7 +100,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             events = events.filter(this.props.eventsPredicate);
         }
 
-        const requests = this.props.requests;
+        const requests =  this.props.showPendingRequests ? this.props.requests : undefined;
 
         return (
                 <View style={layoutStyles.container}>
@@ -146,6 +145,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                                     events={requests.get(key)} 
                                     employee={this.props.employees.employeesById.get(key)}
                                     eventSetNewStatusAction={this.props.eventSetNewStatusAction}
+                                    showUserAvatar
                                     pendingRequestMode
                                     eventManagementEnabled
                                 />
@@ -155,7 +155,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                         {
                             (events !== undefined && events.length > 0) ? 
                             <View>
-                                <StyledText style={{ alignSelf: 'center'}}>MY EVENTS</StyledText>
+                                <StyledText style={{ alignSelf: 'center'}}>EVENTS</StyledText>
                                 <EmployeeDetailsEventsList 
                                     events={events} 
                                     employee={employee}

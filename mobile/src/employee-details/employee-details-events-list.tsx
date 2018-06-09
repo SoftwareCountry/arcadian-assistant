@@ -13,6 +13,7 @@ interface EmployeeDetailsEventsListProps {
     events: CalendarEvent[];
     employee: Employee;
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
+    showUserAvatar?: Boolean;
     pendingRequestMode?: Boolean;
     eventManagementEnabled: Boolean;
 }
@@ -32,6 +33,9 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
         const { item } = itemInfo;
         const { eventsContainer, eventRow, eventLeftIcons, eventTypeIconContainer, eventLeftIconsTiny, eventTypeIconContainerTiny, eventIcon, eventTextContainer, eventTitle, eventDetails, avatarContainer, avatarOuterFrame, avatarImage } = layoutStylesForEmployeeDetailsScreen;
         
+        const leftIconsStyle = this.props.showUserAvatar ? eventLeftIcons : eventLeftIconsTiny;
+        const typeIconContainerStyle = this.props.showUserAvatar ? eventTypeIconContainer : eventTypeIconContainerTiny;
+
         const eventsContainerFlattened = StyleSheet.flatten([
             eventsContainer, {width: Dimensions.get('window').width}
         ]);
@@ -41,13 +45,16 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
         return (
                 <View style={eventsContainerFlattened} key={item.calendarEventId}>
                     <View style={eventRow}>
-                    <View style={eventLeftIcons}>
-                        <View style={eventTypeIconContainer}>
+                    <View style={leftIconsStyle}>
+                        <View style={typeIconContainerStyle}>
                             <ApplicationIcon name={eventTypeToGlyphIcon.get(item.type)} style={eventIcon} />
                         </View>
-                        <View style={avatarContainer}>
-                            <Avatar photo={this.props.employee.photo} style={avatarOuterFrame} imageStyle={avatarImage} />
-                        </View>
+                        {
+                            this.props.showUserAvatar ? 
+                            <View style={avatarContainer}>
+                                <Avatar photo={this.props.employee.photo} style={avatarOuterFrame} imageStyle={avatarImage} />
+                            </View> : null
+                        }
                     </View>
                         <View style={eventTextContainer}>
                             <StyledText style={eventTitle}>{this.props.employee.name}</StyledText>
