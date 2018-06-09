@@ -1,7 +1,8 @@
 import { dataMember, required, deserialize } from 'santee-dcts';
 import moment, { Moment } from 'moment';
 import { Map } from 'immutable';
-import { eventDigitsDateFormat } from '../../calendar/event-dialog/event-dialog-base';
+import { IntervalTypeConverter } from './interval-type-converter';
+import { IntervalType } from './calendar.model';
 
 export enum CalendarEventType {
     Vacation = 'Vacation',
@@ -101,12 +102,18 @@ export class CalendarEvent {
     public get whichHalf(): string {
         let halfDescription: string;
 
-        if (this.dates.startWorkingHour === 0 && this.dates.finishWorkingHour === 4) {
-            halfDescription = ' (first half)';
-        } else if (this.dates.startWorkingHour === 4 && this.dates.finishWorkingHour === 8) {
-            halfDescription = ' (second half)';
-        } else {
-            halfDescription = ' (whole day)';
+        const intervalType = IntervalTypeConverter.hoursToIntervalType(this.dates.startWorkingHour, this.dates.finishWorkingHour);
+
+        switch (intervalType) {
+            case IntervalType.IntervalLeftBoundary:
+                halfDescription = ' (first half)';
+                break;
+            case IntervalType.IntervalRightBoundary:
+                halfDescription = ' (second half)';
+                break;
+            case IntervalType.IntervalFullBoundary:
+                halfDescription = ' (whole day)';
+                break;
         }
 
         return halfDescription;
@@ -114,6 +121,7 @@ export class CalendarEvent {
 
     public get descriptionFromTo(): string {
         let description: string;
+        const eventDigitsDateFormat = 'DD/MM/YYYY';
 
         if (this.isWorkout || this.isDayoff) {
             description = 'on ' + this.dates.startDate.format(eventDigitsDateFormat) + this.whichHalf;

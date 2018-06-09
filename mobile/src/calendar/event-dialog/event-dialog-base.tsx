@@ -21,7 +21,6 @@ interface EventDialogBaseProps extends EventDialogBaseDefaultProps {
 }
 
 export const eventDialogTextDateFormat = 'MMMM D, YYYY';
-export const eventDigitsDateFormat = 'DD/MM/YYYY';
 
 export class EventDialogBase extends Component<EventDialogBaseProps> {
     public static defaultProps: EventDialogBaseDefaultProps = {
