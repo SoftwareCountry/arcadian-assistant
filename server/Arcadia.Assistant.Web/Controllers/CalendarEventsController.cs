@@ -162,7 +162,9 @@
                 return this.NotFound();
             }
 
-            if (!(await this.authorizationService.AuthorizeAsync(this.User, employee, new ApproveCalendarEvents())).Succeeded)
+            var approveStatus = new CalendarEventStatuses().ApproveForType(model.Type);
+
+            if (model.Status == approveStatus && !(await this.authorizationService.AuthorizeAsync(this.User, employee, new ApproveCalendarEvents())).Succeeded)
             {
                 return this.Forbid();
             }
