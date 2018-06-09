@@ -26,6 +26,7 @@ interface EmployeeDetailsProps {
     events?: Map<string, CalendarEvent[]>;
     eventsPredicate?: (event: CalendarEvent) => boolean;
     requests?: Map<string, CalendarEvent[]>;
+    titleDatesHelper?: (startWorkingHour: number, finishWorkingHour: number) => string;
     showPendingRequests?: Boolean;
 }
 
@@ -34,7 +35,8 @@ const mapStateToProps = (state: AppState, props: EmployeeDetailsProps): Employee
     employees: state.organization.employees,
     events: state.calendar.calendarEvents.events,
     eventsPredicate: state.calendar.calendarEvents.eventsPredicate,
-    requests: state.calendar.calendarEvents.requests
+    requests: state.calendar.calendarEvents.requests,
+    titleDatesHelper: state.calendar.calendarEvents.titleDatesHelper
 });
 
 const TileSeparator = () => <View style = {tileStyles.separator}></View>;
@@ -66,11 +68,11 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         }
 
         if (!employees.equals(nextEmployees)) {
-            let employeesSubset = nextEmployees.filter(employee => {
+            let newEmployeesSubset = nextEmployees.filter(employee => {
                 return !employees.has(employee.employeeId);
             });
 
-            if (requests.keySeq().some(key => employeesSubset.has(key))) {
+            if (requests.keySeq().some(key => newEmployeesSubset.has(key))) {
                 return true;
             } else {
                 return false;
@@ -145,6 +147,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                                     events={events} 
                                     employee={employee}
                                     eventSetNewStatusAction={this.props.eventSetNewStatusAction}
+                                    titleDatesHelper={this.props.titleDatesHelper}
                                     eventManagementEnabled={(this.props.requests.has(employee.employeeId))} 
                                 />
                             </View> : null
@@ -263,6 +266,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                         events={requests.get(key)} 
                         employee={this.props.employees.employeesById.get(key)}
                         eventSetNewStatusAction={this.props.eventSetNewStatusAction}
+                        titleDatesHelper={this.props.titleDatesHelper}
                         showUserAvatar
                         pendingRequestMode
                         eventManagementEnabled />

@@ -1,8 +1,6 @@
 import { dataMember, required, deserialize } from 'santee-dcts';
 import moment, { Moment } from 'moment';
 import { Map } from 'immutable';
-import { IntervalTypeConverter } from './interval-type-converter';
-import { IntervalType } from './calendar.model';
 
 export enum CalendarEventType {
     Vacation = 'Vacation',
@@ -97,51 +95,5 @@ export class CalendarEvent {
 
     public get isDayoff(): boolean {
         return this.type === CalendarEventType.Dayoff;
-    }
-
-    public get whichHalf(): string {
-        let halfDescription: string;
-
-        const intervalType = IntervalTypeConverter.hoursToIntervalType(this.dates.startWorkingHour, this.dates.finishWorkingHour);
-
-        switch (intervalType) {
-            case IntervalType.IntervalLeftBoundary:
-                halfDescription = ' (first half)';
-                break;
-            case IntervalType.IntervalRightBoundary:
-                halfDescription = ' (second half)';
-                break;
-            case IntervalType.IntervalFullBoundary:
-                halfDescription = ' (whole day)';
-                break;
-        }
-
-        return halfDescription;
-    }
-
-    public get descriptionFromTo(): string {
-        let description: string;
-        const eventDigitsDateFormat = 'DD/MM/YYYY';
-
-        if (this.isWorkout || this.isDayoff) {
-            description = 'on ' + this.dates.startDate.format(eventDigitsDateFormat) + this.whichHalf;
-        } else {
-            description = 'from ' + this.dates.startDate.format(eventDigitsDateFormat) + ' to ' + this.dates.endDate.format(eventDigitsDateFormat);
-        }
-
-        return description;
-    }
-
-    public get descriptionStatus(): string {
-        let description: string;
-
-        if (this.isRequested) {
-            description = 'requests ' + this.type.toLowerCase();
-        } else if (this.isApproved) {
-            let prefix = this.dates.endDate.isAfter(moment(), 'date') ? 'has coming ' : 'on ';
-            description = prefix + this.type.toLowerCase();
-        }
-
-        return description;
     }
 }

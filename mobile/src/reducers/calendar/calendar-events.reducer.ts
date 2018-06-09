@@ -13,6 +13,7 @@ import { UserInfoState } from '../user/user-info.reducer';
 import { nextCalendarPageReducer } from './next-calendar-page.reducer';
 import { prevCalendarPageReducer } from './prev-calendar-page.reducer';
 import { createCalendarPagesInitState } from './calendar-pages-init-state';
+import { IntervalTypeConverter } from './interval-type-converter';
 
 
 export interface IntervalsSubState {
@@ -35,6 +36,7 @@ export interface EventsMapSubState {
 
 export interface PendingRequestsSubState {
     requests: Map<string, CalendarEvent[]>;
+    titleDatesHelper: (startWorkingHour: number, finishWorkingHour: number) => string;
 }
 
 export interface CalendarPagesSubState {
@@ -91,6 +93,7 @@ const createInitState = (): CalendarEventsState => {
             return event.dates.endDate.isSameOrAfter(now, 'date');
         },
         requests: Map<string, CalendarEvent[]>(),
+        titleDatesHelper: IntervalTypeConverter.hoursToIntervalTitle,
         disableCalendarDaysBefore: null,
         disableCalendarActionsButtonGroup: true,
         selection: defaultSelection,

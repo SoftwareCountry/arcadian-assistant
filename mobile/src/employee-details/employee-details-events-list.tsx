@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
+import moment, { Moment } from 'moment';
 import { View, StyleSheet, FlatList, ListRenderItemInfo, Dimensions } from 'react-native';
 
 import { StyledText } from '../override/styled-text';
 import { ApplicationIcon } from '../override/application-icon';
 import { Avatar } from '../people/avatar';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
-import { CalendarEvent, CalendarEventType, eventTypeToGlyphIcon, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
+import { CalendarEvent, CalendarEventType, eventTypeToGlyphIcon, CalendarEventStatus, DatesInterval } from '../reducers/calendar/calendar-event.model';
 import { EventManagementToolset } from './event-management-toolset';
 import { Employee } from '../reducers/organization/employee.model';
 
@@ -13,6 +14,7 @@ interface EmployeeDetailsEventsListProps {
     events: CalendarEvent[];
     employee: Employee;
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
+    titleDatesHelper: (startWorkingHour: number, finishWorkingHour: number) => string;
     showUserAvatar?: Boolean;
     pendingRequestMode?: Boolean;
     eventManagementEnabled: Boolean;
@@ -40,7 +42,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
             eventsContainer, {width: Dimensions.get('window').width}
         ]);
 
-        const secondRowEventDetails = this.props.pendingRequestMode ? 'requests ' + item.type.toLowerCase() : item.descriptionStatus;
+        const secondRowEventDetails = this.props.pendingRequestMode ? 'requests ' + item.type.toLowerCase() : this.descriptionStatus(item);
 
         return (
                 <View style={eventsContainerFlattened} key={item.calendarEventId}>
@@ -59,7 +61,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
                         <View style={eventTextContainer}>
                             <StyledText style={eventTitle}>{this.props.employee.name}</StyledText>
                             <StyledText style={eventDetails}>{secondRowEventDetails}</StyledText>
-                            <StyledText style={eventDetails}>{item.descriptionFromTo}</StyledText>
+                            <StyledText style={eventDetails}>{this.descriptionFromTo(item)}</StyledText>
                         </View>
                         {
                             (this.props.pendingRequestMode || this.props.eventManagementEnabled) ? <EventManagementToolset 
@@ -70,5 +72,31 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
                     </View>
                 </View>
         );
+    }
+
+    private descriptionFromTo(event: CalendarEvent): string {
+        let description: string;
+        const eventDigitsDateFormat = 'DD/MM/YYYY';
+
+        if (event.isWorkout || event.isDayoff ) {
+            description = 'on ' + event.dates.startDate.format(eventDigitsDateFormat) + ' (' + this.props.titleDatesHelper(event.dates.startWorkingHour, event.dates.finishWorkingHour) + ')';
+        } else {
+            description = 'from ' + event.dates.startDate.format(eventDigitsDateFormat) + ' to ' + event.dates.endDate.format(eventDigitsDateFormat);
+        }
+
+        return description;
+    }
+
+    private descriptionStatus(event: CalendarEvent): string {
+        let description: string;
+
+        if (event.isRequested) {
+            description = 'requests ' + event.type.toLowerCase();
+        } else if (event.isApproved) {
+            let prefix = event.dates.endDate.isAfter(moment(), 'date') ? 'has coming ' : 'on ';
+            description = prefix + event.type.toLowerCase();
+        }
+
+        return description;
     }
 }
