@@ -1,15 +1,22 @@
 import React, { Component } from 'react';
 import moment from 'moment';
+import { Map } from 'immutable';
 import { View, StyleSheet, FlatList, ListRenderItemInfo, Dimensions } from 'react-native';
 
 import { StyledText } from '../override/styled-text';
 import { ApplicationIcon } from '../override/application-icon';
 import { Avatar } from '../people/avatar';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
-import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
+import { CalendarEvent, CalendarEventStatus, CalendarEventType } from '../reducers/calendar/calendar-event.model';
 import { EventManagementToolset } from './event-management-toolset';
 import { Employee } from '../reducers/organization/employee.model';
-import { eventTypeToGlyphIcon } from './font-glyph-to-eventtype-helper';
+
+export const eventTypeToGlyphIcon: Map<string, string> = Map([
+    [CalendarEventType.Dayoff, 'dayoff'],
+    [CalendarEventType.Vacation, 'vacation'],
+    [CalendarEventType.Sickleave, 'sick_leave'],
+    [CalendarEventType.Workout, 'dayoff']
+]);
 
 interface EmployeeDetailsEventsListProps {
     events: CalendarEvent[];
