@@ -48,16 +48,9 @@ export const loadCalendarEventsEpic$ = (action$: ActionsObservable<LoadCalendarE
 export const loadPendingRequestsEpic$ = (action$: ActionsObservable<LoadPendingRequests>, state: AppState, deps: DependenciesContainer) =>
         action$.ofType('LOAD-PENDING-REQUESTS')
             .map(x => deps.apiClient.getJSON(`/pending-requests`)
-            .map(obj => deserialize(obj as any, PendingRequests))
-            .map (pendingRequests => {
-                let requests = Map<string, CalendarEvent[]>();
-                Map(pendingRequests.events).forEach((events, key) => {
-                    requests = requests.set(key, deserializeArray(events as any, CalendarEvent));
-                });
-                return requests;
-            }))
+            .map(obj => deserialize(obj as any, PendingRequests)))
             .mergeAll()
-            .map(y => loadPendingRequestsFinished(y))
+            .map(y => loadPendingRequestsFinished(y.events))
             .catch((e: Error) => Observable.of(loadFailedError(e.message)));
      
 export const intervalsBySingleDaySelectionEpic$ = (action$: ActionsObservable<SelectCalendarDay | LoadCalendarEventsFinished>) =>
