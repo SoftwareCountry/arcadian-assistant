@@ -134,28 +134,13 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                         </View>
 
                         {
-                            (requests !== undefined && requests.size > 0) ? <StyledText style={{ alignSelf: 'center'}}>REQUESTS</StyledText> : null
-                        }
-
-                        {
-                            (requests !== undefined && requests.size > 0) ? 
-                            requests.keySeq().map((key) => (
-                                <EmployeeDetailsEventsList
-                                    key={key}
-                                    events={requests.get(key)} 
-                                    employee={this.props.employees.employeesById.get(key)}
-                                    eventSetNewStatusAction={this.props.eventSetNewStatusAction}
-                                    showUserAvatar
-                                    pendingRequestMode
-                                    eventManagementEnabled
-                                />
-                            )) : null
+                            (requests !== undefined && requests.size > 0) ? this.getPendingRequests(requests) : null
                         }
 
                         {
                             (events !== undefined && events.length > 0) ? 
                             <View>
-                                <StyledText style={{ alignSelf: 'center'}}>EVENTS</StyledText>
+                                <StyledText style={layoutStyles.header}>EVENTS</StyledText>
                                 <EmployeeDetailsEventsList 
                                     events={events} 
                                     employee={employee}
@@ -266,6 +251,24 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                 </View>
             </TouchableOpacity>
         ));
+    }
+
+    private getPendingRequests(requests: Map<string, CalendarEvent[]>) {
+        return <React.Fragment>
+            <StyledText style={layoutStyles.header}>REQUESTS</StyledText>
+            {
+                requests.keySeq().map((key) => (
+                    <EmployeeDetailsEventsList
+                        key={key}
+                        events={requests.get(key)} 
+                        employee={this.props.employees.employeesById.get(key)}
+                        eventSetNewStatusAction={this.props.eventSetNewStatusAction}
+                        showUserAvatar
+                        pendingRequestMode
+                        eventManagementEnabled />
+                ))
+            }
+        </React.Fragment>;
     }
 
     private openLink(url: string) {

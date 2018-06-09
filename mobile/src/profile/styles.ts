@@ -68,6 +68,9 @@ export const layoutStyles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
     },
+    header: {
+        alignSelf: 'center'
+    },
     avatarContainer: {
         borderRadius: circleDiameter / 2,
         height: circleDiameter,
