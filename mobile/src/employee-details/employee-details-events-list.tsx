@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
-import moment, { Moment } from 'moment';
+import moment from 'moment';
 import { View, StyleSheet, FlatList, ListRenderItemInfo, Dimensions } from 'react-native';
 
 import { StyledText } from '../override/styled-text';
 import { ApplicationIcon } from '../override/application-icon';
 import { Avatar } from '../people/avatar';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
-import { CalendarEvent, CalendarEventType, eventTypeToGlyphIcon, CalendarEventStatus, DatesInterval } from '../reducers/calendar/calendar-event.model';
+import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { EventManagementToolset } from './event-management-toolset';
 import { Employee } from '../reducers/organization/employee.model';
+import { eventTypeToGlyphIcon } from './font-glyph-to-eventtype-helper';
 
 interface EmployeeDetailsEventsListProps {
     events: CalendarEvent[];
