@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import { loadFailedError } from '../errors/errors.action';
 import { IntervalType } from './calendar.model';
 import { IntervalTypeConverter } from './interval-type-converter';
+import { getEventsAndPendingRequests } from './calendar.epics';
 
 export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff>, state: AppState, deps: DependenciesContainer) =>
     action$.ofType('CONFIRM-PROCESS-DAYOFF')
@@ -34,10 +35,7 @@ export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff
                 calendarEvents,
                 { 'Content-Type': 'application/json' }
             ).map(obj => deserialize(obj.response, CalendarEvent))
-            .flatMap(action => Observable.concat(
-                Observable.of(loadCalendarEvents(x.employeeId)),
-                Observable.of(loadPendingRequests())
-            ));
+            .pipe(getEventsAndPendingRequests(x.employeeId));
         })
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
@@ -52,9 +50,6 @@ export const dayoffCanceledEpic$ = (action$: ActionsObservable<CancelDayoff>, st
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
                 requestBody,
                 { 'Content-Type': 'application/json' }
-            ).flatMap(action => Observable.concat(
-                Observable.of(loadCalendarEvents(x.employeeId)),
-                Observable.of(loadPendingRequests())
-            ));
+            ).pipe(getEventsAndPendingRequests(x.employeeId));
         })
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
