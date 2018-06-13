@@ -11,7 +11,7 @@ import { sickLeaveSavedEpic$, sickLeaveCompletedEpic$, sickLeaveProlongedEpic$, 
 import { vacationSavedEpic$, vacationCanceledEpic$, vacationChangedEpic$ } from './vacation.epics';
 import { dayoffSavedEpic$, dayoffCanceledEpic$ } from './dayoff.epics';
 import { calendarEventSetNewStatus } from './calendar.action';
-import { loadPendingRequestsEpic$ } from './pending-requests/pedning-requests.epics';
+import { loadPendingRequestsEpic$ } from './pending-requests/pending-requests.epics';
 import { pendingRequestsReducer, PendingRequestsState } from './pending-requests/pending-requests.reducer';
 
 export interface CalendarState {
