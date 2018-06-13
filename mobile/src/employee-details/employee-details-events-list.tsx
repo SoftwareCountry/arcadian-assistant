@@ -7,16 +7,10 @@ import { StyledText } from '../override/styled-text';
 import { ApplicationIcon } from '../override/application-icon';
 import { Avatar } from '../people/avatar';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
-import { CalendarEvent, CalendarEventStatus, CalendarEventType } from '../reducers/calendar/calendar-event.model';
+import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { EventManagementToolset } from './event-management-toolset';
 import { Employee } from '../reducers/organization/employee.model';
-
-export const eventTypeToGlyphIcon: Map<string, string> = Map([
-    [CalendarEventType.Dayoff, 'dayoff'],
-    [CalendarEventType.Vacation, 'vacation'],
-    [CalendarEventType.Sickleave, 'sick_leave'],
-    [CalendarEventType.Workout, 'dayoff']
-]);
+import { CalendarEventIcon } from '../calendar/calendar-event-icon';
 
 interface EmployeeDetailsEventsListProps {
     events: CalendarEvent[];
@@ -59,7 +53,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
                     <View style={eventRow}>
                     <View style={leftIconsStyle}>
                         <View style={typeIconContainerStyle}>
-                            <ApplicationIcon name={eventTypeToGlyphIcon.get(item.type)} style={eventIcon} />
+                            <CalendarEventIcon type={item.type} style={eventIcon} />
                         </View>
                         {
                             this.props.showUserAvatar ? 
