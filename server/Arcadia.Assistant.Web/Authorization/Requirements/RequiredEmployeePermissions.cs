@@ -11,5 +11,10 @@
         {
             this.RequiredPermissions = requiredPermissions;
         }
+
+        public virtual bool HasPermissions(EmployeePermissionsEntry employeePermissionsEntry)
+        {
+            return employeePermissionsEntry.HasFlag(this.RequiredPermissions);
+        }
     }
 }
