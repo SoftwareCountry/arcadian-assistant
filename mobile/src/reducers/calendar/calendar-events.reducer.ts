@@ -34,11 +34,6 @@ export interface EventsMapSubState {
     eventsPredicate: (event: CalendarEvent) => boolean;
 }
 
-export interface PendingRequestsSubState {
-    requests: Map<string, CalendarEvent[]>;
-    hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => string;
-}
-
 export interface CalendarPagesSubState {
     pages: CalendarPageModel[];
 }
@@ -47,7 +42,6 @@ export interface CalendarEventsState extends
     IntervalsSubState,
     DisableCalendarDaysBeforeSubState,
     EventsMapSubState,
-    PendingRequestsSubState,
     SelectionSubState,
     CalendarPagesSubState {
         disableCalendarActionsButtonGroup: boolean;
@@ -92,8 +86,6 @@ const createInitState = (): CalendarEventsState => {
             const now = moment();
             return event.dates.endDate.isSameOrAfter(now, 'date');
         },
-        requests: Map<string, CalendarEvent[]>(),
-        hoursToIntervalTitle: IntervalTypeConverter.hoursToIntervalTitle,
         disableCalendarDaysBefore: null,
         disableCalendarActionsButtonGroup: true,
         selection: defaultSelection,
@@ -109,7 +101,7 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
     switch (action.type) {
         case 'LOAD-USER-FINISHED':
             return {...state, userEmployeeId: action.userEmployeeId};
-        case 'LOAD-CALENDAR-EVENTS-FINISHED': {
+        case 'LOAD-CALENDAR-EVENTS-FINISHED':
             let newState: CalendarEventsState;
             let {events} = state;
 
@@ -131,17 +123,7 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
             }
 
             return newState;
-        }
-        case 'LOAD-PENDING-REQUESTS-FINISHED': {
-            let newState: CalendarEventsState;
 
-            newState = {
-                ...state,
-                requests: action.requests
-            };
-
-            return newState;        
-        }
         case 'SELECT-CALENDAR-DAY':
             const singleDayState = singleDaySelectionReducer(state, action);
             const intervalState = intervalSelectionReducer(state, action);

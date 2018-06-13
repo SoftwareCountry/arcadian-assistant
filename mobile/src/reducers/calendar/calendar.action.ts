@@ -2,7 +2,7 @@ import { Map } from 'immutable';
 import { CalendarEvent, CalendarEventStatus } from './calendar-event.model';
 import { DayModel, CalendarSelection } from './calendar.model';
 import { SickLeaveActions } from './sick-leave.action';
-import { CalendarEvents, PendingRequests } from './calendar-events.model';
+import { CalendarEvents } from './calendar-events.model';
 
 export interface LoadCalendarEvents {
     type: 'LOAD-CALENDAR-EVENTS';
@@ -18,19 +18,6 @@ export interface LoadCalendarEventsFinished {
 }
 
 export const loadCalendarEventsFinished = (calendarEvents: CalendarEvents, employeeId: string): LoadCalendarEventsFinished => ({ type: 'LOAD-CALENDAR-EVENTS-FINISHED', calendarEvents, employeeId });
-
-export interface LoadPendingRequests {
-    type: 'LOAD-PENDING-REQUESTS';
-}
-
-export const loadPendingRequests = (): LoadPendingRequests => ({ type: 'LOAD-PENDING-REQUESTS' });
-
-export interface LoadPendingRequestsFinished {
-    type: 'LOAD-PENDING-REQUESTS-FINISHED';
-    requests: Map<string, CalendarEvent[]>;
-}
-
-export const loadPendingRequestsFinished = (requests: Map<string, CalendarEvent[]>): LoadPendingRequestsFinished => ({ type: 'LOAD-PENDING-REQUESTS-FINISHED', requests });
 
 export interface CalendarEventSetNewStatus {
     type: 'CALENDAR-EVENT-NEW-STATUS';
@@ -94,5 +81,5 @@ export interface DisableSelectIntervalsBySingleDaySelection {
 
 export const disableSelectIntervalsBySingleDaySelection = (disable: boolean): DisableSelectIntervalsBySingleDaySelection => ({ type: 'DISABLE-SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION', disable });
 
-export type CalendarActions = LoadCalendarEventsFinished | LoadPendingRequestsFinished | SelectCalendarDay | NextCalendarPage | PrevCalendarPage |
+export type CalendarActions = LoadCalendarEventsFinished | SelectCalendarDay | NextCalendarPage | PrevCalendarPage |
     CalendarSelectionMode | SelectIntervalsBySingleDaySelection | DisableCalendarSelection | DisableSelectIntervalsBySingleDaySelection | CalendarEventSetNewStatus;

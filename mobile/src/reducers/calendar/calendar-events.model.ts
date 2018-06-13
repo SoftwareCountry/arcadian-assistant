@@ -1,24 +1,7 @@
-import { dataMember, required, deserializeArray } from 'santee-dcts';
-import { Map } from 'immutable';
 import { CalendarEvent, CalendarEventType } from './calendar-event.model';
 import { IntervalsModel, IntervalType, ReadOnlyIntervalsModel, IntervalModel } from './calendar.model';
 import moment from 'moment';
 import { IntervalTypeConverter } from './interval-type-converter';
-
-export class PendingRequests {
-    @dataMember({
-        customDeserializer: (pendingRequests: any) => {
-            let requests = Map<string, CalendarEvent[]>();
-            Object.keys(pendingRequests).forEach(key => {
-                const events = pendingRequests[key];
-                requests = requests.set(key, deserializeArray(events as any, CalendarEvent));
-            });
-            return requests;
-        }
-    })
-    @required()
-    public events: Map<string, CalendarEvent[]>;
-}
 
 export class CalendarEvents {
     constructor(private readonly calendarEvents: CalendarEvent[]) {}

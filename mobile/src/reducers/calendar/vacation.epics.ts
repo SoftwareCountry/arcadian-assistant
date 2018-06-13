@@ -3,7 +3,7 @@ import { ConfirmClaimVacation, CancelVacation, ConfirmVacationChange } from './v
 import { ActionsObservable } from 'redux-observable';
 import { CalendarEvent, CalendarEventType, CalendarEventStatus } from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
-import { loadCalendarEvents, loadPendingRequests } from './calendar.action';
+import { loadCalendarEvents } from './calendar.action';
 import { Observable } from 'rxjs/Observable';
 import { loadFailedError } from '../errors/errors.action';
 import { getEventsAndPendingRequests } from './calendar.epics';

@@ -13,10 +13,11 @@ import { StyledText } from '../override/styled-text';
 import { Employee } from '../reducers/organization/employee.model';
 import { ApplicationIcon } from '../override/application-icon';
 import { openCompanyAction } from './employee-details-dispatcher';
-import { loadCalendarEvents, calendarEventSetNewStatus, loadPendingRequests } from '../reducers/calendar/calendar.action';
+import { loadCalendarEvents, calendarEventSetNewStatus } from '../reducers/calendar/calendar.action';
 import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
+import { loadPendingRequests } from '../reducers/calendar/pending-requests/pending-requests.action';
 
 interface EmployeeDetailsProps {
     employee?: Employee;
@@ -35,8 +36,8 @@ const mapStateToProps = (state: AppState, props: EmployeeDetailsProps): Employee
     employees: state.organization.employees,
     events: state.calendar.calendarEvents.events,
     eventsPredicate: state.calendar.calendarEvents.eventsPredicate,
-    requests: state.calendar.calendarEvents.requests,
-    hoursToIntervalTitle: state.calendar.calendarEvents.hoursToIntervalTitle
+    requests: state.calendar.pendingRequests.requests,
+    hoursToIntervalTitle: state.calendar.pendingRequests.hoursToIntervalTitle
 });
 
 const TileSeparator = () => <View style = {tileStyles.separator}></View>;
