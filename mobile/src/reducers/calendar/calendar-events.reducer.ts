@@ -36,7 +36,7 @@ export interface EventsMapSubState {
 
 export interface PendingRequestsSubState {
     requests: Map<string, CalendarEvent[]>;
-    titleDatesHelper: (startWorkingHour: number, finishWorkingHour: number) => string;
+    hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => string;
 }
 
 export interface CalendarPagesSubState {
@@ -93,7 +93,7 @@ const createInitState = (): CalendarEventsState => {
             return event.dates.endDate.isSameOrAfter(now, 'date');
         },
         requests: Map<string, CalendarEvent[]>(),
-        titleDatesHelper: IntervalTypeConverter.hoursToIntervalTitle,
+        hoursToIntervalTitle: IntervalTypeConverter.hoursToIntervalTitle,
         disableCalendarDaysBefore: null,
         disableCalendarActionsButtonGroup: true,
         selection: defaultSelection,

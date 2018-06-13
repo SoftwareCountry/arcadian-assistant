@@ -26,7 +26,7 @@ interface EmployeeDetailsProps {
     events?: Map<string, CalendarEvent[]>;
     eventsPredicate?: (event: CalendarEvent) => boolean;
     requests?: Map<string, CalendarEvent[]>;
-    titleDatesHelper?: (startWorkingHour: number, finishWorkingHour: number) => string;
+    hoursToIntervalTitle?: (startWorkingHour: number, finishWorkingHour: number) => string;
     showPendingRequests?: Boolean;
 }
 
@@ -36,7 +36,7 @@ const mapStateToProps = (state: AppState, props: EmployeeDetailsProps): Employee
     events: state.calendar.calendarEvents.events,
     eventsPredicate: state.calendar.calendarEvents.eventsPredicate,
     requests: state.calendar.calendarEvents.requests,
-    titleDatesHelper: state.calendar.calendarEvents.titleDatesHelper
+    hoursToIntervalTitle: state.calendar.calendarEvents.hoursToIntervalTitle
 });
 
 const TileSeparator = () => <View style = {tileStyles.separator}></View>;
@@ -147,7 +147,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                                     events={events} 
                                     employee={employee}
                                     eventSetNewStatusAction={this.props.eventSetNewStatusAction}
-                                    titleDatesHelper={this.props.titleDatesHelper}
+                                    hoursToIntervalTitle={this.props.hoursToIntervalTitle}
                                     eventManagementEnabled={(this.props.requests.has(employee.employeeId))} 
                                 />
                             </View> : null
@@ -266,7 +266,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                         events={requests.get(key)} 
                         employee={this.props.employees.employeesById.get(key)}
                         eventSetNewStatusAction={this.props.eventSetNewStatusAction}
-                        titleDatesHelper={this.props.titleDatesHelper}
+                        hoursToIntervalTitle={this.props.hoursToIntervalTitle}
                         showUserAvatar
                         pendingRequestMode
                         eventManagementEnabled />

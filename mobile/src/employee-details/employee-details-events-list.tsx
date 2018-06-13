@@ -22,13 +22,15 @@ interface EmployeeDetailsEventsListProps {
     events: CalendarEvent[];
     employee: Employee;
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
-    titleDatesHelper: (startWorkingHour: number, finishWorkingHour: number) => string;
+    hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => string;
     showUserAvatar?: Boolean;
     pendingRequestMode?: Boolean;
     eventManagementEnabled: Boolean;
 }
 
 export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsListProps> {
+    private readonly eventDigitsDateFormat = 'DD/MM/YYYY';
+
     public render() {
         return (<FlatList
                     data={this.props.events}
@@ -84,12 +86,11 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
 
     private descriptionFromTo(event: CalendarEvent): string {
         let description: string;
-        const eventDigitsDateFormat = 'DD/MM/YYYY';
 
         if (event.isWorkout || event.isDayoff ) {
-            description = 'on ' + event.dates.startDate.format(eventDigitsDateFormat) + ' (' + this.props.titleDatesHelper(event.dates.startWorkingHour, event.dates.finishWorkingHour) + ')';
+            description = `on ${event.dates.startDate.format(this.eventDigitsDateFormat)} (${this.props.hoursToIntervalTitle(event.dates.startWorkingHour, event.dates.finishWorkingHour)})`;
         } else {
-            description = 'from ' + event.dates.startDate.format(eventDigitsDateFormat) + ' to ' + event.dates.endDate.format(eventDigitsDateFormat);
+            description = `from ${event.dates.startDate.format(this.eventDigitsDateFormat)} to ${event.dates.endDate.format(this.eventDigitsDateFormat)}`;
         }
 
         return description;
