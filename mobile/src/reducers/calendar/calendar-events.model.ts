@@ -7,11 +7,12 @@ import { IntervalTypeConverter } from './interval-type-converter';
 
 export class PendingRequests {
     @dataMember({
-        customDeserializer: (pendingRequests: Map<string, CalendarEvent[]>) => {
+        customDeserializer: (pendingRequests: any) => {
             let requests = Map<string, CalendarEvent[]>();
-            Map(pendingRequests).forEach((events, key) => {
-                    requests = requests.set(key, deserializeArray(events as any, CalendarEvent));
-                });
+            Object.keys(pendingRequests).forEach(key => {
+                const events = pendingRequests[key];
+                requests = requests.set(key, deserializeArray(events as any, CalendarEvent));
+            });
             return requests;
         }
     })
