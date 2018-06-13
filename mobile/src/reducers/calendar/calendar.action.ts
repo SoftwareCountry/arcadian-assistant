@@ -1,4 +1,3 @@
-import { Map } from 'immutable';
 import { CalendarEvent, CalendarEventStatus } from './calendar-event.model';
 import { DayModel, CalendarSelection } from './calendar.model';
 import { SickLeaveActions } from './sick-leave.action';

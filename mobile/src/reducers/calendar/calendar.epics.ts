@@ -1,8 +1,7 @@
 import { LoadUserEmployeeFinished } from '../user/user.action';
 import { ActionsObservable, ofType } from 'redux-observable';
 import { Observable } from 'rxjs/Observable';
-import { Map } from 'immutable';
-import { deserializeArray, deserialize } from 'santee-dcts';
+import { deserializeArray } from 'santee-dcts';
 import {
     loadCalendarEventsFinished, SelectIntervalsBySingleDaySelection, selectIntervalsBySingleDaySelection, SelectCalendarDay, LoadCalendarEventsFinished, LoadCalendarEvents, loadCalendarEvents,
     CalendarSelectionMode, disableCalendarSelection, DisableCalendarSelection, CalendarSelectionModeType, CalendarEventSetNewStatus
@@ -15,7 +14,6 @@ import { DependenciesContainer } from '../app.reducer';
 import { CalendarEvents } from './calendar-events.model';
 import { handleHttpErrors } from '../errors/errors.epics';
 import { map, mergeMap } from 'rxjs/operators';
-import { UnaryFunction } from 'rxjs/interfaces';
 import { pipe } from 'rxjs';
 import { loadPendingRequests } from './pending-requests/pending-requests.action';
 

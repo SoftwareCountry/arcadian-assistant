@@ -13,7 +13,6 @@ import { UserInfoState } from '../user/user-info.reducer';
 import { nextCalendarPageReducer } from './next-calendar-page.reducer';
 import { prevCalendarPageReducer } from './prev-calendar-page.reducer';
 import { createCalendarPagesInitState } from './calendar-pages-init-state';
-import { IntervalTypeConverter } from './interval-type-converter';
 
 
 export interface IntervalsSubState {
@@ -123,7 +122,6 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
             }
 
             return newState;
-
         case 'SELECT-CALENDAR-DAY':
             const singleDayState = singleDaySelectionReducer(state, action);
             const intervalState = intervalSelectionReducer(state, action);
