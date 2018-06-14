@@ -3,7 +3,7 @@ import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base'
 import { AppState } from '../../reducers/app.reducer';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { EventDialogActions, closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
+import { EventDialogActions, closeEventDialog, openEventDialog, startProgress } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { DayModel, IntervalType } from '../../reducers/calendar/calendar.model';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
 import { Moment } from 'moment';
@@ -100,7 +100,10 @@ const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ConfirmDayo
         date: Moment,
         isWorkout: boolean,
         intervalType: IntervalType
-    ) => { dispatch(confirmProcessDayoff(employeeId, date, isWorkout, intervalType)); },
+    ) => { 
+        dispatch(startProgress());
+        dispatch(confirmProcessDayoff(employeeId, date, isWorkout, intervalType)); 
+    },
     closeDialog: () => { dispatch(closeEventDialog()); }
 });
 

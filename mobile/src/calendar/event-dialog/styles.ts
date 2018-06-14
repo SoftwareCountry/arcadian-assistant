@@ -71,15 +71,20 @@ export const buttons = StyleSheet.create({
     },
     cancel: StyleSheet.flatten([defaultButtonStyle.border, {
         marginRight: 5
-    }]) as any,
+    }]),
     accept: StyleSheet.flatten([defaultButtonStyle.border, {
         backgroundColor: '#56CCF2',
         marginLeft: 5
-    }]) as any,
-    cancelLabel: StyleSheet.flatten([defaultButtonStyle.label]) as any,
+    }]),
+    cancelLabel: StyleSheet.flatten([defaultButtonStyle.label]),
     acceptLabel: StyleSheet.flatten([defaultButtonStyle.label, {
         color: '#18515E'
-    }]) as any
+    }]),
+    progressIndicator: {
+        position: 'absolute',
+        right: '-12%',
+        top: '32%'
+    }
 });
 
 export const switchDayoffTypeStyles = StyleSheet.create({

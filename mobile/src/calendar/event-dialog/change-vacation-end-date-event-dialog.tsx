@@ -3,7 +3,7 @@ import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base'
 import { AppState } from '../../reducers/app.reducer';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { EventDialogActions, closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
+import { EventDialogActions, closeEventDialog, openEventDialog, startProgress } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { ExtractedIntervals, IntervalSelection } from '../../reducers/calendar/calendar.model';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
 import { CalendarEvent } from '../../reducers/calendar/calendar-event.model';
@@ -86,7 +86,10 @@ const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ChangeVacat
         calendarEvent: CalendarEvent,
         startDate: Moment,
         endDate: Moment
-    ) => { dispatch(confirmVacationChange(employeeId, calendarEvent, startDate, endDate)); },
+    ) => { 
+        dispatch(startProgress());
+        dispatch(confirmVacationChange(employeeId, calendarEvent, startDate, endDate)); 
+    },
     closeDialog: () => { dispatch(closeEventDialog()); }
 });
 

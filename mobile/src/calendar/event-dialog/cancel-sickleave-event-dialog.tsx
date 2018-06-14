@@ -4,7 +4,7 @@ import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base'
 import { AppState } from '../../reducers/app.reducer';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { EventDialogActions, closeEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
+import { EventDialogActions, closeEventDialog, startProgress } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { ExtractedIntervals } from '../../reducers/calendar/calendar.model';
 import { CalendarEvent } from '../../reducers/calendar/calendar-event.model';
 import { cancelSickLeave } from '../../reducers/calendar/sick-leave.action';
@@ -62,7 +62,10 @@ const mapStateToProps = (state: AppState): CancelSickLeaveEventDialogProps => ({
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): CancelSickLeaveEventDialogDispatchProps => ({
     closeDialog: () => { dispatch(closeEventDialog()); },
-    cancelSickLeave: (employeeId: string, calendarEvent: CalendarEvent) => { dispatch(cancelSickLeave(employeeId, calendarEvent)); }
+    cancelSickLeave: (employeeId: string, calendarEvent: CalendarEvent) => { 
+        dispatch(startProgress());
+        dispatch(cancelSickLeave(employeeId, calendarEvent)); 
+    }
 });
 
 export const CancelSickLeaveEventDialog = connect(mapStateToProps, mapDispatchToProps)(CancelSickLeaveEventDialogImpl);

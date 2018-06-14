@@ -3,7 +3,7 @@ import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base'
 import { AppState } from '../../reducers/app.reducer';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { EventDialogActions, closeEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
+import { EventDialogActions, closeEventDialog, startProgress } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { ExtractedIntervals } from '../../reducers/calendar/calendar.model';
 import { cancelDayoff } from '../../reducers/calendar/dayoff.action';
 import { CalendarEvent } from '../../reducers/calendar/calendar-event.model';
@@ -62,7 +62,10 @@ const mapStateToProps = (state: AppState): EditDayoffEventDialogProps => ({
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): EditDayoffEventDialogDispatchProps => ({
     closeDialog: () => { dispatch(closeEventDialog()); },
-    cancelProcessDayoff: (employeeId: string, calendarEvent: CalendarEvent) => { dispatch(cancelDayoff(employeeId, calendarEvent)); }
+    cancelProcessDayoff: (employeeId: string, calendarEvent: CalendarEvent) => { 
+        dispatch(startProgress());
+        dispatch(cancelDayoff(employeeId, calendarEvent)); 
+    }
 });
 
 export const EditDayoffEventDialog = connect(mapStateToProps, mapDispatchToProps)(EditDayoffEventDialogImpl);
