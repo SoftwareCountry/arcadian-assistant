@@ -11,17 +11,21 @@ import { sickLeaveSavedEpic$, sickLeaveCompletedEpic$, sickLeaveProlongedEpic$, 
 import { vacationSavedEpic$, vacationCanceledEpic$, vacationChangedEpic$ } from './vacation.epics';
 import { dayoffSavedEpic$, dayoffCanceledEpic$ } from './dayoff.epics';
 import { calendarEventSetNewStatus } from './calendar.action';
+import { loadPendingRequestsEpic$ } from './pending-requests/pending-requests.epics';
+import { pendingRequestsReducer, PendingRequestsState } from './pending-requests/pending-requests.reducer';
 
 export interface CalendarState {
     daysCounters: DaysCountersState;
     calendarEvents: CalendarEventsState;
     eventDialog: EventDialogState;
+    pendingRequests: PendingRequestsState;
 }
 
 export const calendarEpics = combineEpics(
     loadUserEmployeeFinishedEpic$ as any,
     loadCalendarEventsEpic$ as any,
     loadCalendarEventsFinishedEpic$ as any,
+    loadPendingRequestsEpic$ as any,
     calendarEventSetNewStatusEpic$ as any,
     sickLeaveSavedEpic$ as any,
     sickLeaveCompletedEpic$ as any,
@@ -40,5 +44,6 @@ export const calendarEpics = combineEpics(
 export const calendarReducer = combineReducers<CalendarState>({
     daysCounters: daysCountersReducer,
     calendarEvents: calendarEventsReducer,
-    eventDialog: eventDialogReducer
+    eventDialog: eventDialogReducer,
+    pendingRequests: pendingRequestsReducer
 });

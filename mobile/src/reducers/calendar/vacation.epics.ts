@@ -6,6 +6,7 @@ import { deserialize } from 'santee-dcts';
 import { loadCalendarEvents } from './calendar.action';
 import { Observable } from 'rxjs/Observable';
 import { loadFailedError } from '../errors/errors.action';
+import { getEventsAndPendingRequests } from './calendar.epics';
 
 export const vacationSavedEpic$ = (action$: ActionsObservable<ConfirmClaimVacation>, state: AppState, deps: DependenciesContainer) =>
     action$.ofType('CONFIRM-VACATION')
@@ -28,7 +29,7 @@ export const vacationSavedEpic$ = (action$: ActionsObservable<ConfirmClaimVacati
                 calendarEvents,
                 { 'Content-Type': 'application/json' }
             ).map(obj => deserialize(obj.response, CalendarEvent))
-            .map(() => loadCalendarEvents(x.employeeId));
+            .pipe(getEventsAndPendingRequests(x.employeeId));
         })
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
@@ -43,7 +44,7 @@ export const vacationCanceledEpic$ = (action$: ActionsObservable<CancelVacation>
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
                 requestBody,
                 { 'Content-Type': 'application/json' }
-            ).map(() => loadCalendarEvents(x.employeeId));
+            ).pipe(getEventsAndPendingRequests(x.employeeId));
         })
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
@@ -62,6 +63,6 @@ export const vacationChangedEpic$ = (action$: ActionsObservable<ConfirmVacationC
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
                 requestBody,
                 { 'Content-Type': 'application/json' }
-            ).map(() => loadCalendarEvents(x.employeeId));
+            ).pipe(getEventsAndPendingRequests(x.employeeId));
         })
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
