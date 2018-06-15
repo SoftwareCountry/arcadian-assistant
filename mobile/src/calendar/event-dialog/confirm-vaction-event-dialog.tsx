@@ -4,7 +4,7 @@ import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base'
 import { AppState } from '../../reducers/app.reducer';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { EventDialogActions, closeEventDialog, openEventDialog, startProgress } from '../../reducers/calendar/event-dialog/event-dialog.action';
+import { EventDialogActions, closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { DayModel } from '../../reducers/calendar/calendar.model';
 import { Employee } from '../../reducers/organization/employee.model';
 import { confirmVacation } from '../../reducers/calendar/vacation.action';
@@ -62,10 +62,7 @@ const mapStateToProps = (state: AppState): ClaimVacationEventDialogProps => ({
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ClaimVacationEventDialogDispatchProps => ({
     back: () => { dispatch(openEventDialog(EventDialogType.RequestVacation)); },
-    confirmVacation: (employeeId: string, startDate: Moment, endDate: Moment) => { 
-        dispatch(startProgress());
-        dispatch(confirmVacation(employeeId, startDate, endDate)); 
-    },
+    confirmVacation: (employeeId: string, startDate: Moment, endDate: Moment) => { dispatch(confirmVacation(employeeId, startDate, endDate)); },
     closeDialog: () => { dispatch(closeEventDialog()); }
 });
 
