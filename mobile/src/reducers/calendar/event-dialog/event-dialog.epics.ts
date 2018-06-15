@@ -1,4 +1,4 @@
-import { EventDialogActions, OpenEventDialog, closeEventDialog, stopProgress, startProgress } from './event-dialog.action';
+import { EventDialogActions, OpenEventDialog, closeEventDialog, stopEventDialogProgress, startProgress } from './event-dialog.action';
 import { ActionsObservable } from 'redux-observable';
 import { calendarSelectionMode, CalendarSelectionModeType, selectIntervalsBySingleDaySelection, disableCalendarSelection, CalendarActions, disableSelectIntervalsBySingleDaySelection } from '../calendar.action';
 import { CalendarEventsColor } from '../../../calendar/styles';
@@ -66,7 +66,7 @@ export const closeEventDialogEpic$ = (action$: ActionsObservable<EventDialogActi
             calendarSelectionMode(CalendarSelectionModeType.SingleDay),
             disableSelectIntervalsBySingleDaySelection(false),
             selectIntervalsBySingleDaySelection(),
-            stopProgress()
+            stopEventDialogProgress()
         ));
 
 export const startEventDialogProgressEpic$ = (action$: ActionsObservable<VacationActions | SickLeaveActions | DayoffActions>) =>

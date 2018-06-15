@@ -1,6 +1,6 @@
 import 'rxjs';
 import { CalendarSelectionModeType, calendarSelectionMode, disableSelectIntervalsBySingleDaySelection, selectIntervalsBySingleDaySelection } from '../calendar.action';
-import { closeEventDialog, EventDialogActions, stopProgress } from '../event-dialog/event-dialog.action';
+import { closeEventDialog, EventDialogActions, stopEventDialogProgress } from '../event-dialog/event-dialog.action';
 import { ActionsObservable } from 'redux-observable';
 import { closeEventDialogEpic$ } from '../event-dialog/event-dialog.epics';
 
@@ -40,11 +40,11 @@ describe('closeEventDialogEpic', () => {
             });
     });
 
-    it('should stop progress', (done) => {
+    it('should stop event dialog progress', (done) => {
         closeEventDialogEpic$(action$)
-            .filter(x => x.type === 'STOP-PROGRESS')
+            .filter(x => x.type === 'STOP-EVENT-DIALOG-PROGRESS')
             .subscribe(x => {
-                expect(x).toEqual(stopProgress());
+                expect(x).toEqual(stopEventDialogProgress());
                 done();
             });
     });

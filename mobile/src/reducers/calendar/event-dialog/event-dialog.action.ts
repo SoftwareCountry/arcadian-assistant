@@ -15,16 +15,16 @@ export interface CloseEventDialog {
 
 export const closeEventDialog = (): CloseEventDialog => ({ type: 'CLOSE-EVENT-DIALOG' });
 
-export interface StartProgress {
-    type: 'START-PROGRESS';
+export interface StartEventDialogProgress {
+    type: 'START-EVENT-DIALOG-PROGRESS';
 }
 
-export const startProgress = (): StartProgress => ({ type: 'START-PROGRESS' });
+export const startProgress = (): StartEventDialogProgress => ({ type: 'START-EVENT-DIALOG-PROGRESS' });
 
-export interface StopProgress {
-    type: 'STOP-PROGRESS';
+export interface StopEventDialogProgress {
+    type: 'STOP-EVENT-DIALOG-PROGRESS';
 }
 
-export const stopProgress = (): StopProgress => ({ type: 'STOP-PROGRESS' });
+export const stopEventDialogProgress = (): StopEventDialogProgress => ({ type: 'STOP-EVENT-DIALOG-PROGRESS' });
 
-export type EventDialogActions = OpenEventDialog | CloseEventDialog | ChosenTypeDayoff | StartProgress | StopProgress;
+export type EventDialogActions = OpenEventDialog | CloseEventDialog | ChosenTypeDayoff | StartEventDialogProgress | StopEventDialogProgress;

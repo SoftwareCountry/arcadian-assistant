@@ -35,12 +35,12 @@ export const eventDialogReducer = (state: EventDialogState = initState, action: 
                 chosenHoursCreditType: action.isWorkout ? HoursCreditType.Workout : HoursCreditType.DaysOff
             };
         }
-        case 'START-PROGRESS':
+        case 'START-EVENT-DIALOG-PROGRESS':
             return {
                 ...state,
                 inProgress: true
             };
-        case 'STOP-PROGRESS':
+        case 'STOP-EVENT-DIALOG-PROGRESS':
             return {
                 ...state,
                 inProgress: false
