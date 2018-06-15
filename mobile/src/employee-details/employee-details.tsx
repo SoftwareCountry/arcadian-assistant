@@ -73,16 +73,12 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                 return !employees.has(employee.employeeId);
             });
 
-            if (requests.keySeq().some(key => newEmployeesSubset.has(key))) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
+            return requests.keySeq().some(key => newEmployeesSubset.has(key));
         }
+
+        return false;
     }
-    
+
     public componentDidMount() {
         this.props.loadPendingRequests();
         this.props.loadCalendarEvents(this.props.employee.employeeId);
@@ -137,11 +133,11 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                         </View>
 
                         {
-                            (requests !== undefined && requests.size > 0) ? this.getPendingRequests(requests) : null
+                            (requests && requests.size > 0) ? this.getPendingRequests(requests) : null
                         }
 
                         {
-                            (events !== undefined && events.length > 0) ? 
+                            (events && events.length > 0) ? 
                             <View>
                                 <StyledText style={layoutStyles.header}>EVENTS</StyledText>
                                 <EmployeeDetailsEventsList 
