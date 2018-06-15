@@ -84,4 +84,8 @@ export class CalendarEvent {
     public get isWorkout(): boolean {
         return this.type === CalendarEventType.Workout;
     }
+
+    public get isDayoff(): boolean {
+        return this.type === CalendarEventType.Dayoff;
+    }
 }

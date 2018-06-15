@@ -1,38 +1,43 @@
 import React, { Component } from 'react';
 import { connect, Dispatch } from 'react-redux';
 import { Map } from 'immutable';
-import { View, LayoutChangeEvent, Text, Image, ImageStyle, StyleSheet, ScrollView, Linking, TouchableOpacity, ViewStyle, Dimensions } from 'react-native';
+import { View, StyleSheet, ScrollView, Linking, TouchableOpacity, ViewStyle } from 'react-native';
 
 import { layoutStyles, contentStyles, tileStyles, contactStyles } from '../profile/styles';
 import { Chevron } from '../profile/chevron';
 import { Avatar } from '../people/avatar';
-import { TopNavBar } from '../navigation/top-nav-bar';
 import { AppState } from '../reducers/app.reducer';
-import { UserInfoState } from '../reducers/user/user-info.reducer';
 import { Department } from '../reducers/organization/department.model';
 
 import { StyledText } from '../override/styled-text';
 import { Employee } from '../reducers/organization/employee.model';
 import { ApplicationIcon } from '../override/application-icon';
-import { layoutStylesForEmployeeDetailsScreen } from './styles';
 import { openCompanyAction } from './employee-details-dispatcher';
 import { loadCalendarEvents, calendarEventSetNewStatus } from '../reducers/calendar/calendar.action';
 import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
-import { eventDialogTextDateFormat } from '../calendar/event-dialog/event-dialog-base';
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
+import { EmployeesStore } from '../reducers/organization/employees.reducer';
+import { loadPendingRequests } from '../reducers/calendar/pending-requests/pending-requests.action';
 
 interface EmployeeDetailsProps {
     employee?: Employee;
+    employees?: EmployeesStore;
     department: Department;
     layoutStylesChevronPlaceholder?: ViewStyle;
     events?: Map<string, CalendarEvent[]>;
     eventsPredicate?: (event: CalendarEvent) => boolean;
+    requests?: Map<string, CalendarEvent[]>;
+    hoursToIntervalTitle?: (startWorkingHour: number, finishWorkingHour: number) => string;
+    showPendingRequests?: Boolean;
 }
 
 const mapStateToProps = (state: AppState, props: EmployeeDetailsProps): EmployeeDetailsProps => ({
     department: props.department,
+    employees: state.organization.employees,
     events: state.calendar.calendarEvents.events,
-    eventsPredicate: state.calendar.calendarEvents.eventsPredicate
+    eventsPredicate: state.calendar.calendarEvents.eventsPredicate,
+    requests: state.calendar.pendingRequests.requests,
+    hoursToIntervalTitle: state.calendar.pendingRequests.hoursToIntervalTitle
 });
 
 const TileSeparator = () => <View style = {tileStyles.separator}></View>;
@@ -40,16 +45,46 @@ const TileSeparator = () => <View style = {tileStyles.separator}></View>;
 interface EmployeeDetailsDispatchProps {
     onCompanyClicked: (departmentId: string) => void;
     loadCalendarEvents: (employeeId: string) => void;
+    loadPendingRequests: () => void;
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchProps => ({
     onCompanyClicked: (departmentId: string) => dispatch( openCompanyAction(departmentId)),
     loadCalendarEvents: (employeeId: string) => dispatch(loadCalendarEvents(employeeId)),
+    loadPendingRequests: () => dispatch(loadPendingRequests()),
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status))
 });
 
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
+    public shouldComponentUpdate(nextProps: EmployeeDetailsProps & EmployeeDetailsDispatchProps) {
+        const employees = this.props.employees.employeesById;
+        const nextEmployees = nextProps.employees.employeesById;
+        const requests = this.props.requests;
+        const nextRequests = nextProps.requests;
+        const events = this.props.events;
+        const nextEvents = nextProps.events;
+
+        if (!requests.equals(nextRequests) || !events.equals(nextEvents)) {
+            return true;
+        }
+
+        if (!employees.equals(nextEmployees)) {
+            let newEmployeesSubset = nextEmployees.filter(employee => {
+                return !employees.has(employee.employeeId);
+            });
+
+            if (requests.keySeq().some(key => newEmployeesSubset.has(key))) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+    
     public componentDidMount() {
+        this.props.loadPendingRequests();
         this.props.loadCalendarEvents(this.props.employee.employeeId);
     }
     public render() {
@@ -62,12 +97,13 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         const tiles = this.getTiles(employee);
         const contacts = this.getContacts(employee);
 
-
         let events = this.props.events.get(employee.employeeId);
 
         if (events !== undefined) {
             events = events.filter(this.props.eventsPredicate);
         }
+
+        const requests =  this.props.showPendingRequests ? this.props.requests : undefined;
 
         return (
                 <View style={layoutStyles.container}>
@@ -101,12 +137,21 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                         </View>
 
                         {
+                            (requests !== undefined && requests.size > 0) ? this.getPendingRequests(requests) : null
+                        }
+
+                        {
                             (events !== undefined && events.length > 0) ? 
-                            <EmployeeDetailsEventsList 
-                                events={events} 
-                                employeeId={employee.employeeId}
-                                eventSetNewStatusAction={this.props.eventSetNewStatusAction} 
-                            /> : null
+                            <View>
+                                <StyledText style={layoutStyles.header}>EVENTS</StyledText>
+                                <EmployeeDetailsEventsList 
+                                    events={events} 
+                                    employee={employee}
+                                    eventSetNewStatusAction={this.props.eventSetNewStatusAction}
+                                    hoursToIntervalTitle={this.props.hoursToIntervalTitle}
+                                    eventManagementEnabled={(this.props.requests.has(employee.employeeId))} 
+                                />
+                            </View> : null
                         }
 
                     </View>
@@ -210,6 +255,25 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                 </View>
             </TouchableOpacity>
         ));
+    }
+
+    private getPendingRequests(requests: Map<string, CalendarEvent[]>) {
+        return <React.Fragment>
+            <StyledText style={layoutStyles.header}>REQUESTS</StyledText>
+            {
+                requests.keySeq().map((key) => (
+                    <EmployeeDetailsEventsList
+                        key={key}
+                        events={requests.get(key)} 
+                        employee={this.props.employees.employeesById.get(key)}
+                        eventSetNewStatusAction={this.props.eventSetNewStatusAction}
+                        hoursToIntervalTitle={this.props.hoursToIntervalTitle}
+                        showUserAvatar
+                        pendingRequestMode
+                        eventManagementEnabled />
+                ))
+            }
+        </React.Fragment>;
     }
 
     private openLink(url: string) {

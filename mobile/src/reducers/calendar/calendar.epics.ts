@@ -13,7 +13,9 @@ import { AppState } from 'react-native';
 import { DependenciesContainer } from '../app.reducer';
 import { CalendarEvents } from './calendar-events.model';
 import { handleHttpErrors } from '../errors/errors.epics';
-import { map } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
+import { pipe } from 'rxjs';
+import { loadPendingRequests } from './pending-requests/pending-requests.action';
 
 export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, state: AppState, deps: DependenciesContainer) =>
     action$.ofType('LOAD-USER-EMPLOYEE-FINISHED')
@@ -63,6 +65,15 @@ export const calendarEventSetNewStatusEpic$ = (action$: ActionsObservable<Calend
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
                 requestBody,
                 { 'Content-Type': 'application/json' }
-            ).map(obj => loadCalendarEvents(x.employeeId));
+            ).pipe(getEventsAndPendingRequests(x.employeeId));
         })
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+
+export function getEventsAndPendingRequests(employeeId: string) {
+    return <T>(source: Observable<T>) => source.pipe(
+        mergeMap(x => Observable.from([
+            loadCalendarEvents(employeeId), 
+            loadPendingRequests()
+        ]))
+    );
+}

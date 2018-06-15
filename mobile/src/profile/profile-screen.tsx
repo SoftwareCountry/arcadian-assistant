@@ -41,7 +41,7 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
                         <Image style={profileScreenStyles.imageLogout} source={require('./logout-image.png')} />
                     </View>
                 </TouchableOpacity>
-                <EmployeeDetails department={department} employee={employee} layoutStylesChevronPlaceholder={layoutStyles.chevronPlaceholder} />
+                <EmployeeDetails department={department} employee={employee} layoutStylesChevronPlaceholder={layoutStyles.chevronPlaceholder} showPendingRequests />
             </SafeAreaView>
             : (
                 <View style={profileScreenStyles.loadingContainer}>

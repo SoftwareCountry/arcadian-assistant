@@ -4,6 +4,7 @@ interface IntervalTypeConverterRule {
     readonly startHour: number;
     readonly finishHour: number;
     readonly intervalType: IntervalType;
+    readonly title: string;
 
     includes(startWorkingHour: number, finishWorkingHour: number): boolean;
 }
@@ -12,6 +13,7 @@ class IntervalLeftBoundaryRule implements IntervalTypeConverterRule {
     public readonly startHour = 0;
     public readonly finishHour = 4;
     public readonly intervalType = IntervalType.IntervalLeftBoundary;
+    public readonly title = 'first half';
 
     public includes(startWorkingHour: number, finishWorkingHour: number): boolean {
         return this.startHour <= startWorkingHour && finishWorkingHour <= this.finishHour;
@@ -22,6 +24,7 @@ class IntervalRightBoundaryRule implements IntervalTypeConverterRule {
     public readonly startHour = 4;
     public readonly finishHour = 8;
     public readonly intervalType = IntervalType.IntervalRightBoundary;
+    public readonly title = 'second half';
 
     public includes(startWorkingHour: number, finishWorkingHour: number): boolean {
         return this.startHour <= startWorkingHour && finishWorkingHour <= this.finishHour;
@@ -32,6 +35,7 @@ class IntervalFullBoundaryRule implements IntervalTypeConverterRule {
     public readonly startHour = 0;
     public readonly finishHour = 8;
     public readonly intervalType = IntervalType.IntervalFullBoundary;
+    public readonly title = 'full day';
 
     public includes(startWorkingHour: number, finishWorkingHour: number): boolean {
         return this.startHour <= startWorkingHour
@@ -66,5 +70,15 @@ export class IntervalTypeConverter {
         }
 
         return rule;
+    }
+
+    public static hoursToIntervalTitle(startWorkingHour: number, finishWorkingHour: number): string | null {
+        const rule = IntervalTypeConverter.rules.find(x => x.includes(startWorkingHour, finishWorkingHour));
+
+        if (!rule) {
+            return null;
+        }
+
+        return rule.title;
     }
 }

@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Image, Text, TouchableOpacity } from 'react-native';
 
 import { CalendarEvent, CalendarEventType, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
+import { ApplicationIcon } from '../override/application-icon';
+import { layoutStylesForEventManagementToolset } from './styles';
 
 interface EventManagementToolsetProps {
     event: CalendarEvent;
@@ -19,15 +21,15 @@ export class EventManagementToolset extends Component<EventManagementToolsetProp
     }
 
     public render() {
+        const { toolsetContainer, approveIcon, rejectIcon } = layoutStylesForEventManagementToolset;
+
         return (this.props.event.status === CalendarEventStatus.Requested) ? 
-        <View style={{ paddingLeft: 10, flexDirection: 'column', alignItems: 'center' }}>
-            <TouchableOpacity 
-                onPress={this.onApprove}>
-                <Text style={{ fontSize: 9, color: 'green' }}>APPROVE</Text>
+        <View style={toolsetContainer}>
+            <TouchableOpacity onPress={this.onApprove}>
+                <ApplicationIcon name={'approve-tick'} style={approveIcon} />
             </TouchableOpacity>
-            <TouchableOpacity 
-                onPress={this.onReject}>
-                    <Text style={{ fontSize: 9, color: 'red' }}>REJECT</Text>
+            <TouchableOpacity onPress={this.onReject}>
+                <ApplicationIcon name={'reject-cross'} style={rejectIcon} />
             </TouchableOpacity>
         </View> : null;
     }

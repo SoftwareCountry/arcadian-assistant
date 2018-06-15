@@ -7,6 +7,7 @@ import { loadCalendarEvents } from './calendar.action';
 import { loadFailedError } from '../errors/errors.action';
 import { Observable } from 'rxjs/Observable';
 import { closeEventDialog } from './event-dialog/event-dialog.action';
+import { getEventsAndPendingRequests } from './calendar.epics';
 
 export const sickLeaveSavedEpic$ = (action$: ActionsObservable<ConfirmClaimSickLeave>, state: AppState, deps: DependenciesContainer) =>
     action$.ofType('CONFIRM-CLAIM-SICK-LEAVE')
@@ -29,7 +30,7 @@ export const sickLeaveSavedEpic$ = (action$: ActionsObservable<ConfirmClaimSickL
                 calendarEvents,
                 { 'Content-Type': 'application/json' }
             ).map(obj => deserialize(obj.response, CalendarEvent))
-            .map(() => loadCalendarEvents(x.employeeId));
+            .pipe(getEventsAndPendingRequests(x.employeeId));
         })
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
@@ -45,7 +46,7 @@ export const sickLeaveCompletedEpic$ = (action$: ActionsObservable<CompleteSickL
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
                 requestBody,
                 { 'Content-Type': 'application/json' }
-            ).map(() => loadCalendarEvents(x.employeeId));
+            ).pipe(getEventsAndPendingRequests(x.employeeId));
         })
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
@@ -64,7 +65,7 @@ export const sickLeaveProlongedEpic$ = (action$: ActionsObservable<ConfirmProlon
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
                 requestBody,
                 { 'Content-Type': 'application/json' }
-            ).map(() => loadCalendarEvents(x.employeeId));
+            ).pipe(getEventsAndPendingRequests(x.employeeId));
         })
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));
 
@@ -80,6 +81,6 @@ export const sickLeaveCanceledEpic$ = (action$: ActionsObservable<CancelSickLeav
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
                 requestBody,
                 { 'Content-Type': 'application/json' }
-            ).map(() => loadCalendarEvents(x.employeeId));
+            ).pipe(getEventsAndPendingRequests(x.employeeId));
         })
         .catch((e: Error) => Observable.of(loadFailedError(e.message)));

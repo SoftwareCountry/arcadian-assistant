@@ -2,22 +2,25 @@ import React, { Component } from 'react';
 import { createIconSet } from 'react-native-vector-icons';
 
 const glyphMap = {
+    'approve-tick': 0xE011,
     'birthday': 0xE001,
     'calendar': 0xE002,
-    'dayoff': 0xE003,
-    'envelope': 0xE004,
-    'feeds': 0xE005,
-    'handshake': 0xE006,
-    'helpdesk': 0xE007,
-    'office': 0xE008,
-    'org_structure': 0xE009,
-    'people': 0xE00A,
-    'phone': 0xE00B,
-    'profile': 0xE00C,
-    'search': 0xE00D,
-    'settings': 0xE00E,
-    'sick_leave': 0xE00F,
-    'vacation': 0xE010
+    'dayoff': 0xE004,
+    'employees': 0xE012,
+    'envelope': 0xE005,
+    'feeds': 0xE006,
+    'handshake': 0xE007,
+    'helpdesk': 0xE008,
+    'office': 0xE009,
+    'org_structure': 0xE00A,
+    'people': 0xE00B,
+    'phone': 0xE00C,
+    'profile': 0xE00D,
+    'reject-cross': 0xE003,
+    'search': 0xE00E,
+    'settings': 0xE00F,
+    'sick_leave': 0xE010,
+    'vacation': 0xE013
 };
 export const ApplicationIcon = createIconSet(glyphMap, 'aa-iconfont');
 
