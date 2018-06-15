@@ -19,7 +19,7 @@ export interface StartEventDialogProgress {
     type: 'START-EVENT-DIALOG-PROGRESS';
 }
 
-export const startProgress = (): StartEventDialogProgress => ({ type: 'START-EVENT-DIALOG-PROGRESS' });
+export const startEventDialogProgress = (): StartEventDialogProgress => ({ type: 'START-EVENT-DIALOG-PROGRESS' });
 
 export interface StopEventDialogProgress {
     type: 'STOP-EVENT-DIALOG-PROGRESS';

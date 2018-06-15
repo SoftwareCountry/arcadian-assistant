@@ -1,4 +1,4 @@
-import { openEventDialog, closeEventDialog, startProgress, stopEventDialogProgress } from './event-dialog.action';
+import { openEventDialog, closeEventDialog, startEventDialogProgress, stopEventDialogProgress } from './event-dialog.action';
 import { chosenTypeDayoff } from '../dayoff.action';
 import { HoursCreditType } from '../days-counters.model';
 import { EventDialogType } from './event-dialog-type.model';
@@ -35,7 +35,7 @@ describe('event dialog reducer', () => {
     });
 
     it('should return inProgress as true when start progress', () => {
-        const action = startProgress();
+        const action = startEventDialogProgress();
         const state = eventDialogReducer(undefined, action);
 
         expect(state.inProgress).toBeTruthy();

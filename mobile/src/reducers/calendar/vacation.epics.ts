@@ -7,7 +7,6 @@ import { loadCalendarEvents } from './calendar.action';
 import { Observable } from 'rxjs/Observable';
 import { loadFailedError } from '../errors/errors.action';
 import { getEventsAndPendingRequests } from './calendar.epics';
-import { startProgress } from './event-dialog/event-dialog.action';
 
 export const vacationSavedEpic$ = (action$: ActionsObservable<ConfirmClaimVacation>, state: AppState, deps: DependenciesContainer) =>
     action$.ofType('CONFIRM-VACATION')
