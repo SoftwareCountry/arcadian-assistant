@@ -26,6 +26,11 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
     private readonly eventDigitsDateFormat = 'DD/MM/YYYY';
 
     public render() {
+
+        const events = this.props.events 
+            ? this.props.events.sort((a, b) => a.dates.startDate.valueOf() - b.dates.startDate.valueOf()) 
+            : null;
+
         return (<FlatList
                     data={this.props.events}
                     keyExtractor={this.keyExtractor}
