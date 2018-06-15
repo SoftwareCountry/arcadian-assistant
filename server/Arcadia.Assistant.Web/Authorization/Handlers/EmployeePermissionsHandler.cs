@@ -21,7 +21,7 @@
             var allPermissions = await this.permissionsLoader.LoadAsync(context.User);
             var employeePermissions = allPermissions.GetPermissions(resource);
 
-            if (requirement.HasPermissions(employeePermissions))
+            if (employeePermissions.HasFlag(requirement.RequiredPermissions))
             {
                 context.Succeed(requirement);
             }
