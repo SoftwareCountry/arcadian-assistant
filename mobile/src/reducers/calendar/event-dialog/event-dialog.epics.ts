@@ -1,9 +1,12 @@
-import { EventDialogActions, OpenEventDialog, closeEventDialog } from './event-dialog.action';
+import { EventDialogActions, OpenEventDialog, closeEventDialog, stopEventDialogProgress, startEventDialogProgress } from './event-dialog.action';
 import { ActionsObservable } from 'redux-observable';
 import { calendarSelectionMode, CalendarSelectionModeType, selectIntervalsBySingleDaySelection, disableCalendarSelection, CalendarActions, disableSelectIntervalsBySingleDaySelection } from '../calendar.action';
 import { CalendarEventsColor } from '../../../calendar/styles';
 import { EventDialogType } from './event-dialog-type.model';
 import { Observable } from 'rxjs';
+import { VacationActions } from '../vacation.action';
+import { SickLeaveActions } from '../sick-leave.action';
+import { DayoffActions } from '../dayoff.action';
 
 export const openEventDialogEpic$ = (action$: ActionsObservable<EventDialogActions>) =>
     action$.ofType('OPEN-EVENT-DIALOG')
@@ -59,8 +62,22 @@ export const openEventDialogEpic$ = (action$: ActionsObservable<EventDialogActio
 
 export const closeEventDialogEpic$ = (action$: ActionsObservable<EventDialogActions>) =>
     action$.ofType('CLOSE-EVENT-DIALOG')
-        .flatMap(x => Observable.of<CalendarActions>(
+        .flatMap(x => Observable.of<CalendarActions | EventDialogActions>(
             calendarSelectionMode(CalendarSelectionModeType.SingleDay),
             disableSelectIntervalsBySingleDaySelection(false),
-            selectIntervalsBySingleDaySelection()
+            selectIntervalsBySingleDaySelection(),
+            stopEventDialogProgress()
         ));
+
+export const startEventDialogProgressEpic$ = (action$: ActionsObservable<VacationActions | SickLeaveActions | DayoffActions>) =>
+    action$.ofType(
+        'CANCEL-SICK-LEAVE',
+        'CANCEL-VACACTION',
+        'CONFIRM-VACATION-CHANGE',
+        'CONFIRM-PROCESS-DAYOFF',
+        'CONFIRM-CLAIM-SICK-LEAVE',
+        'CONFIRM-VACATION',
+        'CANCEL-DAYOFF',
+        'CANCEL-VACACTION',
+        'CONFIRM-PROLONG-SICK-LEAVE',
+    ).map(x => startEventDialogProgress());

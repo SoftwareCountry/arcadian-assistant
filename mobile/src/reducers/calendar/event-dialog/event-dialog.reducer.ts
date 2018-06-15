@@ -5,12 +5,14 @@ import { chosenTypeDayoff } from '../dayoff.action';
 
 export interface EventDialogState {
     dialogType: EventDialogType;
-    chosenHoursCreditType: HoursCreditType; 
+    chosenHoursCreditType: HoursCreditType;
+    inProgress: boolean;
 }
 
 const initState: EventDialogState = {
     dialogType: null,
-    chosenHoursCreditType: HoursCreditType.DaysOff
+    chosenHoursCreditType: HoursCreditType.DaysOff,
+    inProgress: false
 };
 
 export const eventDialogReducer = (state: EventDialogState = initState, action: EventDialogActions): EventDialogState => {
@@ -33,6 +35,16 @@ export const eventDialogReducer = (state: EventDialogState = initState, action: 
                 chosenHoursCreditType: action.isWorkout ? HoursCreditType.Workout : HoursCreditType.DaysOff
             };
         }
+        case 'START-EVENT-DIALOG-PROGRESS':
+            return {
+                ...state,
+                inProgress: true
+            };
+        case 'STOP-EVENT-DIALOG-PROGRESS':
+            return {
+                ...state,
+                inProgress: false
+            };
         default:
             return state;
     }

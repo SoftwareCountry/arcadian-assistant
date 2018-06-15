@@ -28,3 +28,5 @@ export interface ConfirmVacationChange {
 
 export const confirmVacationChange = (employeeId: string, calendarEvent: CalendarEvent, startDate: Moment, endDate: Moment): ConfirmVacationChange => 
     ({ type: 'CONFIRM-VACATION-CHANGE', employeeId, calendarEvent, startDate, endDate });
+
+export type VacationActions = ConfirmClaimVacation | CancelVacation | ConfirmVacationChange;

@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
 import { layout, content, buttons } from './styles';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { ApplicationIcon } from '../../override/application-icon';
 import { StyledText } from '../../override/styled-text';
 import { CalendarActionButton } from '../calendar-action-button';
+import { connect, MapStateToProps } from 'react-redux';
+import { AppState } from '../../reducers/app.reducer';
 
 interface EventDialogBaseDefaultProps {
     disableAccept?: boolean;
 }
 
-interface EventDialogBaseProps extends EventDialogBaseDefaultProps {
+interface EventDialogBaseOwnProps extends EventDialogBaseDefaultProps {
     icon: string;
     title: string;
     text: string;
@@ -20,9 +22,15 @@ interface EventDialogBaseProps extends EventDialogBaseDefaultProps {
     onClosePress: () => void;
 }
 
+interface EventDialogMappedProps {
+    inProgress: boolean;
+}
+
+type EventDialogBaseProps = EventDialogBaseOwnProps & EventDialogMappedProps;
+
 export const eventDialogTextDateFormat = 'MMMM D, YYYY';
 
-export class EventDialogBase extends Component<EventDialogBaseProps> {
+export class EventDialogBaseImpl extends Component<EventDialogBaseProps> {
     public static defaultProps: EventDialogBaseDefaultProps = {
         disableAccept: false
     };
@@ -61,8 +69,9 @@ export class EventDialogBase extends Component<EventDialogBaseProps> {
 
         return (
             <View style={layout.buttons}>
-                <CalendarActionButton title={cancelLabel} onPress={this.cancel} style={buttons.cancel} textStyle={buttons.cancelLabel} />
-                <CalendarActionButton title={acceptLabel} onPress={this.accept} style={buttons.accept} textStyle={buttons.acceptLabel} disabled={disableAccept} />
+                <CalendarActionButton title={cancelLabel} onPress={this.cancel} style={buttons.cancel} textStyle={buttons.cancelLabel} disabled={this.props.inProgress} />
+                <CalendarActionButton title={acceptLabel} onPress={this.accept} style={buttons.accept} textStyle={buttons.acceptLabel} disabled={disableAccept || this.props.inProgress} />
+                {this.props.inProgress && <ActivityIndicator size={'small'} style={buttons.progressIndicator} />}
             </View>
         );
     }
@@ -79,3 +88,17 @@ export class EventDialogBase extends Component<EventDialogBaseProps> {
         this.props.onAcceptPress();
     }
 }
+
+const mapStateToProps: MapStateToProps<EventDialogBaseProps, EventDialogBaseOwnProps, AppState> = (state, ownProps) => ({
+    inProgress: state.calendar.eventDialog.inProgress,
+    icon: ownProps.icon,
+    title: ownProps.title,
+    text: ownProps.text,
+    cancelLabel: ownProps.cancelLabel,
+    acceptLabel: ownProps.acceptLabel,
+    onCancelPress: ownProps.onCancelPress,
+    onAcceptPress: ownProps.onAcceptPress,
+    onClosePress: ownProps.onClosePress
+});
+
+export const EventDialogBase = connect(mapStateToProps)(EventDialogBaseImpl);

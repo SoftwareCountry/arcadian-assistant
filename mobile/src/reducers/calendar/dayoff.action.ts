@@ -36,3 +36,5 @@ export const cancelDayoff = (
     employeeId: string,
     calendarEvent: CalendarEvent
 ): CancelDayoff => ({ type: 'CANCEL-DAYOFF', employeeId, calendarEvent });
+
+export type DayoffActions = ChosenTypeDayoff | ConfirmProcessDayoff | CancelDayoff;

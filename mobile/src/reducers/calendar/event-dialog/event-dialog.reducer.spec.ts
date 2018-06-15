@@ -1,4 +1,4 @@
-import { openEventDialog, closeEventDialog } from './event-dialog.action';
+import { openEventDialog, closeEventDialog, startEventDialogProgress, stopEventDialogProgress } from './event-dialog.action';
 import { chosenTypeDayoff } from '../dayoff.action';
 import { HoursCreditType } from '../days-counters.model';
 import { EventDialogType } from './event-dialog-type.model';
@@ -32,5 +32,19 @@ describe('event dialog reducer', () => {
         const state = eventDialogReducer(undefined, action);
 
         expect(state.chosenHoursCreditType).toBe(HoursCreditType.Workout);
+    });
+
+    it('should return inProgress as true when start progress', () => {
+        const action = startEventDialogProgress();
+        const state = eventDialogReducer(undefined, action);
+
+        expect(state.inProgress).toBeTruthy();
+    });
+
+    it('should return inProgress as false when stop progress', () => {
+        const action = stopEventDialogProgress();
+        const state = eventDialogReducer(undefined, action);
+
+        expect(state.inProgress).toBeFalsy();
     });
 });
