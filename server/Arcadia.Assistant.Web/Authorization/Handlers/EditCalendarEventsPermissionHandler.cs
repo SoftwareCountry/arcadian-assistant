@@ -34,10 +34,7 @@
                 {
                     context.Succeed(requirement);
                 }
-                else
-                {
-                    context.Fail();
-                }
+
                 return;
             }
 
@@ -47,10 +44,7 @@
                 {
                     context.Succeed(requirement);
                 }
-                else
-                {
-                    context.Fail();
-                }
+
                 return;
             }
 
@@ -60,10 +54,7 @@
                 {
                     context.Succeed(requirement);
                 }
-                else
-                {
-                    context.Fail();
-                }
+
                 return;
             }
 
@@ -73,10 +64,7 @@
                 {
                     context.Succeed(requirement);
                 }
-                else
-                {
-                    context.Fail();
-                }
+
                 return;
             }
         }
