@@ -124,7 +124,7 @@
 
                         var tasks = response
                             .Departments
-                            .Select(x => this.organizationActor.Ask<DepartmentsQuery.Response>(DepartmentsQuery.Create().DescendantOf(employeeId), this.timeout));
+                            .Select(x => this.organizationActor.Ask<DepartmentsQuery.Response>(DepartmentsQuery.Create().DescendantOf(x.Department.DepartmentId), this.timeout));
 
                         //setup permissions for branch-like supervised departments
                         Task.WhenAll(tasks).PipeTo(this.Self);
