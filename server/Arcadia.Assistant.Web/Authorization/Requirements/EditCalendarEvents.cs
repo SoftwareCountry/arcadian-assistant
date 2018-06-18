@@ -1,14 +1,19 @@
 ﻿namespace Arcadia.Assistant.Web.Authorization.Requirements
 {
-    using Arcadia.Assistant.Security;
     using Calendar.Abstractions;
+    using Microsoft.AspNetCore.Authorization;
     using Models.Calendar;
+    using Security;
 
-    public class EditCalendarEvents : RequiredEmployeePermissions
+    public class EditCalendarEvents : IAuthorizationRequirement
     {
-        public EditCalendarEvents()
-            : base(EmployeePermissionsEntry.EditCalendarEvents)
+        public CalendarEvent ExistingEvent { get; }
+        public CalendarEventsModel UpdatedEvent { get; }
+
+        public EditCalendarEvents(CalendarEvent existingEvent, CalendarEventsModel updatedEvent)
         {
+            ExistingEvent = existingEvent;
+            UpdatedEvent = updatedEvent;
         }
     }
 }

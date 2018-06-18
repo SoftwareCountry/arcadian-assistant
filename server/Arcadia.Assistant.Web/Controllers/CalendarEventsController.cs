@@ -170,7 +170,7 @@
 
             var hasPermissions = existingEvent.IsPending
                 ? (await this.authorizationService.AuthorizeAsync(this.User, employee, new EditPendingCalendarEvents())).Succeeded
-                : (await this.authorizationService.AuthorizeAsync(this.User, employee, new EditCalendarEvents())).Succeeded;
+                : (await this.authorizationService.AuthorizeAsync(this.User, employee, new EditCalendarEvents(existingEvent, model))).Succeeded;
 
             if (!hasPermissions)
             {
