@@ -14,14 +14,14 @@
         CreateCalendarEvents = 1 << 5,
         ApproveCalendarEvents = 1 << 6,
         RejectCalendarEvents = 1 << 7,
-        CompleteCalendarEvents = 1 << 8,
-        ProlongCalendarEvents = 1 << 9,
+        CompleteSickLeave = 1 << 8,
+        ProlongSickLeave = 1 << 9,
         CancelCalendarEvents = 1 << 10,
         EditCalendarEvents = 
             ApproveCalendarEvents |
             RejectCalendarEvents |
-            CompleteCalendarEvents |
-            ProlongCalendarEvents |
+            CompleteSickLeave |
+            ProlongSickLeave |
             CancelCalendarEvents,
         EditPendingCalendarEvents = 1 << 11,
     }

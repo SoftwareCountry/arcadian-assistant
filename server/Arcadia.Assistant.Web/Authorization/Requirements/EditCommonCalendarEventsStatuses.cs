@@ -5,12 +5,12 @@
     using Models.Calendar;
     using Security;
 
-    public class EditCalendarEvents : IAuthorizationRequirement
+    public class EditCommonCalendarEventsStatuses : IAuthorizationRequirement
     {
         public CalendarEvent ExistingEvent { get; }
         public CalendarEventsModel UpdatedEvent { get; }
 
-        public EditCalendarEvents(CalendarEvent existingEvent, CalendarEventsModel updatedEvent)
+        public EditCommonCalendarEventsStatuses(CalendarEvent existingEvent, CalendarEventsModel updatedEvent)
         {
             ExistingEvent = existingEvent;
             UpdatedEvent = updatedEvent;

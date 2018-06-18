@@ -182,8 +182,8 @@
 
         private static readonly EmployeePermissionsEntry SelfPermissions =
             EmployeePermissionsEntry.CreateCalendarEvents |
-            EmployeePermissionsEntry.CompleteCalendarEvents |
-            EmployeePermissionsEntry.ProlongCalendarEvents |
+            EmployeePermissionsEntry.CompleteSickLeave |
+            EmployeePermissionsEntry.ProlongSickLeave |
             EmployeePermissionsEntry.CancelCalendarEvents |
             EmployeePermissionsEntry.EditPendingCalendarEvents |
             EmployeePermissionsEntry.ReadEmployeeCalendarEvents |
