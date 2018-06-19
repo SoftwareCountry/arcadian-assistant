@@ -12,12 +12,14 @@ export interface FeedsState {
     feeds: FeedsById;
     toDate: Moment;
     fromDate: Moment;
+    filter: string;
 }
 
 const initState: FeedsState = {
     feeds: Map<string, Feed>(),
     toDate: null,
     fromDate: null,
+    filter: ""
 };
 
 export const feedsReducer: Reducer<FeedsState> = (state = initState, action: FeedsActions) => {
@@ -45,6 +47,11 @@ export const feedsReducer: Reducer<FeedsState> = (state = initState, action: Fee
                 toDate: action.toDate,
                 fromDate: action.fromDate,
             };
+        case 'SEARCH_FEED_FILTER':
+            return {
+                ...state,
+                filter: action.filter,
+            }
         default:
             return state;
     }

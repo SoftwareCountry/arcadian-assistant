@@ -25,6 +25,7 @@ interface FeedsScreenProps {
     toDate: Moment;
     fromDate: Moment;
     user: string;
+    filter: string;
 }
 
 interface FeedScreenDispatchProps {
@@ -39,6 +40,7 @@ const mapStateToProps = (state: AppState): FeedsScreenProps => ({
     toDate: state.feeds.toDate,
     fromDate: state.feeds.fromDate,
     user: state.userInfo.employeeId,
+    filter: state.feeds.filter,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<any>): FeedScreenDispatchProps => ({
@@ -69,8 +71,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     }
 
     public render() {
-
-        const feeds = this.sortedFeeds();
+        const feeds = this.sortedFeeds().filter(this.feedPredicate);
 
         return (
             <FlatList
@@ -94,6 +95,10 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
 
     private itemSeparator() {
         return <View style={styles.separator}></View>;
+    }
+
+    private feedPredicate = (feed: Feed) => {
+        return feed.title.startsWith(this.props.filter);
     }
 
     private sortedFeeds() {
