@@ -168,9 +168,11 @@
                 return this.NotFound();
             }
 
-            var hasPermissions = existingEvent.IsPending
-                ? (await this.authorizationService.AuthorizeAsync(this.User, employee, new EditPendingCalendarEvents())).Succeeded
-                : (await this.authorizationService.AuthorizeAsync(this.User, employee, new EditCalendarEvents(existingEvent, model))).Succeeded;
+            var calendarEventsRequirement = existingEvent.IsPending 
+                ? (IAuthorizationRequirement) new EditPendingCalendarEvents()
+                : new EditCalendarEvents(existingEvent, model);
+
+            var hasPermissions = (await this.authorizationService.AuthorizeAsync(this.User, employee, calendarEventsRequirement)).Succeeded;
 
             if (!hasPermissions)
             {
