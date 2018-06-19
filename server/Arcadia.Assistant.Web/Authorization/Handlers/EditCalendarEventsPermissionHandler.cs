@@ -6,6 +6,7 @@
     using Requirements;
     using Security;
     using System.Threading.Tasks;
+    using Models.Calendar;
 
     public class EditCalendarEventsPermissionHandler : AuthorizationHandler<EditCalendarEvents, EmployeeContainer>
     {
@@ -23,57 +24,69 @@
 
             var existingEvent = requirement.ExistingEvent;
             var updatedEvent = requirement.UpdatedEvent;
+            var statusChanged = updatedEvent.Status != existingEvent.Status;
 
-            var calendarEventStatuses = new CalendarEventStatuses();
-            var approved = calendarEventStatuses.ApprovedForType(existingEvent.Type);
-            var rejected = calendarEventStatuses.RejectedForType(existingEvent.Type);
+            var hasPermissions = true;
 
-            if (updatedEvent.Status != existingEvent.Status && updatedEvent.Status == approved)
-            {
-                if (employeePermissions.HasFlag(EmployeePermissionsEntry.ApproveCalendarEvents))
-                {
-                    context.Succeed(requirement);
-                }
-
-                return;
-            }
-
-            if (updatedEvent.Status != existingEvent.Status && updatedEvent.Status == rejected)
-            {
-                if (employeePermissions.HasFlag(EmployeePermissionsEntry.RejectCalendarEvents))
-                {
-                    context.Succeed(requirement);
-                }
-
-                return;
-            }
+            hasPermissions &= this.CheckIfApproval(statusChanged, existingEvent, updatedEvent, employeePermissions);
+            hasPermissions &= this.CheckIfRejected(statusChanged, existingEvent, updatedEvent, employeePermissions);
 
             if (updatedEvent.Type == CalendarEventTypes.Sickleave)
             {
-                if (updatedEvent.Status == existingEvent.Status
-                    && updatedEvent.Status == SickLeaveStatuses.Approved
-                    && updatedEvent.Dates != existingEvent.Dates)
-                {
-                    if (employeePermissions.HasFlag(EmployeePermissionsEntry.ProlongSickLeave))
-                    {
-                        context.Succeed(requirement);
-                    }
-
-                    return;
-                }
-
-                if (updatedEvent.Status != existingEvent.Status && updatedEvent.Status == SickLeaveStatuses.Completed)
-                {
-                    if (employeePermissions.HasFlag(EmployeePermissionsEntry.CompleteSickLeave))
-                    {
-                        context.Succeed(requirement);
-                    }
-
-                    return;
-                }
+                hasPermissions &= this.CheckSickLeave(existingEvent, updatedEvent, employeePermissions);
             }
 
-            context.Succeed(requirement);
+            if (hasPermissions)
+            {
+                context.Succeed(requirement);
+            }
+            else
+            {
+                context.Fail();
+            }
+        }
+
+        private bool CheckIfApproval(bool statusChanged, CalendarEvent existingEvent, CalendarEventsModel updatedEvent, EmployeePermissionsEntry employeePermissions)
+        {
+            var calendarEventStatuses = new CalendarEventStatuses();
+            var approved = calendarEventStatuses.ApprovedForType(existingEvent.Type);
+
+            if (statusChanged && updatedEvent.Status == approved)
+            {
+                return employeePermissions.HasFlag(EmployeePermissionsEntry.ApproveCalendarEvents);
+            }
+
+            return true;
+        }
+
+        private bool CheckIfRejected(bool statusChanged, CalendarEvent existingEvent, CalendarEventsModel updatedEvent, EmployeePermissionsEntry employeePermissions)
+        {
+            var calendarEventStatuses = new CalendarEventStatuses();
+            var rejected = calendarEventStatuses.RejectedForType(existingEvent.Type);
+
+            if (statusChanged && updatedEvent.Status == rejected)
+            {
+                return employeePermissions.HasFlag(EmployeePermissionsEntry.RejectCalendarEvents);
+            }
+
+            return true;
+        }
+
+        private bool CheckSickLeave(CalendarEvent existingEvent, CalendarEventsModel updatedEvent, EmployeePermissionsEntry employeePermissions)
+        {
+            if (updatedEvent.Status == existingEvent.Status
+                && updatedEvent.Status == SickLeaveStatuses.Approved
+                && updatedEvent.Dates != existingEvent.Dates)
+            {
+                return employeePermissions.HasFlag(EmployeePermissionsEntry.ProlongSickLeave);
+            }
+
+            if (updatedEvent.Status != existingEvent.Status && updatedEvent.Status == SickLeaveStatuses.Completed)
+            {
+                return employeePermissions.HasFlag(EmployeePermissionsEntry.CompleteSickLeave);
+            }
+
+            return true;
         }
     }
 }
