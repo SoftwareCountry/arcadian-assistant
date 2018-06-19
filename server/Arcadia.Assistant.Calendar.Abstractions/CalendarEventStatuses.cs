@@ -9,7 +9,7 @@
                 { CalendarEventTypes.Dayoff, WorkHoursChangeStatuses.All },
                 { CalendarEventTypes.Workout, WorkHoursChangeStatuses.All },
                 { CalendarEventTypes.Sickleave, SickLeaveStatuses.All },
-                { CalendarEventTypes.Vacation, SickLeaveStatuses.All }
+                { CalendarEventTypes.Vacation, VacationStatuses.All }
             };
 
         private static readonly IReadOnlyDictionary<string, string[]> PendingStatusesByType = new Dictionary<string, string[]>()
@@ -17,8 +17,24 @@
                 { CalendarEventTypes.Dayoff, WorkHoursChangeStatuses.Pending },
                 { CalendarEventTypes.Workout, WorkHoursChangeStatuses.Pending },
                 { CalendarEventTypes.Sickleave, SickLeaveStatuses.Pending },
-                { CalendarEventTypes.Vacation, SickLeaveStatuses.Pending }
+                { CalendarEventTypes.Vacation, VacationStatuses.Pending }
             };
+
+        private static readonly IReadOnlyDictionary<string, string> ApprovedStatusByType = new Dictionary<string, string>()
+        {
+            { CalendarEventTypes.Dayoff, WorkHoursChangeStatuses.Approved },
+            { CalendarEventTypes.Workout, WorkHoursChangeStatuses.Approved },
+            { CalendarEventTypes.Sickleave, SickLeaveStatuses.Approved },
+            { CalendarEventTypes.Vacation, VacationStatuses.Approved }
+        };
+
+        private static readonly IReadOnlyDictionary<string, string> RejectedStatusByType = new Dictionary<string, string>()
+        {
+            { CalendarEventTypes.Dayoff, WorkHoursChangeStatuses.Rejected },
+            { CalendarEventTypes.Workout, WorkHoursChangeStatuses.Rejected },
+            { CalendarEventTypes.Sickleave, SickLeaveStatuses.Rejected },
+            { CalendarEventTypes.Vacation, VacationStatuses.Rejected }
+        };
 
         public string[] AllForType(string type)
         {
@@ -36,6 +52,26 @@
                 return statuses;
             }
             return new string[0];
+        }
+
+        public string ApprovedForType(string type)
+        {
+            if (ApprovedStatusByType.TryGetValue(type, out var status))
+            {
+                return status;
+            }
+
+            return null;
+        }
+
+        public string RejectedForType(string type)
+        {
+            if (RejectedStatusByType.TryGetValue(type, out var status))
+            {
+                return status;
+            }
+
+            return null;
         }
     }
 }

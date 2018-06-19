@@ -12,6 +12,17 @@
         ReadEmployeePhone = 1 << 3,
         ReadEmployeeCalendarEvents = 1 << 4,
         CreateCalendarEvents = 1 << 5,
-        ApproveEmployeeCalendarEvents = 1 << 6,
+        ApproveCalendarEvents = 1 << 6,
+        RejectCalendarEvents = 1 << 7,
+        CompleteSickLeave = 1 << 8,
+        ProlongSickLeave = 1 << 9,
+        CancelCalendarEvents = 1 << 10,
+        EditCalendarEvents = 
+            ApproveCalendarEvents |
+            RejectCalendarEvents |
+            CompleteSickLeave |
+            ProlongSickLeave |
+            CancelCalendarEvents,
+        EditPendingCalendarEvents = 1 << 11,
     }
 }

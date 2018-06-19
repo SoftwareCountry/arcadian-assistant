@@ -162,15 +162,21 @@
                 return this.NotFound();
             }
 
-            if (!(await this.authorizationService.AuthorizeAsync(this.User, employee, new ApproveCalendarEvents())).Succeeded)
-            {
-                return this.Forbid();
-            }
-
             var existingEvent = await this.GetCalendarEventOrDefaultAsync(employee.Calendar.CalendarActor, eventId, token);
             if (existingEvent == null)
             {
                 return this.NotFound();
+            }
+
+            var calendarEventsRequirement = existingEvent.IsPending 
+                ? (IAuthorizationRequirement) new EditPendingCalendarEvents()
+                : new EditCalendarEvents(existingEvent, model);
+
+            var hasPermissions = (await this.authorizationService.AuthorizeAsync(this.User, employee, calendarEventsRequirement)).Succeeded;
+
+            if (!hasPermissions)
+            {
+                return this.Forbid();
             }
 
             if (existingEvent.Type != model.Type)
