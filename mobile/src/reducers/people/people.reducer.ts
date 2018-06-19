@@ -17,13 +17,15 @@ export interface PeopleState {
     departmentsBranch: Department[];
     currentFocusedDepartmentId: string;
     departmentsLists: DepartmentsListStateDescriptor[];
+    filter: string;
 }
 
 const initState: PeopleState = {
     departments: [],
     departmentsBranch: [],
     currentFocusedDepartmentId: null,
-    departmentsLists: []
+    departmentsLists: [],
+    filter: "",
 };
 
 function onlyUnique(value: string, index: number, self: string[]) { 
@@ -99,6 +101,11 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
             const depsAndMeta = departmentsBranchFromDepartmentWithId(action.departmentId, state.departments, action.focusOnEmployeesList);
             return {...state, departmentsBranch: depsAndMeta.departmentsLineup, departmentsLists: depsAndMeta.departmentsLists};
         }
+        case 'SEARCH_PEOPLE_FILTER':
+            return {
+                ...state,
+                filter: action.filter,
+            }
         default:
             return state;
     }

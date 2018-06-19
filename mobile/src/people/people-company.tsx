@@ -24,6 +24,7 @@ interface PeopleCompanyProps {
     employee?: Employee;
     currentFocusedDepartmentId?: string;
     departmentLists?: DepartmentsListStateDescriptor[];
+    filter: string;
 }
 
 const mapStateToProps = (state: AppState): PeopleCompanyProps => ({
@@ -33,7 +34,8 @@ const mapStateToProps = (state: AppState): PeopleCompanyProps => ({
     departments: state.people.departments,
     employee: state.organization.employees.employeesById.get(state.userInfo.employeeId),
     currentFocusedDepartmentId: state.people.currentFocusedDepartmentId,
-    departmentLists: state.people.departmentsLists
+    departmentLists: state.people.departmentsLists,
+    filter: state.people.filter,
 });
 
 interface PeopleCompanyDispatchProps {
@@ -89,13 +91,16 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
                         updateDepartmentsBranch={this.props.updateDepartmentsBranch}
                         requestEmployeesForDepartment={this.props.requestEmployeesForDepartment}
                         onItemClicked={this.props.onItemClicked}
-                        employeesPredicate={(employee: Employee) => { 
-                            return employee.departmentId === head.departmentId && employee.employeeId !== head.chiefId;
-                        }}
+                        employeesPredicate={(employee: Employee) => this.employeesPredicate(head, employee)}
                     />
                 ))
             }
         </ScrollView>;
+    }
+
+    private employeesPredicate = (head: Department, employee: Employee) => {
+        return employee.name.startsWith(this.props.filter) &&
+            employee.departmentId === head.departmentId && employee.employeeId !== head.chiefId;
     }
 }
 

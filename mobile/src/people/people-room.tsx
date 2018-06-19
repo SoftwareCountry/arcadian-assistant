@@ -11,18 +11,20 @@ import { openEmployeeDetailsAction } from '../employee-details/employee-details-
 interface PeopleRoomProps {
     employees: EmployeesStore;
     userEmployee: Employee;
+    filter: string;
 }
 
 const mapStateToProps = (state: AppState): PeopleRoomProps => ({
     employees: state.organization.employees,
-    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
+    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId),
+    filter: state.people.filter,
 });
 
 interface EmployeesListDispatchProps {
     onItemClicked: (employee: Employee) => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeesListDispatchProps => ({
-    onItemClicked: (employee: Employee) => dispatch( openEmployeeDetailsAction(employee))
+    onItemClicked: (employee: Employee) => dispatch(openEmployeeDetailsAction(employee))
 });
 
 export class PeopleRoomImpl extends React.Component<PeopleRoomProps & EmployeesListDispatchProps> {
@@ -44,11 +46,12 @@ export class PeopleRoomImpl extends React.Component<PeopleRoomProps & EmployeesL
     }
 
     public render() {
-        return <EmployeesList employees={this.props.employees.employeesById.toArray().filter(this.employeesPredicate)} onItemClicked = {this.props.onItemClicked}/>;
+        return <EmployeesList employees={this.props.employees.employeesById.toArray().filter(this.employeesPredicate)} onItemClicked={this.props.onItemClicked}/>;
     }
 
     private employeesPredicate = (employee: Employee) => {
-        return this.props.userEmployee && employee.roomNumber === this.props.userEmployee.roomNumber;
+        return employee.name.startsWith(this.props.filter) && 
+            this.props.userEmployee && employee.roomNumber === this.props.userEmployee.roomNumber;
     }
 }
 
