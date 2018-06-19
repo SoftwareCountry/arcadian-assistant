@@ -24,12 +24,11 @@
 
             var existingEvent = requirement.ExistingEvent;
             var updatedEvent = requirement.UpdatedEvent;
-            var statusChanged = updatedEvent.Status != existingEvent.Status;
 
             var hasPermissions = true;
 
-            hasPermissions &= this.CheckIfApproval(statusChanged, existingEvent, updatedEvent, employeePermissions);
-            hasPermissions &= this.CheckIfRejected(statusChanged, existingEvent, updatedEvent, employeePermissions);
+            hasPermissions &= this.CheckIfApproval(existingEvent, updatedEvent, employeePermissions);
+            hasPermissions &= this.CheckIfRejected(existingEvent, updatedEvent, employeePermissions);
 
             if (updatedEvent.Type == CalendarEventTypes.Sickleave)
             {
@@ -40,16 +39,13 @@
             {
                 context.Succeed(requirement);
             }
-            else
-            {
-                context.Fail();
-            }
         }
 
-        private bool CheckIfApproval(bool statusChanged, CalendarEvent existingEvent, CalendarEventsModel updatedEvent, EmployeePermissionsEntry employeePermissions)
+        private bool CheckIfApproval(CalendarEvent existingEvent, CalendarEventsModel updatedEvent, EmployeePermissionsEntry employeePermissions)
         {
             var calendarEventStatuses = new CalendarEventStatuses();
             var approved = calendarEventStatuses.ApprovedForType(existingEvent.Type);
+            var statusChanged = this.StatusChanged(existingEvent, updatedEvent);
 
             if (statusChanged && updatedEvent.Status == approved)
             {
@@ -59,10 +55,11 @@
             return true;
         }
 
-        private bool CheckIfRejected(bool statusChanged, CalendarEvent existingEvent, CalendarEventsModel updatedEvent, EmployeePermissionsEntry employeePermissions)
+        private bool CheckIfRejected(CalendarEvent existingEvent, CalendarEventsModel updatedEvent, EmployeePermissionsEntry employeePermissions)
         {
             var calendarEventStatuses = new CalendarEventStatuses();
             var rejected = calendarEventStatuses.RejectedForType(existingEvent.Type);
+            var statusChanged = this.StatusChanged(existingEvent, updatedEvent);
 
             if (statusChanged && updatedEvent.Status == rejected)
             {
@@ -74,7 +71,9 @@
 
         private bool CheckSickLeave(CalendarEvent existingEvent, CalendarEventsModel updatedEvent, EmployeePermissionsEntry employeePermissions)
         {
-            if (updatedEvent.Status == existingEvent.Status
+            var statusChanged = this.StatusChanged(existingEvent, updatedEvent);
+
+            if (!statusChanged
                 && updatedEvent.Status == SickLeaveStatuses.Approved
                 && updatedEvent.Dates != existingEvent.Dates)
             {
@@ -87,6 +86,11 @@
             }
 
             return true;
+        }
+        
+        private bool StatusChanged(CalendarEvent existingEvent, CalendarEventsModel updatedEvent)
+        {
+            return existingEvent.Status != updatedEvent.Status;
         }
     }
 }
