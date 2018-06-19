@@ -80,7 +80,7 @@
                 return employeePermissions.HasFlag(EmployeePermissionsEntry.ProlongSickLeave);
             }
 
-            if (updatedEvent.Status != existingEvent.Status && updatedEvent.Status == SickLeaveStatuses.Completed)
+            if (statusChanged && updatedEvent.Status == SickLeaveStatuses.Completed)
             {
                 return employeePermissions.HasFlag(EmployeePermissionsEntry.CompleteSickLeave);
             }
