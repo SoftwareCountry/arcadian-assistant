@@ -1,16 +1,20 @@
-﻿namespace Arcadia.Assistant.Web.Authorization.Requirements
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Arcadia.Assistant.Web.Authorization.Requirements
 {
     using Calendar.Abstractions;
     using Microsoft.AspNetCore.Authorization;
     using Models.Calendar;
-    using Security;
 
-    public class EditCommonCalendarEventsStatuses : IAuthorizationRequirement
+    public class EditCalendarEvents : IAuthorizationRequirement
     {
         public CalendarEvent ExistingEvent { get; }
         public CalendarEventsModel UpdatedEvent { get; }
 
-        public EditCommonCalendarEventsStatuses(CalendarEvent existingEvent, CalendarEventsModel updatedEvent)
+        public EditCalendarEvents(CalendarEvent existingEvent, CalendarEventsModel updatedEvent)
         {
             ExistingEvent = existingEvent;
             UpdatedEvent = updatedEvent;
