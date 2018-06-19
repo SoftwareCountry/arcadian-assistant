@@ -6,12 +6,13 @@ import { UserInfoState } from '../reducers/user/user-info.reducer';
 import { AppState } from '../reducers/app.reducer';
 import { connect, Dispatch } from 'react-redux';
 import { StyledText } from '../override/styled-text';
-import { View, SafeAreaView, TouchableOpacity, Image } from 'react-native';
+import { View, SafeAreaView, TouchableOpacity, Image, ScrollView, RefreshControl } from 'react-native';
 import { Employee } from '../reducers/organization/employee.model';
 import { chevronColor, profileScreenStyles, layoutStyles } from './styles';
 import { EmployeeDetails } from '../employee-details/employee-details';
 import { AuthActions, startLogoutProcess } from '../reducers/auth/auth.action';
- 
+import { refresh } from '../reducers/refresh/refresh.action';
+
 interface ProfileScreenProps {
     employee: Employee;
     departments: Department[];
@@ -24,9 +25,11 @@ const mapStateToProps = (state: AppState): ProfileScreenProps => ({
 
 interface AuthDispatchProps {
     onlogoutClicked: () => void;
+    refresh: () => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<AuthActions>): AuthDispatchProps => ({
-    onlogoutClicked: () => { dispatch(startLogoutProcess()); }
+    onlogoutClicked: () => { dispatch(startLogoutProcess()); },
+    refresh: () => dispatch(refresh())
 });
 
 class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps> {
@@ -35,19 +38,25 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
         const department = this.props.departments && employee ? this.props.departments.find((d) => d.departmentId === employee.departmentId) : null;
 
         return employee && department ?
-            <SafeAreaView style={profileScreenStyles.profileContainer}>
-                <TouchableOpacity onPress={this.props.onlogoutClicked}>
-                    <View style={layoutStyles.logoutContainer}>
-                        <Image style={profileScreenStyles.imageLogout} source={require('./logout-image.png')} />
-                    </View>
-                </TouchableOpacity>
-                <EmployeeDetails department={department} employee={employee} layoutStylesChevronPlaceholder={layoutStyles.chevronPlaceholder} showPendingRequests />
-            </SafeAreaView>
+            <ScrollView refreshControl= { <RefreshControl refreshing={false} onRefresh= {this.onRefresh} />} >
+                <SafeAreaView style={profileScreenStyles.profileContainer}>
+                    <TouchableOpacity onPress={this.props.onlogoutClicked}>
+                        <View style={layoutStyles.logoutContainer}>
+                            <Image style={profileScreenStyles.imageLogout} source={require('./logout-image.png')} />
+                        </View>
+                    </TouchableOpacity>
+                    <EmployeeDetails department={department} employee={employee} layoutStylesChevronPlaceholder={layoutStyles.chevronPlaceholder} showPendingRequests />
+                </SafeAreaView>
+            </ScrollView>
             : (
                 <View style={profileScreenStyles.loadingContainer}>
                     <StyledText style={profileScreenStyles.loadingText}>Loading...</StyledText>
                 </View>
             );
+    }
+
+    private onRefresh = () => {    
+        this.props.refresh();
     }
 }
 
