@@ -25,7 +25,7 @@ const initState: PeopleState = {
     departmentsBranch: [],
     currentFocusedDepartmentId: null,
     departmentsLists: [],
-    filter: "",
+    filter: '',
 };
 
 function onlyUnique(value: string, index: number, self: string[]) { 
@@ -105,7 +105,7 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
             return {
                 ...state,
                 filter: action.filter,
-            }
+            };
         default:
             return state;
     }

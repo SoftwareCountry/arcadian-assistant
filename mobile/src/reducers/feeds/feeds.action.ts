@@ -40,11 +40,11 @@ export interface SetFeedFilter extends Action {
 
 export const setFeedFilter = (filter: string): SetFeedFilter => {
     return { type: 'SEARCH_FEED_FILTER', filter };
-}
+};
 
 export const endFeedSearch = (): SetFeedFilter => {
-    return { type: 'SEARCH_FEED_FILTER', filter: ""}
-}
+    return { type: 'SEARCH_FEED_FILTER', filter: ''};
+};
 
 export type FeedsActions =
     LoadFeedsFinished | ChangeBoundaryDates | FetchNewFeeds | FetchOldFeeds | SetFeedFilter;

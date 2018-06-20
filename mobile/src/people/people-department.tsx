@@ -1,6 +1,7 @@
 import React from 'react';
 import { Action } from 'redux';
 import { connect, Dispatch } from 'react-redux';
+import { View } from 'react-native';
 
 import { EmployeesList } from './employees-list';
 import { AppState } from '../reducers/app.reducer';
@@ -8,6 +9,7 @@ import { EmployeeMap, EmployeesStore } from '../reducers/organization/employees.
 import { Employee } from '../reducers/organization/employee.model';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 import { employeesAZSort } from './employee-comparer';
+import { SearchPeopleView } from '../navigation/search-view';
 
 interface PeopleDepartmentProps {
     employees: EmployeesStore;
@@ -36,8 +38,8 @@ export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentProps 
             return true;
         }
 
-        const employees = this.props.employees.employeesById.filter(this.employeesPredicate);
-        const nextEmployees = nextProps.employees.employeesById.filter(this.employeesPredicate);
+        const employees = this.props.employees.employeesById.filter((e) => PeopleDepartmentImpl.employeesPredicate(e, this.props));
+        const nextEmployees = nextProps.employees.employeesById.filter((e) => PeopleDepartmentImpl.employeesPredicate(e, nextProps));
 
         if (!employees.equals(nextEmployees)) {
             return true;
@@ -47,12 +49,17 @@ export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentProps 
     }
 
     public render() {
-        return <EmployeesList employees={this.props.employees.employeesById.toArray().filter(this.employeesPredicate)} onItemClicked={this.props.onItemClicked} />;
+        const employees = this.props.employees.employeesById.toArray().filter((e) => PeopleDepartmentImpl.employeesPredicate(e, this.props));
+
+        return <View>
+            <SearchPeopleView/>
+            <EmployeesList employees={employees} onItemClicked={this.props.onItemClicked} />
+        </View>;
     }
 
-    private employeesPredicate = (employee: Employee) => {
-        return employee.name.startsWith(this.props.filter) &&
-            this.props.userEmployee && employee.departmentId === this.props.userEmployee.departmentId;
+    private static employeesPredicate = (employee: Employee, props: PeopleDepartmentProps) => {
+        return employee.name.includes(props.filter) &&
+            props.userEmployee && employee.departmentId === props.userEmployee.departmentId;
     }
 }
 

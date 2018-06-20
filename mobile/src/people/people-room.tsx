@@ -1,12 +1,14 @@
 import React from 'react';
 import { Action } from 'redux';
 import { connect, Dispatch } from 'react-redux';
+import { View } from 'react-native';
 
 import { EmployeesList } from './employees-list';
 import { AppState } from '../reducers/app.reducer';
 import { EmployeeMap, EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Employee } from '../reducers/organization/employee.model';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
+import { SearchPeopleView } from '../navigation/search-view';
 
 interface PeopleRoomProps {
     employees: EmployeesStore;
@@ -46,11 +48,16 @@ export class PeopleRoomImpl extends React.Component<PeopleRoomProps & EmployeesL
     }
 
     public render() {
-        return <EmployeesList employees={this.props.employees.employeesById.toArray().filter(this.employeesPredicate)} onItemClicked={this.props.onItemClicked}/>;
+        const employees = this.props.employees.employeesById.toArray().filter(this.employeesPredicate);
+
+        return <View>
+                <SearchPeopleView/>
+                <EmployeesList employees={employees} onItemClicked={this.props.onItemClicked}/>
+            </View>;
     }
 
     private employeesPredicate = (employee: Employee) => {
-        return employee.name.startsWith(this.props.filter) && 
+        return employee.name.includes(this.props.filter) && 
             this.props.userEmployee && employee.roomNumber === this.props.userEmployee.roomNumber;
     }
 }

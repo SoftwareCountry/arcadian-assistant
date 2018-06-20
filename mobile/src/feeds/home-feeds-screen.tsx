@@ -9,6 +9,7 @@ import { connect, Dispatch } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 
 import { FeedListItem } from './feed';
+import { SearchFeedView } from '../navigation/search-view';
 
 import { screenStyles as styles } from './styles';
 import { StyledText } from '../override/styled-text';
@@ -74,18 +75,21 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
         const feeds = this.sortedFeeds().filter(this.feedPredicate);
 
         return (
-            <FlatList
-                style={styles.view}
-                keyExtractor={this.keyExtractor}
-                ItemSeparatorComponent={this.itemSeparator}
-                data={feeds}
-                extraData={this.props.employees}
-                renderItem={this.renderItem}
-                onEndReached={this.endReached}
-                onEndReachedThreshold={0}
-                refreshing={false}
-                onRefresh={this.onRefresh}
-            />
+            <View>
+                <SearchFeedView/>
+                <FlatList
+                    style={styles.view}
+                    keyExtractor={this.keyExtractor}
+                    ItemSeparatorComponent={this.itemSeparator}
+                    data={feeds}
+                    extraData={this.props.employees}
+                    renderItem={this.renderItem}
+                    onEndReached={this.endReached}
+                    onEndReachedThreshold={0}
+                    refreshing={false}
+                    onRefresh={this.onRefresh}
+                />
+            </View>
         );
     }
 
@@ -98,7 +102,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     }
 
     private feedPredicate = (feed: Feed) => {
-        return feed.title.startsWith(this.props.filter);
+        return feed.title.includes(this.props.filter);
     }
 
     private sortedFeeds() {

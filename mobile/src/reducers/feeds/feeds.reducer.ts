@@ -19,7 +19,7 @@ const initState: FeedsState = {
     feeds: Map<string, Feed>(),
     toDate: null,
     fromDate: null,
-    filter: ""
+    filter: '',
 };
 
 export const feedsReducer: Reducer<FeedsState> = (state = initState, action: FeedsActions) => {
@@ -51,7 +51,7 @@ export const feedsReducer: Reducer<FeedsState> = (state = initState, action: Fee
             return {
                 ...state,
                 filter: action.filter,
-            }
+            };
         default:
             return state;
     }
