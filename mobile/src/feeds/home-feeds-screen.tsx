@@ -55,9 +55,11 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     public static navigationOptions = navBar.configurate();
 
     public shouldComponentUpdate(nextProps: FeedsScreenProps & FeedScreenDispatchProps) {
+        const currentFeeds = this.props.feeds.filter((feed) => HomeFeedsScreenImpl.feedPredicate(feed, this.props.filter));
+        const nextFeeds = nextProps.feeds.filter((feed) => HomeFeedsScreenImpl.feedPredicate(feed, nextProps.filter));
+
         if (this.props.onAvatarClicked !== nextProps.onAvatarClicked
-            || this.props.feeds !== nextProps.feeds
-        ) {
+            || !currentFeeds.equals(nextFeeds)) {
             return true;
         }
 
@@ -72,7 +74,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     }
 
     public render() {
-        const feeds = this.sortedFeeds().filter(this.feedPredicate);
+        const feeds = this.sortedFeeds().filter((feed) => HomeFeedsScreenImpl.feedPredicate(feed, this.props.filter));
 
         return (
             <View>
@@ -101,10 +103,6 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
         return <View style={styles.separator}></View>;
     }
 
-    private feedPredicate = (feed: Feed) => {
-        return feed.title.includes(this.props.filter);
-    }
-
     private sortedFeeds() {
         return this.props.feeds.toArray().sort((x, y) => {
             return ((y.datePosted.valueOf() - x.datePosted.valueOf()) || (y.employeeId < x.employeeId ? -1 : 1));
@@ -128,6 +126,10 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     }
     private onRefresh = () => {
         this.props.fetchNewFeeds();
+    }
+
+    private static feedPredicate = (feed: Feed, filter: string) => {
+        return feed.title.includes(filter);
     }
 }
 
