@@ -9,6 +9,8 @@ interface EventManagementToolsetProps {
     event: CalendarEvent;
     employeeId: string;
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
+    canApprove: boolean;
+    canReject: boolean;
 }
 
 export class EventManagementToolset extends Component<EventManagementToolsetProps> {
@@ -22,15 +24,22 @@ export class EventManagementToolset extends Component<EventManagementToolsetProp
 
     public render() {
         const { toolsetContainer, approveIcon, rejectIcon } = layoutStylesForEventManagementToolset;
+        const { canApprove, canReject } = this.props;
 
         return (this.props.event.status === CalendarEventStatus.Requested) ? 
         <View style={toolsetContainer}>
-            <TouchableOpacity onPress={this.onApprove}>
-                <ApplicationIcon name={'approve-tick'} style={approveIcon} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={this.onReject}>
-                <ApplicationIcon name={'reject-cross'} style={rejectIcon} />
-            </TouchableOpacity>
+            {
+                canApprove &&
+                <TouchableOpacity onPress={this.onApprove}>
+                    <ApplicationIcon name={'approve-tick'} style={approveIcon} />
+                </TouchableOpacity>
+            }
+            {
+                canReject &&
+                <TouchableOpacity onPress={this.onReject}>
+                    <ApplicationIcon name={'reject-cross'} style={rejectIcon} />
+                </TouchableOpacity>
+            }
         </View> : null;
     }
 

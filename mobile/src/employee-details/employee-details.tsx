@@ -18,6 +18,8 @@ import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calenda
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { loadPendingRequests } from '../reducers/calendar/pending-requests/pending-requests.action';
+import { loadUserEmployeePermissions } from '../reducers/user/user.action';
+import { UserPermissions } from '../reducers/user/user-permissions.model';
 
 interface EmployeeDetailsProps {
     employee?: Employee;
@@ -29,6 +31,7 @@ interface EmployeeDetailsProps {
     requests?: Map<string, CalendarEvent[]>;
     hoursToIntervalTitle?: (startWorkingHour: number, finishWorkingHour: number) => string;
     showPendingRequests?: Boolean;
+    userPermissions?: UserPermissions;
 }
 
 const mapStateToProps = (state: AppState, props: EmployeeDetailsProps): EmployeeDetailsProps => ({
@@ -37,7 +40,8 @@ const mapStateToProps = (state: AppState, props: EmployeeDetailsProps): Employee
     events: state.calendar.calendarEvents.events,
     eventsPredicate: state.calendar.calendarEvents.eventsPredicate,
     requests: state.calendar.pendingRequests.requests,
-    hoursToIntervalTitle: state.calendar.pendingRequests.hoursToIntervalTitle
+    hoursToIntervalTitle: state.calendar.pendingRequests.hoursToIntervalTitle,
+    userPermissions: state.userInfo.permissions
 });
 
 const TileSeparator = () => <View style = {tileStyles.separator}></View>;
@@ -46,12 +50,14 @@ interface EmployeeDetailsDispatchProps {
     onCompanyClicked: (departmentId: string) => void;
     loadCalendarEvents: (employeeId: string) => void;
     loadPendingRequests: () => void;
+    loadUserEmployeePermissions: () => void;
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchProps => ({
     onCompanyClicked: (departmentId: string) => dispatch( openCompanyAction(departmentId)),
     loadCalendarEvents: (employeeId: string) => dispatch(loadCalendarEvents(employeeId)),
     loadPendingRequests: () => dispatch(loadPendingRequests()),
+    loadUserEmployeePermissions: () => { dispatch(loadUserEmployeePermissions()); },
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status))
 });
 
@@ -82,9 +88,10 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
     public componentDidMount() {
         this.props.loadPendingRequests();
         this.props.loadCalendarEvents(this.props.employee.employeeId);
+        this.props.loadUserEmployeePermissions();
     }
     public render() {
-        const { employee, department } = this.props;
+        const { employee, department, userPermissions } = this.props;
 
         if (!employee || !department) {
             return null;
@@ -100,6 +107,8 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         }
 
         const requests =  this.props.showPendingRequests ? this.props.requests : undefined;
+        const canApprove = userPermissions ? userPermissions.canApproveCalendarEvents : false;
+        const canReject = userPermissions ? userPermissions.canRejectCalendarEvents : false;
 
         return (
                 <View style={layoutStyles.container}>
@@ -145,7 +154,8 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                                     employee={employee}
                                     eventSetNewStatusAction={this.props.eventSetNewStatusAction}
                                     hoursToIntervalTitle={this.props.hoursToIntervalTitle}
-                                    eventManagementEnabled={(this.props.requests.has(employee.employeeId))} 
+                                    canApprove={canApprove}
+                                    canReject={canReject}
                                 />
                             </View> : null
                         }
@@ -264,9 +274,10 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                         employee={this.props.employees.employeesById.get(key)}
                         eventSetNewStatusAction={this.props.eventSetNewStatusAction}
                         hoursToIntervalTitle={this.props.hoursToIntervalTitle}
-                        showUserAvatar
-                        pendingRequestMode
-                        eventManagementEnabled />
+                        showUserAvatar={true}
+                        pendingRequestMode={true}
+                        canApprove={true}
+                        canReject={true} />
                 ))
             }
         </React.Fragment>;

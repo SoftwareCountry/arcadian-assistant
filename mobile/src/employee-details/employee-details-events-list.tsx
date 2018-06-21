@@ -17,9 +17,10 @@ interface EmployeeDetailsEventsListProps {
     employee: Employee;
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
     hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => string;
-    showUserAvatar?: Boolean;
-    pendingRequestMode?: Boolean;
-    eventManagementEnabled: Boolean;
+    showUserAvatar?: boolean;
+    pendingRequestMode?: boolean;
+    canApprove: boolean;
+    canReject: boolean;
 }
 
 export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsListProps> {
@@ -72,12 +73,13 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
                             <StyledText style={eventDetails}>{secondRowEventDetails}</StyledText>
                             <StyledText style={eventDetails}>{this.descriptionFromTo(item)}</StyledText>
                         </View>
-                        {
-                            (this.props.pendingRequestMode || this.props.eventManagementEnabled) ? <EventManagementToolset 
+                        <EventManagementToolset 
                             event={this.props.events.find(e => e.calendarEventId === item.calendarEventId)} 
                             employeeId={this.props.employee.employeeId} 
-                            eventSetNewStatusAction={this.props.eventSetNewStatusAction} /> : null
-                        }
+                            eventSetNewStatusAction={this.props.eventSetNewStatusAction}
+                            canApprove={this.props.canApprove}
+                            canReject={this.props.canReject} 
+                        />
                     </View>
                 </View>
         );

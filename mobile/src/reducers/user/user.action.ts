@@ -1,5 +1,6 @@
 import { User } from './user.model';
 import { Employee } from '../organization/employee.model';
+import { UserPermissions } from './user-permissions.model';
 
 export interface LoadUser {
     type: 'LOAD-USER';
@@ -21,4 +22,19 @@ export interface LoadUserEmployeeFinished {
 
 export const loadUserEmployeeFinished = (employee: Employee): LoadUserEmployeeFinished => ({ type: 'LOAD-USER-EMPLOYEE-FINISHED', employee });
 
-export type UserActions = LoadUser | LoadUserFinished | LoadUserEmployeeFinished;
+export interface LoadUserEmployeePermissions {
+    type: 'LOAD-USER-EMPLOYEE-PERMISSIONS';
+}
+
+export const loadUserEmployeePermissions = (): LoadUserEmployeePermissions => ({ type: 'LOAD-USER-EMPLOYEE-PERMISSIONS' });
+
+export interface LoadUserEmployeePermissionsFininshed {
+    type: 'LOAD-USER-EMPLOYEE-PERMISSIONS-FINISHED';
+    userPermissions: UserPermissions;
+}
+
+export const loadUserEmployeePermissionsFinished = (userPermissions: UserPermissions): LoadUserEmployeePermissionsFininshed => 
+    ({ type: 'LOAD-USER-EMPLOYEE-PERMISSIONS-FINISHED', userPermissions });
+
+export type UserActions = LoadUser | LoadUserFinished | LoadUserEmployeeFinished 
+    | LoadUserEmployeePermissions | LoadUserEmployeePermissionsFininshed;

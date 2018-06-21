@@ -1,24 +1,36 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
     using Arcadia.Assistant.Web.Models;
     using Arcadia.Assistant.Web.Users;
-
+    using Authorization;
+    using Employees;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Organization.Abstractions;
+    using Organization.Abstractions.OrganizationRequests;
+    using Security;
 
     [Route("api/user")]
     [Authorize]
     public class UserController : Controller
     {
         private readonly IUserEmployeeSearch userEmployeeSearch;
+        private readonly IEmployeesRegistry employeesRegistry;
+        private readonly IPermissionsLoader permissionsLoader;
 
-        public UserController(IUserEmployeeSearch userEmployeeSearch)
+        public UserController(
+            IUserEmployeeSearch userEmployeeSearch, 
+            IEmployeesRegistry employeesRegistry, 
+            IPermissionsLoader permissionsLoader)
         {
             this.userEmployeeSearch = userEmployeeSearch;
+            this.employeesRegistry = employeesRegistry;
+            this.permissionsLoader = permissionsLoader;
         }
 
         [HttpGet]
@@ -38,6 +50,34 @@
                     EmployeeId = userEmployee.Metadata.EmployeeId,
                     Username = userEmployee.Metadata.Name
                 });
+        }
+
+        [Route("permissions")]
+        [HttpGet]
+        [ProducesResponseType(typeof(UserEmployeePermissionsModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetPermissions(CancellationToken token)
+        {
+            var userEmployee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, token);
+
+            if (userEmployee == null)
+            {
+                return this.Forbid();
+            }
+
+            var employee = await this.GetEmployeeOrDefaultAsync(userEmployee.Metadata.EmployeeId, token);
+            var allPermissions = await this.permissionsLoader.LoadAsync(this.User);
+            var employeePermissions = allPermissions.GetPermissions(employee);
+
+            return Ok(new UserEmployeePermissionsModel(employeePermissions));
+        }
+
+        private async Task<EmployeeContainer> GetEmployeeOrDefaultAsync(string employeeId, CancellationToken token)
+        {
+            var query = new EmployeesQuery().WithId(employeeId);
+            var employees = await this.employeesRegistry.SearchAsync(query, token);
+
+            return employees.SingleOrDefault();
         }
     }
 }
