@@ -107,8 +107,6 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         }
 
         const requests =  this.props.showPendingRequests ? this.props.requests : undefined;
-        const canApprove = userPermissions ? userPermissions.canApproveCalendarEvents : false;
-        const canReject = userPermissions ? userPermissions.canRejectCalendarEvents : false;
 
         return (
                 <View style={layoutStyles.container}>
@@ -142,22 +140,10 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                         </View>
 
                         {
-                            (requests && requests.size > 0) ? this.getPendingRequests(requests) : null
+                            this.renderPendingRequests(requests)
                         }
-
                         {
-                            (events && events.length > 0) ? 
-                            <View>
-                                <StyledText style={layoutStyles.header}>EVENTS</StyledText>
-                                <EmployeeDetailsEventsList 
-                                    events={events} 
-                                    employee={employee}
-                                    eventSetNewStatusAction={this.props.eventSetNewStatusAction}
-                                    hoursToIntervalTitle={this.props.hoursToIntervalTitle}
-                                    canApprove={canApprove}
-                                    canReject={canReject}
-                                />
-                            </View> : null
+                            this.renderEmployeeEvents(events, userPermissions)
                         }
 
                     </View>
@@ -263,23 +249,43 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         ));
     }
 
-    private getPendingRequests(requests: Map<string, CalendarEvent[]>) {
+    private renderEmployeeEvents(events: CalendarEvent[], userPermissions: UserPermissions) {
+        if (!events || !events.length || !this.props.employee) {
+            return null;
+        }
+
+        const employeeToCalendarEvents = Map<Employee, CalendarEvent[]>([ [ this.props.employee, events ] ]);
+        const canApprove = userPermissions ? userPermissions.canApproveCalendarEvents : false;
+        const canReject = userPermissions ? userPermissions.canRejectCalendarEvents : false;
+
+        return <View>
+            <StyledText style={layoutStyles.header}>EVENTS</StyledText>
+            <EmployeeDetailsEventsList 
+                events={employeeToCalendarEvents} 
+                eventSetNewStatusAction={this.props.eventSetNewStatusAction}
+                hoursToIntervalTitle={this.props.hoursToIntervalTitle}
+                canApprove={canApprove}
+                canReject={canReject}
+            />
+        </View>;
+    }
+
+    private renderPendingRequests(requests: Map<string, CalendarEvent[]>) {
+        if (!requests || !requests.size) {
+            return null;
+        }
+
+        const employeesToCalendarEvents = requests.mapKeys(employeeId => this.props.employees.employeesById.get(employeeId)).toMap();
+
         return <React.Fragment>
             <StyledText style={layoutStyles.header}>REQUESTS</StyledText>
-            {
-                requests.keySeq().map((key) => (
-                    <EmployeeDetailsEventsList
-                        key={key}
-                        events={requests.get(key)} 
-                        employee={this.props.employees.employeesById.get(key)}
-                        eventSetNewStatusAction={this.props.eventSetNewStatusAction}
-                        hoursToIntervalTitle={this.props.hoursToIntervalTitle}
-                        showUserAvatar={true}
-                        pendingRequestMode={true}
-                        canApprove={true}
-                        canReject={true} />
-                ))
-            }
+            <EmployeeDetailsEventsList
+                events={employeesToCalendarEvents}
+                eventSetNewStatusAction={this.props.eventSetNewStatusAction}
+                hoursToIntervalTitle={this.props.hoursToIntervalTitle}
+                showUserAvatar={true}
+                canApprove={true}
+                canReject={true} />
         </React.Fragment>;
     }
 
