@@ -19,7 +19,7 @@ import { EmployeeDetailsEventsList } from './employee-details-events-list';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { loadPendingRequests } from '../reducers/calendar/pending-requests/pending-requests.action';
 import { loadUserEmployeePermissions } from '../reducers/user/user.action';
-import { UserPermissions } from '../reducers/user/user-permissions.model';
+import { UserEmployeePermissions } from '../reducers/user/user-permissions.model';
 
 interface EmployeeDetailsProps {
     employee?: Employee;
@@ -31,7 +31,7 @@ interface EmployeeDetailsProps {
     requests?: Map<string, CalendarEvent[]>;
     hoursToIntervalTitle?: (startWorkingHour: number, finishWorkingHour: number) => string;
     showPendingRequests?: Boolean;
-    userPermissions?: UserPermissions;
+    userPermissions?: UserEmployeePermissions;
 }
 
 const mapStateToProps = (state: AppState, props: EmployeeDetailsProps): EmployeeDetailsProps => ({
@@ -249,7 +249,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         ));
     }
 
-    private renderEmployeeEvents(events: CalendarEvent[], userPermissions: UserPermissions) {
+    private renderEmployeeEvents(events: CalendarEvent[], userPermissions: UserEmployeePermissions) {
         if (!events || !events.length || !this.props.employee) {
             return null;
         }

@@ -8,11 +8,14 @@
 
     public class UserEmployeePermissionsModel
     {
-        public string[] UserEmployeePermissions { get; }
+        public string EmployeeId { get; }
 
-        public UserEmployeePermissionsModel(EmployeePermissionsEntry employeePermissionsEntry)
+        public string[] permissionsNames { get; }
+
+        public UserEmployeePermissionsModel(string employeeId, EmployeePermissionsEntry employeePermissionsEntry)
         {
-            this.UserEmployeePermissions = this.ExtractPermissionNames(employeePermissionsEntry);
+            this.EmployeeId = employeeId;
+            this.permissionsNames = this.ExtractPermissionNames(employeePermissionsEntry);
         }
 
         private string[] ExtractPermissionNames(EmployeePermissionsEntry employeePermissionsEntry)

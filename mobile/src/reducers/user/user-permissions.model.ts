@@ -1,11 +1,15 @@
 import { required, dataMember, typedArray } from 'santee-dcts';
 
-export class UserPermissions {
+export class UserEmployeePermissions {
+
+    @dataMember()
+    @required()
+    public employeeId: string;
 
     @dataMember()
     @typedArray(String)
     @required()
-    public userEmployeePermissions: string[];
+    public permissionsNames: string[];
 
     public get canApproveCalendarEvents(): boolean {
         return this.hasPermission('approveCalendarEvents');
@@ -16,6 +20,6 @@ export class UserPermissions {
     }
 
     private hasPermission(permission: string): boolean {
-        return this.userEmployeePermissions.some(x => x === permission);
+        return this.permissionsNames.some(x => x === permission);
     }
 }

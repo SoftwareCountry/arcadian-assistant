@@ -10,7 +10,7 @@ import { DependenciesContainer } from '../app.reducer';
 import { Employee } from '../organization/employee.model';
 import { handleHttpErrors } from '../errors/errors.epics';
 import { startLogoutProcess } from '../auth/auth.action';
-import { UserPermissions } from './user-permissions.model';
+import { UserEmployeePermissions } from './user-permissions.model';
 
 export const loadUserEpic$ = (action$: ActionsObservable<LoadUser>, appState: AppState, deps: DependenciesContainer) =>
     action$.ofType('LOAD-USER')
@@ -32,5 +32,5 @@ export const loadUserEmployeePermissionsEpic$ = (action$: ActionsObservable<Load
         action$.ofType('LOAD-USER-EMPLOYEE-PERMISSIONS')
             .switchMap(x => deps.apiClient.getJSON(`/user/permissions`)
                 .pipe(handleHttpErrors(false)))
-            .map(obj => deserialize(obj, UserPermissions))
+            .map(obj => deserialize(obj, UserEmployeePermissions))
             .map(x => loadUserEmployeePermissionsFinished(x));

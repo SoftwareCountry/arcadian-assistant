@@ -3,11 +3,11 @@ import { Employee } from '../organization/employee.model';
 import { Reducer } from 'redux';
 import { OrganizationActions } from '../organization/organization.action';
 import { UserActions } from './user.action';
-import { UserPermissions } from './user-permissions.model';
+import { UserEmployeePermissions } from './user-permissions.model';
 
 export interface UserInfoState {
     employeeId: string;
-    permissions: UserPermissions;
+    permissions: UserEmployeePermissions;
 }
 
 const initState: UserInfoState = {
@@ -25,7 +25,7 @@ export const userInfoReducer: Reducer<UserInfoState> = (state = initState, actio
         case 'LOAD-USER-EMPLOYEE-PERMISSIONS-FINISHED':
             return {
                 ...state,
-                permissions: action.userPermissions
+                permissions: action.permissions
             };
         default:
             return state;
