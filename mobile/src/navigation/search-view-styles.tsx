@@ -27,4 +27,22 @@ export const searchViewStyles = StyleSheet.create({
         width: '100%',
         color: 'white',
     },
+    loadingContainer: {
+        flex: 2,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    loadingTextContainer: {
+        flex: 1,
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start'
+    },
+    searchContainer: {
+        flex: 1,
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start'
+    },
+    loadingText: {
+        fontSize: 20
+    }
   });
