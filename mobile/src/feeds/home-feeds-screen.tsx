@@ -10,6 +10,7 @@ import { AppState } from '../reducers/app.reducer';
 
 import { FeedListItem } from './feed';
 import { SearchFeedView } from '../navigation/search-view';
+import { FeedLoading } from '../navigation/loading';
 
 import { screenStyles as styles } from './styles';
 import { StyledText } from '../override/styled-text';
@@ -27,6 +28,7 @@ interface FeedsScreenProps {
     fromDate: Moment;
     user: string;
     filter: string;
+    feedPredicate: (feed: Feed) => boolean;
 }
 
 interface FeedScreenDispatchProps {
@@ -35,14 +37,26 @@ interface FeedScreenDispatchProps {
     fetchOldFeeds: () => void;
 }
 
-const mapStateToProps = (state: AppState): FeedsScreenProps => ({
-    feeds: state.feeds.feeds,
-    employees: state.organization.employees,
-    toDate: state.feeds.toDate,
-    fromDate: state.feeds.fromDate,
-    user: state.userInfo.employeeId,
-    filter: state.feeds.filter,
+const mapStateToProps = (state: AppState): FeedsScreenProps => {
+    const filter = state.feeds.filter;
+    const employees = state.organization.employees;
+
+    return ({
+        feeds: state.feeds.feeds,
+        employees,
+        toDate: state.feeds.toDate,
+        fromDate: state.feeds.fromDate,
+        user: state.userInfo.employeeId,
+        filter,
+        feedPredicate: (feed: Feed) =>  {
+            const employee = employees.employeesById.get(feed.employeeId);
+
+            return  feed.title.includes(filter) || 
+                    feed.text.includes(filter) ||
+                    (employee && employee.name.includes(filter));
+        },
 });
+};
 
 const mapDispatchToProps = (dispatch: Dispatch<any>): FeedScreenDispatchProps => ({
     onAvatarClicked: (employee: Employee) => dispatch(openEmployeeDetailsAction(employee)),
@@ -55,8 +69,8 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     public static navigationOptions = navBar.configurate();
 
     public shouldComponentUpdate(nextProps: FeedsScreenProps & FeedScreenDispatchProps) {
-        const currentFeeds = this.props.feeds.filter((feed) => HomeFeedsScreenImpl.feedPredicate(feed, this.props.filter));
-        const nextFeeds = nextProps.feeds.filter((feed) => HomeFeedsScreenImpl.feedPredicate(feed, nextProps.filter));
+        const currentFeeds = this.props.feeds.filter(this.props.feedPredicate);
+        const nextFeeds = nextProps.feeds.filter(nextProps.feedPredicate);
 
         if (this.props.onAvatarClicked !== nextProps.onAvatarClicked
             || !currentFeeds.equals(nextFeeds)) {
@@ -74,25 +88,27 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     }
 
     public render() {
-        const feeds = this.sortedFeeds().filter((feed) => HomeFeedsScreenImpl.feedPredicate(feed, this.props.filter));
+        const feeds = this.sortedFeeds().filter(this.props.feedPredicate);
 
-        return (
+        return feeds.length > 0 ? (
             <View>
                 <SearchFeedView/>
-                <FlatList
-                    style={styles.view}
-                    keyExtractor={this.keyExtractor}
-                    ItemSeparatorComponent={this.itemSeparator}
-                    data={feeds}
-                    extraData={this.props.employees}
-                    renderItem={this.renderItem}
-                    onEndReached={this.endReached}
-                    onEndReachedThreshold={0}
-                    refreshing={false}
-                    onRefresh={this.onRefresh}
-                />
+                <View>
+                    <FlatList
+                        style={styles.view}
+                        keyExtractor={this.keyExtractor}
+                        ItemSeparatorComponent={this.itemSeparator}
+                        data={feeds}
+                        extraData={this.props.employees}
+                        renderItem={this.renderItem}
+                        onEndReached={this.endReached}
+                        onEndReachedThreshold={0}
+                        refreshing={false}
+                        onRefresh={this.onRefresh}
+                    />
+                </View>
             </View>
-        );
+        ) : <FeedLoading/>;
     }
 
     private keyExtractor(item: Feed) {
@@ -109,7 +125,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
         });
     }
 
-    private renderItem = (itemInfo: ListRenderItemInfo<Feed>) => {
+    private renderItem(itemInfo: ListRenderItemInfo<Feed>) {
         const { item } = itemInfo;
         const employee: Employee = this.props.employees.employeesById.get(item.employeeId);
         if (!employee) {
@@ -126,10 +142,6 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     }
     private onRefresh = () => {
         this.props.fetchNewFeeds();
-    }
-
-    private static feedPredicate = (feed: Feed, filter: string) => {
-        return feed.title.includes(filter);
     }
 }
 

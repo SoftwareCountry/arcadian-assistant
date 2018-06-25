@@ -15,13 +15,23 @@ interface PeopleDepartmentProps {
     employees: EmployeesStore;
     userEmployee: Employee;
     filter: string;
+    employeesPredicate: (employee: Employee) => boolean;
 }
 
-const mapStateToProps = (state: AppState): PeopleDepartmentProps => ({
-    employees: state.organization.employees,
-    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId),
-    filter: state.people.filter,
-});
+const mapStateToProps = (state: AppState): PeopleDepartmentProps => {
+    const filter = state.people.filter;
+    const userEmployee = state.organization.employees.employeesById.get(state.userInfo.employeeId);
+
+    return ({
+        employees: state.organization.employees,
+        userEmployee,
+        filter,
+        employeesPredicate: (employee: Employee) => (employee.name.includes(filter) ||
+                                                    employee.email.includes(filter) || 
+                                                    employee.position.includes(filter)) &&
+                                                    userEmployee && employee.departmentId === userEmployee.departmentId,
+    });
+};
 
 interface EmployeesListDispatchProps {
     onItemClicked: (employee: Employee) => void;
@@ -38,8 +48,8 @@ export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentProps 
             return true;
         }
 
-        const employees = this.props.employees.employeesById.filter((e) => PeopleDepartmentImpl.employeesPredicate(e, this.props));
-        const nextEmployees = nextProps.employees.employeesById.filter((e) => PeopleDepartmentImpl.employeesPredicate(e, nextProps));
+        const employees = this.props.employees.employeesById.filter(this.props.employeesPredicate);
+        const nextEmployees = nextProps.employees.employeesById.filter(this.props.employeesPredicate);
 
         if (!employees.equals(nextEmployees)) {
             return true;
@@ -49,17 +59,9 @@ export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentProps 
     }
 
     public render() {
-        const employees = this.props.employees.employeesById.toArray().filter((e) => PeopleDepartmentImpl.employeesPredicate(e, this.props));
+        const employees = this.props.employees.employeesById.toArray().filter(this.props.employeesPredicate);
 
-        return <View>
-            <SearchPeopleView/>
-            <EmployeesList employees={employees} onItemClicked={this.props.onItemClicked} />
-        </View>;
-    }
-
-    private static employeesPredicate = (employee: Employee, props: PeopleDepartmentProps) => {
-        return employee.name.includes(props.filter) &&
-            props.userEmployee && employee.departmentId === props.userEmployee.departmentId;
+        return <EmployeesList employees={employees} onItemClicked={this.props.onItemClicked} />;
     }
 }
 

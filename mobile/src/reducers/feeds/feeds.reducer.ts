@@ -47,7 +47,7 @@ export const feedsReducer: Reducer<FeedsState> = (state = initState, action: Fee
                 toDate: action.toDate,
                 fromDate: action.fromDate,
             };
-        case 'SEARCH_FEED_FILTER':
+        case 'SEARCH_FEED':
             return {
                 ...state,
                 filter: action.filter,

@@ -16,6 +16,7 @@ import { StyledText } from '../override/styled-text';
 import { employeesListStyles as styles } from './styles';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { SearchPeopleView } from '../navigation/search-view';
+import { PeopleLoading } from '../navigation/loading';
 
 interface PeopleCompanyProps {
     routeName: string;
@@ -26,18 +27,27 @@ interface PeopleCompanyProps {
     currentFocusedDepartmentId?: string;
     departmentLists?: DepartmentsListStateDescriptor[];
     filter: string;
+    employeesPredicate: (head: Department, employee: Employee) => boolean;
 }
 
-const mapStateToProps = (state: AppState): PeopleCompanyProps => ({
-    routeName: 'Company',
-    departmentsBranch: state.people.departmentsBranch.length > 0 ? state.people.departmentsBranch : null,
-    employees: state.organization.employees,
-    departments: state.people.departments,
-    employee: state.organization.employees.employeesById.get(state.userInfo.employeeId),
-    currentFocusedDepartmentId: state.people.currentFocusedDepartmentId,
-    departmentLists: state.people.departmentsLists,
-    filter: state.people.filter,
-});
+const mapStateToProps = (state: AppState): PeopleCompanyProps => {
+    const filter = state.people.filter;
+
+    return ({
+        routeName: 'Company',
+        departmentsBranch: state.people.departmentsBranch.length > 0 ? state.people.departmentsBranch : null,
+        employees: state.organization.employees,
+        departments: state.people.departments,
+        employee: state.organization.employees.employeesById.get(state.userInfo.employeeId),
+        currentFocusedDepartmentId: state.people.currentFocusedDepartmentId,
+        departmentLists: state.people.departmentsLists,
+        filter,
+        employeesPredicate: (head: Department, employee: Employee) => (employee.name.includes(filter) ||
+                                                    employee.email.includes(filter) || 
+                                                    employee.position.includes(filter)) &&
+                                                    employee.departmentId === head.departmentId && employee.employeeId !== head.chiefId,
+    });
+};
 
 interface PeopleCompanyDispatchProps {
     requestEmployeesForDepartment: (departmentId: string) => void;
@@ -65,47 +75,45 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
         if (this.props.departments && this.props.departments.length > 0 && this.props.departmentsBranch !== null) {
                 userFocusedDepartmentsBranch = userFocusedDepartmentsBranch.concat(this.props.departmentsBranch);
         } else {
-            return <View style={styles.loadingContainer}>
-                        <SearchPeopleView/>
-                        <StyledText style={styles.loadingText}>Loading...</StyledText>
-                    </View>;
+            return <PeopleLoading/>;
         }
         
         return <View>
             <SearchPeopleView/>
-            <ScrollView style={{ backgroundColor: '#fff', flex: 1 }}>
-                <EmployeeCardWithAvatar
-                    employee={this.props.employees.employeesById.get(userFocusedDepartmentsBranch[0].chiefId)}
-                    departmentAbbreviation={userFocusedDepartmentsBranch[0].abbreviation}
-                    treeLevel={0}
-                    onItemClicked = {this.props.onItemClicked}
-                />
-                {
-                    userFocusedDepartmentsBranch.map((head, index) => (
-                        <DepartmentsHScrollableList
-                            treeLevel={index + 1}
-                            departments={this.props.departments.filter(department => department.parentDepartmentId === head.departmentId)}
-                            departmentsLists={this.props.departmentLists[index + 1]}
-                            headDepartmentId={head.departmentId}
-                            headDepartmentChiefId={head.chiefId}
-                            focusOnDepartmentWithId={(index + 1) < userFocusedDepartmentsBranch.length ? userFocusedDepartmentsBranch[index + 1].departmentId : null}
-                            currentFocusedDepartmentId={this.props.currentFocusedDepartmentId}
-                            employees={this.props.employees}
-                            key={head.departmentId}
-                            updateDepartmentsBranch={this.props.updateDepartmentsBranch}
-                            requestEmployeesForDepartment={this.props.requestEmployeesForDepartment}
-                            onItemClicked={this.props.onItemClicked}
-                            employeesPredicate={(employee: Employee) => this.employeesPredicate(head, employee)}
-                        />
-                    ))
-                }
-            </ScrollView>
-        </View>;
-    }
+            <View>
+                <ScrollView style={{ backgroundColor: '#fff', flex: 1 }}>
+                    <EmployeeCardWithAvatar
+                        employee={this.props.employees.employeesById.get(userFocusedDepartmentsBranch[0].chiefId)}
+                        departmentAbbreviation={userFocusedDepartmentsBranch[0].abbreviation}
+                        treeLevel={0}
+                        onItemClicked = {this.props.onItemClicked}
+                    />
+                    {
+                        userFocusedDepartmentsBranch.map((head, index) => {
+                            const employeesPredicate = (employee: Employee) => this.props.employeesPredicate(head, employee);
 
-    private employeesPredicate = (head: Department, employee: Employee) => {
-        return employee.name.includes(this.props.filter) &&
-            employee.departmentId === head.departmentId && employee.employeeId !== head.chiefId;
+                            return (
+                                <DepartmentsHScrollableList
+                                    treeLevel={index + 1}
+                                    departments={this.props.departments.filter(department => department.parentDepartmentId === head.departmentId)}
+                                    departmentsLists={this.props.departmentLists[index + 1]}
+                                    headDepartmentId={head.departmentId}
+                                    headDepartmentChiefId={head.chiefId}
+                                    focusOnDepartmentWithId={(index + 1) < userFocusedDepartmentsBranch.length ? userFocusedDepartmentsBranch[index + 1].departmentId : null}
+                                    currentFocusedDepartmentId={this.props.currentFocusedDepartmentId}
+                                    employees={this.props.employees}
+                                    key={head.departmentId}
+                                    updateDepartmentsBranch={this.props.updateDepartmentsBranch}
+                                    requestEmployeesForDepartment={this.props.requestEmployeesForDepartment}
+                                    onItemClicked={this.props.onItemClicked}
+                                    employeesPredicate={employeesPredicate}
+                                />
+                            );
+                        })
+                    }
+                </ScrollView>
+            </View>
+        </View>;
     }
 }
 

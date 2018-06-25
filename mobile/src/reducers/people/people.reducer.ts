@@ -101,7 +101,7 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
             const depsAndMeta = departmentsBranchFromDepartmentWithId(action.departmentId, state.departments, action.focusOnEmployeesList);
             return {...state, departmentsBranch: depsAndMeta.departmentsLineup, departmentsLists: depsAndMeta.departmentsLists};
         }
-        case 'SEARCH_PEOPLE_FILTER':
+        case 'SEARCH_PEOPLE':
             return {
                 ...state,
                 filter: action.filter,

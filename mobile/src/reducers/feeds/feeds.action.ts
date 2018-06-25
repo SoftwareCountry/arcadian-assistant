@@ -34,16 +34,16 @@ export const changeBoundaryDates = (toDate: Moment, fromDate: Moment): ChangeBou
 };
 
 export interface SetFeedFilter extends Action {
-    type: 'SEARCH_FEED_FILTER';
+    type: 'SEARCH_FEED';
     filter: string;
 }
 
 export const setFeedFilter = (filter: string): SetFeedFilter => {
-    return { type: 'SEARCH_FEED_FILTER', filter };
+    return { type: 'SEARCH_FEED', filter };
 };
 
 export const endFeedSearch = (): SetFeedFilter => {
-    return { type: 'SEARCH_FEED_FILTER', filter: ''};
+    return { type: 'SEARCH_FEED', filter: ''};
 };
 
 export type FeedsActions =

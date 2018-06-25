@@ -6,14 +6,6 @@ export const employeesListStyles  = StyleSheet.create({
         flex: 1,
         backgroundColor: '#FFF'
     },
-    loadingContainer: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    loadingText: {
-        fontSize: 20
-    }
 });
 
 export const employeesListItemStyles = StyleSheet.create({
