@@ -3,7 +3,7 @@ import { Employee } from '../organization/employee.model';
 import { Reducer } from 'redux';
 import { OrganizationActions } from '../organization/organization.action';
 import { UserActions } from './user.action';
-import { UserEmployeePermissions } from './user-permissions.model';
+import { UserEmployeePermissions } from './user-employee-permissions.model';
 import { Map } from 'immutable';
 
 export interface UserInfoState {
@@ -24,10 +24,16 @@ export const userInfoReducer: Reducer<UserInfoState> = (state = initState, actio
                 employeeId: action.userEmployeeId
             };
         case 'LOAD-USER-EMPLOYEE-PERMISSIONS-FINISHED':
-            return {
-                ...state,
-                permissions: state.permissions.set(action.permissions.employeeId, action.permissions)
-            };
+            const existingPermissions = state.permissions.get(action.permissions.employeeId);
+
+            if (!existingPermissions || !existingPermissions.equals(action.permissions)) {
+                return {
+                    ...state,
+                    permissions: state.permissions.set(action.permissions.employeeId, action.permissions)
+                };
+            }
+
+            return state;
         default:
             return state;
     }

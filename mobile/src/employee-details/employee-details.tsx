@@ -18,7 +18,7 @@ import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calenda
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { loadPendingRequests } from '../reducers/calendar/pending-requests/pending-requests.action';
-import { UserEmployeePermissions } from '../reducers/user/user-permissions.model';
+import { UserEmployeePermissions } from '../reducers/user/user-employee-permissions.model';
 import { loadUserEmployeePermissions } from '../reducers/user/user.action';
 
 interface EmployeeDetailsOwnProps {
@@ -79,11 +79,12 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         const events = this.props.events;
         const nextEvents = nextProps.events;
 
-        const permissions = this.props.userEmployeePermissions.get(this.props.employee.employeeId);
-        const nextPermissions = nextProps.userEmployeePermissions.get(this.props.employee.employeeId);
+        if (!this.props.userEmployeePermissions.equals(nextProps.userEmployeePermissions)) {
 
-        if (!this.props.userEmployeePermissions.equals(nextProps.userEmployeePermissions) && permissions !== nextPermissions) {
-            return true;
+            const permissions = this.props.userEmployeePermissions.get(this.props.employee.employeeId);
+            const nextPermissions = nextProps.userEmployeePermissions.get(this.props.employee.employeeId);
+
+            return !permissions || !permissions.equals(nextPermissions);
         }
 
         if (!requests.equals(nextRequests) || !events.equals(nextEvents)) {
@@ -104,10 +105,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
     public componentDidMount() {
         this.props.loadPendingRequests();
         this.props.loadCalendarEvents(this.props.employee.employeeId);
-
-        if (!this.props.userEmployeePermissions.has(this.props.employee.employeeId)) {
-            this.props.loadUserEmployeePermissions(this.props.employee.employeeId);
-        }
+        this.props.loadUserEmployeePermissions(this.props.employee.employeeId);
     }
 
     public render() {

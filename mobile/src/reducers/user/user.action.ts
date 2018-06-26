@@ -1,6 +1,6 @@
 import { User } from './user.model';
 import { Employee } from '../organization/employee.model';
-import { UserEmployeePermissions } from './user-permissions.model';
+import { UserEmployeePermissions } from './user-employee-permissions.model';
 
 export interface LoadUser {
     type: 'LOAD-USER';

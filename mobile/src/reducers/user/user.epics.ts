@@ -10,7 +10,7 @@ import { DependenciesContainer } from '../app.reducer';
 import { Employee } from '../organization/employee.model';
 import { handleHttpErrors } from '../errors/errors.epics';
 import { startLogoutProcess } from '../auth/auth.action';
-import { UserEmployeePermissions } from './user-permissions.model';
+import { UserEmployeePermissions } from './user-employee-permissions.model';
 
 export const loadUserEpic$ = (action$: ActionsObservable<LoadUser>, appState: AppState, deps: DependenciesContainer) =>
     action$.ofType('LOAD-USER')
