@@ -24,9 +24,10 @@ export const loadUserEmployeeFinished = (employee: Employee): LoadUserEmployeeFi
 
 export interface LoadUserEmployeePermissions {
     type: 'LOAD-USER-EMPLOYEE-PERMISSIONS';
+    employeeId: string;
 }
 
-export const loadUserEmployeePermissions = (): LoadUserEmployeePermissions => ({ type: 'LOAD-USER-EMPLOYEE-PERMISSIONS' });
+export const loadUserEmployeePermissions = (employeeId: string): LoadUserEmployeePermissions => ({ type: 'LOAD-USER-EMPLOYEE-PERMISSIONS', employeeId });
 
 export interface LoadUserEmployeePermissionsFininshed {
     type: 'LOAD-USER-EMPLOYEE-PERMISSIONS-FINISHED';

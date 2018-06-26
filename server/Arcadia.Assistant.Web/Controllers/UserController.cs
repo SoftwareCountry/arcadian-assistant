@@ -52,11 +52,12 @@
                 });
         }
 
-        [Route("permissions")]
+        [Route("{employeeId}/permissions")]
         [HttpGet]
         [ProducesResponseType(typeof(UserEmployeePermissionsModel), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetPermissions(CancellationToken token)
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetPermissions(string employeeId, CancellationToken token)
         {
             var userEmployee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, token);
 
@@ -65,11 +66,17 @@
                 return this.Forbid();
             }
 
-            var employee = await this.GetEmployeeOrDefaultAsync(userEmployee.Metadata.EmployeeId, token);
+            var employee = await this.GetEmployeeOrDefaultAsync(employeeId, token);
+
+            if (employee == null)
+            {
+                return this.BadRequest();
+            }
+
             var allPermissions = await this.permissionsLoader.LoadAsync(this.User);
             var employeePermissions = allPermissions.GetPermissions(employee);
 
-            return Ok(new UserEmployeePermissionsModel(userEmployee.Metadata.EmployeeId, employeePermissions));
+            return Ok(new UserEmployeePermissionsModel(employeeId, employeePermissions));
         }
 
         private async Task<EmployeeContainer> GetEmployeeOrDefaultAsync(string employeeId, CancellationToken token)

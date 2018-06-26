@@ -29,8 +29,8 @@ export const loadUserFinishedEpic$ = (action$: ActionsObservable<LoadUserFinishe
         .catch(e => Observable.of(startLogoutProcess()));
 
 export const loadUserEmployeePermissionsEpic$ = (action$: ActionsObservable<LoadUserEmployeePermissions>, appState: AppState, deps: DependenciesContainer) =>
-        action$.ofType('LOAD-USER-EMPLOYEE-PERMISSIONS')
-            .switchMap(x => deps.apiClient.getJSON(`/user/permissions`)
-                .pipe(handleHttpErrors(false)))
-            .map(obj => deserialize(obj, UserEmployeePermissions))
-            .map(x => loadUserEmployeePermissionsFinished(x));
+    action$.ofType('LOAD-USER-EMPLOYEE-PERMISSIONS')
+        .switchMap(x => deps.apiClient.getJSON(`/user/${x.employeeId}/permissions`)
+            .pipe(handleHttpErrors(false)))
+        .map(obj => deserialize(obj, UserEmployeePermissions))
+        .map(x => loadUserEmployeePermissionsFinished(x));

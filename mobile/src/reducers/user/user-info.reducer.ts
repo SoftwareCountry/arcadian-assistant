@@ -4,15 +4,16 @@ import { Reducer } from 'redux';
 import { OrganizationActions } from '../organization/organization.action';
 import { UserActions } from './user.action';
 import { UserEmployeePermissions } from './user-permissions.model';
+import { Map } from 'immutable';
 
 export interface UserInfoState {
     employeeId: string;
-    permissions: UserEmployeePermissions;
+    permissions: Map<string, UserEmployeePermissions>;
 }
 
 const initState: UserInfoState = {
     employeeId: null,
-    permissions: null
+    permissions: Map<string, UserEmployeePermissions>()
 };
 
 export const userInfoReducer: Reducer<UserInfoState> = (state = initState, action: UserActions) => {
@@ -25,7 +26,7 @@ export const userInfoReducer: Reducer<UserInfoState> = (state = initState, actio
         case 'LOAD-USER-EMPLOYEE-PERMISSIONS-FINISHED':
             return {
                 ...state,
-                permissions: action.permissions
+                permissions: state.permissions.set(action.permissions.employeeId, action.permissions)
             };
         default:
             return state;

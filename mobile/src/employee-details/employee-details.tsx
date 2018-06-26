@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { connect, Dispatch } from 'react-redux';
+import { connect, Dispatch, MapStateToProps } from 'react-redux';
 import { Map } from 'immutable';
 import { View, StyleSheet, ScrollView, Linking, TouchableOpacity, ViewStyle } from 'react-native';
 
@@ -13,35 +13,44 @@ import { StyledText } from '../override/styled-text';
 import { Employee } from '../reducers/organization/employee.model';
 import { ApplicationIcon } from '../override/application-icon';
 import { openCompanyAction } from './employee-details-dispatcher';
-import { loadCalendarEvents, calendarEventSetNewStatus } from '../reducers/calendar/calendar.action';
+import { loadCalendarEvents, calendarEventSetNewStatus, nextCalendarPage } from '../reducers/calendar/calendar.action';
 import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { loadPendingRequests } from '../reducers/calendar/pending-requests/pending-requests.action';
-import { loadUserEmployeePermissions } from '../reducers/user/user.action';
 import { UserEmployeePermissions } from '../reducers/user/user-permissions.model';
+import { loadUserEmployeePermissions } from '../reducers/user/user.action';
 
-interface EmployeeDetailsProps {
-    employee?: Employee;
-    employees?: EmployeesStore;
+interface EmployeeDetailsOwnProps {
+    employee: Employee;
     department: Department;
-    layoutStylesChevronPlaceholder?: ViewStyle;
-    events?: Map<string, CalendarEvent[]>;
-    eventsPredicate?: (event: CalendarEvent) => boolean;
-    requests?: Map<string, CalendarEvent[]>;
-    hoursToIntervalTitle?: (startWorkingHour: number, finishWorkingHour: number) => string;
-    showPendingRequests?: Boolean;
-    userPermissions?: UserEmployeePermissions;
+    layoutStylesChevronPlaceholder: ViewStyle;
+    showPendingRequests: Boolean;
 }
 
-const mapStateToProps = (state: AppState, props: EmployeeDetailsProps): EmployeeDetailsProps => ({
-    department: props.department,
+interface EmployeeDetailsStateProps {
+    employees: EmployeesStore;
+    events: Map<string, CalendarEvent[]>;
+    eventsPredicate: (event: CalendarEvent) => boolean;
+    requests: Map<string, CalendarEvent[]>;
+    hoursToIntervalTitle?: (startWorkingHour: number, finishWorkingHour: number) => string;
+    userEmployeePermissions: Map<string, UserEmployeePermissions>;
+}
+
+type EmployeeDetailsProps = EmployeeDetailsOwnProps & EmployeeDetailsStateProps;
+
+const mapStateToProps: MapStateToProps<EmployeeDetailsProps, EmployeeDetailsOwnProps, AppState> = (state: AppState, ownProps: EmployeeDetailsOwnProps): EmployeeDetailsProps => ({
+    employee: ownProps.employee,
+    department: ownProps.department,
+    layoutStylesChevronPlaceholder: ownProps.layoutStylesChevronPlaceholder,
+    showPendingRequests: ownProps.showPendingRequests,
+
     employees: state.organization.employees,
     events: state.calendar.calendarEvents.events,
     eventsPredicate: state.calendar.calendarEvents.eventsPredicate,
     requests: state.calendar.pendingRequests.requests,
     hoursToIntervalTitle: state.calendar.pendingRequests.hoursToIntervalTitle,
-    userPermissions: state.userInfo.permissions
+    userEmployeePermissions: state.userInfo.permissions
 });
 
 const TileSeparator = () => <View style = {tileStyles.separator}></View>;
@@ -50,15 +59,15 @@ interface EmployeeDetailsDispatchProps {
     onCompanyClicked: (departmentId: string) => void;
     loadCalendarEvents: (employeeId: string) => void;
     loadPendingRequests: () => void;
-    loadUserEmployeePermissions: () => void;
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
+    loadUserEmployeePermissions: (employeeId: string) => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchProps => ({
     onCompanyClicked: (departmentId: string) => dispatch( openCompanyAction(departmentId)),
     loadCalendarEvents: (employeeId: string) => dispatch(loadCalendarEvents(employeeId)),
     loadPendingRequests: () => dispatch(loadPendingRequests()),
-    loadUserEmployeePermissions: () => { dispatch(loadUserEmployeePermissions()); },
-    eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status))
+    eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status)),
+    loadUserEmployeePermissions: (employeeId: string) => { dispatch(loadUserEmployeePermissions(employeeId)); }
 });
 
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
@@ -69,6 +78,13 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         const nextRequests = nextProps.requests;
         const events = this.props.events;
         const nextEvents = nextProps.events;
+
+        const permissions = this.props.userEmployeePermissions.get(this.props.employee.employeeId);
+        const nextPermissions = nextProps.userEmployeePermissions.get(this.props.employee.employeeId);
+
+        if (!this.props.userEmployeePermissions.equals(nextProps.userEmployeePermissions) && permissions !== nextPermissions) {
+            return true;
+        }
 
         if (!requests.equals(nextRequests) || !events.equals(nextEvents)) {
             return true;
@@ -88,14 +104,20 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
     public componentDidMount() {
         this.props.loadPendingRequests();
         this.props.loadCalendarEvents(this.props.employee.employeeId);
-        this.props.loadUserEmployeePermissions();
+
+        if (!this.props.userEmployeePermissions.has(this.props.employee.employeeId)) {
+            this.props.loadUserEmployeePermissions(this.props.employee.employeeId);
+        }
     }
+
     public render() {
-        const { employee, department, userPermissions } = this.props;
+        const { employee, department, userEmployeePermissions } = this.props;
 
         if (!employee || !department) {
             return null;
         }
+
+        const permissions = userEmployeePermissions.get(employee.employeeId);
 
         const tiles = this.getTiles(employee);
         const contacts = this.getContacts(employee);
@@ -143,7 +165,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                             this.renderPendingRequests(requests)
                         }
                         {
-                            this.renderEmployeeEvents(events, userPermissions)
+                            this.renderEmployeeEvents(events, permissions)
                         }
 
                     </View>
