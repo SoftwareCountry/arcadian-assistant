@@ -9,7 +9,6 @@ import { EmployeeMap, EmployeesStore } from '../reducers/organization/employees.
 import { Employee } from '../reducers/organization/employee.model';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 import { employeesAZSort } from './employee-comparer';
-import { SearchPeopleView } from '../navigation/search-view';
 
 interface PeopleDepartmentProps {
     employees: EmployeesStore;

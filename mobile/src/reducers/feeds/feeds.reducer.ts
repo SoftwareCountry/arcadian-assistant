@@ -2,6 +2,8 @@ import { Reducer } from 'redux';
 import { combineEpics } from 'redux-observable';
 import { Feed } from './feed.model';
 import { FeedsActions } from './feeds.action';
+import { SearchActions } from '../search.action';
+import { SearchType } from '../../navigation/search-view';
 import { loadFeedsFinishedEpic$, pagingPeriodDays, fetchNewFeedsEpic$, fetchOldFeedsEpic$, loadUserEmployeeFinishedEpic$ } from './feeds.epics';
 import { Moment } from 'moment';
 import { Map } from 'immutable';
@@ -22,7 +24,7 @@ const initState: FeedsState = {
     filter: '',
 };
 
-export const feedsReducer: Reducer<FeedsState> = (state = initState, action: FeedsActions) => {
+export const feedsReducer: Reducer<FeedsState> = (state = initState, action: FeedsActions | SearchActions) => {
     switch (action.type) {
         case 'FETCH_NEW_FEEDS':
         case 'FETCH_OLD_FEEDS':
@@ -47,11 +49,13 @@ export const feedsReducer: Reducer<FeedsState> = (state = initState, action: Fee
                 toDate: action.toDate,
                 fromDate: action.fromDate,
             };
-        case 'SEARCH_FEED':
-            return {
-                ...state,
-                filter: action.filter,
-            };
+        case 'SEARCH-BY-TEXT-FILTER':
+            if (action.searchType === SearchType.FEED) {
+                return {
+                    ...state,
+                    filter: action.filter,
+                };
+            }
         default:
             return state;
     }

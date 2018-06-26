@@ -2,9 +2,9 @@ import { StyleSheet, Platform } from 'react-native';
 
 export const searchViewStyles = StyleSheet.create({
     container: {
-        paddingTop: Platform.OS === 'ios' ? 30 : 10,
-        paddingLeft: Platform.OS === 'ios' ? 30 : 10,
-        height: Platform.OS === 'ios' ? 80 : 50,
+        paddingTop: 10,
+        paddingLeft: 10,
+        height: 50,
         backgroundColor: '#2FAFCC',
         flexDirection: 'row',
         alignItems: 'center',

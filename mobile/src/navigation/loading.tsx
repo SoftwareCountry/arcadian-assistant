@@ -1,30 +1,19 @@
 import React from 'react';
 import { View } from 'react-native';
 import { StyledText } from '../override/styled-text';
-import { SearchFeedView, SearchPeopleView } from './search-view';
+import { SearchView, SearchType } from './search-view';
 import { searchViewStyles as styles } from './search-view-styles';
 
-export class FeedLoading extends React.Component {
-    public render() {
-        return (
-            <View style={styles.loadingContainer}>
-                <View style={styles.searchContainer}>
-                    <SearchFeedView/>
-                </View>
-                <View style={styles.loadingTextContainer}>
-                    <StyledText style={styles.loadingText}>Loading...</StyledText>
-                </View>
-            </View>
-        );
-    }
+interface LoadingProps {
+    type: SearchType;
 }
 
-export class PeopleLoading extends React.Component {
+export class LoadingView extends React.Component<LoadingProps> {
     public render() {
         return (
             <View style={styles.loadingContainer}>
                 <View style={styles.searchContainer}>
-                    <SearchPeopleView/>
+                    <SearchView type={this.props.type}/>
                 </View>
                 <View style={styles.loadingTextContainer}>
                     <StyledText style={styles.loadingText}>Loading...</StyledText>

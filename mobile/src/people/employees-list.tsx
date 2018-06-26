@@ -10,8 +10,8 @@ import { EmployeesListItem } from './employees-list-item';
 import { employeesListStyles as styles } from './styles';
 import { employeesAZSort } from './employee-comparer';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
-import { PeopleLoading } from '../navigation/loading';
-import { SearchPeopleView } from '../navigation/search-view';
+import { LoadingView } from '../navigation/loading';
+import { SearchView, SearchType } from '../navigation/search-view';
 
 export interface EmployeesListProps {
     employees: Employee[];
@@ -24,7 +24,7 @@ export class EmployeesList extends React.Component<EmployeesListProps> {
 
         return employees.length > 0 ? 
             <View>
-                <SearchPeopleView/>
+                <SearchView type={SearchType.PEOPLE}/>
                 <View style={styles.view}>
                     <FlatList
                         data={employees}
@@ -32,7 +32,7 @@ export class EmployeesList extends React.Component<EmployeesListProps> {
                         renderItem={this.renderItem} />
                 </View>
             </View>
-        : (<PeopleLoading/>);
+        : <LoadingView type={SearchType.PEOPLE}/>;
     }
 
     private keyExtractor = (item: Employee) => item.employeeId;

@@ -33,18 +33,5 @@ export const changeBoundaryDates = (toDate: Moment, fromDate: Moment): ChangeBou
     return { type: 'CHANGE_BOUNDARY_DATES', toDate, fromDate };
 };
 
-export interface SetFeedFilter extends Action {
-    type: 'SEARCH_FEED';
-    filter: string;
-}
-
-export const setFeedFilter = (filter: string): SetFeedFilter => {
-    return { type: 'SEARCH_FEED', filter };
-};
-
-export const endFeedSearch = (): SetFeedFilter => {
-    return { type: 'SEARCH_FEED', filter: ''};
-};
-
 export type FeedsActions =
-    LoadFeedsFinished | ChangeBoundaryDates | FetchNewFeeds | FetchOldFeeds | SetFeedFilter;
+    LoadFeedsFinished | ChangeBoundaryDates | FetchNewFeeds | FetchOldFeeds;

@@ -15,8 +15,8 @@ import { Employee } from '../reducers/organization/employee.model';
 import { StyledText } from '../override/styled-text';
 import { employeesListStyles as styles } from './styles';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
-import { SearchPeopleView } from '../navigation/search-view';
-import { PeopleLoading } from '../navigation/loading';
+import { SearchView, SearchType } from '../navigation/search-view';
+import { LoadingView } from '../navigation/loading';
 
 interface PeopleCompanyProps {
     routeName: string;
@@ -75,11 +75,11 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
         if (this.props.departments && this.props.departments.length > 0 && this.props.departmentsBranch !== null) {
                 userFocusedDepartmentsBranch = userFocusedDepartmentsBranch.concat(this.props.departmentsBranch);
         } else {
-            return <PeopleLoading/>;
+            return <LoadingView type={SearchType.PEOPLE}/>;
         }
         
         return <View>
-            <SearchPeopleView/>
+            <SearchView type={SearchType.PEOPLE}/>
             <View>
                 <ScrollView style={{ backgroundColor: '#fff', flex: 1 }}>
                     <EmployeeCardWithAvatar

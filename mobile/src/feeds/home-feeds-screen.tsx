@@ -9,8 +9,8 @@ import { connect, Dispatch } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 
 import { FeedListItem } from './feed';
-import { SearchFeedView } from '../navigation/search-view';
-import { FeedLoading } from '../navigation/loading';
+import { SearchView, SearchType } from '../navigation/search-view';
+import { LoadingView } from '../navigation/loading';
 
 import { screenStyles as styles } from './styles';
 import { StyledText } from '../override/styled-text';
@@ -90,9 +90,9 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     public render() {
         const feeds = this.sortedFeeds().filter(this.props.feedPredicate);
 
-        return feeds.length > 0 ? (
+        return this.props.feeds.size > 0 ?
             <View>
-                <SearchFeedView/>
+                <SearchView type={SearchType.FEED}/>
                 <View>
                     <FlatList
                         style={styles.view}
@@ -108,7 +108,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
                     />
                 </View>
             </View>
-        ) : <FeedLoading/>;
+        : <LoadingView type={SearchType.FEED}/>;
     }
 
     private keyExtractor(item: Feed) {
@@ -125,7 +125,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
         });
     }
 
-    private renderItem(itemInfo: ListRenderItemInfo<Feed>) {
+    private renderItem = (itemInfo: ListRenderItemInfo<Feed>) => {
         const { item } = itemInfo;
         const employee: Employee = this.props.employees.employeesById.get(item.employeeId);
         if (!employee) {
