@@ -22,6 +22,14 @@ export class UserEmployeePermissions {
     }
 
     public equals(obj: UserEmployeePermissions): boolean {
-        return (obj && obj === this) || this.permissionsNames.equals(obj.permissionsNames);
+        if (!obj) {
+            return false;
+        }
+
+        if (obj === this) {
+            return true;
+        }
+
+        return this.employeeId === obj.employeeId && this.permissionsNames.equals(obj.permissionsNames);
     }
 }
