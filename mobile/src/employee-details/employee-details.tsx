@@ -89,7 +89,10 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         }
 
         if (!requests.equals(nextRequests) || !events.equals(nextEvents)) {
-            return true;
+            const calendarEvents = requests.get(this.props.employee.employeeId);
+            const nextCalendarEvents = nextRequests.get(nextProps.employee.employeeId);
+
+            return calendarEvents !== nextCalendarEvents;
         }
 
         if (!employees.equals(nextEmployees)) {
