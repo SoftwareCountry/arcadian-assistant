@@ -79,17 +79,17 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
         return (
             <View style={eventsContainerFlattened} key={item.calendarEvent.calendarEventId}>
                 <View style={eventRow}>
-                <View style={leftIconsStyle}>
-                    <View style={typeIconContainerStyle}>
-                        <CalendarEventIcon type={item.calendarEvent.type} style={eventIcon} />
+                    <View style={leftIconsStyle}>
+                        <View style={typeIconContainerStyle}>
+                            <CalendarEventIcon type={item.calendarEvent.type} style={eventIcon} />
+                        </View>
+                        {
+                            this.props.showUserAvatar ? 
+                            <View style={avatarContainer}>
+                                <Avatar photo={item.employee.photo} style={avatarOuterFrame} imageStyle={avatarImage} />
+                            </View> : null
+                        }
                     </View>
-                    {
-                        this.props.showUserAvatar ? 
-                        <View style={avatarContainer}>
-                            <Avatar photo={item.employee.photo} style={avatarOuterFrame} imageStyle={avatarImage} />
-                        </View> : null
-                    }
-                </View>
                     <View style={eventTextContainer}>
                         <StyledText style={eventTitle}>{item.employee.name}</StyledText>
                         <StyledText style={eventDetails}>{descriptionStatus}</StyledText>
