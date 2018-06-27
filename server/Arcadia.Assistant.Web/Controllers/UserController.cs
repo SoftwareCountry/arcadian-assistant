@@ -52,11 +52,11 @@
                 });
         }
 
-        [Route("{employeeId}/permissions")]
+        [Route("permissions/{employeeId}")]
         [HttpGet]
         [ProducesResponseType(typeof(UserEmployeePermissionsModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetPermissions(string employeeId, CancellationToken token)
         {
             var userEmployee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, token);
@@ -70,7 +70,7 @@
 
             if (employee == null)
             {
-                return this.BadRequest();
+                return this.NotFound();
             }
 
             var allPermissions = await this.permissionsLoader.LoadAsync(this.User);
