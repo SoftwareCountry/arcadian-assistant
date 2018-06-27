@@ -12,6 +12,7 @@ import { chevronColor, profileScreenStyles, layoutStyles } from './styles';
 import { EmployeeDetails } from '../employee-details/employee-details';
 import { AuthActions, startLogoutProcess } from '../reducers/auth/auth.action';
 import { refresh } from '../reducers/refresh/refresh.action';
+import { loadPendingRequests } from '../reducers/calendar/pending-requests/pending-requests.action';
 
 interface ProfileScreenProps {
     employee: Employee;
@@ -26,13 +27,19 @@ const mapStateToProps = (state: AppState): ProfileScreenProps => ({
 interface AuthDispatchProps {
     onlogoutClicked: () => void;
     refresh: () => void;
+    loadPendingRequests: () => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<AuthActions>): AuthDispatchProps => ({
     onlogoutClicked: () => { dispatch(startLogoutProcess()); },
-    refresh: () => dispatch(refresh())
+    refresh: () => dispatch(refresh()),
+    loadPendingRequests: () => dispatch(loadPendingRequests()),
 });
 
 class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps> {
+    public componentDidMount() {
+        this.props.loadPendingRequests();
+    }
+
     public render() {
         const employee = this.props.employee;
         const department = this.props.departments && employee ? this.props.departments.find((d) => d.departmentId === employee.departmentId) : null;

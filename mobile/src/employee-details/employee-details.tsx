@@ -17,7 +17,6 @@ import { loadCalendarEvents, calendarEventSetNewStatus, nextCalendarPage } from 
 import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
-import { loadPendingRequests } from '../reducers/calendar/pending-requests/pending-requests.action';
 import { UserEmployeePermissions } from '../reducers/user/user-employee-permissions.model';
 import { loadUserEmployeePermissions } from '../reducers/user/user.action';
 
@@ -58,14 +57,12 @@ const TileSeparator = () => <View style = {tileStyles.separator}></View>;
 interface EmployeeDetailsDispatchProps {
     onCompanyClicked: (departmentId: string) => void;
     loadCalendarEvents: (employeeId: string) => void;
-    loadPendingRequests: () => void;
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
     loadUserEmployeePermissions: (employeeId: string) => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchProps => ({
     onCompanyClicked: (departmentId: string) => dispatch( openCompanyAction(departmentId)),
     loadCalendarEvents: (employeeId: string) => dispatch(loadCalendarEvents(employeeId)),
-    loadPendingRequests: () => dispatch(loadPendingRequests()),
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status)),
     loadUserEmployeePermissions: (employeeId: string) => { dispatch(loadUserEmployeePermissions(employeeId)); }
 });
@@ -79,10 +76,14 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         const events = this.props.events;
         const nextEvents = nextProps.events;
 
+        if (this.props.employee !== nextProps.employee) {
+            return true;
+        }
+
         if (!this.props.userEmployeePermissions.equals(nextProps.userEmployeePermissions)) {
 
             const permissions = this.props.userEmployeePermissions.get(this.props.employee.employeeId);
-            const nextPermissions = nextProps.userEmployeePermissions.get(this.props.employee.employeeId);
+            const nextPermissions = nextProps.userEmployeePermissions.get(nextProps.employee.employeeId);
 
             return !permissions || !permissions.equals(nextPermissions);
         }
@@ -103,7 +104,6 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
     }
 
     public componentDidMount() {
-        this.props.loadPendingRequests();
         this.props.loadCalendarEvents(this.props.employee.employeeId);
         this.props.loadUserEmployeePermissions(this.props.employee.employeeId);
     }
