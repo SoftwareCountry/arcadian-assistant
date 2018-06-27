@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import moment from 'moment';
-import { Map } from 'immutable';
+import { Map, Set, Iterable } from 'immutable';
 import { View, StyleSheet, FlatList, ListRenderItemInfo, Dimensions } from 'react-native';
 
 import { StyledText } from '../override/styled-text';
@@ -13,13 +13,17 @@ import { Employee } from '../reducers/organization/employee.model';
 import { CalendarEventIcon } from '../calendar/calendar-event-icon';
 
 interface EmployeeDetailsEventsListProps {
-    events: CalendarEvent[];
-    employee: Employee;
+    events: Map<Employee, CalendarEvent[]>;
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
     hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => string;
-    showUserAvatar?: Boolean;
-    pendingRequestMode?: Boolean;
-    eventManagementEnabled: Boolean;
+    showUserAvatar?: boolean;
+    canApprove: boolean;
+    canReject: boolean;
+}
+
+interface EmployeeDetailItem {
+    employee: Employee;
+    calendarEvent: CalendarEvent;
 }
 
 export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsListProps> {
@@ -27,23 +31,42 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
 
     public render() {
 
-        const events = this.props.events 
-            ? this.props.events.sort((a, b) => a.dates.startDate.valueOf() - b.dates.startDate.valueOf()) 
-            : null;
+        const events = this.prepareEvents();
 
         return (<FlatList
-                    data={this.props.events}
+                    data={events}
                     keyExtractor={this.keyExtractor}
                     renderItem={this.renderItem} />
         );
     }
 
-    private keyExtractor = (item: CalendarEvent) => item.calendarEventId;
+    private prepareEvents(): EmployeeDetailItem[] {
+        const { events } = this.props;
 
-    private renderItem = (itemInfo: ListRenderItemInfo<CalendarEvent>) => {
+        if (!events) {
+            return null;
+        }
+
+        return events
+            .sortBy((_, employee) => employee.name)
+            .map((calendarEvents, employee) =>
+                Set(calendarEvents)
+                    .sort((a, b) => a.dates.startDate.valueOf() - b.dates.startDate.valueOf())
+                    .map(calendarEvent => ({
+                        employee: employee,
+                        calendarEvent: calendarEvent
+                    } as EmployeeDetailItem))
+            )
+            .flatten()
+            .toArray();
+    }
+
+    private keyExtractor = (item: EmployeeDetailItem) => item.calendarEvent.calendarEventId;
+
+    private renderItem = (itemInfo: ListRenderItemInfo<EmployeeDetailItem>) => {
         const { item } = itemInfo;
         const { eventsContainer, eventRow, eventLeftIcons, eventTypeIconContainer, eventLeftIconsTiny, eventTypeIconContainerTiny, eventIcon, eventTextContainer, eventTitle, eventDetails, avatarContainer, avatarOuterFrame, avatarImage } = layoutStylesForEmployeeDetailsScreen;
-        
+
         const leftIconsStyle = this.props.showUserAvatar ? eventLeftIcons : eventLeftIconsTiny;
         const typeIconContainerStyle = this.props.showUserAvatar ? eventTypeIconContainer : eventTypeIconContainerTiny;
 
@@ -51,35 +74,36 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
             eventsContainer, {width: Dimensions.get('window').width}
         ]);
 
-        const secondRowEventDetails = this.props.pendingRequestMode ? 'requests ' + item.type.toLowerCase() : this.descriptionStatus(item);
+        const descriptionStatus = this.descriptionStatus(item.calendarEvent);
 
         return (
-                <View style={eventsContainerFlattened} key={item.calendarEventId}>
-                    <View style={eventRow}>
+            <View style={eventsContainerFlattened} key={item.calendarEvent.calendarEventId}>
+                <View style={eventRow}>
                     <View style={leftIconsStyle}>
                         <View style={typeIconContainerStyle}>
-                            <CalendarEventIcon type={item.type} style={eventIcon} />
+                            <CalendarEventIcon type={item.calendarEvent.type} style={eventIcon} />
                         </View>
                         {
                             this.props.showUserAvatar ? 
                             <View style={avatarContainer}>
-                                <Avatar photo={this.props.employee.photo} style={avatarOuterFrame} imageStyle={avatarImage} />
+                                <Avatar photo={item.employee.photo} style={avatarOuterFrame} imageStyle={avatarImage} />
                             </View> : null
                         }
                     </View>
-                        <View style={eventTextContainer}>
-                            <StyledText style={eventTitle}>{this.props.employee.name}</StyledText>
-                            <StyledText style={eventDetails}>{secondRowEventDetails}</StyledText>
-                            <StyledText style={eventDetails}>{this.descriptionFromTo(item)}</StyledText>
-                        </View>
-                        {
-                            (this.props.pendingRequestMode || this.props.eventManagementEnabled) ? <EventManagementToolset 
-                            event={this.props.events.find(e => e.calendarEventId === item.calendarEventId)} 
-                            employeeId={this.props.employee.employeeId} 
-                            eventSetNewStatusAction={this.props.eventSetNewStatusAction} /> : null
-                        }
+                    <View style={eventTextContainer}>
+                        <StyledText style={eventTitle}>{item.employee.name}</StyledText>
+                        <StyledText style={eventDetails}>{descriptionStatus}</StyledText>
+                        <StyledText style={eventDetails}>{this.descriptionFromTo(item.calendarEvent)}</StyledText>
                     </View>
+                    <EventManagementToolset 
+                        event={item.calendarEvent} 
+                        employeeId={item.employee.employeeId} 
+                        eventSetNewStatusAction={this.props.eventSetNewStatusAction}
+                        canApprove={this.props.canApprove}
+                        canReject={this.props.canReject} 
+                    />
                 </View>
+            </View>
         );
     }
 

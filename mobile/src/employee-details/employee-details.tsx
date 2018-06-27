@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { connect, Dispatch } from 'react-redux';
+import { connect, Dispatch, MapStateToProps } from 'react-redux';
 import { Map } from 'immutable';
 import { View, StyleSheet, ScrollView, Linking, TouchableOpacity, ViewStyle } from 'react-native';
 
@@ -16,28 +16,34 @@ import { openCompanyAction } from './employee-details-dispatcher';
 import { loadCalendarEvents, calendarEventSetNewStatus } from '../reducers/calendar/calendar.action';
 import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
-import { EmployeesStore } from '../reducers/organization/employees.reducer';
-import { loadPendingRequests } from '../reducers/calendar/pending-requests/pending-requests.action';
+import { UserEmployeePermissions } from '../reducers/user/user-employee-permissions.model';
+import { loadUserEmployeePermissions } from '../reducers/user/user.action';
 
-interface EmployeeDetailsProps {
-    employee?: Employee;
-    employees?: EmployeesStore;
+interface EmployeeDetailsOwnProps {
+    employee: Employee;
     department: Department;
-    layoutStylesChevronPlaceholder?: ViewStyle;
-    events?: Map<string, CalendarEvent[]>;
-    eventsPredicate?: (event: CalendarEvent) => boolean;
-    requests?: Map<string, CalendarEvent[]>;
-    hoursToIntervalTitle?: (startWorkingHour: number, finishWorkingHour: number) => string;
-    showPendingRequests?: Boolean;
+    layoutStylesChevronPlaceholder: ViewStyle;
+    requests?: Map<Employee, CalendarEvent[]>;
 }
 
-const mapStateToProps = (state: AppState, props: EmployeeDetailsProps): EmployeeDetailsProps => ({
-    department: props.department,
-    employees: state.organization.employees,
+interface EmployeeDetailsStateProps {
+    events: Map<string, CalendarEvent[]>;
+    eventsPredicate: (event: CalendarEvent) => boolean;
+    hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => string;
+    userEmployeePermissions: Map<string, UserEmployeePermissions>;
+}
+
+type EmployeeDetailsProps = EmployeeDetailsOwnProps & EmployeeDetailsStateProps;
+
+const mapStateToProps: MapStateToProps<EmployeeDetailsProps, EmployeeDetailsOwnProps, AppState> = (state: AppState, ownProps: EmployeeDetailsOwnProps): EmployeeDetailsProps => ({
+    employee: ownProps.employee,
+    department: ownProps.department,
+    layoutStylesChevronPlaceholder: ownProps.layoutStylesChevronPlaceholder,
     events: state.calendar.calendarEvents.events,
     eventsPredicate: state.calendar.calendarEvents.eventsPredicate,
-    requests: state.calendar.pendingRequests.requests,
-    hoursToIntervalTitle: state.calendar.pendingRequests.hoursToIntervalTitle
+    requests: ownProps.requests,
+    hoursToIntervalTitle: state.calendar.pendingRequests.hoursToIntervalTitle,
+    userEmployeePermissions: state.userInfo.permissions
 });
 
 const TileSeparator = () => <View style = {tileStyles.separator}></View>;
@@ -45,50 +51,58 @@ const TileSeparator = () => <View style = {tileStyles.separator}></View>;
 interface EmployeeDetailsDispatchProps {
     onCompanyClicked: (departmentId: string) => void;
     loadCalendarEvents: (employeeId: string) => void;
-    loadPendingRequests: () => void;
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
+    loadUserEmployeePermissions: (employeeId: string) => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchProps => ({
     onCompanyClicked: (departmentId: string) => dispatch( openCompanyAction(departmentId)),
     loadCalendarEvents: (employeeId: string) => dispatch(loadCalendarEvents(employeeId)),
-    loadPendingRequests: () => dispatch(loadPendingRequests()),
-    eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status))
+    eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status)),
+    loadUserEmployeePermissions: (employeeId: string) => { dispatch(loadUserEmployeePermissions(employeeId)); }
 });
 
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
     public shouldComponentUpdate(nextProps: EmployeeDetailsProps & EmployeeDetailsDispatchProps) {
-        const employees = this.props.employees.employeesById;
-        const nextEmployees = nextProps.employees.employeesById;
         const requests = this.props.requests;
         const nextRequests = nextProps.requests;
         const events = this.props.events;
         const nextEvents = nextProps.events;
 
-        if (!requests.equals(nextRequests) || !events.equals(nextEvents)) {
+        if (this.props.employee !== nextProps.employee) {
             return true;
         }
 
-        if (!employees.equals(nextEmployees)) {
-            let newEmployeesSubset = nextEmployees.filter(employee => {
-                return !employees.has(employee.employeeId);
-            });
+        if (!this.props.userEmployeePermissions.equals(nextProps.userEmployeePermissions)) {
 
-            return requests.keySeq().some(key => newEmployeesSubset.has(key));
+            const permissions = this.props.userEmployeePermissions.get(this.props.employee.employeeId);
+            const nextPermissions = nextProps.userEmployeePermissions.get(nextProps.employee.employeeId);
+
+            return !permissions || !permissions.equals(nextPermissions);
+        }
+
+        if (!events.equals(nextEvents)) {
+            const calendarEvents = events.get(this.props.employee.employeeId);
+            const nextCalendarEvents = nextEvents.get(nextProps.employee.employeeId);
+
+            return calendarEvents !== nextCalendarEvents;            
         }
 
         return false;
     }
 
     public componentDidMount() {
-        this.props.loadPendingRequests();
         this.props.loadCalendarEvents(this.props.employee.employeeId);
+        this.props.loadUserEmployeePermissions(this.props.employee.employeeId);
     }
+
     public render() {
-        const { employee, department } = this.props;
+        const { employee, department, userEmployeePermissions } = this.props;
 
         if (!employee || !department) {
             return null;
         }
+
+        const permissions = userEmployeePermissions.get(employee.employeeId);
 
         const tiles = this.getTiles(employee);
         const contacts = this.getContacts(employee);
@@ -98,8 +112,6 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         if (events !== undefined) {
             events = events.filter(this.props.eventsPredicate);
         }
-
-        const requests =  this.props.showPendingRequests ? this.props.requests : undefined;
 
         return (
                 <View style={layoutStyles.container}>
@@ -133,21 +145,10 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                         </View>
 
                         {
-                            (requests && requests.size > 0) ? this.getPendingRequests(requests) : null
+                            this.renderPendingRequests()
                         }
-
                         {
-                            (events && events.length > 0) ? 
-                            <View>
-                                <StyledText style={layoutStyles.header}>EVENTS</StyledText>
-                                <EmployeeDetailsEventsList 
-                                    events={events} 
-                                    employee={employee}
-                                    eventSetNewStatusAction={this.props.eventSetNewStatusAction}
-                                    hoursToIntervalTitle={this.props.hoursToIntervalTitle}
-                                    eventManagementEnabled={(this.props.requests.has(employee.employeeId))} 
-                                />
-                            </View> : null
+                            this.renderEmployeeEvents(events, permissions)
                         }
 
                     </View>
@@ -253,22 +254,41 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         ));
     }
 
-    private getPendingRequests(requests: Map<string, CalendarEvent[]>) {
+    private renderEmployeeEvents(events: CalendarEvent[], userPermissions: UserEmployeePermissions) {
+        if (!events || !events.length || !this.props.employee) {
+            return null;
+        }
+
+        const employeeToCalendarEvents = Map<Employee, CalendarEvent[]>([ [ this.props.employee, events ] ]);
+        const canApprove = userPermissions ? userPermissions.canApproveCalendarEvents : false;
+        const canReject = userPermissions ? userPermissions.canRejectCalendarEvents : false;
+
+        return <View>
+            <StyledText style={layoutStyles.header}>EVENTS</StyledText>
+            <EmployeeDetailsEventsList 
+                events={employeeToCalendarEvents} 
+                eventSetNewStatusAction={this.props.eventSetNewStatusAction}
+                hoursToIntervalTitle={this.props.hoursToIntervalTitle}
+                canApprove={canApprove}
+                canReject={canReject}
+            />
+        </View>;
+    }
+
+    private renderPendingRequests() {
+        if (!this.props.requests || !this.props.requests.size) {
+            return null;
+        }
+
         return <React.Fragment>
             <StyledText style={layoutStyles.header}>REQUESTS</StyledText>
-            {
-                requests.keySeq().map((key) => (
-                    <EmployeeDetailsEventsList
-                        key={key}
-                        events={requests.get(key)} 
-                        employee={this.props.employees.employeesById.get(key)}
-                        eventSetNewStatusAction={this.props.eventSetNewStatusAction}
-                        hoursToIntervalTitle={this.props.hoursToIntervalTitle}
-                        showUserAvatar
-                        pendingRequestMode
-                        eventManagementEnabled />
-                ))
-            }
+            <EmployeeDetailsEventsList
+                events={this.props.requests}
+                eventSetNewStatusAction={this.props.eventSetNewStatusAction}
+                hoursToIntervalTitle={this.props.hoursToIntervalTitle}
+                showUserAvatar={true}
+                canApprove={true}
+                canReject={true} />
         </React.Fragment>;
     }
 

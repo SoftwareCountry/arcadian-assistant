@@ -36,7 +36,6 @@ export class EmployeeDetailsScreenImpl extends Component<EmployeeDetailsProps & 
                     department={department} 
                     employee={employee} 
                     layoutStylesChevronPlaceholder = {layoutStylesForEmployeeDetailsScreen.chevronPlaceholder}
-                    showPendingRequests={false}
                 />
             </SafeAreaView>
             : (
