@@ -58,7 +58,7 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
         }
 
         if (!employees.equals(nextEmployees)) {
-            let newEmployeesSubset = nextEmployees.filter(employee => {
+            const newEmployeesSubset = nextEmployees.filter(employee => {
                 return !employees.has(employee.employeeId);
             });
 
