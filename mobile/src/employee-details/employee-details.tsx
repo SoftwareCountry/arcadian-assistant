@@ -13,10 +13,9 @@ import { StyledText } from '../override/styled-text';
 import { Employee } from '../reducers/organization/employee.model';
 import { ApplicationIcon } from '../override/application-icon';
 import { openCompanyAction } from './employee-details-dispatcher';
-import { loadCalendarEvents, calendarEventSetNewStatus, nextCalendarPage } from '../reducers/calendar/calendar.action';
+import { loadCalendarEvents, calendarEventSetNewStatus } from '../reducers/calendar/calendar.action';
 import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
-import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { UserEmployeePermissions } from '../reducers/user/user-employee-permissions.model';
 import { loadUserEmployeePermissions } from '../reducers/user/user.action';
 
@@ -24,15 +23,13 @@ interface EmployeeDetailsOwnProps {
     employee: Employee;
     department: Department;
     layoutStylesChevronPlaceholder: ViewStyle;
-    showPendingRequests: Boolean;
+    requests?: Map<Employee, CalendarEvent[]>;
 }
 
 interface EmployeeDetailsStateProps {
-    employees: EmployeesStore;
     events: Map<string, CalendarEvent[]>;
     eventsPredicate: (event: CalendarEvent) => boolean;
-    requests: Map<string, CalendarEvent[]>;
-    hoursToIntervalTitle?: (startWorkingHour: number, finishWorkingHour: number) => string;
+    hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => string;
     userEmployeePermissions: Map<string, UserEmployeePermissions>;
 }
 
@@ -42,12 +39,9 @@ const mapStateToProps: MapStateToProps<EmployeeDetailsProps, EmployeeDetailsOwnP
     employee: ownProps.employee,
     department: ownProps.department,
     layoutStylesChevronPlaceholder: ownProps.layoutStylesChevronPlaceholder,
-    showPendingRequests: ownProps.showPendingRequests,
-
-    employees: state.organization.employees,
     events: state.calendar.calendarEvents.events,
     eventsPredicate: state.calendar.calendarEvents.eventsPredicate,
-    requests: state.calendar.pendingRequests.requests,
+    requests: ownProps.requests,
     hoursToIntervalTitle: state.calendar.pendingRequests.hoursToIntervalTitle,
     userEmployeePermissions: state.userInfo.permissions
 });
@@ -69,8 +63,6 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchPro
 
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
     public shouldComponentUpdate(nextProps: EmployeeDetailsProps & EmployeeDetailsDispatchProps) {
-        const employees = this.props.employees.employeesById;
-        const nextEmployees = nextProps.employees.employeesById;
         const requests = this.props.requests;
         const nextRequests = nextProps.requests;
         const events = this.props.events;
@@ -88,19 +80,11 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             return !permissions || !permissions.equals(nextPermissions);
         }
 
-        if (!requests.equals(nextRequests) || !events.equals(nextEvents)) {
-            const calendarEvents = requests.get(this.props.employee.employeeId);
-            const nextCalendarEvents = nextRequests.get(nextProps.employee.employeeId);
+        if (!events.equals(nextEvents)) {
+            const calendarEvents = events.get(this.props.employee.employeeId);
+            const nextCalendarEvents = nextEvents.get(nextProps.employee.employeeId);
 
-            return calendarEvents !== nextCalendarEvents;
-        }
-
-        if (!employees.equals(nextEmployees)) {
-            let newEmployeesSubset = nextEmployees.filter(employee => {
-                return !employees.has(employee.employeeId);
-            });
-
-            return requests.keySeq().some(key => newEmployeesSubset.has(key));
+            return calendarEvents !== nextCalendarEvents;            
         }
 
         return false;
@@ -128,8 +112,6 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         if (events !== undefined) {
             events = events.filter(this.props.eventsPredicate);
         }
-
-        const requests =  this.props.showPendingRequests ? this.props.requests : undefined;
 
         return (
                 <View style={layoutStyles.container}>
@@ -163,7 +145,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                         </View>
 
                         {
-                            this.renderPendingRequests(requests)
+                            this.renderPendingRequests()
                         }
                         {
                             this.renderEmployeeEvents(events, permissions)
@@ -293,17 +275,15 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         </View>;
     }
 
-    private renderPendingRequests(requests: Map<string, CalendarEvent[]>) {
-        if (!requests || !requests.size) {
+    private renderPendingRequests() {
+        if (!this.props.requests || !this.props.requests.size) {
             return null;
         }
-
-        const employeesToCalendarEvents = requests.mapKeys(employeeId => this.props.employees.employeesById.get(employeeId)).toMap();
 
         return <React.Fragment>
             <StyledText style={layoutStyles.header}>REQUESTS</StyledText>
             <EmployeeDetailsEventsList
-                events={employeesToCalendarEvents}
+                events={this.props.requests}
                 eventSetNewStatusAction={this.props.eventSetNewStatusAction}
                 hoursToIntervalTitle={this.props.hoursToIntervalTitle}
                 showUserAvatar={true}
