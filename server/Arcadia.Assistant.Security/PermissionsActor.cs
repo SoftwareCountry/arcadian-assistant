@@ -194,7 +194,11 @@
 
         private static readonly EmployeePermissionsEntry SupervisedPermissions =
             EmployeePermissionsEntry.CreateCalendarEvents |
-            EmployeePermissionsEntry.EditCalendarEvents |
+            EmployeePermissionsEntry.ApproveCalendarEvents |
+            EmployeePermissionsEntry.RejectCalendarEvents |
+            EmployeePermissionsEntry.CompleteSickLeave |
+            EmployeePermissionsEntry.ProlongSickLeave |
+            EmployeePermissionsEntry.CancelCalendarEvents |
             EmployeePermissionsEntry.EditPendingCalendarEvents |
             EmployeePermissionsEntry.ReadEmployeeCalendarEvents |
             EmployeePermissionsEntry.ReadEmployeeInfo |

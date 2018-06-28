@@ -17,12 +17,6 @@
         CompleteSickLeave = 1 << 8,
         ProlongSickLeave = 1 << 9,
         CancelCalendarEvents = 1 << 10,
-        EditCalendarEvents = 
-            ApproveCalendarEvents |
-            RejectCalendarEvents |
-            CompleteSickLeave |
-            ProlongSickLeave |
-            CancelCalendarEvents,
         EditPendingCalendarEvents = 1 << 11,
     }
 }
