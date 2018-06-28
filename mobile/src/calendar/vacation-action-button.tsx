@@ -6,21 +6,21 @@ import { CalendarEventsColor } from './styles';
 interface VacationActionButtonProps {
     allIntervals: ReadOnlyIntervalsModel;
     interval: IntervalModel;
-    disabled: boolean;
+    hide: boolean;
     request: () => void;
     edit: () => void;
 }
 
 export class VacationActionButton extends Component<VacationActionButtonProps> {
     public render() {
-        const disableActionButton = this.disableCalendarAction();
+        const hideActionButton = this.hideCalendarAction();
 
         return (
             <CalendarActionButton 
                 title={this.title} 
                 borderColor={CalendarEventsColor.vacation} 
                 onPress={this.onVacationAction} 
-                disabled={this.props.disabled || disableActionButton} />
+                hide={this.props.hide || hideActionButton} />
         );
     }
 
@@ -38,12 +38,12 @@ export class VacationActionButton extends Component<VacationActionButtonProps> {
         }
     }
 
-    private disableCalendarAction(): boolean {
+    private hideCalendarAction(): boolean {
         const { interval, allIntervals } = this.props;
 
-        const disableWhenCompleted = interval && interval.calendarEvent.isCompleted;
+        const hideWhenApproved = interval && interval.calendarEvent.isApproved;
 
-        return disableWhenCompleted;
+        return hideWhenApproved;
     }
 }
 

@@ -26,21 +26,22 @@ export class EventManagementToolset extends Component<EventManagementToolsetProp
         const { toolsetContainer, approveIcon, rejectIcon } = layoutStylesForEventManagementToolset;
         const { canApprove, canReject } = this.props;
 
-        return (this.props.event.status === CalendarEventStatus.Requested) ? 
-        <View style={toolsetContainer}>
-            {
-                canApprove &&
-                <TouchableOpacity onPress={this.onApprove}>
-                    <ApplicationIcon name={'approve-tick'} style={approveIcon} />
-                </TouchableOpacity>
-            }
-            {
-                canReject &&
-                <TouchableOpacity onPress={this.onReject}>
-                    <ApplicationIcon name={'reject-cross'} style={rejectIcon} />
-                </TouchableOpacity>
-            }
-        </View> : null;
+        return (
+            <View style={toolsetContainer}>
+                {
+                    canApprove && this.props.event.status === CalendarEventStatus.Requested &&
+                    <TouchableOpacity onPress={this.onApprove}>
+                        <ApplicationIcon name={'approve-tick'} style={approveIcon} />
+                    </TouchableOpacity>
+                }
+                {
+                    canReject &&
+                    <TouchableOpacity onPress={this.onReject}>
+                        <ApplicationIcon name={'reject-cross'} style={rejectIcon} />
+                    </TouchableOpacity>
+                }
+            </View>
+        );
     }
 
     private updateCalendarEvent(calendarEvent: CalendarEvent, status: CalendarEventStatus) {

@@ -8,7 +8,7 @@ import { connect, MapStateToProps } from 'react-redux';
 import { AppState } from '../../reducers/app.reducer';
 
 interface EventDialogBaseDefaultProps {
-    disableAccept?: boolean;
+    hideAccept?: boolean;
 }
 
 interface EventDialogBaseOwnProps extends EventDialogBaseDefaultProps {
@@ -32,7 +32,7 @@ export const eventDialogTextDateFormat = 'MMMM D, YYYY';
 
 export class EventDialogBaseImpl extends Component<EventDialogBaseProps> {
     public static defaultProps: EventDialogBaseDefaultProps = {
-        disableAccept: false
+        hideAccept: false
     };
 
     public render() {
@@ -65,12 +65,12 @@ export class EventDialogBaseImpl extends Component<EventDialogBaseProps> {
     }
 
     private getActionButtons() {
-        const { cancelLabel, acceptLabel, disableAccept } = this.props;
+        const { cancelLabel, acceptLabel, hideAccept } = this.props;
 
         return (
             <View style={layout.buttons}>
-                <CalendarActionButton title={cancelLabel} onPress={this.cancel} style={buttons.cancel} textStyle={buttons.cancelLabel} disabled={this.props.inProgress} />
-                <CalendarActionButton title={acceptLabel} onPress={this.accept} style={buttons.accept} textStyle={buttons.acceptLabel} disabled={disableAccept || this.props.inProgress} />
+                <CalendarActionButton title={cancelLabel} onPress={this.cancel} style={buttons.cancel} textStyle={buttons.cancelLabel} hide={this.props.inProgress} />
+                <CalendarActionButton title={acceptLabel} onPress={this.accept} style={buttons.accept} textStyle={buttons.acceptLabel} hide={hideAccept || this.props.inProgress} />
                 {this.props.inProgress && <ActivityIndicator size={'small'} style={buttons.progressIndicator} />}
             </View>
         );

@@ -34,7 +34,7 @@ class ConfirmSickLeaveEventDialogImpl extends Component<ClaimSickLeaveEventDialo
                     onAcceptPress={this.acceptAction}
                     onCancelPress={this.cancelAction}
                     onClosePress={this.closeDialog}
-                    disableAccept={!this.props.endDay} />;
+                    hideAccept={!this.props.endDay} />;
     }
 
     private cancelAction = () => {

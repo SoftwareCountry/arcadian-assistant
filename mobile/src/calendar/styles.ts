@@ -204,6 +204,11 @@ export const calendarActionsStyles = StyleSheet.create({
         lineHeight: 14,
         color: '#18515E'
     },
+    hidden: {
+        flex: 3,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
     separator: {
         flex: 1
     }

@@ -8,26 +8,26 @@ import { AppState } from '../reducers/app.reducer';
 
 interface DayoffActionButtonProps {
     interval: IntervalModel;
-    disabled: boolean;
+    hide: boolean;
     process: () => void;
     edit: () => void;
 }
 
 interface DayoffCase {
-    disableCalendatButton: boolean;
+    hideCalendatButton: boolean;
     action: () => void;
 }
 
 export class DayoffActionButton extends Component<DayoffActionButtonProps> {
     public render() {
-        const disableCalendarAction = this.disableCalendarAction();
+        const hideCalendarAction = this.hideCalendarAction();
 
         return (
             <CalendarActionButton
                 title={this.title}
                 borderColor={CalendarEventsColor.dayoff}
                 onPress={this.onDayoffAction}
-                disabled={this.props.disabled || disableCalendarAction} />
+                hide={this.props.hide || hideCalendarAction} />
         );
     }
 
@@ -47,20 +47,20 @@ export class DayoffActionButton extends Component<DayoffActionButtonProps> {
         dayoffCase.action();
     }
 
-    private disableCalendarAction() {
+    private hideCalendarAction() {
         const dayoffCase = this.dayoffCases();
-        return !dayoffCase || dayoffCase.disableCalendatButton;
+        return !dayoffCase || dayoffCase.hideCalendatButton;
     }
 
     private dayoffCases(): DayoffCase | null {
         const { interval, process, edit } = this.props;
 
         if (!interval) {
-            return { disableCalendatButton: false, action: process };
+            return { hideCalendatButton: false, action: process };
         }
 
         if (interval && !interval.calendarEvent.isApproved) {
-            return { disableCalendatButton: false, action: edit };
+            return { hideCalendatButton: false, action: edit };
         }
 
         return null;
