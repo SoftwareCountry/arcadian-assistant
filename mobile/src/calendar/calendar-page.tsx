@@ -1,8 +1,8 @@
 import React, { Component, Fragment, PureComponent } from 'react';
 import moment, { Moment } from 'moment';
-import { View, StyleSheet, LayoutChangeEvent, PixelRatio } from 'react-native';
+import { View, StyleSheet, LayoutChangeEvent, PixelRatio, Dimensions } from 'react-native';
 import { StyledText } from '../override/styled-text';
-import { calendarStyles, calendarIntervalStyles, CalendarEventsColor } from './styles';
+import { calendarStyles, calendarIntervalStyles, CalendarEventsColor, weekCalendarStyles } from './styles';
 import { DayModel, WeekModel, IntervalModel, IntervalType, CalendarSelection, ReadOnlyIntervalsModel } from '../reducers/calendar/calendar.model';
 import { StartInterval, EndInterval, Interval } from './calendar-page-interval';
 import { WeekDay, WeekDayCircle, WeekDayTouchable } from './calendar-page-weekday';
@@ -27,6 +27,7 @@ interface CalendarPageProps {
 
 interface CalendarPageState {
     weekHeight: number;
+    weekDayContainerWidth: number;
 }
 
 export class CalendarPage extends PureComponent<CalendarPageDefaultProps & CalendarPageProps, CalendarPageState> {
@@ -43,7 +44,8 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
     constructor(props: CalendarPageDefaultProps & CalendarPageProps) {
         super(props);
         this.state = {
-            weekHeight: 0
+            weekHeight: 0,
+            weekDayContainerWidth: 0
         };
     }
 
@@ -103,14 +105,32 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
         );
     }
 
+    private onLayoutWeekDayContainer = (e: LayoutChangeEvent) => {
+        // TODO: Workaround for https://github.com/facebook/react-native/issues/18137 
+        if (!this.state.weekDayContainerWidth) {
+            const paddings = weekCalendarStyles.paddingLeft + weekCalendarStyles.paddingRight;
+            const daysPerWeek = 7;
+            const calendarWidth = Dimensions.get('window').width - paddings;
+            const width = PixelRatio.roundToNearestPixel(calendarWidth / daysPerWeek);
+            this.setState({ weekDayContainerWidth: width });
+        }
+    }
+
     private renderDay(day: DayModel) {
         const intervalModels = this.getIntervalsByDate(day.date);
         const disableDay = this.props.disableBefore
             ? day.date.isBefore(this.props.disableBefore.date, 'day')
             : false;
 
+        const weekDayContainerStyles = StyleSheet.flatten([
+            calendarStyles.weekDayContainer,
+            {
+                width: this.state.weekDayContainerWidth
+            }
+        ]);
+
         return (
-            <View style={calendarStyles.weekDayContainer} key={`${day.date.week()}-${day.date.date()}`}>
+            <View style={weekDayContainerStyles} key={`${day.date.week()}-${day.date.date()}`} onLayout={this.onLayoutWeekDayContainer}>
                 <WeekDay hide={this.props.hidePrevNextMonthDays && !day.belongsToCurrentMonth}>
                     <WeekDayTouchable onSelectedDay={this.props.onSelectedDay} day={day} disabled={disableDay} />
                     {
