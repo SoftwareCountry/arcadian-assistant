@@ -42,6 +42,16 @@
                     Context.ActorOf(Props.Create(() => new EmployeeSearch(this.EmployeesById.Values, requesters, query)));
                     break;
 
+                case Terminated t:
+                    // unexpected employee actor termination
+                    var deadEmployees = this.EmployeesById.Where(x => x.Value.Equals(t.ActorRef)).Select(x => x.Key).ToList();
+                    foreach (var deadEmployee in deadEmployees)
+                    {
+                        this.logger.Debug($"Employee actor {deadEmployee} died unexpectedly");
+                        this.EmployeesById.Remove(deadEmployee);
+                    }
+                    break;
+
                 default:
                     this.Unhandled(message);
                     break;
@@ -92,7 +102,9 @@
 
             foreach (var removedId in removedIds)
             {
-                this.EmployeesById[removedId].Tell(PoisonPill.Instance);
+                var actorToRemove = this.EmployeesById[removedId];
+                actorToRemove.Tell(PoisonPill.Instance);
+                Context.Unwatch(actorToRemove);
                 this.EmployeesById.Remove(removedId);
             }
 
@@ -107,6 +119,7 @@
                 {
                     employee = Context.ActorOf(EmployeeActor.GetProps(employeeNewInfo), Uri.EscapeDataString(employeeNewInfo.Metadata.EmployeeId));
                     this.EmployeesById[employeeNewInfo.Metadata.EmployeeId] = employee;
+                    Context.Watch(employee);
                     newEmployeesCount++;
                 }
             }
