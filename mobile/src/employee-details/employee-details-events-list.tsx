@@ -51,7 +51,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
             .sortBy((_, employee) => employee.name)
             .map((calendarEvents, employee) =>
                 Set(calendarEvents)
-                    .sort((a, b) => a.dates.startDate.valueOf() - b.dates.startDate.valueOf())
+                    .sort((a, b) => b.dates.startDate.valueOf() - a.dates.startDate.valueOf())
                     .map(calendarEvent => ({
                         employee: employee,
                         calendarEvent: calendarEvent
