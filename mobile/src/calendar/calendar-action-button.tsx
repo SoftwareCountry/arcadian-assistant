@@ -9,7 +9,7 @@ interface CalendarActionButtonProps {
     title: string;
     style?: ViewStyle;
     textStyle?: TextStyle;
-    hide?: boolean;
+    disabled?: boolean;
 }
 
 interface CalendarActionButtonState {
@@ -44,13 +44,9 @@ export class CalendarActionButton extends Component<CalendarActionButtonProps, C
         ]);
 
         return (
-            this.props.hide 
-                ? <View style={calendarActionsStyles.hidden}>
-                    <StyledText style={textStyle}> </StyledText>
-                </View>
-                : <TouchableOpacity style={buttonStyles} onLayout={this.onButtonLayout} onPress={this.onButtonEditorPress}>
-                    <StyledText style={textStyle}>{this.props.title}</StyledText>
-                </TouchableOpacity>
+            <TouchableOpacity style={buttonStyles} onLayout={this.onButtonLayout} onPress={this.onButtonEditorPress} disabled={this.props.disabled}>
+                <StyledText style={textStyle}>{this.props.title}</StyledText>
+            </TouchableOpacity>
         );
     }
 

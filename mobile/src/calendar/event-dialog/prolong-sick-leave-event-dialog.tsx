@@ -25,7 +25,7 @@ interface ProlongSickLeaveEventDialogProps {
 
 export class ProlongSickLeaveEventDialogImpl extends Component<ProlongSickLeaveEventDialogDispatchProps & ProlongSickLeaveEventDialogProps> {
     public render() {
-        const hideAccept = !this.isProlongEndDateValid();
+        const disableAccept = !this.isProlongEndDateValid();
 
         return <EventDialogBase
                     title={'Select date to Prolong your Sick Leave'}
@@ -36,7 +36,7 @@ export class ProlongSickLeaveEventDialogImpl extends Component<ProlongSickLeaveE
                     onAcceptPress={this.onAcceptClick}
                     onCancelPress={this.onCancelClick}
                     onClosePress={this.onCloseClick}
-                    hideAccept={hideAccept} />;
+                    disableAccept={disableAccept} />;
     }
 
     public get text(): string {

@@ -45,8 +45,8 @@ describe('calendar events reducer', () => {
             expect(intervals[0].calendarEvent.type).toBe(calendarEvent.type);
         });
 
-        it('should show calendar actions group', () => {
-            expect(state.hideCalendarActionsButtonGroup).toBeFalsy();
+        it('should enable calendar actions group', () => {
+            expect(state.disableCalendarActionsButtonGroup).toBeFalsy();
         });
     });
 

@@ -30,7 +30,7 @@ interface ChangeVacationEndDateEventDialogProps {
 
 class ChangeVacationEndDateEventDialogImpl extends Component<ChangeVacationEndDateEventDialogProps & ChangeVacationEndDateEventDialogDispatchProps> {
     public render() {
-        const hideAccept = !this.props.interval || !this.props.interval.endDay;
+        const disableAccept = !this.props.interval || !this.props.interval.endDay;
 
         return <EventDialogBase
                     title={'Change end date'}
@@ -41,7 +41,7 @@ class ChangeVacationEndDateEventDialogImpl extends Component<ChangeVacationEndDa
                     onAcceptPress={this.confirmEndDateChange}
                     onCancelPress={this.back}
                     onClosePress={this.closeDialog}
-                    hideAccept={hideAccept} />;
+                    disableAccept={disableAccept} />;
     }
 
     private back = () => {

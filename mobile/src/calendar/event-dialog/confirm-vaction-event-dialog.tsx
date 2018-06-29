@@ -34,7 +34,7 @@ class ConfirmVacationEventDialogImpl extends Component<ClaimVacationEventDialogP
                     onAcceptPress={this.acceptAction}
                     onCancelPress={this.cancelAction}
                     onClosePress={this.closeDialog}
-                    hideAccept={!this.props.endDay} />;
+                    disableAccept={!this.props.endDay} />;
     }
 
     private cancelAction = () => {

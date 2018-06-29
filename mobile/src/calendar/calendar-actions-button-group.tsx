@@ -17,7 +17,7 @@ import { HoursCreditCounter } from '../reducers/calendar/days-counters.model';
 interface ActionButtonGroupProps {
     allIntervals: ReadOnlyIntervalsModel;
     intervalsBySingleDaySelection: ExtractedIntervals;
-    hideActionButtons: boolean;
+    disableActionButtons: boolean;
 }
 
 interface ActionButtonsGroupDispatchProps {
@@ -45,14 +45,14 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & A
                 <VacationActionButton
                     allIntervals={allIntervals}
                     interval={intervalsBySingleDaySelection.vacation}
-                    hide={this.props.hideActionButtons}
+                    disabled={this.props.disableActionButtons}
                     {...this.props.vacationActions} />
 
                 <CalendarActionButtonSeparator />
 
                 <DayoffActionButton
                     interval={intervalsBySingleDaySelection.dayoff}
-                    hide={this.props.hideActionButtons}
+                    disabled={this.props.disableActionButtons}
                     {...this.props.dayoff} />
 
                 <CalendarActionButtonSeparator />
@@ -60,7 +60,7 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & A
                 <SickLeaveActionButton
                     allIntervals={allIntervals}
                     interval={intervalsBySingleDaySelection.sickleave}
-                    hide={this.props.hideActionButtons}
+                    disabled={this.props.disableActionButtons}
                     {...this.props.sickLeaveActions} />
 
                 <CalendarActionButtonSeparator />
@@ -72,7 +72,7 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & A
 const mapStateToProps = (state: AppState): ActionButtonGroupProps => ({
     allIntervals: state.calendar.calendarEvents.intervals,
     intervalsBySingleDaySelection: state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection,
-    hideActionButtons: state.calendar.calendarEvents.hideCalendarActionsButtonGroup
+    disableActionButtons: state.calendar.calendarEvents.disableCalendarActionsButtonGroup
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>): ActionButtonsGroupDispatchProps => ({

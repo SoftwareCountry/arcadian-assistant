@@ -43,7 +43,7 @@ export interface CalendarEventsState extends
     EventsMapSubState,
     SelectionSubState,
     CalendarPagesSubState {
-        hideCalendarActionsButtonGroup: boolean;
+        disableCalendarActionsButtonGroup: boolean;
         selectedIntervalsBySingleDaySelection: ExtractedIntervals;
         disableSelectIntervalsBySingleDaySelection: boolean;
         disableSelection: boolean;
@@ -86,7 +86,7 @@ const createInitState = (): CalendarEventsState => {
             return event.dates.endDate.isSameOrAfter(now, 'date');
         },
         disableCalendarDaysBefore: null,
-        hideCalendarActionsButtonGroup: true,
+        disableCalendarActionsButtonGroup: true,
         selection: defaultSelection,
         selectedIntervalsBySingleDaySelection: defaultExtractedIntervals,
         disableSelectIntervalsBySingleDaySelection: false,
@@ -117,7 +117,7 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 newState = {
                     ...newState,
                     intervals: intervals,
-                    hideCalendarActionsButtonGroup: false,
+                    disableCalendarActionsButtonGroup: false,
                 };
             }
 

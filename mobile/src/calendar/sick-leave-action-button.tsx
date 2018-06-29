@@ -6,7 +6,7 @@ import { CalendarEventsColor } from './styles';
 interface SickLeaveActionButtonProps {
     allIntervals: ReadOnlyIntervalsModel;
     interval: IntervalModel;
-    hide: boolean;
+    disabled: boolean;
     claim: () => void;
     edit: () => void;
     cancel: () => void;
@@ -16,14 +16,14 @@ export class SickLeaveActionButton extends Component<SickLeaveActionButtonProps>
     public render() {
         const { interval, allIntervals } = this.props;
 
-        const hideCalendarAction = this.hideCalendarAction();
+        const disableCalendarAction = this.disableCalendarAction();
 
         return (
             <CalendarActionButton 
                 title={this.title} 
                 borderColor={CalendarEventsColor.sickLeave} 
                 onPress={this.onSickLeaveAction} 
-                hide={this.props.hide || hideCalendarAction} />
+                disabled={this.props.disabled || disableCalendarAction} />
         );
     }
 
@@ -45,16 +45,16 @@ export class SickLeaveActionButton extends Component<SickLeaveActionButtonProps>
         }
     }
 
-    private hideCalendarAction(): boolean {
+    private disableCalendarAction(): boolean {
         const { interval, allIntervals } = this.props;
 
-        const hideWhenRequested = !interval
+        const disableWhenRequested = !interval
             && allIntervals
             && allIntervals.metadata.calendarEvents.some(x => x.isSickLeave && x.isRequested);
 
-        const hideWhenCompleted = interval && interval.calendarEvent.isCompleted;
+        const disableWhenCompleted = interval && interval.calendarEvent.isCompleted;
 
-        return hideWhenRequested || hideWhenCompleted;
+        return disableWhenRequested || disableWhenCompleted;
     }
 }
 
