@@ -43,11 +43,12 @@
                     break;
 
                 case Terminated t:
+                    this.logger.Debug($"Employee actor got terminated - {t.ActorRef}");
                     // unexpected employee actor termination
                     var deadEmployees = this.EmployeesById.Where(x => x.Value.Equals(t.ActorRef)).Select(x => x.Key).ToList();
                     foreach (var deadEmployee in deadEmployees)
                     {
-                        this.logger.Debug($"Employee actor {deadEmployee} died unexpectedly");
+                        this.logger.Warning($"Employee actor {deadEmployee} died unexpectedly");
                         this.EmployeesById.Remove(deadEmployee);
                     }
                     break;
