@@ -27,7 +27,7 @@ export class CalendarActionButton extends Component<CalendarActionButtonProps, C
     public render() {
 
         const buttonStyles = StyleSheet.flatten([
-            calendarActionsStyles.buttonContainer,
+            calendarActionsStyles.button,
             {
                 height: this.state.buttonHeight,
                 borderColor: this.props.borderColor,
@@ -35,7 +35,11 @@ export class CalendarActionButton extends Component<CalendarActionButtonProps, C
             },
             this.state.buttonHeight === 0 // Prevent border flicker
             ? { borderWidth: 0, borderColor: 'transparent' } : {},
-            this.props.style,
+            this.props.style
+        ]);
+
+        const buttonContainerStyles = StyleSheet.flatten([
+            calendarActionsStyles.buttonContainer,
             this.props.disabled
                 ? { opacity: 0.1 }
                 : null
@@ -47,15 +51,15 @@ export class CalendarActionButton extends Component<CalendarActionButtonProps, C
         ]);
 
         return (
-            <View style={buttonStyles}>
-                <TouchableOpacity style={calendarActionsStyles.button} onLayout={this.onButtonLayout} onPress={this.onButtonEditorPress} disabled={this.props.disabled}>
+            <View style={buttonContainerStyles} onLayout={this.onButtonContainerLayout}>
+                <TouchableOpacity style={buttonStyles} onPress={this.onButtonEditorPress} disabled={this.props.disabled}>
                     <StyledText style={textStyle}>{this.props.title}</StyledText>
                 </TouchableOpacity>
             </View>
         );
     }
 
-    private onButtonLayout = (e: LayoutChangeEvent) => {
+    private onButtonContainerLayout = (e: LayoutChangeEvent) => {
         this.setState({
             buttonHeight: e.nativeEvent.layout.height
         });
