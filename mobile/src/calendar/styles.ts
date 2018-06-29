@@ -20,6 +20,11 @@ const weekDayCircleZIndex = intervalZIndex + 1;
 const intervalBoundaryZIndex = weekDayCircleZIndex + 1;
 const weekDayTouchableZIndex = intervalBoundaryZIndex + 1;
 
+export const weekCalendarStyles = {
+    paddingLeft: 1,
+    paddingRight: 1
+};
+
 export const calendarStyles = StyleSheet.create({
     pagerContainer: {
         marginTop: 25,
@@ -43,8 +48,8 @@ export const calendarStyles = StyleSheet.create({
         color: daysCounterTitleColor
     },
     weekContainer: {
-        paddingLeft: 1,
-        paddingRight: 1
+        paddingLeft: weekCalendarStyles.paddingLeft,
+        paddingRight: weekCalendarStyles.paddingRight
     },
     weeksNames: {
         flex: 1,
@@ -64,7 +69,6 @@ export const calendarStyles = StyleSheet.create({
         flexDirection: 'row'
     },
     weekDayContainer: {
-        flex: 1,
         alignItems: 'center',
         justifyContent: 'center'
     },
