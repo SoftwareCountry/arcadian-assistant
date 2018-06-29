@@ -192,12 +192,15 @@ export const calendarActionsStyles = StyleSheet.create({
         marginLeft: 20,
         marginRight: 20,
     },
-    button: {
+    buttonContainer: {
         flex: 3,
-        justifyContent: 'center',
-        alignItems: 'center',
         borderWidth: 1,
         borderColor: CalendarEventsColor.vacation
+    },
+    button: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     buttonTitle: {
         fontSize: 12,

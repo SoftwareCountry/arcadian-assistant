@@ -27,7 +27,7 @@ export class CalendarActionButton extends Component<CalendarActionButtonProps, C
     public render() {
 
         const buttonStyles = StyleSheet.flatten([
-            calendarActionsStyles.button,
+            calendarActionsStyles.buttonContainer,
             {
                 height: this.state.buttonHeight,
                 borderColor: this.props.borderColor,
@@ -35,7 +35,10 @@ export class CalendarActionButton extends Component<CalendarActionButtonProps, C
             },
             this.state.buttonHeight === 0 // Prevent border flicker
             ? { borderWidth: 0, borderColor: 'transparent' } : {},
-            this.props.style
+            this.props.style,
+            this.props.disabled
+                ? { opacity: 0.1 }
+                : null
         ]);
 
         const textStyle = StyleSheet.flatten([
@@ -44,9 +47,11 @@ export class CalendarActionButton extends Component<CalendarActionButtonProps, C
         ]);
 
         return (
-            <TouchableOpacity style={buttonStyles} onLayout={this.onButtonLayout} onPress={this.onButtonEditorPress} disabled={this.props.disabled}>
-                <StyledText style={textStyle}>{this.props.title}</StyledText>
-            </TouchableOpacity>
+            <View style={buttonStyles}>
+                <TouchableOpacity style={calendarActionsStyles.button} onLayout={this.onButtonLayout} onPress={this.onButtonEditorPress} disabled={this.props.disabled}>
+                    <StyledText style={textStyle}>{this.props.title}</StyledText>
+                </TouchableOpacity>
+            </View>
         );
     }
 
