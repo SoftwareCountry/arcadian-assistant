@@ -28,7 +28,6 @@ interface EmployeeDetailsOwnProps {
 
 interface EmployeeDetailsStateProps {
     events: Map<string, CalendarEvent[]>;
-    eventsPredicate: (event: CalendarEvent) => boolean;
     hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => string;
     userEmployeePermissions: Map<string, UserEmployeePermissions>;
 }
@@ -40,7 +39,6 @@ const mapStateToProps: MapStateToProps<EmployeeDetailsProps, EmployeeDetailsOwnP
     department: ownProps.department,
     layoutStylesChevronPlaceholder: ownProps.layoutStylesChevronPlaceholder,
     events: state.calendar.calendarEvents.events,
-    eventsPredicate: state.calendar.calendarEvents.eventsPredicate,
     requests: ownProps.requests,
     hoursToIntervalTitle: state.calendar.pendingRequests.hoursToIntervalTitle,
     userEmployeePermissions: state.userInfo.permissions
@@ -108,10 +106,6 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         const contacts = this.getContacts(employee);
 
         let events = this.props.events.get(employee.employeeId);
-
-        if (events !== undefined) {
-            events = events.filter(this.props.eventsPredicate);
-        }
 
         return (
                 <View style={layoutStyles.container}>

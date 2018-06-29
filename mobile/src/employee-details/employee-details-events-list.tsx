@@ -70,8 +70,15 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
         const leftIconsStyle = this.props.showUserAvatar ? eventLeftIcons : eventLeftIconsTiny;
         const typeIconContainerStyle = this.props.showUserAvatar ? eventTypeIconContainer : eventTypeIconContainerTiny;
 
+        const now = moment();
+        const isOutdated = item.calendarEvent.dates.endDate.isSameOrBefore(now, 'date');
+
         const eventsContainerFlattened = StyleSheet.flatten([
-            eventsContainer, {width: Dimensions.get('window').width}
+            eventsContainer, 
+            {
+                width: Dimensions.get('window').width,
+                opacity: isOutdated ? 0.55 : 1
+            }
         ]);
 
         const descriptionStatus = this.descriptionStatus(item.calendarEvent);
