@@ -192,8 +192,10 @@ export const calendarActionsStyles = StyleSheet.create({
         marginLeft: 20,
         marginRight: 20,
     },
+    buttonContainer: {
+        flex: 3
+    },
     button: {
-        flex: 3,
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
