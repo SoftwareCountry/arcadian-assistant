@@ -11,12 +11,9 @@
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
-    
     public abstract class EmployeesImportantDatesFeedActor : UntypedActor, ILogReceive
     {
         private readonly IActorRef organizationActor;
-
-        private readonly Dictionary<DateTime, List<Message>> messagesByDate = new Dictionary<DateTime, List<Message>>();
 
         public EmployeesImportantDatesFeedActor(IActorRef organizationActor)
         {
@@ -61,19 +58,14 @@
 
             foreach (var date in dates)
             {
-                if (!this.messagesByDate.TryGetValue(date, out var messagesForDate))
-                {
-                    var query = this.GetEmployeesQuery(date);
-                    var result = await this.organizationActor.Ask<EmployeesQuery.Response>(query);
+                var query = this.GetEmployeesQuery(date);
+                var result = await this.organizationActor.Ask<EmployeesQuery.Response>(query);
 
-                    messagesForDate = result
-                        .Employees
-                        .Select(x => this.GetDateMessageForEmployee(x.Metadata, date))
-                        .Where(x => x != null)
-                        .ToList();
-
-                    this.messagesByDate[date] = messagesForDate;
-                }
+                var messagesForDate = result
+                    .Employees
+                    .Select(x => this.GetDateMessageForEmployee(x.Metadata, date))
+                    .Where(x => x != null)
+                    .ToList();
 
                 allMessages.AddRange(messagesForDate);
             }
