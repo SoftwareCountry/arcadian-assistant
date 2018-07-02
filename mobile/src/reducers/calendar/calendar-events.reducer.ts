@@ -30,7 +30,6 @@ export interface SelectionSubState {
 export interface EventsMapSubState {
     events: Map<string, CalendarEvent[]>;
     userEmployeeId: string;
-    eventsPredicate: (event: CalendarEvent) => boolean;
 }
 
 export interface CalendarPagesSubState {
@@ -81,10 +80,6 @@ const createInitState = (): CalendarEventsState => {
         intervals: null,
         events: Map<string, CalendarEvent[]>(),
         userEmployeeId: null,
-        eventsPredicate: (event: CalendarEvent) => {
-            const now = moment();
-            return event.dates.endDate.isSameOrAfter(now, 'date');
-        },
         disableCalendarDaysBefore: null,
         disableCalendarActionsButtonGroup: true,
         selection: defaultSelection,
