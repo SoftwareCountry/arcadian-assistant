@@ -2,7 +2,7 @@ import { TabNavigatorConfig, NavigationRouteConfigMap } from 'react-navigation';
 import React from 'react';
 import { PeopleDepartment } from '../people-department';
 import { PeopleRoom } from '../people-room';
-import { PeopleCompanyFiltered } from '../people-company-filtered';
+import { PeopleCompany } from '../people-company';
 import { TabNavigationOptionsFactory } from '../../tabbar/tab-navigation-options-factory';
 
 const navOptionsFactory = new TabNavigationOptionsFactory();
@@ -20,7 +20,7 @@ const peopleScreenNavigatorModel: NavigationRouteConfigMap = {
         navigationOptions: navOptionsFactory.create('Room', null)
     },
     Company: {
-        screen: PeopleCompanyFiltered,
+        screen: PeopleCompany,
         path: '/people/company',
         navigationOptions: navOptionsFactory.create('Company', null)
     }

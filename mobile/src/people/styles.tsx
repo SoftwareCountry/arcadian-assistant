@@ -1,15 +1,19 @@
 import { StyleSheet } from 'react-native';
 
 export const employeesListStyles  = StyleSheet.create({
-    company: {
-        flex: 1,
-        backgroundColor: '#FFF'
-    },
     view: {
         paddingTop: 5,
         flex: 1,
         backgroundColor: '#FFF'
     },
+    loadingContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    loadingText: {
+        fontSize: 20
+    }
 });
 
 export const employeesListItemStyles = StyleSheet.create({
