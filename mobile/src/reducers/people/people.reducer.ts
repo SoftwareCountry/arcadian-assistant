@@ -105,7 +105,7 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
             return {...state, departmentsBranch: depsAndMeta.departmentsLineup, departmentsLists: depsAndMeta.departmentsLists};
         }
         case 'SEARCH-BY-TEXT-FILTER':
-            if (action.searchType === SearchType.PEOPLE) {
+            if (action.searchType === SearchType.People) {
                 return {
                     ...state,
                     filter: action.filter,

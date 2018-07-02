@@ -50,7 +50,7 @@ export const feedsReducer: Reducer<FeedsState> = (state = initState, action: Fee
                 fromDate: action.fromDate,
             };
         case 'SEARCH-BY-TEXT-FILTER':
-            if (action.searchType === SearchType.FEED) {
+            if (action.searchType === SearchType.Feeds) {
                 return {
                     ...state,
                     filter: action.filter,

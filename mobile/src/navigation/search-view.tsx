@@ -7,8 +7,8 @@ import { ApplicationIcon } from '../override/application-icon';
 import { searchViewStyles as styles } from './search-view-styles';
 
 export enum SearchType {
-    'FEED',
-    'PEOPLE',
+    Feeds = 'Feeds',
+    People = 'People',
 }
 
 interface SearchViewProps {
@@ -16,13 +16,15 @@ interface SearchViewProps {
 }
 
 interface SearchViewStateProps {
-    filterFeed: string;
-    filterPeople: string;
+    filter: string;
 }
 
-const mapStateToProps = (state: AppState): SearchViewStateProps => ({
-    filterFeed: state.feeds.filter,
-    filterPeople: state.people.filter,
+const mapStateToPropsFeeds = (state: AppState): SearchViewStateProps => ({
+    filter: state.feeds.filter,
+});
+
+const mapStateToPropsPeople = (state: AppState): SearchViewStateProps => ({
+    filter: state.people.filter,
 });
 
 interface SearchViewDispatchProps {
@@ -49,7 +51,7 @@ class SearchViewImpl extends Component<SearchViewDispatchProps & SearchViewProps
                         underlineColorAndroid='transparent'
                         autoCapitalize='none'
                         onChangeText={this.changeText.bind(this)}
-                        value={this.getCurrentFilter()}
+                        value={this.props.filter}
                     />
                 </View>
                 <View style={styles.iconsContainer}>
@@ -58,17 +60,6 @@ class SearchViewImpl extends Component<SearchViewDispatchProps & SearchViewProps
                     </TouchableOpacity>
                 </View>
             </View>;
-    }
-
-    private getCurrentFilter() {
-        switch (this.props.type) {
-            case SearchType.FEED:
-                return this.props.filterFeed;
-            case SearchType.PEOPLE:
-                return this.props.filterPeople;
-            default:
-                return '';
-        }
     }
 
     private changeText(filter: string) {
@@ -80,4 +71,17 @@ class SearchViewImpl extends Component<SearchViewDispatchProps & SearchViewProps
     }
 }
 
-export const SearchView = connect(mapStateToProps, mapDispatchToProps)(SearchViewImpl);
+const SearchViewFeeds = connect(mapStateToPropsFeeds, mapDispatchToProps)(SearchViewImpl);
+const SearchViewPeople = connect(mapStateToPropsPeople, mapDispatchToProps)(SearchViewImpl);
+
+export class SearchView extends Component<SearchViewProps> {
+    public render() {
+        switch (this.props.type) {
+            case SearchType.Feeds:
+                return <SearchViewFeeds type={this.props.type}/>;
+            case SearchType.People: 
+            default:
+                return <SearchViewPeople type={this.props.type}/>;
+        }
+    }
+}

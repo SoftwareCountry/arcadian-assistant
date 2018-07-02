@@ -92,7 +92,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
 
         return this.props.feeds.size > 0 ?
             <View>
-                <SearchView type={SearchType.FEED}/>
+                <SearchView type={SearchType.Feeds}/>
                 <View>
                     <FlatList
                         style={styles.view}
@@ -108,7 +108,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
                     />
                 </View>
             </View>
-        : <LoadingView type={SearchType.FEED}/>;
+        : <LoadingView/>;
     }
 
     private keyExtractor(item: Feed) {

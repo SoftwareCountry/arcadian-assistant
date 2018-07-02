@@ -16,38 +16,32 @@ import { StyledText } from '../override/styled-text';
 import { employeesListStyles as styles } from './styles';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { SearchView, SearchType } from '../navigation/search-view';
-import { LoadingView } from '../navigation/loading';
+
+interface PeopleCompanySearchProps {
+    searchPredicate: (employee: Employee) => boolean;
+}
 
 interface PeopleCompanyProps {
     routeName: string;
     departmentsBranch?: Department[];
-    employees: EmployeesStore;
     departments?: Department[];
+    employees: EmployeesStore;
     employee?: Employee;
     currentFocusedDepartmentId?: string;
     departmentLists?: DepartmentsListStateDescriptor[];
-    filter: string;
     employeesPredicate: (head: Department, employee: Employee) => boolean;
 }
 
-const mapStateToProps = (state: AppState): PeopleCompanyProps => {
-    const filter = state.people.filter;
-
-    return ({
+const mapStateToProps = (state: AppState): PeopleCompanyProps => ({
         routeName: 'Company',
         departmentsBranch: state.people.departmentsBranch.length > 0 ? state.people.departmentsBranch : null,
-        employees: state.organization.employees,
         departments: state.people.departments,
+        employees: state.organization.employees,
         employee: state.organization.employees.employeesById.get(state.userInfo.employeeId),
         currentFocusedDepartmentId: state.people.currentFocusedDepartmentId,
         departmentLists: state.people.departmentsLists,
-        filter,
-        employeesPredicate: (head: Department, employee: Employee) => (employee.name.includes(filter) ||
-                                                    employee.email.includes(filter) || 
-                                                    employee.position.includes(filter)) &&
-                                                    employee.departmentId === head.departmentId && employee.employeeId !== head.chiefId,
-    });
-};
+        employeesPredicate: (head: Department, employee: Employee) => employee.departmentId === head.departmentId && employee.employeeId !== head.chiefId,
+});
 
 interface PeopleCompanyDispatchProps {
     requestEmployeesForDepartment: (departmentId: string) => void;
@@ -67,21 +61,17 @@ const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
     },
 });
 
-export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & PeopleCompanyDispatchProps> {
+export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & PeopleCompanyDispatchProps & PeopleCompanySearchProps> {
     public render() {
         // Branch for current employee
         let userFocusedDepartmentsBranch: Department[] = [];
 
         if (this.props.departments && this.props.departments.length > 0 && this.props.departmentsBranch !== null) {
                 userFocusedDepartmentsBranch = userFocusedDepartmentsBranch.concat(this.props.departmentsBranch);
-        } else {
-            return <LoadingView type={SearchType.PEOPLE}/>;
         }
         
         return <View>
-            <SearchView type={SearchType.PEOPLE}/>
-            <View>
-                <ScrollView style={{ backgroundColor: '#fff', flex: 1 }}>
+                <ScrollView style={styles.company}>
                     <EmployeeCardWithAvatar
                         employee={this.props.employees.employeesById.get(userFocusedDepartmentsBranch[0].chiefId)}
                         departmentAbbreviation={userFocusedDepartmentsBranch[0].abbreviation}
@@ -90,7 +80,8 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
                     />
                     {
                         userFocusedDepartmentsBranch.map((head, index) => {
-                            const employeesPredicate = (employee: Employee) => this.props.employeesPredicate(head, employee);
+                            const employeesPredicate = (employee: Employee) => this.props.employeesPredicate(head, employee) &&
+                                                                               this.props.searchPredicate(employee);
 
                             return (
                                 <DepartmentsHScrollableList
@@ -112,8 +103,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
                         })
                     }
                 </ScrollView>
-            </View>
-        </View>;
+            </View>;
     }
 }
 

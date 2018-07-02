@@ -24,7 +24,7 @@ export class EmployeesList extends React.Component<EmployeesListProps> {
 
         return employees.length > 0 ? 
             <View>
-                <SearchView type={SearchType.PEOPLE}/>
+                <SearchView type={SearchType.People}/>
                 <View style={styles.view}>
                     <FlatList
                         data={employees}
@@ -32,7 +32,7 @@ export class EmployeesList extends React.Component<EmployeesListProps> {
                         renderItem={this.renderItem} />
                 </View>
             </View>
-        : <LoadingView type={SearchType.PEOPLE}/>;
+        : <LoadingView/>;
     }
 
     private keyExtractor = (item: Employee) => item.employeeId;
