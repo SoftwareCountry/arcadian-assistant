@@ -9,8 +9,9 @@ import { AppState } from '../reducers/app.reducer';
 import { EmployeesListItem } from './employees-list-item';
 import { employeesListStyles as styles } from './styles';
 import { employeesAZSort } from './employee-comparer';
-import { StyledText } from '../override/styled-text';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
+import { LoadingView } from '../navigation/loading';
+import { SearchView, SearchType } from '../navigation/search-view';
 
 export interface EmployeesListProps {
     employees: Employee[];
@@ -22,17 +23,16 @@ export class EmployeesList extends React.Component<EmployeesListProps> {
         const employees = this.props.employees.sort(employeesAZSort);
 
         return employees.length > 0 ? 
-            <View style={styles.view}>
-                <FlatList
-                    data={employees}
-                    keyExtractor={this.keyExtractor}
-                    renderItem={this.renderItem} />
+            <View>
+                <SearchView type={SearchType.People}/>
+                <View style={styles.view}>
+                    <FlatList
+                        data={employees}
+                        keyExtractor={this.keyExtractor}
+                        renderItem={this.renderItem} />
+                </View>
             </View>
-        : (
-            <View style={styles.loadingContainer}>
-                    <StyledText style={styles.loadingText}>Loading...</StyledText>
-            </View>
-        );
+        : <LoadingView/>;
     }
 
     private keyExtractor = (item: Employee) => item.employeeId;

@@ -9,6 +9,8 @@ import { connect, Dispatch } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 
 import { FeedListItem } from './feed';
+import { SearchView, SearchType } from '../navigation/search-view';
+import { LoadingView } from '../navigation/loading';
 
 import { screenStyles as styles } from './styles';
 import { StyledText } from '../override/styled-text';
@@ -25,6 +27,8 @@ interface FeedsScreenProps {
     toDate: Moment;
     fromDate: Moment;
     user: string;
+    filter: string;
+    feedPredicate: (feed: Feed) => boolean;
 }
 
 interface FeedScreenDispatchProps {
@@ -33,13 +37,26 @@ interface FeedScreenDispatchProps {
     fetchOldFeeds: () => void;
 }
 
-const mapStateToProps = (state: AppState): FeedsScreenProps => ({
-    feeds: state.feeds.feeds,
-    employees: state.organization.employees,
-    toDate: state.feeds.toDate,
-    fromDate: state.feeds.fromDate,
-    user: state.userInfo.employeeId,
+const mapStateToProps = (state: AppState): FeedsScreenProps => {
+    const filter = state.feeds.filter;
+    const employees = state.organization.employees;
+
+    return ({
+        feeds: state.feeds.feeds,
+        employees,
+        toDate: state.feeds.toDate,
+        fromDate: state.feeds.fromDate,
+        user: state.userInfo.employeeId,
+        filter,
+        feedPredicate: (feed: Feed) =>  {
+            const employee = employees.employeesById.get(feed.employeeId);
+
+            return  feed.title.includes(filter) || 
+                    feed.text.includes(filter) ||
+                    (employee && employee.name.includes(filter));
+        },
 });
+};
 
 const mapDispatchToProps = (dispatch: Dispatch<any>): FeedScreenDispatchProps => ({
     onAvatarClicked: (employee: Employee) => dispatch(openEmployeeDetailsAction(employee)),
@@ -52,9 +69,11 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     public static navigationOptions = navBar.configurate();
 
     public shouldComponentUpdate(nextProps: FeedsScreenProps & FeedScreenDispatchProps) {
+        const currentFeeds = this.props.feeds.filter(this.props.feedPredicate);
+        const nextFeeds = nextProps.feeds.filter(nextProps.feedPredicate);
+
         if (this.props.onAvatarClicked !== nextProps.onAvatarClicked
-            || this.props.feeds !== nextProps.feeds
-        ) {
+            || !currentFeeds.equals(nextFeeds)) {
             return true;
         }
 
@@ -69,23 +88,27 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     }
 
     public render() {
+        const feeds = this.sortedFeeds().filter(this.props.feedPredicate);
 
-        const feeds = this.sortedFeeds();
-
-        return (
-            <FlatList
-                style={styles.view}
-                keyExtractor={this.keyExtractor}
-                ItemSeparatorComponent={this.itemSeparator}
-                data={feeds}
-                extraData={this.props.employees}
-                renderItem={this.renderItem}
-                onEndReached={this.endReached}
-                onEndReachedThreshold={0}
-                refreshing={false}
-                onRefresh={this.onRefresh}
-            />
-        );
+        return this.props.feeds.size > 0 ?
+            <View>
+                <SearchView type={SearchType.Feeds}/>
+                <View>
+                    <FlatList
+                        style={styles.view}
+                        keyExtractor={this.keyExtractor}
+                        ItemSeparatorComponent={this.itemSeparator}
+                        data={feeds}
+                        extraData={this.props.employees}
+                        renderItem={this.renderItem}
+                        onEndReached={this.endReached}
+                        onEndReachedThreshold={0}
+                        refreshing={false}
+                        onRefresh={this.onRefresh}
+                    />
+                </View>
+            </View>
+        : <LoadingView/>;
     }
 
     private keyExtractor(item: Feed) {
