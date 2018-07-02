@@ -16,7 +16,7 @@
 
     public class EmployeesActor : UntypedActor, IWithUnboundedStash, ILogReceive
     {
-        private static readonly int ResizersCount = (int)Math.Floor(Environment.ProcessorCount / 2.0);
+        private static readonly int ResizersCount = (int)Math.Ceiling(Environment.ProcessorCount / 2.0);
 
         private readonly IActorRef employeesInfoStorage;
 
@@ -31,6 +31,7 @@
         public EmployeesActor()
         {
             this.employeesInfoStorage = Context.ActorOf(EmployeesInfoStorage.GetProps, "employees-storage");
+            this.logger.Info($"Image resizers pool size: {ResizersCount}");
             this.imageResizer = Context.ActorOf(
                 Props.Create(() => new ImageResizer()).WithRouter(new RoundRobinPool(ResizersCount)),
                 "image-resizer");
