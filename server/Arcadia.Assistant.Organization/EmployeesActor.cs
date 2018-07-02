@@ -8,13 +8,19 @@
     using Akka.Actor;
     using Akka.DI.Core;
     using Akka.Event;
+    using Akka.Routing;
 
+    using Arcadia.Assistant.Images;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public class EmployeesActor : UntypedActor, IWithUnboundedStash, ILogReceive
     {
+        private static readonly int ResizersCount = (int)Math.Floor(Environment.ProcessorCount / 2.0);
+
         private readonly IActorRef employeesInfoStorage;
+
+        private readonly IActorRef imageResizer;
 
         private Dictionary<string, IActorRef> EmployeesById { get; } = new Dictionary<string, IActorRef>();
 
@@ -25,6 +31,9 @@
         public EmployeesActor()
         {
             this.employeesInfoStorage = Context.ActorOf(EmployeesInfoStorage.GetProps, "employees-storage");
+            this.imageResizer = Context.ActorOf(
+                Props.Create(() => new ImageResizer()).WithRouter(new RoundRobinPool(ResizersCount)),
+                "image-resizer");
         }
 
         protected override void OnReceive(object message)
@@ -118,7 +127,10 @@
                 }
                 else
                 {
-                    employee = Context.ActorOf(EmployeeActor.GetProps(employeeNewInfo), Uri.EscapeDataString(employeeNewInfo.Metadata.EmployeeId));
+                    employee = Context.ActorOf(
+                        EmployeeActor.GetProps(employeeNewInfo, this.imageResizer),
+                        $"employee-{Uri.EscapeDataString(employeeNewInfo.Metadata.EmployeeId)}");
+
                     this.EmployeesById[employeeNewInfo.Metadata.EmployeeId] = employee;
                     Context.Watch(employee);
                     newEmployeesCount++;

@@ -26,12 +26,12 @@
 
         private readonly EmployeeCalendarContainer calendar;
 
-        public EmployeeActor(EmployeeStoredInformation storedInformation)
+        public EmployeeActor(EmployeeStoredInformation storedInformation, IActorRef imageResizer)
         {
             this.employeeMetadata = storedInformation.Metadata;
             this.PersistenceId = $"employee-info-{Uri.EscapeDataString(this.employeeMetadata.EmployeeId)}";
 
-            this.photo = Context.ActorOf(Props.Create(() => new PhotoActor()), "photo");
+            this.photo = Context.ActorOf(Props.Create(() => new PhotoActor(imageResizer)), "photo");
             this.photo.Tell(new PhotoActor.SetSource(storedInformation.Photo));
 
             this.employeeFeed = Context.ActorOf(FeedActor.GetProps(), "feed");
@@ -177,6 +177,7 @@
             }
         }
 
-        public static Props GetProps(EmployeeStoredInformation employeeStoredInformation) => Props.Create(() => new EmployeeActor(employeeStoredInformation));
+        public static Props GetProps(EmployeeStoredInformation employeeStoredInformation, IActorRef imageResizer) =>
+            Props.Create(() => new EmployeeActor(employeeStoredInformation, imageResizer));
     }
 }
