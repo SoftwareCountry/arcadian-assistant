@@ -70,7 +70,7 @@ export class FeedListItem extends React.Component<FeedListItemProps, FeedListIte
     private onAvatarContainerLayout = (evt: LayoutChangeEvent) => {
         const layout = evt.nativeEvent.layout;
         this.setState({
-            avatarHeight: Math.max(layout.height, layout.width)
+            avatarHeight: Math.min(layout.height, layout.width)
         });
     }
     private onAvatarClicked = () => {
