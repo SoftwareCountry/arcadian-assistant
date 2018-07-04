@@ -113,6 +113,7 @@
 
             builder.RegisterType<UserIsEmployeeHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
             builder.RegisterType<EmployeePermissionsHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
+            builder.RegisterType<EditCalendarEventsPermissionHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
 
             builder.RegisterType<PermissionsLoader>().As<IPermissionsLoader>().InstancePerLifetimeScope();
         }

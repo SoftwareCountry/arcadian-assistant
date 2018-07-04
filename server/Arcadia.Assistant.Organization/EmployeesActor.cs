@@ -8,13 +8,19 @@
     using Akka.Actor;
     using Akka.DI.Core;
     using Akka.Event;
+    using Akka.Routing;
 
+    using Arcadia.Assistant.Images;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public class EmployeesActor : UntypedActor, IWithUnboundedStash, ILogReceive
     {
+        private static readonly int ResizersCount = (int)Math.Ceiling(Environment.ProcessorCount / 2.0);
+
         private readonly IActorRef employeesInfoStorage;
+
+        private readonly IActorRef imageResizer;
 
         private Dictionary<string, IActorRef> EmployeesById { get; } = new Dictionary<string, IActorRef>();
 
@@ -25,6 +31,10 @@
         public EmployeesActor()
         {
             this.employeesInfoStorage = Context.ActorOf(EmployeesInfoStorage.GetProps, "employees-storage");
+            this.logger.Info($"Image resizers pool size: {ResizersCount}");
+            this.imageResizer = Context.ActorOf(
+                Props.Create(() => new ImageResizer()).WithRouter(new RoundRobinPool(ResizersCount)),
+                "image-resizer");
         }
 
         protected override void OnReceive(object message)
@@ -40,6 +50,17 @@
                 case EmployeesQuery query:
                     var requesters = new[] { this.Sender };
                     Context.ActorOf(Props.Create(() => new EmployeeSearch(this.EmployeesById.Values, requesters, query)));
+                    break;
+
+                case Terminated t:
+                    this.logger.Debug($"Employee actor got terminated - {t.ActorRef}");
+                    // unexpected employee actor termination
+                    var deadEmployees = this.EmployeesById.Where(x => x.Value.Equals(t.ActorRef)).Select(x => x.Key).ToList();
+                    foreach (var deadEmployee in deadEmployees)
+                    {
+                        this.logger.Warning($"Employee actor {deadEmployee} died unexpectedly");
+                        this.EmployeesById.Remove(deadEmployee);
+                    }
                     break;
 
                 default:
@@ -92,7 +113,9 @@
 
             foreach (var removedId in removedIds)
             {
-                this.EmployeesById[removedId].Tell(PoisonPill.Instance);
+                var actorToRemove = this.EmployeesById[removedId];
+                actorToRemove.Tell(PoisonPill.Instance);
+                Context.Unwatch(actorToRemove);
                 this.EmployeesById.Remove(removedId);
             }
 
@@ -105,8 +128,12 @@
                 }
                 else
                 {
-                    employee = Context.ActorOf(EmployeeActor.GetProps(employeeNewInfo), Uri.EscapeDataString(employeeNewInfo.Metadata.EmployeeId));
+                    employee = Context.ActorOf(
+                        EmployeeActor.GetProps(employeeNewInfo, this.imageResizer),
+                        $"employee-{Uri.EscapeDataString(employeeNewInfo.Metadata.EmployeeId)}");
+
                     this.EmployeesById[employeeNewInfo.Metadata.EmployeeId] = employee;
+                    Context.Watch(employee);
                     newEmployeesCount++;
                 }
             }

@@ -26,20 +26,24 @@
 
         private readonly EmployeeCalendarContainer calendar;
 
-        public EmployeeActor(EmployeeStoredInformation storedInformation)
+        public EmployeeActor(EmployeeStoredInformation storedInformation, IActorRef imageResizer)
         {
             this.employeeMetadata = storedInformation.Metadata;
             this.PersistenceId = $"employee-info-{Uri.EscapeDataString(this.employeeMetadata.EmployeeId)}";
 
-            this.photo = Context.ActorOf(Props.Create(() => new PhotoActor()), "photo");
+            this.photo = Context.ActorOf(Props.Create(() => new PhotoActor(imageResizer)), "photo");
             this.photo.Tell(new PhotoActor.SetSource(storedInformation.Photo));
 
             this.employeeFeed = Context.ActorOf(FeedActor.GetProps(), "feed");
             var sendEmailActor = Context.ActorOf(SendEmailSickLeaveActor.GetProps(), "sendEmail");
             sendEmailActor.Tell(new SendEmailSickLeaveActor.SetEmployeesActor(Context.Parent));
+
             var vacationsActor = Context.ActorOf(EmployeeVacationsActor.CreateProps(this.employeeMetadata.EmployeeId), "vacations");
             var sickLeavesActor = Context.ActorOf(EmployeeSickLeaveActor.CreateProps(this.employeeMetadata.EmployeeId, sendEmailActor), "sick-leaves");
             var workHoursActor = Context.ActorOf(EmployeeWorkHoursActor.CreateProps(this.employeeMetadata.EmployeeId), "work-hours");
+            Context.Watch(vacationsActor);
+            Context.Watch(sickLeavesActor);
+            Context.Watch(workHoursActor);
 
             var calendarActor = Context.ActorOf(EmployeeCalendarActor.CreateProps(this.employeeMetadata.EmployeeId, vacationsActor, workHoursActor, sickLeavesActor), "all-calendar-events");
 
@@ -64,6 +68,11 @@
                 case UpdateEmployeeInformation newInfo when newInfo.Information.Metadata.EmployeeId == this.employeeMetadata.EmployeeId:
                     this.photo.Tell(new PhotoActor.SetSource(newInfo.Information.Photo));
                     this.UpdateEmployeeMetadata(newInfo.Information.Metadata);
+                    break;
+
+                //TODO: get rid of it somehow, now it monitors that actors were able to restore.
+                case Terminated t:
+                    Context.Stop(this.Self);
                     break;
                     
                 default:
@@ -168,6 +177,7 @@
             }
         }
 
-        public static Props GetProps(EmployeeStoredInformation employeeStoredInformation) => Props.Create(() => new EmployeeActor(employeeStoredInformation));
+        public static Props GetProps(EmployeeStoredInformation employeeStoredInformation, IActorRef imageResizer) =>
+            Props.Create(() => new EmployeeActor(employeeStoredInformation, imageResizer));
     }
 }

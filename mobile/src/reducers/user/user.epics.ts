@@ -2,7 +2,7 @@ import { deserialize } from 'santee-dcts/src/deserializer';
 import { loadEmployee, LoadEmployeeFinished } from '../organization/organization.action';
 import { ActionsObservable } from 'redux-observable';
 import { User } from './user.model';
-import { LoadUser, loadUserFinished, LoadUserFinished, loadUserEmployeeFinished, LoadUserEmployeeFinished } from './user.action';
+import { LoadUser, loadUserFinished, LoadUserFinished, loadUserEmployeeFinished, LoadUserEmployeeFinished, LoadUserEmployeePermissions, loadUserEmployeePermissionsFinished } from './user.action';
 import { Observable } from 'rxjs/Observable';
 import { loadFailedError } from '../errors/errors.action';
 import { AppState } from 'react-native';
@@ -10,8 +10,8 @@ import { DependenciesContainer } from '../app.reducer';
 import { Employee } from '../organization/employee.model';
 import { handleHttpErrors } from '../errors/errors.epics';
 import { startLogoutProcess } from '../auth/auth.action';
+import { UserEmployeePermissions } from './user-employee-permissions.model';
 
-// TODO: Handle error, display some big alert blocking app...
 export const loadUserEpic$ = (action$: ActionsObservable<LoadUser>, appState: AppState, deps: DependenciesContainer) =>
     action$.ofType('LOAD-USER')
         .switchMap(x => deps.apiClient.getJSON(`/user`)
@@ -28,3 +28,9 @@ export const loadUserFinishedEpic$ = (action$: ActionsObservable<LoadUserFinishe
         .map(z => loadUserEmployeeFinished(z))
         .catch(e => Observable.of(startLogoutProcess()));
 
+export const loadUserEmployeePermissionsEpic$ = (action$: ActionsObservable<LoadUserEmployeePermissions>, appState: AppState, deps: DependenciesContainer) =>
+    action$.ofType('LOAD-USER-EMPLOYEE-PERMISSIONS')
+        .switchMap(x => deps.apiClient.getJSON(`/user/permissions/${x.employeeId}`)
+            .pipe(handleHttpErrors(false)))
+        .map(obj => deserialize(obj, UserEmployeePermissions))
+        .map(x => loadUserEmployeePermissionsFinished(x));

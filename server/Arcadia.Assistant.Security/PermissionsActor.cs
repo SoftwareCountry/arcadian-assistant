@@ -182,6 +182,10 @@
 
         private static readonly EmployeePermissionsEntry SelfPermissions =
             EmployeePermissionsEntry.CreateCalendarEvents |
+            EmployeePermissionsEntry.CompleteSickLeave |
+            EmployeePermissionsEntry.ProlongSickLeave |
+            EmployeePermissionsEntry.CancelCalendarEvents |
+            EmployeePermissionsEntry.EditPendingCalendarEvents |
             EmployeePermissionsEntry.ReadEmployeeCalendarEvents |
             EmployeePermissionsEntry.ReadEmployeeInfo |
             EmployeePermissionsEntry.ReadEmployeePhone |            
@@ -189,8 +193,13 @@
             EmployeePermissionsEntry.ReadEmployeeVacationsCounter;
 
         private static readonly EmployeePermissionsEntry SupervisedPermissions =
-            EmployeePermissionsEntry.ApproveEmployeeCalendarEvents |
             EmployeePermissionsEntry.CreateCalendarEvents |
+            EmployeePermissionsEntry.ApproveCalendarEvents |
+            EmployeePermissionsEntry.RejectCalendarEvents |
+            EmployeePermissionsEntry.CompleteSickLeave |
+            EmployeePermissionsEntry.ProlongSickLeave |
+            EmployeePermissionsEntry.CancelCalendarEvents |
+            EmployeePermissionsEntry.EditPendingCalendarEvents |
             EmployeePermissionsEntry.ReadEmployeeCalendarEvents |
             EmployeePermissionsEntry.ReadEmployeeInfo |
             EmployeePermissionsEntry.ReadEmployeePhone |

@@ -38,19 +38,28 @@ export class CalendarActionButton extends Component<CalendarActionButtonProps, C
             this.props.style
         ]);
 
+        const buttonContainerStyles = StyleSheet.flatten([
+            calendarActionsStyles.buttonContainer,
+            this.props.disabled
+                ? { opacity: 0.1 }
+                : null
+        ]);
+
         const textStyle = StyleSheet.flatten([
             calendarActionsStyles.buttonTitle,
             this.props.textStyle
         ]);
 
         return (
-            <TouchableOpacity style={buttonStyles} onLayout={this.onButtonLayout} onPress={this.onButtonEditorPress} disabled={this.props.disabled}>
-                <StyledText style={textStyle}>{this.props.title}</StyledText>
-            </TouchableOpacity>
+            <View style={buttonContainerStyles} onLayout={this.onButtonContainerLayout}>
+                <TouchableOpacity style={buttonStyles} onPress={this.onButtonEditorPress} disabled={this.props.disabled}>
+                    <StyledText style={textStyle}>{this.props.title}</StyledText>
+                </TouchableOpacity>
+            </View>
         );
     }
 
-    private onButtonLayout = (e: LayoutChangeEvent) => {
+    private onButtonContainerLayout = (e: LayoutChangeEvent) => {
         this.setState({
             buttonHeight: e.nativeEvent.layout.height
         });

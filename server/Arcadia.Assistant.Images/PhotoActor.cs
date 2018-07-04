@@ -29,7 +29,13 @@
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
-        [HandleProcessCorruptedStateExceptions]
+        private readonly IActorRef imageResizer;
+
+        public PhotoActor(IActorRef imageResizer)
+        {
+            this.imageResizer = imageResizer;
+        }
+
         protected override void OnReceive(object message)
         {
             switch (message)
@@ -54,41 +60,33 @@
                     this.Sender.Tell(new GetPhoto.Response(photo));
                     break;
 
+                case ImageResizer.ResizeImage.ImageResized image:
+                    this.imageBytes = image.Bytes;
+                    this.lastImageHash = GetBytesHash(this.imageBytes);
+                    break;
+
                 default:
                     this.Unhandled(message);
                     break;
             }
         }
 
+        private static string GetBytesHash(byte[] bytes)
+        {
+            using (var sha512 = SHA512.Create())
+            {
+                return Convert.ToBase64String(sha512.ComputeHash(bytes));
+            }
+        }
+
         private void ProcessImage(byte[] bytes)
         {
-            if (bytes == null)
+            if ((bytes == null) || (GetBytesHash(bytes) == this.lastImageHash))
             {
                 return;
             }
 
-            using (var sha512 = SHA512.Create())
-            {
-                var newHash = Convert.ToBase64String(sha512.ComputeHash(bytes));
-                if (newHash == this.lastImageHash)
-                {
-                    return;
-                }
-
-                this.lastImageHash = newHash;
-            }
-
-            using (var image = Image.Load(bytes))
-            using (var output = new MemoryStream())
-            {
-                image
-                    .Mutate(x => x.Resize(Width, Height));
-
-                image
-                    .SaveAsJpeg(output);
-
-                this.imageBytes = output.ToArray();
-            }
+            this.imageResizer.Tell(new ImageResizer.ResizeImage(bytes, Width, Height));
         }
 
         public sealed class SetSource
