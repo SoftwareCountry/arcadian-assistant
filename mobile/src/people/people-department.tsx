@@ -18,17 +18,19 @@ interface PeopleDepartmentProps {
 }
 
 const mapStateToProps = (state: AppState): PeopleDepartmentProps => {
-    const filter = state.people.filter;
-    const userEmployee = state.organization.employees.employeesById.get(state.userInfo.employeeId);
+    let filter = state.people.filter;
+    let userEmployee = state.organization.employees.employeesById.get(state.userInfo.employeeId);
 
     return ({
         employees: state.organization.employees,
         userEmployee,
         filter,
-        employeesPredicate: (employee: Employee) => (employee.name.includes(filter) ||
-                                                    employee.email.includes(filter) || 
-                                                    employee.position.includes(filter)) &&
-                                                    userEmployee && employee.departmentId === userEmployee.departmentId,
+        employeesPredicate: (employee: Employee) => {
+            return (employee.name.includes(filter) ||
+                    employee.email.includes(filter) || 
+                    employee.position.includes(filter)) &&
+                    userEmployee && employee.departmentId === userEmployee.departmentId;
+        },
     });
 };
 
@@ -60,7 +62,7 @@ export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentProps 
     public render() {
         const employees = this.props.employees.employeesById.toArray().filter(this.props.employeesPredicate);
 
-        return <EmployeesList employees={employees} onItemClicked={this.props.onItemClicked} />;
+        return <EmployeesList employees={employees} onItemClicked={this.props.onItemClicked} isLoading={this.props.employees.employeesById.size > 0}/>;
     }
 }
 

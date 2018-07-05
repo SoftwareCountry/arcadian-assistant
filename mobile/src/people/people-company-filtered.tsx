@@ -18,16 +18,18 @@ interface PeopleCompanyProps {
 }
 
 const mapStateToProps = (state: AppState): PeopleCompanyProps => {
-    const filter = state.people.filter;
-    const loaded = state.people.departmentsBranch.length > 0 && 
+    let filter = state.people.filter;
+    let loaded = state.people.departmentsBranch.length > 0 && 
                       state.people.departments && state.people.departments.length > 0;
 
     return ({
         filter,
         loaded,
-        employeesPredicate: (employee: Employee) => (employee.name.includes(filter) ||
+        employeesPredicate: (employee: Employee) => {
+            return (employee.name.includes(filter) ||
                                                      employee.email.includes(filter) || 
-                                                     employee.position.includes(filter)),
+                                                     employee.position.includes(filter));
+        },
     });
 };
 

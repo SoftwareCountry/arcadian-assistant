@@ -16,13 +16,14 @@ import { SearchView, SearchType } from '../navigation/search-view';
 export interface EmployeesListProps {
     employees: Employee[];
     onItemClicked: (e: Employee) => void;
+    isLoading: boolean;
 }
 
 export class EmployeesList extends React.Component<EmployeesListProps> {
     public render() {
         const employees = this.props.employees.sort(employeesAZSort);
 
-        return employees.length > 0 ? 
+        return this.props.isLoading ? 
             <View>
                 <SearchView type={SearchType.People}/>
                 <View style={styles.view}>

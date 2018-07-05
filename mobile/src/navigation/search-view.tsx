@@ -80,6 +80,7 @@ export class SearchView extends Component<SearchViewProps> {
             case SearchType.Feeds:
                 return <SearchViewFeeds type={this.props.type}/>;
             case SearchType.People: 
+                return <SearchViewPeople type={this.props.type}/>;
             default:
                 return <SearchViewPeople type={this.props.type}/>;
         }

@@ -2,12 +2,10 @@ import { StyleSheet } from 'react-native';
 
 export const employeesListStyles  = StyleSheet.create({
     company: {
-        flex: 1,
         backgroundColor: '#FFF'
     },
     view: {
         paddingTop: 5,
-        flex: 1,
         backgroundColor: '#FFF'
     },
 });
