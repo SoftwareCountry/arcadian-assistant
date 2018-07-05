@@ -1,5 +1,6 @@
 import React from 'react';
-import { FlatList, View, StyleSheet, ListRenderItemInfo, RefreshControl } from 'react-native';
+import { FlatList, View, StyleSheet, ListRenderItemInfo, RefreshControl,
+    TouchableOpacity } from 'react-native';
 import { TopNavBar } from '../navigation/top-nav-bar';
 
 import { Employee } from '../reducers/organization/employee.model';
@@ -55,7 +56,7 @@ const mapStateToProps = (state: AppState): FeedsScreenProps => {
                     feed.text.includes(filter) ||
                     (employee && employee.name.includes(filter));
         },
-});
+    });
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<any>): FeedScreenDispatchProps => ({
@@ -64,11 +65,10 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): FeedScreenDispatchProps =>
     fetchOldFeeds: () => dispatch(fetchOldFeeds()),
 });
 
-
 class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenDispatchProps> {
     public static navigationOptions = navBar.configurate();
 
-    public shouldComponentUpdate(nextProps: FeedsScreenProps & FeedScreenDispatchProps) {
+     public shouldComponentUpdate(nextProps: FeedsScreenProps & FeedScreenDispatchProps) {
         const currentFeeds = this.props.feeds.filter(this.props.feedPredicate);
         const nextFeeds = nextProps.feeds.filter(nextProps.feedPredicate);
 
@@ -85,7 +85,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
         });
 
         return !nothingChanged;
-    }
+    } 
 
     public render() {
         const feeds = this.sortedFeeds().filter(this.props.feedPredicate);
@@ -99,10 +99,11 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
                         keyExtractor={this.keyExtractor}
                         ItemSeparatorComponent={this.itemSeparator}
                         data={feeds}
-                        extraData={this.props.employees}
-                        renderItem={this.renderItem}
+                        ListFooterComponent = {this.renderFooter}
                         onEndReached={this.endReached}
                         onEndReachedThreshold={0}
+                        extraData={this.props.employees}
+                        renderItem={this.renderItem}
                         refreshing={false}
                         onRefresh={this.onRefresh}
                     />
@@ -135,11 +136,22 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
         }
     }
 
+    private renderFooter = () => {
+        return <View style={styles.footer}>
+                <TouchableOpacity onPress={this.endReached}>
+                    <StyledText>
+                        Load more
+                    </StyledText>
+                </TouchableOpacity>
+            </View>;
+    }
+
     private endReached = () => {
         if (this.props.user) {
-        this.props.fetchOldFeeds();
+            this.props.fetchOldFeeds();
         }
     }
+
     private onRefresh = () => {
         this.props.fetchNewFeeds();
     }
