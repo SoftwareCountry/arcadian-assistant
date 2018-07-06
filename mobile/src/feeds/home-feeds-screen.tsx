@@ -92,22 +92,18 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
 
         return this.props.feeds.size > 0 ?
             <View>
-                <SearchView type={SearchType.Feeds}/>
-                <View>
-                    <FlatList
-                        style={styles.view}
-                        keyExtractor={this.keyExtractor}
-                        ItemSeparatorComponent={this.itemSeparator}
-                        data={feeds}
-                        ListFooterComponent = {this.renderFooter}
-                        onEndReached={this.endReached}
-                        onEndReachedThreshold={0}
-                        extraData={this.props.employees}
-                        renderItem={this.renderItem}
-                        refreshing={false}
-                        onRefresh={this.onRefresh}
-                    />
-                </View>
+                <FlatList
+                    style={styles.view}
+                    keyExtractor={this.keyExtractor}
+                    ItemSeparatorComponent={this.itemSeparator}
+                    data={feeds}
+                    extraData={this.props.employees}
+                    renderItem={this.renderItem}
+                    onEndReached={this.endReached}
+                    onEndReachedThreshold={0}
+                    refreshing={false}
+                    onRefresh={this.onRefresh}
+                />
             </View>
         : <LoadingView/>;
     }
