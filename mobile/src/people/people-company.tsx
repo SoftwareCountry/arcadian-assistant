@@ -69,20 +69,22 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
         if (this.props.departments && this.props.departments.length > 0 && this.props.departmentsBranch !== null) {
                 userFocusedDepartmentsBranch = userFocusedDepartmentsBranch.concat(this.props.departmentsBranch);
         }
-        
-        return <View>
+        let chief = this.props.employees.employeesById.get(userFocusedDepartmentsBranch[0].chiefId);
+        let toRender = !userFocusedDepartmentsBranch.every((head) => this.props.employees.employeesById.every((e) => 
+            !this.props.searchPredicate(e) || !this.props.employeesPredicate(head, e))) ||
+            this.props.searchPredicate(chief);
+
+        return toRender ? 
+            <View>
                 <ScrollView style={styles.company}>
                     <EmployeeCardWithAvatar
-                        employee={this.props.employees.employeesById.get(userFocusedDepartmentsBranch[0].chiefId)}
+                        employee={chief}
                         departmentAbbreviation={userFocusedDepartmentsBranch[0].abbreviation}
                         treeLevel={0}
                         onItemClicked = {this.props.onItemClicked}
                     />
                     {
                         userFocusedDepartmentsBranch.map((head, index) => {
-                            const employeesPredicate = (employee: Employee) => this.props.employeesPredicate(head, employee) &&
-                                                                               this.props.searchPredicate(employee);
-
                             return (
                                 <DepartmentsHScrollableList
                                     treeLevel={index + 1}
@@ -97,13 +99,13 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
                                     updateDepartmentsBranch={this.props.updateDepartmentsBranch}
                                     requestEmployeesForDepartment={this.props.requestEmployeesForDepartment}
                                     onItemClicked={this.props.onItemClicked}
-                                    employeesPredicate={employeesPredicate}
+                                    employeesPredicate={(e) => this.props.searchPredicate(e) && this.props.employeesPredicate(head, e)}
                                 />
                             );
                         })
                     }
                 </ScrollView>
-            </View>;
+            </View> : null;
     }
 }
 

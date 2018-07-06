@@ -5,6 +5,8 @@ import { EmployeeCardWithAvatar } from '../employee-card-with-avatar';
 import { Employee } from '../../reducers/organization/employee.model';
 import { EmployeesStore } from '../../reducers/organization/employees.reducer';
 import { Department } from '../../reducers/organization/department.model';
+import { StyledText } from '../../override/styled-text';
+import {Map} from 'immutable';
 
 interface DepartmentsHScrollableListProps {
     treeLevel?: number;
@@ -37,21 +39,6 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
     private scrollView: ScrollViewComponent;
     private employeeCards: EmployeeCardWithAvatar[];
     private animatedValue: Animated.Value;
-
-    public shouldComponentUpdate(nextProps: DepartmentsHScrollableListProps) {
-        if (this.props.departmentsLists !== nextProps.departmentsLists) {
-            return true;
-        } else {
-            const employees = this.props.employees.employeesById.filter(this.props.employeesPredicate);
-            const nextEmployees = nextProps.employees.employeesById.filter(this.props.employeesPredicate);
-
-            if (!employees.equals(nextEmployees)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    }
 
     public render() {
         this.employeeCards = [];

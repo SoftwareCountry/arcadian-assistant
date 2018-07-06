@@ -52,11 +52,7 @@ export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentProps 
         const employees = this.props.employees.employeesById.filter(this.props.employeesPredicate);
         const nextEmployees = nextProps.employees.employeesById.filter(this.props.employeesPredicate);
 
-        if (!employees.equals(nextEmployees)) {
-            return true;
-        } else {
-            return false;
-        }
+        return !employees.equals(nextEmployees);
     }
 
     public render() {
