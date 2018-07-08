@@ -13,6 +13,7 @@ import { loadPendingRequests } from '../reducers/calendar/pending-requests/pendi
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Map } from 'immutable';
 import { CalendarEvent } from '../reducers/calendar/calendar-event.model';
+import { LogoutView } from '../navigation/logout-view';
 
 interface ProfileScreenProps {
     employees: EmployeesStore;
@@ -76,11 +77,7 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
         return employee && department ?
             <ScrollView refreshControl= { <RefreshControl refreshing={false} onRefresh= {this.onRefresh} />} >
                 <SafeAreaView style={profileScreenStyles.profileContainer}>
-                    <TouchableOpacity onPress={this.props.onlogoutClicked}>
-                        <View style={layoutStyles.logoutContainer}>
-                            <Image style={profileScreenStyles.imageLogout} source={require('./logout-image.png')} />
-                        </View>
-                    </TouchableOpacity>
+                    <LogoutView onLogoutClicked={this.props.onlogoutClicked}/>
                     <EmployeeDetails 
                         department={department} 
                         employee={employee} 
