@@ -21,7 +21,7 @@ export class TopNavBar {
                         <StyledText style={topNavBarStyles.navTitle}>{this.name}</StyledText>
                     </View>
                     <View style={topNavBarStyles.iconContainer}>
-                        <LogoutView onLogoutClicked={null}/>
+                        <LogoutView/>
                     </View>
                 </View>
             </View>,

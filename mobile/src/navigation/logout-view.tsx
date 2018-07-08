@@ -1,12 +1,17 @@
 import React, { Component } from 'react';
 import { View, TouchableOpacity, Image } from 'react-native';
 import { logoutStyles as styles } from './top-nav-bar-styles';
+import { AuthActions, startLogoutProcess } from '../reducers/auth/auth.action';
+import { connect, Dispatch } from 'react-redux';
 
-interface LogoutViewProps {
-   onLogoutClicked: () => void;
+interface LogoutDispatchProps {
+    onLogoutClicked: () => void;
 }
+const mapDispatchToProps = (dispatch: Dispatch<AuthActions>): LogoutDispatchProps => ({
+    onLogoutClicked: () => { dispatch(startLogoutProcess()); }
+});
 
-export class LogoutView extends Component<LogoutViewProps> {
+class LogoutViewImpl extends Component<LogoutDispatchProps> {
     public render() {
         return <TouchableOpacity onPress={this.props.onLogoutClicked}>
                     <View style={styles.logoutContainer}>
@@ -15,3 +20,5 @@ export class LogoutView extends Component<LogoutViewProps> {
                 </TouchableOpacity>;
     }
 }
+
+export const LogoutView = connect(null, mapDispatchToProps)(LogoutViewImpl);
