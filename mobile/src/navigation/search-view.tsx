@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, TextInput, Button, TouchableOpacity, Text } from 'react-native';
+import { View, TextInput, Button, TouchableOpacity, Text, TouchableHighlight } from 'react-native';
 import { AppState } from '../reducers/app.reducer';
 import { connect, Dispatch, MapStateToProps, MapDispatchToPropsFunction } from 'react-redux';
 import { startSearch, endSearch } from '../reducers/search.action';
@@ -17,14 +17,17 @@ interface SearchViewProps {
 
 interface SearchViewStateProps {
     filter: string;
+    type: SearchType;
 }
 
-const mapStateToPropsFeeds = (state: AppState): SearchViewStateProps => ({
+const mapStateToPropsFeeds = (state: AppState, ownProps: SearchViewProps): SearchViewStateProps => ({
     filter: state.feeds.filter,
+    type: ownProps.type
 });
 
-const mapStateToPropsPeople = (state: AppState): SearchViewStateProps => ({
+const mapStateToPropsPeople = (state: AppState, ownProps: SearchViewProps): SearchViewStateProps => ({
     filter: state.people.filter,
+    type: ownProps.type
 });
 
 interface SearchViewDispatchProps {
@@ -37,12 +40,14 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): SearchViewDispatchProps =>
     clearFilter: (type) => dispatch(endSearch(type)),
 });
 
-class SearchViewImpl extends Component<SearchViewDispatchProps & SearchViewProps & SearchViewStateProps> {
+class SearchViewImpl extends Component<SearchViewDispatchProps & SearchViewStateProps> {
     public render() {
         return <View style={styles.container}>
-                <View style={styles.iconsContainer}>
+                <TouchableHighlight 
+                    style={styles.iconsContainer}
+                >
                     <ApplicationIcon name={'search'} style={styles.icon} />
-                </View>
+                </TouchableHighlight>
                 <View style={styles.inputContainer}>
                     <TextInput 
                         style={styles.input}
