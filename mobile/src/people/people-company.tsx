@@ -74,8 +74,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
             !this.props.searchPredicate(e) || !this.props.employeesPredicate(head, e))) ||
             this.props.searchPredicate(chief);
 
-        return toRender ? 
-            <View>
+        return <View>
                 <ScrollView style={styles.company}>
                     <EmployeeCardWithAvatar
                         employee={chief}
@@ -105,7 +104,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
                         })
                     }
                 </ScrollView>
-            </View> : null;
+            </View>;
     }
 }
 

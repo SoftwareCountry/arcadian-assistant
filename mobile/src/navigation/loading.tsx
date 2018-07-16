@@ -16,9 +16,6 @@ export class LoadingView extends React.Component {
                         </View>
                         <View style={styles.inputContainer}>
                         </View>
-                        <View style={styles.iconsContainer}>
-                            <ApplicationIcon name={'reject-cross'} style={styles.icon} />
-                        </View>
                     </View>
                 </View>
                 <View style={styles.loadingTextContainer}>

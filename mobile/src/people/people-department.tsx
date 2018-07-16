@@ -26,9 +26,9 @@ const mapStateToProps = (state: AppState): PeopleDepartmentProps => {
         userEmployee,
         filter,
         employeesPredicate: (employee: Employee) => {
-            return (employee.name.includes(filter) ||
-                    employee.email.includes(filter) || 
-                    employee.position.includes(filter)) &&
+            return (employee.name && employee.name.includes(filter) ||
+                    employee.email && employee.email.includes(filter) || 
+                    employee.position && employee.position.includes(filter)) &&
                     userEmployee && employee.departmentId === userEmployee.departmentId;
         },
     });
@@ -50,13 +50,13 @@ export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentProps 
         }
 
         const employees = this.props.employees.employeesById.filter(this.props.employeesPredicate);
-        const nextEmployees = nextProps.employees.employeesById.filter(this.props.employeesPredicate);
+        const nextEmployees = nextProps.employees.employeesById.filter(nextProps.employeesPredicate);
 
         return !employees.equals(nextEmployees);
     }
 
     public render() {
-        const employees = this.props.employees.employeesById.toArray().filter(this.props.employeesPredicate);
+        const employees = this.props.employees.employeesById.filter(this.props.employeesPredicate).toArray();
 
         return <EmployeesList employees={employees} onItemClicked={this.props.onItemClicked} isLoading={this.props.employees.employeesById.size > 0}/>;
     }

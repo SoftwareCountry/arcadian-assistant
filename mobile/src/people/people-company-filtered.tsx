@@ -26,9 +26,10 @@ const mapStateToProps = (state: AppState): PeopleCompanyProps => {
         filter,
         loaded,
         employeesPredicate: (employee: Employee) => {
-            return (employee.name.includes(filter) ||
-                    employee.email.includes(filter) || 
-                    employee.position.includes(filter));
+            return (employee.name && employee.name.includes(filter) ||
+                    employee.email && employee.email.includes(filter) || 
+                    employee.position && employee.position.includes(filter)
+            );
         },
     });
 };

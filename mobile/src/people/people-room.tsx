@@ -8,6 +8,7 @@ import { AppState } from '../reducers/app.reducer';
 import { EmployeeMap, EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Employee } from '../reducers/organization/employee.model';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
+import { SearchView, SearchType } from '../navigation/search-view';
 
 interface PeopleRoomProps {
     employees: EmployeesStore;
@@ -25,9 +26,9 @@ const mapStateToProps = (state: AppState): PeopleRoomProps => {
         userEmployee,
         filter: state.people.filter,
         employeesPredicate: (employee: Employee) =>  {
-            return (employee.name.includes(filter) ||
-                    employee.email.includes(filter) || 
-                    employee.position.includes(filter)) &&
+            return (employee.name && employee.name.includes(filter) ||
+                    employee.email && employee.email.includes(filter) || 
+                    employee.position && employee.position.includes(filter)) &&
                     userEmployee && employee.roomNumber === userEmployee.roomNumber;
         },
     });
@@ -41,6 +42,12 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeesListDispatchProps
 });
 
 export class PeopleRoomImpl extends React.Component<PeopleRoomProps & EmployeesListDispatchProps> {
+    public static navigationOptions = {
+        header: <View>
+                    <SearchView type={SearchType.People}/>
+                </View>
+    };
+
     public shouldComponentUpdate(nextProps: PeopleRoomProps & EmployeesListDispatchProps) {
         if (this.props.onItemClicked !== nextProps.onItemClicked
             || this.props.userEmployee !== nextProps.userEmployee

@@ -2,9 +2,8 @@ import { StyleSheet, Platform } from 'react-native';
 
 export const searchViewStyles = StyleSheet.create({
     container: {
-        paddingTop: 10,
-        paddingLeft: 10,
-        height: 50,
+        paddingLeft: 5,
+        height: 40,
         backgroundColor: '#2FAFCC',
         flexDirection: 'row',
         alignItems: 'center',
@@ -21,7 +20,7 @@ export const searchViewStyles = StyleSheet.create({
     },
     icon: {
         color: 'white', 
-        fontSize: 28,
+        fontSize: 24,
     },
     input: {
         width: '100%',

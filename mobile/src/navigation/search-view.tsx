@@ -46,28 +46,17 @@ class SearchViewImpl extends Component<SearchViewDispatchProps & SearchViewProps
                 <View style={styles.inputContainer}>
                     <TextInput 
                         style={styles.input}
-                        placeholder = 'Search'
-                        placeholderTextColor = 'white'
                         underlineColorAndroid='transparent'
                         autoCapitalize='none'
                         onChangeText={this.changeText.bind(this)}
                         value={this.props.filter}
                     />
                 </View>
-                <View style={styles.iconsContainer}>
-                    <TouchableOpacity onPress={this.clearText.bind(this)}>
-                        <ApplicationIcon name={'reject-cross'} style={styles.icon} />
-                    </TouchableOpacity>
-                </View>
             </View>;
     }
 
     private changeText(filter: string) {
         this.props.setFilter(filter, this.props.type);
-    }
-
-    private clearText() {
-        this.props.clearFilter(this.props.type);
     }
 }
 
