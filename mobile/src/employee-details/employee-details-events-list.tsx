@@ -130,10 +130,12 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
         let description: string;
 
         if (event.isRequested) {
-            description = 'requests ' + event.type.toLowerCase();
+            description = `requests ${event.type.toLowerCase()}`;
         } else if (event.isApproved) {
-            let prefix = event.dates.endDate.isAfter(moment(), 'date') ? 'has coming ' : 'on ';
+            const prefix = event.dates.endDate.isAfter(moment(), 'date') ? 'has coming ' : 'on ';
             description = prefix + event.type.toLowerCase();
+        } else if (event.isCompleted) {
+            description = `has completed ${event.type.toLowerCase()}`;
         }
 
         return description;
