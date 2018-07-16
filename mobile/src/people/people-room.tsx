@@ -12,24 +12,16 @@ import { openEmployeeDetailsAction } from '../employee-details/employee-details-
 interface PeopleRoomProps {
     employees: EmployeesStore;
     userEmployee: Employee;
-    filter: string;
     employeesPredicate: (employee: Employee) => boolean;
 }
 
-const mapStateToProps = (state: AppState): PeopleRoomProps => {
-    let filter = state.people.filter;
+const mapStateToProps = (state: AppState, ownProps: {employees: EmployeesStore}): PeopleRoomProps => {
     let userEmployee = state.organization.employees.employeesById.get(state.userInfo.employeeId);
 
     return ({
-        employees: state.organization.employees,
+        employees: ownProps.employees,
         userEmployee,
-        filter: state.people.filter,
-        employeesPredicate: (employee: Employee) =>  {
-            return (employee.name && employee.name.includes(filter) ||
-                    employee.email && employee.email.includes(filter) || 
-                    employee.position && employee.position.includes(filter)) &&
-                    userEmployee && employee.roomNumber === userEmployee.roomNumber;
-        },
+        employeesPredicate: (employee: Employee) => userEmployee && employee.roomNumber === userEmployee.roomNumber
     });
 };
 
@@ -40,7 +32,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeesListDispatchProps
     onItemClicked: (employee: Employee) => dispatch(openEmployeeDetailsAction(employee))
 });
 
-export class PeopleRoomImpl extends React.Component<PeopleRoomProps & EmployeesListDispatchProps> {
+class PeopleRoomImpl extends React.Component<PeopleRoomProps & EmployeesListDispatchProps> {
     public shouldComponentUpdate(nextProps: PeopleRoomProps & EmployeesListDispatchProps) {
         if (this.props.onItemClicked !== nextProps.onItemClicked
             || this.props.userEmployee !== nextProps.userEmployee

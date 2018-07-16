@@ -9,14 +9,16 @@ import { Employee } from '../reducers/organization/employee.model';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { LoadingView } from '../navigation/loading';
 import { PeopleCompany } from './people-company';
+import { PeopleRoom } from './people-room';
+import { PeopleDepartment } from './people-department';
 import { Map } from 'immutable';
 
-interface PeopleCompanyProps {
+interface PeopleProps {
     loaded: boolean;
     employees: EmployeesStore;
 }
 
-const mapStateToProps = (state: AppState): PeopleCompanyProps => {
+const mapStateToProps = (state: AppState): PeopleProps => {
     let filter = state.people.filter;
     let employees = state.organization.employees;  
     let employeesPredicate = (employee: Employee) => {
@@ -36,8 +38,8 @@ const mapStateToProps = (state: AppState): PeopleCompanyProps => {
     });
 };
 
-export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps> {
-    public shouldComponentUpdate(nextProps: PeopleCompanyProps) {
+class PeopleCompanyImpl extends React.Component<PeopleProps> {
+    public shouldComponentUpdate(nextProps: PeopleProps) {
         return this.props.loaded !== nextProps.loaded || !this.props.employees.employeesById.equals(nextProps.employees.employeesById);
     }
 
@@ -50,4 +52,26 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps> {
     }
 }
 
+class PeopleRoomImpl extends React.Component<PeopleProps> {
+    public shouldComponentUpdate(nextProps: PeopleProps) {
+        return !this.props.employees.employeesById.equals(nextProps.employees.employeesById);
+    }
+
+    public render() {
+        return <PeopleRoom employees={this.props.employees}/>;
+    }
+}
+
+class PeopleDepartmentImpl extends React.Component<PeopleProps> {
+    public shouldComponentUpdate(nextProps: PeopleProps) {
+        return !this.props.employees.employeesById.equals(nextProps.employees.employeesById);
+    }
+
+    public render() {
+        return <PeopleDepartment employees={this.props.employees}/>;
+    }
+}
+
 export const PeopleCompanyFiltered = connect(mapStateToProps)(PeopleCompanyImpl);
+export const PeopleRoomFiltered = connect(mapStateToProps)(PeopleRoomImpl);
+export const PeopleDepartmentFiltered = connect(mapStateToProps)(PeopleDepartmentImpl);

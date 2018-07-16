@@ -13,24 +13,16 @@ import { employeesAZSort } from './employee-comparer';
 interface PeopleDepartmentProps {
     employees: EmployeesStore;
     userEmployee: Employee;
-    filter: string;
     employeesPredicate: (employee: Employee) => boolean;
 }
 
-const mapStateToProps = (state: AppState): PeopleDepartmentProps => {
-    let filter = state.people.filter;
+const mapStateToProps = (state: AppState, ownProps: { employees: EmployeesStore; }): PeopleDepartmentProps => {
     let userEmployee = state.organization.employees.employeesById.get(state.userInfo.employeeId);
 
     return ({
-        employees: state.organization.employees,
+        employees: ownProps.employees,
         userEmployee,
-        filter,
-        employeesPredicate: (employee: Employee) => {
-            return (employee.name && employee.name.includes(filter) ||
-                    employee.email && employee.email.includes(filter) || 
-                    employee.position && employee.position.includes(filter)) &&
-                    userEmployee && employee.departmentId === userEmployee.departmentId;
-        },
+        employeesPredicate: (employee: Employee) => userEmployee && employee.departmentId === userEmployee.departmentId
     });
 };
 
@@ -41,7 +33,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeesListDispatchProps
     onItemClicked: (employee: Employee) => dispatch(openEmployeeDetailsAction(employee))
 });
 
-export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentProps & EmployeesListDispatchProps> {
+class PeopleDepartmentImpl extends React.Component<PeopleDepartmentProps & EmployeesListDispatchProps> {
     public shouldComponentUpdate(nextProps: PeopleDepartmentProps & EmployeesListDispatchProps) {
         if (this.props.onItemClicked !== nextProps.onItemClicked
             || this.props.userEmployee !== nextProps.userEmployee
