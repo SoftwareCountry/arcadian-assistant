@@ -3,8 +3,8 @@ import { StyleSheet, Platform } from 'react-native';
 
 const peopleScreenNavigatorStyles = StyleSheet.create({
     tabBar: {
-        height: 60,
-        paddingTop: 20,
+        height: 40,
+        paddingTop: 0,
         backgroundColor: '#2FAFCC',
         justifyContent: 'center'
     },
