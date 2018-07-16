@@ -77,7 +77,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
             eventsContainer, 
             {
                 width: Dimensions.get('window').width,
-                opacity: isOutdated ? 0.55 : 1
+                opacity: isOutdated ? 0.40 : 1
             }
         ]);
 
