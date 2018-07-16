@@ -29,7 +29,7 @@
             var query = EmployeesQuery.Create().WithEmail(user.Identity.Name);
             var employees = await this.employeesRegistry.SearchAsync(query, cancellationToken);
 
-            return employees.FirstOrDefault();
+            return employees.SingleOrDefault();
         }
     }
 }
