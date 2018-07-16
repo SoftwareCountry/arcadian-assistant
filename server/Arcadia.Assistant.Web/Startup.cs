@@ -109,7 +109,7 @@
             builder.RegisterInstance(pathsBuilder).AsSelf();
 
             builder.RegisterType<EmployeesRegistry>().As<IEmployeesRegistry>();
-            builder.RegisterType<MockUserEmployeeSearch>().As<IUserEmployeeSearch>();
+            builder.RegisterType<UserEmployeeSearch>().As<IUserEmployeeSearch>();
 
             builder.RegisterType<UserIsEmployeeHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
             builder.RegisterType<EmployeePermissionsHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
