@@ -7,7 +7,6 @@ import { Department } from '../reducers/organization/department.model';
 import { AppState } from '../reducers/app.reducer';
 import { Employee } from '../reducers/organization/employee.model';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
-import { SearchView, SearchType } from '../navigation/search-view';
 import { LoadingView } from '../navigation/loading';
 import { PeopleCompany } from './people-company';
 import { Map } from 'immutable';
@@ -47,10 +46,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps> {
             return <LoadingView/>;
         }
 
-        return <View>
-                <SearchView type={SearchType.People}/>
-                <PeopleCompany employees={this.props.employees}/>
-            </View>;
+        return <PeopleCompany employees={this.props.employees}/>;
     }
 }
 

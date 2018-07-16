@@ -11,7 +11,6 @@ import { employeesListStyles as styles } from './styles';
 import { employeesAZSort } from './employee-comparer';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 import { LoadingView } from '../navigation/loading';
-import { SearchView, SearchType } from '../navigation/search-view';
 
 export interface EmployeesListProps {
     employees: Employee[];
@@ -24,15 +23,12 @@ export class EmployeesList extends React.Component<EmployeesListProps> {
         const employees = this.props.employees.sort(employeesAZSort);
 
         return this.props.isLoading ? 
-            <View>
-                <SearchView type={SearchType.People}/>
                 <View style={styles.view}>
                     <FlatList
                         data={employees}
                         keyExtractor={this.keyExtractor}
                         renderItem={this.renderItem} />
                 </View>
-            </View>
         : <LoadingView/>;
     }
 

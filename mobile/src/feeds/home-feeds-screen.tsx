@@ -105,12 +105,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
                     onRefresh={this.onRefresh}
                 />
             </View>
-        : <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <StyledText style={{ fontSize: 20 }}>Loading...</StyledText>
-            </View>
-        </View>;
-        // <LoadingView/>;
+        : <LoadingView/>;
     }
 
     private keyExtractor(item: Feed) {
