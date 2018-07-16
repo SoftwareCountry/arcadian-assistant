@@ -18,14 +18,13 @@ import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { SearchView, SearchType } from '../navigation/search-view';
 
 interface PeopleCompanySearchProps {
-    searchPredicate: (employee: Employee) => boolean;
+    employees: EmployeesStore;
 }
 
 interface PeopleCompanyProps {
     routeName: string;
     departmentsBranch?: Department[];
     departments?: Department[];
-    employees: EmployeesStore;
     employee?: Employee;
     currentFocusedDepartmentId?: string;
     departmentLists?: DepartmentsListStateDescriptor[];
@@ -36,7 +35,6 @@ const mapStateToProps = (state: AppState): PeopleCompanyProps => ({
         routeName: 'Company',
         departmentsBranch: state.people.departmentsBranch.length > 0 ? state.people.departmentsBranch : null,
         departments: state.people.departments,
-        employees: state.organization.employees,
         employee: state.organization.employees.employeesById.get(state.userInfo.employeeId),
         currentFocusedDepartmentId: state.people.currentFocusedDepartmentId,
         departmentLists: state.people.departmentsLists,
@@ -70,9 +68,6 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
                 userFocusedDepartmentsBranch = userFocusedDepartmentsBranch.concat(this.props.departmentsBranch);
         }
         let chief = this.props.employees.employeesById.get(userFocusedDepartmentsBranch[0].chiefId);
-        let toRender = !userFocusedDepartmentsBranch.every((head) => this.props.employees.employeesById.every((e) => 
-            !this.props.searchPredicate(e) || !this.props.employeesPredicate(head, e))) ||
-            this.props.searchPredicate(chief);
 
         return <View>
                 <ScrollView style={styles.company}>
@@ -98,7 +93,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
                                     updateDepartmentsBranch={this.props.updateDepartmentsBranch}
                                     requestEmployeesForDepartment={this.props.requestEmployeesForDepartment}
                                     onItemClicked={this.props.onItemClicked}
-                                    employeesPredicate={(e) => this.props.searchPredicate(e) && this.props.employeesPredicate(head, e)}
+                                    employeesPredicate={(e) => this.props.employeesPredicate(head, e)}
                                 />
                             );
                         })

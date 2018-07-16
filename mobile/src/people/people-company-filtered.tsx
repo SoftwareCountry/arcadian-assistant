@@ -10,31 +10,38 @@ import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { SearchView, SearchType } from '../navigation/search-view';
 import { LoadingView } from '../navigation/loading';
 import { PeopleCompany } from './people-company';
+import { Map } from 'immutable';
 
 interface PeopleCompanyProps {
-    filter: string;
     loaded: boolean;
-    employeesPredicate: (employee: Employee) => boolean;
+    employees: EmployeesStore;
 }
 
 const mapStateToProps = (state: AppState): PeopleCompanyProps => {
     let filter = state.people.filter;
-    let loaded = state.people.departmentsBranch.length > 0 && 
-                state.people.departments && state.people.departments.length > 0;
+    let employees = state.organization.employees;  
+    let employeesPredicate = (employee: Employee) => {
+        return (employee.name && employee.name.includes(filter) ||
+                employee.email && employee.email.includes(filter) || 
+                employee.position && employee.position.includes(filter)
+        );
+    };
+    let filteredEmployeesById: Map<string, Employee> = employees.employeesById.filter(employeesPredicate) as Map<string, Employee>;
+    let filteredEmployees : EmployeesStore = {employeesById: filteredEmployeesById, employeeIdsByDepartment: employees.employeeIdsByDepartment};
+
 
     return ({
-        filter,
-        loaded,
-        employeesPredicate: (employee: Employee) => {
-            return (employee.name && employee.name.includes(filter) ||
-                    employee.email && employee.email.includes(filter) || 
-                    employee.position && employee.position.includes(filter)
-            );
-        },
+        loaded: state.people.departmentsBranch.length > 0 && 
+                state.people.departments && state.people.departments.length > 0,
+        employees: filteredEmployees,
     });
 };
 
 export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps> {
+    public shouldComponentUpdate(nextProps: PeopleCompanyProps) {
+        return this.props.loaded !== nextProps.loaded || !this.props.employees.employeesById.equals(nextProps.employees.employeesById);
+    }
+
     public render() {
         if (!this.props.loaded) {
             return <LoadingView/>;
@@ -42,7 +49,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps> {
 
         return <View>
                 <SearchView type={SearchType.People}/>
-                <PeopleCompany searchPredicate={this.props.employeesPredicate}/>
+                <PeopleCompany employees={this.props.employees}/>
             </View>;
     }
 }

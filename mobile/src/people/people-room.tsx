@@ -8,7 +8,6 @@ import { AppState } from '../reducers/app.reducer';
 import { EmployeeMap, EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Employee } from '../reducers/organization/employee.model';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
-import { SearchView, SearchType } from '../navigation/search-view';
 
 interface PeopleRoomProps {
     employees: EmployeesStore;
@@ -42,12 +41,6 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeesListDispatchProps
 });
 
 export class PeopleRoomImpl extends React.Component<PeopleRoomProps & EmployeesListDispatchProps> {
-    public static navigationOptions = {
-        header: <View>
-                    <SearchView type={SearchType.People}/>
-                </View>
-    };
-
     public shouldComponentUpdate(nextProps: PeopleRoomProps & EmployeesListDispatchProps) {
         if (this.props.onItemClicked !== nextProps.onItemClicked
             || this.props.userEmployee !== nextProps.userEmployee
