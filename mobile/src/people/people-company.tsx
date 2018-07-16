@@ -15,7 +15,6 @@ import { Employee } from '../reducers/organization/employee.model';
 import { StyledText } from '../override/styled-text';
 import { employeesListStyles as styles } from './styles';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
-import { SearchView, SearchType } from '../navigation/search-view';
 
 interface PeopleCompanySearchProps {
     employees: EmployeesStore;
@@ -75,7 +74,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
                         employee={chief}
                         departmentAbbreviation={userFocusedDepartmentsBranch[0].abbreviation}
                         treeLevel={0}
-                        onItemClicked = {this.props.onItemClicked}
+                        onItemClicked = {chief ? this.props.onItemClicked : () => {}}
                     />
                     {
                         userFocusedDepartmentsBranch.map((head, index) => {
@@ -92,7 +91,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
                                     key={head.departmentId}
                                     updateDepartmentsBranch={this.props.updateDepartmentsBranch}
                                     requestEmployeesForDepartment={this.props.requestEmployeesForDepartment}
-                                    onItemClicked={this.props.onItemClicked}
+                                    onItemClicked={(e) => { if (e) { this.props.onItemClicked(e); }}}
                                     employeesPredicate={(e) => this.props.employeesPredicate(head, e)}
                                 />
                             );
