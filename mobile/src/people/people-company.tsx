@@ -78,6 +78,9 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
                     />
                     {
                         userFocusedDepartmentsBranch.map((head, index) => {
+                            let itemClicked = (e: Employee) => { if (e) { this.props.onItemClicked(e); }};
+                            let employeesPredicate = (e: Employee) => this.props.employeesPredicate(head, e);
+
                             return (
                                 <DepartmentsHScrollableList
                                     treeLevel={index + 1}
@@ -91,8 +94,8 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & Peop
                                     key={head.departmentId}
                                     updateDepartmentsBranch={this.props.updateDepartmentsBranch}
                                     requestEmployeesForDepartment={this.props.requestEmployeesForDepartment}
-                                    onItemClicked={(e) => { if (e) { this.props.onItemClicked(e); }}}
-                                    employeesPredicate={(e) => this.props.employeesPredicate(head, e)}
+                                    onItemClicked={itemClicked}
+                                    employeesPredicate={employeesPredicate}
                                 />
                             );
                         })
