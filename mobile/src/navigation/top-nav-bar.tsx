@@ -15,13 +15,8 @@ export class TopNavBar {
             <View>
                 <StatusBar backgroundColor = '#2FAFCC' barStyle = 'light-content' />
                 <View style={topNavBarStyles.container}>
-                    <View style={topNavBarStyles.iconContainer}>
-                    </View>
                     <View style={topNavBarStyles.titleContainer}>
                         <StyledText style={topNavBarStyles.navTitle}>{this.name}</StyledText>
-                    </View>
-                    <View style={topNavBarStyles.iconContainer}>
-                        <LogoutView/>
                     </View>
                 </View>
             </View>,
