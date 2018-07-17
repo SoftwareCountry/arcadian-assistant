@@ -18,9 +18,13 @@ export const searchViewStyles = StyleSheet.create({
         flex: 10,
         alignItems: 'flex-start',
     },
-    icon: {
+    activeIcon: {
         color: 'white', 
         fontSize: 24,
+    },
+    inactiveIcon: {
+        color: 'white', 
+        fontSize: 18,
     },
     input: {
         width: '100%',

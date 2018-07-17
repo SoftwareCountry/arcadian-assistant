@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, TextInput, Button, TouchableOpacity, Text, TouchableHighlight } from 'react-native';
+import { View, TextInput, Button, TouchableOpacity, Text } from 'react-native';
 import { AppState } from '../reducers/app.reducer';
 import { connect, Dispatch, MapStateToProps, MapDispatchToPropsFunction } from 'react-redux';
 import { startSearch, endSearch } from '../reducers/search.action';
@@ -9,6 +9,10 @@ import { searchViewStyles as styles } from './search-view-styles';
 export enum SearchType {
     Feeds = 'Feeds',
     People = 'People',
+}
+
+interface SearchViewState {
+    isActive: boolean;
 }
 
 interface SearchViewProps {
@@ -40,24 +44,40 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): SearchViewDispatchProps =>
     clearFilter: (type) => dispatch(endSearch(type)),
 });
 
-class SearchViewImpl extends Component<SearchViewDispatchProps & SearchViewStateProps> {
+class SearchViewImpl extends Component<SearchViewDispatchProps & SearchViewStateProps, SearchViewState> {
+    constructor(props: SearchViewDispatchProps & SearchViewStateProps) {
+        super(props);
+        this.state = {
+            isActive: false,
+        };
+    }
+
     public render() {
         return <View style={styles.container}>
-                <TouchableHighlight 
+                <TouchableOpacity
                     style={styles.iconsContainer}
+                    onPress={this.onPress.bind(this)}
                 >
-                    <ApplicationIcon name={'search'} style={styles.icon} />
-                </TouchableHighlight>
+                    <ApplicationIcon 
+                        name={'search'} 
+                        style={this.state.isActive ? styles.activeIcon : styles.inactiveIcon}
+                    />
+                </TouchableOpacity>
                 <View style={styles.inputContainer}>
+                    {this.state.isActive ? 
                     <TextInput 
                         style={styles.input}
                         underlineColorAndroid='transparent'
                         autoCapitalize='none'
                         onChangeText={this.changeText.bind(this)}
                         value={this.props.filter}
-                    />
+                    /> : null}
                 </View>
             </View>;
+    }
+
+    private onPress() {
+        this.setState({isActive: !this.state.isActive});
     }
 
     private changeText(filter: string) {
