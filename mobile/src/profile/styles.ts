@@ -45,11 +45,6 @@ export const profileScreenStyles = StyleSheet.create({
     },
     loadingText: {
         fontSize: 20
-    },
-    imageLogout: {
-        height: 25, 
-        width: 25, 
-        tintColor: '#fff'
     }
 });
 
@@ -86,10 +81,6 @@ export const layoutStyles = StyleSheet.create({
     chevronPlaceholder: {
         height: placeholderHeight - chevronHeight * 0.5,
         backgroundColor: chevronColor
-    },
-    logoutContainer: {
-        alignItems: 'flex-end', 
-        paddingRight: 10
     }
 });
 
