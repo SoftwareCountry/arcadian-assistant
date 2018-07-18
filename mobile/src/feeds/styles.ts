@@ -4,6 +4,7 @@ const screenPadding = 19;
 
 export const screenStyles = StyleSheet.create({
     view: {
+        flex: 1,
         backgroundColor: '#FFF'
     },
     viewHeaderText: {
@@ -13,7 +14,7 @@ export const screenStyles = StyleSheet.create({
     },
     separator: {
         height: 15
-    },
+    }
 });
 
 export const feedStyles = StyleSheet.create({
