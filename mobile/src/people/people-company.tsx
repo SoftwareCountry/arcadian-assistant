@@ -1,9 +1,7 @@
 import React from 'react';
-import { Action } from 'redux';
-import { connect, Dispatch, MapStateToProps, MapDispatchToPropsFunction } from 'react-redux';
-import { View, Text, ScrollView, Dimensions, Animated } from 'react-native';
+import { connect, Dispatch, MapStateToProps } from 'react-redux';
+import { View, ScrollView } from 'react-native';
 
-import { EmployeesList } from './employees-list';
 import { Department } from '../reducers/organization/department.model';
 import { AppState } from '../reducers/app.reducer';
 import { DepartmentsHScrollableList, DepartmentsListStateDescriptor } from './departments/departments-horizontal-scrollable-list';
@@ -12,7 +10,6 @@ import { PeopleActions, updateDepartmentsBranch } from '../reducers/people/peopl
 import { loadEmployeesForDepartment } from '../reducers/organization/organization.action';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 import { Employee } from '../reducers/organization/employee.model';
-import { StyledText } from '../override/styled-text';
 import { employeesListStyles as styles } from './styles';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 
@@ -44,7 +41,6 @@ const mapStateToProps: MapStateToProps<PeopleCompanySearchProps, PeopleCompanySe
 
 type PeopleCompanySearchProps = PeopleCompanySearchOwnProps & PeopleCompanyStateProps;
 
-
 interface PeopleCompanyDispatchProps {
     requestEmployeesForDepartment: (departmentId: string) => void;
     updateDepartmentsBranch: (departmentId: string, focusOnEmployeesList?: boolean) => void;
@@ -71,7 +67,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanySearchProps 
         if (this.props.departments && this.props.departments.length > 0 && this.props.departmentsBranch !== null) {
                 userFocusedDepartmentsBranch = userFocusedDepartmentsBranch.concat(this.props.departmentsBranch);
         }
-        let chief = this.props.employees.employeesById.get(userFocusedDepartmentsBranch[0].chiefId);
+        const chief = this.props.employees.employeesById.get(userFocusedDepartmentsBranch[0].chiefId);
 
         return <View>
                 <ScrollView style={styles.company}>
@@ -83,8 +79,8 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanySearchProps 
                     />
                     {
                         userFocusedDepartmentsBranch.map((head, index) => {
-                            let itemClicked = (e: Employee) => { if (e) { this.props.onItemClicked(e); }};
-                            let employeesPredicate = (e: Employee) => this.props.employeesPredicate(head, e);
+                            const itemClicked = (e: Employee) => { if (e) { this.props.onItemClicked(e); }};
+                            const employeesPredicate = (e: Employee) => this.props.employeesPredicate(head, e);
 
                             return (
                                 <DepartmentsHScrollableList

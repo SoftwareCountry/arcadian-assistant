@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, StatusBar } from 'react-native';
 import topNavBarStyles from './top-nav-bar-styles';
-import tabBarStyles from '../tabbar/tab-bar-styles';
 import { StyledText } from '../override/styled-text';
 
 export class TopNavBar {

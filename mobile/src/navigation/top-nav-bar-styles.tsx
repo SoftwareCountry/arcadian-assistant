@@ -1,4 +1,3 @@
-import React from 'react';
 import { StyleSheet, Platform } from 'react-native';
 
 const topNavBarStyles = StyleSheet.create({

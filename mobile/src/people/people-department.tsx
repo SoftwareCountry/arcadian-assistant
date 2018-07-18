@@ -1,14 +1,11 @@
 import React from 'react';
-import { Action } from 'redux';
 import { connect, Dispatch } from 'react-redux';
-import { View } from 'react-native';
 
 import { EmployeesList } from './employees-list';
 import { AppState } from '../reducers/app.reducer';
-import { EmployeeMap, EmployeesStore } from '../reducers/organization/employees.reducer';
+import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Employee } from '../reducers/organization/employee.model';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
-import { employeesAZSort } from './employee-comparer';
 
 interface PeopleDepartmentProps {
     employees: EmployeesStore;
@@ -17,7 +14,7 @@ interface PeopleDepartmentProps {
 }
 
 const mapStateToProps = (state: AppState, ownProps: { employees: EmployeesStore; }): PeopleDepartmentProps => {
-    let userEmployee = state.organization.employees.employeesById.get(state.userInfo.employeeId);
+    const userEmployee = state.organization.employees.employeesById.get(state.userInfo.employeeId);
 
     return ({
         employees: ownProps.employees,

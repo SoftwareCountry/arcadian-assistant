@@ -14,12 +14,6 @@ export const screenStyles = StyleSheet.create({
     separator: {
         height: 15
     },
-    footer:
-    {
-        backgroundColor: '#2FAFCC',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
 });
 
 export const feedStyles = StyleSheet.create({

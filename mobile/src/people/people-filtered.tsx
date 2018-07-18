@@ -1,9 +1,6 @@
 import React from 'react';
-import { Action } from 'redux';
-import { connect, Dispatch, MapStateToProps, MapDispatchToPropsFunction } from 'react-redux';
-import { View, Text, ScrollView, Dimensions, Animated } from 'react-native';
+import { connect } from 'react-redux';
 
-import { Department } from '../reducers/organization/department.model';
 import { AppState } from '../reducers/app.reducer';
 import { Employee } from '../reducers/organization/employee.model';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
@@ -19,16 +16,16 @@ interface PeopleProps {
 }
 
 const mapStateToProps = (state: AppState): PeopleProps => {
-    let filter = state.people.filter;
-    let employees = state.organization.employees;  
-    let employeesPredicate = (employee: Employee) => {
+    const filter = state.people.filter;
+    const employees = state.organization.employees;  
+    const employeesPredicate = (employee: Employee) => {
         return (employee.name && employee.name.includes(filter) ||
                 employee.email && employee.email.includes(filter) || 
                 employee.position && employee.position.includes(filter)
         );
     };
-    let filteredEmployeesById: Map<string, Employee> = employees.employeesById.filter(employeesPredicate) as Map<string, Employee>;
-    let filteredEmployees : EmployeesStore = {employeesById: filteredEmployeesById, employeeIdsByDepartment: employees.employeeIdsByDepartment};
+    const filteredEmployeesById: Map<string, Employee> = employees.employeesById.filter(employeesPredicate) as Map<string, Employee>;
+    const filteredEmployees : EmployeesStore = {employeesById: filteredEmployeesById, employeeIdsByDepartment: employees.employeeIdsByDepartment};
 
 
     return ({

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, View, StyleSheet, ListRenderItemInfo, RefreshControl } from 'react-native';
+import { FlatList, View, ListRenderItemInfo } from 'react-native';
 import { TopNavBar } from '../navigation/top-nav-bar';
 
 import { Employee } from '../reducers/organization/employee.model';
@@ -12,7 +12,6 @@ import { FeedListItem } from './feed';
 import { LoadingView } from '../navigation/loading';
 
 import { screenStyles as styles } from './styles';
-import { StyledText } from '../override/styled-text';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 import { fetchNewFeeds, fetchOldFeeds } from '../reducers/feeds/feeds.action';
 import { FeedsById } from '../reducers/feeds/feeds.reducer';

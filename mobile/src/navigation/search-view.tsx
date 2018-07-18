@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { View, TextInput, Button, TouchableOpacity, Text } from 'react-native';
+import { View, TextInput, TouchableOpacity } from 'react-native';
 import { AppState } from '../reducers/app.reducer';
-import { connect, Dispatch, MapStateToProps, MapDispatchToPropsFunction } from 'react-redux';
+import { connect, Dispatch } from 'react-redux';
 import { startSearch, endSearch } from '../reducers/search.action';
 import { ApplicationIcon } from '../override/application-icon';
 import { searchViewStyles as styles } from './search-view-styles';
@@ -19,11 +19,6 @@ interface SearchViewStateProps {
     filter: string;
     type: SearchType;
 }
-
-const mapStateToPropsFeeds = (state: AppState): SearchViewStateProps => ({
-    filter: state.feeds.filter,
-    type: SearchType.Feeds
-});
 
 const mapStateToPropsPeople = (state: AppState): SearchViewStateProps => ({
     filter: state.people.filter,

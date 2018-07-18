@@ -1,12 +1,9 @@
-import React, { Component, SyntheticEvent } from 'react';
-import { Animated, Easing, View, Text, ScrollView, Dimensions, TouchableOpacity, NativeScrollEvent, NativeSyntheticEvent, ScrollViewStatic } from 'react-native';
-import { AppState } from '../../reducers/app.reducer';
+import React, { Component } from 'react';
+import { Animated, View, ScrollView, Dimensions, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { EmployeeCardWithAvatar } from '../employee-card-with-avatar';
 import { Employee } from '../../reducers/organization/employee.model';
 import { EmployeesStore } from '../../reducers/organization/employees.reducer';
 import { Department } from '../../reducers/organization/department.model';
-import { StyledText } from '../../override/styled-text';
-import {Map} from 'immutable';
 
 interface DepartmentsHScrollableListProps {
     treeLevel?: number;
