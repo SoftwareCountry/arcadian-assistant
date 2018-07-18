@@ -24,14 +24,14 @@ interface SearchViewStateProps {
     type: SearchType;
 }
 
-const mapStateToPropsFeeds = (state: AppState, ownProps: SearchViewProps): SearchViewStateProps => ({
+const mapStateToPropsFeeds = (state: AppState): SearchViewStateProps => ({
     filter: state.feeds.filter,
-    type: ownProps.type
+    type: SearchType.Feeds
 });
 
-const mapStateToPropsPeople = (state: AppState, ownProps: SearchViewProps): SearchViewStateProps => ({
+const mapStateToPropsPeople = (state: AppState): SearchViewStateProps => ({
     filter: state.people.filter,
-    type: ownProps.type
+    type: SearchType.People
 });
 
 interface SearchViewDispatchProps {
@@ -93,11 +93,11 @@ export class SearchView extends Component<SearchViewProps> {
     public render() {
         switch (this.props.type) {
             case SearchType.Feeds:
-                return <SearchViewFeeds type={this.props.type}/>;
+                return <SearchViewFeeds/>;
             case SearchType.People: 
-                return <SearchViewPeople type={this.props.type}/>;
+                return <SearchViewPeople/>;
             default:
-                return <SearchViewPeople type={this.props.type}/>;
+                return null;
         }
     }
 }
