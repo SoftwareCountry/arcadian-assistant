@@ -33,6 +33,5 @@ export const changeBoundaryDates = (toDate: Moment, fromDate: Moment): ChangeBou
     return { type: 'CHANGE_BOUNDARY_DATES', toDate, fromDate };
 };
 
-
 export type FeedsActions =
     LoadFeedsFinished | ChangeBoundaryDates | FetchNewFeeds | FetchOldFeeds;

@@ -1,6 +1,5 @@
-import React, { Component, SyntheticEvent } from 'react';
-import { Animated, Easing, View, Text, ScrollView, Dimensions, TouchableOpacity, NativeScrollEvent, NativeSyntheticEvent, ScrollViewStatic } from 'react-native';
-import { AppState } from '../../reducers/app.reducer';
+import React, { Component } from 'react';
+import { Animated, View, ScrollView, Dimensions, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { EmployeeCardWithAvatar } from '../employee-card-with-avatar';
 import { Employee } from '../../reducers/organization/employee.model';
 import { EmployeesStore } from '../../reducers/organization/employees.reducer';
@@ -38,19 +37,15 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
     private employeeCards: EmployeeCardWithAvatar[];
     private animatedValue: Animated.Value;
 
-    public shouldComponentUpdate(nextProps: DepartmentsHScrollableListProps) {
-        if (this.props.departmentsLists !== nextProps.departmentsLists) {
-            return true;
-        } else {
-            const employees = this.props.employees.employeesById.filter(this.props.employeesPredicate);
-            const nextEmployees = nextProps.employees.employeesById.filter(this.props.employeesPredicate);
+    public shouldComponentUpdate(nextProps: DepartmentsHScrollableListProps) {	
+        if (this.props.departmentsLists !== nextProps.departmentsLists) {	
+            return true;	
+        } else {	
+            const employees = this.props.employees.employeesById.filter(this.props.employeesPredicate);	
+            const nextEmployees = nextProps.employees.employeesById.filter(nextProps.employeesPredicate);	
 
-            if (!employees.equals(nextEmployees)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
+            return !employees.equals(nextEmployees);
+        }	
     }
 
     public render() {
