@@ -16,22 +16,24 @@ import { StyledText } from '../override/styled-text';
 import { employeesListStyles as styles } from './styles';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 
-interface PeopleCompanySearchProps {
+interface PeopleCompanySearchOwnProps {
     employees: EmployeesStore;
 }
 
-interface PeopleCompanyProps {
+interface PeopleCompanyStateProps {
     routeName: string;
-    departmentsBranch?: Department[];
-    departments?: Department[];
-    employee?: Employee;
-    currentFocusedDepartmentId?: string;
-    departmentLists?: DepartmentsListStateDescriptor[];
+    departmentsBranch: Department[];
+    departments: Department[];
+    employee: Employee;
+    currentFocusedDepartmentId: string;
+    departmentLists: DepartmentsListStateDescriptor[];
     employeesPredicate: (head: Department, employee: Employee) => boolean;
 }
 
-const mapStateToProps = (state: AppState): PeopleCompanyProps => ({
-        routeName: 'Company',
+const mapStateToProps: MapStateToProps<PeopleCompanySearchProps, PeopleCompanySearchOwnProps, AppState> = (state: AppState, ownProps): PeopleCompanySearchProps => ({
+        employees: ownProps.employees, // own props
+
+        routeName: 'Company', 
         departmentsBranch: state.people.departmentsBranch.length > 0 ? state.people.departmentsBranch : null,
         departments: state.people.departments,
         employee: state.organization.employees.employeesById.get(state.userInfo.employeeId),
@@ -39,6 +41,9 @@ const mapStateToProps = (state: AppState): PeopleCompanyProps => ({
         departmentLists: state.people.departmentsLists,
         employeesPredicate: (head: Department, employee: Employee) => employee.departmentId === head.departmentId && employee.employeeId !== head.chiefId,
 });
+
+type PeopleCompanySearchProps = PeopleCompanySearchOwnProps & PeopleCompanyStateProps;
+
 
 interface PeopleCompanyDispatchProps {
     requestEmployeesForDepartment: (departmentId: string) => void;
@@ -58,7 +63,7 @@ const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
     },
 });
 
-export class PeopleCompanyImpl extends React.Component<PeopleCompanyProps & PeopleCompanyDispatchProps & PeopleCompanySearchProps> {
+export class PeopleCompanyImpl extends React.Component<PeopleCompanySearchProps & PeopleCompanyDispatchProps> {
     public render() {
         // Branch for current employee
         let userFocusedDepartmentsBranch: Department[] = [];
