@@ -3,8 +3,8 @@ import { StackNavigator, NavigationRouteConfigMap } from 'react-navigation';
 import { EmployeeDetailsScreen } from '../employee-details/employee-details-screen';
 import { stackNavigatorConfig } from '../override/stack-navigator-config';
 import { PeopleScreenNavigator } from './navigator/people-screen-navigator';
-import { PeopleDepartment } from './people-department';
 import { SearchViewPeople } from '../navigation/search-view';
+import { CurrentPeopleDepartment } from './current-people-department';
 
 const routeConfig: NavigationRouteConfigMap = {
     PeopleHomeScreen: {
@@ -19,7 +19,7 @@ const routeConfig: NavigationRouteConfigMap = {
         path: '/profile',
     },
     CurrentDepartment: {
-        screen: PeopleDepartment,
+        screen: CurrentPeopleDepartment,
         path: '/current-department'
     }    
 };

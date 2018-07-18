@@ -1,7 +1,7 @@
 import { NavigationRouteConfigMap, StackNavigator } from 'react-navigation';
 import { HomeProfileScreen } from './home-profile-screen';
-import { PeopleDepartment } from '../people/people-department';
 import { stackNavigatorConfig } from '../override/stack-navigator-config';
+import { CurrentPeopleDepartment } from '../people/current-people-department';
 
 const routeConfig: NavigationRouteConfigMap = {
     PeopleHomeScreen: {
@@ -12,7 +12,7 @@ const routeConfig: NavigationRouteConfigMap = {
         }
     },
     CurrentDepartment: {
-        screen: PeopleDepartment,
+        screen: CurrentPeopleDepartment,
         path: '/current-department'
     }
 };

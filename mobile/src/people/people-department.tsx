@@ -5,19 +5,11 @@ import { EmployeesList } from './employees-list';
 import { AppState } from '../reducers/app.reducer';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Employee } from '../reducers/organization/employee.model';
-import { openEmployeeDetailsAction, CurrentDepartmentNavigationParams } from '../employee-details/employee-details-dispatcher';
-import { NavigationRoute, NavigationScreenProp, NavigationLeafRoute } from 'react-navigation';
-
-interface ExtendedNavigationScreenProp<P> extends NavigationScreenProp<NavigationRoute> {
-    getParam: <T extends keyof P>(param: T, fallback?: P[T]) => P[T];
-}
-
-interface NavigationProps {
-    navigation: ExtendedNavigationScreenProp<CurrentDepartmentNavigationParams>;
-}
+import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 
 interface PeopleDepartmentPropsOwnProps {
     employees: EmployeesStore;
+    customEmployeesPredicate?: (employee: Employee) => boolean;
 }
 
 interface PeopleDepartmentStateProps {
@@ -28,20 +20,15 @@ interface PeopleDepartmentStateProps {
 
 type PeopleDepartmentProps = PeopleDepartmentStateProps & PeopleDepartmentPropsOwnProps;
 
-const mapStateToProps: MapStateToProps<PeopleDepartmentProps, PeopleDepartmentPropsOwnProps, AppState> = (state: AppState, ownProps: PeopleDepartmentPropsOwnProps & NavigationProps): PeopleDepartmentStateProps => {
+const mapStateToProps: MapStateToProps<PeopleDepartmentProps, PeopleDepartmentPropsOwnProps, AppState> = (state: AppState, ownProps: PeopleDepartmentPropsOwnProps): PeopleDepartmentStateProps => {
 
     const userEmployee = state.organization.employees.employeesById.get(state.userInfo.employeeId);
-    const departmentId = ownProps.navigation.getParam('departmentId', undefined);
+    const defaultEmployeesPredicate = (employee: Employee) => userEmployee && employee.departmentId === userEmployee.departmentId;
 
     return ({
         employees: ownProps.employees,
         userEmployee,
-        employeesPredicate: (employee: Employee) => {
-
-            return departmentId 
-                ? employee.departmentId === departmentId 
-                : userEmployee && employee.departmentId === userEmployee.departmentId;
-        }
+        employeesPredicate: ownProps.customEmployeesPredicate ? ownProps.customEmployeesPredicate : defaultEmployeesPredicate
     });
 };
 
