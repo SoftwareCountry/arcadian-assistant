@@ -1,6 +1,5 @@
 import React from 'react';
-import { FlatList, View, StyleSheet, ListRenderItemInfo, RefreshControl,
-    TouchableOpacity } from 'react-native';
+import { FlatList, View, StyleSheet, ListRenderItemInfo, RefreshControl } from 'react-native';
 import { TopNavBar } from '../navigation/top-nav-bar';
 
 import { Employee } from '../reducers/organization/employee.model';
@@ -10,7 +9,6 @@ import { connect, Dispatch } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 
 import { FeedListItem } from './feed';
-import { SearchView, SearchType } from '../navigation/search-view';
 import { LoadingView } from '../navigation/loading';
 
 import { screenStyles as styles } from './styles';
@@ -36,18 +34,13 @@ interface FeedScreenDispatchProps {
     fetchOldFeeds: () => void;
 }
 
-const mapStateToProps = (state: AppState): FeedsScreenProps => {
-    const filter = state.feeds.filter;
-    const employees = state.organization.employees;
-
-    return ({
-        feeds: state.feeds.feeds,
-        employees,
-        toDate: state.feeds.toDate,
-        fromDate: state.feeds.fromDate,
-        user: state.userInfo.employeeId,
-    });
-};
+const mapStateToProps = (state: AppState): FeedsScreenProps => ({
+    feeds: state.feeds.feeds,
+    employees: state.organization.employees,
+    toDate: state.feeds.toDate,
+    fromDate: state.feeds.fromDate,
+    user: state.userInfo.employeeId,
+});
 
 const mapDispatchToProps = (dispatch: Dispatch<any>): FeedScreenDispatchProps => ({
     onAvatarClicked: (employee: Employee) => dispatch(openEmployeeDetailsAction(employee)),
@@ -59,7 +52,8 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     public static navigationOptions = navBar.configurate();
 
      public shouldComponentUpdate(nextProps: FeedsScreenProps & FeedScreenDispatchProps) {
-        if (this.props.onAvatarClicked !== nextProps.onAvatarClicked) {
+        if (this.props.onAvatarClicked !== nextProps.onAvatarClicked
+            || this.props.feeds !== nextProps.feeds) {
             return true;
         }
 
@@ -77,7 +71,6 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
         const feeds = this.sortedFeeds();
 
         return this.props.feeds.size > 0 ?
-            <View>
                 <FlatList
                     style={styles.view}
                     keyExtractor={this.keyExtractor}
@@ -90,7 +83,6 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
                     refreshing={false}
                     onRefresh={this.onRefresh}
                 />
-            </View>
         : <LoadingView/>;
     }
 
@@ -116,16 +108,6 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
         } else {
             return <FeedListItem message={item} employee={employee} onAvatarClicked={this.props.onAvatarClicked} />;
         }
-    }
-
-    private renderFooter = () => {
-        return <View style={styles.footer}>
-                <TouchableOpacity onPress={this.endReached}>
-                    <StyledText>
-                        Load more
-                    </StyledText>
-                </TouchableOpacity>
-            </View>;
     }
 
     private endReached = () => {

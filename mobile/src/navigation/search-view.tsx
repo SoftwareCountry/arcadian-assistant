@@ -15,10 +15,6 @@ interface SearchViewState {
     isActive: boolean;
 }
 
-interface SearchViewProps {
-    type: SearchType;
-}
-
 interface SearchViewStateProps {
     filter: string;
     type: SearchType;
@@ -86,18 +82,4 @@ class SearchViewImpl extends Component<SearchViewDispatchProps & SearchViewState
     }
 }
 
-const SearchViewFeeds = connect(mapStateToPropsFeeds, mapDispatchToProps)(SearchViewImpl);
-const SearchViewPeople = connect(mapStateToPropsPeople, mapDispatchToProps)(SearchViewImpl);
-
-export class SearchView extends Component<SearchViewProps> {
-    public render() {
-        switch (this.props.type) {
-            case SearchType.Feeds:
-                return <SearchViewFeeds/>;
-            case SearchType.People: 
-                return <SearchViewPeople/>;
-            default:
-                return null;
-        }
-    }
-}
+export const SearchViewPeople = connect(mapStateToPropsPeople, mapDispatchToProps)(SearchViewImpl);
