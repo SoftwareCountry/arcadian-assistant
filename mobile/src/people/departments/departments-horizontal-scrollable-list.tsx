@@ -40,6 +40,17 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
     private employeeCards: EmployeeCardWithAvatar[];
     private animatedValue: Animated.Value;
 
+    public shouldComponentUpdate(nextProps: DepartmentsHScrollableListProps) {	
+        if (this.props.departmentsLists !== nextProps.departmentsLists) {	
+            return true;	
+        } else {	
+            const employees = this.props.employees.employeesById.filter(this.props.employeesPredicate);	
+            const nextEmployees = nextProps.employees.employeesById.filter(nextProps.employeesPredicate);	
+
+            return !employees.equals(nextEmployees);
+        }	
+    }
+
     public render() {
         this.employeeCards = [];
         
