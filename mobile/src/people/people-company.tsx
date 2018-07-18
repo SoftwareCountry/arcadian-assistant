@@ -5,7 +5,8 @@ import { View, ScrollView } from 'react-native';
 import { Department } from '../reducers/organization/department.model';
 import { AppState } from '../reducers/app.reducer';
 import { DepartmentsHScrollableList, DepartmentsListStateDescriptor } from './departments/departments-horizontal-scrollable-list';
-import { EmployeeCardWithAvatar } from './employee-card-with-avatar';
+import { EmployeeCardWithAvatar } from './departments/employee-card-with-avatar';
+import { EmployeeCardWithAvatarList } from './departments/employee-card-with-avatar-list';
 import { PeopleActions, updateDepartmentsBranch } from '../reducers/people/people.action';
 import { loadEmployeesForDepartment } from '../reducers/organization/organization.action';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
@@ -15,12 +16,12 @@ import { EmployeesStore } from '../reducers/organization/employees.reducer';
 
 interface PeopleCompanySearchOwnProps {
     employees: EmployeesStore;
+    departments: Department[];
 }
 
 interface PeopleCompanyStateProps {
     routeName: string;
     departmentsBranch: Department[];
-    departments: Department[];
     employee: Employee;
     currentFocusedDepartmentId: string;
     departmentLists: DepartmentsListStateDescriptor[];
@@ -29,10 +30,10 @@ interface PeopleCompanyStateProps {
 
 const mapStateToProps: MapStateToProps<PeopleCompanySearchProps, PeopleCompanySearchOwnProps, AppState> = (state: AppState, ownProps): PeopleCompanySearchProps => ({
         employees: ownProps.employees, // own props
+        departments: ownProps.departments,
 
         routeName: 'Company', 
-        departmentsBranch: state.people.departmentsBranch.length > 0 ? state.people.departmentsBranch : null,
-        departments: state.people.departments,
+        departmentsBranch: state.people.departmentsBranch,
         employee: state.organization.employees.employeesById.get(state.userInfo.employeeId),
         currentFocusedDepartmentId: state.people.currentFocusedDepartmentId,
         departmentLists: state.people.departmentsLists,
@@ -55,51 +56,60 @@ const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
         dispatch(updateDepartmentsBranch(departmentId, focusOnEmployeesList)); 
     },
     onItemClicked: (employee: Employee) => {
-        dispatch( openEmployeeDetailsAction(employee));
+        if (employee) {
+            dispatch(openEmployeeDetailsAction(employee));
+        }
     },
 });
 
 export class PeopleCompanyImpl extends React.Component<PeopleCompanySearchProps & PeopleCompanyDispatchProps> {
     public render() {
-        // Branch for current employee
-        let userFocusedDepartmentsBranch: Department[] = [];
+        const chief = this.props.employees.employeesById.get(this.props.departmentsBranch[0].chiefId);
 
-        if (this.props.departments && this.props.departments.length > 0 && this.props.departmentsBranch !== null) {
-                userFocusedDepartmentsBranch = userFocusedDepartmentsBranch.concat(this.props.departmentsBranch);
+        //list of employees
+        const lowestLevel = this.props.departmentsBranch[this.props.departmentsBranch.length - 1];
+        const lowestLevelDesc = this.props.departmentLists[this.props.departmentsBranch.length - 1];
+        const employeesPredicate = (e: Employee) => this.props.employeesPredicate(lowestLevel, e);
+        let subordinates;
+        if (this.props.employees.employeeIdsByDepartment.has(lowestLevel.departmentId) && 
+            this.props.employees.employeeIdsByDepartment.get(lowestLevel.departmentId).size > 0) {
+            subordinates = this.props.employees.employeesById.filter(employeesPredicate).toArray();
+        } else {
+            subordinates = null;
         }
-        const chief = this.props.employees.employeesById.get(userFocusedDepartmentsBranch[0].chiefId);
 
         return <View>
                 <ScrollView style={styles.company}>
                     <EmployeeCardWithAvatar
                         employee={chief}
-                        departmentAbbreviation={userFocusedDepartmentsBranch[0].abbreviation}
-                        treeLevel={0}
-                        onItemClicked = {chief ? this.props.onItemClicked : () => {}}
+                        departmentAbbreviation={this.props.departmentsBranch[0].abbreviation}
+                        onItemClicked = {this.props.onItemClicked}
                     />
                     {
-                        userFocusedDepartmentsBranch.map((head, index) => {
-                            const itemClicked = (e: Employee) => { if (e) { this.props.onItemClicked(e); }};
-                            const employeesPredicate = (e: Employee) => this.props.employeesPredicate(head, e);
-
+                        this.props.departmentsBranch.map((head, index) => {
                             return (
                                 <DepartmentsHScrollableList
-                                    treeLevel={index + 1}
                                     departments={this.props.departments.filter(department => department.parentDepartmentId === head.departmentId)}
                                     departmentsLists={this.props.departmentLists[index + 1]}
-                                    headDepartmentId={head.departmentId}
-                                    headDepartmentChiefId={head.chiefId}
-                                    focusOnDepartmentWithId={(index + 1) < userFocusedDepartmentsBranch.length ? userFocusedDepartmentsBranch[index + 1].departmentId : null}
-                                    currentFocusedDepartmentId={this.props.currentFocusedDepartmentId}
+                                    headDepartment={head}
                                     employees={this.props.employees}
                                     key={head.departmentId}
                                     updateDepartmentsBranch={this.props.updateDepartmentsBranch}
                                     requestEmployeesForDepartment={this.props.requestEmployeesForDepartment}
-                                    onItemClicked={itemClicked}
-                                    employeesPredicate={employeesPredicate}
+                                    onItemClicked={this.props.onItemClicked}
                                 />
                             );
                         })
+                    }
+                    {
+                    (subordinates != null && subordinates.length > 0) ? 
+                        <EmployeeCardWithAvatarList 
+                            employees={subordinates.sort()} 
+                            chiefId={lowestLevel.chiefId}
+                            treeLevel={this.props.departmentsBranch.length - 1}
+                            onItemClicked={this.props.onItemClicked}
+                        /> 
+                        : null
                     }
                 </ScrollView>
             </View>;
