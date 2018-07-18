@@ -4,13 +4,14 @@ import { EmployeeDetailsScreen } from '../employee-details/employee-details-scre
 import { stackNavigatorConfig } from '../override/stack-navigator-config';
 import { PeopleScreenNavigator } from './navigator/people-screen-navigator';
 import { PeopleDepartment } from './people-department';
+import { SearchViewPeople } from '../navigation/search-view';
 
 const routeConfig: NavigationRouteConfigMap = {
     PeopleHomeScreen: {
         screen: PeopleScreenNavigator,
         path: '/',
         navigationOptions: {
-            header: null,
+            header: <SearchViewPeople/>,
         }
     },
     CurrentProfile: {

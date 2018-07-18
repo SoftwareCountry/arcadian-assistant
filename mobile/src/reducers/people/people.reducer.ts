@@ -8,6 +8,8 @@ import { User } from '../user/user.model';
 import { Employee } from '../organization/employee.model';
 import { OrganizationActions, loadEmployeesForDepartment, loadEmployeesForRoom, LoadDepartmentsFinished } from '../organization/organization.action';
 import { PeopleActions } from './people.action';
+import { SearchActions } from '../search.action';
+import { SearchType } from '../../navigation/search-view';
 import { Department } from '../organization/department.model';
 import { LoadUserEmployeeFinished } from '../user/user.action';
 import { DepartmentsListStateDescriptor } from '../../people/departments/departments-horizontal-scrollable-list';
@@ -17,13 +19,15 @@ export interface PeopleState {
     departmentsBranch: Department[];
     currentFocusedDepartmentId: string;
     departmentsLists: DepartmentsListStateDescriptor[];
+    filter: string;
 }
 
 const initState: PeopleState = {
     departments: [],
     departmentsBranch: [],
     currentFocusedDepartmentId: null,
-    departmentsLists: []
+    departmentsLists: [],
+    filter: '',
 };
 
 function onlyUnique(value: string, index: number, self: string[]) { 
@@ -73,7 +77,8 @@ function departmentsBranchFromDepartmentWithId(departmentId: string, departments
     return {departmentsLineup: deps, departmentsLists: depsLists};
 }
 
-export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions | NavigationAction | LoadUserEmployeeFinished | LoadDepartmentsFinished) => {
+export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions | NavigationAction | 
+        LoadUserEmployeeFinished | LoadDepartmentsFinished | SearchActions) => {
     switch (action.type) {
         case 'Navigation/NAVIGATE':
             if (action.routeName === 'Company') {
@@ -99,6 +104,13 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
             const depsAndMeta = departmentsBranchFromDepartmentWithId(action.departmentId, state.departments, action.focusOnEmployeesList);
             return {...state, departmentsBranch: depsAndMeta.departmentsLineup, departmentsLists: depsAndMeta.departmentsLists};
         }
+        case 'SEARCH-BY-TEXT-FILTER':
+            if (action.searchType === SearchType.People) {
+                return {
+                    ...state,
+                    filter: action.filter,
+                };
+            }
         default:
             return state;
     }

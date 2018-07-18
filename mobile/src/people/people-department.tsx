@@ -1,35 +1,40 @@
 import React from 'react';
-import { Action } from 'redux';
-import { connect, Dispatch } from 'react-redux';
+import { connect, Dispatch, MapStateToProps } from 'react-redux';
 
 import { EmployeesList } from './employees-list';
 import { AppState } from '../reducers/app.reducer';
-import { EmployeeMap, EmployeesStore } from '../reducers/organization/employees.reducer';
+import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Employee } from '../reducers/organization/employee.model';
 import { openEmployeeDetailsAction, CurrentDepartmentNavigationParams } from '../employee-details/employee-details-dispatcher';
 import { NavigationRoute, NavigationScreenProp, NavigationLeafRoute } from 'react-navigation';
 
-interface NavigationTyped<P> extends NavigationScreenProp<NavigationRoute> {
+interface ExtendedNavigationScreenProp<P> extends NavigationScreenProp<NavigationRoute> {
     getParam: <T extends keyof P>(param: T, fallback?: P[T]) => P[T];
 }
 
 interface NavigationProps {
-    navigation: NavigationTyped<CurrentDepartmentNavigationParams>;
+    navigation: ExtendedNavigationScreenProp<CurrentDepartmentNavigationParams>;
 }
 
-interface PeopleDepartmentProps {
+interface PeopleDepartmentPropsOwnProps {
+    employees: EmployeesStore;
+}
+
+interface PeopleDepartmentStateProps {
     employees: EmployeesStore;
     userEmployee: Employee;
     employeesPredicate: (employee: Employee) => boolean;
 }
 
-const mapStateToProps = (state: AppState, ownProps: NavigationProps): PeopleDepartmentProps => {
+type PeopleDepartmentProps = PeopleDepartmentStateProps & PeopleDepartmentPropsOwnProps;
+
+const mapStateToProps: MapStateToProps<PeopleDepartmentProps, PeopleDepartmentPropsOwnProps, AppState> = (state: AppState, ownProps: PeopleDepartmentPropsOwnProps & NavigationProps): PeopleDepartmentStateProps => {
 
     const userEmployee = state.organization.employees.employeesById.get(state.userInfo.employeeId);
     const departmentId = ownProps.navigation.getParam('departmentId', undefined);
 
-    return {
-        employees: state.organization.employees,
+    return ({
+        employees: ownProps.employees,
         userEmployee,
         employeesPredicate: (employee: Employee) => {
 
@@ -37,7 +42,7 @@ const mapStateToProps = (state: AppState, ownProps: NavigationProps): PeopleDepa
                 ? employee.departmentId === departmentId 
                 : userEmployee && employee.departmentId === userEmployee.departmentId;
         }
-    };
+    });
 };
 
 interface EmployeesListDispatchProps {
@@ -47,8 +52,8 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeesListDispatchProps
     onItemClicked: (employee: Employee) => dispatch(openEmployeeDetailsAction(employee))
 });
 
-export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentProps & EmployeesListDispatchProps & NavigationProps> {
-    public shouldComponentUpdate(nextProps: PeopleDepartmentProps & EmployeesListDispatchProps & NavigationProps) {
+export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentStateProps & EmployeesListDispatchProps & PeopleDepartmentPropsOwnProps> {
+    public shouldComponentUpdate(nextProps: PeopleDepartmentStateProps & EmployeesListDispatchProps & PeopleDepartmentPropsOwnProps) {
         if (this.props.onItemClicked !== nextProps.onItemClicked
             || this.props.userEmployee !== nextProps.userEmployee
         ) {
@@ -56,17 +61,15 @@ export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentProps 
         }
 
         const employees = this.props.employees.employeesById.filter(this.props.employeesPredicate);
-        const nextEmployees = nextProps.employees.employeesById.filter(this.props.employeesPredicate);
+        const nextEmployees = nextProps.employees.employeesById.filter(nextProps.employeesPredicate);
 
-        if (!employees.equals(nextEmployees)) {
-            return true;
-        } else {
-            return false;
+        return !employees.equals(nextEmployees);
         }
-    }
 
     public render() {
-        return <EmployeesList employees={this.props.employees.employeesById.toArray().filter(this.props.employeesPredicate)} onItemClicked={this.props.onItemClicked} />;
+        const employees = this.props.employees.employeesById.filter(this.props.employeesPredicate).toArray();
+
+        return <EmployeesList employees={employees} onItemClicked={this.props.onItemClicked} isLoading={this.props.employees.employeesById.size > 0}/>;
     }
 }
 

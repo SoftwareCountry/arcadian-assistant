@@ -31,7 +31,6 @@ export const authReducer = (state: AuthState = initState, action: AuthActions): 
                     isAuthenticated: true
                 }
             };
-        case 'START-LOGOUT-PROCESS':
         case 'USER-LOGGED-OUT':
             return {
                 ...state,

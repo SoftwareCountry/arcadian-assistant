@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, View, StyleSheet, ListRenderItemInfo, RefreshControl } from 'react-native';
+import { FlatList, View, ListRenderItemInfo } from 'react-native';
 import { TopNavBar } from '../navigation/top-nav-bar';
 
 import { Employee } from '../reducers/organization/employee.model';
@@ -9,9 +9,9 @@ import { connect, Dispatch } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 
 import { FeedListItem } from './feed';
+import { LoadingView } from '../navigation/loading';
 
 import { screenStyles as styles } from './styles';
-import { StyledText } from '../override/styled-text';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 import { fetchNewFeeds, fetchOldFeeds } from '../reducers/feeds/feeds.action';
 import { FeedsById } from '../reducers/feeds/feeds.reducer';
@@ -47,14 +47,12 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): FeedScreenDispatchProps =>
     fetchOldFeeds: () => dispatch(fetchOldFeeds()),
 });
 
-
 class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenDispatchProps> {
     public static navigationOptions = navBar.configurate();
 
-    public shouldComponentUpdate(nextProps: FeedsScreenProps & FeedScreenDispatchProps) {
+     public shouldComponentUpdate(nextProps: FeedsScreenProps & FeedScreenDispatchProps) {
         if (this.props.onAvatarClicked !== nextProps.onAvatarClicked
-            || this.props.feeds !== nextProps.feeds
-        ) {
+            || this.props.feeds !== nextProps.feeds) {
             return true;
         }
 
@@ -66,26 +64,25 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
         });
 
         return !nothingChanged;
-    }
+    } 
 
     public render() {
-
         const feeds = this.sortedFeeds();
 
-        return (
-            <FlatList
-                style={styles.view}
-                keyExtractor={this.keyExtractor}
-                ItemSeparatorComponent={this.itemSeparator}
-                data={feeds}
-                extraData={this.props.employees}
-                renderItem={this.renderItem}
-                onEndReached={this.endReached}
-                onEndReachedThreshold={0}
-                refreshing={false}
-                onRefresh={this.onRefresh}
-            />
-        );
+        return this.props.feeds.size > 0 ?
+                <FlatList
+                    style={styles.view}
+                    keyExtractor={this.keyExtractor}
+                    ItemSeparatorComponent={this.itemSeparator}
+                    data={feeds}
+                    extraData={this.props.employees}
+                    renderItem={this.renderItem}
+                    onEndReached={this.endReached}
+                    onEndReachedThreshold={0}
+                    refreshing={false}
+                    onRefresh={this.onRefresh}
+                />
+        : <LoadingView/>;
     }
 
     private keyExtractor(item: Feed) {
@@ -114,9 +111,10 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
 
     private endReached = () => {
         if (this.props.user) {
-        this.props.fetchOldFeeds();
+            this.props.fetchOldFeeds();
         }
     }
+
     private onRefresh = () => {
         this.props.fetchNewFeeds();
     }
