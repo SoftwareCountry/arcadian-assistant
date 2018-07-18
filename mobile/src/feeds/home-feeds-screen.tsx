@@ -28,8 +28,6 @@ interface FeedsScreenProps {
     toDate: Moment;
     fromDate: Moment;
     user: string;
-    filter: string;
-    feedPredicate: (feed: Feed) => boolean;
 }
 
 interface FeedScreenDispatchProps {
@@ -48,14 +46,6 @@ const mapStateToProps = (state: AppState): FeedsScreenProps => {
         toDate: state.feeds.toDate,
         fromDate: state.feeds.fromDate,
         user: state.userInfo.employeeId,
-        filter,
-        feedPredicate: (feed: Feed) =>  {
-            const employee = employees.employeesById.get(feed.employeeId);
-
-            return  feed.title.includes(filter) || 
-                    feed.text.includes(filter) ||
-                    (employee && employee.name.includes(filter));
-        },
     });
 };
 
@@ -69,11 +59,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     public static navigationOptions = navBar.configurate();
 
      public shouldComponentUpdate(nextProps: FeedsScreenProps & FeedScreenDispatchProps) {
-        const currentFeeds = this.props.feeds.filter(this.props.feedPredicate);
-        const nextFeeds = nextProps.feeds.filter(nextProps.feedPredicate);
-
-        if (this.props.onAvatarClicked !== nextProps.onAvatarClicked
-            || !currentFeeds.equals(nextFeeds)) {
+        if (this.props.onAvatarClicked !== nextProps.onAvatarClicked) {
             return true;
         }
 
@@ -88,7 +74,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     } 
 
     public render() {
-        const feeds = this.sortedFeeds().filter(this.props.feedPredicate);
+        const feeds = this.sortedFeeds();
 
         return this.props.feeds.size > 0 ?
             <View>
