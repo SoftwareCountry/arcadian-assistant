@@ -1,6 +1,7 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { connect, Dispatch } from 'react-redux';
 
+import { PeopleActions, updateDepartmentsBranch } from '../reducers/people/people.action';
 import { AppState } from '../reducers/app.reducer';
 import { Employee } from '../reducers/organization/employee.model';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
@@ -10,11 +11,18 @@ import { PeopleRoom } from './people-room';
 import { PeopleDepartment } from './people-department';
 import { Map, Set } from 'immutable';
 import { Department } from '../reducers/organization/department.model';
+import { DepartmentsListStateDescriptor } from './departments/departments-horizontal-scrollable-list';
+import { updateTopOfBranch } from '../reducers/people/people.reducer';
 
 interface PeopleProps {
-    loaded: boolean;
     employees: EmployeesStore;
+}
+
+interface PeopleCompanyFilteredProps {
+    loaded: boolean;
     departments: Department[];
+    departmentBranch: Department[];
+    departmentLists: DepartmentsListStateDescriptor[];
 }
 
 const mapStateToProps = (state: AppState): PeopleProps => {
@@ -36,35 +44,79 @@ const mapStateToProps = (state: AppState): PeopleProps => {
                                                 employeeIdsByDepartment: filteredEmployeesByDep};
 
     return ({
-        loaded: state.people.departmentsBranch.length > 0 && 
-                state.people.departments && state.people.departments.length > 0,
         employees: filteredEmployees,
-        departments: state.people.departments,
     });
 };
 
-class PeopleCompanyImpl extends React.Component<PeopleProps> {
-    public shouldComponentUpdate(nextProps: PeopleProps) {
-        return this.props.loaded !== nextProps.loaded || !this.props.employees.employeesById.equals(nextProps.employees.employeesById);
+const mapStateToCompanyFilteredProps = (state: AppState): PeopleProps & PeopleCompanyFilteredProps => {
+    const empl = mapStateToProps(state);
+    const branch = state.people.departmentsBranch;
+
+    // filter departments
+    const filteredDeps = state.people.departments.filter((d) => empl.employees.employeeIdsByDepartment.has(d.departmentId));
+    let deps = filteredDeps;
+    filteredDeps.forEach(dep => {
+        let curDep = dep;
+        while (!curDep.isHeadDepartment) {
+            curDep = state.people.departments.filter(d => d.departmentId === curDep.parentDepartmentId)[0];
+            if (deps.findIndex(e => e === curDep) === -1) {
+                deps.push(curDep);
+            }
+        }
+    });
+    // recalculate department branch
+    const res = updateTopOfBranch(branch[branch.length - 1].departmentId, deps);
+
+    return ({
+        loaded: res.departmentsLineup.length > 0 && 
+                state.people.departments && state.people.departments.length > 0,
+        employees: empl.employees,
+        departments: deps,
+        departmentBranch: res.departmentsLineup,
+        departmentLists: res.departmentsLists
+    });
+};
+
+interface PeopleCompanyFilteredDispatchProps {
+    updateDepartmentsBranch: (deps: Department[], depLists: DepartmentsListStateDescriptor[]) => void;
+}
+
+const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
+    updateDepartmentsBranch: (deps: Department[], depLists: DepartmentsListStateDescriptor[]) => { 
+        dispatch(updateDepartmentsBranch(deps, depLists)); 
+    },
+});
+
+class PeopleCompanyImpl extends React.Component<PeopleProps & PeopleCompanyFilteredProps & PeopleCompanyFilteredDispatchProps> {
+    public componentWillMount() {
+        this.props.updateDepartmentsBranch(this.props.departmentBranch, this.props.departmentLists);
+    }
+
+    public shouldComponentUpdate(nextProps: PeopleProps & PeopleCompanyFilteredProps) {
+        if (this.props.loaded !== nextProps.loaded || !this.props.employees.employeesById.equals(nextProps.employees.employeesById) || 
+            !this.areEqual(this.props.departmentBranch, nextProps.departmentBranch, (a, b) => a === b) || 
+            !this.areEqual(this.props.departmentLists, nextProps.departmentLists, (a, b) => a.currentPage === b.currentPage)) {
+                this.props.updateDepartmentsBranch(nextProps.departmentBranch, nextProps.departmentLists);
+                return true;
+        } 
+        return false;
     }
 
     public render() {
-        if (!this.props.loaded) {
-            return <LoadingView/>;
-        }
+        return !this.props.loaded ? <LoadingView/> :
+            <PeopleCompany employees={this.props.employees} departments={this.props.departments}/>;
+    }
 
-        const filteredDeps = this.props.departments.filter((d) => this.props.employees.employeeIdsByDepartment.has(d.departmentId));
-        let deps = filteredDeps;
-        filteredDeps.forEach(dep => {
-            let curDep = dep;
-            while (!curDep.isHeadDepartment) {
-                curDep = this.props.departments.filter(d => d.departmentId === curDep.parentDepartmentId)[0];
-                if (deps.findIndex(e => e === curDep) === -1) {
-                    deps.push(curDep);
-                }
+    private areEqual<T>(first: T[], second: T[], f: (a: T, b: T) => boolean): boolean {
+        if (!first || ! second || first.length !== second.length) {
+            return false;
+        }
+        for (let i = 0; i < first.length; i++) {
+            if (!f(first[i], second[i])) {
+                return false;
             }
-        });
-        return <PeopleCompany employees={this.props.employees} departments={deps}/>;
+        }
+        return true;
     }
 }
 
@@ -88,6 +140,6 @@ class PeopleDepartmentImpl extends React.Component<PeopleProps> {
     }
 }
 
-export const PeopleCompanyFiltered = connect(mapStateToProps)(PeopleCompanyImpl);
+export const PeopleCompanyFiltered = connect(mapStateToCompanyFilteredProps, mapDispatchToProps)(PeopleCompanyImpl);
 export const PeopleRoomFiltered = connect(mapStateToProps)(PeopleRoomImpl);
 export const PeopleDepartmentFiltered = connect(mapStateToProps)(PeopleDepartmentImpl);

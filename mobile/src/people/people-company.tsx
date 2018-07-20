@@ -23,7 +23,6 @@ interface PeopleCompanyStateProps {
     routeName: string;
     departmentsBranch: Department[];
     employee: Employee;
-    currentFocusedDepartmentId: string;
     departmentLists: DepartmentsListStateDescriptor[];
     employeesPredicate: (head: Department, employee: Employee) => boolean;
 }
@@ -35,7 +34,6 @@ const mapStateToProps: MapStateToProps<PeopleCompanySearchProps, PeopleCompanySe
         routeName: 'Company', 
         departmentsBranch: state.people.departmentsBranch,
         employee: state.organization.employees.employeesById.get(state.userInfo.employeeId),
-        currentFocusedDepartmentId: state.people.currentFocusedDepartmentId,
         departmentLists: state.people.departmentsLists,
         employeesPredicate: (head: Department, employee: Employee) => employee.departmentId === head.departmentId && employee.employeeId !== head.chiefId,
 });
@@ -44,7 +42,7 @@ type PeopleCompanySearchProps = PeopleCompanySearchOwnProps & PeopleCompanyState
 
 interface PeopleCompanyDispatchProps {
     requestEmployeesForDepartment: (departmentId: string) => void;
-    updateDepartmentsBranch: (departmentId: string, focusOnEmployeesList?: boolean) => void;
+    updateDepartmentsBranch: (deps: Department[], depLists: DepartmentsListStateDescriptor[]) => void;
     onItemClicked: (employee: Employee) => void;
 }
 
@@ -52,8 +50,8 @@ const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
     requestEmployeesForDepartment: (departmentId: string) => { 
         dispatch(loadEmployeesForDepartment(departmentId)); 
     },
-    updateDepartmentsBranch: (departmentId: string, focusOnEmployeesList?: boolean) => { 
-        dispatch(updateDepartmentsBranch(departmentId, focusOnEmployeesList)); 
+    updateDepartmentsBranch: (deps: Department[], depLists: DepartmentsListStateDescriptor[]) => { 
+        dispatch(updateDepartmentsBranch(deps, depLists)); 
     },
     onItemClicked: (employee: Employee) => {
         if (employee) {
@@ -93,10 +91,10 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanySearchProps 
                                     departmentsLists={this.props.departmentLists[index + 1]}
                                     headDepartment={head}
                                     employees={this.props.employees}
-                                    key={head.departmentId}
-                                    updateDepartmentsBranch={this.props.updateDepartmentsBranch}
-                                    requestEmployeesForDepartment={this.props.requestEmployeesForDepartment}
+                                    updateDepartmentsBranch={(depId: string) => this.update(depId, index + 1)}
                                     onItemClicked={this.props.onItemClicked}
+                                    key={head.departmentId}
+                                    requestEmployeesForDepartment={this.props.requestEmployeesForDepartment}
                                 />
                             );
                         })
@@ -105,7 +103,6 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanySearchProps 
                     (subordinates != null && subordinates.length > 0) ? 
                         <EmployeeCardWithAvatarList 
                             employees={subordinates.sort()} 
-                            chiefId={lowestLevel.chiefId}
                             treeLevel={this.props.departmentsBranch.length - 1}
                             onItemClicked={this.props.onItemClicked}
                         /> 
@@ -113,6 +110,26 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanySearchProps 
                     }
                 </ScrollView>
             </View>;
+    }
+
+    private update = (departmentId: string, treeLevel: number) => {
+        const deps: Department[] = this.props.departmentsBranch;
+        const depsLists: DepartmentsListStateDescriptor[] = this.props.departmentLists;
+    
+        for (let i = deps.length - 1; i >= treeLevel; i--) {
+            deps.pop();
+            depsLists.pop();
+        }
+
+        let department = this.props.departments.find(d => d.departmentId === departmentId);
+        while (department) {
+            deps.push(department);
+            depsLists.push({currentPage: this.props.departments.filter(d => d.parentDepartmentId === department.parentDepartmentId).indexOf(department)});
+
+            department = this.props.departments.find(d => d.parentDepartmentId === department.departmentId);
+        }
+
+        this.props.updateDepartmentsBranch(deps, depsLists);
     }
 }
 

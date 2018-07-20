@@ -34,44 +34,58 @@ function onlyUnique(value: string, index: number, self: string[]) {
     return self.indexOf(value) === index;
 }
 
-function departmentsBranchFromDepartmentWithId(departmentId: string, departments: Department[], focusOnEmployeesList?: boolean) {
+export function updateTopOfBranch(depId: string, departments: Department[]) {
+    const deps: Department[] = [];
+    const depsLists: DepartmentsListStateDescriptor[] = [];
+    const curId = depId;
+
+    // recalculate current pages if number of departments was changed
+    let department = departments.find(d => d.departmentId === curId);
+    while (department) {
+        deps.push(department);
+        const parent = departments.find(d => d.departmentId === department.parentDepartmentId);
+        if (parent !== null) {
+            let children = departments.filter(d => d.parentDepartmentId === department.parentDepartmentId);
+            depsLists.push({currentPage: children.indexOf(department)});
+        }
+        department = parent;
+    }
+    deps.reverse();
+    depsLists.reverse();
+
+    return {departmentsLineup: deps, departmentsLists: depsLists};
+}
+
+function departmentsBranchFromDepartmentWithId(departmentId: string, departments: Department[]) {
     const deps: Department[] = [];
     const depsLists: DepartmentsListStateDescriptor[] = [];
 
+    // find from cur to the top
     let department = departments.find(d => d.departmentId === departmentId);
-
     while (department) {
         deps.push(department);
         
-        const parent = departments.find(d => d.departmentId === department.parentDepartmentId) != null ?
-            departments.find(d => d.departmentId === department.parentDepartmentId) : null;
+        const parent = departments.find(d => d.departmentId === department.parentDepartmentId);
 
         if (parent !== null) {
-            depsLists.push({currentPage: departments.filter(d => d.parentDepartmentId === department.parentDepartmentId).indexOf(department)});
+            let children = departments.filter(d => d.parentDepartmentId === department.parentDepartmentId);
+            depsLists.push({currentPage: children.indexOf(department)});
         }
 
         department = parent;
     }
 
     deps.reverse();
-    // Toppest Head
     depsLists.push({currentPage: 0});
     depsLists.reverse();
 
-    if (focusOnEmployeesList) {
-        return {departmentsLineup: deps, departmentsLists: depsLists};
-    }
-
+    // find from cur to the leaves
     department = departments.find(d => d.parentDepartmentId === departmentId);
-    
     while (department) {
         deps.push(department);
         depsLists.push({currentPage: departments.filter(d => d.parentDepartmentId === department.parentDepartmentId).indexOf(department)});
 
-        const child = departments.find(d => d.parentDepartmentId === department.departmentId) != null ?
-            departments.find(d => d.parentDepartmentId === department.departmentId) : null;
-
-        department = child;
+        department = departments.find(d => d.parentDepartmentId === department.departmentId);
     }
 
     return {departmentsLineup: deps, departmentsLists: depsLists};
@@ -95,14 +109,35 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
             }
         case 'LOAD-USER-EMPLOYEE-FINISHED': {
             // Init Departments Branch focused on current user's departments
-            const depsAndMeta = departmentsBranchFromDepartmentWithId(action.employee.departmentId, state.departments);
-            return {...state, currentFocusedDepartmentId: action.employee.departmentId, departmentsBranch: depsAndMeta.departmentsLineup, departmentsLists: depsAndMeta.departmentsLists};
+            if (state.departments.length > 0) {
+                const depsAndMeta = departmentsBranchFromDepartmentWithId(action.employee.departmentId, state.departments);
+                return {
+                    ...state, 
+                    currentFocusedDepartmentId: action.employee.departmentId, 
+                    departmentsBranch: depsAndMeta.departmentsLineup, 
+                    departmentsLists: depsAndMeta.departmentsLists
+                };
+            } else {
+                return {
+                    ...state,
+                    currentFocusedDepartmentId: action.employee.departmentId, 
+                };
+            }
         }
         case 'LOAD-DEPARTMENTS-FINISHED':
-            return {...state, departments: action.departments};        
+            if (state.currentFocusedDepartmentId) {
+                const depsAndMeta = departmentsBranchFromDepartmentWithId(state.currentFocusedDepartmentId, action.departments);
+                return {
+                    ...state, 
+                    departmentsBranch: depsAndMeta.departmentsLineup, 
+                    departmentsLists: depsAndMeta.departmentsLists,
+                    departments: action.departments
+                };
+            } else {
+                return {...state, departments: action.departments};   
+            }     
         case 'UPDATE-DEPARTMENTS-BRANCH': {
-            const depsAndMeta = departmentsBranchFromDepartmentWithId(action.departmentId, state.departments, action.focusOnEmployeesList);
-            return {...state, departmentsBranch: depsAndMeta.departmentsLineup, departmentsLists: depsAndMeta.departmentsLists};
+            return {...state, departmentsBranch: action.departments, departmentsLists: action.departmentLists};
         }
         case 'SEARCH-BY-TEXT-FILTER':
             if (action.searchType === SearchType.People) {

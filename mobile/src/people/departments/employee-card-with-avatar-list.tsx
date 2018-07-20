@@ -6,7 +6,6 @@ import { StyledText } from '../../override/styled-text';
 import { companyItemStyles as styles, companyTinyItemStyles as tinyStyles} from '../styles';
 
 interface EmployeeCardWithAvatarProps {
-    chiefId: string;
     employees: Employee[];
     treeLevel: number;
     onItemClicked: (e: Employee) => void;
@@ -25,7 +24,8 @@ export class EmployeeCardWithAvatarList extends Component<EmployeeCardWithAvatar
                 <FlatList
                     data={this.props.employees}
                     keyExtractor={this.keyExtractor}
-                    renderItem={this.renderItem} />
+                    renderItem={this.renderItem} 
+                    refreshing={false}/>
             </View>
         );
     }
@@ -51,7 +51,6 @@ export class EmployeeCardWithAvatarList extends Component<EmployeeCardWithAvatar
     }
 
     private onItemClicked = (itemId: number) => {
-        const filteredEmployees = this.props.employees.filter((emp) => emp.employeeId !== this.props.chiefId);
-        this.props.onItemClicked(filteredEmployees[itemId]);
+        this.props.onItemClicked(this.props.employees[itemId]);
     }
 }

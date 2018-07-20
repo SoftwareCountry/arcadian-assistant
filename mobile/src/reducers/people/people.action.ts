@@ -1,9 +1,13 @@
+import { Department } from '../organization/department.model';
+import { DepartmentsListStateDescriptor } from '../../people/departments/departments-horizontal-scrollable-list';
+
 export interface UpdateDepartmentsBranch {
     type: 'UPDATE-DEPARTMENTS-BRANCH';
-    departmentId: string;
-    focusOnEmployeesList?: boolean;
+    departments: Department[];
+    departmentLists: DepartmentsListStateDescriptor[];
 }
 
-export const updateDepartmentsBranch = (departmentId: string, focusOnEmployeesList?: boolean): UpdateDepartmentsBranch => ({ type: 'UPDATE-DEPARTMENTS-BRANCH', departmentId, focusOnEmployeesList });
+export const updateDepartmentsBranch = (departments: Department[], departmentLists: DepartmentsListStateDescriptor[]): UpdateDepartmentsBranch => 
+    ({ type: 'UPDATE-DEPARTMENTS-BRANCH', departments, departmentLists });
 
 export type PeopleActions = UpdateDepartmentsBranch;
