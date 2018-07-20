@@ -5,7 +5,7 @@ export const searchViewStyles = StyleSheet.create({
         paddingLeft: 5,
         paddingRight: 5,
         paddingTop: Platform.OS === 'ios' ? 40 : 0,
-        height: 60,
+        height: Platform.OS === 'ios' ? 60 : 40,
         backgroundColor: '#2FAFCC',
         flexDirection: 'row',
         alignItems: 'center'
