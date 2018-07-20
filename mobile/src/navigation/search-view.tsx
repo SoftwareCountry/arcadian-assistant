@@ -45,34 +45,34 @@ class SearchViewImpl extends Component<SearchViewDispatchProps & SearchViewState
 
     public render() {
         return <View style={styles.container}>
-                <TouchableOpacity
-                    style={styles.iconsContainer}
-                    onPress={this.onPress.bind(this)}
-                >
-                    <ApplicationIcon 
-                        name={'search'} 
-                        style={this.state.isActive ? styles.activeIcon : styles.inactiveIcon}
-                    />
-                </TouchableOpacity>
-                <View style={styles.inputContainer}>
-                    {this.state.isActive ? 
-                    <TextInput 
+            <TouchableOpacity style={styles.iconsContainer} onPress={this.onPress}>
+                <ApplicationIcon
+                    name={'search'}
+                    style={this.state.isActive ? styles.activeIcon : styles.inactiveIcon}
+                />
+            </TouchableOpacity>
+            <View style={styles.inputContainer}>
+                {
+                    this.state.isActive &&
+                    <TextInput
+                        placeholder={'Search'}
                         style={styles.input}
                         underlineColorAndroid='transparent'
                         autoCapitalize='none'
-                        onChangeText={this.changeText.bind(this)}
+                        onChangeText={this.changeText}
                         value={this.props.filter}
-                    /> : null}
-                </View>
-            </View>;
+                    />
+                }
+            </View>
+        </View>;
     }
 
-    private onPress() {
+    private onPress = () => {
         this.setState({isActive: !this.state.isActive});
         this.props.clearFilter(this.props.type);
     }
 
-    private changeText(filter: string) {
+    private changeText = (filter: string) => {
         this.props.setFilter(filter, this.props.type);
     }
 }
