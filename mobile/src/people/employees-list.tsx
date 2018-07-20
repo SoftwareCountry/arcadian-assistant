@@ -8,7 +8,7 @@ import { EmployeesStore, EmployeeMap, EmployeeIdsGroupMap } from '../reducers/or
 import { AppState } from '../reducers/app.reducer';
 import { EmployeesListItem } from './employees-list-item';
 import { employeesListStyles as styles } from './styles';
-import { employeesAZSort } from './employee-comparer';
+import { employeesAZSortComparer } from './employee-comparer';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 import { LoadingView } from '../navigation/loading';
 
@@ -20,7 +20,7 @@ export interface EmployeesListProps {
 
 export class EmployeesList extends React.Component<EmployeesListProps> {
     public render() {
-        const employees = this.props.employees.sort(employeesAZSort);
+        const employees = this.props.employees.sort(employeesAZSortComparer);
 
         return this.props.isLoading ? 
                 <View style={styles.view}>
