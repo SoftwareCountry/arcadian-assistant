@@ -11,15 +11,10 @@ export class TopNavBar {
     }
     public configurate() {
         return {
-            header: 
-            <View>
-                <StatusBar backgroundColor = '#2FAFCC' barStyle = 'light-content' />
-                <View style={topNavBarStyles.container}>
-                    <View style={topNavBarStyles.titleContainer}>
-                        <StyledText style={topNavBarStyles.navTitle}>{this.name}</StyledText>
-                    </View>
-                </View>
-            </View>,
+            header: <View style={topNavBarStyles.headerView}>
+                <StatusBar backgroundColor='#2FAFCC' barStyle='light-content' />
+                <StyledText style={topNavBarStyles.navTitle}>{this.name}</StyledText>
+             </View>
         };
     }
 }
