@@ -66,7 +66,6 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanySearchProps 
 
         //list of employees
         const lowestLevel = this.props.departmentsBranch[this.props.departmentsBranch.length - 1];
-        const lowestLevelDesc = this.props.departmentLists[this.props.departmentsBranch.length - 1];
         const employeesPredicate = (e: Employee) => this.props.employeesPredicate(lowestLevel, e);
         let subordinates;
         if (this.props.employees.employeeIdsByDepartment.has(lowestLevel.departmentId) && 

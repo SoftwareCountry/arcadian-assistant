@@ -65,15 +65,19 @@ const mapStateToCompanyFilteredProps = (state: AppState): PeopleProps & PeopleCo
         }
     });
     // recalculate department branch
-    const res = updateTopOfBranch(branch[branch.length - 1].departmentId, deps);
+    const loaded = state.people.departmentsBranch && state.people.departmentsBranch.length > 0 && 
+        state.people.departments && state.people.departments.length > 0;
+    let res;
+    if (loaded) {
+        res = updateTopOfBranch(branch[branch.length - 1].departmentId, deps);
+    }
 
     return ({
-        loaded: res.departmentsLineup.length > 0 && 
-                state.people.departments && state.people.departments.length > 0,
+        loaded,
         employees: empl.employees,
         departments: deps,
-        departmentBranch: res.departmentsLineup,
-        departmentLists: res.departmentsLists
+        departmentBranch: loaded ? res.departmentsLineup : null,
+        departmentLists: loaded ? res.departmentsLists : null,
     });
 };
 
@@ -108,7 +112,10 @@ class PeopleCompanyImpl extends React.Component<PeopleProps & PeopleCompanyFilte
     }
 
     private areEqual<T>(first: T[], second: T[], f: (a: T, b: T) => boolean): boolean {
-        if (!first || ! second || first.length !== second.length) {
+        if (!first && !second) {
+            return true;
+        }
+        if (!first || !second || first.length !== second.length) {
             return false;
         }
         for (let i = 0; i < first.length; i++) {
