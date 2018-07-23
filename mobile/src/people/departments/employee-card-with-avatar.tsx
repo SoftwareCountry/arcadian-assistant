@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { Animated, Easing, View, Image, Dimensions, StyleSheet, FlatList, ListRenderItemInfo, TouchableOpacity } from 'react-native';
+import { Animated, View, Dimensions, StyleSheet, TouchableOpacity } from 'react-native';
 import { Avatar } from '../avatar';
 import { Employee } from '../../reducers/organization/employee.model';
 import { StyledText } from '../../override/styled-text';
-import { companyItemStyles as styles, companyTinyItemStyles as tinyStyles} from '../styles';
+import { companyItemStyles as styles } from '../styles';
 
 interface EmployeeCardWithAvatarProps {
     employee: Employee;
@@ -49,7 +49,7 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
         const ePosition = employee ? employee.position : null;
         const { fadeInAnim, fadeOutAnim } = this.state;
         const neighboursAvatarsVisibility = this.state.isNeighboursAvatarsVisible;
-        const {layout, innerLayout, avatarContainer, avatarOuterFrame, avatarImage, info, name, baseText, depabbText, neighborAvatarContainer, neighborAvatarImage } = styles;
+        const {layout, innerLayout, avatarContainer, avatarOuterFrame, info, name, baseText, depabbText, neighborAvatarContainer } = styles;
 
         const layoutFlattenStyle = StyleSheet.flatten([layout, {width: Dimensions.get('window').width}]);
 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Animated, View, ScrollView, Dimensions, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import { View, ScrollView, Dimensions, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { EmployeeCardWithAvatar } from './employee-card-with-avatar';
 import { Employee } from '../../reducers/organization/employee.model';
 import { EmployeesStore } from '../../reducers/organization/employees.reducer';
@@ -107,7 +107,7 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
         }
     }
 
-    private onScrollBeginDrag(event: NativeSyntheticEvent<NativeScrollEvent>) {
+    private onScrollBeginDrag() {
         this.employeeCards.forEach(card => {
             card.revealNeighboursAvatars(false);
         });

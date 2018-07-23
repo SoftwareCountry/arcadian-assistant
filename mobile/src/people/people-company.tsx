@@ -14,6 +14,7 @@ import { Employee } from '../reducers/organization/employee.model';
 import { employeesListStyles as styles } from './styles';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { updateLeaves } from '../reducers/people/people.reducer';
+import { employeesAZComparer } from './employee-comparer';
 
 interface PeopleCompanySearchOwnProps {
     employees: EmployeesStore;
@@ -29,14 +30,14 @@ interface PeopleCompanyStateProps {
 }
 
 const mapStateToProps: MapStateToProps<PeopleCompanySearchProps, PeopleCompanySearchOwnProps, AppState> = (state: AppState, ownProps): PeopleCompanySearchProps => ({
-        employees: ownProps.employees, // own props
-        departments: ownProps.departments,
+    employees: ownProps.employees, // own props
+    departments: ownProps.departments,
 
-        routeName: 'Company', 
-        departmentsBranch: state.people.departmentsBranch,
-        employee: state.organization.employees.employeesById.get(state.userInfo.employeeId),
-        departmentLists: state.people.departmentsLists,
-        employeesPredicate: (head: Department, employee: Employee) => employee.departmentId === head.departmentId && employee.employeeId !== head.chiefId,
+    routeName: 'Company', 
+    departmentsBranch: state.people.departmentsBranch,
+    employee: state.organization.employees.employeesById.get(state.userInfo.employeeId),
+    departmentLists: state.people.departmentsLists,
+    employeesPredicate: (head: Department, employee: Employee) => employee.departmentId === head.departmentId && employee.employeeId !== head.chiefId,
 });
 
 type PeopleCompanySearchProps = PeopleCompanySearchOwnProps & PeopleCompanyStateProps;
@@ -102,7 +103,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanySearchProps 
                     {
                     (subordinates != null && subordinates.length > 0) ? 
                         <EmployeeCardWithAvatarList 
-                            employees={subordinates.sort()} 
+                            employees={subordinates.sort(employeesAZComparer)} 
                             treeLevel={this.props.departmentsBranch.length - 1}
                             onItemClicked={this.props.onItemClicked}
                         /> 

@@ -1,15 +1,10 @@
 import React from 'react';
-import { FlatList, Text, View, StyleSheet, ListRenderItemInfo } from 'react-native';
-import { connect, Dispatch } from 'react-redux';
+import { FlatList, View, ListRenderItemInfo } from 'react-native';
 
-import { Department } from '../reducers/organization/department.model';
 import { Employee } from '../reducers/organization/employee.model';
-import { EmployeesStore, EmployeeMap, EmployeeIdsGroupMap } from '../reducers/organization/employees.reducer';
-import { AppState } from '../reducers/app.reducer';
 import { EmployeesListItem } from './employees-list-item';
 import { employeesListStyles as styles } from './styles';
 import { employeesAZComparer } from './employee-comparer';
-import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 import { LoadingView } from '../navigation/loading';
 
 export interface EmployeesListProps {

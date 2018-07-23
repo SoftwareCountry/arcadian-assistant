@@ -1,12 +1,5 @@
 import { Reducer } from 'redux';
-import { Map, Set } from 'immutable';
-import { combineEpics } from 'redux-observable';
-import { NavigationAction } from 'react-navigation';
-import { ActionsObservable } from 'redux-observable';
-
-import { User } from '../user/user.model';
-import { Employee } from '../organization/employee.model';
-import { OrganizationActions, loadEmployeesForDepartment, loadEmployeesForRoom, LoadDepartmentsFinished } from '../organization/organization.action';
+import { LoadDepartmentsFinished } from '../organization/organization.action';
 import { PeopleActions } from './people.action';
 import { SearchActions } from '../search.action';
 import { SearchType } from '../../navigation/search-view';

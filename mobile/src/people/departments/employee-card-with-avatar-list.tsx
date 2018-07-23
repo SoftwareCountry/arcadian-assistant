@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Image, Dimensions, StyleSheet, FlatList, ListRenderItemInfo, TouchableOpacity } from 'react-native';
+import { View, Dimensions, StyleSheet, FlatList, ListRenderItemInfo, TouchableOpacity } from 'react-native';
 import { Avatar } from '../avatar';
 import { Employee } from '../../reducers/organization/employee.model';
 import { StyledText } from '../../override/styled-text';
