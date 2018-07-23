@@ -4,6 +4,7 @@ import { EmployeeCardWithAvatar } from '../employee-card-with-avatar';
 import { Employee } from '../../reducers/organization/employee.model';
 import { EmployeesStore } from '../../reducers/organization/employees.reducer';
 import { Department } from '../../reducers/organization/department.model';
+import { employeesAZComparer } from '../employee-comparer';
 
 interface DepartmentsHScrollableListProps {
     treeLevel?: number;
@@ -91,7 +92,7 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                 {
                     (subordinates != null && subordinates.length > 0) ? 
                         <EmployeeCardWithAvatar 
-                            employees={subordinates.sort()} 
+                            employees={subordinates.sort(employeesAZComparer)} 
                             chiefId={headDepartmentChiefId}
                             treeLevel={this.props.treeLevel} 
                             stretchToFitScreen={subDepartments === null || (this.props.departmentsLists !== undefined ? this.props.departmentsLists.currentPage > subDepartments.length : true)}
