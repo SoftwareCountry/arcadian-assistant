@@ -13,6 +13,7 @@ import { openEmployeeDetailsAction } from '../employee-details/employee-details-
 import { Employee } from '../reducers/organization/employee.model';
 import { employeesListStyles as styles } from './styles';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
+import { updateLeaves } from '../reducers/people/people.reducer';
 
 interface PeopleCompanySearchOwnProps {
     employees: EmployeesStore;
@@ -112,23 +113,9 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanySearchProps 
     }
 
     private update = (departmentId: string, treeLevel: number) => {
-        const deps: Department[] = this.props.departmentsBranch;
-        const depsLists: DepartmentsListStateDescriptor[] = this.props.departmentLists;
-    
-        for (let i = deps.length - 1; i >= treeLevel; i--) {
-            deps.pop();
-            depsLists.pop();
-        }
-
-        let department = this.props.departments.find(d => d.departmentId === departmentId);
-        while (department) {
-            deps.push(department);
-            depsLists.push({currentPage: this.props.departments.filter(d => d.parentDepartmentId === department.parentDepartmentId).indexOf(department)});
-
-            department = this.props.departments.find(d => d.parentDepartmentId === department.departmentId);
-        }
-
-        this.props.updateDepartmentsBranch(deps, depsLists);
+        const res = updateLeaves(this.props.departmentsBranch, this.props.departmentLists,
+                                 treeLevel, departmentId, this.props.departments);
+        this.props.updateDepartmentsBranch(res.departmentsLineup, res.departmentsLists);
     }
 }
 

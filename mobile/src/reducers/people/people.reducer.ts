@@ -53,42 +53,31 @@ export function updateTopOfBranch(depId: string, departments: Department[]) {
     deps.reverse();
     depsLists.reverse();
 
-    return {departmentsLineup: deps, departmentsLists: depsLists};
+    return { departmentsLineup: deps, departmentsLists: depsLists };
 }
 
-function departmentsBranchFromDepartmentWithId(departmentId: string, departments: Department[]) {
-    const deps: Department[] = [];
-    const depsLists: DepartmentsListStateDescriptor[] = [];
-
-    // find from cur to the top
-    let department = departments.find(d => d.departmentId === departmentId);
-    while (department) {
-        deps.push(department);
-        
-        const parent = departments.find(d => d.departmentId === department.parentDepartmentId);
-
-        if (parent !== null) {
-            let children = departments.filter(d => d.parentDepartmentId === department.parentDepartmentId);
-            depsLists.push({currentPage: children.indexOf(department)});
-        }
-
-        department = parent;
+export function updateLeaves(depsBranch: Department[], depsLists: DepartmentsListStateDescriptor[], 
+                             treeLevel: number, depId: string, departments: Department[]) {
+    for (let i = depsBranch.length - 1; i >= treeLevel; i--) {
+        depsBranch.pop();
+        depsLists.pop();
     }
 
-    deps.reverse();
-    depsLists.push({currentPage: 0});
-    depsLists.reverse();
-
-    // find from cur to the leaves
-    department = departments.find(d => d.parentDepartmentId === departmentId);
+    let department = departments.find(d => d.departmentId === depId);
     while (department) {
-        deps.push(department);
+        depsBranch.push(department);
         depsLists.push({currentPage: departments.filter(d => d.parentDepartmentId === department.parentDepartmentId).indexOf(department)});
 
         department = departments.find(d => d.parentDepartmentId === department.departmentId);
     }
+    return { departmentsLineup: depsBranch, departmentsLists: depsLists };
+}
 
-    return {departmentsLineup: deps, departmentsLists: depsLists};
+function departmentsBranchFromDepartmentWithId(departmentId: string, departments: Department[]) {
+    const res = updateTopOfBranch(departmentId, departments);
+    const leaves = updateLeaves(res.departmentsLineup, res.departmentsLists, res.departmentsLineup.length - 1,
+                                departmentId, departments);
+    return { departmentsLineup: leaves.departmentsLineup, departmentsLists: leaves.departmentsLists };
 }
 
 export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions | NavigationAction | 
