@@ -26,27 +26,25 @@ export interface DepartmentsListStateDescriptor {
 
 export class DepartmentsHScrollableList extends Component<DepartmentsHScrollableListProps> {
     private employeeCards: EmployeeCardWithAvatar[];
-    private animatedValue: Animated.Value;
-    private curVisibleCard: number | null = null;
 
     public shouldComponentUpdate(nextProps: DepartmentsHScrollableListProps) {	
-        return this.props.departmentsLists !== nextProps.departmentsLists || 
+        return this.props.departmentsLists.currentPage !== nextProps.departmentsLists.currentPage || 
             !this.props.employees.employeesById.equals(nextProps.employees.employeesById);
     }
 
     public render() {
-        this.employeeCards = [];
-        
         const { headDepartment, departments } = this.props;
         const subDepartments = headDepartment != null && departments.length > 0 ? departments : null;
+        this.employeeCards = [];
+        const cur = this;
 
         const view = <View>
             <ScrollView 
                 horizontal 
                 pagingEnabled
                 showsHorizontalScrollIndicator={false}
-                onMomentumScrollEnd={this.onMomentumScrollEnd}
-                onScrollBeginDrag={this.onScrollBeginDrag}
+                onMomentumScrollEnd={this.onMomentumScrollEnd.bind(this)}
+                onScrollBeginDrag={this.onScrollBeginDrag.bind(this)}
                 ref='_scrollView'
             >
                 {
@@ -57,8 +55,8 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                         leftNeighbor={(index > 0) ? this.props.employees.employeesById.get(subDepartments[index - 1].chiefId) : null } 
                         rightNeighbor={(index < subDepartments.length - 1) ? this.props.employees.employeesById.get(subDepartments[index + 1].chiefId) : null} 
                         ref={(employeeCard) => { 
-                            if ( employeeCard != null ) {
-                                this.employeeCards.push(employeeCard);
+                            if (employeeCard != null) {
+                                cur.employeeCards.push(employeeCard);
                             }
                         }} 
                         key={subDepartment.departmentId} 
@@ -68,18 +66,17 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
             </ScrollView>
         </View>;
         this.setScroll();
-
         return view;
     }
 
     private setScroll() {
         let x;
         if (this.props.departmentsLists !== undefined) {
-            this.curVisibleCard = this.props.departmentsLists.currentPage;
             x = this.props.departmentsLists.currentPage;
+            this.props.requestEmployeesForDepartment(
+                this.props.departments[this.props.departmentsLists.currentPage].departmentId);
         } else {
             x = this.props.departments.length;
-            this.curVisibleCard = null;
         }
         const curOffsetX = Dimensions.get('window').width * x;
 
@@ -91,7 +88,7 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
         });
     }
 
-    private onMomentumScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    private onMomentumScrollEnd(event: NativeSyntheticEvent<NativeScrollEvent>) {
         const offset = event.nativeEvent.contentOffset;
         if (offset) {
             const currentPage = Math.round(offset.x / Dimensions.get('window').width) + 1;
@@ -102,24 +99,17 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
             } else {
                 const visibleCard: EmployeeCardWithAvatar = this.employeeCards[currentPage - 1];
                 visibleCard.revealNeighboursAvatars(true);
-                this.curVisibleCard = currentPage - 1;
 
                 const visibleDepartment = this.props.departments[currentPage - 1];
                 this.props.updateDepartmentsBranch(visibleDepartment.departmentId);
-
                 this.props.requestEmployeesForDepartment(visibleDepartment.departmentId);
-                const childDepartment = this.props.departments.find(department => department.parentDepartmentId === visibleDepartment.departmentId);
-                if (childDepartment !== undefined) {
-                    this.props.requestEmployeesForDepartment(childDepartment.departmentId);
-                }
             }
         }
     }
 
-    private onScrollBeginDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-        if (this.curVisibleCard && this.employeeCards[this.curVisibleCard]) {
-            this.employeeCards[this.curVisibleCard].revealNeighboursAvatars(false);
-            this.curVisibleCard = null;
-        }
+    private onScrollBeginDrag(event: NativeSyntheticEvent<NativeScrollEvent>) {
+        this.employeeCards.forEach(card => {
+            card.revealNeighboursAvatars(false);
+        });
     }
 }
