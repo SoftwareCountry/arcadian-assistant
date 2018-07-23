@@ -80,4 +80,5 @@ export const startEventDialogProgressEpic$ = (action$: ActionsObservable<Vacatio
         'CANCEL-DAYOFF',
         'CANCEL-VACACTION',
         'CONFIRM-PROLONG-SICK-LEAVE',
+        'COMPLETE-SICK-LEAVE'
     ).map(x => startEventDialogProgress());
