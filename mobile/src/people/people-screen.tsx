@@ -11,7 +11,7 @@ const routeConfig: NavigationRouteConfigMap = {
         screen: PeopleScreenNavigator,
         path: '/',
         navigationOptions: {
-            header: <SearchViewPeople/>,
+            header: <SearchViewPeople/>
         }
     },
     CurrentProfile: {
