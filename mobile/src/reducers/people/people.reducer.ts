@@ -1,4 +1,5 @@
 import { Reducer } from 'redux';
+import { NavigationAction } from 'react-navigation';
 import { LoadDepartmentsFinished } from '../organization/organization.action';
 import { PeopleActions } from './people.action';
 import { SearchActions } from '../search.action';

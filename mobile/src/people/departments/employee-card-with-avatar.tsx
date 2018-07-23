@@ -47,19 +47,15 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
         const photo = employee ? employee.photo : null;
         const eName = employee ? employee.name : null;
         const ePosition = employee ? employee.position : null;
-        const { fadeInAnim, fadeOutAnim } = this.state;
-        const neighboursAvatarsVisibility = this.state.isNeighboursAvatarsVisible;
-        const {layout, innerLayout, avatarContainer, avatarOuterFrame, info, name, baseText, depabbText, neighborAvatarContainer } = styles;
+        const opacityValue = this.state.isNeighboursAvatarsVisible ? this.state.fadeInAnim : this.state.fadeOutAnim;
 
-        const layoutFlattenStyle = StyleSheet.flatten([layout, {width: Dimensions.get('window').width}]);
-
+        const { layout, innerLayout, avatarContainer, avatarOuterFrame, info, name, baseText, depabbText, neighborAvatarContainer } = styles;
+        const layoutFlattenStyle = StyleSheet.flatten([layout, { width: Dimensions.get('window').width }]);
         const neighborTop = ((StyleSheet.flatten(layout).height as number) - (StyleSheet.flatten(neighborAvatarContainer).height as number)) * 0.5;
         const leftNeighborX = - (StyleSheet.flatten(neighborAvatarContainer).height as number) * 0.5;
         const rightNeighborX = Dimensions.get('window').width - (StyleSheet.flatten(neighborAvatarContainer).height as number) * 0.5;
-        const opacityValue = neighboursAvatarsVisibility ? fadeInAnim : fadeOutAnim;
-
-        const leftNeighborFlattenStyle = StyleSheet.flatten([neighborAvatarContainer, {top: neighborTop, left: leftNeighborX}]);
-        const rightNeighborFlattenStyle = StyleSheet.flatten([neighborAvatarContainer, {top: neighborTop, left: rightNeighborX}]);
+        const leftNeighborFlattenStyle = StyleSheet.flatten([neighborAvatarContainer, { top: neighborTop, left: leftNeighborX }]);
+        const rightNeighborFlattenStyle = StyleSheet.flatten([neighborAvatarContainer, { top: neighborTop, left: rightNeighborX }]);
 
         return (
             <TouchableOpacity onPress={this.onItemClicked}>

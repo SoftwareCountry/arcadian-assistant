@@ -14,10 +14,7 @@ interface EmployeeCardWithAvatarProps {
 export class EmployeeCardWithAvatarList extends Component<EmployeeCardWithAvatarProps> {
     public render() {
         const calcultatedHeight = Dimensions.get('screen').height - 90 * this.props.treeLevel - 119;
-        const { layout } = styles;
-        const layoutFlattenStyle = StyleSheet.flatten([
-            layout, {width: Dimensions.get('window').width, height: calcultatedHeight}
-        ]);
+        const layoutFlattenStyle = StyleSheet.flatten([styles.layout, { width: Dimensions.get('window').width, height: calcultatedHeight }]);
         
         return (
             <View style={layoutFlattenStyle}>
