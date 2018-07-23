@@ -1,24 +1,13 @@
 import { StyleSheet, Platform } from 'react-native';
 
 const topNavBarStyles = StyleSheet.create({
-    container: {
+    headerView: {
+        height: Platform.OS === 'ios' ? 70 : 50,
         marginTop: 0,
-        height: 50,
-        backgroundColor: '#2FAFCC',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    iconContainer: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    titleContainer: {
-        flex: 8,
-        alignItems: 'center',
+        backgroundColor: '#2FAFCC'
     },
     navTitle: {
+        marginTop: Platform.OS === 'ios' ? 40 : 20,
         color: 'white', 
         textAlign: 'center'
     },

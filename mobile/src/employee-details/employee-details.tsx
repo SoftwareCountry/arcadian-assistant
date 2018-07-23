@@ -12,7 +12,7 @@ import { Department } from '../reducers/organization/department.model';
 import { StyledText } from '../override/styled-text';
 import { Employee } from '../reducers/organization/employee.model';
 import { ApplicationIcon } from '../override/application-icon';
-import { openCompanyAction } from './employee-details-dispatcher';
+import { openCompanyAction, openDepartmentAction } from './employee-details-dispatcher';
 import { loadCalendarEvents, calendarEventSetNewStatus } from '../reducers/calendar/calendar.action';
 import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
@@ -51,12 +51,14 @@ interface EmployeeDetailsDispatchProps {
     loadCalendarEvents: (employeeId: string) => void;
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
     loadUserEmployeePermissions: (employeeId: string) => void;
+    openDepartment: (departmentId: string) => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchProps => ({
     onCompanyClicked: (departmentId: string) => dispatch( openCompanyAction(departmentId)),
     loadCalendarEvents: (employeeId: string) => dispatch(loadCalendarEvents(employeeId)),
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status)),
-    loadUserEmployeePermissions: (employeeId: string) => { dispatch(loadUserEmployeePermissions(employeeId)); }
+    loadUserEmployeePermissions: (employeeId: string) => { dispatch(loadUserEmployeePermissions(employeeId)); },
+    openDepartment: (departmentId: string) => { dispatch(openDepartmentAction(departmentId)); }
 });
 
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
@@ -124,9 +126,11 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                         <StyledText style={contentStyles.position}>
                             {this.uppercase(employee.position)}
                         </StyledText>
-                        <StyledText style={contentStyles.department}>
-                            {this.uppercase(department.abbreviation)}
-                        </StyledText>
+                        <TouchableOpacity onPress={this.openDepartment}>
+                            <StyledText style={contentStyles.department}>
+                                {this.uppercase(department.abbreviation)}
+                            </StyledText>
+                        </TouchableOpacity>
 
                         <View style={contentStyles.infoContainer}>
                             {tiles}
@@ -292,6 +296,10 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
     private openCompany = () => {
         return this.props.onCompanyClicked(this.props.employee.departmentId);
+    }
+
+    private openDepartment = () => {
+        this.props.openDepartment(this.props.employee.departmentId);
     }
 }
 

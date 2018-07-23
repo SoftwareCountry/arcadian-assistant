@@ -1,5 +1,5 @@
 import React from 'react';
-import { connect, Dispatch } from 'react-redux';
+import { connect, Dispatch, MapStateToProps } from 'react-redux';
 
 import { EmployeesList } from './employees-list';
 import { AppState } from '../reducers/app.reducer';
@@ -7,19 +7,28 @@ import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Employee } from '../reducers/organization/employee.model';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 
-interface PeopleDepartmentProps {
+interface PeopleDepartmentPropsOwnProps {
+    employees: EmployeesStore;
+    customEmployeesPredicate?: (employee: Employee) => boolean;
+}
+
+interface PeopleDepartmentStateProps {
     employees: EmployeesStore;
     userEmployee: Employee;
     employeesPredicate: (employee: Employee) => boolean;
 }
 
-const mapStateToProps = (state: AppState, ownProps: { employees: EmployeesStore; }): PeopleDepartmentProps => {
+type PeopleDepartmentProps = PeopleDepartmentStateProps & PeopleDepartmentPropsOwnProps;
+
+const mapStateToProps: MapStateToProps<PeopleDepartmentProps, PeopleDepartmentPropsOwnProps, AppState> = (state: AppState, ownProps: PeopleDepartmentPropsOwnProps): PeopleDepartmentStateProps => {
+
     const userEmployee = state.organization.employees.employeesById.get(state.userInfo.employeeId);
+    const defaultEmployeesPredicate = (employee: Employee) => userEmployee && employee.departmentId === userEmployee.departmentId;
 
     return ({
         employees: ownProps.employees,
         userEmployee,
-        employeesPredicate: (employee: Employee) => userEmployee && employee.departmentId === userEmployee.departmentId
+        employeesPredicate: ownProps.customEmployeesPredicate ? ownProps.customEmployeesPredicate : defaultEmployeesPredicate
     });
 };
 
@@ -30,8 +39,8 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeesListDispatchProps
     onItemClicked: (employee: Employee) => dispatch(openEmployeeDetailsAction(employee))
 });
 
-class PeopleDepartmentImpl extends React.Component<PeopleDepartmentProps & EmployeesListDispatchProps> {
-    public shouldComponentUpdate(nextProps: PeopleDepartmentProps & EmployeesListDispatchProps) {
+export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentStateProps & EmployeesListDispatchProps & PeopleDepartmentPropsOwnProps> {
+    public shouldComponentUpdate(nextProps: PeopleDepartmentStateProps & EmployeesListDispatchProps & PeopleDepartmentPropsOwnProps) {
         if (this.props.onItemClicked !== nextProps.onItemClicked
             || this.props.userEmployee !== nextProps.userEmployee
         ) {
@@ -42,7 +51,7 @@ class PeopleDepartmentImpl extends React.Component<PeopleDepartmentProps & Emplo
         const nextEmployees = nextProps.employees.employeesById.filter(nextProps.employeesPredicate);
 
         return !employees.equals(nextEmployees);
-    }
+        }
 
     public render() {
         const employees = this.props.employees.employeesById.filter(this.props.employeesPredicate).toArray();

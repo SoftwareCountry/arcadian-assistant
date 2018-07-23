@@ -11,3 +11,12 @@ export const openCompanyAction = (departmentId: string) => NavigationActions.nav
     routeName: 'Company',
     params: {departmentId},
 });
+
+export interface CurrentDepartmentNavigationParams {
+    departmentId: string;
+}
+
+export const openDepartmentAction = (departmentId: string) => NavigationActions.navigate({
+    routeName: 'CurrentDepartment',
+    params: { departmentId } as CurrentDepartmentNavigationParams
+});
