@@ -71,7 +71,7 @@ export function updateLeaves(depsBranch: Department[], depsLists: DepartmentsLis
     return { departmentsLineup: depsBranch, departmentsLists: depsLists };
 }
 
-function departmentsBranchFromDepartmentWithId(departmentId: string, departments: Department[]) {
+export function departmentsBranchFromDepartmentWithId(departmentId: string, departments: Department[]) {
     const res = updateTopOfBranch(departmentId, departments);
     const leaves = updateLeaves(res.departmentsLineup, res.departmentsLists, res.departmentsLineup.length - 1,
                                 departmentId, departments);

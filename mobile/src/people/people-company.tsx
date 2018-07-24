@@ -15,6 +15,7 @@ import { employeesListStyles as styles } from './styles';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { updateLeaves } from '../reducers/people/people.reducer';
 import { employeesAZComparer } from './employee-comparer';
+import { Set } from 'immutable';
 
 interface PeopleCompanySearchOwnProps {
     employees: EmployeesStore;
@@ -63,6 +64,17 @@ const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
 });
 
 export class PeopleCompanyImpl extends React.Component<PeopleCompanySearchProps & PeopleCompanyDispatchProps> {
+    private listDepartments: JSX.Element[];
+
+    constructor(props: PeopleCompanySearchProps & PeopleCompanyDispatchProps) {
+        super(props);
+        this.listDepartments = renderDepartments(this.props);
+    }
+
+    public componentWillUpdate() {
+        this.listDepartments = renderDepartments(this.props);
+    }
+
     public render() {
         if (!this.props.departmentsBranch || this.props.departmentsBranch.length <= 0) {
             return null;
@@ -72,13 +84,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanySearchProps 
         //list of employees
         const lowestLevel = this.props.departmentsBranch[this.props.departmentsBranch.length - 1];
         const employeesPredicate = (e: Employee) => this.props.employeesPredicate(lowestLevel, e);
-        let subordinates;
-        if (this.props.employees.employeeIdsByDepartment.has(lowestLevel.departmentId) && 
-            this.props.employees.employeeIdsByDepartment.get(lowestLevel.departmentId).size > 0) {
-            subordinates = this.props.employees.employeesById.filter(employeesPredicate).toArray();
-        } else {
-            subordinates = null;
-        }
+        const subordinates = this.props.employees.employeesById.filter(employeesPredicate).toArray();
 
         return <ScrollView style={styles.company}>
                     <EmployeeCardWithAvatar
@@ -86,39 +92,38 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanySearchProps 
                         departmentAbbreviation={this.props.departmentsBranch[0].abbreviation}
                         onItemClicked = {this.props.onItemClicked}
                     />
+                    {this.listDepartments}
                     {
-                        this.props.departmentsBranch.map((head, index) => {
-                            return (
-                                <DepartmentsHScrollableList
-                                    departments={this.props.departments.filter(department => department.parentDepartmentId === head.departmentId)}
-                                    departmentsLists={this.props.departmentLists[index + 1]}
-                                    headDepartment={head}
-                                    employees={this.props.employees}
-                                    updateDepartmentsBranch={(depId: string) => this.update(depId, index + 1)}
-                                    onItemClicked={this.props.onItemClicked}
-                                    key={head.departmentId}
-                                    requestEmployeesForDepartment={this.props.requestEmployeesForDepartment}
-                                />
-                            );
-                        })
-                    }
-                    {
-                    (subordinates != null && subordinates.length > 0) ? 
+                        (subordinates != null && subordinates.length > 0) ? 
                         <EmployeeCardWithAvatarList 
                             employees={subordinates.sort(employeesAZComparer)} 
                             treeLevel={this.props.departmentsBranch.length - 1}
                             onItemClicked={this.props.onItemClicked}
-                        /> 
-                        : null
+                        /> : null
                     }
                 </ScrollView>;
     }
+}
 
-    private update = (departmentId: string, treeLevel: number) => {
-        const res = updateLeaves(this.props.departmentsBranch, this.props.departmentLists,
-                                 treeLevel, departmentId, this.props.departments);
-        this.props.updateDepartmentsBranch(res.departmentsLineup, res.departmentsLists, this.props.departments);
-    }
+function renderDepartments(props: PeopleCompanySearchProps & PeopleCompanyDispatchProps) {
+    const update = (departmentId: string, treeLevel: number) => {
+        const res = updateLeaves(props.departmentsBranch, props.departmentLists,
+                                 treeLevel, departmentId, props.departments);
+        props.updateDepartmentsBranch(res.departmentsLineup, res.departmentsLists, props.departments);
+    };
+
+    return props.departmentsBranch.map((head, index) => {
+        return <DepartmentsHScrollableList
+                departments={props.departments.filter(department => department.parentDepartmentId === head.departmentId)}
+                departmentsLists={props.departmentLists[index + 1]}
+                headDepartment={head}
+                employees={props.employees}
+                updateDepartmentsBranch={(depId: string) => update(depId, index + 1)}
+                onItemClicked={props.onItemClicked}
+                key={head.departmentId}
+                requestEmployeesForDepartment={props.requestEmployeesForDepartment}
+            />;
+    });
 }
 
 export const PeopleCompany = connect(mapStateToProps, mapDispatchToProps)(PeopleCompanyImpl);

@@ -18,7 +18,7 @@ export class EmployeeCardWithAvatarList extends Component<EmployeeCardWithAvatar
         const max = Math.max(calcultatedHeight, listHeight);
         const layoutFlattenStyle = StyleSheet.flatten([styles.layout, { width: Dimensions.get('window').width, height: max }]);
         
-        return <View>
+        return <View style={layoutFlattenStyle}>
                     <FlatList
                         data={this.props.employees}
                         keyExtractor={this.keyExtractor}
