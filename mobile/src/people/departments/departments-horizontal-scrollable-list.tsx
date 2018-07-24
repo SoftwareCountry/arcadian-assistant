@@ -26,10 +26,15 @@ export interface DepartmentsListStateDescriptor {
 
 export class DepartmentsHScrollableList extends Component<DepartmentsHScrollableListProps> {
     private employeeCards: EmployeeCardWithAvatar[];
+    private toScroll = true;
 
     public shouldComponentUpdate(nextProps: DepartmentsHScrollableListProps) {	
-        return this.props.departmentsLists.currentPage !== nextProps.departmentsLists.currentPage || 
-            !this.props.employees.employeesById.equals(nextProps.employees.employeesById);
+        const lists = this.props.departmentsLists && nextProps.departmentsLists && 
+            this.props.departmentsLists.currentPage !== nextProps.departmentsLists.currentPage;
+        if (lists) {
+            this.toScroll = true;
+        }
+        return lists || !this.props.employees.employeesById.equals(nextProps.employees.employeesById);
     }
 
     public render() {
@@ -65,18 +70,18 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                 }
             </ScrollView>
         </View>;
-        this.setScroll();
+        if (this.toScroll) {
+            this.setScroll();
+            this.toScroll = false;
+        }
         return view;
     }
 
     private setScroll() {
-        let x;
-        if (this.props.departmentsLists !== undefined) {
-            x = this.props.departmentsLists.currentPage;
-            this.props.requestEmployeesForDepartment(
-                this.props.departments[this.props.departmentsLists.currentPage].departmentId);
-        } else {
-            x = this.props.departments.length;
+        const x: number = this.props.departmentsLists ? this.props.departmentsLists.currentPage : 0;
+        const dep = this.props.departments[x];
+        if (dep) {
+            this.props.requestEmployeesForDepartment(dep.departmentId);
         }
         const curOffsetX = Dimensions.get('window').width * x;
 

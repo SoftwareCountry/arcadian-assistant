@@ -7,9 +7,12 @@ import { SearchType } from '../../navigation/search-view';
 import { Department } from '../organization/department.model';
 import { LoadUserEmployeeFinished } from '../user/user.action';
 import { DepartmentsListStateDescriptor } from '../../people/departments/departments-horizontal-scrollable-list';
+import { combineEpics } from 'redux-observable';
+import { updateDepartmentsBranchEpic$ } from './people.epics';
 
 export interface PeopleState {
     departments: Department[];
+    filteredDepartments: Department[];
     departmentsBranch: Department[];
     currentFocusedDepartmentId: string;
     departmentsLists: DepartmentsListStateDescriptor[];
@@ -18,6 +21,7 @@ export interface PeopleState {
 
 const initState: PeopleState = {
     departments: [],
+    filteredDepartments: [],
     departmentsBranch: [],
     currentFocusedDepartmentId: null,
     departmentsLists: [],
@@ -120,7 +124,12 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
                 return {...state, departments: action.departments};   
             }     
         case 'UPDATE-DEPARTMENTS-BRANCH': {
-            return {...state, departmentsBranch: action.departments, departmentsLists: action.departmentLists};
+            return {
+                ...state, 
+                departmentsBranch: action.departments, 
+                departmentsLists: action.departmentLists, 
+                filteredDepartments: action.filteredDepartments
+            };
         }
         case 'SEARCH-BY-TEXT-FILTER':
             if (action.searchType === SearchType.People) {
@@ -133,3 +142,7 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
             return state;
     }
 };
+
+export const peopleEpics = combineEpics(
+    updateDepartmentsBranchEpic$ as any,
+);

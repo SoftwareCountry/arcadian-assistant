@@ -5,9 +5,11 @@ export interface UpdateDepartmentsBranch {
     type: 'UPDATE-DEPARTMENTS-BRANCH';
     departments: Department[];
     departmentLists: DepartmentsListStateDescriptor[];
+    filteredDepartments: Department[];
 }
 
-export const updateDepartmentsBranch = (departments: Department[], departmentLists: DepartmentsListStateDescriptor[]): UpdateDepartmentsBranch => 
-    ({ type: 'UPDATE-DEPARTMENTS-BRANCH', departments, departmentLists });
+export const updateDepartmentsBranch = (departments: Department[], departmentLists: DepartmentsListStateDescriptor[], 
+                                        filteredDepartments: Department[]): UpdateDepartmentsBranch => 
+    ({ type: 'UPDATE-DEPARTMENTS-BRANCH', departments, departmentLists, filteredDepartments });
 
 export type PeopleActions = UpdateDepartmentsBranch;

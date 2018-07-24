@@ -13,16 +13,12 @@ import { Map, Set } from 'immutable';
 import { Department } from '../reducers/organization/department.model';
 import { DepartmentsListStateDescriptor } from './departments/departments-horizontal-scrollable-list';
 import { updateTopOfBranch } from '../reducers/people/people.reducer';
+import { startSearch } from '../reducers/search.action';
+import { SearchType } from '../navigation/search-view';
 
 interface PeopleProps {
     employees: EmployeesStore;
-}
-
-interface PeopleCompanyFilteredProps {
     loaded: boolean;
-    departments: Department[];
-    departmentBranch: Department[];
-    departmentLists: DepartmentsListStateDescriptor[];
 }
 
 const mapStateToProps = (state: AppState): PeopleProps => {
@@ -45,89 +41,35 @@ const mapStateToProps = (state: AppState): PeopleProps => {
 
     return ({
         employees: filteredEmployees,
+        loaded: state.people.departments && state.people.departments.length > 0,
     });
 };
 
-const mapStateToCompanyFilteredProps = (state: AppState): PeopleProps & PeopleCompanyFilteredProps => {
-    const empl = mapStateToProps(state);
-    const branch = state.people.departmentsBranch;
-
-    // filter departments
-    const filteredDeps = state.people.departments.filter((d) => empl.employees.employeeIdsByDepartment.has(d.departmentId));
-    let deps = filteredDeps;
-    filteredDeps.forEach(dep => {
-        let curDep = dep;
-        while (!curDep.isHeadDepartment) {
-            curDep = state.people.departments.filter(d => d.departmentId === curDep.parentDepartmentId)[0];
-            if (deps.findIndex(e => e === curDep) === -1) {
-                deps.push(curDep);
-            }
-        }
-    });
-    // recalculate department branch
-    const loaded = state.people.departmentsBranch && state.people.departmentsBranch.length > 0 && 
-        state.people.departments && state.people.departments.length > 0;
-    let res;
-    if (loaded) {
-        res = updateTopOfBranch(branch[branch.length - 1].departmentId, deps);
-    }
-
-    return ({
-        loaded,
-        employees: empl.employees,
-        departments: deps,
-        departmentBranch: loaded ? res.departmentsLineup : null,
-        departmentLists: loaded ? res.departmentsLists : null,
-    });
-};
-
-interface PeopleCompanyFilteredDispatchProps {
-    updateDepartmentsBranch: (deps: Department[], depLists: DepartmentsListStateDescriptor[]) => void;
+interface PeopleFilteredDispatchProps {
+    startSearch: () => void;
 }
-
-const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
-    updateDepartmentsBranch: (deps: Department[], depLists: DepartmentsListStateDescriptor[]) => { 
-        dispatch(updateDepartmentsBranch(deps, depLists)); 
-    },
+const mapDispatchToProps = (dispatch: Dispatch<any>): PeopleFilteredDispatchProps => ({
+    startSearch: () => dispatch(startSearch('', SearchType.People))
 });
 
-class PeopleCompanyImpl extends React.Component<PeopleProps & PeopleCompanyFilteredProps & PeopleCompanyFilteredDispatchProps> {
-    public componentWillMount() {
-        this.props.updateDepartmentsBranch(this.props.departmentBranch, this.props.departmentLists);
+class PeopleCompanyFilteredImpl extends React.Component<PeopleProps & PeopleFilteredDispatchProps> {
+    public componentDidMount() {
+        // recalculate current branch if need
+        this.props.startSearch();
     }
 
-    public shouldComponentUpdate(nextProps: PeopleProps & PeopleCompanyFilteredProps) {
-        if (this.props.loaded !== nextProps.loaded || !this.props.employees.employeesById.equals(nextProps.employees.employeesById) || 
-            !this.areEqual(this.props.departmentBranch, nextProps.departmentBranch, (a, b) => a === b) || 
-            !this.areEqual(this.props.departmentLists, nextProps.departmentLists, (a, b) => a.currentPage === b.currentPage)) {
-                this.props.updateDepartmentsBranch(nextProps.departmentBranch, nextProps.departmentLists);
-                return true;
-        } 
-        return false;
+    public shouldComponentUpdate(nextProps: PeopleProps) {
+        return this.props.loaded !== nextProps.loaded || 
+            !this.props.employees.employeesById.equals(nextProps.employees.employeesById);
     }
 
     public render() {
         return !this.props.loaded ? <LoadingView/> :
-            <PeopleCompany employees={this.props.employees} departments={this.props.departments}/>;
-    }
-
-    private areEqual<T>(first: T[], second: T[], f: (a: T, b: T) => boolean): boolean {
-        if (!first && !second) {
-            return true;
-        }
-        if (!first || !second || first.length !== second.length) {
-            return false;
-        }
-        for (let i = 0; i < first.length; i++) {
-            if (!f(first[i], second[i])) {
-                return false;
-            }
-        }
-        return true;
+            <PeopleCompany employees={this.props.employees}/>;
     }
 }
 
-class PeopleRoomImpl extends React.Component<PeopleProps> {
+class PeopleRoomFilteredImpl extends React.Component<PeopleProps> {
     public shouldComponentUpdate(nextProps: PeopleProps) {
         return !this.props.employees.employeesById.equals(nextProps.employees.employeesById);
     }
@@ -137,7 +79,7 @@ class PeopleRoomImpl extends React.Component<PeopleProps> {
     }
 }
 
-class PeopleDepartmentImpl extends React.Component<PeopleProps> {
+class PeopleDepartmentFilteredImpl extends React.Component<PeopleProps> {
     public shouldComponentUpdate(nextProps: PeopleProps) {
         return !this.props.employees.employeesById.equals(nextProps.employees.employeesById);
     }
@@ -147,6 +89,6 @@ class PeopleDepartmentImpl extends React.Component<PeopleProps> {
     }
 }
 
-export const PeopleCompanyFiltered = connect(mapStateToCompanyFilteredProps, mapDispatchToProps)(PeopleCompanyImpl);
-export const PeopleRoomFiltered = connect(mapStateToProps)(PeopleRoomImpl);
-export const PeopleDepartmentFiltered = connect(mapStateToProps)(PeopleDepartmentImpl);
+export const PeopleCompanyFiltered = connect(mapStateToProps, mapDispatchToProps)(PeopleCompanyFilteredImpl);
+export const PeopleRoomFiltered = connect(mapStateToProps)(PeopleRoomFilteredImpl);
+export const PeopleDepartmentFiltered = connect(mapStateToProps)(PeopleDepartmentFilteredImpl);
