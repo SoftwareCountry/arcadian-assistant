@@ -26,15 +26,22 @@ export interface DepartmentsListStateDescriptor {
 
 export class DepartmentsHScrollableList extends Component<DepartmentsHScrollableListProps> {
     private employeeCards: EmployeeCardWithAvatar[];
-    private toScroll = true;
+    private scrollView: ScrollViewComponent;
 
-    public shouldComponentUpdate(nextProps: DepartmentsHScrollableListProps) {	
-        const lists = this.props.departmentsLists && nextProps.departmentsLists && 
-            this.props.departmentsLists.currentPage !== nextProps.departmentsLists.currentPage;
-        if (lists) {
-            this.toScroll = true;
+    public componentDidMount() {
+        const x: number = this.props.departmentsLists ? this.props.departmentsLists.currentPage : 0;
+        const dep = this.props.departments[x];
+        if (dep) {
+            this.props.requestEmployeesForDepartment(dep.departmentId);
         }
-        return lists || !this.props.employees.employeesById.equals(nextProps.employees.employeesById);
+        const curOffsetX = Dimensions.get('window').width * x;
+
+        setTimeout(() => {
+            const view = this.scrollView as ScrollViewComponent;
+            if (view) {
+                view.scrollTo({y: 0, x: curOffsetX});
+            }
+        });
     }
 
     public render() {
@@ -43,14 +50,14 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
         this.employeeCards = [];
         const cur = this;
 
-        const view = <View>
+        return <View>
             <ScrollView 
                 horizontal 
                 pagingEnabled
                 showsHorizontalScrollIndicator={false}
                 onMomentumScrollEnd={this.onMomentumScrollEnd.bind(this)}
                 onScrollBeginDrag={this.onScrollBeginDrag.bind(this)}
-                ref='_scrollView'
+                ref={component => this.scrollView = component as ScrollViewComponent}
             >
                 {
                     subDepartments != null ? subDepartments.map((subDepartment, index) => 
@@ -70,27 +77,6 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                 }
             </ScrollView>
         </View>;
-        if (this.toScroll) {
-            this.setScroll();
-            this.toScroll = false;
-        }
-        return view;
-    }
-
-    private setScroll() {
-        const x: number = this.props.departmentsLists ? this.props.departmentsLists.currentPage : 0;
-        const dep = this.props.departments[x];
-        if (dep) {
-            this.props.requestEmployeesForDepartment(dep.departmentId);
-        }
-        const curOffsetX = Dimensions.get('window').width * x;
-
-        setTimeout(() => {
-            const view = this.refs._scrollView as ScrollViewComponent;
-            if (view) {
-                view.scrollTo({y: 0, x: curOffsetX});
-            }
-        });
     }
 
     private onMomentumScrollEnd(event: NativeSyntheticEvent<NativeScrollEvent>) {

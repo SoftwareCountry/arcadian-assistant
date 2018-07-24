@@ -53,7 +53,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): PeopleFilteredDispatchProp
 });
 
 class PeopleCompanyFilteredImpl extends React.Component<PeopleProps & PeopleFilteredDispatchProps> {
-    public componentDidMount() {
+    public componentWillMount() {
         // recalculate current branch if need
         this.props.startSearch();
     }
