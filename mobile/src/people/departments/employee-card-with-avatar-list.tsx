@@ -14,17 +14,18 @@ interface EmployeeCardWithAvatarProps {
 export class EmployeeCardWithAvatarList extends Component<EmployeeCardWithAvatarProps> {
     public render() {
         const calcultatedHeight = Dimensions.get('screen').height - 90 * this.props.treeLevel - 119;
-        const layoutFlattenStyle = StyleSheet.flatten([styles.layout, { width: Dimensions.get('window').width, height: calcultatedHeight }]);
+        const listHeight = 38 * this.props.employees.length;
+        const max = Math.max(calcultatedHeight, listHeight);
+        const layoutFlattenStyle = StyleSheet.flatten([styles.layout, { width: Dimensions.get('window').width, height: max }]);
         
-        return (
-            <View style={layoutFlattenStyle}>
-                <FlatList
-                    data={this.props.employees}
-                    keyExtractor={this.keyExtractor}
-                    renderItem={this.renderItem} 
-                    refreshing={false}/>
-            </View>
-        );
+        return <View>
+                    <FlatList
+                        data={this.props.employees}
+                        keyExtractor={this.keyExtractor}
+                        renderItem={this.renderItem} 
+                        refreshing={false}
+                    />
+                </View>;
     }
 
     private keyExtractor = (item: Employee) => item.employeeId;

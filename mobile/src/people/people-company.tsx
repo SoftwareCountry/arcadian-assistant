@@ -80,8 +80,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanySearchProps 
             subordinates = null;
         }
 
-        return <View>
-                <ScrollView style={styles.company}>
+        return <ScrollView style={styles.company}>
                     <EmployeeCardWithAvatar
                         employee={chief}
                         departmentAbbreviation={this.props.departmentsBranch[0].abbreviation}
@@ -112,8 +111,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanySearchProps 
                         /> 
                         : null
                     }
-                </ScrollView>
-            </View>;
+                </ScrollView>;
     }
 
     private update = (departmentId: string, treeLevel: number) => {
