@@ -28,10 +28,6 @@ const initState: PeopleState = {
     filter: '',
 };
 
-function onlyUnique(value: string, index: number, self: string[]) { 
-    return self.indexOf(value) === index;
-}
-
 export function updateTopOfBranch(depId: string, departments: Department[]) {
     const deps: Department[] = [];
     const depsLists: DepartmentsListStateDescriptor[] = [];

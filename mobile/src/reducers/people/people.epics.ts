@@ -1,14 +1,13 @@
 import { SearchActions } from '../search.action';
 import { Employee } from '../organization/employee.model';
-import { EmployeesStore } from '../organization/employees.reducer';
 import { ActionsObservable, ofType } from 'redux-observable';
-import { AppState, DependenciesContainer } from '../app.reducer';
+import { AppState } from '../app.reducer';
 import { MiddlewareAPI } from 'redux';
 import { Map, Set } from 'immutable';
 import { updateDepartmentsBranch } from './people.action';
 import { updateTopOfBranch, updateLeaves, departmentsBranchFromDepartmentWithId } from './people.reducer';
 
-export const updateDepartmentsBranchEpic$ = (action$: ActionsObservable<SearchActions>, appState: MiddlewareAPI<AppState>, depends: DependenciesContainer) =>
+export const updateDepartmentsBranchEpic$ = (action$: ActionsObservable<SearchActions>, appState: MiddlewareAPI<AppState>) =>
     action$.ofType('SEARCH-BY-TEXT-FILTER')
     .map(action => {
         const employees = appState.getState().organization.employees;

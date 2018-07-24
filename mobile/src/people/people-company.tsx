@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect, Dispatch, MapStateToProps } from 'react-redux';
-import { View, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 
 import { Department } from '../reducers/organization/department.model';
 import { AppState } from '../reducers/app.reducer';
@@ -15,7 +15,6 @@ import { employeesListStyles as styles } from './styles';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { updateLeaves } from '../reducers/people/people.reducer';
 import { employeesAZComparer } from './employee-comparer';
-import { Set } from 'immutable';
 
 interface PeopleCompanySearchOwnProps {
     employees: EmployeesStore;
