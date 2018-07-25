@@ -63,17 +63,6 @@ const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
 });
 
 export class PeopleCompanyImpl extends React.Component<PeopleCompanySearchProps & PeopleCompanyDispatchProps> {
-    private listDepartments: JSX.Element[];
-
-    constructor(props: PeopleCompanySearchProps & PeopleCompanyDispatchProps) {
-        super(props);
-        this.listDepartments = renderDepartments(this.props);
-    }
-
-    public componentWillUpdate() {
-        this.listDepartments = renderDepartments(this.props);
-    }
-
     public render() {
         if (!this.props.departmentsBranch || this.props.departmentsBranch.length <= 0) {
             return null;
@@ -84,6 +73,8 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanySearchProps 
         const lowestLevel = this.props.departmentsBranch[this.props.departmentsBranch.length - 1];
         const employeesPredicate = (e: Employee) => this.props.employeesPredicate(lowestLevel, e);
         const subordinates = this.props.employees.employeesById.filter(employeesPredicate).toArray();
+        //list of departments 
+        const departments = renderDepartments(this.props);
 
         return <ScrollView style={styles.company}>
                     <EmployeeCardWithAvatar
@@ -91,7 +82,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanySearchProps 
                         departmentAbbreviation={this.props.departmentsBranch[0].abbreviation}
                         onItemClicked = {this.props.onItemClicked}
                     />
-                    {this.listDepartments}
+                    {departments}
                     {
                         (subordinates != null && subordinates.length > 0) ? 
                         <EmployeeCardWithAvatarList 

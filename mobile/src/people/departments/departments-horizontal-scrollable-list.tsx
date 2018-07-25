@@ -4,6 +4,7 @@ import { EmployeeCardWithAvatar } from './employee-card-with-avatar';
 import { Employee } from '../../reducers/organization/employee.model';
 import { EmployeesStore } from '../../reducers/organization/employees.reducer';
 import { Department } from '../../reducers/organization/department.model';
+import { Set } from 'immutable';
 
 interface DepartmentsHScrollableListProps {
     headDepartment: Department;
@@ -13,6 +14,7 @@ interface DepartmentsHScrollableListProps {
     updateDepartmentsBranch: (departmentId: string) => void;
     requestEmployeesForDepartment: (departmentId: string) => void;
     onItemClicked: (e: Employee) => void;
+    key: string;
 }
 
 interface ScrollViewComponent extends Component {
@@ -29,19 +31,14 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
     private scrollView: ScrollViewComponent;
 
     public componentDidMount() {
-        const x: number = this.props.departmentsLists ? this.props.departmentsLists.currentPage : 0;
-        const dep = this.props.departments[x];
-        if (dep) {
-            this.props.requestEmployeesForDepartment(dep.departmentId);
+        this.setScroll();
+    }
+    public componentDidUpdate(prevProps: DepartmentsHScrollableListProps) {
+        if (!Set(prevProps.departments).equals(Set(this.props.departments)) ||
+            prevProps.departmentsLists && this.props.departmentsLists &&
+            prevProps.departmentsLists.currentPage !== this.props.departmentsLists.currentPage) {
+            this.setScroll();
         }
-        const curOffsetX = Dimensions.get('window').width * x;
-
-        setTimeout(() => {
-            const view = this.scrollView as ScrollViewComponent;
-            if (view) {
-                view.scrollTo({y: 0, x: curOffsetX});
-            }
-        });
     }
 
     public render() {
@@ -77,6 +74,22 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                 }
             </ScrollView>
         </View>;
+    }
+
+    private setScroll() {
+        const x: number = this.props.departmentsLists ? this.props.departmentsLists.currentPage : 0;
+        const dep = this.props.departments[x];
+        if (dep) {
+            this.props.requestEmployeesForDepartment(dep.departmentId);
+        }
+        const curOffsetX = Dimensions.get('window').width * x;
+
+        setTimeout(() => {
+            const view = this.scrollView as ScrollViewComponent;
+            if (view) {
+                view.scrollTo({y: 0, x: curOffsetX});
+            }
+        });
     }
 
     private onMomentumScrollEnd(event: NativeSyntheticEvent<NativeScrollEvent>) {
