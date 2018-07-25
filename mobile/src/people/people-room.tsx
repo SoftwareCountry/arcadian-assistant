@@ -47,7 +47,7 @@ class PeopleRoomImpl extends React.Component<PeopleRoomProps & EmployeesListDisp
     public render() {
         const employees = this.props.employees.employeesById.toArray().filter(this.props.employeesPredicate);
 
-        return <EmployeesList employees={employees} onItemClicked={this.props.onItemClicked} isLoading={this.props.employees.employeesById.size > 0}/>;
+        return <EmployeesList employees={employees} onItemClicked={this.props.onItemClicked}/>;
     }
 }
 

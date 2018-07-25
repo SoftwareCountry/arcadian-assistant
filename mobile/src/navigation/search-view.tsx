@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, TextInput, TouchableOpacity } from 'react-native';
 import { AppState } from '../reducers/app.reducer';
 import { connect, Dispatch } from 'react-redux';
-import { startSearch, endSearch } from '../reducers/search.action';
+import { startSearch, endSearch } from '../reducers/search/search.action';
 import { ApplicationIcon } from '../override/application-icon';
 import { searchViewStyles as styles } from './search-view-styles';
 

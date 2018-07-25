@@ -12,14 +12,12 @@ interface DepartmentsHScrollableListProps {
     departmentsLists: DepartmentsListStateDescriptor;
     employees: EmployeesStore;
     updateDepartmentsBranch: (departmentId: string) => void;
-    requestEmployeesForDepartment: (departmentId: string) => void;
     onItemClicked: (e: Employee) => void;
     key: string;
 }
 
 interface ScrollViewComponent extends Component {
     scrollTo(to : {y?: number, x?: number, animated?: boolean}): void;
-    scrollToEnd(): void;
 }
 
 export interface DepartmentsListStateDescriptor {
@@ -37,7 +35,18 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
         if (!Set(prevProps.departments).equals(Set(this.props.departments)) ||
             prevProps.departmentsLists && this.props.departmentsLists &&
             prevProps.departmentsLists.currentPage !== this.props.departmentsLists.currentPage) {
-            this.setScroll();
+                const cur = this.props.departmentsLists ? this.props.departmentsLists.currentPage : 0;
+                const prev = prevProps.departmentsLists ? prevProps.departmentsLists.currentPage : 0;
+                const curDep = this.props.departments[cur];
+                const prevDep = prevProps.departments[prev];
+                if (curDep && prevDep) {
+                    if (curDep.departmentId === prevDep.departmentId && prev !== cur ||
+                        curDep.departmentId !== prevDep.departmentId) {
+                        this.setScroll();
+                    }
+                } else if (curDep && !prevDep) {
+                    this.setScroll();
+                }
         }
     }
 
@@ -78,10 +87,6 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
 
     private setScroll() {
         const x: number = this.props.departmentsLists ? this.props.departmentsLists.currentPage : 0;
-        const dep = this.props.departments[x];
-        if (dep) {
-            this.props.requestEmployeesForDepartment(dep.departmentId);
-        }
         const curOffsetX = Dimensions.get('window').width * x;
 
         setTimeout(() => {
@@ -95,25 +100,19 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
     private onMomentumScrollEnd(event: NativeSyntheticEvent<NativeScrollEvent>) {
         const offset = event.nativeEvent.contentOffset;
         if (offset) {
-            const currentPage = Math.round(offset.x / Dimensions.get('window').width) + 1;
+            const currentPage = Math.round(offset.x / Dimensions.get('window').width);
 
-            if (currentPage > this.employeeCards.length) {
-                this.props.requestEmployeesForDepartment(this.props.headDepartment.departmentId);
+            if (currentPage > this.employeeCards.length - 1) {
                 this.props.updateDepartmentsBranch(this.props.headDepartment.departmentId);
             } else {
-                const visibleCard: EmployeeCardWithAvatar = this.employeeCards[currentPage - 1];
-                visibleCard.revealNeighboursAvatars(true);
-
-                const visibleDepartment = this.props.departments[currentPage - 1];
+                this.employeeCards[currentPage].revealNeighboursAvatars(true);
+                const visibleDepartment = this.props.departments[currentPage];
                 this.props.updateDepartmentsBranch(visibleDepartment.departmentId);
-                this.props.requestEmployeesForDepartment(visibleDepartment.departmentId);
             }
         }
     }
 
     private onScrollBeginDrag() {
-        this.employeeCards.forEach(card => {
-            card.revealNeighboursAvatars(false);
-        });
+        this.employeeCards.forEach(card => { card.revealNeighboursAvatars(false); });
     }
 }

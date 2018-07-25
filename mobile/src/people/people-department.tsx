@@ -56,7 +56,7 @@ export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentStateP
     public render() {
         const employees = this.props.employees.employeesById.filter(this.props.employeesPredicate).toArray();
 
-        return <EmployeesList employees={employees} onItemClicked={this.props.onItemClicked} isLoading={this.props.employees.employeesById.size > 0}/>;
+        return <EmployeesList employees={employees} onItemClicked={this.props.onItemClicked}/>;
     }
 }
 

@@ -8,32 +8,17 @@ import { PeopleCompany } from './people-company';
 import { PeopleRoom } from './people-room';
 import { PeopleDepartment } from './people-department';
 import { Map, Set } from 'immutable';
-import { startSearch } from '../reducers/search.action';
+import { startSearch } from '../reducers/search/search.action';
 import { SearchType } from '../navigation/search-view';
+import { filterEmployees } from '../reducers/search/search.epics';
 
 interface PeopleProps {
     employees: EmployeesStore;
     loaded: boolean;
 }
-
+//FILTER!!!!
 const mapStateToProps = (state: AppState): PeopleProps => {
-    const filter = state.people.filter;
-    const employees = state.organization.employees;  
-    const employeesPredicate = (employee: Employee) => {
-        return (employee.name && employee.name.includes(filter) ||
-                employee.email && employee.email.includes(filter) || 
-                employee.position && employee.position.includes(filter)
-        );
-    };
-    // filter employees
-    const filteredEmployeesById: Map<string, Employee> = employees.employeesById.filter(employeesPredicate) as Map<string, Employee>;
-    let filteredEmployeesByDep: Map<string, Set<string>> = 
-        employees.employeeIdsByDepartment.map(d => d.filter(e => filteredEmployeesById.has(e))) as Map<string, Set<string>>;
-    // clear empty departments
-    filteredEmployeesByDep = filteredEmployeesByDep.filter(e => !e.isEmpty()) as Map<string, Set<string>>;
-    const filteredEmployees : EmployeesStore = {employeesById: filteredEmployeesById, 
-                                                employeeIdsByDepartment: filteredEmployeesByDep};
-
+    const filteredEmployees = filterEmployees(state.organization.employees, state.people.filter);
     return ({
         employees: filteredEmployees,
         loaded: state.people.departments && state.people.departments.length > 0,
@@ -48,39 +33,37 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): PeopleFilteredDispatchProp
 });
 
 class PeopleCompanyFilteredImpl extends React.Component<PeopleProps & PeopleFilteredDispatchProps> {
-    public componentWillMount() {
-        // recalculate current branch if need
-        this.props.startSearch();
-    }
-
     public shouldComponentUpdate(nextProps: PeopleProps) {
         return this.props.loaded !== nextProps.loaded || 
+            !this.props.employees || this.props.employees && nextProps.employees && 
             !this.props.employees.employeesById.equals(nextProps.employees.employeesById);
     }
 
     public render() {
-        return !this.props.loaded ? <LoadingView/> :
+        return !this.props.loaded || !this.props.employees ? <LoadingView/> :
             <PeopleCompany employees={this.props.employees}/>;
     }
 }
 
 class PeopleRoomFilteredImpl extends React.Component<PeopleProps> {
     public shouldComponentUpdate(nextProps: PeopleProps) {
-        return !this.props.employees.employeesById.equals(nextProps.employees.employeesById);
+        return !this.props.employees || this.props.employees && nextProps.employees && 
+            !this.props.employees.employeesById.equals(nextProps.employees.employeesById);
     }
 
     public render() {
-        return <PeopleRoom employees={this.props.employees}/>;
+        return !this.props.employees ? <LoadingView/> : <PeopleRoom employees={this.props.employees}/>;
     }
 }
 
 class PeopleDepartmentFilteredImpl extends React.Component<PeopleProps> {
     public shouldComponentUpdate(nextProps: PeopleProps) {
-        return !this.props.employees.employeesById.equals(nextProps.employees.employeesById);
+        return !this.props.employees || this.props.employees && nextProps.employees && 
+            !this.props.employees.employeesById.equals(nextProps.employees.employeesById);
     }
 
     public render() {
-        return <PeopleDepartment employees={this.props.employees}/>;
+        return !this.props.employees ? <LoadingView/> : <PeopleDepartment employees={this.props.employees}/>;
     }
 }
 

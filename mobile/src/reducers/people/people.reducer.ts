@@ -2,13 +2,13 @@ import { Reducer } from 'redux';
 import { NavigationAction } from 'react-navigation';
 import { LoadDepartmentsFinished } from '../organization/organization.action';
 import { PeopleActions } from './people.action';
-import { SearchActions } from '../search.action';
+import { SearchActions } from '../search/search.action';
 import { SearchType } from '../../navigation/search-view';
 import { Department } from '../organization/department.model';
 import { LoadUserEmployeeFinished } from '../user/user.action';
 import { DepartmentsListStateDescriptor } from '../../people/departments/departments-horizontal-scrollable-list';
 import { combineEpics } from 'redux-observable';
-import { updateDepartmentsBranchEpic$ } from './people.epics';
+import { updateDepartmentsBranchEpic$ } from '../search/search.epics';
 
 export interface PeopleState {
     departments: Department[];
