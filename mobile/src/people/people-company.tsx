@@ -74,8 +74,10 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanySearchProps 
     }
 
     public componentWillUpdate(nextProps: PeopleCompanySearchProps & PeopleCompanyDispatchProps) {
-        const lowestLevel = nextProps.departmentsBranch[nextProps.departmentsBranch.length - 1];
-        nextProps.requestEmployeesForDepartment(lowestLevel.departmentId);
+        if (nextProps.departmentsBranch && nextProps.departmentsBranch.length > 0) {
+            const lowestLevel = nextProps.departmentsBranch[nextProps.departmentsBranch.length - 1];
+            nextProps.requestEmployeesForDepartment(lowestLevel.departmentId);
+        }
     }
 
     public render() {
