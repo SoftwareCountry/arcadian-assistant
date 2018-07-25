@@ -61,8 +61,8 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                 horizontal 
                 pagingEnabled
                 showsHorizontalScrollIndicator={false}
-                onMomentumScrollEnd={this.onMomentumScrollEnd.bind(this)}
-                onScrollBeginDrag={this.onScrollBeginDrag.bind(this)}
+                onMomentumScrollEnd={this.onMomentumScrollEnd}
+                onScrollBeginDrag={this.onScrollBeginDrag}
                 ref={component => this.scrollView = component as ScrollViewComponent}
             >
                 {
@@ -97,7 +97,7 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
         });
     }
 
-    private onMomentumScrollEnd(event: NativeSyntheticEvent<NativeScrollEvent>) {
+    private onMomentumScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
         const offset = event.nativeEvent.contentOffset;
         if (offset) {
             const currentPage = Math.round(offset.x / Dimensions.get('window').width);
@@ -112,7 +112,7 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
         }
     }
 
-    private onScrollBeginDrag() {
+    private onScrollBeginDrag = () => {
         this.employeeCards.forEach(card => { card.revealNeighboursAvatars(false); });
     }
 }

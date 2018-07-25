@@ -2,7 +2,6 @@ import { SearchActions } from './search.action';
 import { Employee } from '../organization/employee.model';
 import { EmployeesStore } from '../organization/employees.reducer';
 import { ActionsObservable, ofType } from 'redux-observable';
-import { Observable } from 'rxjs/Observable';
 import { AppState } from '../app.reducer';
 import { MiddlewareAPI } from 'redux';
 import { Map, Set } from 'immutable';
@@ -27,7 +26,6 @@ export function filterEmployees(employees: EmployeesStore, filter: string) {
 }
 
 export function recountBranch(departments: Department[], currentBranch: Department[], filteredDeps: Department[]) {
-    let result: UpdateDepartmentsBranch;
     if (currentBranch && currentBranch.length > 0) {
         // recalculate department branch
         let leave = filteredDeps.find(d => d.departmentId === currentBranch[currentBranch.length - 1].departmentId);

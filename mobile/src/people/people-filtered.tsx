@@ -1,13 +1,11 @@
 import React from 'react';
 import { connect, Dispatch } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
-import { Employee } from '../reducers/organization/employee.model';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { LoadingView } from '../navigation/loading';
 import { PeopleCompany } from './people-company';
 import { PeopleRoom } from './people-room';
 import { PeopleDepartment } from './people-department';
-import { Map, Set } from 'immutable';
 import { startSearch } from '../reducers/search/search.action';
 import { SearchType } from '../navigation/search-view';
 import { filterEmployees } from '../reducers/search/search.epics';
