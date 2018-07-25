@@ -20,8 +20,8 @@ interface PeopleDepartmentStateProps {
 
 type PeopleDepartmentProps = PeopleDepartmentStateProps & PeopleDepartmentPropsOwnProps;
 
-const mapStateToProps: MapStateToProps<PeopleDepartmentProps, PeopleDepartmentPropsOwnProps, AppState> = (state: AppState, ownProps: PeopleDepartmentPropsOwnProps): PeopleDepartmentStateProps => {
-
+const mapStateToProps: MapStateToProps<PeopleDepartmentProps, PeopleDepartmentPropsOwnProps, AppState> = 
+        (state: AppState, ownProps: PeopleDepartmentPropsOwnProps): PeopleDepartmentStateProps => {
     const userEmployee = state.organization.employees.employeesById.get(state.userInfo.employeeId);
     const defaultEmployeesPredicate = (employee: Employee) => userEmployee && employee.departmentId === userEmployee.departmentId;
 

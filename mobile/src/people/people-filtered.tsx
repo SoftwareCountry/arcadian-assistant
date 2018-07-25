@@ -14,7 +14,7 @@ interface PeopleProps {
     employees: EmployeesStore;
     loaded: boolean;
 }
-//FILTER!!!!
+
 const mapStateToProps = (state: AppState): PeopleProps => {
     const filteredEmployees = filterEmployees(state.organization.employees, state.people.filter);
     return ({
