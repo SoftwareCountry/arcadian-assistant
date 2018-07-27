@@ -15,26 +15,14 @@ interface PeopleProps {
     loaded: boolean;
 }
 
-const mapStateToProps = (state: AppState): PeopleProps => {
-    const filteredEmployees = filterEmployees(state.organization.employees, state.people.filter);
-    return ({
-        employees: filteredEmployees,
-        loaded: state.people.departments && state.people.departments.length > 0,
-    });
-};
-
-interface PeopleFilteredDispatchProps {
-    startSearch: () => void;
-}
-const mapDispatchToProps = (dispatch: Dispatch<any>): PeopleFilteredDispatchProps => ({
-    startSearch: () => dispatch(startSearch('', SearchType.People))
+const mapStateToProps = (state: AppState): PeopleProps => ({
+    employees: filterEmployees(state.organization.employees, state.people.filter),
+    loaded: state.people.departments && state.people.departments.length > 0,
 });
 
-class PeopleCompanyFilteredImpl extends React.Component<PeopleProps & PeopleFilteredDispatchProps> {
+class PeopleCompanyFilteredImpl extends React.Component<PeopleProps> {
     public shouldComponentUpdate(nextProps: PeopleProps) {
-        return this.props.loaded !== nextProps.loaded || 
-            !this.props.employees || this.props.employees && nextProps.employees && 
-            !this.props.employees.employeesById.equals(nextProps.employees.employeesById);
+        return shouldUpdate(this.props, nextProps) || this.props.loaded !== nextProps.loaded;
     }
 
     public render() {
@@ -45,8 +33,7 @@ class PeopleCompanyFilteredImpl extends React.Component<PeopleProps & PeopleFilt
 
 class PeopleRoomFilteredImpl extends React.Component<PeopleProps> {
     public shouldComponentUpdate(nextProps: PeopleProps) {
-        return !this.props.employees || this.props.employees && nextProps.employees && 
-            !this.props.employees.employeesById.equals(nextProps.employees.employeesById);
+        return shouldUpdate(this.props, nextProps);
     }
 
     public render() {
@@ -56,8 +43,7 @@ class PeopleRoomFilteredImpl extends React.Component<PeopleProps> {
 
 class PeopleDepartmentFilteredImpl extends React.Component<PeopleProps> {
     public shouldComponentUpdate(nextProps: PeopleProps) {
-        return !this.props.employees || this.props.employees && nextProps.employees && 
-            !this.props.employees.employeesById.equals(nextProps.employees.employeesById);
+        return shouldUpdate(this.props, nextProps);
     }
 
     public render() {
@@ -65,6 +51,12 @@ class PeopleDepartmentFilteredImpl extends React.Component<PeopleProps> {
     }
 }
 
-export const PeopleCompanyFiltered = connect(mapStateToProps, mapDispatchToProps)(PeopleCompanyFilteredImpl);
+function shouldUpdate(curProps: PeopleProps, nextProps: PeopleProps) {
+    return !curProps.employees || !nextProps.employees || 
+            curProps.employees && nextProps.employees && 
+            !curProps.employees.employeesById.equals(nextProps.employees.employeesById);
+}
+
+export const PeopleCompanyFiltered = connect(mapStateToProps)(PeopleCompanyFilteredImpl);
 export const PeopleRoomFiltered = connect(mapStateToProps)(PeopleRoomFilteredImpl);
 export const PeopleDepartmentFiltered = connect(mapStateToProps)(PeopleDepartmentFilteredImpl);

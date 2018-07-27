@@ -111,24 +111,24 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanySearchProps 
                 </ScrollView>;
     }
 
-    private renderDepartments() {
-        const update = (departmentId: string, treeLevel: number) => {
-            const res = updateLeaves(this.props.departmentsBranch, this.props.departmentLists,
-                                     treeLevel, departmentId, this.props.filteredDepartments);
-            this.props.updateDepartmentsBranch(res.departmentsLineup, res.departmentsLists, this.props.filteredDepartments);
-            this.props.requestEmployeesForDepartment(departmentId);
-        };
-    
+    private update = (departmentId: string, treeLevel: number) => {
+        const res = updateLeaves(this.props.departmentsBranch, this.props.departmentLists,
+                                 treeLevel, departmentId, this.props.filteredDepartments);
+        this.props.updateDepartmentsBranch(res.departmentsLineup, res.departmentsLists, this.props.filteredDepartments);
+        this.props.requestEmployeesForDepartment(departmentId);
+    }
+
+    private renderDepartments = () => {  
         return this.props.departmentsBranch.map((head, index) => {
             return <DepartmentsHScrollableList
-                    departments={this.props.filteredDepartments.filter(department => department.parentDepartmentId === head.departmentId)}
-                    departmentsLists={this.props.departmentLists[index + 1]}
-                    headDepartment={head}
-                    employees={this.props.employees}
-                    updateDepartmentsBranch={(depId: string) => update(depId, index + 1)}
-                    onItemClicked={this.props.onItemClicked}
-                    key={head.departmentId}
-                />;
+                        departments={this.props.filteredDepartments.filter(department => department.parentDepartmentId === head.departmentId)}
+                        departmentsLists={this.props.departmentLists[index + 1]}
+                        headDepartment={head}
+                        employees={this.props.employees}
+                        updateDepartmentsBranch={(depId: string) => this.update(depId, index + 1)}
+                        onItemClicked={this.props.onItemClicked}
+                        key={head.departmentId}
+                    />;
         });
     }
 }
