@@ -13,8 +13,9 @@ interface EmployeeCardWithAvatarProps {
 
 export class EmployeeCardWithAvatarList extends Component<EmployeeCardWithAvatarProps> {
     public render() {
-        const calcultatedHeight = Dimensions.get('screen').height - 90 * this.props.treeLevel - 119;
-        const listHeight = 38 * this.props.employees.length;
+        const calcultatedHeight = Dimensions.get('screen').height - 
+            (StyleSheet.flatten(styles.layout).height as number) * this.props.treeLevel - 119;
+        const listHeight = (StyleSheet.flatten(tinyStyles.innerLayout).height as number) * this.props.employees.length;
         const max = Math.max(calcultatedHeight, listHeight);
         const layoutFlattenStyle = StyleSheet.flatten([styles.layout, { width: Dimensions.get('window').width, height: max }]);
         
