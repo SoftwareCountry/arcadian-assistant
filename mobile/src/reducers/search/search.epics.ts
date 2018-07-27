@@ -4,7 +4,6 @@ import { ActionsObservable, ofType } from 'redux-observable';
 import { AppState } from '../app.reducer';
 import { MiddlewareAPI } from 'redux';
 import { Map, Set } from 'immutable';
-import { updateDepartmentsBranch, UpdateDepartmentsBranch } from '../people/people.action';
 import { departmentsBranchFromDepartmentWithId } from '../people/people.reducer';
 import { Department } from '../organization/department.model';
 import { filterDepartmentsFinished, SetFilter } from './search.action';

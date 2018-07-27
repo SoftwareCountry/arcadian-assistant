@@ -13,7 +13,6 @@ import { openEmployeeDetailsAction } from '../employee-details/employee-details-
 import { Employee } from '../reducers/organization/employee.model';
 import { employeesListStyles as styles } from './styles';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
-import { departmentsBranchFromDepartmentWithId } from '../reducers/people/people.reducer';
 import { employeesAZComparer } from './employee-comparer';
 import { recountBranch, recountDepartments } from '../reducers/search/search.epics';
 import { filterDepartmentsFinished } from '../reducers/search/search.action';

@@ -43,7 +43,6 @@ export function departmentsBranchFromDepartmentWithId(departmentId: string, depa
     }
 
     deps.reverse();
-    // Toppest Head
     depsLists.reverse();
 
     department = departments.find(d => d.parentDepartmentId === departmentId);
