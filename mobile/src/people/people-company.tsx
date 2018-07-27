@@ -13,9 +13,10 @@ import { openEmployeeDetailsAction } from '../employee-details/employee-details-
 import { Employee } from '../reducers/organization/employee.model';
 import { employeesListStyles as styles } from './styles';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
-import { updateLeaves } from '../reducers/people/people.reducer';
+import { departmentsBranchFromDepartmentWithId } from '../reducers/people/people.reducer';
 import { employeesAZComparer } from './employee-comparer';
 import { recountBranch, recountDepartments } from '../reducers/search/search.epics';
+import { filterDepartmentsFinished } from '../reducers/search/search.action';
 
 interface PeopleCompanySearchOwnProps {
     employees: EmployeesStore;
@@ -47,21 +48,27 @@ type PeopleCompanySearchProps = PeopleCompanySearchOwnProps & PeopleCompanyState
 
 interface PeopleCompanyDispatchProps {
     requestEmployeesForDepartment: (departmentId: string) => void;
-    updateDepartmentsBranch: (deps: Department[], depLists: DepartmentsListStateDescriptor[], filteredDeps: Department[]) => void;
+    updateDepartmentsBranch: (deps: Department[], depId: string) => void;
     onItemClicked: (employee: Employee) => void;
+    filterDepartmentsFinished: (filteredDeps: Department[], departmentBranch: Department[],
+                                departmentList: DepartmentsListStateDescriptor[]) => void;
 }
 
 const mapDispatchToProps = (dispatch: Dispatch<PeopleActions>) => ({
     requestEmployeesForDepartment: (departmentId: string) => { 
         dispatch(loadEmployeesForDepartment(departmentId)); 
     },
-    updateDepartmentsBranch: (deps: Department[], depLists: DepartmentsListStateDescriptor[], filteredDeps: Department[]) => { 
-        dispatch(updateDepartmentsBranch(deps, depLists, filteredDeps)); 
+    updateDepartmentsBranch: (deps: Department[], depId: string) => { 
+        dispatch(updateDepartmentsBranch(deps, depId)); 
     },
     onItemClicked: (employee: Employee) => {
         if (employee) {
             dispatch(openEmployeeDetailsAction(employee));
         }
+    },
+    filterDepartmentsFinished: (filteredDeps: Department[], departmentBranch: Department[],
+                                departmentList: DepartmentsListStateDescriptor[]) => {
+        dispatch(filterDepartmentsFinished(filteredDeps, departmentBranch, departmentList));
     },
 });
 
@@ -70,7 +77,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanySearchProps 
         // recalculate current branch
         const deps = recountDepartments(this.props.departments, this.props.employees);
         const newBranch = recountBranch(this.props.departments, this.props.departmentsBranch, deps);
-        this.props.updateDepartmentsBranch(newBranch.departmentsLineup, newBranch.departmentsLists, deps);
+        this.props.filterDepartmentsFinished(deps, newBranch.departmentsLineup, newBranch.departmentsLists);
     }
 
     public componentWillUpdate(nextProps: PeopleCompanySearchProps & PeopleCompanyDispatchProps) {
@@ -112,9 +119,7 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanySearchProps 
     }
 
     private update = (departmentId: string, treeLevel: number) => {
-        const res = updateLeaves(this.props.departmentsBranch, this.props.departmentLists,
-                                 treeLevel, departmentId, this.props.filteredDepartments);
-        this.props.updateDepartmentsBranch(res.departmentsLineup, res.departmentsLists, this.props.filteredDepartments);
+        this.props.updateDepartmentsBranch(this.props.filteredDepartments, departmentId);
         this.props.requestEmployeesForDepartment(departmentId);
     }
 

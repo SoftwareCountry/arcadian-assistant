@@ -1,4 +1,3 @@
-import { SearchActions } from './search.action';
 import { Employee } from '../organization/employee.model';
 import { EmployeesStore } from '../organization/employees.reducer';
 import { ActionsObservable, ofType } from 'redux-observable';
@@ -6,8 +5,9 @@ import { AppState } from '../app.reducer';
 import { MiddlewareAPI } from 'redux';
 import { Map, Set } from 'immutable';
 import { updateDepartmentsBranch, UpdateDepartmentsBranch } from '../people/people.action';
-import { updateTopOfBranch, updateLeaves, departmentsBranchFromDepartmentWithId } from '../people/people.reducer';
+import { departmentsBranchFromDepartmentWithId } from '../people/people.reducer';
 import { Department } from '../organization/department.model';
+import { filterDepartmentsFinished, SetFilter } from './search.action';
 
 export function filterEmployees(employees: EmployeesStore, filter: string) {
     const employeesPredicate = (employee: Employee) => {
@@ -31,7 +31,7 @@ export function recountBranch(departments: Department[], currentBranch: Departme
         let leave = filteredDeps.find(d => d.departmentId === currentBranch[currentBranch.length - 1].departmentId);
         if (leave) {
             // if found - recalculate branch
-            return updateTopOfBranch(currentBranch[currentBranch.length - 1].departmentId, filteredDeps);
+            return departmentsBranchFromDepartmentWithId(currentBranch[currentBranch.length - 1].departmentId, filteredDeps);
         } else {
             // else - find the smallest department in branch, which was filtered
             let cur = currentBranch[currentBranch.length - 1];
@@ -44,7 +44,7 @@ export function recountBranch(departments: Department[], currentBranch: Departme
     } else {
         // calculate new branch from top
         const head = departments.filter(d => d.isHeadDepartment)[0];
-        return updateLeaves([], [], 0, head.departmentId, filteredDeps);
+        return departmentsBranchFromDepartmentWithId(head.departmentId, filteredDeps);
     }
 }
 
@@ -63,11 +63,11 @@ export function recountDepartments(departments: Department[], employees: Employe
     return deps;
 }
 
-export const updateDepartmentsBranchEpic$ = (action$: ActionsObservable<SearchActions>, appState: MiddlewareAPI<AppState>) =>
+export const updateDepartmentsBranchEpic$ = (action$: ActionsObservable<SetFilter>, appState: MiddlewareAPI<AppState>) =>
     action$.ofType('SEARCH-BY-TEXT-FILTER')
     .map(action => {
         const filteredEmployees = filterEmployees(appState.getState().organization.employees, action.filter);
         const deps = recountDepartments(appState.getState().people.departments, filteredEmployees);
         const newBranch = recountBranch(appState.getState().people.departments, appState.getState().people.departmentsBranch, deps);
-        return updateDepartmentsBranch(newBranch.departmentsLineup, newBranch.departmentsLists, deps);
+        return filterDepartmentsFinished(deps, newBranch.departmentsLineup, newBranch.departmentsLists);
     });

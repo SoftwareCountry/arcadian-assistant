@@ -28,50 +28,33 @@ const initState: PeopleState = {
     filter: '',
 };
 
-export function updateTopOfBranch(depId: string, departments: Department[]) {
+export function departmentsBranchFromDepartmentWithId(departmentId: string, departments: Department[]) {
     const deps: Department[] = [];
     const depsLists: DepartmentsListStateDescriptor[] = [];
-    const curId = depId;
 
-    // recalculate current pages if number of departments was changed
-    let department = departments.find(d => d.departmentId === curId);
+    let department = departments.find(d => d.departmentId === departmentId);
     while (department) {
-        deps.push(department);
+        deps.push(department);   
         const parent = departments.find(d => d.departmentId === department.parentDepartmentId);
         if (parent !== null) {
-            let children = departments.filter(d => d.parentDepartmentId === department.parentDepartmentId);
-            depsLists.push({currentPage: children.indexOf(department)});
+            depsLists.push({currentPage: departments.filter(d => d.parentDepartmentId === department.parentDepartmentId).indexOf(department)});
         }
         department = parent;
     }
+
     deps.reverse();
+    // Toppest Head
     depsLists.reverse();
 
-    return { departmentsLineup: deps, departmentsLists: depsLists };
-}
-
-export function updateLeaves(depsBranch: Department[], depsLists: DepartmentsListStateDescriptor[], 
-                             treeLevel: number, depId: string, departments: Department[]) {
-    for (let i = depsBranch.length - 1; i >= treeLevel; i--) {
-        depsBranch.pop();
-        depsLists.pop();
-    }
-
-    let department = departments.find(d => d.departmentId === depId);
+    department = departments.find(d => d.parentDepartmentId === departmentId);
+    
     while (department) {
-        depsBranch.push(department);
+        deps.push(department);
         depsLists.push({currentPage: departments.filter(d => d.parentDepartmentId === department.parentDepartmentId).indexOf(department)});
-
         department = departments.find(d => d.parentDepartmentId === department.departmentId);
     }
-    return { departmentsLineup: depsBranch, departmentsLists: depsLists };
-}
 
-export function departmentsBranchFromDepartmentWithId(departmentId: string, departments: Department[]) {
-    const res = updateTopOfBranch(departmentId, departments);
-    const leaves = updateLeaves(res.departmentsLineup, res.departmentsLists, res.departmentsLineup.length - 1,
-                                departmentId, departments);
-    return { departmentsLineup: leaves.departmentsLineup, departmentsLists: leaves.departmentsLists };
+    return {departmentsLineup: deps, departmentsLists: depsLists};
 }
 
 export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions | NavigationAction | 
@@ -119,14 +102,19 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
             } else {
                 return {...state, departments: action.departments};   
             }     
-        case 'UPDATE-DEPARTMENTS-BRANCH': {
+        case 'UPDATE-DEPARTMENTS-BRANCH':
             return {
                 ...state, 
-                departmentsBranch: action.departments, 
-                departmentsLists: action.departmentLists, 
-                filteredDepartments: action.filteredDepartments
+                departmentsBranch: action.departmentsBranch, 
+                departmentsLists: action.departmentLists,
             };
-        }
+        case 'FILTER-DEPARTMENTS-FINISHED':
+            return {
+                ...state,
+                filteredDepartments: action.filteredDeps,
+                departmentsBranch: action.departmentBranch,
+                departmentsLists: action.departmentList,
+            };
         case 'SEARCH-BY-TEXT-FILTER':
             if (action.searchType === SearchType.People) {
                 return {
