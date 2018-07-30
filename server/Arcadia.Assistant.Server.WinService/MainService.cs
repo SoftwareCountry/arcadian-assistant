@@ -28,7 +28,7 @@
                 .AddCommandLine(args)
                 .Build();
 
-            this.application = new Application(config);
+            this.application = new MonitoredApplication(config);
             this.application.Start();
         }
 
