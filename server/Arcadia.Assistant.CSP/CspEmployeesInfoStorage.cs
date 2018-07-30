@@ -14,7 +14,7 @@
     {
         private readonly Func<ArcadiaCspContext> contextFactory;
 
-        public const string ArcadianEmployeeQuery = "SELECT * FROM dbo.ArcadianEmployee";
+        public const string ArcadianEmployeeQuery = "SELECT * FROM dbo.ArcadianEmployee WHERE IsDelete <> 1";
 
         public CspEmployeesInfoStorage(Func<ArcadiaCspContext> contextFactory)
         {
