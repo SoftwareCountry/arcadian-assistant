@@ -1,89 +1,97 @@
 {
-	"name": "ArcadiaAssistant",
-	"version": "0.0.1",
-	"private": true,
-	"watch": {
-		"lint": {
-			"patterns": [
-				"src"
-			],
-			"extensions": [
-				"ts",
-				"tsx"
-			]
-		}
-	},
-	"scripts": {
-		"start": "node node_modules/react-native/local-cli/cli.js start",
-		"test": "jest",
-		"test-coverage": "jest --coverage",
-		"tsc": "tsc",
-		"clean": "rimraf artifacts",
-		"copyImages": "copyfiles -u 1 src/**/*.png src/**/*.jpg artifacts",
-		"build": "npm run clean && npm run lint && npm run copyImages && npm run tsc --",
-		"watch": "concurrently \"npm-watch lint\" \"npm run build -- -w\"",
-		"prepublish": "npm run build",
-		"lint": "tslint -p ."
-	},
-	"dependencies": {
-		"babel-plugin-transform-inline-environment-variables": "^0.3.0",
-		"immutable": "^3.8.2",
-		"moment": "^2.20.1",
-		"react": "^16.0.0",
-		"react-native": "0.52.2",
-		"react-native-sensitive-info": "5.2.0",
-		"react-native-sf-authentication-session": "^0.1.1",
-		"react-native-vector-icons": "^4.4.2",
-		"react-navigation": "^1.0.0-beta.19",
-		"react-navigation-redux-helpers": "^1.0.3",
-		"react-redux": "^5.0.6",
-		"redux": "^3.7.2",
-		"redux-logger": "^3.0.6",
-		"redux-observable": "^0.17.0",
-		"rxjs": "^5.5.2",
-		"santee-dcts": "^0.9.4",
-		"url-search-params-polyfill": "^3.0.0",
-		"uuid": "^3.2.1"
-	},
-	"devDependencies": {
-		"@types/immutable": "^3.8.7",
-		"@types/jest": "^21.1.5",
-		"@types/moment": "^2.13.0",
-		"@types/react": "^16.0.40",
-		"@types/react-native": "0.52.6",
-		"@types/react-native-vector-icons": "^4.4.2",
-		"@types/react-navigation": "^1.2.3",
-		"@types/react-redux": "^5.0.12",
-		"@types/react-test-renderer": "^16.0.0",
-		"@types/redux-logger": "^3.0.5",
-		"babel-jest": "21.2.0",
-		"babel-preset-react-native": "4.0.0",
-		"concurrently": "^3.5.1",
-		"copyfiles": "^1.2.0",
-		"jest": "21.2.1",
-		"npm-watch": "^0.3.0",
-		"react-test-renderer": "^16.0.0",
-		"rimraf": "^2.6.2",
-		"tslint": "^5.8.0",
-		"typescript": "^2.5.3"
-	},
-	"jest": {
-		"preset": "react-native",
-		"testRegex": "artifacts/.+\\.(test|spec).js$",
-		"coverageDirectory": ".coverage",
-		"coverageReporters": [
-			"text-summary",
-			"html"
-		],
-		"collectCoverageFrom": [
-			"artifacts/**/*.js",
-			"!artifacts/**/*.spec.js",
-			"!artifacts/**/*.index.js"
-		]
-	},
-	"rnpm": {
-		"assets": [
-			"./assets/fonts/"
-		]
-	}
+  "name": "ArcadiaAssistant",
+  "version": "0.0.1",
+  "private": true,
+  "watch": {
+    "lint": {
+      "patterns": [
+        "src"
+      ],
+      "extensions": [
+        "ts",
+        "tsx"
+      ]
+    }
+  },
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest",
+    "test-coverage": "jest --coverage",
+    "tsc": "tsc",
+    "clean": "rimraf artifacts",
+    "copyImages": "copyfiles -u 1 src/**/*.png src/**/*.jpg artifacts",
+    "build": "npm run clean && npm run lint && npm run copyImages && npm run tsc --",
+    "watch": "concurrently \"npm-watch lint\" \"npm run build -- -w\"",
+    "prepublish": "npm run build",
+    "lint": "tslint -p ."
+  },
+  "dependencies": {
+    "appcenter": "^1.7.1",
+    "appcenter-analytics": "^1.7.1",
+    "appcenter-crashes": "^1.7.1",
+    "babel-plugin-transform-inline-environment-variables": "^0.3.0",
+    "immutable": "^3.8.2",
+    "moment": "^2.20.1",
+    "react": "^16.0.0",
+    "react-native": "0.52.2",
+    "react-native-sensitive-info": "5.2.0",
+    "react-native-sf-authentication-session": "^0.1.1",
+    "react-native-vector-icons": "^4.4.2",
+    "react-navigation": "^1.0.0-beta.19",
+    "react-navigation-redux-helpers": "^1.0.3",
+    "react-redux": "^5.0.6",
+    "redux": "^3.7.2",
+    "redux-logger": "^3.0.6",
+    "redux-observable": "^0.17.0",
+    "rxjs": "^5.5.2",
+    "santee-dcts": "^0.9.4",
+    "url-search-params-polyfill": "^3.0.0",
+    "uuid": "^3.2.1"
+  },
+  "devDependencies": {
+    "@types/immutable": "^3.8.7",
+    "@types/jest": "^21.1.5",
+    "@types/moment": "^2.13.0",
+    "@types/react": "^16.0.40",
+    "@types/react-native": "0.52.6",
+    "@types/react-native-vector-icons": "^4.4.2",
+    "@types/react-navigation": "^1.2.3",
+    "@types/react-redux": "^5.0.12",
+    "@types/react-test-renderer": "^16.0.0",
+    "@types/redux-logger": "^3.0.5",
+    "babel-jest": "21.2.0",
+    "babel-preset-react-native": "4.0.0",
+    "concurrently": "^3.5.1",
+    "copyfiles": "^1.2.0",
+    "jest": "21.2.1",
+    "npm-watch": "^0.3.0",
+    "react-test-renderer": "^16.0.0",
+    "rimraf": "^2.6.2",
+    "tslint": "^5.8.0",
+    "typescript": "^2.5.3"
+  },
+  "jest": {
+    "preset": "react-native",
+    "testRegex": "artifacts/.+\\.(test|spec).js$",
+    "coverageDirectory": ".coverage",
+    "coverageReporters": [
+      "text-summary",
+      "html"
+    ],
+    "collectCoverageFrom": [
+      "artifacts/**/*.js",
+      "!artifacts/**/*.spec.js",
+      "!artifacts/**/*.index.js"
+    ],
+    "setupFiles": [
+      "<rootDir>/node_modules/appcenter/test/AppCenterMock.js",
+      "<rootDir>/node_modules/appcenter-analytics/test/AppCenterAnalyticsMock.js",
+      "<rootDir>/node_modules/appcenter-crashes/test/AppCenterCrashesMock.js"
+    ]
+  },
+  "rnpm": {
+    "assets": [
+      "./assets/fonts/"
+    ]
+  }
 }
