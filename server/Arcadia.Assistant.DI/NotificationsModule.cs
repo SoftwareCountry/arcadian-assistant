@@ -18,7 +18,7 @@
         }
         protected override void Load(ContainerBuilder builder)
         {
-            builder.Register(x => new SendEmailSickLeaveActor(mailConfig, smtpConfig));
+            builder.Register(x => new SendEmailSickLeaveActor(this.mailConfig, this.smtpConfig));
         }
     }
 }

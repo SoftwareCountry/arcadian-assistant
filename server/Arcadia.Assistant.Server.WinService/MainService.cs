@@ -4,6 +4,7 @@
     using System.ServiceProcess;
 
     using Arcadia.Assistant.Configuration;
+    using Arcadia.Assistant.Configuration.Configuration;
 
     using Microsoft.Extensions.Configuration;
 
@@ -28,7 +29,11 @@
                 .AddCommandLine(args)
                 .Build();
 
-            this.application = new MonitoredApplication(config);
+            var settings = config.Get<AppSettings>();
+
+            new AppInsightTelemetry().Setup(settings);
+
+            this.application = new MonitoredApplication(settings);
             this.application.Start();
         }
 
