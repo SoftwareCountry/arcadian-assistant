@@ -8,16 +8,16 @@
 
     public class DependencyInjection
     {
-        public IContainer GetContainer(IConfigurationRoot config)
+        public IContainer GetContainer(AppSettings config)
         {
             var container = new ContainerBuilder();
 
-            container.RegisterModule(new DatabaseModule(config.GetConnectionString("ArcadiaCSP")));
+            container.RegisterModule(new DatabaseModule(config.ConnectionStrings.ArcadiaCSP));
 
-            var organizationSettings = config.Get<AppSettings>().Organization;
+            var organizationSettings = config.Organization;
             container.RegisterModule(new OrganizationModule(organizationSettings.RefreshInformation));
 
-            var mailSettings = config.Get<AppSettings>().Messaging;
+            var mailSettings = config.Messaging;
             container.RegisterModule(new NotificationsModule(mailSettings.Smtp, mailSettings.SickLeave));
 
             return container.Build();
