@@ -27,6 +27,7 @@
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .UseApplicationInsights()
                 .ConfigureServices(services => services.AddAutofac())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
