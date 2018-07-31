@@ -52,6 +52,20 @@
             return this.Ok(employees.Single());
         }
 
+        [Route("{employeeId}/photo")]
+        [HttpGet]
+        [ProducesResponseType(typeof(PhotoModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetPhotoById(string employeeId, CancellationToken token)
+        {
+            var employees = await this.LoadEmployeesAsync(new EmployeesQuery().WithId(employeeId), token);
+            if (employees.Length == 0)
+            {
+                return this.NotFound();
+            }
+            return this.Ok(employees.Single().Photo);
+        }
+
         [Route("")]
         [HttpGet]
         [ProducesResponseType(typeof(EmployeeModel[]), StatusCodes.Status200OK)]
