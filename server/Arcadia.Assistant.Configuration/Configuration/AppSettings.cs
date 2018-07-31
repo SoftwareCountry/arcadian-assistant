@@ -9,5 +9,13 @@
 
         [Required]
         public OrganizationSettings Organization { get; set; }
+
+        public ApplicationInsightsSettings ApplicationInsights { get; set; }
+
+        [Required]
+        public string Akka { get; set; }
+
+        [Required]
+        public ConnectionStringsSettings ConnectionStrings { get; set; }
     }
 }

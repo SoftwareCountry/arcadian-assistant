@@ -5,6 +5,8 @@
     using System.Threading;
 
     using Arcadia.Assistant.Configuration;
+    using Arcadia.Assistant.Configuration.Configuration;
+
     using Microsoft.Extensions.Configuration;
 
     internal class Program
@@ -24,7 +26,11 @@
                 .AddUserSecrets<Program>()
                 .Build();
 
-            using (var app = new Application(config))
+            var settings = config.Get<AppSettings>();
+
+            new AppInsightTelemetry().Setup(settings);
+
+            using (var app = new Application(settings))
             {
                 app.Start();
                 Console.CancelKeyPress += OnExit;
