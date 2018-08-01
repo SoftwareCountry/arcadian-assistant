@@ -25,13 +25,10 @@ export const loadEmployeeEpic$ = (action$: ActionsObservable<LoadEmployee>, stat
 
 export const loadPhotoEpic$ = (action$: ActionsObservable<LoadPhoto>, deps: DependenciesContainer) => 
         action$.ofType('LOAD_PHOTO')
-            .groupBy(x => x.employeeId)
-            .map(x =>
-                x.switchMap(y => deps.apiClient.getJSON(`/employees/${y.employeeId}/photo`)).map(obj => deserialize(obj, Photo))
-                    .pipe(handleHttpErrors())
-            )
-            .mergeAll()
-            .map(x => loadPhotoFinished(x));
+            .map(x => {
+                const photo = deserialize(deps.apiClient.getJSON(`/employees/${x.employeeId}/photo`), Photo);
+                return loadPhotoFinished(photo, x.employeeId);
+            });
 
 export const loadDepartmentsEpic$ = (action$: ActionsObservable<LoadDepartments>, state: AppState, deps: DependenciesContainer) =>
     action$.ofType('LOAD-DEPARTMENTS')
