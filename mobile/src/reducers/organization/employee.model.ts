@@ -66,4 +66,8 @@ export class Employee {
     @dataMember()
     @required({nullable: true})
     public roomNumber: string;
+
+    public equals(obj: Employee): boolean {
+        return this.employeeId === obj.employeeId;
+    }
 }

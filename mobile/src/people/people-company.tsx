@@ -17,6 +17,8 @@ import { employeesAZComparer } from './employee-comparer';
 import { recountBranch, recountDepartments } from '../reducers/search/search.epics';
 import { filterDepartmentsFinished } from '../reducers/search/search.action';
 
+import {is} from 'immutable';
+
 interface PeopleCompanySearchOwnProps {
     employees: EmployeesStore;
 }
@@ -77,6 +79,14 @@ export class PeopleCompanyImpl extends React.Component<PeopleCompanySearchProps 
         const deps = recountDepartments(this.props.departments, this.props.employees);
         const newBranch = recountBranch(this.props.departments, this.props.departmentsBranch, deps);
         this.props.filterDepartmentsFinished(deps, newBranch.departmentsLineup, newBranch.departmentsLists);
+    }
+
+    public shouldComponentUpdate(nextProps: PeopleCompanySearchProps & PeopleCompanyDispatchProps) {
+        const somethingUndefined = !this.props.employees || !nextProps.employees;
+        const arrays = !is(this.props.employees.employeesById, nextProps.employees.employeesById);
+        const areEquals = !is(this.props.departmentsBranch, nextProps.departmentsBranch);
+        const empl = !this.props.employee.equals(nextProps.employee);
+        return somethingUndefined || !somethingUndefined && arrays || areEquals || empl;
     }
 
     public componentWillUpdate(nextProps: PeopleCompanySearchProps & PeopleCompanyDispatchProps) {

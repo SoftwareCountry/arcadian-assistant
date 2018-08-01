@@ -7,6 +7,7 @@ import { PeopleCompany } from './people-company';
 import { PeopleRoom } from './people-room';
 import { PeopleDepartment } from './people-department';
 import { filterEmployees } from '../reducers/search/search.epics';
+import {Map, is} from 'immutable';
 
 interface PeopleProps {
     employees: EmployeesStore;
@@ -20,7 +21,8 @@ const mapStateToProps = (state: AppState): PeopleProps => ({
 
 class PeopleCompanyFilteredImpl extends React.Component<PeopleProps> {
     public shouldComponentUpdate(nextProps: PeopleProps) {
-        return shouldUpdate(this.props, nextProps) || this.props.loaded !== nextProps.loaded;
+        const su = shouldUpdate(this.props, nextProps);
+        return su || this.props.loaded !== nextProps.loaded;
     }
 
     public render() {
@@ -50,9 +52,9 @@ class PeopleDepartmentFilteredImpl extends React.Component<PeopleProps> {
 }
 
 function shouldUpdate(curProps: PeopleProps, nextProps: PeopleProps) {
-    return !curProps.employees || !nextProps.employees || 
-            curProps.employees && nextProps.employees && 
-            !curProps.employees.employeesById.equals(nextProps.employees.employeesById);
+    const somethingUndefined = !curProps.employees || !nextProps.employees;
+    const arrays = !is(curProps.employees.employeesById, nextProps.employees.employeesById);
+    return somethingUndefined || !somethingUndefined && arrays;
 }
 
 export const PeopleCompanyFiltered = connect(mapStateToProps)(PeopleCompanyFilteredImpl);

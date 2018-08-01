@@ -26,4 +26,8 @@ export class Department {
     @dataMember()
     @required({ nullable: true })
     public isHeadDepartment: boolean;
+
+    public equals(obj: Department): boolean {
+        return this.departmentId === obj.departmentId;
+    }
 }
