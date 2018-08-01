@@ -4,7 +4,9 @@ import { combineReducers } from 'redux';
 import { OrganizationState } from './organization.reducer';
 import { departmentsReducer } from './departments.reducer';
 import { employeesReducer, EmployeesStore } from './employees.reducer';
-import { loadDepartmentsEpic$, loadChiefsEpic$, loadEmployeesForDepartmentEpic$, loadEmployeeEpic$, loadEmployeesForUserDepartmentEpic$, loadEmployeesForUserRoomEpic$, loadEmployeesForRoomEpic$, loadUserEmployeeFinishedEpic$ } from './organization.epics';
+import { loadDepartmentsEpic$, loadChiefsEpic$, loadEmployeesForDepartmentEpic$, loadEmployeeEpic$, 
+    loadEmployeesForUserDepartmentEpic$, loadEmployeesForUserRoomEpic$, loadEmployeesForRoomEpic$, 
+    loadUserEmployeeFinishedEpic$, loadPhotoEpic$ } from './organization.epics';
 import { Employee } from './employee.model';
 
 export interface OrganizationState {
@@ -20,7 +22,8 @@ export const organizationEpics = combineEpics(
     loadEmployeesForRoomEpic$ as any,
     loadEmployeesForUserDepartmentEpic$ as any, 
     loadEmployeesForUserRoomEpic$ as any,
-    loadUserEmployeeFinishedEpic$ as any
+    loadUserEmployeeFinishedEpic$ as any,
+    loadPhotoEpic$ as any
 );
 
 export const organizationReducer = combineReducers<OrganizationState>({

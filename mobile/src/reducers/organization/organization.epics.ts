@@ -2,13 +2,13 @@ import { ActionsObservable, ofType, combineEpics } from 'redux-observable';
 import {
     LoadDepartments, loadDepartmentsFinished, LoadDepartmentsFinished, loadDepartments,
     loadEmployeeFinished, LoadEmployeesForDepartment, LoadEmployeesForRoom, loadEmployeesForDepartment,
-    LoadEmployee, loadEmployee, LoadEmployeeFinished, loadEmployeesForRoom
+    LoadEmployee, loadEmployee, LoadEmployeeFinished, loadEmployeesForRoom, LoadPhoto, loadPhotoFinished
 } from './organization.action';
 import { LoadUserEmployeeFinished } from '../user/user.action';
 import { deserializeArray, deserialize } from 'santee-dcts/src/deserializer';
 import { Department } from './department.model';
 import { AppState, AppEpic, DependenciesContainer } from '../app.reducer';
-import { Employee } from './employee.model';
+import { Employee, Photo } from './employee.model';
 import { Observable } from 'rxjs/Observable';
 import { loadFailedError } from '../errors/errors.action';
 import { handleHttpErrors } from '../errors/errors.epics';
@@ -22,6 +22,16 @@ export const loadEmployeeEpic$ = (action$: ActionsObservable<LoadEmployee>, stat
         )
         .mergeAll()
         .map(x => loadEmployeeFinished(x));
+
+export const loadPhotoEpic$ = (action$: ActionsObservable<LoadPhoto>, deps: DependenciesContainer) => 
+        action$.ofType('LOAD_PHOTO')
+            .groupBy(x => x.employeeId)
+            .map(x =>
+                x.switchMap(y => deps.apiClient.getJSON(`/employees/${y.employeeId}/photo`)).map(obj => deserialize(obj, Photo))
+                    .pipe(handleHttpErrors())
+            )
+            .mergeAll()
+            .map(x => loadPhotoFinished(x));
 
 export const loadDepartmentsEpic$ = (action$: ActionsObservable<LoadDepartments>, state: AppState, deps: DependenciesContainer) =>
     action$.ofType('LOAD-DEPARTMENTS')
