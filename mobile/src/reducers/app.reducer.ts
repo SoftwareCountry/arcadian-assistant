@@ -10,7 +10,7 @@ import logger from 'redux-logger';
 import { errorsEpics } from './errors/errors.reducer';
 
 import 'rxjs/Rx';
-import { OrganizationState, employeesReducer, organizationEpics } from './organization/employees.reducer';
+import { OrganizationState, organizationReducer, organizationEpics } from './organization/employees.reducer';
 import { UserInfoState, userInfoReducer } from './user/user-info.reducer';
 import { userEpics } from './user/user.reducer';
 import { FeedsState, feedsReducer, feedsEpics } from './feeds/feeds.reducer';
@@ -51,7 +51,7 @@ const rootEpic = combineEpics(
 
 const reducers = combineReducers<AppState>({
     helpdesk: helpdeskReducer,
-    organization: employeesReducer,
+    organization: organizationReducer,
     nav: navigationReducer,
     navigationMiddlewareKey: navigationMiddlewareKeyReducer,
     userInfo: userInfoReducer,

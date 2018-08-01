@@ -1,6 +1,6 @@
 import { Map, Set } from 'immutable';
 import { Employee, Photo } from './employee.model';
-import { Reducer } from 'redux';
+import { Reducer, combineReducers } from 'redux';
 import { combineEpics } from 'redux-observable';
 import { OrganizationActions } from './organization.action';
 import { loadChiefsEpic$, loadEmployeesForDepartmentEpic$, loadEmployeeEpic$, 
@@ -78,3 +78,7 @@ export const organizationEpics = combineEpics(
     loadUserEmployeeFinishedEpic$ as any,
     loadPhotoEpic$ as any
 );
+
+export const organizationReducer = combineReducers<OrganizationState>({
+    employees: employeesReducer
+});
