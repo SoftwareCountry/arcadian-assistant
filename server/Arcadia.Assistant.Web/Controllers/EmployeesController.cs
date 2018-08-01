@@ -89,14 +89,12 @@
             }
 
             var employees = await this.LoadEmployeesAsync(query, token);
-
             return this.Ok(employees);
         }
 
         private async Task<EmployeeModel[]> LoadEmployeesAsync(EmployeesQuery query, CancellationToken token)
         {
             var allPermissions = await this.permissionsLoader.LoadAsync(this.User);
-
             var employees = await this.employeesRegistry.SearchAsync(query, token);
 
             var tasks = employees
@@ -105,13 +103,12 @@
                     {
                         var employee = EmployeeModel.FromMetadata(x.Metadata);
                         var employeePermissions = allPermissions.GetPermissions(x);
+                        employee.Photo = null;
 
                         if (!employeePermissions.HasFlag(EmployeePermissionsEntry.ReadEmployeePhone))
                         {
                             employee.MobilePhone = null;
                         }
-
-                        var photo = await x.Actor.Ask<GetPhoto.Response>(GetPhoto.Instance, this.timeoutSettings.Timeout, token);
 
                         if (employeePermissions.HasFlag(EmployeePermissionsEntry.ReadEmployeeVacationsCounter))
                         {
@@ -128,9 +125,6 @@
                                 .Ask<GetWorkHoursCredit.Response>(GetWorkHoursCredit.Instance, this.timeoutSettings.Timeout, token);
                             employee.HoursCredit = workhoursCredit.WorkHoursCredit;
                         }
-
-                        employee.Photo = photo.Photo;
-
                         return employee;
                     });
 
