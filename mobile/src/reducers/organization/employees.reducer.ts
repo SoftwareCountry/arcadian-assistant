@@ -56,9 +56,12 @@ export const employeesReducer: Reducer<EmployeesStore> = (state = defaultState, 
             let employee = employeesById.get(action.id);
             employee.photo = action.photo;
             employeesById = employeesById.set(action.id, employee);
+            let { photoById } = state;
+            photoById = photoById.set(action.id, action.photo);
             return {
                 ...state,
-                employeesById
+                employeesById,
+                photoById,
             };
         default:
             return state;

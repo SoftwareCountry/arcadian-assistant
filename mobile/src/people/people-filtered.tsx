@@ -26,9 +26,8 @@ const mapStateToProps = (state: AppState): PeopleProps => {
     };
     const filteredEmployeesById: Map<string, Employee> = employees.employeesById.filter(employeesPredicate) as Map<string, Employee>;
     const filteredEmployees : EmployeesStore = {
+        ...employees,
         employeesById: filteredEmployeesById, 
-        employeeIdsByDepartment: employees.employeeIdsByDepartment,
-        photoById: state.organization.employees.photoById,
     };
 
 
