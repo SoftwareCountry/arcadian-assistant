@@ -14,6 +14,7 @@ import { LoadingView } from '../navigation/loading';
 import { screenStyles as styles } from './styles';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 import { fetchNewFeeds, fetchOldFeeds } from '../reducers/feeds/feeds.action';
+import { loadPhoto } from '../reducers/organization/organization.action';
 import { FeedsById } from '../reducers/feeds/feeds.reducer';
 import { Moment } from 'moment';
 
@@ -31,6 +32,7 @@ interface FeedScreenDispatchProps {
     onAvatarClicked: (employee: Employee) => void;
     fetchNewFeeds: () => void;
     fetchOldFeeds: () => void;
+    loadPhoto: (id: string) => void;
 }
 
 const mapStateToProps = (state: AppState): FeedsScreenProps => ({
@@ -45,6 +47,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): FeedScreenDispatchProps =>
     onAvatarClicked: (employee: Employee) => dispatch(openEmployeeDetailsAction(employee)),
     fetchNewFeeds: () => dispatch(fetchNewFeeds()),
     fetchOldFeeds: () => dispatch(fetchOldFeeds()),
+    loadPhoto: (id: string) => dispatch(loadPhoto(id)),
 });
 
 class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenDispatchProps> {
@@ -105,6 +108,9 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
         if (!employee) {
             return <FeedListItem message={item} employee={null} onAvatarClicked={this.props.onAvatarClicked} />;
         } else {
+            if (!employee.photo) {
+                this.props.loadPhoto(employee.employeeId);
+            }
             return <FeedListItem message={item} employee={employee} onAvatarClicked={this.props.onAvatarClicked} />;
         }
     }

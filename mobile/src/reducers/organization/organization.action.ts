@@ -53,7 +53,7 @@ export const loadPhoto = (employeeId: string): LoadPhoto => ({ type: 'LOAD_PHOTO
 
 export interface LoadPhotoFinished extends Action {
     type: 'LOAD_PHOTO_FINISHED';
-    id: string, 
+    id: string;
     photo: Photo;
 }
 
