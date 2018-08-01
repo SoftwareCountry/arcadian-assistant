@@ -2,7 +2,7 @@ import React from 'react';
 import { connect, Dispatch, MapStateToProps } from 'react-redux';
 import { View, ScrollView } from 'react-native';
 
-import { Department } from '../reducers/organization/department.model';
+import { Department } from '../reducers/people/department.model';
 import { AppState } from '../reducers/app.reducer';
 import { DepartmentsHScrollableList, DepartmentsListStateDescriptor } from './departments/departments-horizontal-scrollable-list';
 import { EmployeeCardWithAvatar } from './employee-card-with-avatar';

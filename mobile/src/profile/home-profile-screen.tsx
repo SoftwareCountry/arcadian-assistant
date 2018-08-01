@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Department } from '../reducers/organization/department.model';
+import { Department } from '../reducers/people/department.model';
 import { AppState } from '../reducers/app.reducer';
 import { connect, Dispatch } from 'react-redux';
 import { StyledText } from '../override/styled-text';
@@ -25,7 +25,7 @@ interface ProfileScreenProps {
 const mapStateToProps = (state: AppState): ProfileScreenProps => ({
     employees: state.organization.employees,
     employee: state.organization.employees.employeesById.get(state.userInfo.employeeId),
-    departments: state.organization.departments,
+    departments: state.people.departments,
     requests: state.calendar.pendingRequests.requests
 });
 

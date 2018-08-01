@@ -2,7 +2,7 @@ import React from 'react';
 import { FlatList, Text, View, StyleSheet, ListRenderItemInfo } from 'react-native';
 import { connect, Dispatch } from 'react-redux';
 
-import { Department } from '../reducers/organization/department.model';
+import { Department } from '../reducers/people/department.model';
 import { Employee } from '../reducers/organization/employee.model';
 import { EmployeesStore, EmployeeMap, EmployeeIdsGroupMap } from '../reducers/organization/employees.reducer';
 import { AppState } from '../reducers/app.reducer';

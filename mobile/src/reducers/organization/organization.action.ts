@@ -1,20 +1,5 @@
 import { Action } from 'redux';
-import { Department } from './department.model';
 import { Employee, Photo } from './employee.model';
-
-export interface LoadDepartments extends Action {
-    type: 'LOAD-DEPARTMENTS';
-}
-
-export const loadDepartments = (): LoadDepartments => ({ type: 'LOAD-DEPARTMENTS' });
-
-export interface LoadDepartmentsFinished extends Action {
-    type: 'LOAD-DEPARTMENTS-FINISHED';
-    departments: Department[];
-}
-
-export const loadDepartmentsFinished = (departments: Department[]): LoadDepartmentsFinished =>
-    ({ type: 'LOAD-DEPARTMENTS-FINISHED', departments });
 
 export interface LoadEmployee extends Action {
     type: 'LOAD_EMPLOYEE';
@@ -60,6 +45,5 @@ export interface LoadPhotoFinished extends Action {
 export const loadPhotoFinished = (photo: Photo, id: string): LoadPhotoFinished => ({ type: 'LOAD_PHOTO_FINISHED', photo, id });
 
 export type OrganizationActions =
-    LoadDepartments | LoadDepartmentsFinished |
     LoadEmployee | LoadEmployeeFinished | LoadEmployeesForDepartment | LoadEmployeesForRoom |
     LoadPhoto | LoadPhotoFinished;

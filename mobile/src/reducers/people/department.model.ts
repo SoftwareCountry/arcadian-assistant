@@ -1,5 +1,5 @@
 import {dataMember, required} from 'santee-dcts';
-import { Employee } from './employee.model';
+import { Employee } from '../organization/employee.model';
 
 export class Department {
 

@@ -6,11 +6,13 @@ import { ActionsObservable } from 'redux-observable';
 
 import { User } from '../user/user.model';
 import { Employee } from '../organization/employee.model';
-import { OrganizationActions, loadEmployeesForDepartment, loadEmployeesForRoom, LoadDepartmentsFinished } from '../organization/organization.action';
+import { OrganizationActions, loadEmployeesForDepartment, loadEmployeesForRoom } from '../organization/organization.action';
+import { loadDepartmentsEpic$ } from './people.epics';
+import { LoadDepartmentsFinished } from './people.action';
 import { PeopleActions } from './people.action';
 import { SearchActions } from '../search.action';
 import { SearchType } from '../../navigation/search-view';
-import { Department } from '../organization/department.model';
+import { Department } from './department.model';
 import { LoadUserEmployeeFinished } from '../user/user.action';
 import { DepartmentsListStateDescriptor } from '../../people/departments/departments-horizontal-scrollable-list';
 
@@ -115,3 +117,7 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
             return state;
     }
 };
+
+export const peopleEpics = combineEpics(
+    loadDepartmentsEpic$ as any,
+);

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Department } from '../reducers/organization/department.model';
+import { Department } from '../reducers/people/department.model';
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
 import { StyledText } from '../override/styled-text';
@@ -21,7 +21,7 @@ interface NavigationProps {
 }
 
 const mapStateToProps = (state: AppState): EmployeeDetailsProps => ({
-    departments: state.organization.departments,
+    departments: state.people.departments,
 });
 
 export class EmployeeDetailsScreenImpl extends Component<EmployeeDetailsProps & NavigationProps> {

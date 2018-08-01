@@ -3,7 +3,7 @@ import { Animated, View, ScrollView, Dimensions, NativeScrollEvent, NativeSynthe
 import { EmployeeCardWithAvatar } from '../employee-card-with-avatar';
 import { Employee } from '../../reducers/organization/employee.model';
 import { EmployeesStore } from '../../reducers/organization/employees.reducer';
-import { Department } from '../../reducers/organization/department.model';
+import { Department } from '../../reducers/people/department.model';
 import { employeesAZComparer } from '../employee-comparer';
 
 interface DepartmentsHScrollableListProps {

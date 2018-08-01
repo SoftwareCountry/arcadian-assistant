@@ -7,7 +7,7 @@ import { layoutStyles, contentStyles, tileStyles, contactStyles } from '../profi
 import { Chevron } from '../profile/chevron';
 import { Avatar } from '../people/avatar';
 import { AppState } from '../reducers/app.reducer';
-import { Department } from '../reducers/organization/department.model';
+import { Department } from '../reducers/people/department.model';
 
 import { StyledText } from '../override/styled-text';
 import { Employee } from '../reducers/organization/employee.model';
