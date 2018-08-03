@@ -107,7 +107,6 @@
                     {
                         var employee = EmployeeModel.FromMetadata(x.Metadata);
                         var employeePermissions = allPermissions.GetPermissions(x);
-                        employee.Photo = null;
 
                         if (!employeePermissions.HasFlag(EmployeePermissionsEntry.ReadEmployeePhone))
                         {

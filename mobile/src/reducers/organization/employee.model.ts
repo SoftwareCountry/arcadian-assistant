@@ -37,10 +37,6 @@ export class Employee {
     public sex: number;
 
     @dataMember()
-    @required({nullable: true})
-    public photo: Photo;
-
-    @dataMember()
     public position: string;
 
     @dataMember()

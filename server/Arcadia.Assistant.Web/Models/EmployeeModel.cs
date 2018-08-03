@@ -14,8 +14,6 @@
 
         public Sex Sex { get; set; }
 
-        public PhotoModel Photo { get; set; }
-
         public string Position { get; set; }
 
         public string DepartmentId { get; set; }
