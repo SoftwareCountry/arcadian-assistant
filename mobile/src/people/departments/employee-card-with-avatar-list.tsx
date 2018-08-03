@@ -4,6 +4,9 @@ import { Avatar } from '../avatar';
 import { Employee } from '../../reducers/organization/employee.model';
 import { StyledText } from '../../override/styled-text';
 import { companyItemStyles as styles, companyTinyItemStyles as tinyStyles} from '../styles';
+import topNavBarStyles from '../../navigation/top-nav-bar-styles';
+import { searchViewStyles } from '../../navigation/search-view-styles';
+import peopleScreenNavigatorStyles from '../navigator/styles';
 
 interface EmployeeCardWithAvatarProps {
     employees: Employee[];
@@ -13,8 +16,12 @@ interface EmployeeCardWithAvatarProps {
 
 export class EmployeeCardWithAvatarList extends Component<EmployeeCardWithAvatarProps> {
     public render() {
-        const calcultatedHeight = Dimensions.get('screen').height - 
-            (StyleSheet.flatten(styles.layout).height as number) * this.props.treeLevel - 119;
+        const searchViewHeight = StyleSheet.flatten(searchViewStyles.container).height as number;
+        const topNavBarHeight = StyleSheet.flatten(topNavBarStyles.headerView).height as number;
+        const menuHeight = StyleSheet.flatten(peopleScreenNavigatorStyles.tabBar).height as number;
+        const calcultatedHeight = Dimensions.get('window').height - 
+            (StyleSheet.flatten(styles.layout).height as number) * (this.props.treeLevel + 1) -
+            searchViewHeight - topNavBarHeight - menuHeight;
         const listHeight = (StyleSheet.flatten(tinyStyles.innerLayout).height as number) * this.props.employees.length;
         const max = Math.max(calcultatedHeight, listHeight);
         const layoutFlattenStyle = StyleSheet.flatten([styles.layout, { width: Dimensions.get('window').width, height: max }]);

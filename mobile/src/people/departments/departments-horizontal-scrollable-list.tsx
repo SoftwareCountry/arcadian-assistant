@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { View, ScrollView, Dimensions, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import React, { Component, Ref } from 'react';
+import { View, ScrollView, ScrollViewProps, Dimensions, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { EmployeeCardWithAvatar } from './employee-card-with-avatar';
 import { Employee } from '../../reducers/organization/employee.model';
 import { EmployeesStore } from '../../reducers/organization/employees.reducer';
@@ -16,23 +16,28 @@ interface DepartmentsHScrollableListProps {
     key: string;
 }
 
-interface ScrollViewComponent extends Component {
-    scrollTo(to : {y?: number, x?: number, animated?: boolean}): void;
-}
-
 export interface DepartmentsListStateDescriptor {
     currentPage: number;
 }
 
+function arrayEquals(a: Department[], b: Department[]) {
+    if (a.length !== b.length) {
+        return false;
+    }
+    const intersect = a.filter(e => b.find(e1 => e1.equals(e)) !== undefined);
+    return intersect.length === a.length;
+}
+
 export class DepartmentsHScrollableList extends Component<DepartmentsHScrollableListProps> {
     private employeeCards: EmployeeCardWithAvatar[];
-    private scrollView: ScrollViewComponent;
+    private scrollView: ScrollView;
 
     public componentDidMount() {
         this.setScroll();
     }
+    
     public componentDidUpdate(prevProps: DepartmentsHScrollableListProps) {
-        if (!Set(prevProps.departments).equals(Set(this.props.departments)) ||
+        if (!arrayEquals(prevProps.departments, this.props.departments) ||
             prevProps.departmentsLists && this.props.departmentsLists &&
             prevProps.departmentsLists.currentPage !== this.props.departmentsLists.currentPage) {
                 const cur = this.props.departmentsLists ? this.props.departmentsLists.currentPage : 0;
@@ -63,7 +68,7 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                 showsHorizontalScrollIndicator={false}
                 onMomentumScrollEnd={this.onMomentumScrollEnd}
                 onScrollBeginDrag={this.onScrollBeginDrag}
-                ref={component => this.scrollView = component as ScrollViewComponent}
+                ref={this.ref}
             >
                 {
                     subDepartments != null ? subDepartments.map((subDepartment, index) => 
@@ -85,12 +90,16 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
         </View>;
     }
 
+    private ref: Ref<ScrollView & Component<ScrollViewProps>> = (instance) => {
+        this.scrollView = instance;
+    }
+
     private setScroll() {
         const x: number = this.props.departmentsLists ? this.props.departmentsLists.currentPage : 0;
         const curOffsetX = Dimensions.get('window').width * x;
 
         setTimeout(() => {
-            const view = this.scrollView as ScrollViewComponent;
+            const view = this.scrollView;
             if (view) {
                 view.scrollTo({y: 0, x: curOffsetX});
             }
