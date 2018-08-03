@@ -55,7 +55,11 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
         const { headDepartment, departments } = this.props;
         const subDepartments = headDepartment != null && departments.length > 0 ? departments : null;
         this.employeeCards = [];
-        const cur = this;
+        const addEmployeeCard = (employeeCard: EmployeeCardWithAvatar) => {
+            if (employeeCard !== null) {
+                this.employeeCards.push(employeeCard);
+            }
+        };
 
         return <View>
             <ScrollView 
@@ -73,11 +77,7 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
                         departmentAbbreviation={subDepartment.abbreviation}
                         leftNeighbor={(index > 0) ? this.props.employees.employeesById.get(subDepartments[index - 1].chiefId) : null } 
                         rightNeighbor={(index < subDepartments.length - 1) ? this.props.employees.employeesById.get(subDepartments[index + 1].chiefId) : null} 
-                        ref={(employeeCard) => { 
-                            if (employeeCard != null) {
-                                cur.employeeCards.push(employeeCard);
-                            }
-                        }} 
+                        ref={addEmployeeCard} 
                         key={subDepartment.departmentId} 
                         onItemClicked={this.props.onItemClicked}
                     />) : null
