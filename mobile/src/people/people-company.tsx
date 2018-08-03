@@ -4,7 +4,7 @@ import { ScrollView } from 'react-native';
 
 import { Department } from '../reducers/organization/department.model';
 import { AppState } from '../reducers/app.reducer';
-import { DepartmentsHScrollableList, DepartmentsListStateDescriptor } from './departments/departments-horizontal-scrollable-list';
+import { DepartmentsHScrollableList } from './departments/departments-horizontal-scrollable-list';
 import { EmployeeCardWithAvatar } from './departments/employee-card-with-avatar';
 import { EmployeeCardWithAvatarList } from './departments/employee-card-with-avatar-list';
 import { PeopleActions, updateDepartmentsBranch } from '../reducers/people/people.action';
@@ -16,6 +16,7 @@ import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { employeesAZComparer } from './employee-comparer';
 import { recountBranch, recountDepartments } from '../reducers/search/search.epics';
 import { filterDepartmentsFinished } from '../reducers/search/search.action';
+import { DepartmentsListStateDescriptor } from '../reducers/people/people.reducer';
 
 import {is} from 'immutable';
 

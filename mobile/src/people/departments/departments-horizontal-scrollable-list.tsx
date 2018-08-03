@@ -4,7 +4,7 @@ import { EmployeeCardWithAvatar } from './employee-card-with-avatar';
 import { Employee } from '../../reducers/organization/employee.model';
 import { EmployeesStore } from '../../reducers/organization/employees.reducer';
 import { Department } from '../../reducers/organization/department.model';
-import { Set } from 'immutable';
+import { DepartmentsListStateDescriptor } from '../../reducers/people/people.reducer';
 
 interface DepartmentsHScrollableListProps {
     headDepartment: Department;
@@ -14,10 +14,6 @@ interface DepartmentsHScrollableListProps {
     updateDepartmentsBranch: (departmentId: string) => void;
     onItemClicked: (e: Employee) => void;
     key: string;
-}
-
-export interface DepartmentsListStateDescriptor {
-    currentPage: number;
 }
 
 function arrayEquals(a: Department[], b: Department[]) {

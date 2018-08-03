@@ -1,7 +1,7 @@
 import { Action } from 'redux';
 import { SearchType } from '../../navigation/search-view';
 import { Department } from '../organization/department.model';
-import { DepartmentsListStateDescriptor } from '../../people/departments/departments-horizontal-scrollable-list';
+import { DepartmentsListStateDescriptor } from '../../reducers/people/people.reducer';
 
 export interface SetFilter extends Action {
     type: 'SEARCH-BY-TEXT-FILTER';

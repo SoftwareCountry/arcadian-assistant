@@ -6,9 +6,12 @@ import { SearchActions } from '../search/search.action';
 import { SearchType } from '../../navigation/search-view';
 import { Department } from '../organization/department.model';
 import { LoadUserEmployeeFinished } from '../user/user.action';
-import { DepartmentsListStateDescriptor } from '../../people/departments/departments-horizontal-scrollable-list';
 import { combineEpics } from 'redux-observable';
 import { updateDepartmentsBranchEpic$ } from '../search/search.epics';
+
+export interface DepartmentsListStateDescriptor {
+    currentPage: number;
+}
 
 export interface PeopleState {
     departments: Department[];

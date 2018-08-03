@@ -1,5 +1,5 @@
 import { Department } from '../organization/department.model';
-import { DepartmentsListStateDescriptor } from '../../people/departments/departments-horizontal-scrollable-list';
+import { DepartmentsListStateDescriptor } from '../../reducers/people/people.reducer';
 import { departmentsBranchFromDepartmentWithId } from './people.reducer';
 
 export interface UpdateDepartmentsBranch {
