@@ -18,7 +18,6 @@ import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calenda
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
 import { UserEmployeePermissions } from '../reducers/user/user-employee-permissions.model';
 import { loadUserEmployeePermissions } from '../reducers/user/user.action';
-import { loadPhoto } from '../reducers/organization/organization.action';
 
 interface EmployeeDetailsOwnProps {
     employee: Employee;
@@ -53,7 +52,6 @@ interface EmployeeDetailsDispatchProps {
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
     loadUserEmployeePermissions: (employeeId: string) => void;
     openDepartment: (departmentId: string) => void;
-    loadPhoto: (id: string) => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchProps => ({
     onCompanyClicked: (departmentId: string) => dispatch( openCompanyAction(departmentId)),
@@ -62,7 +60,6 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchPro
         dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status)),
     loadUserEmployeePermissions: (employeeId: string) => { dispatch(loadUserEmployeePermissions(employeeId)); },
     openDepartment: (departmentId: string) => dispatch(openDepartmentAction(departmentId)),
-    loadPhoto: (id: string) => dispatch(loadPhoto(id)),
 });
 
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
@@ -73,9 +70,6 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         const nextEvents = nextProps.events;
 
         if (this.props.employee !== nextProps.employee) {
-            if (!nextProps.employee.photo) {
-                nextProps.loadPhoto(nextProps.employee.employeeId);
-            }
             return true;
         }
 
@@ -97,9 +91,6 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
     public componentDidMount() {
         this.props.loadCalendarEvents(this.props.employee.employeeId);
         this.props.loadUserEmployeePermissions(this.props.employee.employeeId);
-        if (!this.props.employee.photo) {
-            this.props.loadPhoto(this.props.employee.employeeId);
-        }
     }
 
     public render() {

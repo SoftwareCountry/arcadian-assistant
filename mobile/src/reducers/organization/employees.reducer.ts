@@ -24,13 +24,14 @@ export interface OrganizationState {
 
 const defaultState: EmployeesStore = {
     employeesById: Map(),
-    employeeIdsByDepartment: Map(),
+    employeeIdsByDepartment: Map()
 };
 
 export const employeesReducer: Reducer<EmployeesStore> = (state = defaultState, action: OrganizationActions) => {
-    let { employeesById, employeeIdsByDepartment } = state;
     switch (action.type) {
         case 'LOAD_EMPLOYEE_FINISHED':
+            let { employeesById, employeeIdsByDepartment } = state;
+            
             const newEmployee = action.employee;
             const oldEmployee = employeesById.get(newEmployee.employeeId);
             if (oldEmployee !== undefined) {
@@ -47,7 +48,6 @@ export const employeesReducer: Reducer<EmployeesStore> = (state = defaultState, 
             employeesById = employeesById.set(newEmployee.employeeId, newEmployee);
 
             return {
-                ...state,
                 employeeIdsByDepartment,
                 employeesById
             };
