@@ -95,9 +95,8 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
         const curOffsetX = Dimensions.get('window').width * x;
 
         setTimeout(() => {
-            const view = this.scrollView;
-            if (view) {
-                view.scrollTo({y: 0, x: curOffsetX});
+            if (this.scrollView) {
+                this.scrollView.scrollTo({y: 0, x: curOffsetX});
             }
         });
     }
