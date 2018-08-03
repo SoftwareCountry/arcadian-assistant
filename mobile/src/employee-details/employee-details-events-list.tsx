@@ -5,7 +5,7 @@ import { View, StyleSheet, FlatList, ListRenderItemInfo, Dimensions } from 'reac
 
 import { StyledText } from '../override/styled-text';
 import { ApplicationIcon } from '../override/application-icon';
-import { Avatar } from '../people/avatar';
+import { Avatar } from '../people/avatar/avatar';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
 import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { EventManagementToolset } from './event-management-toolset';
@@ -82,6 +82,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
         ]);
 
         const descriptionStatus = this.descriptionStatus(item.calendarEvent);
+        const avatar = item.employee ? <Avatar id={item.employee.employeeId} style={avatarOuterFrame} imageStyle={avatarImage} /> : null;
 
         return (
             <View style={eventsContainerFlattened} key={item.calendarEvent.calendarEventId}>
@@ -93,7 +94,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
                         {
                             this.props.showUserAvatar ? 
                             <View style={avatarContainer}>
-                                <Avatar photo={item.employee.photo} style={avatarOuterFrame} imageStyle={avatarImage} />
+                                {avatar}
                             </View> : null
                         }
                     </View>

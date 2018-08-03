@@ -1,27 +1,14 @@
 import React, { Component } from 'react';
 import { View, Image, StyleSheet, ViewStyle, ImageStyle, LayoutChangeEvent } from 'react-native';
-import { Photo } from '../reducers/organization/employee.model';
-
-const styles = StyleSheet.create({
-    container: {
-        width: '100%',
-        height: '100%',
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    outerFrame: {
-        borderColor: '#2FAFCC',
-        borderWidth: 1
-    },
-    image: {
-        borderColor: '#fff',
-        flex: 1
-    }
-});
+import { Photo } from '../../reducers/organization/employee.model';
+import { PhotoMap } from '../../reducers/organization/employees.reducer';
+import { loadPhoto } from '../../reducers/organization/organization.action';
+import { AppState } from '../../reducers/app.reducer';
+import { connect, Dispatch } from 'react-redux';
+import { styles } from './avatar-styles';
 
 export interface AvatarProps {
-    photo?: Photo;
+    id?: string;
     style?: ViewStyle;
     imageStyle?: ViewStyle;
     useDefaultForEmployeesList?: boolean;
@@ -38,8 +25,24 @@ interface AvatarState {
     visible: boolean;
 }
 
-export class Avatar extends Component<AvatarProps, AvatarState> {
-    constructor(props: AvatarProps) {
+interface AvatarStateProps {
+    photoById: PhotoMap;
+}
+
+interface AvatarDispatchProps {
+    loadPhoto: (id: string) => void;
+}
+
+const mapStateToProps = (state: AppState): AvatarStateProps => ({
+    photoById: state.organization.photoById,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<any>): AvatarDispatchProps => ({
+    loadPhoto: (id: string) => dispatch(loadPhoto(id)),
+});
+
+class AvatarImpl extends Component<AvatarProps & AvatarStateProps & AvatarDispatchProps, AvatarState> {
+    constructor(props: AvatarProps & AvatarStateProps & AvatarDispatchProps) {
         super(props);
         this.state = {
             visible: false
@@ -56,11 +59,20 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
     }
 
     public render() {
-        const mimeType = this.validateMimeType(this.props.photo);
-        const photoBase64 = this.validateEncodedImage(this.props.photo);
+        let image = this.props.useDefaultForEmployeesList ? employeesListAvatarRect : arcadiaIcon;
 
-        const defaultPhoto = this.props.useDefaultForEmployeesList ? employeesListAvatarRect : arcadiaIcon;
-        const image = !mimeType || !photoBase64 ? defaultPhoto : { uri: mimeType + photoBase64 };
+        if (this.props.id) {
+            const photo = this.props.photoById.get(this.props.id);
+            if (!photo) {
+                this.props.loadPhoto(this.props.id);
+            }
+            const mimeType = this.validateMimeType(photo);
+            const photoBase64 = this.validateEncodedImage(photo);
+
+            if (mimeType && photoBase64) {
+                image = { uri: mimeType + photoBase64 };
+            }
+        }
 
         const outerFrameFlattenStyle = StyleSheet.flatten([
             styles.outerFrame,
@@ -114,3 +126,5 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
         return data;
     }
 }
+
+export const Avatar = connect(mapStateToProps, mapDispatchToProps)(AvatarImpl);

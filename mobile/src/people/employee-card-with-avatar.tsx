@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Animated, Easing, View, Image, Dimensions, StyleSheet, FlatList, ListRenderItemInfo, TouchableOpacity } from 'react-native';
-import { Avatar } from './avatar';
+import { Avatar } from './avatar/avatar';
 import { Employee } from '../reducers/organization/employee.model';
 import { StyledText } from '../override/styled-text';
 import { companyItemStyles as styles, companyTinyItemStyles as tinyStyles} from './styles';
@@ -58,15 +58,14 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
 
     private standardEmployeeCard = () => {
         const employee = this.props.employee;
-        const photo = employee ? employee.photo : null;
         const eName = employee ? employee.name : null;
         const ePosition = employee ? employee.position : null;
         const { fadeInAnim, fadeOutAnim } = this.state;
         const neighboursAvatarsVisibility = this.state.isNeighboursAvatarsVisible;
         const {layout, innerLayout, avatarContainer, avatarOuterFrame, avatarImage, info, name, baseText, depabbText, neighborAvatarContainer, neighborAvatarImage } = styles;
+        const avatar = employee ? <Avatar id={employee.employeeId} style={avatarOuterFrame} /> : null;
 
         const layoutFlattenStyle = StyleSheet.flatten([layout, {width: Dimensions.get('window').width}]);
-
         const neighborTop = ((StyleSheet.flatten(layout).height as number) - (StyleSheet.flatten(neighborAvatarContainer).height as number)) * 0.5;
         const leftNeighborX = - (StyleSheet.flatten(neighborAvatarContainer).height as number) * 0.5;
         const rightNeighborX = Dimensions.get('window').width - (StyleSheet.flatten(neighborAvatarContainer).height as number) * 0.5;
@@ -79,11 +78,11 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
             <TouchableOpacity onPress={this.onItemClicked}>
                 <Animated.View style={layoutFlattenStyle}>
                     <Animated.View style={{ ...leftNeighborFlattenStyle, opacity: opacityValue }}>
-                        {this.props.leftNeighbor ? <Avatar photo={this.props.leftNeighbor.photo} /> : null}
+                        {this.props.leftNeighbor ? <Avatar id={this.props.leftNeighbor.employeeId} /> : null}
                     </Animated.View>
                     <View style={innerLayout}>
                         <View style={avatarContainer}>
-                            <Avatar photo={photo} style={avatarOuterFrame} />
+                            {avatar}
                         </View>
                         <View style={info}>
                             <StyledText style={name}>{eName}</StyledText>
@@ -92,7 +91,7 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
                         </View>
                     </View>
                     <Animated.View style={{ ...rightNeighborFlattenStyle, opacity: opacityValue }}>
-                        {this.props.rightNeighbor ? <Avatar photo={this.props.rightNeighbor.photo} /> : null}
+                        {this.props.rightNeighbor ? <Avatar id={this.props.rightNeighbor.employeeId} /> : null}
                     </Animated.View>
                 </Animated.View>
             </TouchableOpacity>
@@ -125,7 +124,7 @@ export class EmployeeCardWithAvatar extends Component<EmployeeCardWithAvatarProp
             <TouchableOpacity onPress={() => this.onLowestLevelItemClicked(itemInfo.index)}>
                 <View style={innerLayout} key={item.employeeId}>
                     <View style={avatarContainer}>
-                        <Avatar photo={item.photo} style={avatarOuterFrame} imageStyle={avatarImage} />
+                        <Avatar id={item.employeeId} style={avatarOuterFrame} imageStyle={avatarImage} />
                     </View>
                     <View style={info}>
                         <StyledText style={name}>{item.name}, </StyledText>

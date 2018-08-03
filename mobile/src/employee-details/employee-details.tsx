@@ -5,7 +5,7 @@ import { View, StyleSheet, ScrollView, Linking, TouchableOpacity, ViewStyle } fr
 
 import { layoutStyles, contentStyles, tileStyles, contactStyles } from '../profile/styles';
 import { Chevron } from '../profile/chevron';
-import { Avatar } from '../people/avatar';
+import { Avatar } from '../people/avatar/avatar';
 import { AppState } from '../reducers/app.reducer';
 import { Department } from '../reducers/people/department.model';
 
@@ -120,7 +120,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                     <View>
                         <Chevron />
                         <View style={layoutStyles.avatarContainer}>
-                            <Avatar photo={employee.photo} imageStyle={{ borderWidth: 0 }} style={{ borderWidth: 3 }} />
+                            <Avatar id={employee.employeeId} imageStyle={{ borderWidth: 0 }} style={{ borderWidth: 3 }} />
                         </View>
                     </View>
                     <ScrollView style={layoutStyles.scrollView} alwaysBounceVertical = {false}>

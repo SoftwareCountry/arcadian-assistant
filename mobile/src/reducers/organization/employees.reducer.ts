@@ -15,17 +15,16 @@ export type PhotoMap = Map<string, Photo>;
 export interface EmployeesStore {
     employeesById: EmployeeMap;
     employeeIdsByDepartment: EmployeeIdsGroupMap;
-    photoById: PhotoMap;
 }
 
 export interface OrganizationState {
     employees: EmployeesStore;
+    photoById: PhotoMap;
 }
 
 const defaultState: EmployeesStore = {
     employeesById: Map(),
     employeeIdsByDepartment: Map(),
-    photoById: Map(),
 };
 
 export const employeesReducer: Reducer<EmployeesStore> = (state = defaultState, action: OrganizationActions) => {
@@ -52,17 +51,15 @@ export const employeesReducer: Reducer<EmployeesStore> = (state = defaultState, 
                 employeeIdsByDepartment,
                 employeesById
             };
+        default:
+            return state;
+    }
+};
+
+export const photoReducer: Reducer<PhotoMap> = (state = Map(), action: OrganizationActions) => {
+    switch (action.type) {
         case 'LOAD_PHOTO_FINISHED':
-            let employee = employeesById.get(action.id);
-            employee.photo = action.photo;
-            employeesById = employeesById.set(action.id, employee);
-            let { photoById } = state;
-            photoById = photoById.set(action.id, action.photo);
-            return {
-                ...state,
-                employeesById,
-                photoById,
-            };
+            return state.set(action.id, action.photo);
         default:
             return state;
     }
@@ -80,5 +77,6 @@ export const organizationEpics = combineEpics(
 );
 
 export const organizationReducer = combineReducers<OrganizationState>({
-    employees: employeesReducer
+    employees: employeesReducer,
+    photoById: photoReducer,
 });

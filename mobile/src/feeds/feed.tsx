@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableHighlight, StyleSheet, Platform, Text, View, Image, LayoutChangeEvent, TouchableOpacity } from 'react-native';
 import { LayoutEvent } from 'react-navigation';
 
-import { Avatar } from '../people/avatar';
+import { Avatar } from '../people/avatar/avatar';
 import { Feed } from '../reducers/feeds/feed.model';
 import { feedStyles as styles } from './styles';
 import { Employee } from '../reducers/organization/employee.model';
@@ -30,7 +30,7 @@ export class FeedListItem extends React.Component<FeedListItemProps, FeedListIte
     public render() {
         const message = this.props.message;
         const employee = this.props.employee;
-        const photo = employee ? employee.photo : null;
+        const avatar = employee ? <Avatar id={employee.employeeId}/> : null;
         const formattedDate = message.datePosted.format('MMMM D, YYYY');
 
         const imgContainerStyle = StyleSheet.flatten([
@@ -42,9 +42,9 @@ export class FeedListItem extends React.Component<FeedListItemProps, FeedListIte
         const isDisabledClick = (this.props.employee) ? false : true;
 
         const avatarContent = isDisabledClick ?
-            <Avatar photo={photo} /> :
+            avatar :
             <TouchableOpacity onPress={this.onAvatarClicked} style={styles.touchableOpacityContainer} >
-                <Avatar photo={photo} />
+                {avatar}
             </TouchableOpacity> ;
 
         return (

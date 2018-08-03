@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Platform, Text, View, Image, TouchableOpacity } from 'react-native';
-import { Avatar } from '../people/avatar';
+import { Avatar } from '../people/avatar/avatar';
 import { Employee } from '../reducers/organization/employee.model';
 import { employeesListItemStyles as styles } from './styles';
 import { StyledText } from '../override/styled-text';
@@ -15,13 +15,16 @@ export class EmployeesListItem extends React.Component<EmployeesListItemProps> {
     public render() {
         const employeeName = this.props.employee ? this.props.employee.name : null;
         const employeePosition = this.props.employee ? this.props.employee.position : null;
-        const photo = this.props.employee ? this.props.employee.photo : null;
+        const avatar = this.props.employee ?  
+            <Avatar id={this.props.employee.employeeId} style={StyleSheet.flatten(styles.avatarOuterFrame)} 
+                imageStyle={StyleSheet.flatten(styles.avatarImage)} /> 
+            : null;
 
         return (
             <TouchableOpacity onPress = {this.onItemClicked}>
                 <View style={styles.layout}>
                     <View style={styles.avatarContainer}>                
-                        <Avatar photo={photo} style={StyleSheet.flatten(styles.avatarOuterFrame)} imageStyle={StyleSheet.flatten(styles.avatarImage)} />
+                        {avatar}
                     </View>
                     <View style={styles.info}>
                         <StyledText style={styles.name}>{employeeName}</StyledText>
