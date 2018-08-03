@@ -1,5 +1,5 @@
 import React, { Component, Ref } from 'react';
-import { View, ScrollView, ScrollViewProps, Dimensions, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import { View, ScrollView, ScrollViewProps, Dimensions, NativeScrollEvent, NativeSyntheticEvent, InteractionManager } from 'react-native';
 import { EmployeeCardWithAvatar } from './employee-card-with-avatar';
 import { Employee } from '../../reducers/organization/employee.model';
 import { EmployeesStore } from '../../reducers/organization/employees.reducer';
@@ -29,7 +29,7 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
     private scrollView: ScrollView;
 
     public componentDidMount() {
-        this.setScroll();
+        InteractionManager.runAfterInteractions(() => this.setScroll());
     }
     
     public componentDidUpdate(prevProps: DepartmentsHScrollableListProps) {
@@ -93,12 +93,9 @@ export class DepartmentsHScrollableList extends Component<DepartmentsHScrollable
     private setScroll() {
         const x: number = this.props.departmentsLists ? this.props.departmentsLists.currentPage : 0;
         const curOffsetX = Dimensions.get('window').width * x;
-
-        setTimeout(() => {
-            if (this.scrollView) {
-                this.scrollView.scrollTo({y: 0, x: curOffsetX});
-            }
-        });
+        if (this.scrollView) {
+            this.scrollView.scrollTo({y: 0, x: curOffsetX});
+        }
     }
 
     private onMomentumScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
