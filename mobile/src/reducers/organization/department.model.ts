@@ -28,6 +28,11 @@ export class Department {
     public isHeadDepartment: boolean;
 
     public equals(obj: Department): boolean {
-        return this.departmentId === obj.departmentId;
+        return this.departmentId === obj.departmentId &&
+        this.abbreviation === obj.abbreviation &&
+        this.name === obj.name &&
+        this.parentDepartmentId === obj.parentDepartmentId &&
+        this.chiefId === obj.chiefId &&
+        this.isHeadDepartment === obj.isHeadDepartment;
     }
 }

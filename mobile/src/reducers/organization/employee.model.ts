@@ -68,6 +68,17 @@ export class Employee {
     public roomNumber: string;
 
     public equals(obj: Employee): boolean {
-        return this.employeeId === obj.employeeId;
+        return this.employeeId === obj.employeeId &&
+        this.name === obj.name &&
+        this.email === obj.email &&
+        this.sex === obj.sex &&
+        this.position === obj.position &&
+        this.departmentId === obj.departmentId &&
+        this.mobilePhone === obj.mobilePhone &&
+        this.birthDate === obj.birthDate &&
+        this.hireDate === obj.hireDate &&
+        this.hoursCredit === obj.hoursCredit &&
+        this.vacationDaysLeft === obj.vacationDaysLeft &&
+        this.roomNumber === obj.roomNumber;
     }
 }
