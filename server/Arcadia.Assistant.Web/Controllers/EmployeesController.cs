@@ -58,12 +58,16 @@
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetPhotoById(string employeeId, CancellationToken token)
         {
-            var employees = await this.LoadEmployeesAsync(new EmployeesQuery().WithId(employeeId), token);
-            if (employees.Length == 0)
+            var allPermissions = await this.permissionsLoader.LoadAsync(this.User);
+            var employees = await this.employeesRegistry.SearchAsync(new EmployeesQuery().WithId(employeeId), token);
+            var validEmployees = employees.Where(x => allPermissions.GetPermissions(x).HasFlag(EmployeePermissionsEntry.ReadEmployeeInfo));
+
+            if (validEmployees.Count() == 0)
             {
                 return this.NotFound();
             }
-            return this.Ok(employees.Single().Photo);
+            var photo = await validEmployees.First().Actor.Ask<GetPhoto.Response>(GetPhoto.Instance, this.timeoutSettings.Timeout, token);
+            return this.Ok(photo.Photo);
         }
 
         [Route("")]
