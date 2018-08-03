@@ -68,6 +68,13 @@ export class Employee {
     public roomNumber: string;
 
     public equals(obj: Employee): boolean {
+        if (!obj) {
+            return false;
+        }
+        if (obj === this) {
+            return true;
+        }
+        
         return this.employeeId === obj.employeeId &&
         this.name === obj.name &&
         this.email === obj.email &&
