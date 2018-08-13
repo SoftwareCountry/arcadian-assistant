@@ -2,11 +2,12 @@
 {
     using System;
     using System.Linq;
-    using System.Threading.Tasks;
     using Akka.Actor;
     using Akka.DI.Core;
     using Akka.Event;
-    using Akka.Util.Internal;
+
+    using Arcadia.Assistant.Calendar.Abstractions;
+
     using MimeKit;
     using Configuration.Configuration;
     using MailKit.Net.Smtp;
@@ -37,16 +38,13 @@
         {
             switch (message)
             {
-                case SickLeaveEmail email:
-                    this.SendEmail(email);
-                    break;
-
-                case SickLeaveIsApproved ev:
+                case SendNotification notification:
                     if (this.employeesActor != null)
                     {
+                        //TODO: Fix hardcode
                         this.employeesActor
-                            .Ask(new EmployeesQuery().WithId(ev.UserId))
-                            .ContinueWith(result => new SickLeaveEmail(ev.TimeStamp, result.Result.AsInstanceOf<EmployeesQuery.Response>()), TaskContinuationOptions.AttachedToParent & TaskContinuationOptions.ExecuteSynchronously)
+                            .Ask<EmployeesQuery.Response>(new EmployeesQuery().WithId(notification.CalendarEvent.EmployeeId), TimeSpan.FromSeconds(10))
+                            .ContinueWith(task => new SendNotificationEnd(task.Result, notification.CalendarEvent.Dates))
                             .PipeTo(this.Self);
                     }
                     else
@@ -56,28 +54,39 @@
 
                     break;
 
+                //TODO: I hate this, remove...
                 case SetEmployeesActor actor:
                     this.employeesActor = actor.EmployeesActor;
+                    break;
+
+                case SendNotificationEnd notification when notification.Employee == null:
+                    break;
+
+                case SendNotificationEnd notification:
+                    this.SendEmail(notification);
+                    break;
+
+                default:
+                    this.Unhandled(message);
                     break;
             }
         }
 
-        private void SendEmail(SickLeaveEmail email)
+        private void SendEmail(SendNotificationEnd notification)
         {
             using (var client = new SmtpClient())
             {
-                this.logger.Debug("Sending a sick leave email notification for user {0}", email.GetEmployeeId());
-                var msg = this.CreateMimeMessage(email.GetBody(this.mailConfig.Body));
+                this.logger.Debug("Sending a sick leave email notification for user {0}", notification.Employee.Metadata.Name);
+                var msg = this.CreateMimeMessage(this.GetNotificationText(notification));
 
                 client.Connect(
                     this.smtpConfig.Host,
                     this.smtpConfig.Port,
-                    this.smtpConfig.UseTls ? SecureSocketOptions.StartTls 
-                                                                        : SecureSocketOptions.SslOnConnect);
+                    this.smtpConfig.UseTls ? SecureSocketOptions.StartTls : SecureSocketOptions.None);
                 client.Authenticate(this.smtpConfig.User, this.smtpConfig.Password);
                 client.Send(msg);
                 client.Disconnect(true);
-                this.logger.Debug("Sick leave email notification for user {0} was succesfully sent", email.GetEmployeeId());
+                this.logger.Debug("Sick leave email notification for user {0} was succesfully sent", notification.Employee.Metadata.Name);
             }
         }
 
@@ -92,27 +101,22 @@
             return message;
         }
 
-        public sealed class SickLeaveEmail
+        private string GetNotificationText(SendNotificationEnd notification)
         {
-            public SickLeaveEmail(DateTimeOffset timeStamp, EmployeesQuery.Response response)
+            return string.Format(this.mailConfig.Body, notification.Employee.Metadata, notification.DatesPeriod.StartDate.ToString("D"));
+        }
+
+        private sealed class SendNotificationEnd
+        {
+            public SendNotificationEnd(EmployeesQuery.Response response, DatesPeriod datesPeriod)
             {
-                this.TimeStamp = timeStamp;
+                this.DatesPeriod = datesPeriod;
                 this.Employee = response.Employees.FirstOrDefault();
             }
 
-            public string GetBody(string format)
-            {
-                return string.Format(format, this.Employee.Metadata.Name, this.TimeStamp.ToString());
-            }
+            public DatesPeriod DatesPeriod { get; }
 
-            public string GetEmployeeId()
-            {
-                return this.Employee.Metadata.EmployeeId;
-            }
-
-            private DateTimeOffset TimeStamp { get; }
-
-            private EmployeeContainer Employee { get; }
+            public EmployeeContainer Employee { get; }
         }
 
         public sealed class SetEmployeesActor
@@ -123,6 +127,16 @@
             }
 
             public IActorRef EmployeesActor { get; }
+        }
+
+        public sealed class SendNotification
+        {
+            public CalendarEvent CalendarEvent { get; }
+
+            public SendNotification(CalendarEvent calendarEvent)
+            {
+                this.CalendarEvent = calendarEvent;
+            }
         }
     }
 }

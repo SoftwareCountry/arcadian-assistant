@@ -120,7 +120,7 @@
                             }, e =>
                                 {
                                     this.OnSickleaveApproved(e);
-                                    this.sickLeaveNotifications.Tell(e);
+                                    this.SendSickLeaveApprovedMessage(e);
                                 });
                         break;
 
@@ -186,6 +186,14 @@
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
                 this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, SickLeaveStatuses.Approved, this.EmployeeId);
+            }
+        }
+
+        private void SendSickLeaveApprovedMessage(SickLeaveIsApproved message)
+        {
+            if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
+            {
+                this.sickLeaveNotifications.Tell(new SendEmailSickLeaveActor.SendNotification(calendarEvent));
             }
         }
 
