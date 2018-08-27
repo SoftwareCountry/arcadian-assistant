@@ -6,8 +6,6 @@
 
     using Arcadia.Assistant.Configuration.Configuration;
 
-    using Microsoft.Extensions.Configuration;
-
     using NLog;
 
     public class MonitoredApplication : Application
