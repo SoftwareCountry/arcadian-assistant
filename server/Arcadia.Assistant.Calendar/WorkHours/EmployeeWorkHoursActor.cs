@@ -159,24 +159,12 @@
 
         private void OnChangeCancelled(WorkHoursChangeIsCancelled message)
         {
-            if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
-            {
-                //If it were approved before, revert changes to counter
-                if (calendarEvent.Status == WorkHoursChangeStatuses.Approved)
-                {
-                    this.ChangeCounter(calendarEvent.Dates.StartWorkingHour, calendarEvent.Dates.FinishWorkingHour, !this.IsCreditingType(calendarEvent.Type));
-                }
-
-                this.EventsById.Remove(message.EventId);
-            }
+            this.RemoveEvent(message.EventId);
         }
 
         private void OnChangeRejected(WorkHoursChangeIsRejected message)
         {
-            if (this.EventsById.ContainsKey(message.EventId))
-            {
-                this.EventsById.Remove(message.EventId);
-            }
+            this.RemoveEvent(message.EventId);
         }
 
         private void OnChangeApproved(WorkHoursChangeIsApproved message)
@@ -186,6 +174,20 @@
                 //Make changes to the counter
                 this.ChangeCounter(calendarEvent.Dates.StartWorkingHour, calendarEvent.Dates.FinishWorkingHour, this.IsCreditingType(calendarEvent.Type));
                 this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, WorkHoursChangeStatuses.Approved, this.EmployeeId);
+            }
+        }
+
+        private void RemoveEvent(string eventId)
+        {
+            if (this.EventsById.TryGetValue(eventId, out var calendarEvent))
+            {
+                //If it were approved before, revert changes to counter
+                if (calendarEvent.Status == WorkHoursChangeStatuses.Approved)
+                {
+                    this.ChangeCounter(calendarEvent.Dates.StartWorkingHour, calendarEvent.Dates.FinishWorkingHour, !this.IsCreditingType(calendarEvent.Type));
+                }
+
+                this.EventsById.Remove(eventId);
             }
         }
 
