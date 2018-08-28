@@ -3,15 +3,19 @@
     using System;
     using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
+    using System.Runtime.Serialization;
 
     using Arcadia.Assistant.Calendar.Abstractions;
 
+    [DataContract]
     public class DatesPeriodModel
     {
         [Required]
+        [DataMember]
         public DateTime StartDate { get; set; }
 
         [Required]
+        [DataMember]
         public DateTime EndDate { get; set; }
 
         /// <summary>
@@ -19,6 +23,7 @@
         /// </summary>
         [DefaultValue(0)]
         [Range(0, 23)]
+        [DataMember]
         public int StartWorkingHour { get; set; } = 0;
 
         /// <summary>
@@ -26,6 +31,7 @@
         /// </summary>
         [DefaultValue(8)]
         [Range(1, 24)]
+        [DataMember]
         public int FinishWorkingHour { get; set; } = 8;
 
 
