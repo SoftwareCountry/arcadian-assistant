@@ -8,22 +8,27 @@
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
     using Arcadia.Assistant.Calendar.Vacations.Events;
+    using Arcadia.Assistant.Feeds;
+    using Arcadia.Assistant.Feeds.Messages;
 
     public class EmployeeVacationsActor : CalendarEventsStorageBase
     {
+        private readonly IActorRef employeeFeed;
+
         public override string PersistenceId { get; }
 
         private int vacationsCredit = 28;
 
-        public EmployeeVacationsActor(string employeeId)
+        public EmployeeVacationsActor(string employeeId, IActorRef employeeFeed)
             : base(employeeId)
         {
+            this.employeeFeed = employeeFeed;
             this.PersistenceId = $"employee-vacations-{this.EmployeeId}";
         }
 
-        public static Props CreateProps(string employeeId)
+        public static Props CreateProps(string employeeId, IActorRef employeeFeed)
         {
-            return Props.Create(() => new EmployeeVacationsActor(employeeId));
+            return Props.Create(() => new EmployeeVacationsActor(employeeId, employeeFeed));
         }
 
         protected override void InsertCalendarEvent(CalendarEvent calendarEvent, OnSuccessfulUpsertCallback onUpsert)
@@ -165,14 +170,22 @@
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
                 this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, VacationStatuses.Approved, this.EmployeeId);
+
+                var text = $"Got vacation approved from {calendarEvent.Dates.StartDate.ToLongDateString()} to {calendarEvent.Dates.EndDate.ToLongDateString()}";
+                var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, DateTime.Now);
+                this.employeeFeed.Tell(new PostMessage(msg));
             }
         }
 
         private void OnVacationCancel(VacationIsCancelled message)
         {
-            if (this.EventsById.ContainsKey(message.EventId))
+            if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
                 this.EventsById.Remove(message.EventId);
+
+                var text = $"Got vacation canceled ({calendarEvent.Dates.StartDate.ToLongDateString()} - {calendarEvent.Dates.EndDate.ToLongDateString()})";
+                var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, DateTime.Now);
+                this.employeeFeed.Tell(new PostMessage(msg));
             }
         }
 

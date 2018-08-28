@@ -7,7 +7,7 @@
     {
         public string MessageId { get; }
 
-        public string EmployeeId { get; }
+        public string PostedByEmployeeId { get; }
 
         public string Title { get; }
 
@@ -15,13 +15,13 @@
 
         public DateTime DatePosted { get; }
 
-        public Message(string messageId, string employeeId, string title, string text, DateTime datePosted)
+        public Message(string messageId, string postedByEmployeeId, string title, string text, DateTime datePosted)
         {
             this.Title = title;
             this.Text = text;
             this.DatePosted = datePosted;
             this.MessageId = messageId;
-            this.EmployeeId = employeeId;
+            this.PostedByEmployeeId = postedByEmployeeId;
         }
 
         private sealed class MessageIdEqualityComparer : IEqualityComparer<Message>
