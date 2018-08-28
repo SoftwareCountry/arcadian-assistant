@@ -1,17 +1,23 @@
 ﻿namespace Arcadia.Assistant.Web.Models
 {
     using System;
+    using System.Runtime.Serialization;
 
     using Arcadia.Assistant.Organization.Abstractions;
 
+    [DataContract]
     public class PhotoModel
     {
+        [DataMember]
         public string MimeType { get; set; }
 
+        [DataMember]
         public int Width { get; set; }
 
+        [DataMember]
         public int Height { get; set; }
 
+        [DataMember]
         public string Base64 { get; set; }
 
         public static implicit operator PhotoModel(Photo photo)

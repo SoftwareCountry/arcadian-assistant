@@ -13,6 +13,7 @@
     using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.Web.Authorization;
     using Arcadia.Assistant.Web.Configuration;
+    using Arcadia.Assistant.Web.Models;
     using Arcadia.Assistant.Web.Users;
 
     using Microsoft.AspNetCore.Authorization;
@@ -45,7 +46,7 @@
 
         [Route("messages")]
         [HttpGet]
-        [ProducesResponseType(typeof(Message[]), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(MessageModel[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllMessages([FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, CancellationToken token)
         {
             var timeout = this.timeoutSettings.Timeout;
@@ -69,7 +70,8 @@
             var respones = await Task.WhenAll(responsesTasks);
             var messages = respones.SelectMany(x => x.Messages)
                 .Distinct(Message.MessageIdComparer)
-                .OrderByDescending(x => x.DatePosted);
+                .OrderByDescending(x => x.DatePosted)
+                .Select(x => new MessageModel(x));
 
             return this.Ok(messages);
         }
