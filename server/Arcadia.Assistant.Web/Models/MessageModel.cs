@@ -29,6 +29,7 @@
             this.EmployeeId = message.PostedByEmployeeId;
             this.Title = message.Title;
             this.Text = message.Text;
+            this.DatePosted = message.DatePosted;
         }
     }
 }
