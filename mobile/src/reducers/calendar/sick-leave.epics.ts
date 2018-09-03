@@ -1,7 +1,7 @@
 import { ActionsObservable } from 'redux-observable';
 import { CompleteSickLeave, ConfirmClaimSickLeave, ConfirmProlongSickLeave, CancelSickLeave } from './sick-leave.action';
 import { AppState, DependenciesContainer } from '../app.reducer';
-import { CalendarEventStatus, CalendarEvent, CalendarEventType } from './calendar-event.model';
+import { CalendarEventStatus, CalendarEvent, CalendarEventType, DatesInterval } from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
 import { loadCalendarEvents } from './calendar.action';
 import { loadFailedError } from '../errors/errors.action';
@@ -16,12 +16,11 @@ export const sickLeaveSavedEpic$ = (action$: ActionsObservable<ConfirmClaimSickL
 
             calendarEvents.type = CalendarEventType.Sickleave;
 
-            calendarEvents.dates = {
-                startDate: x.startDate,
-                endDate: x.endDate,
-                startWorkingHour: 0,
-                finishWorkingHour: 8
-            };
+            calendarEvents.dates = new DatesInterval();
+            calendarEvents.dates.startDate = x.startDate;
+            calendarEvents.dates.endDate = x.endDate;
+            calendarEvents.dates.startWorkingHour = 0;
+            calendarEvents.dates.finishWorkingHour = 8;
 
             calendarEvents.status = CalendarEventStatus.Requested;
 
@@ -56,10 +55,9 @@ export const sickLeaveProlongedEpic$ = (action$: ActionsObservable<ConfirmProlon
 
             const requestBody = {...x.calendarEvent};
 
-            requestBody.dates = {
-                ...x.calendarEvent.dates,
-                endDate: x.prolongedEndDate
-            };
+            requestBody.dates = new DatesInterval();
+            requestBody.dates.startDate = x.calendarEvent.dates.startDate;
+            requestBody.dates.endDate = x.prolongedEndDate;
 
             return deps.apiClient.put(
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
