@@ -1,7 +1,7 @@
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { ConfirmClaimVacation, CancelVacation, ConfirmVacationChange } from './vacation.action';
 import { ActionsObservable } from 'redux-observable';
-import { CalendarEvent, CalendarEventType, CalendarEventStatus } from './calendar-event.model';
+import { CalendarEvent, CalendarEventType, CalendarEventStatus, DatesInterval } from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
 import { loadCalendarEvents } from './calendar.action';
 import { Observable } from 'rxjs/Observable';
@@ -15,12 +15,11 @@ export const vacationSavedEpic$ = (action$: ActionsObservable<ConfirmClaimVacati
 
             calendarEvents.type = CalendarEventType.Vacation;
 
-            calendarEvents.dates = {
-                startDate: x.startDate,
-                endDate: x.endDate,
-                startWorkingHour: 0,
-                finishWorkingHour: 8
-            };
+            calendarEvents.dates = new DatesInterval();
+            calendarEvents.dates.startDate = x.startDate;
+            calendarEvents.dates.endDate = x.endDate;
+            calendarEvents.dates.startWorkingHour = 0;
+            calendarEvents.dates.finishWorkingHour = 8;
 
             calendarEvents.status = CalendarEventStatus.Requested;
 
@@ -53,11 +52,9 @@ export const vacationChangedEpic$ = (action$: ActionsObservable<ConfirmVacationC
         .flatMap(x => {
             const requestBody = {...x.calendarEvent};
 
-            requestBody.dates = {
-                ...requestBody.dates,
-                startDate: x.startDate,
-                endDate: x.endDate
-            };
+            requestBody.dates = new DatesInterval();
+            requestBody.dates.startDate = x.startDate;
+            requestBody.dates.endDate = x.endDate;
 
             return deps.apiClient.put(
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
