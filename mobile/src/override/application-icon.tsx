@@ -24,3 +24,12 @@ const glyphMap = {
 };
 export const ApplicationIcon = createIconSet(glyphMap, 'aa-iconfont');
 
+const glyphMapBold = {
+    'calendar': 0xE001,
+    'feeds': 0xE002,
+    'helpdesk': 0xE003,
+    'people': 0xE004,
+    'profile': 0xE005
+};
+
+export const ApplicationIconBold = createIconSet(glyphMapBold, 'aa-iconfont-bold');

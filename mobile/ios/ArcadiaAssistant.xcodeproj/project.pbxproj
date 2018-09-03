@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -74,14 +75,15 @@
 		7D16B1D41FAC70E000B0892E /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7D16B1941FAC70DF00B0892E /* Zocial.ttf */; };
 		7F79E5A619DF4BA581E2E293 /* libAppCenterReactNative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 535FE0FFDE7B493C8A653CB4 /* libAppCenterReactNative.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
+		86DA8A50F2D44941B01326A9 /* libAppCenterReactNativeCrashes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CFE6260F975A4FBE9E934D18 /* libAppCenterReactNativeCrashes.a */; };
+		8F61F82B213D499B008305E7 /* aa-iconfont-bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8F61F82A213D499B008305E7 /* aa-iconfont-bold.ttf */; };
 		AC1CD46A284D40858BC0A31F /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 64B3870ACAA84AEBAC42A0A6 /* EvilIcons.ttf */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
+		BFD0278726E44AD394BF2069 /* libAppCenterReactNativeAnalytics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9DDFF4ACAAB449E9E57B4AC /* libAppCenterReactNativeAnalytics.a */; };
 		CB02B501F8354425B6ECA252 /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D4FEAF4C9AB442BA9F7F2F7E /* Feather.ttf */; };
 		D54731A77FBA84CB1CAA5E43 /* libPods-ArcadiaAssistantTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB823EB2ABE03BBCC3A0EA60 /* libPods-ArcadiaAssistantTests.a */; };
 		F796E19C08FF4C1390512289 /* libRNSensitiveInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 020F0ACA7F5049308CF20505 /* libRNSensitiveInfo.a */; };
 		F8DE791E988E4DA5BADF942B /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D5DEC77FEF41C8B1CBEF03 /* MaterialCommunityIcons.ttf */; };
-		BFD0278726E44AD394BF2069 /* libAppCenterReactNativeAnalytics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9DDFF4ACAAB449E9E57B4AC /* libAppCenterReactNativeAnalytics.a */; };
-		86DA8A50F2D44941B01326A9 /* libAppCenterReactNativeCrashes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CFE6260F975A4FBE9E934D18 /* libAppCenterReactNativeCrashes.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -372,6 +374,27 @@
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
 		};
+		8F61F81E213D496C008305E7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C5A6DA0B712A448AB4014354 /* AppCenterReactNative.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = C35AEC211EF91F9300931F0C;
+			remoteInfo = AppCenterReactNative;
+		};
+		8F61F823213D496C008305E7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCA5B9CC2C6C47649C82A2A0 /* AppCenterReactNativeCrashes.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 5419C2701D824AA700DDF3A1;
+			remoteInfo = AppCenterReactNativeCrashes;
+		};
+		8F61F828213D496C008305E7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C3EEF7910F1A4A71939B26D2 /* AppCenterReactNativeAnalytics.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 548694001D8384E600E6685A;
+			remoteInfo = AppCenterReactNativeAnalytics;
+		};
 		8F91398720C55EF400564483 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 18B1051145BD4F19864A2ED0 /* RNSensitiveInfo.xcodeproj */;
@@ -423,7 +446,7 @@
 		4ECB6F36DF22428DBA874C87 /* libRNVectorIcons.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNVectorIcons.a; sourceTree = "<group>"; };
 		500E8EA82F3BB526773299C6 /* Pods-ArcadiaAssistant.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ArcadiaAssistant.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ArcadiaAssistant/Pods-ArcadiaAssistant.debug.xcconfig"; sourceTree = "<group>"; };
 		5202EF7A13774E01A2DE166E /* AppCenter-Config.plist */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.xml; name = "AppCenter-Config.plist"; path = "ArcadiaAssistant/AppCenter-Config.plist"; sourceTree = "<group>"; };
-		535FE0FFDE7B493C8A653CB4 /* libAppCenterReactNative.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = archive.ar; name = libAppCenterReactNative.a; path = libAppCenterReactNative.a; sourceTree = "<group>"; };
+		535FE0FFDE7B493C8A653CB4 /* libAppCenterReactNative.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libAppCenterReactNative.a; sourceTree = "<group>"; };
 		554DF58F5558D24F3FF391B7 /* Pods-ArcadiaAssistantTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ArcadiaAssistantTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ArcadiaAssistantTests/Pods-ArcadiaAssistantTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
 		64B3870ACAA84AEBAC42A0A6 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
@@ -443,6 +466,7 @@
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		880BD520E7A34417A5BDEC02 /* libRNSFAuthenticationSession.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNSFAuthenticationSession.a; sourceTree = "<group>"; };
 		8C7B05C4BD90420B8B507F44 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
+		8F61F82A213D499B008305E7 /* aa-iconfont-bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "aa-iconfont-bold.ttf"; path = "../assets/fonts/aa-iconfont-bold.ttf"; sourceTree = "<group>"; };
 		97F364A02A7149BEB21F7974 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
 		9D0E06A9EA5049CDB5E05544 /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
@@ -450,19 +474,19 @@
 		B54281EB789D654431BAD6E3 /* Pods-ArcadiaAssistant-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ArcadiaAssistant-tvOSTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ArcadiaAssistant-tvOSTests/Pods-ArcadiaAssistant-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		B641C71C12E387EF19786BC2 /* Pods-ArcadiaAssistant-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ArcadiaAssistant-tvOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-ArcadiaAssistant-tvOS/Pods-ArcadiaAssistant-tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		BB823EB2ABE03BBCC3A0EA60 /* libPods-ArcadiaAssistantTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ArcadiaAssistantTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		C5A6DA0B712A448AB4014354 /* AppCenterReactNative.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = AppCenterReactNative.xcodeproj; path = ../node_modules/appcenter/ios/AppCenterReactNative.xcodeproj; sourceTree = "<group>"; };
+		C3EEF7910F1A4A71939B26D2 /* AppCenterReactNativeAnalytics.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = AppCenterReactNativeAnalytics.xcodeproj; path = "../node_modules/appcenter-analytics/ios/AppCenterReactNativeAnalytics.xcodeproj"; sourceTree = "<group>"; };
+		C5A6DA0B712A448AB4014354 /* AppCenterReactNative.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = AppCenterReactNative.xcodeproj; path = ../node_modules/appcenter/ios/AppCenterReactNative.xcodeproj; sourceTree = "<group>"; };
 		C620AFBA06618B28A211EA21 /* Pods-ArcadiaAssistant.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ArcadiaAssistant.release.xcconfig"; path = "Pods/Target Support Files/Pods-ArcadiaAssistant/Pods-ArcadiaAssistant.release.xcconfig"; sourceTree = "<group>"; };
 		C95A42356364E85264677774 /* Pods-ArcadiaAssistantTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ArcadiaAssistantTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ArcadiaAssistantTests/Pods-ArcadiaAssistantTests.release.xcconfig"; sourceTree = "<group>"; };
 		CBEE7CC97CBBC0F1B9DCDC24 /* libPods-ArcadiaAssistant.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ArcadiaAssistant.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE2E218B837D4A99AF9B8046 /* RNSFAuthenticationSession.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNSFAuthenticationSession.xcodeproj; path = "../node_modules/react-native-sf-authentication-session/ios/RNSFAuthenticationSession.xcodeproj"; sourceTree = "<group>"; };
+		CFE6260F975A4FBE9E934D18 /* libAppCenterReactNativeCrashes.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libAppCenterReactNativeCrashes.a; sourceTree = "<group>"; };
 		D43E8A878AEFCA7E13C079C0 /* libPods-ArcadiaAssistant-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ArcadiaAssistant-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4FEAF4C9AB442BA9F7F2F7E /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
 		D7D5DEC77FEF41C8B1CBEF03 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
+		D9DDFF4ACAAB449E9E57B4AC /* libAppCenterReactNativeAnalytics.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libAppCenterReactNativeAnalytics.a; sourceTree = "<group>"; };
+		DCA5B9CC2C6C47649C82A2A0 /* AppCenterReactNativeCrashes.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = AppCenterReactNativeCrashes.xcodeproj; path = "../node_modules/appcenter-crashes/ios/AppCenterReactNativeCrashes.xcodeproj"; sourceTree = "<group>"; };
 		F502F4A152D443EEA4BB3D8D /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
-		C3EEF7910F1A4A71939B26D2 /* AppCenterReactNativeAnalytics.xcodeproj */ = {isa = PBXFileReference; name = "AppCenterReactNativeAnalytics.xcodeproj"; path = "../node_modules/appcenter-analytics/ios/AppCenterReactNativeAnalytics.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		D9DDFF4ACAAB449E9E57B4AC /* libAppCenterReactNativeAnalytics.a */ = {isa = PBXFileReference; name = "libAppCenterReactNativeAnalytics.a"; path = "libAppCenterReactNativeAnalytics.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
-		DCA5B9CC2C6C47649C82A2A0 /* AppCenterReactNativeCrashes.xcodeproj */ = {isa = PBXFileReference; name = "AppCenterReactNativeCrashes.xcodeproj"; path = "../node_modules/appcenter-crashes/ios/AppCenterReactNativeCrashes.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		CFE6260F975A4FBE9E934D18 /* libAppCenterReactNativeCrashes.a */ = {isa = PBXFileReference; name = "libAppCenterReactNativeCrashes.a"; path = "libAppCenterReactNativeCrashes.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -707,6 +731,9 @@
 				4ECB6F36DF22428DBA874C87 /* libRNVectorIcons.a */,
 				880BD520E7A34417A5BDEC02 /* libRNSFAuthenticationSession.a */,
 				020F0ACA7F5049308CF20505 /* libRNSensitiveInfo.a */,
+				535FE0FFDE7B493C8A653CB4 /* libAppCenterReactNative.a */,
+				D9DDFF4ACAAB449E9E57B4AC /* libAppCenterReactNativeAnalytics.a */,
+				CFE6260F975A4FBE9E934D18 /* libAppCenterReactNativeCrashes.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -756,6 +783,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				8F61F82A213D499B008305E7 /* aa-iconfont-bold.ttf */,
 				7D16B1891FAC70DF00B0892E /* Fonts */,
 				13B07FAE1A68108700A75B9A /* ArcadiaAssistant */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -779,6 +807,30 @@
 				00E356EE1AD99517003FC87E /* ArcadiaAssistantTests.xctest */,
 				2D02E47B1E0B4A5D006451C7 /* ArcadiaAssistant-tvOS.app */,
 				2D02E4901E0B4A5D006451C7 /* ArcadiaAssistant-tvOSTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8F61F81B213D496C008305E7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8F61F81F213D496C008305E7 /* libAppCenterReactNative.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8F61F820213D496C008305E7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8F61F824213D496C008305E7 /* libAppCenterReactNativeCrashes.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8F61F825213D496C008305E7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8F61F829213D496C008305E7 /* libAppCenterReactNativeAnalytics.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -956,6 +1008,18 @@
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
+				{
+					ProductGroup = 8F61F81B213D496C008305E7 /* Products */;
+					ProjectRef = C5A6DA0B712A448AB4014354 /* AppCenterReactNative.xcodeproj */;
+				},
+				{
+					ProductGroup = 8F61F825213D496C008305E7 /* Products */;
+					ProjectRef = C3EEF7910F1A4A71939B26D2 /* AppCenterReactNativeAnalytics.xcodeproj */;
+				},
+				{
+					ProductGroup = 8F61F820213D496C008305E7 /* Products */;
+					ProjectRef = DCA5B9CC2C6C47649C82A2A0 /* AppCenterReactNativeCrashes.xcodeproj */;
+				},
 				{
 					ProductGroup = 00C302A81ABCB8CE00DB3ED1 /* Products */;
 					ProjectRef = 00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */;
@@ -1294,6 +1358,27 @@
 			remoteRef = 832341B41AAA6A8300B99B32 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		8F61F81F213D496C008305E7 /* libAppCenterReactNative.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libAppCenterReactNative.a;
+			remoteRef = 8F61F81E213D496C008305E7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8F61F824213D496C008305E7 /* libAppCenterReactNativeCrashes.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libAppCenterReactNativeCrashes.a;
+			remoteRef = 8F61F823213D496C008305E7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8F61F829213D496C008305E7 /* libAppCenterReactNativeAnalytics.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libAppCenterReactNativeAnalytics.a;
+			remoteRef = 8F61F828213D496C008305E7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		8F91398820C55EF400564483 /* libRNSensitiveInfo.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1322,6 +1407,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8F61F82B213D499B008305E7 /* aa-iconfont-bold.ttf in Resources */,
 				0C09D7D58DE04786A258E0DE /* aa-iconfont.ttf in Resources */,
 				7D16B1CF1FAC70E000B0892E /* Octicons.ttf in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
