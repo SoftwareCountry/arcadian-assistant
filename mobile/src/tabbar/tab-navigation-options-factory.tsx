@@ -3,14 +3,20 @@ import { NavigationTabScreenOptions } from 'react-navigation';
 import {Platform, Dimensions } from 'react-native';
 import tabBarStyles from './tab-bar-styles';
 import { StyledText } from '../override/styled-text';
-import { ApplicationIcon } from '../override/application-icon';
+import { ApplicationIcon, ApplicationIconBold } from '../override/application-icon';
 
 export class TabNavigationOptionsFactory {
     public create(label: string, iconName: string): NavigationTabScreenOptions {
         return {
             tabBarLabel: this.getTabBarLabel(label),
-            tabBarIcon: ({ tintColor, focused }) =>
-           <ApplicationIcon name={iconName} size={Platform.OS === 'ios' ? Dimensions.get('window').width * 0.08 : Dimensions.get('window').width * 0.04 } style = {tabBarStyles.tabImages} ></ApplicationIcon>
+            tabBarIcon: ({ tintColor, focused }) => {
+                if (focused) {
+                    return <ApplicationIconBold name={iconName} size={Platform.OS === 'ios' ? Dimensions.get('window').width * 0.08 : Dimensions.get('window').width * 0.04} style={tabBarStyles.tabImages} ></ApplicationIconBold>;
+                } else {
+                    return <ApplicationIcon name={iconName} size={Platform.OS === 'ios' ? Dimensions.get('window').width * 0.08 : Dimensions.get('window').width * 0.04} style={tabBarStyles.tabImages} ></ApplicationIcon>;
+                }
+            }
+
         };
     }
 
