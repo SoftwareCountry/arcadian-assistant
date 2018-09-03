@@ -62,27 +62,29 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
         const weeks = this.props.weeks.map(week => this.renderWeek(week));
 
         return (
-            <View style={weeksContainerStyles}>
-                <View style={calendarStyles.today}>
-                    <StyledText style={calendarStyles.todayTitle}>
-                        {this.props.pageDate.format('MMMM YYYY')}
-                    </StyledText>
+            this.props.width && this.props.height ?
+                <View style={weeksContainerStyles}>
+                    <View style={calendarStyles.today}>
+                        <StyledText style={calendarStyles.todayTitle}>
+                            {this.props.pageDate.format('MMMM YYYY')}
+                        </StyledText>
+                    </View>
+                    <View style={calendarStyles.weeksNames}>
+                        {
+                            this.weekdaysNames.map((weekdayName, index) =>
+                                <View key={`${index}-${weekdayName}`} style={calendarStyles.weekName}>
+                                    <StyledText style={calendarStyles.weekDayName}>{weekdayName}</StyledText>
+                                </View>
+                            )
+                        }
+                    </View>
+                    <View style={calendarStyles.weeks}>
+                        {
+                            weeks
+                        }
+                    </View>
                 </View>
-                <View style={calendarStyles.weeksNames}>
-                    {
-                        this.weekdaysNames.map((weekdayName, index) =>
-                            <View key={`${index}-${weekdayName}`} style={calendarStyles.weekName}>
-                                <StyledText style={calendarStyles.weekDayName}>{weekdayName}</StyledText>
-                            </View>
-                        )
-                    }
-                </View>
-                <View style={calendarStyles.weeks}>
-                    {
-                        weeks
-                    }
-                </View>
-            </View>
+            : null
         );
     }
 
@@ -131,7 +133,7 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
 
         return (
             <View style={weekDayContainerStyles} key={`${day.date.week()}-${day.date.date()}`} onLayout={this.onLayoutWeekDayContainer}>
-                <WeekDay hide={this.props.hidePrevNextMonthDays && !day.belongsToCurrentMonth}>
+                <WeekDay hide={this.state.weekDayContainerWidth === 0 || (this.props.hidePrevNextMonthDays && !day.belongsToCurrentMonth)}>
                     <WeekDayTouchable onSelectedDay={this.props.onSelectedDay} day={day} disabled={disableDay} />
                     {
                         this.renderSingleSelection(day, intervalModels)
