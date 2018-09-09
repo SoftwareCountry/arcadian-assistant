@@ -26,7 +26,7 @@
 
         private readonly EmployeeCalendarContainer calendar;
 
-        public EmployeeActor(EmployeeStoredInformation storedInformation, IActorRef imageResizer)
+        public EmployeeActor(EmployeeStoredInformation storedInformation, IActorRef imageResizer, IActorRef vacationsRegistry)
         {
             this.employeeMetadata = storedInformation.Metadata;
             this.PersistenceId = $"employee-info-{Uri.EscapeDataString(this.employeeMetadata.EmployeeId)}";
@@ -38,7 +38,7 @@
             var sendEmailActor = Context.ActorOf(SendEmailSickLeaveActor.GetProps(), "sendEmail");
             sendEmailActor.Tell(new SendEmailSickLeaveActor.SetEmployeesActor(Context.Parent));
 
-            var vacationsActor = Context.ActorOf(EmployeeVacationsActor.CreateProps(this.employeeMetadata.EmployeeId, this.employeeFeed), "vacations");
+            var vacationsActor = Context.ActorOf(EmployeeVacationsActor.CreateProps(this.employeeMetadata.EmployeeId, this.employeeFeed, vacationsRegistry), "vacations");
             var sickLeavesActor = Context.ActorOf(EmployeeSickLeaveActor.CreateProps(this.employeeMetadata.EmployeeId, sendEmailActor), "sick-leaves");
             var workHoursActor = Context.ActorOf(EmployeeWorkHoursActor.CreateProps(this.employeeMetadata.EmployeeId), "work-hours");
             Context.Watch(vacationsActor);
@@ -177,7 +177,7 @@
             }
         }
 
-        public static Props GetProps(EmployeeStoredInformation employeeStoredInformation, IActorRef imageResizer) =>
-            Props.Create(() => new EmployeeActor(employeeStoredInformation, imageResizer));
+        public static Props GetProps(EmployeeStoredInformation employeeStoredInformation, IActorRef imageResizer, IActorRef vacationsRegistry) =>
+            Props.Create(() => new EmployeeActor(employeeStoredInformation, imageResizer, vacationsRegistry));
     }
 }

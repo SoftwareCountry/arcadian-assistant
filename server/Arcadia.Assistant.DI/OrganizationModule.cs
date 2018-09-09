@@ -1,11 +1,22 @@
 ﻿namespace Arcadia.Assistant.DI
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data.Services.Client;
+    using System.Linq;
+    using System.Net;
+    using System.Threading.Tasks;
+
+    using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.CSP;
+    using Arcadia.Assistant.CSP.Vacations;
     using Arcadia.Assistant.Organization;
     using Arcadia.Assistant.Organization.Abstractions;
 
     using Autofac;
     using Configuration.Configuration;
+
+    using Microsoft.EntityFrameworkCore;
 
     public class OrganizationModule : Module
     {
@@ -25,6 +36,9 @@
 
             builder.RegisterType<CspDepartmentsStorage>().As<DepartmentsStorage>();
             builder.RegisterType<CspEmployeesInfoStorage>().As<EmployeesInfoStorage>();
+
+            builder.RegisterType<ArcadiaVacationRegistry>().As<VacationsRegistry>();
+            builder.RegisterType<VacationsQueryExecutor>().AsSelf();
         }
     }
 }

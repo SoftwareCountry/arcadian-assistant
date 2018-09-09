@@ -22,6 +22,8 @@
 
         private readonly IActorRef imageResizer;
 
+        private readonly IActorRef vacationsRegistry;
+
         private Dictionary<string, IActorRef> EmployeesById { get; } = new Dictionary<string, IActorRef>();
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
@@ -35,6 +37,8 @@
             this.imageResizer = Context.ActorOf(
                 Props.Create(() => new ImageResizer()).WithRouter(new RoundRobinPool(ResizersCount)),
                 "image-resizer");
+
+            this.vacationsRegistry = Context.ActorOf(VacationsRegistry.GetProps, "vacations-registry");
         }
 
         protected override void OnReceive(object message)
@@ -129,7 +133,7 @@
                 else
                 {
                     employee = Context.ActorOf(
-                        EmployeeActor.GetProps(employeeNewInfo, this.imageResizer),
+                        EmployeeActor.GetProps(employeeNewInfo, this.imageResizer, this.vacationsRegistry),
                         $"employee-{Uri.EscapeDataString(employeeNewInfo.Metadata.EmployeeId)}");
 
                     this.EmployeesById[employeeNewInfo.Metadata.EmployeeId] = employee;

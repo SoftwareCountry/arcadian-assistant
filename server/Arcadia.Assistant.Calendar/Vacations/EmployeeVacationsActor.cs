@@ -10,25 +10,29 @@
     using Arcadia.Assistant.Calendar.Vacations.Events;
     using Arcadia.Assistant.Feeds;
     using Arcadia.Assistant.Feeds.Messages;
+    using Arcadia.Assistant.Organization.Abstractions;
 
     public class EmployeeVacationsActor : CalendarEventsStorageBase
     {
         private readonly IActorRef employeeFeed;
 
+        private readonly IActorRef vacationsRegistry;
+
         public override string PersistenceId { get; }
 
-        private int vacationsCredit = 28;
+        //private int vacationsCredit = 28;
 
-        public EmployeeVacationsActor(string employeeId, IActorRef employeeFeed)
+        public EmployeeVacationsActor(string employeeId, IActorRef employeeFeed, IActorRef vacationsRegistry)
             : base(employeeId)
         {
             this.employeeFeed = employeeFeed;
+            this.vacationsRegistry = vacationsRegistry;
             this.PersistenceId = $"employee-vacations-{this.EmployeeId}";
         }
 
-        public static Props CreateProps(string employeeId, IActorRef employeeFeed)
+        public static Props CreateProps(string employeeId, IActorRef employeeFeed, IActorRef vacationsRegistry)
         {
-            return Props.Create(() => new EmployeeVacationsActor(employeeId, employeeFeed));
+            return Props.Create(() => new EmployeeVacationsActor(employeeId, employeeFeed, vacationsRegistry));
         }
 
         protected override void InsertCalendarEvent(CalendarEvent calendarEvent, OnSuccessfulUpsertCallback onUpsert)
@@ -54,7 +58,11 @@
             switch (message)
             {
                 case GetVacationsCredit _:
-                    this.Sender.Tell(new GetVacationsCredit.Response(this.vacationsCredit));
+                    this.vacationsRegistry
+                        .Ask<VacationsRegistry.GetVacationInfo.Response>(new VacationsRegistry.GetVacationInfo(this.EmployeeId))
+                        .ContinueWith(x => new GetVacationsCredit.Response(x.Result.VacationsCredit))
+                        .PipeTo(this.Sender);
+
                     break;
 
                 default:

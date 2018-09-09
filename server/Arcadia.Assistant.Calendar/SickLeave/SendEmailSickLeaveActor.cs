@@ -103,7 +103,7 @@
 
         private string GetNotificationText(SendNotificationEnd notification)
         {
-            return string.Format(this.mailConfig.Body, notification.Employee.Metadata, notification.DatesPeriod.StartDate.ToString("D"));
+            return string.Format(this.mailConfig.Body, notification.Employee.Metadata.Name, notification.DatesPeriod.StartDate.ToString("D"));
         }
 
         private sealed class SendNotificationEnd
