@@ -30,7 +30,7 @@
 
             new AppInsightTelemetry().Setup(settings);
 
-            using (var app = new Application(settings))
+            using (var app = new Application(config))
             {
                 app.Start();
                 Console.CancelKeyPress += OnExit;

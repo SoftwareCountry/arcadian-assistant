@@ -1,6 +1,9 @@
 ﻿namespace Arcadia.Assistant.Configuration.Configuration
 {
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+
+    using Microsoft.Extensions.Configuration;
 
     public class AppSettings
     {
@@ -14,8 +17,5 @@
 
         [Required]
         public string Akka { get; set; }
-
-        [Required]
-        public ConnectionStringsSettings ConnectionStrings { get; set; }
     }
 }

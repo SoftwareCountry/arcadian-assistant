@@ -33,7 +33,7 @@
 
             new AppInsightTelemetry().Setup(settings);
 
-            this.application = new MonitoredApplication(settings);
+            this.application = new MonitoredApplication(config);
             this.application.Start();
         }
 

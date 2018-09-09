@@ -14,8 +14,6 @@
     {
         private readonly Func<ArcadiaCspContext> contextFactory;
 
-        public const string ArcadianEmployeeQuery = "SELECT * FROM dbo.ArcadianEmployee WHERE IsDelete <> 1";
-
         public CspEmployeesInfoStorage(Func<ArcadiaCspContext> contextFactory)
         {
             this.contextFactory = contextFactory;
@@ -25,9 +23,8 @@
         {
             using (var context = this.contextFactory())
             {
-                var employees = await context
-                    .Employee
-                    .FromSql(ArcadianEmployeeQuery)
+                var employees = await new CspEmployeeQuery(context)
+                    .Get()
                     .Select(x => new EmployeeStoredInformation(
                         new EmployeeMetadata(x.Id.ToString(), $"{x.LastName} {x.FirstName}".Trim(), x.Email)
                         {

@@ -17,13 +17,13 @@
 
     public class Application : IDisposable
     {
-        protected readonly AppSettings config;
+        protected readonly IConfigurationRoot config;
 
         private IContainer container;
 
         private ActorSystem ActorSystem { get; set; }
 
-        public Application(AppSettings config)
+        public Application(IConfigurationRoot config)
         {
             this.config = config;
         }
@@ -32,7 +32,7 @@
 
         public void Start()
         {
-            var akkaConfig = ConfigurationFactory.ParseString(this.config.Akka);
+            var akkaConfig = ConfigurationFactory.ParseString(this.config["Akka"]);
 
             this.ActorSystem = ActorSystem.Create("arcadia-assistant", akkaConfig);
             this.OnStart(this.ActorSystem);
