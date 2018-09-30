@@ -50,10 +50,10 @@ export const employeesListItemStyles = StyleSheet.create({
 
 export const companyItemStyles = StyleSheet.create({
     layout: {
-        flex: 2, 
-        height: 90, 
-        overflow: 'hidden', 
-        borderTopWidth: 1, 
+        flex: 2,
+        height: 90,
+        overflow: 'hidden',
+        borderTopWidth: 1,
         borderColor: 'rgba(0, 0, 0, 0.15)'
     },
     innerLayout: {
@@ -94,7 +94,7 @@ export const companyItemStyles = StyleSheet.create({
         fontSize: 9,
         paddingTop: 2,
         color: '#2FAFCC',
-        
+
     },
     name: {
         fontFamily: 'Helvetica-Light',
@@ -116,10 +116,10 @@ export const companyItemStyles = StyleSheet.create({
 
 export const companyTinyItemStyles = StyleSheet.create({
     layout: {
-        height: 90, 
-        flex: 0, 
-        overflow: 'hidden', 
-        borderTopWidth: 1, 
+        height: 90,
+        flex: 0,
+        overflow: 'hidden',
+        borderTopWidth: 1,
         borderColor: 'rgba(0, 0, 0, 0.15)'
     },
     innerLayout: {
@@ -160,5 +160,40 @@ export const companyTinyItemStyles = StyleSheet.create({
         width: 44,
         height: 44,
         position: 'absolute'
+    }
+});
+
+export const companyDepartments = StyleSheet.create({
+    levelContainer: {
+        borderTopWidth: 1,
+        borderColor: 'rgba(0, 0, 0, 0.15)',
+        backgroundColor: '#fff'
+    },
+    nodesContainer: {
+		position: 'relative',
+        height: 100
+    },
+    nodesSwipeableContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        position: 'absolute'
+    }
+});
+
+export const companyDepartmentsAnimatedNode = StyleSheet.create({
+    container: {
+        flexDirection: 'row',
+    },
+    stickyContainer: {
+		justifyContent: 'center',
+		alignItems: 'center'
+    },
+    scaleContainer: {
+		justifyContent: 'center',
+		alignItems: 'center'
+    },
+    content: {
+        marginLeft: 10,
+        justifyContent: 'space-between'
     }
 });
