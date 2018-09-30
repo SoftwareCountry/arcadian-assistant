@@ -12,13 +12,14 @@ import { filterDepartments } from '../reducers/people/filter-departments';
 import { buildBranchFromChildToParent } from '../reducers/people/build-branch-from-child-to-parent';
 import { buildDepartmentIdToChildren } from '../reducers/people/build-department-children';
 import { Department } from '../reducers/organization/department.model';
-import { DepartmentIdToChildren } from '../reducers/people/people.model';
+import { DepartmentIdToChildren, EmployeeIdToNode } from '../reducers/people/people.model';
+import { buildEmployeeNodes } from '../reducers/people/build-employee-nodes';
 
 interface CompanyDepartmentsStateProps {
     headDepartment: Department;
     employeeIdsByDepartment: EmployeeIdsGroupMap;
     departmentIdToChildren: DepartmentIdToChildren;
-    employeesById: EmployeeMap;
+    employeeIdToNode: EmployeeIdToNode;
 }
 
 interface CompanyDepartmentsDispatchProps {
@@ -41,10 +42,12 @@ const mapStateToProps: MapStateToProps<CompanyDepartmentsStateProps, void, AppSt
 
     const departmentIdToChildren = buildDepartmentIdToChildren(withBranches);
 
+    const employeeIdToNode = buildEmployeeNodes(state.organization.employees.employeesById);
+
     return {
         headDepartment: headDepartment,
         employeeIdsByDepartment: state.organization.employees.employeeIdsByDepartment,
-        employeesById: state.organization.employees.employeesById,
+        employeeIdToNode: employeeIdToNode,
         departmentIdToChildren: departmentIdToChildren
     };
 };
@@ -58,7 +61,7 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
                 departmentId={rootId}
                 departmentIdToChildren={this.props.departmentIdToChildren}
                 employeeIdsByDepartment={this.props.employeeIdsByDepartment}
-                employeesById={this.props.employeesById} />
+                employeeIdToNode={this.props.employeeIdToNode} />
             : null;
     }
 }

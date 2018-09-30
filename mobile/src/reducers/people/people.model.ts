@@ -1,4 +1,5 @@
 import { Map, Set } from 'immutable';
+import { Photo } from '../organization/employee.model';
 
 export interface DepartmentNode {
     departmentId: string;
@@ -18,3 +19,13 @@ export interface DepartmentIdToSelectedId {
 }
 
 export type DepartmentIdToNode = { [departmentId: string]: DepartmentNode };
+
+export interface EmployeeNode {
+    name: string;
+    position: string;
+    photo: Map<string, Photo>;
+}
+
+export type MapEmployeeNode = Map<keyof EmployeeNode, EmployeeNode[keyof EmployeeNode]>;
+
+export type EmployeeIdToNode = Map<string, MapEmployeeNode>;

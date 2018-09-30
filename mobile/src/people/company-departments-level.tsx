@@ -3,16 +3,16 @@ import { companyDepartments } from './styles';
 import { View } from 'react-native';
 import { layout } from '../calendar/event-dialog/styles';
 import { StyledText } from '../override/styled-text';
-import { DepartmentIdToChildren, MapDepartmentNode } from '../reducers/people/people.model';
+import { DepartmentIdToChildren, MapDepartmentNode, EmployeeIdToNode } from '../reducers/people/people.model';
 import { Set } from 'immutable';
 import { CompanyDepartmentsLevelNodes } from './company-departments-level-node';
-import { EmployeeIdsGroupMap, EmployeeMap } from '../reducers/organization/employees.reducer';
+import { EmployeeIdsGroupMap } from '../reducers/organization/employees.reducer';
 
 interface CompanyDepartmentsLevelProps {
     departmentId: string;
     departmentIdToChildren: DepartmentIdToChildren;
     employeeIdsByDepartment: EmployeeIdsGroupMap;
-    employeesById: EmployeeMap;
+    employeeIdToNode: EmployeeIdToNode;
 }
 
 export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelProps> {
@@ -33,7 +33,7 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
     }
 
     private renderNodes(nodes: Set<MapDepartmentNode>) {
-        return <CompanyDepartmentsLevelNodes nodes={nodes} employeesById={this.props.employeesById} />;
+        return <CompanyDepartmentsLevelNodes nodes={nodes} employeeIdToNode={this.props.employeeIdToNode} />;
     }
 
     private renderSubLevel(): JSX.Element {
@@ -43,7 +43,7 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
             return null;
         }
 
-        const first = nodes.first();
+        const first = nodes.last();
 
         if (!first) {
             return null;
@@ -53,6 +53,6 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
             departmentId={first.get('departmentId')}
             departmentIdToChildren={this.props.departmentIdToChildren}
             employeeIdsByDepartment={this.props.employeeIdsByDepartment}
-            employeesById={this.props.employeesById} />;
+            employeeIdToNode={this.props.employeeIdToNode} />;
     }
 }

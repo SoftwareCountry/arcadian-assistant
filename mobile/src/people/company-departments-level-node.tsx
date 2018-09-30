@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { MapDepartmentNode } from '../reducers/people/people.model';
+import { MapDepartmentNode, EmployeeIdToNode } from '../reducers/people/people.model';
 import {
     View, Animated, PanResponder, PanResponderInstance, PanResponderGestureState,
     Easing, LayoutChangeEvent, StyleSheet, ViewStyle, TranslateXTransform
@@ -8,11 +8,10 @@ import { Set } from 'immutable';
 import { StyledText } from '../override/styled-text';
 import { companyDepartments } from './styles';
 import { CompanyDepartmentsLevelNodeAnimated } from './company-departments-level-node-animated';
-import { EmployeeMap } from '../reducers/organization/employees.reducer';
 
 interface CompanyDepartmentsLevelNodesProps {
     nodes: Set<MapDepartmentNode>;
-    employeesById: EmployeeMap;
+    employeeIdToNode: EmployeeIdToNode;
 }
 
 interface CompanyDepartmentsLevelNodesState {
@@ -88,13 +87,13 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
                         this.props.nodes.toArray()
                             .map((node, index) =>
                                  <CompanyDepartmentsLevelNodeAnimated
-                                    index={index}
                                     key={node.get('departmentId')}
+                                    index={index}                                    
                                     node={node}
                                     width={this.state.width}
                                     height={this.state.height}
                                     gap={this.gap}
-                                    employeesById={this.props.employeesById}
+                                    employeeIdToNode={this.props.employeeIdToNode}
                                     xCoordinate={this.state.xCoordinate}
                                 />
                             )

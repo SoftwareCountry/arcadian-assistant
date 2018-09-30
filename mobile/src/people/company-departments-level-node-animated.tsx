@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Animated, ViewStyle, PerpectiveTransform } from 'react-native';
 import { StyledText } from '../override/styled-text';
-import { MapDepartmentNode } from '../reducers/people/people.model';
-import { EmployeeMap } from '../reducers/organization/employees.reducer';
-import { Avatar } from './avatar';
+import { MapDepartmentNode, EmployeeIdToNode } from '../reducers/people/people.model';
 import { companyDepartmentsAnimatedNode } from './styles';
+import { Map } from 'immutable';
+import { Photo } from '../reducers/organization/employee.model';
+import { CompanyDepartmentsLevelNodePhoto } from './company-departments-employee-node';
 
 interface Perspective {
     perspective: number;
@@ -128,7 +129,7 @@ class Animations {
 interface CompanyDepartmentsLevelNodeAnimatedProps {
     index: number;
     node: MapDepartmentNode;
-    employeesById: EmployeeMap;
+    employeeIdToNode: EmployeeIdToNode;
     width: number;
     height: number;
     gap: number;
@@ -139,7 +140,7 @@ export class CompanyDepartmentsLevelNodeAnimated extends Component<CompanyDepart
     public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelNodeAnimatedProps) {
         return this.props.index !== nextProps.index
             || !this.props.node.equals(nextProps.node)
-            || !this.props.employeesById.equals(nextProps.employeesById)
+            || !this.props.employeeIdToNode.equals(nextProps.employeeIdToNode)
             || this.props.width !== nextProps.width
             || this.props.height !== nextProps.height
             || this.props.gap !== nextProps.gap
@@ -155,19 +156,19 @@ export class CompanyDepartmentsLevelNodeAnimated extends Component<CompanyDepart
         } = this.calculateStyles();
 
         const chiefId = this.props.node.get('chiefId');
-        const chief = this.props.employeesById.get(chiefId);
+        const chief = this.props.employeeIdToNode.get(chiefId);
 
         return chief ?
             <View style={containerStyles}>
                 <Animated.View style={stickyContainerStyles}>
                     <Animated.View style={scaleContainerStyles}>
-                        <Avatar photo={chief.photo} />
+                        <CompanyDepartmentsLevelNodePhoto photo={chief.get('photo') as Map<string, Photo>} />
                     </Animated.View>
                 </Animated.View>
                 <Animated.View style={contentStyles}>
                     <View>
-                        <StyledText>{chief.name}</StyledText>
-                        <StyledText>{chief.position}</StyledText>
+                        <StyledText>{chief.get('name')}</StyledText>
+                        <StyledText>{chief.get('position')}</StyledText>
                     </View>
                     <StyledText>{this.props.node.get('abbreviation')}</StyledText>
                 </Animated.View>
