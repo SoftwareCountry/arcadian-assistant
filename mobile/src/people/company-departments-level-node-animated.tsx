@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Animated, ViewStyle } from 'react-native';
+import { View, StyleSheet, Animated, ViewStyle, PerpectiveTransform } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { MapDepartmentNode } from '../reducers/people/people.model';
 import { EmployeeMap } from '../reducers/organization/employees.reducer';
@@ -38,6 +38,14 @@ interface ContentAnimation {
 }
 
 class Animations {
+
+    private static perspective: PerpectiveTransform = { 
+        // https://facebook.github.io/react-native/docs/animations#bear-in-mind:
+        // without this line this Animation will not render on Android while working fine on iOS
+        // ¯\_(ツ)_/¯        
+        perspective: 1000 
+    };
+
     public static scaleAnimation = (
         index: number, 
         width: number, 
@@ -45,7 +53,7 @@ class Animations {
         xCoordinate: Animated.Value
     ): ScaleAnimation => ({
         transform: [
-            { perspective: 1000 },
+            Animations.perspective,
             {
                 scale: xCoordinate.interpolate({
                     inputRange: [
@@ -67,42 +75,38 @@ class Animations {
         })
     })
 
-	public static stickyContainerAnimation(
+	public static stickyContainerAnimation = (
         index: number, 
         width: number, 
         height: number, 
         xCoordinate: Animated.Value
-    ): StickyContainerAnimation {
-		return {
-			transform: [
-                { perspective: 1000 },
-				this.horizontalStickyAnimation(index, width, height, xCoordinate)
-			]
-		};
-	}
+    ): StickyContainerAnimation => ({
+        transform: [
+            Animations.perspective,
+            Animations.horizontalStickyAnimation(index, width, height, xCoordinate)
+        ]
+	})
 
-	public static contentAnimation(
+	public static contentAnimation = (
         index: number, 
         width: number, 
         height: number, 
         xCoordinate: Animated.Value
-    ): ContentAnimation {
-		return {
-			transform: [
-				{ perspective: 1000 },
-				this.horizontalStickyAnimation(index, width, height, xCoordinate)
-			],
-			opacity: xCoordinate.interpolate({
-				inputRange: [
-					-width * (index + 1),
-					-width * index,
-					width * (1 - index)
-				],
-				outputRange: [-0.8, 1, 0]
-			})
-		};
-    }
-    
+    ): ContentAnimation => ({
+        transform: [
+            Animations.perspective,
+            Animations.horizontalStickyAnimation(index, width, height, xCoordinate)
+        ],
+        opacity: xCoordinate.interpolate({
+            inputRange: [
+                -width * (index + 1),
+                -width * index,
+                width * (1 - index)
+            ],
+            outputRange: [-0.8, 1, 0]
+        })
+    })
+
 	private static horizontalStickyAnimation = (
         index: number, 
         width: number, 
