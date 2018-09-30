@@ -21,41 +21,6 @@ interface CompanyDepartmentsLevelNodesState {
     xCoordinate: Animated.Value;
 }
 
-interface AnimatedTranslateX {
-    translateX: Animated.Value;
-}
-
-interface Perspective {
-    perspective: number;
-}
-
-interface ScaleAnimation {
-    transform: [
-        Perspective,
-        { scale: Animated.AnimatedInterpolation; }
-    ];
-    opacity: Animated.AnimatedInterpolation;
-}
-
-interface HorizontalStickyAnimation {
-    translateX: Animated.AnimatedInterpolation;
-}
-
-interface StickyContainerAnimation {
-    transform: [
-        Perspective,
-        HorizontalStickyAnimation
-    ];
-}
-
-interface ContentAnimation {
-    transform: [
-        Perspective, 
-        HorizontalStickyAnimation
-    ];
-    opacity: Animated.AnimatedInterpolation;
-}
-
 export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLevelNodesProps, CompanyDepartmentsLevelNodesState> {
     private readonly motionThreshold = 20;
     private readonly gap = 100;
