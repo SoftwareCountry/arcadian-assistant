@@ -121,97 +121,23 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
                     style={nodesContainerStyles}>
                     {
                         this.props.nodes.toArray()
-                            .map((node, index) => {
-                                const scaleAnimation = this.scaleAnimation(index);
-                                const stickyContainerAnimation = this.stickyContainerAnimation(index);
-                                const contentAnimation = this.contentAnimation(index);
-
-                                return <CompanyDepartmentsLevelNodeAnimated
+                            .map((node, index) =>
+                                 <CompanyDepartmentsLevelNodeAnimated
+                                    index={index}
                                     key={node.get('departmentId')}
                                     node={node}
-                                    width={this.state.width - this.gap}
+                                    width={this.state.width}
                                     height={this.state.height}
+                                    gap={this.gap}
                                     employeesById={this.props.employeesById}
-                                    scaleAnimation={scaleAnimation}
-                                    stickyContainerAnimation={stickyContainerAnimation}
-                                    contentAnimation={contentAnimation}
-                                />;
-                            })
+                                    xCoordinate={this.state.xCoordinate}
+                                />
+                            )
                     }
                 </Animated.View>
             </View>
         );
     }
-
-    private scaleAnimation(index: number): ScaleAnimation {
-        const width = this.state.width - this.gap;
-
-        return {
-            transform: [
-                { perspective: 1000 },
-                {
-                    scale: this.state.xCoordinate.interpolate({
-                        inputRange: [
-                            -width * (index + 1),
-                            -width * index,
-                            width * (1 - index) + this.gap
-                        ],
-                        outputRange: [0.6, 0.9, 0.6]
-                    })
-                }
-            ],
-            opacity: this.state.xCoordinate.interpolate({
-                inputRange: [
-                    -width * (index + 1),
-                    -width * index,
-                    width * (1 - index)
-                ],
-                outputRange: [0.3, 1.2, 0.3]
-            })
-        };
-    }
-
-	private horizontalStickyAnimation(index: number, width: number): HorizontalStickyAnimation {
-		return {
-			translateX: this.state.xCoordinate.interpolate({
-				inputRange: [
-					-width * (index + 1),
-					-width * (index + 1) + this.state.height / 2,
-					-width * index,
-					width * (1 - index)
-				],
-				outputRange: [width - this.state.height, width - this.state.height, 0, 0]
-			})
-		};
-    }
-
-	private stickyContainerAnimation(index: number): StickyContainerAnimation {
-		const width = this.state.width - this.gap;
-		return {
-			transform: [
-				{ perspective: 1000 },
-				this.horizontalStickyAnimation(index, width)
-			]
-		};
-	}
-
-	private contentAnimation(index: number): ContentAnimation {
-		const width = this.state.width - this.gap;
-		return {
-			transform: [
-				{ perspective: 1000 },
-				this.horizontalStickyAnimation(index, width)
-			],
-			opacity: this.state.xCoordinate.interpolate({
-				inputRange: [
-					-width * (index + 1),
-					-width * index,
-					width * (1 - index)
-				],
-				outputRange: [-0.8, 1, 0]
-			})
-		};
-	}
 
     private onLayoutContainer = (e: LayoutChangeEvent) => {
         this.setState({

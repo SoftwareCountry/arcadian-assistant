@@ -6,11 +6,11 @@ import { EmployeeMap } from '../reducers/organization/employees.reducer';
 import { Avatar } from './avatar';
 import { companyDepartmentsAnimatedNode } from './styles';
 
-export interface Perspective {
+interface Perspective {
     perspective: number;
 }
 
-export interface ScaleAnimation {
+interface ScaleAnimation {
     transform: [
         Perspective,
         { scale: Animated.AnimatedInterpolation; }
@@ -18,18 +18,18 @@ export interface ScaleAnimation {
     opacity: Animated.AnimatedInterpolation;
 }
 
-export interface HorizontalStickyAnimation {
+interface HorizontalStickyAnimation {
     translateX: Animated.AnimatedInterpolation;
 }
 
-export interface StickyContainerAnimation {
+interface StickyContainerAnimation {
     transform: [
         Perspective,
         HorizontalStickyAnimation
     ];
 }
 
-export interface ContentAnimation {
+interface ContentAnimation {
     transform: [
         Perspective, 
         HorizontalStickyAnimation
@@ -37,58 +37,118 @@ export interface ContentAnimation {
     opacity: Animated.AnimatedInterpolation;
 }
 
+class Animations {
+    public static scaleAnimation = (
+        index: number, 
+        width: number, 
+        gap: number, 
+        xCoordinate: Animated.Value
+    ): ScaleAnimation => ({
+        transform: [
+            { perspective: 1000 },
+            {
+                scale: xCoordinate.interpolate({
+                    inputRange: [
+                        -width * (index + 1),
+                        -width * index,
+                        width * (1 - index) + gap
+                    ],
+                    outputRange: [0.6, 0.9, 0.6]
+                })
+            }
+        ],
+        opacity: xCoordinate.interpolate({
+            inputRange: [
+                -width * (index + 1),
+                -width * index,
+                width * (1 - index)
+            ],
+            outputRange: [0.3, 1.2, 0.3]
+        })
+    })
+
+	public static stickyContainerAnimation(
+        index: number, 
+        width: number, 
+        height: number, 
+        xCoordinate: Animated.Value
+    ): StickyContainerAnimation {
+		return {
+			transform: [
+                { perspective: 1000 },
+				this.horizontalStickyAnimation(index, width, height, xCoordinate)
+			]
+		};
+	}
+
+	public static contentAnimation(
+        index: number, 
+        width: number, 
+        height: number, 
+        xCoordinate: Animated.Value
+    ): ContentAnimation {
+		return {
+			transform: [
+				{ perspective: 1000 },
+				this.horizontalStickyAnimation(index, width, height, xCoordinate)
+			],
+			opacity: xCoordinate.interpolate({
+				inputRange: [
+					-width * (index + 1),
+					-width * index,
+					width * (1 - index)
+				],
+				outputRange: [-0.8, 1, 0]
+			})
+		};
+    }
+    
+	private static horizontalStickyAnimation = (
+        index: number, 
+        width: number, 
+        height: number, 
+        xCoordinate: Animated.Value
+    ): HorizontalStickyAnimation => ({
+        translateX: xCoordinate.interpolate({
+            inputRange: [
+                -width * (index + 1),
+                -width * (index + 1) + height / 2,
+                -width * index,
+                width * (1 - index)
+            ],
+            outputRange: [width - height, width - height, 0, 0]
+        })
+    })    
+}
+
 interface CompanyDepartmentsLevelNodeAnimatedProps {
+    index: number;
     node: MapDepartmentNode;
     employeesById: EmployeeMap;
     width: number;
     height: number;
-    scaleAnimation: ScaleAnimation;
-    stickyContainerAnimation: StickyContainerAnimation;
-    contentAnimation: ContentAnimation;
+    gap: number;
+    xCoordinate: Animated.Value;
 }
 
 export class CompanyDepartmentsLevelNodeAnimated extends Component<CompanyDepartmentsLevelNodeAnimatedProps> {
     public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelNodeAnimatedProps) {
-        return !this.props.node.equals(nextProps.node)
+        return this.props.index !== nextProps.index
+            || !this.props.node.equals(nextProps.node)
             || !this.props.employeesById.equals(nextProps.employeesById)
             || this.props.width !== nextProps.width
             || this.props.height !== nextProps.height
-            || this.props.scaleAnimation !== nextProps.scaleAnimation
-            || this.props.stickyContainerAnimation !== nextProps.stickyContainerAnimation
-            || this.props.contentAnimation !== nextProps.contentAnimation;
+            || this.props.gap !== nextProps.gap
+            || this.props.xCoordinate !== nextProps.xCoordinate;
     }
 
     public render() {
-        const containerStyles = StyleSheet.flatten([
-            companyDepartmentsAnimatedNode.container,
-            {
-                width: this.props.width,
-                height: this.props.height
-            }
-        ]);
-
-        const scaleContainerStyles = StyleSheet.flatten([
-            companyDepartmentsAnimatedNode.scaleContainer as any,
-            this.props.scaleAnimation,
-            {
-                width: this.props.width,
-                height: this.props.height
-            }
-        ]);
-
-        const stickyContainerStyles = StyleSheet.flatten([
-            companyDepartmentsAnimatedNode.stickyContainer as any,
-            this.props.stickyContainerAnimation,
-            {
-                height: this.props.height,
-                width: this.props.height,
-            }
-        ]);
-
-        const contentStyles = StyleSheet.flatten([
-            companyDepartmentsAnimatedNode.content as any,
-            this.props.contentAnimation
-        ]);
+        const { 
+            containerStyles, 
+            stickyContainerStyles, 
+            scaleContainerStyles, 
+            contentStyles 
+        } = this.calculateStyles();
 
         const chiefId = this.props.node.get('chiefId');
         const chief = this.props.employeesById.get(chiefId);
@@ -108,5 +168,47 @@ export class CompanyDepartmentsLevelNodeAnimated extends Component<CompanyDepart
                     <StyledText>{this.props.node.get('abbreviation')}</StyledText>
                 </Animated.View>
             </View> : null;
+    }
+
+    private calculateStyles() {
+        const { index, width, height, gap, xCoordinate } = this.props;
+        const calculatedWidth = width - gap;
+
+        const containerStyles = StyleSheet.flatten([
+            companyDepartmentsAnimatedNode.container,
+            {
+                width: calculatedWidth,
+                height: height
+            }
+        ]);
+
+        const rectSize: ViewStyle = {
+            width: height,
+            height: height
+        };
+
+        const scaleContainerStyles = StyleSheet.flatten([
+            companyDepartmentsAnimatedNode.scaleContainer,
+            Animations.scaleAnimation(index, calculatedWidth, gap, xCoordinate) as any,
+            rectSize
+        ]);
+
+        const stickyContainerStyles = StyleSheet.flatten([
+            companyDepartmentsAnimatedNode.stickyContainer,
+            Animations.stickyContainerAnimation(index, calculatedWidth, height, xCoordinate)  as any,
+            rectSize
+        ]);
+
+        const contentStyles = StyleSheet.flatten([
+            companyDepartmentsAnimatedNode.content,
+            Animations.contentAnimation(index, calculatedWidth, height, xCoordinate) as any
+        ]);
+
+        return {
+            containerStyles,
+            scaleContainerStyles,
+            stickyContainerStyles,
+            contentStyles
+        };
     }
 }
