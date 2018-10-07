@@ -10,15 +10,20 @@
     {
         public IContainer GetContainer(IConfigurationRoot config)
         {
+            var settings = config.Get<AppSettings>();
             var container = new ContainerBuilder();
 
-            container.RegisterModule(new DatabaseModule(config.GetConnectionString("ArcadiaCSP")));
+            container.RegisterModule(new ConfigurationModule(config));
 
-            var organizationSettings = config.Get<AppSettings>().Organization;
+            container.RegisterModule(new DatabaseModule(config["ConnectionStrings:ArcadiaCSP"]));
+
+            var organizationSettings = settings.Organization;
             container.RegisterModule(new OrganizationModule(organizationSettings.RefreshInformation));
 
-            var mailSettings = config.Get<AppSettings>().Messaging;
+            var mailSettings = settings.Messaging;
             container.RegisterModule(new NotificationsModule(mailSettings.Smtp, mailSettings.SickLeave));
+
+            container.RegisterModule(new Remote1CModule(config));
 
             return container.Build();
         }

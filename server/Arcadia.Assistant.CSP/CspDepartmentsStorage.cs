@@ -20,7 +20,7 @@
             this.contextFactory = contextFactory;
         }
 
-        private const int ArcadiaCompanyId = 154;
+        private const int ArcadiaCompanyId = 154; //TODO: put in config
 
         private readonly Expression<Func<Department, DepartmentInfo>> mapDepartment =
             x =>
@@ -35,7 +35,7 @@
         {
             using (var context = this.contextFactory())
             {
-                var arcEmployees = context.Employee.FromSql(CspEmployeesInfoStorage.ArcadianEmployeeQuery);
+                var arcEmployees = new CspEmployeeQuery(context).Get();
 
                 var allDepartments = await context
                     .Department

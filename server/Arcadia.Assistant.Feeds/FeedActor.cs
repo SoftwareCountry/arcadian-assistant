@@ -20,7 +20,7 @@
                 case PostMessage postMessage:
                     //TODO: Broadcast new message information to hubs/etc
                     var message = postMessage.Message;
-                    this.messagesList.Add(new Message(message.MessageId, message.EmployeeId, message.Title, message.Text, message.DatePosted));
+                    this.messagesList.Add(new Message(message.MessageId, message.PostedByEmployeeId, message.Title, message.Text, message.DatePosted));
                     break;
 
                 case GetMessages request:

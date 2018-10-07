@@ -5,6 +5,8 @@
     using System.Threading;
 
     using Arcadia.Assistant.Configuration;
+    using Arcadia.Assistant.Configuration.Configuration;
+
     using Microsoft.Extensions.Configuration;
 
     internal class Program
@@ -23,6 +25,10 @@
                 .AddCommandLine(args)
                 .AddUserSecrets<Program>()
                 .Build();
+
+            var settings = config.Get<AppSettings>();
+
+            new AppInsightTelemetry().Setup(settings);
 
             using (var app = new Application(config))
             {

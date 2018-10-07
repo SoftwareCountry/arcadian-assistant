@@ -8,22 +8,31 @@
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
     using Arcadia.Assistant.Calendar.Vacations.Events;
+    using Arcadia.Assistant.Feeds;
+    using Arcadia.Assistant.Feeds.Messages;
+    using Arcadia.Assistant.Organization.Abstractions;
 
     public class EmployeeVacationsActor : CalendarEventsStorageBase
     {
+        private readonly IActorRef employeeFeed;
+
+        private readonly IActorRef vacationsRegistry;
+
         public override string PersistenceId { get; }
 
-        private int vacationsCredit = 28;
+        //private int vacationsCredit = 28;
 
-        public EmployeeVacationsActor(string employeeId)
+        public EmployeeVacationsActor(string employeeId, IActorRef employeeFeed, IActorRef vacationsRegistry)
             : base(employeeId)
         {
+            this.employeeFeed = employeeFeed;
+            this.vacationsRegistry = vacationsRegistry;
             this.PersistenceId = $"employee-vacations-{this.EmployeeId}";
         }
 
-        public static Props CreateProps(string employeeId)
+        public static Props CreateProps(string employeeId, IActorRef employeeFeed, IActorRef vacationsRegistry)
         {
-            return Props.Create(() => new EmployeeVacationsActor(employeeId));
+            return Props.Create(() => new EmployeeVacationsActor(employeeId, employeeFeed, vacationsRegistry));
         }
 
         protected override void InsertCalendarEvent(CalendarEvent calendarEvent, OnSuccessfulUpsertCallback onUpsert)
@@ -49,7 +58,11 @@
             switch (message)
             {
                 case GetVacationsCredit _:
-                    this.Sender.Tell(new GetVacationsCredit.Response(this.vacationsCredit));
+                    this.vacationsRegistry
+                        .Ask<VacationsRegistry.GetVacationInfo.Response>(new VacationsRegistry.GetVacationInfo(this.EmployeeId))
+                        .ContinueWith(x => new GetVacationsCredit.Response(x.Result.VacationsCredit))
+                        .PipeTo(this.Sender);
+
                     break;
 
                 default:
@@ -165,14 +178,22 @@
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
                 this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, VacationStatuses.Approved, this.EmployeeId);
+
+                var text = $"Got vacation approved from {calendarEvent.Dates.StartDate.ToLongDateString()} to {calendarEvent.Dates.EndDate.ToLongDateString()}";
+                var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, DateTime.Now);
+                this.employeeFeed.Tell(new PostMessage(msg));
             }
         }
 
         private void OnVacationCancel(VacationIsCancelled message)
         {
-            if (this.EventsById.ContainsKey(message.EventId))
+            if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
                 this.EventsById.Remove(message.EventId);
+
+                var text = $"Got vacation canceled ({calendarEvent.Dates.StartDate.ToLongDateString()} - {calendarEvent.Dates.EndDate.ToLongDateString()})";
+                var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, DateTime.Now);
+                this.employeeFeed.Tell(new PostMessage(msg));
             }
         }
 

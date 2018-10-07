@@ -27,7 +27,7 @@
                     var newEvent = new MessageIsPostedToFeedEvent()
                         {
                             MessageId = postMessage.Message.MessageId,
-                            EmployeeId = postMessage.Message.EmployeeId,
+                            EmployeeId = postMessage.Message.PostedByEmployeeId,
                             PostedDate = postMessage.Message.DatePosted,
                             Text = postMessage.Message.Text,
                             Title = postMessage.Message.Title

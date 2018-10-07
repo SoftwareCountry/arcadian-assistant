@@ -1,21 +1,23 @@
 ﻿namespace Arcadia.Assistant.Web.Models
 {
-    using System;
     using System.Linq;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
+    using System.Runtime.Serialization;
+
     using Security;
 
+    [DataContract]
     public class UserEmployeePermissionsModel
     {
+        [DataMember]
         public string EmployeeId { get; }
 
-        public string[] permissionsNames { get; }
+        [DataMember]
+        public string[] PermissionsNames { get; }
 
         public UserEmployeePermissionsModel(string employeeId, EmployeePermissionsEntry employeePermissionsEntry)
         {
             this.EmployeeId = employeeId;
-            this.permissionsNames = this.ExtractPermissionNames(employeePermissionsEntry);
+            this.PermissionsNames = this.ExtractPermissionNames(employeePermissionsEntry);
         }
 
         private string[] ExtractPermissionNames(EmployeePermissionsEntry employeePermissionsEntry)

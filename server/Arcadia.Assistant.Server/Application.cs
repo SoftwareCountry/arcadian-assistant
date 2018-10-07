@@ -8,22 +8,25 @@
     using Akka.DI.AutoFac;
     using Akka.DI.Core;
 
+    using Arcadia.Assistant.Configuration.Configuration;
+
     using Autofac;
 
+    using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.Extensions.Configuration;
 
     public class Application : IDisposable
     {
-        private readonly IConfigurationRoot config;
+        protected readonly IConfigurationRoot config;
 
         private IContainer container;
+
+        private ActorSystem ActorSystem { get; set; }
 
         public Application(IConfigurationRoot config)
         {
             this.config = config;
         }
-
-        public ActorSystem ActorSystem { get; private set; }
 
         public ServerActorsCollection ServerActors { get; private set; }
 
@@ -32,6 +35,7 @@
             var akkaConfig = ConfigurationFactory.ParseString(this.config["Akka"]);
 
             this.ActorSystem = ActorSystem.Create("arcadia-assistant", akkaConfig);
+            this.OnStart(this.ActorSystem);
 
             var di = new DependencyInjection();
 
@@ -44,16 +48,25 @@
             this.ServerActors = builder.AddRootActors();
         }
 
+        protected virtual void OnStart(ActorSystem actorSystem)
+        {
+        }
+
+        protected virtual void OnStop(ActorSystem actorSystem)
+        {
+        }
+
         public async Task Stop()
         {
             if (this.ActorSystem != null)
             {
+                this.OnStop(this.ActorSystem);
                 await this.ActorSystem.Terminate();
                 this.Dispose();
             }
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             this.ActorSystem?.Dispose();
             this.container.Dispose();

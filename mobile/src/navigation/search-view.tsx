@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, TextInput, TouchableOpacity } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { AppState } from '../reducers/app.reducer';
 import { connect, Dispatch } from 'react-redux';
 import { startSearch, endSearch } from '../reducers/search/search.action';
@@ -44,6 +44,13 @@ class SearchViewImpl extends Component<SearchViewDispatchProps & SearchViewState
     }
 
     public render() {
+        const textInputStyles = StyleSheet.flatten([
+            styles.input,
+            {
+                display: this.state.isActive ? 'flex' : 'none'
+            }
+        ]);
+
         return <View style={styles.container}>
             <TouchableOpacity style={styles.iconsContainer} onPress={this.onPress}>
                 <ApplicationIcon
@@ -52,17 +59,14 @@ class SearchViewImpl extends Component<SearchViewDispatchProps & SearchViewState
                 />
             </TouchableOpacity>
             <View style={styles.inputContainer}>
-                {
-                    this.state.isActive &&
-                    <TextInput
-                        placeholder={'Search'}
-                        style={styles.input}
-                        underlineColorAndroid='transparent'
-                        autoCapitalize='none'
-                        onChangeText={this.changeText}
-                        value={this.props.filter}
-                    />
-                }
+                <TextInput
+                    placeholder={'Search'}
+                    style={textInputStyles}
+                    underlineColorAndroid='transparent'
+                    autoCapitalize='none'
+                    onChangeText={this.changeText}
+                    value={this.props.filter}
+                />
             </View>
         </View>;
     }
