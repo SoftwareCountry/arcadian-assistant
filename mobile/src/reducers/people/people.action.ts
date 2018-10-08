@@ -13,4 +13,13 @@ export const updateDepartmentsBranch = (departments: Department[], depId: string
     return ({ type: 'UPDATE-DEPARTMENTS-BRANCH', departmentsBranch: res.departmentsLineup, departmentLists: res.departmentsLists });
 };
 
-export type PeopleActions = UpdateDepartmentsBranch;
+interface SelectCompanyDepartment {
+    type: 'SELECT-COMPANY-DEPARTMENT';
+    departmentId: string;
+    allowSelect: boolean;
+}
+
+export const selectCompanyDepartment = (departmentId: string, allowSelect: boolean): SelectCompanyDepartment => 
+    ({ type: 'SELECT-COMPANY-DEPARTMENT', departmentId, allowSelect });
+
+export type PeopleActions = SelectCompanyDepartment;

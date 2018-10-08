@@ -20,6 +20,8 @@ export interface PeopleState {
     currentFocusedDepartmentId: string;
     departmentsLists: DepartmentsListStateDescriptor[];
     filter: string;
+    selectedCompanyDepartmentId: string;
+    allowSelect: boolean;
 }
 
 const initState: PeopleState = {
@@ -29,6 +31,8 @@ const initState: PeopleState = {
     currentFocusedDepartmentId: null,
     departmentsLists: [],
     filter: '',
+    selectedCompanyDepartmentId: null,
+    allowSelect: true
 };
 
 export function departmentsBranchFromDepartmentWithId(departmentId: string, departments: Department[]) {
@@ -60,7 +64,7 @@ export function departmentsBranchFromDepartmentWithId(departmentId: string, depa
 }
 
 export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions | NavigationAction | 
-        LoadUserEmployeeFinished | LoadDepartmentsFinished | SearchActions) => {
+        LoadUserEmployeeFinished | LoadDepartmentsFinished | SearchActions): PeopleState => {
     switch (action.type) {
         case 'Navigation/NAVIGATE':
             if (action.routeName === 'Company') {
@@ -83,12 +87,14 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
                     ...state, 
                     currentFocusedDepartmentId: action.employee.departmentId, 
                     departmentsBranch: depsAndMeta.departmentsLineup, 
-                    departmentsLists: depsAndMeta.departmentsLists
+                    departmentsLists: depsAndMeta.departmentsLists,
+                    selectedCompanyDepartmentId: action.employee.departmentId
                 };
             } else {
                 return {
                     ...state,
                     currentFocusedDepartmentId: action.employee.departmentId, 
+                    selectedCompanyDepartmentId: action.employee.departmentId
                 };
             }
         }
@@ -104,11 +110,17 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
             } else {
                 return {...state, departments: action.departments};   
             }     
-        case 'UPDATE-DEPARTMENTS-BRANCH':
+        // case 'UPDATE-DEPARTMENTS-BRANCH':
+        //     return {
+        //         ...state, 
+        //         departmentsBranch: action.departmentsBranch, 
+        //         departmentsLists: action.departmentLists,
+        //     };
+        case 'SELECT-COMPANY-DEPARTMENT': 
             return {
-                ...state, 
-                departmentsBranch: action.departmentsBranch, 
-                departmentsLists: action.departmentLists,
+                ...state,
+                selectedCompanyDepartmentId: action.departmentId,
+                allowSelect: action.allowSelect
             };
         case 'FILTER-DEPARTMENTS-FINISHED':
             return {

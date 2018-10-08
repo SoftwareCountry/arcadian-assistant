@@ -1,29 +1,29 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
-import { companyDepartments } from './styles';
-import { layout } from '../calendar/event-dialog/styles';
 import { CompanyDepartmentsLevel } from './company-departments-level';
-import { connect, MapStateToProps } from 'react-redux';
+import { connect, MapStateToProps, MapDispatchToPropsFunction, MapDispatchToProps, Dispatch } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
-import { EmployeeMap, EmployeeIdsGroupMap } from '../reducers/organization/employees.reducer';
+import { EmployeeIdsGroupMap } from '../reducers/organization/employees.reducer';
 import { buildDepartmentIdToNode } from '../reducers/people/build-department-id-to-node';
 import { appendRoot, rootId } from '../reducers/people/append-root';
 import { filterDepartments } from '../reducers/people/filter-departments';
 import { buildBranchFromChildToParent } from '../reducers/people/build-branch-from-child-to-parent';
 import { buildDepartmentIdToChildren } from '../reducers/people/build-department-children';
 import { Department } from '../reducers/organization/department.model';
-import { DepartmentIdToChildren, EmployeeIdToNode } from '../reducers/people/people.model';
+import { DepartmentIdToChildren, EmployeeIdToNode, DepartmentIdToSelectedId } from '../reducers/people/people.model';
 import { buildEmployeeNodes } from '../reducers/people/build-employee-nodes';
+import { buildDepartmentsSelection } from '../reducers/people/build-departments-selection';
+import { selectCompanyDepartment } from '../reducers/people/people.action';
 
 interface CompanyDepartmentsStateProps {
     headDepartment: Department;
     employeeIdsByDepartment: EmployeeIdsGroupMap;
     departmentIdToChildren: DepartmentIdToChildren;
     employeeIdToNode: EmployeeIdToNode;
+    selection: DepartmentIdToSelectedId;
 }
 
 interface CompanyDepartmentsDispatchProps {
-
+    selectCompanyDepartment: (departmentId: string, allowSelect: boolean) => void;
 }
 
 const mapStateToProps: MapStateToProps<CompanyDepartmentsStateProps, void, AppState> = (state: AppState) => {
@@ -44,13 +44,26 @@ const mapStateToProps: MapStateToProps<CompanyDepartmentsStateProps, void, AppSt
 
     const employeeIdToNode = buildEmployeeNodes(state.organization.employees.employeesById);
 
+    const userEmployee = state.organization.employees.employeesById.get(state.userInfo.employeeId);
+
+    const selection = userEmployee 
+        ? buildDepartmentsSelection(departmentIdToNode, state.people.selectedCompanyDepartmentId, state.people.allowSelect)
+        : {};
+
     return {
         headDepartment: headDepartment,
         employeeIdsByDepartment: state.organization.employees.employeeIdsByDepartment,
         employeeIdToNode: employeeIdToNode,
-        departmentIdToChildren: departmentIdToChildren
+        departmentIdToChildren: departmentIdToChildren,
+        selection: selection
     };
 };
+
+const mapDispatchToProps: MapDispatchToProps<CompanyDepartmentsDispatchProps, void> = (dispatch: Dispatch<any>) => ({
+    selectCompanyDepartment: (departmentId: string, allowSelect: boolean) => {
+        dispatch(selectCompanyDepartment(departmentId, allowSelect));
+    }
+});
 
 type CompanyDepartmentsProps = CompanyDepartmentsStateProps & CompanyDepartmentsDispatchProps;
 
@@ -61,9 +74,11 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
                 departmentId={rootId}
                 departmentIdToChildren={this.props.departmentIdToChildren}
                 employeeIdsByDepartment={this.props.employeeIdsByDepartment}
-                employeeIdToNode={this.props.employeeIdToNode} />
+                employeeIdToNode={this.props.employeeIdToNode}
+                selection={this.props.selection}
+                onSelectedNode={this.props.selectCompanyDepartment} />
             : null;
     }
 }
 
-export const CompanyDepartments = connect(mapStateToProps)(CompanyDepartmentsImpl);
+export const CompanyDepartments = connect(mapStateToProps, mapDispatchToProps)(CompanyDepartmentsImpl);

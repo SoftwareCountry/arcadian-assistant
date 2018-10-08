@@ -4,11 +4,11 @@ import { Map } from 'immutable';
 import { Photo } from '../organization/employee.model';
 
 export function buildEmployeeNodes(employeesById: EmployeeMap): EmployeeIdToNode {
-    return employeesById.map(employee => 
-        Map<keyof EmployeeNode, EmployeeNode[keyof EmployeeNode]>({ 
-            name: employee.name, 
-            position: employee.position, 
-            photo: Map<string, Photo>(employee.photo) 
+    return employeesById.map(employee =>
+        Map<keyof EmployeeNode, EmployeeNode[keyof EmployeeNode]>({
+            name: employee.name,
+            position: employee.position,
+            photo: Map<string, Photo>(employee.photo)
         })
     ).toMap();
 }

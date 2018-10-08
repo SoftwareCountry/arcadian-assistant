@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { MapDepartmentNode, EmployeeIdToNode } from '../reducers/people/people.model';
+import { MapDepartmentNode, EmployeeIdToNode, DepartmentIdToSelectedId } from '../reducers/people/people.model';
 import {
     View, Animated, PanResponder, PanResponderInstance, PanResponderGestureState,
     Easing, LayoutChangeEvent, StyleSheet, ViewStyle, TranslateXTransform
@@ -12,6 +12,10 @@ import { CompanyDepartmentsLevelNodeAnimated } from './company-departments-level
 interface CompanyDepartmentsLevelNodesProps {
     nodes: Set<MapDepartmentNode>;
     employeeIdToNode: EmployeeIdToNode;
+    selectedDepartmentId: string;
+    allowSelect: boolean;
+    onPrevDepartment: (departmentId: string) => void;
+    onNextDepartment: (departmentId: string) => void;
 }
 
 interface CompanyDepartmentsLevelNodesState {
@@ -55,10 +59,10 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
             onPanResponderRelease: (e, gesture) => {
                 if (this.rightToLeftSwipe(gesture)) {
                     this.canSwipe = false;
-                    this.moveToPage(gesture, -(this.state.width - this.gap), () => this.nextPage(), false /*this.currentPage.isPageLast*/);
+                    this.moveToPage(gesture, -(this.state.width - this.gap), () => this.nextDepartment(), false /*this.currentPage.isPageLast*/);
                 } else if (this.leftToRightSwipe(gesture)) {
                     this.canSwipe = false;
-                    this.moveToPage(gesture, this.state.width - this.gap, () => this.prevPage(), false /*this.currentPage.isPageFirst*/);
+                    this.moveToPage(gesture, this.state.width - this.gap, () => this.prevDepartment(), false /*this.currentPage.isPageFirst*/);
                 }
             }
         });
@@ -66,11 +70,16 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
 
     public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelNodesProps, nextState: CompanyDepartmentsLevelNodesState) {
         return !this.props.nodes.equals(nextProps.nodes)
+            || !this.props.employeeIdToNode.equals(nextProps.employeeIdToNode)
+            || this.props.selectedDepartmentId !== nextProps.selectedDepartmentId
+            || this.props.allowSelect !== nextProps.allowSelect
             || this.state.height !== nextState.height
             || this.state.width !== nextState.width;
     }
 
     public render() {
+        this.scrollToSelectedDepartment();
+
         const nodesContainerStyles = StyleSheet.flatten([
             companyDepartments.nodesSwipeableContainer,
             {
@@ -103,6 +112,20 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
         );
     }
 
+    private scrollToSelectedDepartment() {
+        if (!this.props.allowSelect) {
+            return;
+        }
+
+        const index = this.props.nodes.toArray().findIndex(node => node.get('departmentId') === this.props.selectedDepartmentId);
+
+        if (index === -1) {
+            return;
+        }
+
+        this.state.xCoordinate.setOffset(-(this.state.width - this.gap) * index);
+    }
+
     private onLayoutContainer = (e: LayoutChangeEvent) => {
         this.setState({
             width: e.nativeEvent.layout.width,
@@ -118,12 +141,30 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
         return gesture.dx > 0;
     }
 
-    private nextPage() {
-        //this.props.onNextPage();
+    private nextDepartment() {
+        const nodesArray = this.props.nodes.toArray();
+        const index = nodesArray.findIndex(node => node.get('departmentId') === this.props.selectedDepartmentId);
+
+        const nextNode = nodesArray[index + 1];
+
+        if (!nextNode) {
+            return;
+        }
+
+        this.props.onNextDepartment(nextNode.get('departmentId'));
     }
 
-    private prevPage() {
-        //this.props.onPrevPage();
+    private prevDepartment() {
+        const nodesArray = this.props.nodes.toArray();
+        const index = nodesArray.findIndex(node => node.get('departmentId') === this.props.selectedDepartmentId);
+
+        const prevNode = nodesArray[index - 1];
+
+        if (!prevNode) {
+            return;
+        }        
+        
+        this.props.onPrevDepartment(prevNode.get('departmentId'));
     }
 
     // private currentPage() {
