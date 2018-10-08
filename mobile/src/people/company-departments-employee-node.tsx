@@ -9,7 +9,7 @@ interface CompanyDepartmentsLevelNodePhotoProps {
 
 export class CompanyDepartmentsLevelNodePhoto extends Component<CompanyDepartmentsLevelNodePhotoProps> {
     public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelNodePhotoProps) {
-        return this.props.photo.equals(nextProps.photo);
+        return !this.props.photo.equals(nextProps.photo);
     }
 
     public render() {
