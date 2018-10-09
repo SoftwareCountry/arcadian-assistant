@@ -7,7 +7,7 @@ import {
 import { Set } from 'immutable';
 import { StyledText } from '../override/styled-text';
 import { companyDepartments } from './styles';
-import { CompanyDepartmentsLevelNodeAnimated } from './company-departments-level-node-animated';
+import { CompanyDepartmentsLevelAnimatedNode } from './company-departments-level-animated-node';
 
 interface CompanyDepartmentsLevelNodesProps {
     nodes: Set<MapDepartmentNode>;
@@ -98,7 +98,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
                                 const chiefId = node.get('chiefId');
                                 const chief = this.props.employeeIdToNode.get(chiefId);
 
-                                return <CompanyDepartmentsLevelNodeAnimated
+                                return <CompanyDepartmentsLevelAnimatedNode
                                     key={node.get('departmentId')}
                                     index={index}                                    
                                     node={node}

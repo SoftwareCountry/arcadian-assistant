@@ -126,7 +126,7 @@ class Animations {
     })    
 }
 
-interface CompanyDepartmentsLevelNodeAnimatedProps {
+interface CompanyDepartmentsLevelAnimatedNodeProps {
     index: number;
     node: MapDepartmentNode;
     chief: MapEmployeeNode;
@@ -136,8 +136,8 @@ interface CompanyDepartmentsLevelNodeAnimatedProps {
     xCoordinate: Animated.Value;
 }
 
-export class CompanyDepartmentsLevelNodeAnimated extends Component<CompanyDepartmentsLevelNodeAnimatedProps> {
-    public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelNodeAnimatedProps) {
+export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepartmentsLevelAnimatedNodeProps> {
+    public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelAnimatedNodeProps) {
         return this.props.index !== nextProps.index
             || !this.props.node.equals(nextProps.node)
             || !is(this.props.chief, nextProps.chief)
