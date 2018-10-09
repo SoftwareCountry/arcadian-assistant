@@ -15,7 +15,7 @@ export interface DepartmentIdToChildren {
 }
 
 export interface DepartmentIdToSelectedId {
-    [departmentId: string]: { selectedDepartmentId: string, allowSelect: boolean };
+    [departmentId: string]: string;
 }
 
 export type DepartmentIdToNode = { [departmentId: string]: DepartmentNode };

@@ -21,7 +21,6 @@ export interface PeopleState {
     departmentsLists: DepartmentsListStateDescriptor[];
     filter: string;
     selectedCompanyDepartmentId: string;
-    allowSelect: boolean;
 }
 
 const initState: PeopleState = {
@@ -31,8 +30,7 @@ const initState: PeopleState = {
     currentFocusedDepartmentId: null,
     departmentsLists: [],
     filter: '',
-    selectedCompanyDepartmentId: null,
-    allowSelect: true
+    selectedCompanyDepartmentId: null
 };
 
 export function departmentsBranchFromDepartmentWithId(departmentId: string, departments: Department[]) {
@@ -119,8 +117,7 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
         case 'SELECT-COMPANY-DEPARTMENT': 
             return {
                 ...state,
-                selectedCompanyDepartmentId: action.departmentId,
-                allowSelect: action.allowSelect
+                selectedCompanyDepartmentId: action.departmentId
             };
         case 'FILTER-DEPARTMENTS-FINISHED':
             return {

@@ -7,6 +7,7 @@ import { DepartmentIdToChildren, MapDepartmentNode, EmployeeIdToNode, Department
 import { Set } from 'immutable';
 import { CompanyDepartmentsLevelNodes } from './company-departments-level-node';
 import { EmployeeIdsGroupMap } from '../reducers/organization/employees.reducer';
+import { CompanyDepartmentsLevelNodesContainer } from './company-departments-level-nodes-container';
 
 interface CompanyDepartmentsLevelProps {
     departmentId: string;
@@ -35,15 +36,22 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
     }
 
     private renderNodes(nodes: Set<MapDepartmentNode>) {
-        const selection = this.props.selection[this.props.departmentId];
+        const selectedDepartmentId = this.props.selection[this.props.departmentId];
+
         return (
-            <CompanyDepartmentsLevelNodes 
-                nodes={nodes} 
-                employeeIdToNode={this.props.employeeIdToNode} 
-                selectedDepartmentId={selection ? selection.selectedDepartmentId : null}
-                allowSelect={selection ? selection.allowSelect : false}
-                onNextDepartment={this.onSelectedNode}
-                onPrevDepartment={this.onSelectedNode} />
+            <CompanyDepartmentsLevelNodesContainer>
+                {
+                    (width: number, height: number) => 
+                        <CompanyDepartmentsLevelNodes
+                            width={width} 
+                            height={height}
+                            nodes={nodes} 
+                            employeeIdToNode={this.props.employeeIdToNode} 
+                            selectedDepartmentId={selectedDepartmentId}
+                            onNextDepartment={this.onSelectedNode}
+                            onPrevDepartment={this.onSelectedNode} />
+                }
+            </CompanyDepartmentsLevelNodesContainer>
         );
     }
 
@@ -54,8 +62,8 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
             return null;
         }
 
-        const selection = this.props.selection[this.props.departmentId];
-        const selectedDepartmentNode = nodes.find(node => selection && node.get('departmentId') ===  selection.selectedDepartmentId);
+        const selectedDepartmentId = this.props.selection[this.props.departmentId];
+        const selectedDepartmentNode = nodes.find(node => node.get('departmentId') === selectedDepartmentId);
 
         if (selectedDepartmentNode) {
             return this.renderDepartmentsLevel(selectedDepartmentNode);

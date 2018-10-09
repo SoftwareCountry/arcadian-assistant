@@ -44,10 +44,8 @@ const mapStateToProps: MapStateToProps<CompanyDepartmentsStateProps, void, AppSt
 
     const employeeIdToNode = buildEmployeeNodes(state.organization.employees.employeesById);
 
-    const userEmployee = state.organization.employees.employeesById.get(state.userInfo.employeeId);
-
-    const selection = userEmployee 
-        ? buildDepartmentsSelection(departmentIdToNode, state.people.selectedCompanyDepartmentId, state.people.allowSelect)
+    const selection = state.people.selectedCompanyDepartmentId 
+        ? buildDepartmentsSelection(departmentIdToNode, state.people.selectedCompanyDepartmentId)
         : {};
 
     return {

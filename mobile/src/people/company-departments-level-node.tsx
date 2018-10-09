@@ -10,17 +10,16 @@ import { companyDepartments } from './styles';
 import { CompanyDepartmentsLevelAnimatedNode } from './company-departments-level-animated-node';
 
 interface CompanyDepartmentsLevelNodesProps {
+    width: number;
+    height: number;    
     nodes: Set<MapDepartmentNode>;
     employeeIdToNode: EmployeeIdToNode;
     selectedDepartmentId: string;
-    allowSelect: boolean;
     onPrevDepartment: (departmentId: string) => void;
     onNextDepartment: (departmentId: string) => void;
 }
 
 interface CompanyDepartmentsLevelNodesState {
-    width: number;
-    height: number;
     xCoordinate: Animated.Value;
 }
 
@@ -38,8 +37,6 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
     constructor(props: CompanyDepartmentsLevelNodesProps) {
         super(props);
         this.state = {
-            width: this.gap,
-            height: 0,
             xCoordinate: new Animated.Value( this.gap / 2 )
         };
     }
@@ -59,10 +56,10 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
             onPanResponderRelease: (e, gesture) => {
                 if (this.rightToLeftSwipe(gesture)) {
                     this.canSwipe = false;
-                    this.moveToPage(gesture, -(this.state.width - this.gap), () => this.nextDepartment(), false /*this.currentPage.isPageLast*/);
+                    this.moveToPage(gesture, -(this.props.width - this.gap), () => this.nextDepartment(), false /*this.currentPage.isPageLast*/);
                 } else if (this.leftToRightSwipe(gesture)) {
                     this.canSwipe = false;
-                    this.moveToPage(gesture, this.state.width - this.gap, () => this.prevDepartment(), false /*this.currentPage.isPageFirst*/);
+                    this.moveToPage(gesture, this.props.width - this.gap, () => this.prevDepartment(), false /*this.currentPage.isPageFirst*/);
                 }
             }
         });
@@ -72,13 +69,15 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
         return !this.props.nodes.equals(nextProps.nodes)
             || !this.props.employeeIdToNode.equals(nextProps.employeeIdToNode)
             || this.props.selectedDepartmentId !== nextProps.selectedDepartmentId
-            || this.props.allowSelect !== nextProps.allowSelect
-            || this.state.height !== nextState.height
-            || this.state.width !== nextState.width;
+            || this.props.height !== nextProps.height
+            || this.props.width !== nextProps.width;
+    }
+
+    public componentDidMount() {
+        this.scrollToSelectedDepartment();        
     }
 
     public render() {
-        this.scrollToSelectedDepartment();
 
         const nodesContainerStyles = StyleSheet.flatten([
             companyDepartments.nodesSwipeableContainer,
@@ -88,52 +87,39 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
         ]);
 
         return (
-            <View style={companyDepartments.nodesContainer} onLayout={this.onLayoutContainer}>
-                <Animated.View
-                    {...this.panResponder.panHandlers}
-                    style={nodesContainerStyles}>
-                    {
-                        this.props.nodes.toArray()
-                            .map((node, index) => {
-                                const chiefId = node.get('chiefId');
-                                const chief = this.props.employeeIdToNode.get(chiefId);
+            <Animated.View
+                {...this.panResponder.panHandlers}
+                style={nodesContainerStyles}>
+                {
+                    this.props.nodes.toArray()
+                        .map((node, index) => {
+                            const chiefId = node.get('chiefId');
+                            const chief = this.props.employeeIdToNode.get(chiefId);
 
-                                return <CompanyDepartmentsLevelAnimatedNode
-                                    key={node.get('departmentId')}
-                                    index={index}                                    
-                                    node={node}
-                                    chief={chief}                                    
-                                    width={this.state.width}
-                                    height={this.state.height}
-                                    gap={this.gap}
-                                    xCoordinate={this.state.xCoordinate}
-                                />;
-                            })
-                    }
-                </Animated.View>
-            </View>
+                            return <CompanyDepartmentsLevelAnimatedNode
+                                key={node.get('departmentId')}
+                                index={index}                                    
+                                node={node}
+                                chief={chief}                                    
+                                width={this.props.width}
+                                height={this.props.height}
+                                gap={this.gap}
+                                xCoordinate={this.state.xCoordinate}
+                            />;
+                        })
+                }
+            </Animated.View>
         );
     }
 
     private scrollToSelectedDepartment() {
-        if (!this.props.allowSelect) {
-            return;
-        }
-
         const index = this.props.nodes.toArray().findIndex(node => node.get('departmentId') === this.props.selectedDepartmentId);
 
         if (index === -1) {
             return;
         }
 
-        this.state.xCoordinate.setOffset(-(this.state.width - this.gap) * index);
-    }
-
-    private onLayoutContainer = (e: LayoutChangeEvent) => {
-        this.setState({
-            width: e.nativeEvent.layout.width,
-            height: e.nativeEvent.layout.height
-        });
+        this.state.xCoordinate.setValue(-(this.props.width - this.gap) * index + this.gap / 2);
     }
 
     private rightToLeftSwipe(gesture: PanResponderGestureState): boolean {
