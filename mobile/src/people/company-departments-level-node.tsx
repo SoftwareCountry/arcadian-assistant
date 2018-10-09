@@ -94,18 +94,21 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
                     style={nodesContainerStyles}>
                     {
                         this.props.nodes.toArray()
-                            .map((node, index) =>
-                                 <CompanyDepartmentsLevelNodeAnimated
+                            .map((node, index) => {
+                                const chiefId = node.get('chiefId');
+                                const chief = this.props.employeeIdToNode.get(chiefId);
+
+                                return <CompanyDepartmentsLevelNodeAnimated
                                     key={node.get('departmentId')}
                                     index={index}                                    
                                     node={node}
+                                    chief={chief}                                    
                                     width={this.state.width}
                                     height={this.state.height}
                                     gap={this.gap}
-                                    employeeIdToNode={this.props.employeeIdToNode}
                                     xCoordinate={this.state.xCoordinate}
-                                />
-                            )
+                                />;
+                            })
                     }
                 </Animated.View>
             </View>

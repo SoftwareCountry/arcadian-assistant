@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Animated, ViewStyle, PerpectiveTransform } from 'react-native';
 import { StyledText } from '../override/styled-text';
-import { MapDepartmentNode, EmployeeIdToNode } from '../reducers/people/people.model';
+import { MapDepartmentNode, MapEmployeeNode } from '../reducers/people/people.model';
 import { companyDepartmentsAnimatedNode } from './styles';
-import { Map } from 'immutable';
+import { Map, is } from 'immutable';
 import { Photo } from '../reducers/organization/employee.model';
 import { CompanyDepartmentsLevelNodePhoto } from './company-departments-employee-node';
 
@@ -129,7 +129,7 @@ class Animations {
 interface CompanyDepartmentsLevelNodeAnimatedProps {
     index: number;
     node: MapDepartmentNode;
-    employeeIdToNode: EmployeeIdToNode;
+    chief: MapEmployeeNode;
     width: number;
     height: number;
     gap: number;
@@ -140,7 +140,7 @@ export class CompanyDepartmentsLevelNodeAnimated extends Component<CompanyDepart
     public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelNodeAnimatedProps) {
         return this.props.index !== nextProps.index
             || !this.props.node.equals(nextProps.node)
-            || !this.props.employeeIdToNode.equals(nextProps.employeeIdToNode)
+            || !is(this.props.chief, nextProps.chief)
             || this.props.width !== nextProps.width
             || this.props.height !== nextProps.height
             || this.props.gap !== nextProps.gap
@@ -155,8 +155,7 @@ export class CompanyDepartmentsLevelNodeAnimated extends Component<CompanyDepart
             contentStyles 
         } = this.calculateStyles();
 
-        const chiefId = this.props.node.get('chiefId');
-        const chief = this.props.employeeIdToNode.get(chiefId);
+        const { chief } = this.props;
 
         return chief ?
             <View style={containerStyles}>
