@@ -23,7 +23,7 @@ interface CompanyDepartmentsStateProps {
 }
 
 interface CompanyDepartmentsDispatchProps {
-    selectCompanyDepartment: (departmentId: string, allowSelect: boolean) => void;
+    selectCompanyDepartment: (departmentId: string) => void;
 }
 
 const mapStateToProps: MapStateToProps<CompanyDepartmentsStateProps, void, AppState> = (state: AppState) => {
@@ -58,8 +58,8 @@ const mapStateToProps: MapStateToProps<CompanyDepartmentsStateProps, void, AppSt
 };
 
 const mapDispatchToProps: MapDispatchToProps<CompanyDepartmentsDispatchProps, void> = (dispatch: Dispatch<any>) => ({
-    selectCompanyDepartment: (departmentId: string, allowSelect: boolean) => {
-        dispatch(selectCompanyDepartment(departmentId, allowSelect));
+    selectCompanyDepartment: (departmentId: string) => {
+        dispatch(selectCompanyDepartment(departmentId));
     }
 });
 

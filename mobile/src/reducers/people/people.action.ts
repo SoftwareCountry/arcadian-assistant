@@ -16,10 +16,9 @@ export const updateDepartmentsBranch = (departments: Department[], depId: string
 interface SelectCompanyDepartment {
     type: 'SELECT-COMPANY-DEPARTMENT';
     departmentId: string;
-    allowSelect: boolean;
 }
 
-export const selectCompanyDepartment = (departmentId: string, allowSelect: boolean): SelectCompanyDepartment => 
-    ({ type: 'SELECT-COMPANY-DEPARTMENT', departmentId, allowSelect });
+export const selectCompanyDepartment = (departmentId: string): SelectCompanyDepartment => 
+    ({ type: 'SELECT-COMPANY-DEPARTMENT', departmentId });
 
 export type PeopleActions = SelectCompanyDepartment;

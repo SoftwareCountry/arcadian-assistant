@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { MapDepartmentNode, EmployeeIdToNode, DepartmentIdToSelectedId } from '../reducers/people/people.model';
+import { MapDepartmentNode, EmployeeIdToNode, DepartmentIdToSelectedId, MapEmployeeNode } from '../reducers/people/people.model';
 import {
     View, Animated, PanResponder, PanResponderInstance, PanResponderGestureState,
     Easing, LayoutChangeEvent, StyleSheet, ViewStyle, TranslateXTransform
@@ -13,7 +13,7 @@ interface CompanyDepartmentsLevelNodesProps {
     width: number;
     height: number;    
     nodes: Set<MapDepartmentNode>;
-    employeeIdToNode: EmployeeIdToNode;
+    chiefs: EmployeeIdToNode;
     selectedDepartmentId: string;
     onPrevDepartment: (departmentId: string) => void;
     onNextDepartment: (departmentId: string) => void;
@@ -67,7 +67,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
 
     public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelNodesProps, nextState: CompanyDepartmentsLevelNodesState) {
         return !this.props.nodes.equals(nextProps.nodes)
-            || !this.props.employeeIdToNode.equals(nextProps.employeeIdToNode)
+            || !this.props.chiefs.equals(nextProps.chiefs)
             || this.props.selectedDepartmentId !== nextProps.selectedDepartmentId
             || this.props.height !== nextProps.height
             || this.props.width !== nextProps.width;
@@ -94,7 +94,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
                     this.props.nodes.toArray()
                         .map((node, index) => {
                             const chiefId = node.get('chiefId');
-                            const chief = this.props.employeeIdToNode.get(chiefId);
+                            const chief = this.props.chiefs.get(chiefId);
 
                             return <CompanyDepartmentsLevelAnimatedNode
                                 key={node.get('departmentId')}

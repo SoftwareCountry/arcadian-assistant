@@ -3,8 +3,8 @@ import { companyDepartments } from './styles';
 import { View } from 'react-native';
 import { layout } from '../calendar/event-dialog/styles';
 import { StyledText } from '../override/styled-text';
-import { DepartmentIdToChildren, MapDepartmentNode, EmployeeIdToNode, DepartmentIdToSelectedId } from '../reducers/people/people.model';
-import { Set } from 'immutable';
+import { DepartmentIdToChildren, MapDepartmentNode, EmployeeIdToNode, DepartmentIdToSelectedId, MapEmployeeNode } from '../reducers/people/people.model';
+import { Set, Map } from 'immutable';
 import { CompanyDepartmentsLevelNodes } from './company-departments-level-node';
 import { EmployeeIdsGroupMap } from '../reducers/organization/employees.reducer';
 import { CompanyDepartmentsLevelNodesContainer } from './company-departments-level-nodes-container';
@@ -15,7 +15,7 @@ interface CompanyDepartmentsLevelProps {
     employeeIdsByDepartment: EmployeeIdsGroupMap;
     employeeIdToNode: EmployeeIdToNode;
     selection: DepartmentIdToSelectedId;
-    onSelectedNode: (departmentId: string, allowSelect: boolean) => void;
+    onSelectedNode: (departmentId: string) => void;
 }
 
 export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelProps> {
@@ -37,7 +37,8 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
 
     private renderNodes(nodes: Set<MapDepartmentNode>) {
         const selectedDepartmentId = this.props.selection[this.props.departmentId];
-
+        const chiefs = this.getChiefs(nodes);
+        
         return (
             <CompanyDepartmentsLevelNodesContainer>
                 {
@@ -46,7 +47,7 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
                             width={width} 
                             height={height}
                             nodes={nodes} 
-                            employeeIdToNode={this.props.employeeIdToNode} 
+                            chiefs={chiefs} 
                             selectedDepartmentId={selectedDepartmentId}
                             onNextDepartment={this.onSelectedNode}
                             onPrevDepartment={this.onSelectedNode} />
@@ -87,6 +88,14 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
     }
 
     private onSelectedNode = (departmentId: string) => {
-        this.props.onSelectedNode(departmentId, false);
+        this.props.onSelectedNode(departmentId);
+    }
+
+    private getChiefs(nodes: Set<MapDepartmentNode>): EmployeeIdToNode {
+        const chiefIdToChiefs = nodes.map(node => {
+            const chiefId = node.get('chiefId');
+            return [chiefId, this.props.employeeIdToNode.get(chiefId)];
+        });
+        return Map<string, MapEmployeeNode>(chiefIdToChiefs);
     }
 }
