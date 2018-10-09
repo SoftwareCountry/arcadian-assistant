@@ -5,7 +5,7 @@ import { MapDepartmentNode, MapEmployeeNode } from '../reducers/people/people.mo
 import { companyDepartmentsAnimatedNode } from './styles';
 import { Map, is } from 'immutable';
 import { Photo } from '../reducers/organization/employee.model';
-import { CompanyDepartmentsLevelNodePhoto } from './company-departments-employee-node';
+import { CompanyDepartmentsLevelNodePhoto } from './company-departments-level-node-photo';
 
 interface Perspective {
     perspective: number;
@@ -156,22 +156,28 @@ export class CompanyDepartmentsLevelNodeAnimated extends Component<CompanyDepart
         } = this.calculateStyles();
 
         const { chief } = this.props;
+        const photo = chief 
+            ? chief.get('photo') as Map<string, Photo> 
+            : null;
+        const chiefName = chief ? chief.get('name') : null;
+        const chiefPosition = chief ? chief.get('position') : null;
 
-        return chief ?
+        return (
             <View style={containerStyles}>
                 <Animated.View style={stickyContainerStyles}>
                     <Animated.View style={scaleContainerStyles}>
-                        <CompanyDepartmentsLevelNodePhoto photo={chief.get('photo') as Map<string, Photo>} />
+                        <CompanyDepartmentsLevelNodePhoto photo={photo} />
                     </Animated.View>
                 </Animated.View>
                 <Animated.View style={contentStyles}>
                     <View>
-                        <StyledText>{chief.get('name')}</StyledText>
-                        <StyledText>{chief.get('position')}</StyledText>
+                        <StyledText>{chiefName}</StyledText>
+                        <StyledText>{chiefPosition}</StyledText>
                     </View>
                     <StyledText>{this.props.node.get('abbreviation')}</StyledText>
                 </Animated.View>
-            </View> : null;
+            </View>
+        );
     }
 
     private calculateStyles() {

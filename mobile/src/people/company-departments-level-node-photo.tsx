@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Photo } from '../reducers/organization/employee.model';
-import { Map } from 'immutable';
+import { Map, is } from 'immutable';
 import { Avatar } from './avatar';
 
 interface CompanyDepartmentsLevelNodePhotoProps {
@@ -9,11 +9,13 @@ interface CompanyDepartmentsLevelNodePhotoProps {
 
 export class CompanyDepartmentsLevelNodePhoto extends Component<CompanyDepartmentsLevelNodePhotoProps> {
     public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelNodePhotoProps) {
-        return !this.props.photo.equals(nextProps.photo);
+        return !is(this.props.photo, nextProps.photo);
     }
 
     public render() {
-        const photo = this.props.photo.toJS();
+        const photo = this.props.photo 
+            ? this.props.photo.toJS() 
+            : null;
 
         return <Avatar photo={photo} />;
     }
