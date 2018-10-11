@@ -24,8 +24,6 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
         const { departmentIdToChildren, departmentId } = this.props;
         const nodes = departmentIdToChildren[departmentId];
 
-        console.log('level: ', departmentId);
-
         return (
             <View style={companyDepartments.levelContainer}>
                 {
