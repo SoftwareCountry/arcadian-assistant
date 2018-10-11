@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { companyDepartments } from './styles';
-import { View } from 'react-native';
+import { View, Animated } from 'react-native';
 import { layout } from '../calendar/event-dialog/styles';
 import { StyledText } from '../override/styled-text';
 import { DepartmentIdToChildren, MapDepartmentNode, EmployeeIdToNode, DepartmentIdToSelectedId, MapEmployeeNode } from '../reducers/people/people.model';
 import { Set, Map } from 'immutable';
-import { CompanyDepartmentsLevelNodes } from './company-departments-level-node';
+import { CompanyDepartmentsLevelNodes } from './company-departments-level-nodes';
 import { EmployeeIdsGroupMap } from '../reducers/organization/employees.reducer';
 import { CompanyDepartmentsLevelNodesContainer } from './company-departments-level-nodes-container';
+import { CompanyDepartmentsLevelPeople } from './company-departments-level-people';
 
 interface CompanyDepartmentsLevelProps {
     departmentId: string;
@@ -23,13 +24,15 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
         const { departmentIdToChildren, departmentId } = this.props;
         const nodes = departmentIdToChildren[departmentId];
 
+        console.log('level: ', departmentId);
+
         return (
             <View style={companyDepartments.levelContainer}>
                 {
                     nodes && this.renderNodes(nodes)
                 }
                 {
-                    this.renderSubLevel()
+                    nodes ? this.renderSubLevel(nodes) : this.renderDepartmentPeople()
                 }
             </View>
         );
@@ -38,7 +41,7 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
     private renderNodes(nodes: Set<MapDepartmentNode>) {
         const selectedDepartmentId = this.props.selection[this.props.departmentId];
         const chiefs = this.getChiefs(nodes);
-        
+
         return (
             <CompanyDepartmentsLevelNodesContainer>
                 {
@@ -56,13 +59,7 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
         );
     }
 
-    private renderSubLevel(): JSX.Element {
-        const nodes = this.props.departmentIdToChildren[this.props.departmentId];
-
-        if (!nodes) {
-            return null;
-        }
-
+    private renderSubLevel(nodes: Set<MapDepartmentNode>): JSX.Element {
         const selectedDepartmentId = this.props.selection[this.props.departmentId];
         const selectedDepartmentNode = nodes.find(node => node.get('departmentId') === selectedDepartmentId);
 
@@ -87,6 +84,14 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
         );
     }
 
+    private renderDepartmentPeople() {
+        const people = this.props.employeeIdToNode.filter(employeeNode => employeeNode.get('departmentId') === this.props.departmentId).toMap();
+
+        return (
+            <CompanyDepartmentsLevelPeople employeeIdToNode={people} />
+        );
+    }
+
     private onSelectedNode = (departmentId: string) => {
         this.props.onSelectedNode(departmentId);
     }
@@ -97,5 +102,5 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
             return [chiefId, this.props.employeeIdToNode.get(chiefId)];
         });
         return Map<string, MapEmployeeNode>(chiefIdToChiefs);
-    }
+    }    
 }

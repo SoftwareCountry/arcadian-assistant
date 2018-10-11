@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import { MapDepartmentNode, EmployeeIdToNode, DepartmentIdToSelectedId, MapEmployeeNode } from '../reducers/people/people.model';
-import {
-    View, Animated, PanResponder, PanResponderInstance, PanResponderGestureState,
-    Easing, LayoutChangeEvent, StyleSheet, ViewStyle, TranslateXTransform
-} from 'react-native';
+import { Animated, PanResponder, PanResponderInstance, PanResponderGestureState, Easing, StyleSheet } from 'react-native';
 import { Set } from 'immutable';
 import { StyledText } from '../override/styled-text';
 import { companyDepartments } from './styles';
@@ -37,7 +34,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
     constructor(props: CompanyDepartmentsLevelNodesProps) {
         super(props);
         this.state = {
-            xCoordinate: new Animated.Value( this.gap / 2 )
+            xCoordinate: new Animated.Value(0)
         };
     }
 
@@ -74,11 +71,18 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
     }
 
     public componentDidMount() {
-        this.scrollToSelectedDepartment();        
+        this.scrollToSelectedDepartment();
+    }
+
+    public componentDidUpdate(prevProps: CompanyDepartmentsLevelNodesProps) {
+        if (!this.props.selectedDepartmentId) {
+            this.state.xCoordinate.flattenOffset();
+            this.state.xCoordinate.setValue( this.gap / 2 );
+        }
     }
 
     public render() {
-
+        
         const nodesContainerStyles = StyleSheet.flatten([
             companyDepartments.nodesSwipeableContainer,
             {
@@ -113,10 +117,10 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
     }
 
     private scrollToSelectedDepartment() {
-        const index = this.props.nodes.toArray().findIndex(node => node.get('departmentId') === this.props.selectedDepartmentId);
+        let index = this.props.nodes.toArray().findIndex(node => node.get('departmentId') === this.props.selectedDepartmentId);
 
         if (index === -1) {
-            return;
+            index = 0;
         }
 
         this.state.xCoordinate.setValue(-(this.props.width - this.gap) * index + this.gap / 2);
@@ -132,7 +136,9 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
 
     private nextDepartment() {
         const nodesArray = this.props.nodes.toArray();
-        const index = nodesArray.findIndex(node => node.get('departmentId') === this.props.selectedDepartmentId);
+        const index = !this.props.selectedDepartmentId 
+            ? 0
+            : nodesArray.findIndex(node => node.get('departmentId') === this.props.selectedDepartmentId);
 
         const nextNode = nodesArray[index + 1];
 
@@ -169,7 +175,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
         if (this.isThresholdExceeded(gesture) && !isFirstOrLast) {
             this.moveToNearestPage(toValue, onCompleteMove);
         } else {
-            this.moveToNearestPage(0, onCompleteMove);
+            this.moveToNearestPage(0);
         }
     }
 
@@ -177,14 +183,14 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
         return this.motionThreshold - Math.abs(gesture.dx) <= 0;
     }
 
-    private moveToNearestPage(toValue: number, onMoveComplete: () => void) {
+    private moveToNearestPage(toValue: number, onMoveComplete: () => void = null) {
         Animated.timing(this.state.xCoordinate, {
             toValue: toValue,
             duration: 90,
             easing: Easing.linear,
             useNativeDriver: true
         }).start(() => {
-            onMoveComplete();
+            onMoveComplete && onMoveComplete();
             this.canSwipe = true;
         });
     }

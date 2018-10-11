@@ -21,6 +21,8 @@ export interface DepartmentIdToSelectedId {
 export type DepartmentIdToNode = { [departmentId: string]: DepartmentNode };
 
 export interface EmployeeNode {
+    employeeId: string;
+    departmentId: string;
     name: string;
     position: string;
     photo: Map<string, Photo>;
