@@ -3,6 +3,7 @@
     using System;
     using System.Diagnostics;
 
+    [DebuggerDisplay("{EmployeeId} - {Name} from Department #{DepartmentId}")]
     public class EmployeeMetadata
     {
         public EmployeeMetadata(string employeeId, string name, string email)
