@@ -22,6 +22,8 @@
 
         private const int ArcadiaCompanyId = 154; //TODO: put in config
 
+        private const string PriorityHeadDepartment = "GMG";
+
         private readonly Expression<Func<Department, DepartmentInfo>> mapDepartment =
             x =>
                 new DepartmentInfo(
@@ -44,7 +46,7 @@
                     .Select(this.mapDepartment)
                     .ToListAsync();
 
-                var head = allDepartments.FirstOrDefault(x => x.IsHeadDepartment);
+                var head = allDepartments.FirstOrDefault(x => x.IsHeadDepartment && (x.Abbreviation == PriorityHeadDepartment));
 
                 var filteredDepartments = new List<DepartmentInfo>();
 

@@ -51,7 +51,14 @@
         {
             var organization = this.actorSystem.ActorSelection(this.pathsBuilder.Get(WellKnownActorPaths.Organization));
             var response = await organization.Ask<DepartmentsQuery.Response>(new DepartmentsQuery().WithId(departmentId), this.timeoutSettings.Timeout, token);
-            return this.Ok(response.Departments.Select(x => x.Department).FirstOrDefault());
+            var dep = response.Departments.Select(x => x.Department).FirstOrDefault();
+            if (dep == null)
+            {
+                return this.NotFound();
+            }
+
+            return this.Ok(dep);
+
         }
     }
 }
