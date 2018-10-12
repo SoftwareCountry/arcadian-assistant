@@ -53,10 +53,10 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
             onPanResponderRelease: (e, gesture) => {
                 if (this.rightToLeftSwipe(gesture)) {
                     this.canSwipe = false;
-                    this.moveToPage(gesture, -(this.props.width - this.gap), () => this.nextDepartment(), false /*this.currentPage.isPageLast*/);
+                    this.moveToPage(gesture, -(this.props.width - this.gap), () => this.nextDepartment(), this.isLastNextPage());
                 } else if (this.leftToRightSwipe(gesture)) {
                     this.canSwipe = false;
-                    this.moveToPage(gesture, this.props.width - this.gap, () => this.prevDepartment(), false /*this.currentPage.isPageFirst*/);
+                    this.moveToPage(gesture, this.props.width - this.gap, () => this.prevDepartment(), this.isFirstPrevPage());
                 }
             }
         });
@@ -168,9 +168,29 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
         this.props.onPrevDepartment(prevNode.get('departmentId'));
     }
 
-    // private currentPage() {
-    //     return this.props.pages[1];
-    // }
+    private isLastNextPage(): boolean {
+        const nodesArray = this.props.nodes.toArray();
+
+        let index = 0;
+
+        if (this.props.selectedDepartmentId) {
+            index = nodesArray.findIndex(node => node.get('departmentId') === this.props.selectedDepartmentId);
+        }
+        
+        return !nodesArray[index + 1];
+    }
+
+    private isFirstPrevPage(): boolean {
+        const nodesArray = this.props.nodes.toArray();
+
+        let index = 0;
+
+        if (this.props.selectedDepartmentId) {
+            index = nodesArray.findIndex(node => node.get('departmentId') === this.props.selectedDepartmentId);
+        }
+        
+        return !nodesArray[index - 1];        
+    }
 
     private moveToPage(
         gesture: PanResponderGestureState,
