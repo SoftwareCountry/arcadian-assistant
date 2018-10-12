@@ -8,6 +8,7 @@ import { Department } from '../organization/department.model';
 import { LoadUserEmployeeFinished } from '../user/user.action';
 import { combineEpics } from 'redux-observable';
 import { updateDepartmentsBranchEpic$ } from '../search/search.epics';
+import { companyDepartmentSelected$, redirectToEmployeeDetails$ } from './people.epics';
 
 export interface DepartmentsListStateDescriptor {
     currentPage: number;
@@ -139,5 +140,7 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
 };
 
 export const peopleEpics = combineEpics(
-    updateDepartmentsBranchEpic$ as any,
+    //updateDepartmentsBranchEpic$ as any,
+    companyDepartmentSelected$ as any,
+    redirectToEmployeeDetails$ as any
 );

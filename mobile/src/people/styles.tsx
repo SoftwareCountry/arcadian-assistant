@@ -1,4 +1,6 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
+
+const screenHeight = Dimensions.get('window').height;
 
 export const employeesListStyles  = StyleSheet.create({
     company: {
@@ -165,13 +167,13 @@ export const companyTinyItemStyles = StyleSheet.create({
 
 export const companyDepartments = StyleSheet.create({
     levelContainer: {
-        borderTopWidth: 1,
-        borderColor: 'rgba(0, 0, 0, 0.15)',
         backgroundColor: '#fff'
     },
     nodesContainer: {
+        borderTopWidth: 1,
+        borderColor: 'rgba(0, 0, 0, 0.15)',        
 		position: 'relative',
-        height: 100
+        height: Dimensions.get('window').height * 0.12
     },
     nodesSwipeableContainer: {
         flex: 1,
@@ -180,20 +182,60 @@ export const companyDepartments = StyleSheet.create({
     }
 });
 
+const contentMargin = screenHeight * 0.018;
+
 export const companyDepartmentsAnimatedNode = StyleSheet.create({
     container: {
         flexDirection: 'row',
     },
     stickyContainer: {
 		justifyContent: 'center',
-		alignItems: 'center'
+        alignItems: 'center',
+        zIndex: 1
     },
     scaleContainer: {
 		justifyContent: 'center',
 		alignItems: 'center'
     },
     content: {
-        marginLeft: 10,
-        justifyContent: 'space-between'
+        marginLeft: contentMargin,
+        justifyContent: 'space-between',
+        marginTop: contentMargin,
+        marginBottom: contentMargin 
+    },
+    contentPosition: {
+        fontSize: 10
+    },
+    contentDepartmentAbbreviation: {
+        fontSize: 9,
+        color: '#2FAFCC',        
     }
+});
+
+export const companyDepartmentLevelPeople = StyleSheet.create({
+    list: {
+        height: '100%',
+        padding: screenHeight * 0.02
+    },
+    listItem: {
+        flexDirection: 'row', 
+        flex: 1,
+        height: screenHeight * 0.052,
+        marginBottom: 10
+    },
+    listItemAvator: {
+        flex: 1
+    },
+    listItemContent: {
+        flex: 5,
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    listItemName: {
+        fontSize: 11,
+        fontWeight: '600'
+    },
+    listItemPosition: {
+        fontSize: 11
+    }    
 });

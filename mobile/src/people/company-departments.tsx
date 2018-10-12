@@ -12,7 +12,8 @@ import { Department } from '../reducers/organization/department.model';
 import { DepartmentIdToChildren, EmployeeIdToNode, DepartmentIdToSelectedId } from '../reducers/people/people.model';
 import { buildEmployeeNodes } from '../reducers/people/build-employee-nodes';
 import { buildDepartmentsSelection } from '../reducers/people/build-departments-selection';
-import { selectCompanyDepartment } from '../reducers/people/people.action';
+import { selectCompanyDepartment, redirectToEmployeeDetails } from '../reducers/people/people.action';
+import { buildSelectedDepartmentId } from '../reducers/people/build-selected-department-id';
 
 interface CompanyDepartmentsStateProps {
     headDepartment: Department;
@@ -24,6 +25,7 @@ interface CompanyDepartmentsStateProps {
 
 interface CompanyDepartmentsDispatchProps {
     selectCompanyDepartment: (departmentId: string) => void;
+    onPressEmployee: (employeeId: string) => void;
 }
 
 const mapStateToProps: MapStateToProps<CompanyDepartmentsStateProps, void, AppState> = (state: AppState) => {
@@ -33,7 +35,7 @@ const mapStateToProps: MapStateToProps<CompanyDepartmentsStateProps, void, AppSt
     appendRoot(headDepartment, departmentIdToNode);
 
     const filteredDepartments = filterDepartments(
-        null,
+        state.people.filter,
         state.organization.departments,
         state.organization.employees.employeesById,
         state.organization.employees.employeeIdsByDepartment);
@@ -42,10 +44,12 @@ const mapStateToProps: MapStateToProps<CompanyDepartmentsStateProps, void, AppSt
 
     const departmentIdToChildren = buildDepartmentIdToChildren(withBranches);
 
-    const employeeIdToNode = buildEmployeeNodes(state.organization.employees.employeesById);
+    const employeeIdToNode = buildEmployeeNodes(state.organization.employees.employeesById, state.people.filter);
 
-    const selection = state.people.selectedCompanyDepartmentId 
-        ? buildDepartmentsSelection(departmentIdToNode, state.people.selectedCompanyDepartmentId)
+    const selectedCompanyDepartmentId = buildSelectedDepartmentId(withBranches, employeeIdToNode, state.people.selectedCompanyDepartmentId);
+
+    const selection = selectedCompanyDepartmentId 
+        ? buildDepartmentsSelection(departmentIdToNode, selectedCompanyDepartmentId)
         : {};
 
     return {
@@ -60,6 +64,9 @@ const mapStateToProps: MapStateToProps<CompanyDepartmentsStateProps, void, AppSt
 const mapDispatchToProps: MapDispatchToProps<CompanyDepartmentsDispatchProps, void> = (dispatch: Dispatch<any>) => ({
     selectCompanyDepartment: (departmentId: string) => {
         dispatch(selectCompanyDepartment(departmentId));
+    },
+    onPressEmployee: (employeeId: string) => {
+        dispatch(redirectToEmployeeDetails(employeeId));
     }
 });
 
@@ -74,7 +81,8 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
                 employeeIdsByDepartment={this.props.employeeIdsByDepartment}
                 employeeIdToNode={this.props.employeeIdToNode}
                 selection={this.props.selection}
-                onSelectedNode={this.props.selectCompanyDepartment} />
+                onSelectedNode={this.props.selectCompanyDepartment}
+                onPressEmployee={this.props.onPressEmployee} />
             : null;
     }
 }

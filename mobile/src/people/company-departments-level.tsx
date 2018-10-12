@@ -17,6 +17,7 @@ interface CompanyDepartmentsLevelProps {
     employeeIdToNode: EmployeeIdToNode;
     selection: DepartmentIdToSelectedId;
     onSelectedNode: (departmentId: string) => void;
+    onPressEmployee: (employeeId: string) => void;
 }
 
 export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelProps> {
@@ -50,8 +51,8 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
                             nodes={nodes} 
                             chiefs={chiefs} 
                             selectedDepartmentId={selectedDepartmentId}
-                            onNextDepartment={this.onSelectedNode}
-                            onPrevDepartment={this.onSelectedNode} />
+                            onNextDepartment={this.props.onSelectedNode}
+                            onPrevDepartment={this.props.onSelectedNode} />
                 }
             </CompanyDepartmentsLevelNodesContainer>
         );
@@ -78,7 +79,8 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
                 employeeIdsByDepartment={this.props.employeeIdsByDepartment}
                 employeeIdToNode={this.props.employeeIdToNode}
                 selection={this.props.selection}
-                onSelectedNode={this.props.onSelectedNode} />
+                onSelectedNode={this.props.onSelectedNode}
+                onPressEmployee={this.props.onPressEmployee} />
         );
     }
 
@@ -86,12 +88,8 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
         const people = this.props.employeeIdToNode.filter(employeeNode => employeeNode.get('departmentId') === this.props.departmentId).toMap();
 
         return (
-            <CompanyDepartmentsLevelPeople employeeIdToNode={people} />
+            <CompanyDepartmentsLevelPeople employeeIdToNode={people} onPressEmployee={this.props.onPressEmployee} />
         );
-    }
-
-    private onSelectedNode = (departmentId: string) => {
-        this.props.onSelectedNode(departmentId);
     }
 
     private getChiefs(nodes: Set<MapDepartmentNode>): EmployeeIdToNode {

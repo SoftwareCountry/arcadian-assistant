@@ -13,7 +13,7 @@ export const updateDepartmentsBranch = (departments: Department[], depId: string
     return ({ type: 'UPDATE-DEPARTMENTS-BRANCH', departmentsBranch: res.departmentsLineup, departmentLists: res.departmentsLists });
 };
 
-interface SelectCompanyDepartment {
+export interface SelectCompanyDepartment {
     type: 'SELECT-COMPANY-DEPARTMENT';
     departmentId: string;
 }
@@ -21,4 +21,12 @@ interface SelectCompanyDepartment {
 export const selectCompanyDepartment = (departmentId: string): SelectCompanyDepartment => 
     ({ type: 'SELECT-COMPANY-DEPARTMENT', departmentId });
 
-export type PeopleActions = SelectCompanyDepartment;
+export interface RedirectToEmployeeDetails {
+    type: 'REDIRECT-TO-EMPLOYEE-DETAILS';
+    employeeId: string;
+}
+
+export const redirectToEmployeeDetails = (employeeId: string): RedirectToEmployeeDetails => 
+    ({ type: 'REDIRECT-TO-EMPLOYEE-DETAILS', employeeId });
+
+export type PeopleActions = SelectCompanyDepartment | RedirectToEmployeeDetails;

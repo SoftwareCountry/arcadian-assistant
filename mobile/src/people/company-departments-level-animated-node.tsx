@@ -172,9 +172,13 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
                 <Animated.View style={contentStyles}>
                     <View>
                         <StyledText>{chiefName}</StyledText>
-                        <StyledText>{chiefPosition}</StyledText>
+                        <StyledText style={companyDepartmentsAnimatedNode.contentPosition}>
+                            {chiefPosition}
+                        </StyledText>
                     </View>
-                    <StyledText>{this.props.node.get('abbreviation')}</StyledText>
+                    <StyledText style={companyDepartmentsAnimatedNode.contentDepartmentAbbreviation}>
+                        {this.props.node.get('abbreviation')}
+                    </StyledText>
                 </Animated.View>
             </View>
         );

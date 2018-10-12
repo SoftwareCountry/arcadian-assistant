@@ -75,18 +75,18 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
     }
 
     public componentDidUpdate(prevProps: CompanyDepartmentsLevelNodesProps) {
-        if (!this.props.selectedDepartmentId) {
+        if (this.props.selectedDepartmentId !== prevProps.selectedDepartmentId || this.props.nodes.size !== prevProps.nodes.size) {
             this.state.xCoordinate.flattenOffset();
-            this.state.xCoordinate.setValue( this.gap / 2 );
+            this.scrollToSelectedDepartment();
         }
     }
 
     public render() {
-        
+
         const nodesContainerStyles = StyleSheet.flatten([
             companyDepartments.nodesSwipeableContainer,
             {
-                transform: [{translateX: this.state.xCoordinate as any}]
+                transform: [{ translateX: this.state.xCoordinate as any }]
             }
         ]);
 
@@ -117,13 +117,19 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
     }
 
     private scrollToSelectedDepartment() {
-        let index = this.props.nodes.toArray().findIndex(node => node.get('departmentId') === this.props.selectedDepartmentId);
+        let coordinate = this.gap / 2;
 
-        if (index === -1) {
-            index = 0;
+        if (this.props.selectedDepartmentId) {
+            let index = this.props.nodes.toArray().findIndex(node => node.get('departmentId') === this.props.selectedDepartmentId);
+            
+            if (index === -1) {
+                return;
+            }
+
+            coordinate += -(this.props.width - this.gap) * index;
         }
 
-        this.state.xCoordinate.setValue(-(this.props.width - this.gap) * index + this.gap / 2);
+        this.state.xCoordinate.setValue(coordinate);
     }
 
     private rightToLeftSwipe(gesture: PanResponderGestureState): boolean {
