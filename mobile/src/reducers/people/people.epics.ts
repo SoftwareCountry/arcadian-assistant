@@ -17,6 +17,6 @@ export const redirectToEmployeeDetails$ = (action$: ActionsObservable<RedirectTo
         .pipe(
             map(x => {
                 const employee = store.getState().organization.employees.employeesById.get(x.employeeId);
-                return employee;
+                return openEmployeeDetailsAction(employee);
             })
         );
