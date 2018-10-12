@@ -1,34 +1,18 @@
 import { Department } from '../organization/department.model';
 import { EmployeeMap, EmployeeIdsGroupMap } from '../organization/employees.reducer';
+import { EmployeeIdToNode } from './people.model';
 
-// TODO: pass lambda instead of term
 export function filterDepartments(
-    term: string,
     departments: Department[],
-    employeesById: EmployeeMap,
-    employeeIdsByDepartmentId: EmployeeIdsGroupMap
+    employeeIdToNode: EmployeeIdToNode
 ): Department[] {
-    if (!term) {
-        return departments;
-    }
 
-    const filteredDepartments = departments.filter(x => {
-        const employeeIds = employeeIdsByDepartmentId.get(x.departmentId);
+    const filteredDepartments = departments.filter(department => {
 
-        if (!employeeIds) {
-            return false;
-        }
+        const employeeNodes = employeeIdToNode.toArray();
 
-        const employeeIdsArray = employeeIds.toArray();
-
-        for (let employeeId of employeeIdsArray) {
-            const employee = employeesById.get(employeeId);
-
-            if (!employee) {
-                return false;
-            }
-
-            if (employee.name.toLowerCase().includes(term.toLowerCase())) {
+        for (let employeeNode of employeeNodes) {
+            if (employeeNode.get('departmentId') === department.departmentId) {
                 return true;
             }
         }

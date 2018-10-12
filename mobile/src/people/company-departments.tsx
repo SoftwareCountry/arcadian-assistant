@@ -34,17 +34,17 @@ const mapStateToProps: MapStateToProps<CompanyDepartmentsStateProps, void, AppSt
 
     appendRoot(headDepartment, departmentIdToNode);
 
+    const employeeIdToNode = buildEmployeeNodes(
+        state.organization.employees.employeesById, 
+        state.people.filter);
+
     const filteredDepartments = filterDepartments(
-        state.people.filter,
         state.organization.departments,
-        state.organization.employees.employeesById,
-        state.organization.employees.employeeIdsByDepartment);
+        employeeIdToNode);
 
     const withBranches = buildBranchFromChildToParent(filteredDepartments, departmentIdToNode);
 
     const departmentIdToChildren = buildDepartmentIdToChildren(withBranches);
-
-    const employeeIdToNode = buildEmployeeNodes(state.organization.employees.employeesById, state.people.filter);
 
     const selectedCompanyDepartmentId = buildSelectedDepartmentId(withBranches, employeeIdToNode, state.people.selectedCompanyDepartmentId);
 
