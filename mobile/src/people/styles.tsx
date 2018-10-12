@@ -167,11 +167,12 @@ export const companyTinyItemStyles = StyleSheet.create({
 
 export const companyDepartments = StyleSheet.create({
     levelContainer: {
-        backgroundColor: '#fff'
+        flex: 1,
+        backgroundColor: '#fff',
+        borderTopWidth: 1,
+        borderColor: 'rgba(0, 0, 0, 0.15)',      
     },
     nodesContainer: {
-        borderTopWidth: 1,
-        borderColor: 'rgba(0, 0, 0, 0.15)',        
 		position: 'relative',
         height: Dimensions.get('window').height * 0.12
     },
@@ -214,7 +215,7 @@ export const companyDepartmentsAnimatedNode = StyleSheet.create({
 
 export const companyDepartmentLevelPeople = StyleSheet.create({
     list: {
-        height: '100%',
+        flex: 1,
         padding: screenHeight * 0.02
     },
     listItem: {
