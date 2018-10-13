@@ -1,17 +1,17 @@
 import { Department } from '../organization/department.model';
 import { EmployeeMap, EmployeeIdsGroupMap } from '../organization/employees.reducer';
-import { EmployeeIdToNode } from './people.model';
+import { EmployeeIdToNode, DepartmentNode } from './people.model';
 
 export function filterDepartments(
-    departments: Department[],
+    departmentNodes: DepartmentNode[],
     employeeIdToNode: EmployeeIdToNode
-): Department[] {
+): DepartmentNode[] {
     const employeeNodes = employeeIdToNode.toArray();
-    
-    const filteredDepartments = departments.filter(department => {
+
+    const filteredDepartmentNodes = departmentNodes.filter(departmentNode => {
 
         for (let employeeNode of employeeNodes) {
-            if (employeeNode.get('departmentId') === department.departmentId) {
+            if (employeeNode.get('departmentId') === departmentNode.departmentId) {
                 return true;
             }
         }
@@ -19,5 +19,5 @@ export function filterDepartments(
         return false;
     });
 
-    return filteredDepartments;
+    return filteredDepartmentNodes;
 }

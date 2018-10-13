@@ -1,16 +1,11 @@
 import { Department } from '../organization/department.model';
-import { DepartmentIdToNode } from './people.model';
+import { DepartmentIdToNode, DepartmentNode } from './people.model';
 
-export function buildDepartmentIdToNode(departments: Department[]): DepartmentIdToNode {
+export function buildDepartmentIdToNode(departmentsNodes: DepartmentNode[]): DepartmentIdToNode {
     const departmentIdToNode: DepartmentIdToNode = {};
 
-    for (let department of departments) {
-        departmentIdToNode[department.departmentId] = {
-            departmentId: department.departmentId,
-            parentId: department.parentDepartmentId,
-            abbreviation: department.abbreviation,
-            chiefId: department.chiefId
-        };
+    for (let departmentNode of departmentsNodes) {
+        departmentIdToNode[departmentNode.departmentId] = departmentNode;
     }
 
     return departmentIdToNode;

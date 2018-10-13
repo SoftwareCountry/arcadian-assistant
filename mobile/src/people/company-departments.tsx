@@ -13,6 +13,7 @@ import { buildEmployeeNodes } from '../reducers/people/build-employee-nodes';
 import { buildDepartmentsSelection } from '../reducers/people/build-departments-selection';
 import { selectCompanyDepartment, redirectToEmployeeDetails } from '../reducers/people/people.action';
 import { buildSelectedDepartmentId } from '../reducers/people/build-selected-department-id';
+import { Set } from 'immutable';
 
 interface CompanyDepartmentsStateProps {
     headDepartment: Department;
@@ -26,22 +27,35 @@ interface CompanyDepartmentsDispatchProps {
     onPressEmployee: (employeeId: string) => void;
 }
 
-const mapStateToProps: MapStateToProps<CompanyDepartmentsStateProps, void, AppState> = (state: AppState) => {
-    const departmentIdToNode = buildDepartmentIdToNode(state.organization.departments);
-    const headDepartment = state.people.departments.find(department => department.isHeadDepartment);
+let cachedProps: CompanyDepartmentsStateProps = null;
+let cachedDepartmentNodes: Set<MapDepartmentNode>;
+let cachedEmployeeNodes: EmployeeIdToNode;
+let cachedSelectedCompanyDepartmentId: string;
+let cachedFilter: string;
 
-    appendRoot(headDepartment, departmentIdToNode);
+const mapStateToProps: MapStateToProps<CompanyDepartmentsStateProps, void, AppState> = (state: AppState) => {
+    if (cachedProps 
+        && state.people.departmentNodes.equals(cachedDepartmentNodes) 
+        && state.people.employeeNodes.equals(cachedEmployeeNodes)
+        && state.people.filter === cachedFilter
+        && state.people.selectedCompanyDepartmentId === cachedSelectedCompanyDepartmentId) {
+            return cachedProps;
+    }
+
+    let departmentsNodes = state.people.departmentNodes.toJS() as DepartmentNode[];
+    const departmentIdToNode = buildDepartmentIdToNode(departmentsNodes);
+
+    appendRoot(state.people.headDepartment, departmentIdToNode);
 
     const employeeIdToNode = buildEmployeeNodes(
-        state.organization.employees.employeesById, 
+        state.people.employeeNodes, 
         state.people.filter);
 
-    let departments = state.organization.departments;
     let mapDepartmentIdToNode = departmentIdToNode;
     
     if (state.people.filter) {
-        departments = filterDepartments(state.organization.departments, employeeIdToNode);
-        mapDepartmentIdToNode = buildBranchFromChildToParent(departments, departmentIdToNode);
+        departmentsNodes = filterDepartments(departmentsNodes, employeeIdToNode);
+        mapDepartmentIdToNode = buildBranchFromChildToParent(departmentsNodes, departmentIdToNode);
     }
 
     const departmentIdToChildren = buildDepartmentIdToChildren(mapDepartmentIdToNode);
@@ -52,12 +66,19 @@ const mapStateToProps: MapStateToProps<CompanyDepartmentsStateProps, void, AppSt
         ? buildDepartmentsSelection(departmentIdToNode, selectedCompanyDepartmentId)
         : {};
 
-    return {
-        headDepartment: headDepartment,
+    cachedDepartmentNodes = state.people.departmentNodes;
+    cachedEmployeeNodes = state.people.employeeNodes; 
+    cachedFilter = state.people.filter;
+    cachedSelectedCompanyDepartmentId = state.people.selectedCompanyDepartmentId;
+
+    cachedProps = {
+        headDepartment: state.people.headDepartment,
         employeeIdToNode: employeeIdToNode,
         departmentIdToChildren: departmentIdToChildren,
         selection: selection
     };
+
+    return cachedProps;
 };
 
 const mapDispatchToProps: MapDispatchToProps<CompanyDepartmentsDispatchProps, void> = (dispatch: Dispatch<any>) => ({

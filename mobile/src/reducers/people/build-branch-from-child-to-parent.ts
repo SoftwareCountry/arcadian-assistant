@@ -1,16 +1,16 @@
 import { Department } from '../organization/department.model';
-import { DepartmentIdToNode } from './people.model';
+import { DepartmentIdToNode, DepartmentNode } from './people.model';
 
 export function buildBranchFromChildToParent(
-    filteredDepartments: Department[],
+    filteredDepartmentNodes: DepartmentNode[],
     departmentIdsToNodes: DepartmentIdToNode
 ): DepartmentIdToNode {
     const newDepartmentIdsToNodes: DepartmentIdToNode = {};
 
-    for (let department of filteredDepartments) {
-        newDepartmentIdsToNodes[department.departmentId] = departmentIdsToNodes[department.departmentId];
+    for (let departmentNode of filteredDepartmentNodes) {
+        newDepartmentIdsToNodes[departmentNode.departmentId] = departmentIdsToNodes[departmentNode.departmentId];
 
-        let parentDepartment = departmentIdsToNodes[department.parentDepartmentId];
+        let parentDepartment = departmentIdsToNodes[departmentNode.parentId];
 
         while (parentDepartment) {
             newDepartmentIdsToNodes[parentDepartment.departmentId] = parentDepartment;
