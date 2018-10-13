@@ -13,7 +13,6 @@ import { CompanyDepartmentsLevelPeople } from './company-departments-level-peopl
 interface CompanyDepartmentsLevelProps {
     departmentId: string;
     departmentIdToChildren: DepartmentIdToChildren;
-    employeeIdsByDepartment: EmployeeIdsGroupMap;
     employeeIdToNode: EmployeeIdToNode;
     selection: DepartmentIdToSelectedId;
     onSelectedNode: (departmentId: string) => void;
@@ -76,7 +75,6 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
             <CompanyDepartmentsLevel
                 departmentId={node.get('departmentId')}
                 departmentIdToChildren={this.props.departmentIdToChildren}
-                employeeIdsByDepartment={this.props.employeeIdsByDepartment}
                 employeeIdToNode={this.props.employeeIdToNode}
                 selection={this.props.selection}
                 onSelectedNode={this.props.onSelectedNode}
