@@ -1,9 +1,11 @@
 ﻿namespace Arcadia.Assistant.Organization.Abstractions
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
 
     using Akka.Actor;
 
+    [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
     public class DepartmentContainer
     {
         public DepartmentInfo Department { get; }
@@ -21,5 +23,8 @@
             this.Head = head;
             this.Employees = employees;
         }
+
+        private string DebuggerDisplay 
+            => $"#{this.Department?.DepartmentId} {this.Department?.Abbreviation}, Head {this.Head?.Metadata?.Name}, Employees count: {this.Employees?.Count}";
     }
 }

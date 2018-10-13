@@ -4,7 +4,7 @@
 
     using Akka.Actor;
 
-    [DebuggerDisplay("{Metadata}")]
+    [DebuggerDisplay("{Metadata?.Name}")]
     public class EmployeeContainer
     {
         public EmployeeMetadata Metadata { get; }

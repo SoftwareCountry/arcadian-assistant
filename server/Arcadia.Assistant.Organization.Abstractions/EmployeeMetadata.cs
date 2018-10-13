@@ -3,7 +3,6 @@
     using System;
     using System.Diagnostics;
 
-    [DebuggerDisplay("{EmployeeId} - {Name} from Department #{DepartmentId}")]
     public class EmployeeMetadata
     {
         public EmployeeMetadata(string employeeId, string name, string email)
@@ -82,6 +81,6 @@
             return years;
         }
 
-        public override string ToString() => $"{this.Name} <{this.EmployeeId}>, Email: {this.Email}";
+        public override string ToString() => $"{this.Name} <{this.EmployeeId}>, Email: {this.Email}, Department {this.DepartmentId}";
     }
 }
