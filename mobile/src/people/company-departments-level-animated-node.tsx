@@ -227,7 +227,9 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
 
         const contentStyles = StyleSheet.flatten([
             companyDepartmentsAnimatedNode.content,
-            Animations.contentAnimation(index, calculatedWidth, height, xCoordinate) as any
+            // Turn off animation as workaround for error: 'Unable to locate view on native tree'.
+            // https://github.com/facebook/react-native/blob/c6b96c0df789717d53ec520ad28ba0ae00db6ec2/Libraries/Animated/src/nodes/AnimatedProps.js#L141
+            // Animations.contentAnimation(index, calculatedWidth, height, xCoordinate) as any
         ]);
 
         return {
