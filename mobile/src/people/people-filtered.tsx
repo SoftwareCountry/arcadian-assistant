@@ -3,11 +3,11 @@ import { connect } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { LoadingView } from '../navigation/loading';
-import { PeopleCompany } from './people-company';
 import { PeopleRoom } from './people-room';
 import { PeopleDepartment } from './people-department';
 import { filterEmployees } from '../reducers/search/search.epics';
 import {Map, is} from 'immutable';
+import { CompanyDepartments } from './company-departments';
 
 interface PeopleProps {
     employees: EmployeesStore;
@@ -16,18 +16,12 @@ interface PeopleProps {
 
 const mapStateToProps = (state: AppState): PeopleProps => ({
     employees: filterEmployees(state.organization.employees, state.people.filter),
-    loaded: state.people.departments && state.people.departments.length > 0,
+    loaded: state.organization.departments && state.organization.departments.length > 0,
 });
 
 class PeopleCompanyFilteredImpl extends React.Component<PeopleProps> {
-    public shouldComponentUpdate(nextProps: PeopleProps) {
-        const su = shouldUpdate(this.props, nextProps);
-        return su || this.props.loaded !== nextProps.loaded;
-    }
-
     public render() {
-        return !this.props.loaded || !this.props.employees ? <LoadingView/> :
-            <PeopleCompany employees={this.props.employees}/>;
+        return !this.props.loaded ? <LoadingView/> : <CompanyDepartments />;
     }
 }
 

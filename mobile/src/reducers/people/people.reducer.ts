@@ -1,132 +1,92 @@
 import { Reducer } from 'redux';
 import { NavigationAction } from 'react-navigation';
-import { LoadDepartmentsFinished } from '../organization/organization.action';
+import { LoadDepartmentsFinished, LoadEmployeeFinished } from '../organization/organization.action';
 import { PeopleActions } from './people.action';
 import { SearchActions } from '../search/search.action';
 import { SearchType } from '../../navigation/search-view';
 import { Department } from '../organization/department.model';
 import { LoadUserEmployeeFinished } from '../user/user.action';
 import { combineEpics } from 'redux-observable';
-import { updateDepartmentsBranchEpic$ } from '../search/search.epics';
 import { companyDepartmentSelected$, redirectToEmployeeDetails$ } from './people.epics';
-
-export interface DepartmentsListStateDescriptor {
-    currentPage: number;
-}
+import { MapDepartmentNode, DepartmentNode, EmployeeNode, EmployeeIdToNode } from './people.model';
+import { Map, Set } from 'immutable';
 
 export interface PeopleState {
-    departments: Department[];
-    filteredDepartments: Department[];
-    departmentsBranch: Department[];
-    currentFocusedDepartmentId: string;
-    departmentsLists: DepartmentsListStateDescriptor[];
+    departmentNodes: Set<MapDepartmentNode>;
+    headDepartment: Department;
     filter: string;
     selectedCompanyDepartmentId: string;
+    employeeNodes: EmployeeIdToNode;
 }
 
 const initState: PeopleState = {
-    departments: [],
-    filteredDepartments: [],
-    departmentsBranch: [],
-    currentFocusedDepartmentId: null,
-    departmentsLists: [],
+    departmentNodes: Set(),
+    headDepartment: null,
     filter: '',
-    selectedCompanyDepartmentId: null
+    selectedCompanyDepartmentId: null,
+    employeeNodes: Map()
 };
 
-export function departmentsBranchFromDepartmentWithId(departmentId: string, departments: Department[]) {
-    const deps: Department[] = [];
-    const depsLists: DepartmentsListStateDescriptor[] = [];
-
-    let department = departments.find(d => d.departmentId === departmentId);
-    while (department) {
-        deps.push(department);   
-        const parent = departments.find(d => d.departmentId === department.parentDepartmentId);
-        if (parent !== null) {
-            depsLists.push({currentPage: departments.filter(d => d.parentDepartmentId === department.parentDepartmentId).indexOf(department)});
-        }
-        department = parent;
-    }
-
-    deps.reverse();
-    depsLists.reverse();
-
-    department = departments.find(d => d.parentDepartmentId === departmentId);
-    
-    while (department) {
-        deps.push(department);
-        depsLists.push({currentPage: departments.filter(d => d.parentDepartmentId === department.parentDepartmentId).indexOf(department)});
-        department = departments.find(d => d.parentDepartmentId === department.departmentId);
-    }
-
-    return {departmentsLineup: deps, departmentsLists: depsLists};
-}
-
 export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions | NavigationAction | 
-        LoadUserEmployeeFinished | LoadDepartmentsFinished | SearchActions): PeopleState => {
+        LoadUserEmployeeFinished | LoadDepartmentsFinished | SearchActions | LoadEmployeeFinished): PeopleState => {
     switch (action.type) {
         case 'Navigation/NAVIGATE':
             if (action.routeName === 'Company') {
-                if (action.params === undefined) {
-                    const depsAndMeta = departmentsBranchFromDepartmentWithId(state.currentFocusedDepartmentId, state.departments);
-                    return {...state, departmentsBranch: depsAndMeta.departmentsLineup, departmentsLists: depsAndMeta.departmentsLists};
-                } else {
+                if (action.params) {
                     const { departmentId } = action.params;
-                    const depsAndMeta = departmentsBranchFromDepartmentWithId(departmentId, state.departments);
-                    return {...state, currentFocusedDepartmentId: departmentId, departmentsBranch: depsAndMeta.departmentsLineup, departmentsLists: depsAndMeta.departmentsLists};
+
+                    return {
+                        ...state,
+                        selectedCompanyDepartmentId: departmentId
+                    };
                 }
-            } else {
-                return state;
             }
-        case 'LOAD-USER-EMPLOYEE-FINISHED': {
-            // Init Departments Branch focused on current user's departments
-            if (state.departments.length > 0) {
-                const depsAndMeta = departmentsBranchFromDepartmentWithId(action.employee.departmentId, state.departments);
-                return {
-                    ...state, 
-                    currentFocusedDepartmentId: action.employee.departmentId, 
-                    departmentsBranch: depsAndMeta.departmentsLineup, 
-                    departmentsLists: depsAndMeta.departmentsLists,
-                    selectedCompanyDepartmentId: action.employee.departmentId
-                };
-            } else {
-                return {
-                    ...state,
-                    currentFocusedDepartmentId: action.employee.departmentId, 
-                    selectedCompanyDepartmentId: action.employee.departmentId
-                };
-            }
-        }
+            return state;
+        case 'LOAD-USER-EMPLOYEE-FINISHED':
+            return {
+                ...state,
+                selectedCompanyDepartmentId: action.employee.departmentId
+            };
         case 'LOAD-DEPARTMENTS-FINISHED':
-            if (state.currentFocusedDepartmentId) {
-                const depsAndMeta = departmentsBranchFromDepartmentWithId(state.currentFocusedDepartmentId, action.departments);
-                return {
-                    ...state, 
-                    departmentsBranch: depsAndMeta.departmentsLineup, 
-                    departmentsLists: depsAndMeta.departmentsLists,
-                    departments: action.departments
-                };
-            } else {
-                return {...state, departments: action.departments};   
-            }     
-        // case 'UPDATE-DEPARTMENTS-BRANCH':
-        //     return {
-        //         ...state, 
-        //         departmentsBranch: action.departmentsBranch, 
-        //         departmentsLists: action.departmentLists,
-        //     };
+            
+            const departmentNodes = action.departments.map(x => {
+                const node: DepartmentNode = {
+                    departmentId: x.departmentId,
+                    parentId: x.parentDepartmentId,
+                    abbreviation: x.abbreviation,
+                    chiefId: x.chiefId
+                };             
+                return Map<keyof DepartmentNode, DepartmentNode[keyof DepartmentNode]>(node);
+            });
+
+            const headDepartment = action.departments.find(department => department.isHeadDepartment);
+
+            return {
+                ...state,
+                departmentNodes: Set(departmentNodes),
+                headDepartment: headDepartment
+            };
+        case 'LOAD_EMPLOYEE_FINISHED': {
+            const employeeNode: EmployeeNode = {
+                employeeId: action.employee.employeeId,
+                departmentId: action.employee.departmentId,
+                name: action.employee.name,
+                position: action.employee.position,
+                photo: Map(action.employee.photo)
+            };
+
+            return {
+                ...state,
+                employeeNodes: state.employeeNodes.set(employeeNode.employeeId, Map(employeeNode))
+            };
+        }
+
         case 'SELECT-COMPANY-DEPARTMENT': 
             return {
                 ...state,
                 selectedCompanyDepartmentId: action.departmentId
             };
-        case 'FILTER-DEPARTMENTS-FINISHED':
-            return {
-                ...state,
-                filteredDepartments: action.filteredDeps,
-                departmentsBranch: action.departmentBranch,
-                departmentsLists: action.departmentList,
-            };
+
         case 'SEARCH-BY-TEXT-FILTER':
             if (action.searchType === SearchType.People) {
                 return {
@@ -140,7 +100,6 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
 };
 
 export const peopleEpics = combineEpics(
-    //updateDepartmentsBranchEpic$ as any,
     companyDepartmentSelected$ as any,
     redirectToEmployeeDetails$ as any
 );
