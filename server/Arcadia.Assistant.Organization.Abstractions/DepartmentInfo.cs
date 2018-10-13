@@ -1,5 +1,8 @@
 ﻿namespace Arcadia.Assistant.Organization.Abstractions
 {
+    using System.Diagnostics;
+
+    [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
     public class DepartmentInfo
     {
         public string DepartmentId { get; }
@@ -21,5 +24,7 @@
             this.Abbreviation = abbreviation;
             this.ParentDepartmentId = parentDepartmentId;
         }
+
+        private string DebuggerDisplay => $"#{this.DepartmentId} - {this.Abbreviation}, Name: {this.Name}, Parent: {this.ParentDepartmentId}";
     }
 }

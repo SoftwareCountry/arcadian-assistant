@@ -1,7 +1,10 @@
 ﻿namespace Arcadia.Assistant.Organization.Abstractions
 {
+    using System.Diagnostics;
+
     using Akka.Actor;
 
+    [DebuggerDisplay("{Metadata?.Name}")]
     public class EmployeeContainer
     {
         public EmployeeMetadata Metadata { get; }

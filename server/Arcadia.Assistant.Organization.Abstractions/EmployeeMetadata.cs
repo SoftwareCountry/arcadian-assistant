@@ -81,6 +81,6 @@
             return years;
         }
 
-        public override string ToString() => $"{this.Name} <{this.EmployeeId}>, Email: {this.Email}";
+        public override string ToString() => $"{this.Name} <{this.EmployeeId}>, Email: {this.Email}, Department {this.DepartmentId}";
     }
 }
