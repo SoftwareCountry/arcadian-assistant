@@ -170,7 +170,7 @@ export const companyDepartments = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         borderTopWidth: 1,
-        borderColor: 'rgba(0, 0, 0, 0.15)',      
+        borderColor: 'rgba(0, 0, 0, 0.15)'
     },
     nodesContainer: {
 		position: 'relative',

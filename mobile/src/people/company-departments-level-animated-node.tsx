@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Animated, ViewStyle, PerpectiveTransform } from 'react-native';
+import { View, StyleSheet, Animated, ViewStyle, PerpectiveTransform, Easing } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { MapDepartmentNode, MapEmployeeNode } from '../reducers/people/people.model';
 import { companyDepartmentsAnimatedNode } from './styles';
@@ -137,6 +137,8 @@ interface CompanyDepartmentsLevelAnimatedNodeProps {
 }
 
 export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepartmentsLevelAnimatedNodeProps> {
+    private readonly animatedContainerOpacity = new Animated.Value(0);
+
     public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelAnimatedNodeProps) {
         return this.props.index !== nextProps.index
             || !this.props.node.equals(nextProps.node)
@@ -145,6 +147,15 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
             || this.props.height !== nextProps.height
             || this.props.gap !== nextProps.gap
             || this.props.xCoordinate !== nextProps.xCoordinate;
+    }
+
+    public componentDidMount() {
+        Animated.timing(this.animatedContainerOpacity, {
+            toValue: 1,
+            duration: 600,
+            easing: Easing.linear,
+            useNativeDriver: true
+        }).start();
     }
 
     public render() {
@@ -163,7 +174,7 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
         const chiefPosition = chief ? chief.get('position') : null;
 
         return (
-            <View style={containerStyles}>
+            <Animated.View style={containerStyles}>
                 <Animated.View style={stickyContainerStyles}>
                     <Animated.View style={scaleContainerStyles}>
                         <CompanyDepartmentsLevelNodePhoto photo={photo} />
@@ -180,7 +191,7 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
                         {this.props.node.get('abbreviation')}
                     </StyledText>
                 </Animated.View>
-            </View>
+            </Animated.View>
         );
     }
 
@@ -192,7 +203,8 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
             companyDepartmentsAnimatedNode.container,
             {
                 width: calculatedWidth,
-                height: height
+                height: height,
+                opacity: this.animatedContainerOpacity as any
             }
         ]);
 
@@ -209,7 +221,7 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
 
         const stickyContainerStyles = StyleSheet.flatten([
             companyDepartmentsAnimatedNode.stickyContainer,
-            Animations.stickyContainerAnimation(index, calculatedWidth, height, xCoordinate)  as any,
+            Animations.stickyContainerAnimation(index, calculatedWidth, height, xCoordinate) as any,
             rectSize
         ]);
 
