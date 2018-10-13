@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { companyDepartments } from './styles';
+import { companyDepartments, nodesContainerWidth, nodesContainerHeight } from './styles';
 import { View, Animated } from 'react-native';
 import { layout } from '../calendar/event-dialog/styles';
 import { StyledText } from '../override/styled-text';
@@ -7,7 +7,6 @@ import { DepartmentIdToChildren, MapDepartmentNode, EmployeeIdToNode, Department
 import { Set, Map } from 'immutable';
 import { CompanyDepartmentsLevelNodes } from './company-departments-level-nodes';
 import { EmployeeIdsGroupMap } from '../reducers/organization/employees.reducer';
-import { CompanyDepartmentsLevelNodesContainer } from './company-departments-level-nodes-container';
 import { CompanyDepartmentsLevelPeople } from './company-departments-level-people';
 
 interface CompanyDepartmentsLevelProps {
@@ -41,19 +40,14 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
         const chiefs = this.getChiefs(nodes);
 
         return (
-            <CompanyDepartmentsLevelNodesContainer>
-                {
-                    (width: number, height: number) => 
-                        <CompanyDepartmentsLevelNodes
-                            width={width} 
-                            height={height}
-                            nodes={nodes} 
-                            chiefs={chiefs} 
-                            selectedDepartmentId={selectedDepartmentId}
-                            onNextDepartment={this.props.onSelectedNode}
-                            onPrevDepartment={this.props.onSelectedNode} />
-                }
-            </CompanyDepartmentsLevelNodesContainer>
+            <CompanyDepartmentsLevelNodes
+                width={nodesContainerWidth} 
+                height={nodesContainerHeight}
+                nodes={nodes} 
+                chiefs={chiefs} 
+                selectedDepartmentId={selectedDepartmentId}
+                onNextDepartment={this.props.onSelectedNode}
+                onPrevDepartment={this.props.onSelectedNode} />
         );
     }
 

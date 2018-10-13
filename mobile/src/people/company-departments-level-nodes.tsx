@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { MapDepartmentNode, EmployeeIdToNode, DepartmentIdToSelectedId, MapEmployeeNode } from '../reducers/people/people.model';
-import { Animated, PanResponder, PanResponderInstance, PanResponderGestureState, Easing, StyleSheet } from 'react-native';
+import { Animated, PanResponder, PanResponderInstance, PanResponderGestureState, Easing, StyleSheet, View } from 'react-native';
 import { Set } from 'immutable';
 import { StyledText } from '../override/styled-text';
 import { companyDepartments } from './styles';
@@ -91,28 +91,30 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
         ]);
 
         return (
-            <Animated.View
-                {...this.panResponder.panHandlers}
-                style={nodesContainerStyles}>
-                {
-                    this.props.nodes.toArray()
-                        .map((node, index) => {
-                            const chiefId = node.get('chiefId');
-                            const chief = this.props.chiefs.get(chiefId);
+            <View style={companyDepartments.nodesContainer}>
+                <Animated.View
+                    {...this.panResponder.panHandlers}
+                    style={nodesContainerStyles}>
+                    {
+                        this.props.nodes.toArray()
+                            .map((node, index) => {
+                                const chiefId = node.get('chiefId');
+                                const chief = this.props.chiefs.get(chiefId);
 
-                            return <CompanyDepartmentsLevelAnimatedNode
-                                key={node.get('departmentId')}
-                                index={index}                                    
-                                node={node}
-                                chief={chief}                                    
-                                width={this.props.width}
-                                height={this.props.height}
-                                gap={this.gap}
-                                xCoordinate={this.state.xCoordinate}
-                            />;
-                        })
-                }
-            </Animated.View>
+                                return <CompanyDepartmentsLevelAnimatedNode
+                                    key={node.get('departmentId')}
+                                    index={index}                                    
+                                    node={node}
+                                    chief={chief}                                    
+                                    width={this.props.width}
+                                    height={this.props.height}
+                                    gap={this.gap}
+                                    xCoordinate={this.state.xCoordinate}
+                                />;
+                            })
+                    }
+                </Animated.View>
+            </View>            
         );
     }
 

@@ -1,6 +1,7 @@
 import { StyleSheet, Dimensions } from 'react-native';
 
 const screenHeight = Dimensions.get('window').height;
+const screenWidth = Dimensions.get('window').width;
 
 export const employeesListStyles  = StyleSheet.create({
     company: {
@@ -165,6 +166,9 @@ export const companyTinyItemStyles = StyleSheet.create({
     }
 });
 
+export const nodesContainerHeight = screenHeight * 0.12;
+export const nodesContainerWidth = screenWidth;
+
 export const companyDepartments = StyleSheet.create({
     levelContainer: {
         flex: 1,
@@ -174,7 +178,7 @@ export const companyDepartments = StyleSheet.create({
     },
     nodesContainer: {
 		position: 'relative',
-        height: Dimensions.get('window').height * 0.12
+        height: nodesContainerHeight
     },
     nodesSwipeableContainer: {
         flex: 1,
