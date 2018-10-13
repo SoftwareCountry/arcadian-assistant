@@ -11,13 +11,14 @@
 
         public DepartmentInfo DepartmentInfo { get; }
 
-        public DepartmentsTreeNode(DepartmentInfo departmentInfo, int employeesCount)
+        public DepartmentsTreeNode(DepartmentInfo departmentInfo, int employeesCount, IEnumerable<DepartmentsTreeNode> children)
         {
             this.DepartmentInfo = departmentInfo;
             this.EmployeesCount = employeesCount;
+            this.Children = children.ToList();
         }
 
-        public List<DepartmentsTreeNode> Children { get; } = new List<DepartmentsTreeNode>();
+        public IReadOnlyCollection<DepartmentsTreeNode> Children { get; }
 
         public int CountAllEmployees()
         {

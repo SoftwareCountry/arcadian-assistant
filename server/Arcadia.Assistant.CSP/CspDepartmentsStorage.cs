@@ -37,7 +37,7 @@
             (d, employees) =>
                 new DepartmentInfoWithPeopleCount()
                 {
-                    Department = d,
+                    Info = d,
                     PeopleCount = employees.Count()
                 };
 
@@ -54,15 +54,15 @@
                     .GroupJoin(arcEmployees, d => d.DepartmentId, e => e.DepartmentId.ToString(), this.countEmployees)
                     .ToListAsync();
 
-                var head = allDepartments.FirstOrDefault(x => x.Department.IsHeadDepartment && (x.Department.Abbreviation == PriorityHeadDepartment));
+                var head = allDepartments.FirstOrDefault(x => x.Info.IsHeadDepartment && (x.Info.Abbreviation == PriorityHeadDepartment));
 
                 if (head == null)
                 {
                     return new LoadAllDepartments.Response(new DepartmentInfo[0]);
                 }
 
-                var tree = new DepartmentsTreeNode(head.Department, head.PeopleCount);
-                tree.Children.AddRange(this.CreateTree(allDepartments, tree.DepartmentInfo.DepartmentId, new HashSet<string>() { head.Department.DepartmentId }));
+                var processedIds = new HashSet<string>() { head.Info.DepartmentId };
+                var tree = new DepartmentsTreeNode(head.Info, head.PeopleCount, this.CreateTree(allDepartments, head.Info.DepartmentId, processedIds));
 
                 var departments = tree.AsEnumerable().Where(x => x.CountAllEmployees() != 0).Select(x => x.DepartmentInfo).ToList();
 
@@ -72,7 +72,7 @@
 
         private class DepartmentInfoWithPeopleCount
         {
-            public DepartmentInfo Department { get; set; }
+            public DepartmentInfo Info { get; set; }
 
             public int PeopleCount { get; set; }
         }
@@ -84,16 +84,17 @@
             string departmentId,
             HashSet<string> processedIds)
         {
-            var children = allDepartments
-                .Where(x => (x.Department.ParentDepartmentId == departmentId) && !processedIds.Contains(x.Department.DepartmentId))
-                .Select(x => new DepartmentsTreeNode(x.Department, x.PeopleCount))
+            var childrenDepartments = allDepartments
+                .Where(x => (x.Info.ParentDepartmentId == departmentId) && !processedIds.Contains(x.Info.DepartmentId))
                 .ToList();
 
-            processedIds.UnionWith(children.Select(x => x.DepartmentInfo.DepartmentId));
+            processedIds.UnionWith(childrenDepartments.Select(x => x.Info.DepartmentId));
 
-            foreach (var child in children)
+            var children = new List<DepartmentsTreeNode>();
+            foreach (var department in childrenDepartments)
             {
-                child.Children.AddRange(this.CreateTree(allDepartments, child.DepartmentInfo.DepartmentId, processedIds));
+                var child = new DepartmentsTreeNode(department.Info, department.PeopleCount, this.CreateTree(allDepartments, department.Info.DepartmentId, processedIds));
+                children.Add(child);
             }
 
             return children;
