@@ -1,6 +1,7 @@
 ﻿namespace Arcadia.Assistant.DI
 {
     using Arcadia.Assistant.Configuration.Configuration;
+    using Arcadia.Assistant.CSP;
 
     using Autofac;
 
@@ -20,6 +21,9 @@
             var settings = this.configurationRoot.Get<AppSettings>();
             builder.RegisterInstance(settings).AsSelf();
             builder.RegisterInstance(settings.Organization.RefreshInformation).As<IRefreshInformation>();
+
+            var cspSettings = this.configurationRoot.GetSection("Csp").Get<CspConfiguration>();
+            builder.RegisterInstance(cspSettings).AsSelf();
         }
     }
 }
