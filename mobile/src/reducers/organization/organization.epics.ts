@@ -32,7 +32,8 @@ export const loadDepartmentsEpic$ = (action$: ActionsObservable<LoadDepartments>
 
 export const loadChiefsEpic$ = (action$: ActionsObservable<LoadDepartmentsFinished>) =>
     action$.ofType('LOAD-DEPARTMENTS-FINISHED')
-        .flatMap(x => x.departments.map(dep => loadEmployee(dep.chiefId)));
+        .map(x => x.departments.filter(d => !!d.chiefId))
+        .flatMap(x => x.map(dep => loadEmployee(dep.chiefId)));
 
 export const loadEmployeesForDepartmentEpic$ = (action$: ActionsObservable<LoadEmployeesForDepartment>, state: AppState, deps: DependenciesContainer) =>
     action$.ofType('LOAD_EMPLOYEES_FOR_DEPARTMENT')
