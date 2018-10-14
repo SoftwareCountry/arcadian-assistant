@@ -1,74 +1,56 @@
 import React from 'react';
 import { connect } from 'react-redux';
-
 import { AppState } from '../reducers/app.reducer';
-import { Employee } from '../reducers/organization/employee.model';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { LoadingView } from '../navigation/loading';
-import { PeopleCompany } from './people-company';
 import { PeopleRoom } from './people-room';
 import { PeopleDepartment } from './people-department';
-import { Map } from 'immutable';
+import { filterEmployees } from '../reducers/search/search.epics';
+import {Map, is} from 'immutable';
+import { CompanyDepartments } from './company-departments';
 
 interface PeopleProps {
-    loaded: boolean;
     employees: EmployeesStore;
+    loaded: boolean;
 }
 
-const mapStateToProps = (state: AppState): PeopleProps => {
-    const filter = state.people.filter;
-    const employees = state.organization.employees;  
-    const employeesPredicate = (employee: Employee) => {
-        return (employee.name && employee.name.includes(filter) ||
-                employee.email && employee.email.includes(filter) || 
-                employee.position && employee.position.includes(filter)
-        );
-    };
-    const filteredEmployeesById: Map<string, Employee> = employees.employeesById.filter(employeesPredicate) as Map<string, Employee>;
-    const filteredEmployees : EmployeesStore = {employeesById: filteredEmployeesById, employeeIdsByDepartment: employees.employeeIdsByDepartment};
+const mapStateToProps = (state: AppState): PeopleProps => ({
+    employees: filterEmployees(state.organization.employees, state.people.filter),
+    loaded: state.organization.departments && state.organization.departments.length > 0,
+});
 
+class PeopleCompanyFilteredImpl extends React.Component<PeopleProps> {
+    public render() {
+        return !this.props.loaded ? <LoadingView/> : <CompanyDepartments />;
+    }
+}
 
-    return ({
-        loaded: state.people.departmentsBranch.length > 0 && 
-                state.people.departments && state.people.departments.length > 0,
-        employees: filteredEmployees,
-    });
-};
-
-class PeopleCompanyImpl extends React.Component<PeopleProps> {
+class PeopleRoomFilteredImpl extends React.Component<PeopleProps> {
     public shouldComponentUpdate(nextProps: PeopleProps) {
-        return this.props.loaded !== nextProps.loaded || !this.props.employees.employeesById.equals(nextProps.employees.employeesById);
+        return shouldUpdate(this.props, nextProps);
     }
 
     public render() {
-        if (!this.props.loaded) {
-            return <LoadingView/>;
-        }
-
-        return <PeopleCompany employees={this.props.employees}/>;
+        return !this.props.employees ? <LoadingView/> : <PeopleRoom employees={this.props.employees}/>;
     }
 }
 
-class PeopleRoomImpl extends React.Component<PeopleProps> {
+class PeopleDepartmentFilteredImpl extends React.Component<PeopleProps> {
     public shouldComponentUpdate(nextProps: PeopleProps) {
-        return !this.props.employees.employeesById.equals(nextProps.employees.employeesById);
+        return shouldUpdate(this.props, nextProps);
     }
 
     public render() {
-        return <PeopleRoom employees={this.props.employees}/>;
+        return !this.props.employees ? <LoadingView/> : <PeopleDepartment employees={this.props.employees}/>;
     }
 }
 
-class PeopleDepartmentImpl extends React.Component<PeopleProps> {
-    public shouldComponentUpdate(nextProps: PeopleProps) {
-        return !this.props.employees.employeesById.equals(nextProps.employees.employeesById);
-    }
-
-    public render() {
-        return <PeopleDepartment employees={this.props.employees}/>;
-    }
+function shouldUpdate(curProps: PeopleProps, nextProps: PeopleProps) {
+    const somethingUndefined = !curProps.employees || !nextProps.employees;
+    const arrays = !is(curProps.employees.employeesById, nextProps.employees.employeesById);
+    return somethingUndefined || !somethingUndefined && arrays;
 }
 
-export const PeopleCompanyFiltered = connect(mapStateToProps)(PeopleCompanyImpl);
-export const PeopleRoomFiltered = connect(mapStateToProps)(PeopleRoomImpl);
-export const PeopleDepartmentFiltered = connect(mapStateToProps)(PeopleDepartmentImpl);
+export const PeopleCompanyFiltered = connect(mapStateToProps)(PeopleCompanyFilteredImpl);
+export const PeopleRoomFiltered = connect(mapStateToProps)(PeopleRoomFilteredImpl);
+export const PeopleDepartmentFiltered = connect(mapStateToProps)(PeopleDepartmentFilteredImpl);
