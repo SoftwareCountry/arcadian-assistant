@@ -15,14 +15,13 @@
     {
         private readonly Func<ArcadiaCspContext> contextFactory;
 
-        public CspDepartmentsStorage(Func<ArcadiaCspContext> contextFactory)
+        private readonly CspConfiguration configuration;
+
+        public CspDepartmentsStorage(Func<ArcadiaCspContext> contextFactory, CspConfiguration configuration)
         {
             this.contextFactory = contextFactory;
+            this.configuration = configuration;
         }
-
-        private const int ArcadiaCompanyId = 154; //TODO: put in config
-
-        private const string PriorityHeadDepartment = "GMG";
 
         private readonly Expression<Func<Department, IEnumerable<Employee>, DepartmentInfo>> mapDepartment =
             (x, chiefsGroup) =>
@@ -49,12 +48,12 @@
 
                 var allDepartments = await context
                     .Department
-                    .Where(x => (x.IsDelete != true) && (x.CompanyId == ArcadiaCompanyId))
+                    .Where(x => (x.IsDelete != true) && (x.CompanyId == this.configuration.CompanyId))
                     .GroupJoin(arcEmployees, d => d.ChiefId, e => e.Id, this.mapDepartment)
                     .GroupJoin(arcEmployees, d => d.DepartmentId, e => e.DepartmentId.ToString(), this.countEmployees)
                     .ToListAsync();
 
-                var head = allDepartments.FirstOrDefault(x => x.Info.IsHeadDepartment && (x.Info.Abbreviation == PriorityHeadDepartment));
+                var head = allDepartments.FirstOrDefault(x => x.Info.IsHeadDepartment && (x.Info.Abbreviation == this.configuration.HeadDepartmentAbbreviation));
 
                 if (head == null)
                 {
