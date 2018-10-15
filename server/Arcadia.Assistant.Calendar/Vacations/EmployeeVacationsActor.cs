@@ -180,7 +180,7 @@
                 this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, VacationStatuses.Approved, this.EmployeeId);
 
                 var text = $"Got vacation approved from {calendarEvent.Dates.StartDate.ToLongDateString()} to {calendarEvent.Dates.EndDate.ToLongDateString()}";
-                var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, DateTime.Now);
+                var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, message.TimeStamp.Date);
                 this.employeeFeed.Tell(new PostMessage(msg));
             }
         }
@@ -192,7 +192,7 @@
                 this.EventsById.Remove(message.EventId);
 
                 var text = $"Got vacation canceled ({calendarEvent.Dates.StartDate.ToLongDateString()} - {calendarEvent.Dates.EndDate.ToLongDateString()})";
-                var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, DateTime.Now);
+                var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, message.TimeStamp.Date);
                 this.employeeFeed.Tell(new PostMessage(msg));
             }
         }

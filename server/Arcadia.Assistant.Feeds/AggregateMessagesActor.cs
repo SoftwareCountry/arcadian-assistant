@@ -12,7 +12,7 @@
     {
         private readonly GetMessages request;
 
-        private readonly IActorRef requestor;
+        private readonly IActorRef requester;
 
         private readonly HashSet<IActorRef> actorsToRespond;
 
@@ -22,13 +22,13 @@
 
         private static readonly TimeSpan Timeout = TimeSpan.FromSeconds(10);
 
-        public static Props GetProps(IEnumerable<IActorRef> actors, GetMessages request, IActorRef requestor) => 
-            Props.Create(() => new AggregateMessagesActor(actors, request, requestor));
+        public static Props GetProps(IEnumerable<IActorRef> actors, GetMessages request, IActorRef requester) => 
+            Props.Create(() => new AggregateMessagesActor(actors, request, requester));
 
-        public AggregateMessagesActor(IEnumerable<IActorRef> actors, GetMessages request, IActorRef requestor)
+        public AggregateMessagesActor(IEnumerable<IActorRef> actors, GetMessages request, IActorRef requester)
         {
             this.request = request;
-            this.requestor = requestor;
+            this.requester = requester;
             this.actorsToRespond = new HashSet<IActorRef>(actors);
             this.Self.Tell(new StartSearch());
 
@@ -48,7 +48,7 @@
                     break;
 
                 case GetMessages.Response response:
-                    this.OnFeedResponseRecieved(response.Messages);
+                    this.OnFeedResponseReceived(response.Messages);
                     break;
 
                 case ReceiveTimeout _:
@@ -62,15 +62,20 @@
             }
         }
 
-        private void OnFeedResponseRecieved(IEnumerable<Message> responseMessages)
+        private void OnFeedResponseReceived(IEnumerable<Message> responseMessages)
         {
             this.actorsToRespond.Remove(this.Sender);
             this.messages.AddRange(responseMessages);
+
+            if (this.actorsToRespond.Count == 0)
+            {
+                this.Self.Tell(new FinishSearch());
+            }
         }
 
         private void OnFinishSearch()
         {
-            this.requestor.Tell(new GetMessages.Response(this.messages));
+            this.requester.Tell(new GetMessages.Response(this.messages));
             Context.Stop(this.Self);
         }
 
