@@ -75,7 +75,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
     }
 
     public componentDidUpdate(prevProps: CompanyDepartmentsLevelNodesProps) {
-        if (this.props.selectedDepartmentId !== prevProps.selectedDepartmentId || this.props.nodes.size !== prevProps.nodes.size) {
+        if (this.props.selectedDepartmentId !== prevProps.selectedDepartmentId || !this.props.nodes.equals(prevProps.nodes)) {
             this.state.xCoordinate.flattenOffset();
             this.scrollToSelectedDepartment();
         }
@@ -216,7 +216,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
             toValue: toValue,
             duration: 90,
             easing: Easing.linear,
-            useNativeDriver: true
+            useNativeDriver: false
         }).start(() => {
             onMoveComplete && onMoveComplete();
             this.canSwipe = true;

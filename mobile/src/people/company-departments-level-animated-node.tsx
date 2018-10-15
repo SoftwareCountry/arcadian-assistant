@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Animated, ViewStyle, PerpectiveTransform, Easing } from 'react-native';
+import { View, StyleSheet, Animated, ViewStyle, PerpectiveTransform, Easing, Platform } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { MapDepartmentNode, MapEmployeeNode } from '../reducers/people/people.model';
 import { companyDepartmentsAnimatedNode } from './styles';
@@ -12,10 +12,9 @@ interface Perspective {
 }
 
 interface ScaleAnimation {
-    transform: [
-        Perspective,
-        { scale: Animated.AnimatedInterpolation; }
-    ];
+    transform: (
+        { scale: Animated.AnimatedInterpolation; } | Perspective
+    )[];
     opacity: Animated.AnimatedInterpolation;
 }
 
@@ -24,28 +23,27 @@ interface HorizontalStickyAnimation {
 }
 
 interface StickyContainerAnimation {
-    transform: [
-        Perspective,
-        HorizontalStickyAnimation
-    ];
+    transform: (
+        HorizontalStickyAnimation | Perspective
+    )[];
 }
 
 interface ContentAnimation {
-    transform: [
-        Perspective, 
-        HorizontalStickyAnimation
-    ];
+    transform: (
+        HorizontalStickyAnimation | Perspective
+    )[];
     opacity: Animated.AnimatedInterpolation;
 }
 
 class Animations {
 
-    private static perspective: PerpectiveTransform = { 
-        // https://facebook.github.io/react-native/docs/animations#bear-in-mind:
-        // without this line this Animation will not render on Android while working fine on iOS
-        // ¯\_(ツ)_/¯        
-        perspective: 1000 
-    };
+    private static perspective: [Perspective] = Platform.OS === 'android' 
+        ? [{ 
+            // https://facebook.github.io/react-native/docs/animations#bear-in-mind:
+            // without this line this Animation will not render on Android while working fine on iOS
+            // ¯\_(ツ)_/¯        
+            perspective: 1000
+        }] : [] as [Perspective];
 
     public static scaleAnimation = (
         index: number, 
@@ -54,7 +52,7 @@ class Animations {
         xCoordinate: Animated.Value
     ): ScaleAnimation => ({
         transform: [
-            Animations.perspective,
+            ...Animations.perspective,
             {
                 scale: xCoordinate.interpolate({
                     inputRange: [
@@ -83,7 +81,7 @@ class Animations {
         xCoordinate: Animated.Value
     ): StickyContainerAnimation => ({
         transform: [
-            Animations.perspective,
+            ...Animations.perspective,
             Animations.horizontalStickyAnimation(index, width, height, xCoordinate)
         ]
 	})
@@ -95,7 +93,7 @@ class Animations {
         xCoordinate: Animated.Value
     ): ContentAnimation => ({
         transform: [
-            Animations.perspective,
+            ...Animations.perspective,
             Animations.horizontalStickyAnimation(index, width, height, xCoordinate)
         ],
         opacity: xCoordinate.interpolate({
@@ -227,9 +225,7 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
 
         const contentStyles = StyleSheet.flatten([
             companyDepartmentsAnimatedNode.content,
-            // Turn off animation as workaround for error: 'Unable to locate view on native tree'.
-            // https://github.com/facebook/react-native/blob/c6b96c0df789717d53ec520ad28ba0ae00db6ec2/Libraries/Animated/src/nodes/AnimatedProps.js#L141
-            // Animations.contentAnimation(index, calculatedWidth, height, xCoordinate) as any
+            Animations.contentAnimation(index, calculatedWidth, height, xCoordinate) as any
         ]);
 
         return {
