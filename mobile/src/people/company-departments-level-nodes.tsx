@@ -5,7 +5,6 @@ import { Set } from 'immutable';
 import { StyledText } from '../override/styled-text';
 import { companyDepartments } from './styles';
 import { CompanyDepartmentsLevelAnimatedNode } from './company-departments-level-animated-node';
-import { departmentAZComparer } from './department-comparer';
 
 interface CompanyDepartmentsLevelNodesProps {
     width: number;
@@ -93,20 +92,13 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
             }
         ]);
 
-        const nodes = this.props.nodes
-            .toArray()
-            .sort((a, b) => departmentAZComparer(
-                { abbreviation: a.get('abbreviation') as string },
-                { abbreviation: b.get('abbreviation') as string }
-            ));
-
         return (
             <View style={companyDepartments.nodesContainer}>
                 <Animated.View
                     {...this.panResponder.panHandlers}
                     style={nodesContainerStyles}>
                     {
-                        nodes.map((node, index) => {
+                        this.props.nodes.toArray().map((node, index) => {
                             const chiefId = node.get('chiefId');
                             const chief = this.props.chiefs.get(chiefId);
 
