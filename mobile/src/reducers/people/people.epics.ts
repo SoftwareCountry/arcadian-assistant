@@ -9,7 +9,7 @@ import { MiddlewareAPI } from 'redux';
 export const companyDepartmentSelected$ = (action$: ActionsObservable<SelectCompanyDepartment>) =>
     action$.ofType('SELECT-COMPANY-DEPARTMENT')
         .pipe(
-            map(x => loadEmployeesForDepartment(x.departmentId))
+            map(x => loadEmployeesForDepartment(x.staffDepartmentId ? x.staffDepartmentId : x.departmentId))
         );
 
 export const redirectToEmployeeDetails$ = (action$: ActionsObservable<RedirectToEmployeeDetails>, store: MiddlewareAPI<AppState>) =>

@@ -23,7 +23,7 @@ interface CompanyDepartmentsStateProps {
 }
 
 interface CompanyDepartmentsDispatchProps {
-    selectCompanyDepartment: (departmentId: string) => void;
+    selectCompanyDepartment: (departmentId: string, staffDepartmentId: string) => void;
     onPressEmployee: (employeeId: string) => void;
 }
 
@@ -82,8 +82,8 @@ const mapStateToProps: MapStateToProps<CompanyDepartmentsStateProps, void, AppSt
 };
 
 const mapDispatchToProps: MapDispatchToProps<CompanyDepartmentsDispatchProps, void> = (dispatch: Dispatch<any>) => ({
-    selectCompanyDepartment: (departmentId: string) => {
-        dispatch(selectCompanyDepartment(departmentId));
+    selectCompanyDepartment: (departmentId: string, staffDepartmentId: string) => {
+        dispatch(selectCompanyDepartment(departmentId, staffDepartmentId));
     },
     onPressEmployee: (employeeId: string) => {
         dispatch(redirectToEmployeeDetails(employeeId));

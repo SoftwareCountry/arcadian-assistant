@@ -12,8 +12,8 @@ interface CompanyDepartmentsLevelNodesProps {
     nodes: Set<MapDepartmentNode>;
     chiefs: EmployeeIdToNode;
     selectedDepartmentId: string;
-    onPrevDepartment: (departmentId: string) => void;
-    onNextDepartment: (departmentId: string) => void;
+    onPrevDepartment: (departmentId: string, staffDepartmentId: string) => void;
+    onNextDepartment: (departmentId: string, staffDepartmentId: string) => void;
     onPressChief: (employeeId: string) => void;
 }
 
@@ -99,11 +99,11 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
                     style={nodesContainerStyles}>
                     {
                         this.props.nodes.toArray().map((node, index) => {
-                            const chiefId = node.get('chiefId');
+                            const chiefId = node.get('chiefId') as string;
                             const chief = this.props.chiefs.get(chiefId);
 
                             return <CompanyDepartmentsLevelAnimatedNode
-                                key={node.get('departmentId')}
+                                key={node.get('departmentId') as string}
                                 index={index}
                                 node={node}
                                 chief={chief}
@@ -156,7 +156,9 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
             return;
         }
 
-        this.props.onNextDepartment(nextNode.get('departmentId'));
+        this.props.onNextDepartment(
+            nextNode.get('departmentId') as string, 
+            nextNode.get('staffDepartmentId') as string);
     }
 
     private prevDepartment() {
@@ -167,9 +169,11 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
 
         if (!prevNode) {
             return;
-        }        
+        }
         
-        this.props.onPrevDepartment(prevNode.get('departmentId'));
+        this.props.onPrevDepartment(
+            prevNode.get('departmentId') as string,
+            prevNode.get('staffDepartmentId') as string);
     }
 
     private isLastNextPage(): boolean {

@@ -12,10 +12,11 @@ import { departmentAZComparer } from './department-comparer';
 
 interface CompanyDepartmentsLevelProps {
     departmentId: string;
+    staffDepartmentId?: string;
     departmentIdToChildren: DepartmentIdToChildren;
     employeeIdToNode: EmployeeIdToNode;
     selection: DepartmentIdToSelectedId;
-    onSelectedNode: (departmentId: string) => void;
+    onSelectedNode: (departmentId: string, staffDepartmentId: string) => void;
     onPressEmployee: (employeeId: string) => void;
 }
 
@@ -75,7 +76,8 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
     private renderDepartmentsLevel(node: MapDepartmentNode) {
         return (
             <CompanyDepartmentsLevel
-                departmentId={node.get('departmentId')}
+                departmentId={node.get('departmentId') as string}
+                staffDepartmentId={node.get('staffDepartmentId') as string}
                 departmentIdToChildren={this.props.departmentIdToChildren}
                 employeeIdToNode={this.props.employeeIdToNode}
                 selection={this.props.selection}
@@ -85,7 +87,11 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
     }
 
     private renderDepartmentPeople() {
-        const people = this.props.employeeIdToNode.filter(employeeNode => employeeNode.get('departmentId') === this.props.departmentId).toMap();
+        const departmentId = this.props.staffDepartmentId 
+            ? this.props.staffDepartmentId 
+            : this.props.departmentId;
+
+        const people = this.props.employeeIdToNode.filter(employeeNode => employeeNode.get('departmentId') === departmentId).toMap();
 
         return (
             <CompanyDepartmentsLevelPeople employeeIdToNode={people} onPressEmployee={this.props.onPressEmployee} />
@@ -94,7 +100,7 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
 
     private getChiefs(nodes: Set<MapDepartmentNode>): EmployeeIdToNode {
         const chiefIdToChiefs = nodes.map(node => {
-            const chiefId = node.get('chiefId');
+            const chiefId = node.get('chiefId') as string;
             return [chiefId, this.props.employeeIdToNode.get(chiefId)];
         });
         return Map<string, MapEmployeeNode>(chiefIdToChiefs);

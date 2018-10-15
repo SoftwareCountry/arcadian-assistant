@@ -175,13 +175,14 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
         const chiefName = chief ? chief.get('name') : null;
         const chiefPosition = chief ? chief.get('position') : null;
         const chiefId = chief ? chief.get('employeeId') as string : null;
+        const showStaffIcon = !!this.props.node.get('staffDepartmentId');
 
         return (
             <Animated.View style={containerStyles}>
                 <Animated.View style={stickyContainerStyles}>
                     <Animated.View style={scaleContainerStyles}>
                         <TouchableOpacity style={touchableStyles} onPress={this.onPressChief}>
-                            <CompanyDepartmentsLevelNodePhoto photo={photo} />
+                            <CompanyDepartmentsLevelNodePhoto photo={photo} showStaffIcon={showStaffIcon} />
                         </TouchableOpacity>
                     </Animated.View>
                 </Animated.View>

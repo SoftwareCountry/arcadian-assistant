@@ -5,11 +5,12 @@ import { Avatar } from './avatar';
 
 interface CompanyDepartmentsLevelNodePhotoProps {
     photo: Map<string, Photo>;
+    showStaffIcon?: boolean;
 }
 
 export class CompanyDepartmentsLevelNodePhoto extends Component<CompanyDepartmentsLevelNodePhotoProps> {
     public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelNodePhotoProps) {
-        return !is(this.props.photo, nextProps.photo);
+        return !is(this.props.photo, nextProps.photo) || this.props.showStaffIcon !== nextProps.showStaffIcon;
     }
 
     public render() {
@@ -17,6 +18,6 @@ export class CompanyDepartmentsLevelNodePhoto extends Component<CompanyDepartmen
             ? this.props.photo.toJS() 
             : null;
 
-        return <Avatar photo={photo} />;
+        return <Avatar photo={photo} useDefaultForEmployeesList={!!this.props.showStaffIcon} />;
     }
 }

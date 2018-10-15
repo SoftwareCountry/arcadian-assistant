@@ -10,6 +10,7 @@ import { combineEpics } from 'redux-observable';
 import { companyDepartmentSelected$, redirectToEmployeeDetails$ } from './people.epics';
 import { MapDepartmentNode, DepartmentNode, EmployeeNode, EmployeeIdToNode } from './people.model';
 import { Map, Set } from 'immutable';
+import { gmgId } from './append-root';
 
 export interface PeopleState {
     departmentNodes: Set<MapDepartmentNode>;
@@ -48,18 +49,29 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
                 selectedCompanyDepartmentId: action.employee.departmentId
             };
         case 'LOAD-DEPARTMENTS-FINISHED':
-            
+
             const departmentNodes = action.departments.map(x => {
                 const node: DepartmentNode = {
                     departmentId: x.departmentId,
                     parentId: x.parentDepartmentId,
                     abbreviation: x.abbreviation,
-                    chiefId: x.chiefId
-                };             
+                    chiefId: x.chiefId,
+                    staffDepartmentId: null
+                };
                 return Map<keyof DepartmentNode, DepartmentNode[keyof DepartmentNode]>(node);
             });
 
             const headDepartment = action.departments.find(department => department.isHeadDepartment);
+
+            const gmgGroup: DepartmentNode = {
+                departmentId: gmgId,
+                parentId: null,
+                abbreviation: 'GMG Staff',
+                chiefId: null,
+                staffDepartmentId: headDepartment.departmentId
+            };
+
+            departmentNodes.push(Map<keyof DepartmentNode, DepartmentNode[keyof DepartmentNode]>(gmgGroup));
 
             return {
                 ...state,
