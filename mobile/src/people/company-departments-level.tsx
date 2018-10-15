@@ -47,7 +47,8 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
                 chiefs={chiefs} 
                 selectedDepartmentId={selectedDepartmentId}
                 onNextDepartment={this.props.onSelectedNode}
-                onPrevDepartment={this.props.onSelectedNode} />
+                onPrevDepartment={this.props.onSelectedNode}
+                onPressChief={this.props.onPressEmployee} />
         );
     }
 

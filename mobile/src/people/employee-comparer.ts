@@ -1,11 +1,13 @@
-import { Employee } from '../reducers/organization/employee.model';
+interface HasName {
+    name: string;
+}
 
-export function employeesAZComparer (first: Employee, second: Employee) {
+export function employeesAZComparer (first: HasName, second: HasName) {
     if (first.name < second.name) {
         return -1;
     } else if (first.name > second.name) {
         return 1;
-    } else {
-        return 0;
     }
+
+    return 0;
 }

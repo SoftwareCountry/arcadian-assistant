@@ -5,6 +5,7 @@ import { Set } from 'immutable';
 import { StyledText } from '../override/styled-text';
 import { companyDepartments } from './styles';
 import { CompanyDepartmentsLevelAnimatedNode } from './company-departments-level-animated-node';
+import { departmentAZComparer } from './department-comparer';
 
 interface CompanyDepartmentsLevelNodesProps {
     width: number;
@@ -14,6 +15,7 @@ interface CompanyDepartmentsLevelNodesProps {
     selectedDepartmentId: string;
     onPrevDepartment: (departmentId: string) => void;
     onNextDepartment: (departmentId: string) => void;
+    onPressChief: (employeeId: string) => void;
 }
 
 interface CompanyDepartmentsLevelNodesState {
@@ -67,7 +69,8 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
             || !this.props.chiefs.equals(nextProps.chiefs)
             || this.props.selectedDepartmentId !== nextProps.selectedDepartmentId
             || this.props.height !== nextProps.height
-            || this.props.width !== nextProps.width;
+            || this.props.width !== nextProps.width
+            || this.props.onPressChief !== nextProps.onPressChief;
     }
 
     public componentDidMount() {
@@ -90,31 +93,38 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
             }
         ]);
 
+        const nodes = this.props.nodes
+            .toArray()
+            .sort((a, b) => departmentAZComparer(
+                { abbreviation: a.get('abbreviation') as string },
+                { abbreviation: b.get('abbreviation') as string }
+            ));
+
         return (
             <View style={companyDepartments.nodesContainer}>
                 <Animated.View
                     {...this.panResponder.panHandlers}
                     style={nodesContainerStyles}>
                     {
-                        this.props.nodes.toArray()
-                            .map((node, index) => {
-                                const chiefId = node.get('chiefId');
-                                const chief = this.props.chiefs.get(chiefId);
+                        nodes.map((node, index) => {
+                            const chiefId = node.get('chiefId');
+                            const chief = this.props.chiefs.get(chiefId);
 
-                                return <CompanyDepartmentsLevelAnimatedNode
-                                    key={node.get('departmentId')}
-                                    index={index}                                    
-                                    node={node}
-                                    chief={chief}                                    
-                                    width={this.props.width}
-                                    height={this.props.height}
-                                    gap={this.gap}
-                                    xCoordinate={this.state.xCoordinate}
-                                />;
-                            })
+                            return <CompanyDepartmentsLevelAnimatedNode
+                                key={node.get('departmentId')}
+                                index={index}
+                                node={node}
+                                chief={chief}
+                                width={this.props.width}
+                                height={this.props.height}
+                                gap={this.gap}
+                                xCoordinate={this.state.xCoordinate}
+                                onPressChief={this.props.onPressChief}
+                            />;
+                        })
                     }
                 </Animated.View>
-            </View>            
+            </View>
         );
     }
 
@@ -123,7 +133,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
 
         if (this.props.selectedDepartmentId) {
             let index = this.props.nodes.toArray().findIndex(node => node.get('departmentId') === this.props.selectedDepartmentId);
-            
+
             if (index === -1) {
                 return;
             }

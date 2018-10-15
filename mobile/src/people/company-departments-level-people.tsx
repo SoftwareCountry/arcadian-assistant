@@ -8,6 +8,7 @@ import { Map } from 'immutable';
 import { StyledText } from '../override/styled-text';
 import { companyDepartmentLevelPeople } from './styles';
 import { CompanyDepartmentsLevelPeopleTouchable } from './company-departments-level-people-touchable';
+import { employeesAZComparer } from './employee-comparer';
 
 interface CompanyDepartmentsLevelPeopleProps {
     employeeIdToNode: EmployeeIdToNode;
@@ -21,7 +22,12 @@ export class CompanyDepartmentsLevelPeople extends Component<CompanyDepartmentsL
     }
 
     public render() {
-        const employees: MapEmployeeNode[] = this.props.employeeIdToNode.toArray();
+        const employees: MapEmployeeNode[] = this.props.employeeIdToNode
+            .toArray()
+            .sort((a, b) => employeesAZComparer(
+                { name: a.get('name') as string }, 
+                { name: b.get('name') as string }
+            ));
 
         return (
             <FlatList
