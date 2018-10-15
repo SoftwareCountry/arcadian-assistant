@@ -27,7 +27,7 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
                 .sort((a, b) => departmentAZComparer(
                     { abbreviation: a.get('abbreviation') as string },
                     { abbreviation: b.get('abbreviation') as string }
-                )).toSet()
+                )).toOrderedSet()
             : null;
 
         return (
