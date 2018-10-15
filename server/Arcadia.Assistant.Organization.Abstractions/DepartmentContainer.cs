@@ -12,16 +12,24 @@
 
         public IActorRef DepartmentActor { get; }
 
+        public IActorRef Feed { get; }
+
         public EmployeeContainer Head { get; }
 
         public IReadOnlyCollection<EmployeeContainer> Employees { get; }
 
-        public DepartmentContainer(DepartmentInfo department, IActorRef departmentActor, EmployeeContainer head, IReadOnlyCollection<EmployeeContainer> employees)
+        public DepartmentContainer(
+            DepartmentInfo department,
+            IActorRef departmentActor,
+            EmployeeContainer head,
+            IReadOnlyCollection<EmployeeContainer> employees,
+            IActorRef feed)
         {
             this.Department = department;
             this.DepartmentActor = departmentActor;
             this.Head = head;
             this.Employees = employees;
+            this.Feed = feed;
         }
 
         private string DebuggerDisplay 

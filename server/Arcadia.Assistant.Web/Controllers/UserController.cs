@@ -76,7 +76,7 @@
             var allPermissions = await this.permissionsLoader.LoadAsync(this.User);
             var employeePermissions = allPermissions.GetPermissions(employee);
 
-            return Ok(new UserEmployeePermissionsModel(employeeId, employeePermissions));
+            return this.Ok(new UserEmployeePermissionsModel(employeeId, employeePermissions));
         }
 
         private async Task<EmployeeContainer> GetEmployeeOrDefaultAsync(string employeeId, CancellationToken token)

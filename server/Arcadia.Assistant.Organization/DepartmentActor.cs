@@ -49,7 +49,7 @@
                     break;
 
                 case GetDepartmentInfo _:
-                    var container = new DepartmentContainer(this.departmentInfo, this.Self, this.head, this.employees.ToList());
+                    var container = new DepartmentContainer(this.departmentInfo, this.Self, this.head, this.employees.ToList(), this.feed);
                     this.Sender.Tell(new GetDepartmentInfo.Result(container));
                     break;
 

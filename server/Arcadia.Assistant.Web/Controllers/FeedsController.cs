@@ -10,6 +10,8 @@
 
     using Arcadia.Assistant.Feeds;
     using Arcadia.Assistant.Feeds.Messages;
+    using Arcadia.Assistant.Organization.Abstractions;
+    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.Web.Authorization;
     using Arcadia.Assistant.Web.Configuration;
@@ -58,22 +60,33 @@
                 return this.Ok(new Message[0]);
             }
 
-            var feedsActor = this.actorFactory.ActorSelection(this.pathsBuilder.Get("shared-feeds"));
-            var feeds = 
-                await feedsActor.Ask<GetFeeds.Response>(new GetFeeds(employee.Metadata.EmployeeId), timeout, token);
-
-            var responsesTasks = feeds
-                .Feeds
-                .Values
+            var responsesTasks = (await this.GetUserFeeds(employee, token))
                 .Select(x => x.Ask<GetMessages.Response>(new GetMessages(fromDate ?? today, toDate ?? today), timeout, token));
 
-            var respones = await Task.WhenAll(responsesTasks);
-            var messages = respones.SelectMany(x => x.Messages)
+            var responses = await Task.WhenAll(responsesTasks);
+            var messages = responses.SelectMany(x => x.Messages)
                 .Distinct(Message.MessageIdComparer)
                 .OrderByDescending(x => x.DatePosted)
                 .Select(x => new MessageModel(x));
 
             return this.Ok(messages);
+        }
+
+        private async Task<IEnumerable<IActorRef>> GetUserFeeds(EmployeeContainer employee, CancellationToken token)
+        {
+            var feedsActor = this.actorFactory.ActorSelection(this.pathsBuilder.Get(WellKnownActorPaths.SharedFeeds));
+            var sharedFeedsResponse =
+                await feedsActor.Ask<GetFeeds.Response>(new GetFeeds(employee.Metadata.EmployeeId), this.timeoutSettings.Timeout, token);
+
+            var sharedFeeds = sharedFeedsResponse.Feeds.Values;
+
+            var departmentActor = this.actorFactory.ActorSelection(this.pathsBuilder.Get(WellKnownActorPaths.Organization));
+            var department =
+                await departmentActor.Ask<DepartmentsQuery.Response>(DepartmentsQuery.Create().WithId(employee.Metadata.DepartmentId));
+
+            var departmentFeeds = department.Departments.Select(x => x.Feed);
+
+            return sharedFeeds.Union(departmentFeeds);
         }
     }
 }
