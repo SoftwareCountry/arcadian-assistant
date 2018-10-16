@@ -127,7 +127,7 @@ export class OAuthProcess {
                         ? error.message.toString()
                         : error.toString()
                     : 'unknown error';
-            this.authenticationStateSource.error(new OauthError(error));
+            this.authenticationStateSource.error(new OauthError(errorText));
         }
     }
 
