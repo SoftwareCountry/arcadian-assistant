@@ -8,6 +8,7 @@ import { Set, Map } from 'immutable';
 import { CompanyDepartmentsLevelNodes } from './company-departments-level-nodes';
 import { EmployeeIdsGroupMap } from '../reducers/organization/employees.reducer';
 import { CompanyDepartmentsLevelPeople } from './company-departments-level-people';
+import { departmentAZComparer } from './department-comparer';
 
 interface CompanyDepartmentsLevelProps {
     departmentId: string;
@@ -21,7 +22,13 @@ interface CompanyDepartmentsLevelProps {
 export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelProps> {
     public render() {
         const { departmentIdToChildren, departmentId } = this.props;
-        const nodes = departmentIdToChildren[departmentId];
+        const nodes = departmentIdToChildren[departmentId] 
+            ? departmentIdToChildren[departmentId]
+                .sort((a, b) => departmentAZComparer(
+                    { abbreviation: a.get('abbreviation') as string },
+                    { abbreviation: b.get('abbreviation') as string }
+                )).toOrderedSet()
+            : null;
 
         return (
             <View style={companyDepartments.levelContainer}>
@@ -47,7 +54,8 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
                 chiefs={chiefs} 
                 selectedDepartmentId={selectedDepartmentId}
                 onNextDepartment={this.props.onSelectedNode}
-                onPrevDepartment={this.props.onSelectedNode} />
+                onPrevDepartment={this.props.onSelectedNode}
+                onPressChief={this.props.onPressEmployee} />
         );
     }
 

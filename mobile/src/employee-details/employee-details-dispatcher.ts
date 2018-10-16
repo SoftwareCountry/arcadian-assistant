@@ -20,3 +20,21 @@ export const openDepartmentAction = (departmentId: string) => NavigationActions.
     routeName: 'CurrentDepartment',
     params: { departmentId } as CurrentDepartmentNavigationParams
 });
+
+export interface CurrentRoomNavigationParams {
+    roomNumber: string;
+}
+
+export const openRoomAction = (roomNumber: string) => NavigationActions.navigate({
+    routeName: 'CurrentRoom',
+    params: { roomNumber } as CurrentRoomNavigationParams
+});
+
+export interface CurrentOrganizationNavigationParams {
+    departmentId: string;
+}
+
+export const openOrganizationAction = (departmentId: string) => NavigationActions.navigate({
+    routeName: 'CurrentOrganization',
+    params: { departmentId } as CurrentOrganizationNavigationParams
+});

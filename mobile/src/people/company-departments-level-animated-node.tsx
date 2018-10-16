@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Animated, ViewStyle, PerpectiveTransform, Easing, Platform } from 'react-native';
+import { View, StyleSheet, Animated, ViewStyle, PerpectiveTransform, Easing, Platform, TouchableOpacity } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { MapDepartmentNode, MapEmployeeNode } from '../reducers/people/people.model';
 import { companyDepartmentsAnimatedNode } from './styles';
 import { Map, is } from 'immutable';
 import { Photo } from '../reducers/organization/employee.model';
 import { CompanyDepartmentsLevelNodePhoto } from './company-departments-level-node-photo';
+import { CompanyDepartmentsLevelPeopleTouchable } from './company-departments-level-people-touchable';
 
 interface Perspective {
     perspective: number;
@@ -132,6 +133,7 @@ interface CompanyDepartmentsLevelAnimatedNodeProps {
     height: number;
     gap: number;
     xCoordinate: Animated.Value;
+    onPressChief: (employeeId: string) => void;
 }
 
 export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepartmentsLevelAnimatedNodeProps> {
@@ -144,7 +146,8 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
             || this.props.width !== nextProps.width
             || this.props.height !== nextProps.height
             || this.props.gap !== nextProps.gap
-            || this.props.xCoordinate !== nextProps.xCoordinate;
+            || this.props.xCoordinate !== nextProps.xCoordinate
+            || this.props.onPressChief !== nextProps.onPressChief;
     }
 
     public componentDidMount() {
@@ -161,7 +164,8 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
             containerStyles, 
             stickyContainerStyles, 
             scaleContainerStyles, 
-            contentStyles 
+            contentStyles,
+            touchableStyles
         } = this.calculateStyles();
 
         const { chief } = this.props;
@@ -170,12 +174,15 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
             : null;
         const chiefName = chief ? chief.get('name') : null;
         const chiefPosition = chief ? chief.get('position') : null;
+        const chiefId = chief ? chief.get('employeeId') as string : null;
 
         return (
             <Animated.View style={containerStyles}>
                 <Animated.View style={stickyContainerStyles}>
                     <Animated.View style={scaleContainerStyles}>
-                        <CompanyDepartmentsLevelNodePhoto photo={photo} />
+                        <TouchableOpacity style={touchableStyles} onPress={this.onPressChief}>
+                            <CompanyDepartmentsLevelNodePhoto photo={photo} />
+                        </TouchableOpacity>
                     </Animated.View>
                 </Animated.View>
                 <Animated.View style={contentStyles}>
@@ -228,11 +235,26 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
             Animations.contentAnimation(index, calculatedWidth, height, xCoordinate) as any
         ]);
 
+        const touchableStyles = StyleSheet.flatten([
+            rectSize
+        ]);
+
         return {
             containerStyles,
             scaleContainerStyles,
             stickyContainerStyles,
-            contentStyles
+            contentStyles,
+            touchableStyles
         };
+    }
+
+    private onPressChief = () => {
+        const employeeId = this.props.chief
+            ? this.props.chief.get('employeeId') as string
+            : null;
+
+        if (employeeId) {
+            this.props.onPressChief(employeeId);
+        }
     }
 }
