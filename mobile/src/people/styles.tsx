@@ -81,8 +81,7 @@ export const companyDepartmentsAnimatedNode = StyleSheet.create({
     stickyContainer: {
 		justifyContent: 'center',
         alignItems: 'center',
-        zIndex: 1,
-        backgroundColor: '#fff'
+        zIndex: 1
     },
     scaleContainer: {
 		justifyContent: 'center',
