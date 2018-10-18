@@ -54,8 +54,4 @@ suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
 [version]
-<<<<<<< ours
-^0.67.0
-=======
 ^0.78.0
->>>>>>> theirs
