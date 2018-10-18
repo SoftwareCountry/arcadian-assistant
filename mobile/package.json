@@ -22,7 +22,7 @@
     "copyImages": "copyfiles -u 1 src/**/*.png src/**/*.jpg artifacts",
     "build": "npm run clean && npm run lint && npm run copyImages && npm run tsc --",
     "watch": "concurrently \"npm-watch lint\" \"npm run build -- -w\"",
-    "prepublish": "npm run build",
+    "prepare": "npm run build",
     "lint": "tslint -p ."
   },
   "dependencies": {
