@@ -6,7 +6,6 @@ import { companyDepartmentsAnimatedNode } from './styles';
 import { Map, is } from 'immutable';
 import { Photo } from '../reducers/organization/employee.model';
 import { CompanyDepartmentsLevelNodePhoto } from './company-departments-level-node-photo';
-import { CompanyDepartmentsLevelPeopleTouchable } from './company-departments-level-people-touchable';
 
 interface Perspective {
     perspective: number;

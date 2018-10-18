@@ -105,13 +105,15 @@ export const companyDepartmentsAnimatedNode = StyleSheet.create({
 export const companyDepartmentLevelPeople = StyleSheet.create({
     list: {
         flex: 1,
-        padding: screenHeight * 0.02
+        paddingLeft: screenHeight * 0.02,
+        paddingRight: screenHeight * 0.02
     },
     listItem: {
         flexDirection: 'row', 
         flex: 1,
         height: screenHeight * 0.052,
-        marginBottom: 10
+        marginTop: screenHeight * 0.005,
+        marginBottom: screenHeight * 0.005
     },
     listItemAvator: {
         flex: 1
