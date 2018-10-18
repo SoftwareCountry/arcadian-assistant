@@ -26,9 +26,9 @@
     "lint": "tslint -p ."
   },
   "dependencies": {
-    "appcenter": "^1.7.1",
-    "appcenter-analytics": "^1.7.1",
-    "appcenter-crashes": "^1.7.1",
+    "appcenter": "^1.8.1",
+    "appcenter-analytics": "^1.8.1",
+    "appcenter-crashes": "^1.8.1",
     "babel-plugin-transform-inline-environment-variables": "^0.3.0",
     "immutable": "^3.8.2",
     "moment": "^2.20.1",
