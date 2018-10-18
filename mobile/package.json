@@ -32,8 +32,8 @@
     "babel-plugin-transform-inline-environment-variables": "^0.3.0",
     "immutable": "^3.8.2",
     "moment": "^2.20.1",
-    "react": "16.3.1",
-    "react-native": "0.55.3",
+    "react": "16.4.1",
+    "react-native": "0.56.0",
     "react-native-sensitive-info": "5.2.0",
     "react-native-sf-authentication-session": "^0.1.1",
     "react-native-vector-icons": "^4.4.2",
@@ -68,7 +68,7 @@
     "react-test-renderer": "^16.0.0",
     "rimraf": "^2.6.2",
     "tslint": "^5.8.0",
-    "typescript": "^2.5.3"
+    "typescript": "2.5.3"
   },
   "jest": {
     "preset": "react-native",
