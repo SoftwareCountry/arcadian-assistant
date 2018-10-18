@@ -46,6 +46,7 @@
 		47E5BFD50BA046F985361947 /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1401C1DA5B97473E844EFD19 /* MaterialIcons.ttf */; };
 		51AB02247D30490584A16AD8 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 29FB9749DEDD47CF96CC34A0 /* Octicons.ttf */; };
 		5D9662D02178FDFE00EB8CA7 /* libAppCenterReactNative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F61F81F213D496C008305E7 /* libAppCenterReactNative.a */; };
+		5D96630E2179019B00EB8CA7 /* libRNSFAuthenticationSession.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DA8874D206AC468004EADEE /* libRNSFAuthenticationSession.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		86DA8A50F2D44941B01326A9 /* libAppCenterReactNativeCrashes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CFE6260F975A4FBE9E934D18 /* libAppCenterReactNativeCrashes.a */; };
 		8F61F82B213D499B008305E7 /* aa-iconfont-bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8F61F82A213D499B008305E7 /* aa-iconfont-bold.ttf */; };
@@ -475,6 +476,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5D96630E2179019B00EB8CA7 /* libRNSFAuthenticationSession.a in Frameworks */,
 				5D9662D02178FDFE00EB8CA7 /* libAppCenterReactNative.a in Frameworks */,
 				ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */,
 				11D1A2F320CAFA9E000508D9 /* libRCTAnimation.a in Frameworks */,
