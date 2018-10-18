@@ -14,6 +14,8 @@ import { buildDepartmentsSelection } from '../reducers/people/build-departments-
 import { selectCompanyDepartment, redirectToEmployeeDetails } from '../reducers/people/people.action';
 import { buildSelectedDepartmentId } from '../reducers/people/build-selected-department-id';
 import { Set } from 'immutable';
+import { EmployeeIdsGroupMap } from '../reducers/organization/employees.reducer';
+import { loadEmployeesForDepartment } from '../reducers/organization/organization.action';
 
 interface CompanyDepartmentsStateProps {
     headDepartment: Department;
@@ -23,7 +25,8 @@ interface CompanyDepartmentsStateProps {
 }
 
 interface CompanyDepartmentsDispatchProps {
-    selectCompanyDepartment: (departmentId: string, staffDepartmentId: string) => void;
+    selectCompanyDepartment: (departmentId: string) => void;
+    loadEmployeesForDepartment: (departmentId: string) => void;
     onPressEmployee: (employeeId: string) => void;
 }
 
@@ -32,13 +35,15 @@ let cachedDepartmentNodes: Set<MapDepartmentNode>;
 let cachedEmployeeNodes: EmployeeIdToNode;
 let cachedSelectedCompanyDepartmentId: string;
 let cachedFilter: string;
+let cachedemployeeIdsByDepartment: EmployeeIdsGroupMap;
 
 const mapStateToProps: MapStateToProps<CompanyDepartmentsStateProps, void, AppState> = (state: AppState) => {
     if (cachedProps 
         && state.people.departmentNodes.equals(cachedDepartmentNodes) 
         && state.people.employeeNodes.equals(cachedEmployeeNodes)
         && state.people.filter === cachedFilter
-        && state.people.selectedCompanyDepartmentId === cachedSelectedCompanyDepartmentId) {
+        && state.people.selectedCompanyDepartmentId === cachedSelectedCompanyDepartmentId
+        && state.organization.employees.employeeIdsByDepartment.equals(cachedemployeeIdsByDepartment)) {
             return cachedProps;
     }
 
@@ -58,7 +63,7 @@ const mapStateToProps: MapStateToProps<CompanyDepartmentsStateProps, void, AppSt
         mapDepartmentIdToNode = buildBranchFromChildToParent(departmentsNodes, departmentIdToNode);
     }
 
-    const departmentIdToChildren = buildDepartmentIdToChildren(mapDepartmentIdToNode);
+    const departmentIdToChildren = buildDepartmentIdToChildren(mapDepartmentIdToNode, state.organization.employees.employeeIdsByDepartment);
 
     const selectedCompanyDepartmentId = buildSelectedDepartmentId(mapDepartmentIdToNode, employeeIdToNode, state.people.selectedCompanyDepartmentId);
 
@@ -70,6 +75,7 @@ const mapStateToProps: MapStateToProps<CompanyDepartmentsStateProps, void, AppSt
     cachedEmployeeNodes = state.people.employeeNodes; 
     cachedFilter = state.people.filter;
     cachedSelectedCompanyDepartmentId = state.people.selectedCompanyDepartmentId;
+    cachedemployeeIdsByDepartment = state.organization.employees.employeeIdsByDepartment;
 
     cachedProps = {
         headDepartment: state.people.headDepartment,
@@ -82,8 +88,11 @@ const mapStateToProps: MapStateToProps<CompanyDepartmentsStateProps, void, AppSt
 };
 
 const mapDispatchToProps: MapDispatchToProps<CompanyDepartmentsDispatchProps, void> = (dispatch: Dispatch<any>) => ({
-    selectCompanyDepartment: (departmentId: string, staffDepartmentId: string) => {
-        dispatch(selectCompanyDepartment(departmentId, staffDepartmentId));
+    selectCompanyDepartment: (departmentId: string) => {
+        dispatch(selectCompanyDepartment(departmentId));
+    },
+    loadEmployeesForDepartment: (departmentId: string) => {
+        dispatch(loadEmployeesForDepartment(departmentId));
     },
     onPressEmployee: (employeeId: string) => {
         dispatch(redirectToEmployeeDetails(employeeId));
@@ -101,7 +110,8 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
                 employeeIdToNode={this.props.employeeIdToNode}
                 selection={this.props.selection}
                 onSelectedNode={this.props.selectCompanyDepartment}
-                onPressEmployee={this.props.onPressEmployee} />
+                onPressEmployee={this.props.onPressEmployee}
+                loadEmployeesForDepartment={this.props.loadEmployeesForDepartment} />
             : null;
     }
 }
