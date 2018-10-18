@@ -6,9 +6,9 @@ target 'ArcadiaAssistant' do
   # use_frameworks!
 
   # Pods for ArcadiaAssistant
-  pod 'AppCenter/Crashes', '~> 1.8.0'
-  pod 'AppCenter/Analytics', '~> 1.8.0'
-  pod 'AppCenterReactNativeShared', '~> 1.7.1'
+  pod 'AppCenter/Crashes', '~> 1.9.0'
+  pod 'AppCenter/Analytics', '~> 1.9.0'
+  pod 'AppCenterReactNativeShared', '~> 1.8.1'
 
   
 

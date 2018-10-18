@@ -16,27 +16,27 @@ function showAlert(errorMessage: string, okButtonTitle: string, rejectButtonTitl
 }
 
 function retryWhenErrorOccured<T>(isForceLogout: boolean = false): UnaryFunction<Observable<T>, Observable<T>> {
-    let errorMessage = 'Uknown error occured';
     let okButtonTitle = 'Try again';
     let rejectButtonTitle = isForceLogout ? 'Logout' : 'Cancel';
     return retryWhen(errors => {
         return errors.exhaustMap(e => new Promise((resolve, reject) => {
-            if (e.status === 401 || e.status === 403) {
+            let errorMessage = 'Uknown error occured';
+            if (e.status === 401) {
                 errorMessage = 'Authentication failed';
-                showAlert(errorMessage, okButtonTitle, rejectButtonTitle, resolve, () => reject(e));
+            } else if (e.status === 403) {
+                errorMessage = 'Authorization error. Please contact administrator';
             } else if (e.status === 0) {
                 errorMessage = 'Cannot establish a connection to the server';
-                showAlert(errorMessage, okButtonTitle, rejectButtonTitle, resolve, () => reject(e));
             } else {
                 errorMessage = `Unknown error occurred ${e}. Please contact administrator`;
-                showAlert(errorMessage, okButtonTitle, rejectButtonTitle, resolve, () => reject(e));
             }
+            
+            showAlert(errorMessage, okButtonTitle, rejectButtonTitle, resolve, () => reject(e));
         }));
     });
 }
 
 export function handleHttpErrors<T>(swallowErrors: boolean = true): UnaryFunction<Observable<T>, Observable<T>> {
-    let errorMessage = 'Uknown error occured';
     if (swallowErrors) {
         return pipe(
             retryWhenErrorOccured(),
