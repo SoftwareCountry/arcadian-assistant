@@ -51,7 +51,7 @@ export const employeesListItemStyles = StyleSheet.create({
     }
 });
 
-export const nodesContainerHeight = screenHeight * 0.12;
+export const nodesContainerHeight = screenHeight * 0.105;
 export const nodesContainerWidth = screenWidth;
 
 export const companyDepartments = StyleSheet.create({
