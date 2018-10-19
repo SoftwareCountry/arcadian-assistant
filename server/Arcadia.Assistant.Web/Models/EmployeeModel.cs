@@ -25,6 +25,9 @@
         public PhotoModel Photo { get; set; }
 
         [DataMember]
+        public string PhotoUrl { get; set; }
+
+        [DataMember]
         public string Position { get; set; }
 
         [DataMember]

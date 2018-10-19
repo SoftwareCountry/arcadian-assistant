@@ -116,6 +116,7 @@
                         }
 
                         employee.Photo = photo.Photo;
+                        employee.PhotoUrl = this.Url.Action(nameof(EmployeePhotoController.GetImage), nameof(EmployeePhotoController), new { employeeId = query.EmployeeId });
 
                         return employee;
                     });
