@@ -6,6 +6,8 @@ import { refresh } from '../refresh/refresh.action';
 import { handleHttpErrors } from '../errors/errors.epics';
 import { flatMap, distinctUntilChanged } from 'rxjs/operators';
 import { Alert } from 'react-native';
+import { AuthenticatedState } from '../../auth/authentication-state';
+import { Action } from 'redux';
 
 
 function showAlert(message: string, okButtonTitle: string, rejectButtonTitle: string, okButton: () => void, rejectButton: () => void) {
@@ -33,7 +35,7 @@ export const listenerAuthStateEpic$ = (action$: ActionsObservable<any>, state: A
         .pipe(
             handleHttpErrors(),
             distinctUntilChanged((x, y) => x.isAuthenticated === y.isAuthenticated),
-            flatMap(x => {
+            flatMap<AuthenticatedState, Action>(x => {
                 if (x.isAuthenticated) {
                     return Observable.concat(Observable.of(userLoggedIn()), Observable.of(refresh()));
                 } else {

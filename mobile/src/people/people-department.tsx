@@ -20,8 +20,8 @@ interface PeopleDepartmentStateProps {
 
 type PeopleDepartmentProps = PeopleDepartmentStateProps & PeopleDepartmentPropsOwnProps;
 
-const mapStateToProps: MapStateToProps<PeopleDepartmentProps, PeopleDepartmentPropsOwnProps, AppState> = (state: AppState, ownProps: PeopleDepartmentPropsOwnProps): PeopleDepartmentStateProps => {
-
+const mapStateToProps: MapStateToProps<PeopleDepartmentProps, PeopleDepartmentPropsOwnProps, AppState> = 
+        (state: AppState, ownProps: PeopleDepartmentPropsOwnProps): PeopleDepartmentStateProps => {
     const userEmployee = state.organization.employees.employeesById.get(state.userInfo.employeeId);
     const defaultEmployeesPredicate = (employee: Employee) => userEmployee && employee.departmentId === userEmployee.departmentId;
 
@@ -56,7 +56,7 @@ export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentStateP
     public render() {
         const employees = this.props.employees.employeesById.filter(this.props.employeesPredicate).toArray();
 
-        return <EmployeesList employees={employees} onItemClicked={this.props.onItemClicked} isLoading={this.props.employees.employeesById.size > 0}/>;
+        return <EmployeesList employees={employees} onItemClicked={this.props.onItemClicked}/>;
     }
 }
 

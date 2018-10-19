@@ -56,8 +56,7 @@ export class FeedListItem extends React.Component<FeedListItemProps, FeedListIte
                     <View style={styles.info}>
                         <StyledText style={styles.title}>{this.props.message.title}</StyledText>
                         <StyledText>
-                            <Text style={styles.to}>@Arcadians</Text>
-                            <Text style={styles.text}>, {this.props.message.text}</Text>
+                            <Text style={styles.text}>{this.props.message.text}</Text>
                         </StyledText>
                         <StyledText style={styles.tags}>#ArcadiaNews</StyledText>
                         <StyledText style={styles.date}>{formattedDate}</StyledText>

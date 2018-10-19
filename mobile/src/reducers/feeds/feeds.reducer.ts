@@ -2,7 +2,7 @@ import { Reducer } from 'redux';
 import { combineEpics } from 'redux-observable';
 import { Feed } from './feed.model';
 import { FeedsActions } from './feeds.action';
-import { SearchActions } from '../search.action';
+import { SearchActions } from '../search/search.action';
 import { SearchType } from '../../navigation/search-view';
 import { loadFeedsFinishedEpic$, pagingPeriodDays, fetchNewFeedsEpic$, fetchOldFeedsEpic$, loadUserEmployeeFinishedEpic$ } from './feeds.epics';
 import { Moment } from 'moment';

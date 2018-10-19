@@ -12,12 +12,21 @@ import { Department } from '../reducers/organization/department.model';
 import { StyledText } from '../override/styled-text';
 import { Employee } from '../reducers/organization/employee.model';
 import { ApplicationIcon } from '../override/application-icon';
-import { openCompanyAction, openDepartmentAction } from './employee-details-dispatcher';
+import { openCompanyAction, openDepartmentAction, openRoomAction } from './employee-details-dispatcher';
 import { loadCalendarEvents, calendarEventSetNewStatus } from '../reducers/calendar/calendar.action';
 import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
 import { UserEmployeePermissions } from '../reducers/user/user-employee-permissions.model';
 import { loadUserEmployeePermissions } from '../reducers/user/user.action';
+
+interface TileData {
+    label: string;
+    icon: string;
+    style: ViewStyle;
+    size: number;
+    payload: string;
+    onPress: () => void;
+}
 
 interface EmployeeDetailsOwnProps {
     employee: Employee;
@@ -52,13 +61,15 @@ interface EmployeeDetailsDispatchProps {
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
     loadUserEmployeePermissions: (employeeId: string) => void;
     openDepartment: (departmentId: string) => void;
+    openRoom: (departmentId: string) => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchProps => ({
     onCompanyClicked: (departmentId: string) => dispatch( openCompanyAction(departmentId)),
     loadCalendarEvents: (employeeId: string) => dispatch(loadCalendarEvents(employeeId)),
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status)),
     loadUserEmployeePermissions: (employeeId: string) => { dispatch(loadUserEmployeePermissions(employeeId)); },
-    openDepartment: (departmentId: string) => { dispatch(openDepartmentAction(departmentId)); }
+    openDepartment: (departmentId: string) => { dispatch(openDepartmentAction(departmentId)); },
+    openRoom: (departmentId: string) => { dispatch(openRoomAction(departmentId)); }
 });
 
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
@@ -160,34 +171,38 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
     }
 
     private getTiles(employee: Employee) {
-        const tilesData = [
+        const tilesData: TileData[] = [
             {
                 label: employee.birthDate.format('MMMM D'),
                 icon: 'birthday',
                 style: StyleSheet.flatten([tileStyles.icon]),
                 size: 30,
-                payload: null
+                payload: null,
+                onPress: null
             },
             {
                 label: employee.hireDate.format('YYYY-D-MM'),
                 icon: 'handshake',
                 style: StyleSheet.flatten([tileStyles.icon]),
                 size: 20,
-                payload: null
+                payload: null,
+                onPress: null
             },
             {
                 label: `Room ${employee.roomNumber}`,
                 icon: 'office',
                 style: StyleSheet.flatten([tileStyles.icon]),
                 size: 25,
-                payload: null
+                payload: employee.roomNumber,
+                onPress: this.openRoom
             },
             {
                 label: 'Organization',
                 icon: 'org_structure',
                 style: StyleSheet.flatten([tileStyles.icon]),
                 size: 28,
-                payload: employee.departmentId
+                payload: employee.departmentId,
+                onPress: this.openCompany
             }
         ];
         const lastIndex = tilesData.length - 1;
@@ -197,7 +212,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             <View style={tileStyles.container}>
             {
                 tile.payload !== null ?
-                    <TouchableOpacity onPress={this.openCompany}>
+                    <TouchableOpacity onPress={tile.onPress}>
                     <View style={tileStyles.tile}>
                         <View style={tileStyles.iconContainer}>
                             <ApplicationIcon name={tile.icon} size={tile.size} style={tile.style} />
@@ -300,6 +315,12 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
     private openDepartment = () => {
         this.props.openDepartment(this.props.employee.departmentId);
+    }
+
+    private openRoom = () => {
+        if (this.props.employee.roomNumber) {
+            this.props.openRoom(this.props.employee.roomNumber);
+        }
     }
 }
 

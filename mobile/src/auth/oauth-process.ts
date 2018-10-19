@@ -127,7 +127,7 @@ export class OAuthProcess {
                         ? error.message.toString()
                         : error.toString()
                     : 'unknown error';
-            this.authenticationStateSource.error(new OauthError(error));
+            this.authenticationStateSource.error(new OauthError(errorText));
         }
     }
 
@@ -135,7 +135,7 @@ export class OAuthProcess {
         try {
             await this.refreshTokenStorage.storeToken(token);
         } catch (e) {
-            console.error("Couldn't change refresh token in the storage", e);
+            console.warn("Couldn't change refresh token in the storage", e);
         }
     }
 
