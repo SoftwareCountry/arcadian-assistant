@@ -96,7 +96,9 @@
                         {
                             employee.MobilePhone = null;
                         }
-                        
+
+                        var photo = await x.Actor.Ask<GetPhoto.Response>(GetPhoto.Instance, this.timeoutSettings.Timeout, token);
+
                         if (employeePermissions.HasFlag(EmployeePermissionsEntry.ReadEmployeeVacationsCounter))
                         {
                             var vacationsCredit = await x.Calendar
@@ -113,6 +115,7 @@
                             employee.HoursCredit = workhoursCredit.WorkHoursCredit;
                         }
 
+                        employee.Photo = photo.Photo;
                         employee.PhotoUrl = this.Url.Action(nameof(EmployeePhotoController.GetImage), nameof(EmployeePhotoController), new { employeeId = query.EmployeeId });
 
                         return employee;
