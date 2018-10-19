@@ -1,12 +1,12 @@
 import { ActionsObservable, ofType, combineEpics } from 'redux-observable';
 import { Observable } from 'rxjs/Observable';
 import { DependenciesContainer, AppState } from '../app.reducer';
-import { StartLoginProcess, StartLogoutProcess, startLoginProcess, startLogoutProcess, userLoggedIn, userLoggedOut } from '../auth/auth.action';
+import { StartLoginProcess, StartLogoutProcess, startLoginProcess, startLogoutProcess, userLoggedIn, userLoggedOut, jwtTokenSet } from '../auth/auth.action';
 import { refresh } from '../refresh/refresh.action';
 import { handleHttpErrors } from '../errors/errors.epics';
-import { flatMap, distinctUntilChanged } from 'rxjs/operators';
+import { flatMap, distinctUntilChanged, map, filter } from 'rxjs/operators';
 import { Alert } from 'react-native';
-import { AuthenticatedState } from '../../auth/authentication-state';
+import { AuthenticationState, AuthenticatedState } from '../../auth/authentication-state';
 import { Action } from 'redux';
 
 
@@ -35,11 +35,18 @@ export const listenerAuthStateEpic$ = (action$: ActionsObservable<any>, state: A
         .pipe(
             handleHttpErrors(),
             distinctUntilChanged((x, y) => x.isAuthenticated === y.isAuthenticated),
-            flatMap<AuthenticatedState, Action>(x => {
+            flatMap<AuthenticationState, Action>(x => {
                 if (x.isAuthenticated) {
                     return Observable.concat(Observable.of(userLoggedIn()), Observable.of(refresh()));
                 } else {
                     return Observable.of(userLoggedOut());
                 }
             })
+        );
+
+
+export const jwtTokenEpic$ = (action$: ActionsObservable<any>, state: AppState, dep: DependenciesContainer) => 
+    dep.oauthProcess.authenticationState
+        .pipe(
+            map(x => x.isAuthenticated ? jwtTokenSet(x.jwtToken) : jwtTokenSet(null))
         );

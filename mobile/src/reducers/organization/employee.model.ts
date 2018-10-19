@@ -11,12 +11,6 @@ export class Photo {
     public mimeType: string;
 
     @dataMember()
-    public width: number;
-
-    @dataMember()
-    public height: number;
-
-    @dataMember()
     public base64: string;
 }
 
@@ -39,6 +33,9 @@ export class Employee {
     @dataMember()
     @required({nullable: true})
     public photo: Photo;
+
+    @dataMember()
+    public photoUrl: string;
 
     @dataMember()
     public position: string;
