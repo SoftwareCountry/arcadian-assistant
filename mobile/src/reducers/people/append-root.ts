@@ -12,7 +12,8 @@ export function appendRoot(headDepartment: Department | null, departmentIdsToNod
         departmentId: rootId,
         parentId: null,
         abbreviation: null,
-        chiefId: null
+        chiefId: null,
+        staffDepartmentId: null
     };
 
     departmentIdsToNodes[headDepartment.departmentId].parentId = departmentIdsToNodes[rootId].departmentId;

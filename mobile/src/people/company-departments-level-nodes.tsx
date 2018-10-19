@@ -15,6 +15,7 @@ interface CompanyDepartmentsLevelNodesProps {
     onPrevDepartment: (departmentId: string) => void;
     onNextDepartment: (departmentId: string) => void;
     onPressChief: (employeeId: string) => void;
+    loadEmployeesForDepartment: (departmentId: string) => void;
 }
 
 interface CompanyDepartmentsLevelNodesState {
@@ -69,17 +70,20 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
             || this.props.selectedDepartmentId !== nextProps.selectedDepartmentId
             || this.props.height !== nextProps.height
             || this.props.width !== nextProps.width
-            || this.props.onPressChief !== nextProps.onPressChief;
+            || this.props.onPressChief !== nextProps.onPressChief
+            || this.props.loadEmployeesForDepartment !== nextProps.loadEmployeesForDepartment;
     }
 
     public componentDidMount() {
         this.scrollToSelectedDepartment();
+        this.loadEmployeesForDepartment();
     }
 
     public componentDidUpdate(prevProps: CompanyDepartmentsLevelNodesProps) {
         if (this.props.selectedDepartmentId !== prevProps.selectedDepartmentId || !this.props.nodes.equals(prevProps.nodes)) {
             this.state.xCoordinate.flattenOffset();
             this.scrollToSelectedDepartment();
+            this.loadEmployeesForDepartment();
         }
     }
 
@@ -99,11 +103,11 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
                     style={nodesContainerStyles}>
                     {
                         this.props.nodes.toArray().map((node, index) => {
-                            const chiefId = node.get('chiefId');
+                            const chiefId = node.get('chiefId') as string;
                             const chief = this.props.chiefs.get(chiefId);
 
                             return <CompanyDepartmentsLevelAnimatedNode
-                                key={node.get('departmentId')}
+                                key={node.get('departmentId') as string}
                                 index={index}
                                 node={node}
                                 chief={chief}
@@ -118,6 +122,18 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
                 </Animated.View>
             </View>
         );
+    }
+
+    private loadEmployeesForDepartment() {
+        let selectedDepartmentId = this.props.selectedDepartmentId;
+
+        if (!selectedDepartmentId) {
+            const first = this.props.nodes.first();
+
+            selectedDepartmentId = first.get('departmentId');
+        }
+
+        this.props.loadEmployeesForDepartment(selectedDepartmentId);
     }
 
     private scrollToSelectedDepartment() {
@@ -156,7 +172,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
             return;
         }
 
-        this.props.onNextDepartment(nextNode.get('departmentId'));
+        this.props.onNextDepartment(nextNode.get('departmentId') as string);
     }
 
     private prevDepartment() {
@@ -167,9 +183,9 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
 
         if (!prevNode) {
             return;
-        }        
+        }
         
-        this.props.onPrevDepartment(prevNode.get('departmentId'));
+        this.props.onPrevDepartment(prevNode.get('departmentId') as string);
     }
 
     private isLastNextPage(): boolean {
