@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { View, FlatList, ListRenderItemInfo } from 'react-native';
-import { EmployeeIdToNode, MapEmployeeNode } from '../reducers/people/people.model';
+import { EmployeeIdToNode, MapEmployeeNode, MapPhoto } from '../reducers/people/people.model';
 import { Avatar } from './avatar';
 import { CompanyDepartmentsLevelNodePhoto } from './company-departments-level-node-photo';
-import { Photo } from '../reducers/organization/employee.model';
 import { Map } from 'immutable';
 import { StyledText } from '../override/styled-text';
 import { companyDepartmentLevelPeople } from './styles';
@@ -44,7 +43,7 @@ export class CompanyDepartmentsLevelPeople extends Component<CompanyDepartmentsL
     private keyExtractor = (item: MapEmployeeNode): string => item.get('employeeId') as string;
 
     private renderItem = ({ item }: { item: MapEmployeeNode }) => {
-        const photo = item.get('photo') as Map<string, Photo>;
+        const photo = item.get('photo') as MapPhoto;
 
         return (
             <CompanyDepartmentsLevelPeopleTouchable onPress={this.props.onPressEmployee} employeeId={item.get('employeeId') as string}>

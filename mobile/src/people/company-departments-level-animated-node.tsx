@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Animated, ViewStyle, PerpectiveTransform, Easing, Platform, TouchableOpacity } from 'react-native';
 import { StyledText } from '../override/styled-text';
-import { MapDepartmentNode, MapEmployeeNode } from '../reducers/people/people.model';
+import { MapDepartmentNode, MapEmployeeNode, MapPhoto } from '../reducers/people/people.model';
 import { companyDepartmentsAnimatedNode } from './styles';
 import { Map, is } from 'immutable';
-import { Photo } from '../reducers/organization/employee.model';
 import { CompanyDepartmentsLevelNodePhoto } from './company-departments-level-node-photo';
 import { CompanyDepartmentsLevelPeopleTouchable } from './company-departments-level-people-touchable';
 
@@ -170,7 +169,7 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
 
         const { chief } = this.props;
         const photo = chief 
-            ? chief.get('photo') as Map<string, Photo> 
+            ? chief.get('photo') as MapPhoto
             : null;
         const chiefName = chief ? chief.get('name') : null;
         const chiefPosition = chief ? chief.get('position') : null;
