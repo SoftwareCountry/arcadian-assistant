@@ -114,7 +114,7 @@
                             employee.HoursCredit = workhoursCredit.WorkHoursCredit;
                         }
 
-                        employee.PhotoUrl = this.Url.Action(nameof(EmployeePhotoController.GetImage), "EmployeePhoto", new { employeeId = query.EmployeeId }, this.Request.GetUri().Scheme);
+                        employee.PhotoUrl = this.Url.Action(nameof(EmployeePhotoController.GetImage), "EmployeePhoto", new { employeeId = employee.EmployeeId }, this.Request.GetUri().Scheme);
 
                         return employee;
                     });
