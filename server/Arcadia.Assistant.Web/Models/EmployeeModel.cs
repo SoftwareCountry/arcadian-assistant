@@ -17,12 +17,8 @@
         [DataMember]
         public string Email { get; set; }
 
-
         [DataMember]
         public Sex Sex { get; set; }
-
-        [DataMember]
-        public PhotoModel Photo { get; set; }
 
         [DataMember]
         public string PhotoUrl { get; set; }
