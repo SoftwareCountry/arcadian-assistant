@@ -1,7 +1,4 @@
-import { EmployeeMap } from '../organization/employees.reducer';
-import { MapEmployeeNode, EmployeeIdToNode, EmployeeNode } from './people.model';
-import { Map } from 'immutable';
-import { Photo } from '../organization/employee.model';
+import { EmployeeIdToNode } from './people.model';
 
 export function buildEmployeeNodes(employeesById: EmployeeIdToNode, term: string): EmployeeIdToNode {
     if (!term) {

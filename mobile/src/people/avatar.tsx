@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { View, Image, StyleSheet, ViewStyle, ImageStyle, LayoutChangeEvent } from 'react-native';
-import { Photo } from '../reducers/organization/employee.model';
 import { connect } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 
