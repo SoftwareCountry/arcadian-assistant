@@ -70,14 +70,12 @@ export class CalendarPager extends Component<CalendarPagerProps, CalendarPagerSt
     }
 
     public render() {
-        const [
-            translateXProperty,
-            translateYProperty
-        ] = this.state.coordinates.getTranslateTransform() as [{'translateX': Animated.Animated }, {'translateY': Animated.Animated }];
+        
+        const translateXProperty = this.state.coordinates.getTranslateTransform()[0];
 
         const swipeableViewStyles = StyleSheet.flatten([
             calendarStyles.swipeableList,
-            { transform: [translateXProperty as TranslateXTransform] },
+            { transform: translateXProperty as any }, //wrong typings
             { left: -this.state.width }
         ]);
 

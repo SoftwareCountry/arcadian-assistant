@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import { Department } from '../reducers/organization/department.model';
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
-import { StyledText } from '../override/styled-text';
-import { View, SafeAreaView } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import { profileScreenStyles } from '../profile/styles';
 import { EmployeeDetails } from './employee-details';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
 import { NavigationRoute } from 'react-navigation';
 import { Employee } from '../reducers/organization/employee.model';
+import { LoadingView } from '../navigation/loading';
  
 interface EmployeeDetailsProps {
     departments: Department[]; 
@@ -38,11 +38,7 @@ export class EmployeeDetailsScreenImpl extends Component<EmployeeDetailsProps & 
                     layoutStylesChevronPlaceholder = {layoutStylesForEmployeeDetailsScreen.chevronPlaceholder}
                 />
             </SafeAreaView>
-            : (
-                <View style={profileScreenStyles.loadingContainer}>
-                    <StyledText style={profileScreenStyles.loadingText}>Loading...</StyledText>
-                </View>
-            );
+            : <LoadingView></LoadingView>;
     }
 }
 

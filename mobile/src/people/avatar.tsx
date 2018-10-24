@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
 });
 
 export interface AvatarOwnProps {
-    photoUrl? : string;
+    photoUrl : string;
     style?: ViewStyle;
     imageStyle?: ViewStyle;
     useDefaultForEmployeesList?: boolean;

@@ -33,8 +33,5 @@ export const searchViewStyles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center'
-    },
-    loadingText: {
-        fontSize: 20
     }
   });
