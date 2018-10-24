@@ -12,11 +12,13 @@ import { departmentAZComparer } from './department-comparer';
 
 interface CompanyDepartmentsLevelProps {
     departmentId: string;
+    staffDepartmentId?: string;
     departmentIdToChildren: DepartmentIdToChildren;
     employeeIdToNode: EmployeeIdToNode;
     selection: DepartmentIdToSelectedId;
     onSelectedNode: (departmentId: string) => void;
     onPressEmployee: (employeeId: string) => void;
+    loadEmployeesForDepartment: (departmentId: string) => void;
 }
 
 export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelProps> {
@@ -55,7 +57,8 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
                 selectedDepartmentId={selectedDepartmentId}
                 onNextDepartment={this.props.onSelectedNode}
                 onPrevDepartment={this.props.onSelectedNode}
-                onPressChief={this.props.onPressEmployee} />
+                onPressChief={this.props.onPressEmployee}
+                loadEmployeesForDepartment={this.props.loadEmployeesForDepartment} />
         );
     }
 
@@ -75,17 +78,23 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
     private renderDepartmentsLevel(node: MapDepartmentNode) {
         return (
             <CompanyDepartmentsLevel
-                departmentId={node.get('departmentId')}
+                departmentId={node.get('departmentId') as string}
+                staffDepartmentId={node.get('staffDepartmentId') as string}
                 departmentIdToChildren={this.props.departmentIdToChildren}
                 employeeIdToNode={this.props.employeeIdToNode}
                 selection={this.props.selection}
                 onSelectedNode={this.props.onSelectedNode}
-                onPressEmployee={this.props.onPressEmployee} />
+                onPressEmployee={this.props.onPressEmployee}
+                loadEmployeesForDepartment={this.props.loadEmployeesForDepartment} />
         );
     }
 
     private renderDepartmentPeople() {
-        const people = this.props.employeeIdToNode.filter(employeeNode => employeeNode.get('departmentId') === this.props.departmentId).toMap();
+        const departmentId = this.props.staffDepartmentId 
+            ? this.props.staffDepartmentId 
+            : this.props.departmentId;
+
+        const people = this.props.employeeIdToNode.filter(employeeNode => employeeNode.get('departmentId') === departmentId).toMap();
 
         return (
             <CompanyDepartmentsLevelPeople employeeIdToNode={people} onPressEmployee={this.props.onPressEmployee} />
@@ -94,7 +103,7 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
 
     private getChiefs(nodes: Set<MapDepartmentNode>): EmployeeIdToNode {
         const chiefIdToChiefs = nodes.map(node => {
-            const chiefId = node.get('chiefId');
+            const chiefId = node.get('chiefId') as string;
             return [chiefId, this.props.employeeIdToNode.get(chiefId)];
         });
         return Map<string, MapEmployeeNode>(chiefIdToChiefs);

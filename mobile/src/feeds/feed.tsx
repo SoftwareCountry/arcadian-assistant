@@ -30,7 +30,7 @@ export class FeedListItem extends React.Component<FeedListItemProps, FeedListIte
     public render() {
         const message = this.props.message;
         const employee = this.props.employee;
-        const photo = employee ? employee.photo : null;
+        const photo = employee ? employee.photoUrl : null;
         const formattedDate = message.datePosted.format('MMMM D, YYYY');
 
         const imgContainerStyle = StyleSheet.flatten([
@@ -42,9 +42,9 @@ export class FeedListItem extends React.Component<FeedListItemProps, FeedListIte
         const isDisabledClick = (this.props.employee) ? false : true;
 
         const avatarContent = isDisabledClick ?
-            <Avatar photo={photo} /> :
+            <Avatar photoUrl={photo} /> :
             <TouchableOpacity onPress={this.onAvatarClicked} style={styles.touchableOpacityContainer} >
-                <Avatar photo={photo} />
+                <Avatar photoUrl={photo} />
             </TouchableOpacity> ;
 
         return (

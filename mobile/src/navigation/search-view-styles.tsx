@@ -27,8 +27,7 @@ export const searchViewStyles = StyleSheet.create({
         fontSize: 18,
     },
     input: {
-        color: 'white',
-        backgroundColor: '#4bacca'
+        color: 'white'
     },
     loadingContainer: {
         flex: 1,

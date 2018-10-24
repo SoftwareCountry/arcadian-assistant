@@ -3,9 +3,8 @@ import { View, StyleSheet, Animated, ViewStyle, PerpectiveTransform, Easing, Pla
 import { StyledText } from '../override/styled-text';
 import { MapDepartmentNode, MapEmployeeNode, MapPhoto } from '../reducers/people/people.model';
 import { companyDepartmentsAnimatedNode } from './styles';
-import { Map, is } from 'immutable';
-import { CompanyDepartmentsLevelNodePhoto } from './company-departments-level-node-photo';
-import { CompanyDepartmentsLevelPeopleTouchable } from './company-departments-level-people-touchable';
+import { is } from 'immutable';
+import { Avatar } from './avatar';
 
 interface Perspective {
     perspective: number;
@@ -37,13 +36,13 @@ interface ContentAnimation {
 
 class Animations {
 
-    private static perspective: [Perspective] = Platform.OS === 'android' 
+    private static perspective: Perspective[] = Platform.OS === 'android' 
         ? [{ 
             // https://facebook.github.io/react-native/docs/animations#bear-in-mind:
             // without this line this Animation will not render on Android while working fine on iOS
             // ¯\_(ツ)_/¯        
             perspective: 1000
-        }] : [] as [Perspective];
+        }] : [];
 
     public static scaleAnimation = (
         index: number, 
@@ -169,18 +168,18 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
 
         const { chief } = this.props;
         const photo = chief 
-            ? chief.get('photo') as MapPhoto
+            ? chief.get('photoUrl')
             : null;
         const chiefName = chief ? chief.get('name') : null;
         const chiefPosition = chief ? chief.get('position') : null;
-        const chiefId = chief ? chief.get('employeeId') as string : null;
+        const showStaffIcon = !!this.props.node.get('staffDepartmentId');
 
         return (
             <Animated.View style={containerStyles}>
                 <Animated.View style={stickyContainerStyles}>
                     <Animated.View style={scaleContainerStyles}>
                         <TouchableOpacity style={touchableStyles} onPress={this.onPressChief}>
-                            <CompanyDepartmentsLevelNodePhoto photo={photo} />
+                            <Avatar photoUrl={photo} useDefaultForEmployeesList={showStaffIcon} />
                         </TouchableOpacity>
                     </Animated.View>
                 </Animated.View>

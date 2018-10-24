@@ -7,7 +7,7 @@ import { SearchType } from '../../navigation/search-view';
 import { Department } from '../organization/department.model';
 import { LoadUserEmployeeFinished } from '../user/user.action';
 import { combineEpics } from 'redux-observable';
-import { companyDepartmentSelected$, redirectToEmployeeDetails$ } from './people.epics';
+import { redirectToEmployeeDetails$ } from './people.epics';
 import { MapDepartmentNode, DepartmentNode, EmployeeNode, EmployeeIdToNode } from './people.model';
 import { Map, Set } from 'immutable';
 
@@ -48,16 +48,32 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
                 selectedCompanyDepartmentId: action.employee.departmentId
             };
         case 'LOAD-DEPARTMENTS-FINISHED':
-            
-            const departmentNodes = action.departments.map(x => {
+            const departmentNodes: Map<keyof DepartmentNode, DepartmentNode[keyof DepartmentNode]>[] = [];
+            const parentIds = Set<string>();
+
+            for (let department of action.departments) {
                 const node: DepartmentNode = {
-                    departmentId: x.departmentId,
-                    parentId: x.parentDepartmentId,
-                    abbreviation: x.abbreviation,
-                    chiefId: x.chiefId
-                };             
-                return Map<keyof DepartmentNode, DepartmentNode[keyof DepartmentNode]>(node);
-            });
+                    departmentId: department.departmentId,
+                    parentId: department.parentDepartmentId,
+                    abbreviation: department.abbreviation,
+                    chiefId: department.chiefId,
+                    staffDepartmentId: null
+                };
+
+                departmentNodes.push(Map(node));
+
+                if (node.parentId && !parentIds.has(node.parentId)) {
+                    const staffNode: DepartmentNode = {
+                        departmentId: `[${node.parentId}-staff]`,
+                        parentId: node.parentId,
+                        abbreviation: null,
+                        chiefId: null,
+                        staffDepartmentId: node.parentId
+                    };
+                    departmentNodes.push(Map(staffNode));
+                    parentIds.add(node.parentId);
+                }
+            }
 
             const headDepartment = action.departments.find(department => department.isHeadDepartment);
 
@@ -72,7 +88,7 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
                 departmentId: action.employee.departmentId,
                 name: action.employee.name,
                 position: action.employee.position,
-                photo: Map(action.employee.photo)
+                photoUrl: action.employee.photoUrl
             };
 
             return {
@@ -100,6 +116,5 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
 };
 
 export const peopleEpics = combineEpics(
-    companyDepartmentSelected$ as any,
     redirectToEmployeeDetails$ as any
 );

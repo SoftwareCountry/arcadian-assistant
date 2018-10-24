@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import { View, FlatList, ListRenderItemInfo } from 'react-native';
 import { EmployeeIdToNode, MapEmployeeNode, MapPhoto } from '../reducers/people/people.model';
-import { Avatar } from './avatar';
-import { CompanyDepartmentsLevelNodePhoto } from './company-departments-level-node-photo';
-import { Map } from 'immutable';
 import { StyledText } from '../override/styled-text';
 import { companyDepartmentLevelPeople } from './styles';
 import { CompanyDepartmentsLevelPeopleTouchable } from './company-departments-level-people-touchable';
 import { employeesAZComparer } from './employee-comparer';
+import { Avatar } from './avatar';
 
 interface CompanyDepartmentsLevelPeopleProps {
     employeeIdToNode: EmployeeIdToNode;
@@ -43,12 +41,12 @@ export class CompanyDepartmentsLevelPeople extends Component<CompanyDepartmentsL
     private keyExtractor = (item: MapEmployeeNode): string => item.get('employeeId') as string;
 
     private renderItem = ({ item }: { item: MapEmployeeNode }) => {
-        const photo = item.get('photo') as MapPhoto;
+        const photo = item.get('photoUrl');
 
         return (
             <CompanyDepartmentsLevelPeopleTouchable onPress={this.props.onPressEmployee} employeeId={item.get('employeeId') as string}>
                 <View style={companyDepartmentLevelPeople.listItemAvator}>
-                    <CompanyDepartmentsLevelNodePhoto photo={photo} />
+                    <Avatar photoUrl={photo} />;
                 </View>
                 <View style={companyDepartmentLevelPeople.listItemContent}>
                     <StyledText style={companyDepartmentLevelPeople.listItemName}>

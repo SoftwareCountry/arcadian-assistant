@@ -126,7 +126,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                     <View>
                         <Chevron />
                         <View style={layoutStyles.avatarContainer}>
-                            <Avatar photo={employee.photo} imageStyle={{ borderWidth: 0 }} style={{ borderWidth: 3 }} />
+                            <Avatar photoUrl={employee.photoUrl} imageStyle={{ borderWidth: 0 }} style={{ borderWidth: 3 }} />
                         </View>
                     </View>
                     <ScrollView style={layoutStyles.scrollView} alwaysBounceVertical = {false}>
