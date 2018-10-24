@@ -69,6 +69,10 @@ class AvatarImpl extends Component<AvatarProps, AvatarState> {
     }
 
     public render() {
+        if (!this.state.size) {
+            return <View onLayout={this.onLayout} style={styles.container}></View>;
+        }
+
         const defaultPhoto = this.props.useDefaultForEmployeesList ? employeesListAvatarRect : arcadiaIcon;
 
         const outerFrameFlattenStyle = StyleSheet.flatten([
