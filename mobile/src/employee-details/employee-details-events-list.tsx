@@ -93,7 +93,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
                         {
                             this.props.showUserAvatar ? 
                             <View style={avatarContainer}>
-                                <Avatar photo={item.employee.photo} style={avatarOuterFrame} imageStyle={avatarImage} />
+                                <Avatar photoUrl={item.employee.photoUrl} style={avatarOuterFrame} imageStyle={avatarImage} />
                             </View> : null
                         }
                     </View>

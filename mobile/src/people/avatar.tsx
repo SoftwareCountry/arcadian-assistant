@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { View, Image, StyleSheet, ViewStyle, ImageStyle, LayoutChangeEvent } from 'react-native';
 import { Photo } from '../reducers/organization/employee.model';
+import { connect } from 'react-redux';
+import { AppState } from '../reducers/app.reducer';
 
 const styles = StyleSheet.create({
     container: {
@@ -20,11 +22,21 @@ const styles = StyleSheet.create({
     }
 });
 
-export interface AvatarProps {
-    photo?: Photo;
+export interface AvatarOwnProps {
+    photoUrl? : string;
     style?: ViewStyle;
     imageStyle?: ViewStyle;
     useDefaultForEmployeesList?: boolean;
+}
+
+export interface AvatarReduxProps {
+    jwtToken: string;
+}
+
+function mapStateToProps(state: AppState): AvatarReduxProps {
+    return {
+        jwtToken: state.authentication.authInfo.jwtToken
+    };
 }
 
 // tslint:disable-next-line:no-var-requires
@@ -38,7 +50,9 @@ interface AvatarState {
     visible: boolean;
 }
 
-export class Avatar extends Component<AvatarProps, AvatarState> {
+type AvatarProps = AvatarOwnProps & AvatarReduxProps;
+
+class AvatarImpl extends Component<AvatarProps, AvatarState> {
     constructor(props: AvatarProps) {
         super(props);
         this.state = {
@@ -56,11 +70,7 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
     }
 
     public render() {
-        const mimeType = this.validateMimeType(this.props.photo);
-        const photoBase64 = this.validateEncodedImage(this.props.photo);
-
         const defaultPhoto = this.props.useDefaultForEmployeesList ? employeesListAvatarRect : arcadiaIcon;
-        const image = !mimeType || !photoBase64 ? defaultPhoto : { uri: mimeType + photoBase64 };
 
         const outerFrameFlattenStyle = StyleSheet.flatten([
             styles.outerFrame,
@@ -87,6 +97,16 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
             this.props.imageStyle
         ]);
 
+        const image = this.props.photoUrl && this.props.jwtToken
+            ? 
+            {
+                uri: this.props.photoUrl,
+                headers: {
+                    'Authorization': `Bearer ${this.props.jwtToken}`
+                }
+            }
+            : defaultPhoto;
+
         return (
             <View onLayout={this.onLayout} style={styles.container}>
                 <View style={outerFrameFlattenStyle}>
@@ -95,22 +115,6 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
             </View>
         );
     }
-
-    private validateMimeType(photo: Photo) {
-        let mime = photo ? photo.mimeType : null;
-        if (mime && mime.indexOf('data:') < 0) {
-            mime = `data:${mime};`;
-        }
-
-        return mime;
-    }
-
-    private validateEncodedImage(photo: Photo) {
-        let data = photo ? photo.base64 : null;
-        if (data && data.indexOf('base64') < 0) {
-            data = `base64,${data}`;
-        }
-
-        return data;
-    }
 }
+
+export const Avatar = connect<AvatarReduxProps, {}, AvatarOwnProps>(mapStateToProps)(AvatarImpl);

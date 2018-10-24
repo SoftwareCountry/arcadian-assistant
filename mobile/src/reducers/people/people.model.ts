@@ -21,12 +21,14 @@ export interface DepartmentIdToSelectedId {
 
 export type DepartmentIdToNode = { [departmentId: string]: DepartmentNode };
 
+export type MapPhoto = Map<keyof Photo, Photo[keyof Photo]>;
+
 export interface EmployeeNode {
     employeeId: string;
     departmentId: string;
     name: string;
     position: string;
-    photo: Map<string, Photo>;
+    photoUrl: string;
 }
 
 export type MapEmployeeNode = Map<keyof EmployeeNode, EmployeeNode[keyof EmployeeNode]>;

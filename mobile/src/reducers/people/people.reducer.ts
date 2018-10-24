@@ -88,7 +88,7 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
                 departmentId: action.employee.departmentId,
                 name: action.employee.name,
                 position: action.employee.position,
-                photo: Map(action.employee.photo)
+                photoUrl: action.employee.photoUrl
             };
 
             return {

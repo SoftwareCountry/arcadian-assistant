@@ -22,4 +22,11 @@ export interface UserLoggedOut {
 
 export const userLoggedOut = (): UserLoggedOut => ({ type: 'USER-LOGGED-OUT' });
 
-export type AuthActions = StartLoginProcess | StartLogoutProcess | UserLoggedIn | UserLoggedOut;
+export interface JwtTokenSet {
+    type: 'JWT-TOKEN-SET';
+    jwtToken: string;
+}
+
+export const jwtTokenSet = (jwtToken: string | null): JwtTokenSet => ({ type: 'JWT-TOKEN-SET', jwtToken });
+
+export type AuthActions = StartLoginProcess | StartLogoutProcess | UserLoggedIn | UserLoggedOut | JwtTokenSet;
