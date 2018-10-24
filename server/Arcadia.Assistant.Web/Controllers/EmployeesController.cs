@@ -17,6 +17,7 @@
     using Arcadia.Assistant.Web.Employees;
     using Arcadia.Assistant.Web.Models;
 
+    using Microsoft.ApplicationInsights.AspNetCore.Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
 
@@ -116,7 +117,7 @@
                         }
 
                         employee.Photo = photo.Photo;
-                        employee.PhotoUrl = this.Url.Action(nameof(EmployeePhotoController.GetImage), nameof(EmployeePhotoController), new { employeeId = query.EmployeeId });
+                        employee.PhotoUrl = this.Url.Action(nameof(EmployeePhotoController.GetImage), "EmployeePhoto", new { employeeId = query.EmployeeId }, this.Request.GetUri().Scheme);
 
                         return employee;
                     });
