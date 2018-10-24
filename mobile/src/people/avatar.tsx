@@ -109,7 +109,7 @@ class AvatarImpl extends Component<AvatarProps, AvatarState> {
         return (
             <View onLayout={this.onLayout} style={styles.container}>
                 <View style={outerFrameFlattenStyle}>
-                    <Image source={image} style={imageFlattenStyle} />
+                    <Image source={image} defaultSource={defaultPhoto} style={imageFlattenStyle} />
                 </View>
             </View>
         );
