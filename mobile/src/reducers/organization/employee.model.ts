@@ -6,14 +6,6 @@ const dateDecoratorParams: DataMemberDecoratorParams  = {
     customDeserializer: (value: string) => moment(value)
 };
 
-export class Photo {
-    @dataMember()
-    public mimeType: string;
-
-    @dataMember()
-    public base64: string;
-}
-
 export class Employee {
     @dataMember()
     @required()

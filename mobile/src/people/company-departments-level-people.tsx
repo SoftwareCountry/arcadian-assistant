@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, FlatList, ListRenderItemInfo } from 'react-native';
-import { EmployeeIdToNode, MapEmployeeNode, MapPhoto } from '../reducers/people/people.model';
+import { View, FlatList } from 'react-native';
+import { EmployeeIdToNode, MapEmployeeNode } from '../reducers/people/people.model';
 import { StyledText } from '../override/styled-text';
 import { companyDepartmentLevelPeople } from './styles';
 import { CompanyDepartmentsLevelPeopleTouchable } from './company-departments-level-people-touchable';

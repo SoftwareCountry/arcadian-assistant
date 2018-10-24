@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Animated, ViewStyle, PerpectiveTransform, Easing, Platform, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Animated, ViewStyle, Easing, Platform, TouchableOpacity } from 'react-native';
 import { StyledText } from '../override/styled-text';
-import { MapDepartmentNode, MapEmployeeNode, MapPhoto } from '../reducers/people/people.model';
+import { MapDepartmentNode, MapEmployeeNode } from '../reducers/people/people.model';
 import { companyDepartmentsAnimatedNode } from './styles';
 import { is } from 'immutable';
 import { Avatar } from './avatar';
