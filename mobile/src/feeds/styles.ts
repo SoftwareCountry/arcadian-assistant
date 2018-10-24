@@ -13,7 +13,7 @@ export const screenStyles = StyleSheet.create({
         paddingRight: screenPadding
     },
     separator: {
-        height: 15
+        height: 5
     }
 });
 
@@ -46,7 +46,7 @@ export const feedStyles = StyleSheet.create({
     info: {
         flex: 6,
         flexDirection: 'column',
-        alignSelf: 'flex-start',
+        alignSelf: 'center',
         paddingLeft: 13
     },
     title: {
