@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { View, Image, StyleSheet, ViewStyle, ImageStyle, LayoutChangeEvent } from 'react-native';
 import { Photo } from '../reducers/organization/employee.model';
+import { connect } from 'react-redux';
+import { AppState } from '../reducers/app.reducer';
 
 const styles = StyleSheet.create({
     container: {
@@ -20,11 +22,22 @@ const styles = StyleSheet.create({
     }
 });
 
-export interface AvatarProps {
+export interface AvatarOwnProps {
     photo?: Photo;
+    photoUrl? : string;
     style?: ViewStyle;
     imageStyle?: ViewStyle;
     useDefaultForEmployeesList?: boolean;
+}
+
+export interface AvatarReduxProps {
+    jwtToken: string;
+}
+
+function mapStateToProps(state: AppState): AvatarReduxProps {
+    return {
+        jwtToken: state.authentication.authInfo.jwtToken
+    };
 }
 
 // tslint:disable-next-line:no-var-requires
@@ -38,7 +51,9 @@ interface AvatarState {
     visible: boolean;
 }
 
-export class Avatar extends Component<AvatarProps, AvatarState> {
+type AvatarProps = AvatarOwnProps & AvatarReduxProps;
+
+class AvatarImpl extends Component<AvatarProps, AvatarState> {
     constructor(props: AvatarProps) {
         super(props);
         this.state = {
@@ -87,10 +102,17 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
             this.props.imageStyle
         ]);
 
+        const sourceObj = {
+            uri: 'https://picjumbo.com/wp-content/uploads/man-in-a-hoodie-standing-still-against-crowds-on-charles-bridge-prague_free_stock_photos_picjumbo_DSC00938-2210x1473.jpg',
+            headers: {
+                'Authorization': `Bearer ${this.props.jwtToken}`
+            }
+        };
+
         return (
             <View onLayout={this.onLayout} style={styles.container}>
                 <View style={outerFrameFlattenStyle}>
-                    <Image source={image} style={imageFlattenStyle} />
+                    <Image source={sourceObj} style={imageFlattenStyle} />
                 </View>
             </View>
         );
@@ -114,3 +136,5 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
         return data;
     }
 }
+
+export const Avatar = connect<AvatarReduxProps, {}, AvatarOwnProps>(mapStateToProps)(AvatarImpl);

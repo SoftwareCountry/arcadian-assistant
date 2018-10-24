@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { Photo } from '../reducers/organization/employee.model';
 import { Map, is } from 'immutable';
 import { Avatar } from './avatar';
+import { MapPhoto } from '../reducers/people/people.model';
 
 interface CompanyDepartmentsLevelNodePhotoProps {
-    photo: Map<string, Photo>;
+    photo: MapPhoto;
 }
 
 export class CompanyDepartmentsLevelNodePhoto extends Component<CompanyDepartmentsLevelNodePhotoProps> {
