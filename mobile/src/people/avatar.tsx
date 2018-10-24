@@ -97,14 +97,15 @@ class AvatarImpl extends Component<AvatarProps, AvatarState> {
             this.props.imageStyle
         ]);
 
-        const sourceObj = {
-            uri: 'https://picjumbo.com/wp-content/uploads/man-in-a-hoodie-standing-still-against-crowds-on-charles-bridge-prague_free_stock_photos_picjumbo_DSC00938-2210x1473.jpg',
-            headers: {
-                'Authorization': `Bearer ${this.props.jwtToken}`
+        const image = this.props.photoUrl && this.props.jwtToken
+            ? 
+            {
+                uri: this.props.photoUrl,
+                headers: {
+                    'Authorization': `Bearer ${this.props.jwtToken}`
+                }
             }
-        };
-
-        const image = this.props.photoUrl ? sourceObj : defaultPhoto;
+            : defaultPhoto;
 
         return (
             <View onLayout={this.onLayout} style={styles.container}>
