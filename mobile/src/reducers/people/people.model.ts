@@ -6,6 +6,7 @@ export interface DepartmentNode {
     parentId: string;
     abbreviation: string;
     chiefId: string;
+    staffDepartmentId: string;
 }
 
 export type MapDepartmentNode = Map<keyof DepartmentNode, DepartmentNode[keyof DepartmentNode]>;

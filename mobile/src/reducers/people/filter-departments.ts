@@ -11,7 +11,13 @@ export function filterDepartments(
     const filteredDepartmentNodes = departmentNodes.filter(departmentNode => {
 
         for (let employeeNode of employeeNodes) {
-            if (employeeNode.get('departmentId') === departmentNode.departmentId) {
+            const employeeDepartmentId = employeeNode.get('departmentId');
+
+            if (departmentNode.staffDepartmentId && departmentNode.staffDepartmentId === employeeDepartmentId) {
+                return true;
+            }
+
+            if (employeeDepartmentId === departmentNode.departmentId) {
                 return true;
             }
         }
