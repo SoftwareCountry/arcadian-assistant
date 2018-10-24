@@ -46,7 +46,7 @@ export class CompanyDepartmentsLevelPeople extends Component<CompanyDepartmentsL
         return (
             <CompanyDepartmentsLevelPeopleTouchable onPress={this.props.onPressEmployee} employeeId={item.get('employeeId') as string}>
                 <View style={companyDepartmentLevelPeople.listItemAvator}>
-                    <Avatar photoUrl={photo} />;
+                    <Avatar photoUrl={photo} />
                 </View>
                 <View style={companyDepartmentLevelPeople.listItemContent}>
                     <StyledText style={companyDepartmentLevelPeople.listItemName}>
