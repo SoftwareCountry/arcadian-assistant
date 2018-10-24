@@ -27,7 +27,7 @@ export interface EmployeeNode {
     departmentId: string;
     name: string;
     position: string;
-    photo: MapPhoto;
+    photoUrl: string;
 }
 
 export type MapEmployeeNode = Map<keyof EmployeeNode, EmployeeNode[keyof EmployeeNode]>;

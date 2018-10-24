@@ -29,8 +29,8 @@ export const authReducer = (state: AuthState = initState, action: AuthActions): 
             return {
                 ...state,
                 authInfo: {
+                    ...state.authInfo,
                     isAuthenticated: true,
-                    jwtToken: state.authInfo.jwtToken
                 }
             };
         case 'USER-LOGGED-OUT':
@@ -46,7 +46,7 @@ export const authReducer = (state: AuthState = initState, action: AuthActions): 
             return {
                 ...state,
                 authInfo: {
-                    isAuthenticated: state.authInfo.isAuthenticated,
+                    ...state.authInfo,
                     jwtToken: action.jwtToken
                 }
             };

@@ -4,19 +4,15 @@ import { Avatar } from './avatar';
 import { MapPhoto } from '../reducers/people/people.model';
 
 interface CompanyDepartmentsLevelNodePhotoProps {
-    photo: MapPhoto;
+    photoUrl: string;
 }
 
 export class CompanyDepartmentsLevelNodePhoto extends Component<CompanyDepartmentsLevelNodePhotoProps> {
-    public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelNodePhotoProps) {
-        return !is(this.props.photo, nextProps.photo);
-    }
-
     public render() {
-        const photo = this.props.photo 
-            ? this.props.photo.toJS() 
+        const photo = this.props.photoUrl
+            ? this.props.photoUrl
             : null;
 
-        return <Avatar photo={photo} />;
+        return <Avatar photoUrl={photo} />;
     }
 }

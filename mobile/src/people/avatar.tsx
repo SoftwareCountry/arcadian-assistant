@@ -23,7 +23,6 @@ const styles = StyleSheet.create({
 });
 
 export interface AvatarOwnProps {
-    photo?: Photo;
     photoUrl? : string;
     style?: ViewStyle;
     imageStyle?: ViewStyle;
@@ -71,11 +70,7 @@ class AvatarImpl extends Component<AvatarProps, AvatarState> {
     }
 
     public render() {
-        const mimeType = this.validateMimeType(this.props.photo);
-        const photoBase64 = this.validateEncodedImage(this.props.photo);
-
         const defaultPhoto = this.props.useDefaultForEmployeesList ? employeesListAvatarRect : arcadiaIcon;
-        const image = !mimeType || !photoBase64 ? defaultPhoto : { uri: mimeType + photoBase64 };
 
         const outerFrameFlattenStyle = StyleSheet.flatten([
             styles.outerFrame,
@@ -109,31 +104,15 @@ class AvatarImpl extends Component<AvatarProps, AvatarState> {
             }
         };
 
+        const image = this.props.photoUrl ? sourceObj : defaultPhoto;
+
         return (
             <View onLayout={this.onLayout} style={styles.container}>
                 <View style={outerFrameFlattenStyle}>
-                    <Image source={sourceObj} style={imageFlattenStyle} />
+                    <Image source={image} style={imageFlattenStyle} />
                 </View>
             </View>
         );
-    }
-
-    private validateMimeType(photo: Photo) {
-        let mime = photo ? photo.mimeType : null;
-        if (mime && mime.indexOf('data:') < 0) {
-            mime = `data:${mime};`;
-        }
-
-        return mime;
-    }
-
-    private validateEncodedImage(photo: Photo) {
-        let data = photo ? photo.base64 : null;
-        if (data && data.indexOf('base64') < 0) {
-            data = `base64,${data}`;
-        }
-
-        return data;
     }
 }
 
