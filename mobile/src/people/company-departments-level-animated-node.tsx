@@ -3,8 +3,8 @@ import { View, StyleSheet, Animated, ViewStyle, PerpectiveTransform, Easing, Pla
 import { StyledText } from '../override/styled-text';
 import { MapDepartmentNode, MapEmployeeNode, MapPhoto } from '../reducers/people/people.model';
 import { companyDepartmentsAnimatedNode } from './styles';
-import { Map, is } from 'immutable';
-import { CompanyDepartmentsLevelNodePhoto } from './company-departments-level-node-photo';
+import { is } from 'immutable';
+import { Avatar } from './avatar';
 
 interface Perspective {
     perspective: number;
@@ -179,7 +179,7 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
                 <Animated.View style={stickyContainerStyles}>
                     <Animated.View style={scaleContainerStyles}>
                         <TouchableOpacity style={touchableStyles} onPress={this.onPressChief}>
-                            <CompanyDepartmentsLevelNodePhoto photoUrl={photo} showStaffIcon={showStaffIcon} />
+                            <Avatar photoUrl={photo} useDefaultForEmployeesList={showStaffIcon} />
                         </TouchableOpacity>
                     </Animated.View>
                 </Animated.View>

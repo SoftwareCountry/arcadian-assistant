@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import { View, FlatList, ListRenderItemInfo } from 'react-native';
 import { EmployeeIdToNode, MapEmployeeNode, MapPhoto } from '../reducers/people/people.model';
-import { CompanyDepartmentsLevelNodePhoto } from './company-departments-level-node-photo';
-import { Map } from 'immutable';
 import { StyledText } from '../override/styled-text';
 import { companyDepartmentLevelPeople } from './styles';
 import { CompanyDepartmentsLevelPeopleTouchable } from './company-departments-level-people-touchable';
 import { employeesAZComparer } from './employee-comparer';
+import { Avatar } from './avatar';
 
 interface CompanyDepartmentsLevelPeopleProps {
     employeeIdToNode: EmployeeIdToNode;
@@ -47,7 +46,7 @@ export class CompanyDepartmentsLevelPeople extends Component<CompanyDepartmentsL
         return (
             <CompanyDepartmentsLevelPeopleTouchable onPress={this.props.onPressEmployee} employeeId={item.get('employeeId') as string}>
                 <View style={companyDepartmentLevelPeople.listItemAvator}>
-                    <CompanyDepartmentsLevelNodePhoto photoUrl={photo} />
+                    <Avatar photoUrl={photo} />;
                 </View>
                 <View style={companyDepartmentLevelPeople.listItemContent}>
                     <StyledText style={companyDepartmentLevelPeople.listItemName}>
