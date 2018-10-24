@@ -1,13 +1,12 @@
 import React from 'react';
-import { View } from 'react-native';
-import { StyledText } from '../override/styled-text';
+import { View, ActivityIndicator } from 'react-native';
 import { searchViewStyles as styles } from './search-view-styles';
 
 export class LoadingView extends React.Component {
     public render() {
         return (
             <View style={styles.loadingContainer}>
-                <StyledText style={styles.loadingText}>Loading...</StyledText>
+                <ActivityIndicator></ActivityIndicator>
             </View>
         );
     }

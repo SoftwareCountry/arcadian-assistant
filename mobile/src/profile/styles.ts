@@ -37,14 +37,6 @@ export const profileScreenStyles = StyleSheet.create({
     profileContainer: {
         flex: 1,
         backgroundColor: chevronColor
-    },
-    loadingContainer: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    loadingText: {
-        fontSize: 20
     }
 });
 

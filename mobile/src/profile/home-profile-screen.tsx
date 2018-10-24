@@ -14,6 +14,7 @@ import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Map } from 'immutable';
 import { CalendarEvent } from '../reducers/calendar/calendar-event.model';
 import { LogoutView } from '../navigation/logout-view';
+import { LoadingView } from '../navigation/loading';
 
 interface ProfileScreenProps {
     employees: EmployeesStore;
@@ -84,11 +85,7 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
                     />
                 </SafeAreaView>
             </ScrollView>
-            : (
-                <View style={profileScreenStyles.loadingContainer}>
-                    <StyledText style={profileScreenStyles.loadingText}>Loading...</StyledText>
-                </View>
-            );
+            : <LoadingView></LoadingView>;
     }
 
     private onRefresh = () => {    

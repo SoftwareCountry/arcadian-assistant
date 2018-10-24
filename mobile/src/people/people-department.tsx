@@ -41,17 +41,18 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeesListDispatchProps
 
 export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentStateProps & EmployeesListDispatchProps & PeopleDepartmentPropsOwnProps> {
     public shouldComponentUpdate(nextProps: PeopleDepartmentStateProps & EmployeesListDispatchProps & PeopleDepartmentPropsOwnProps) {
-        if (this.props.onItemClicked !== nextProps.onItemClicked
-            || this.props.userEmployee !== nextProps.userEmployee
-        ) {
-            return true;
-        }
+        if (this.props.employees === nextProps.employees 
+            && this.props.userEmployee === nextProps.userEmployee
+            && this.props.employeesPredicate === nextProps.employeesPredicate
+            && this.props.onItemClicked === nextProps.onItemClicked) {
+                return true;
+            }
 
         const employees = this.props.employees.employeesById.filter(this.props.employeesPredicate);
         const nextEmployees = nextProps.employees.employeesById.filter(nextProps.employeesPredicate);
 
         return !employees.equals(nextEmployees);
-        }
+    }
 
     public render() {
         const employees = this.props.employees.employeesById.filter(this.props.employeesPredicate).toArray();
