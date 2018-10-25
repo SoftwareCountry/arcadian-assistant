@@ -1,17 +1,18 @@
-import { DepartmentIdToNode, EmployeeIdToNode } from './people.model';
+import { DepartmentIdToNode } from './people.model';
+import { EmployeeMap } from '../organization/employees.reducer';
 
 export function buildSelectedDepartmentId(
     departmentIdToNode: DepartmentIdToNode, 
-    employeeIdToNode: EmployeeIdToNode, 
+    employeesById: EmployeeMap, 
     selectedCompanyDepartmentId: string
 ) {
     if (departmentIdToNode[selectedCompanyDepartmentId]) {
         return selectedCompanyDepartmentId;
     }
 
-    const firstEmployee = employeeIdToNode.first();
+    const firstEmployee = employeesById.first();
 
     return firstEmployee 
-        ? firstEmployee.get('departmentId') as string 
+        ? firstEmployee.departmentId
         : null;
 }

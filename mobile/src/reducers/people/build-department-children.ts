@@ -1,4 +1,4 @@
-import { DepartmentIdToNode, DepartmentIdToChildren, DepartmentNode, MapDepartmentNode } from './people.model';
+import { DepartmentIdToNode, DepartmentIdToChildren, DepartmentNode } from './people.model';
 import { Map, Set } from 'immutable';
 import { EmployeeIdsGroupMap } from '../organization/employees.reducer';
 
@@ -14,7 +14,7 @@ export function buildDepartmentIdToChildren(departmentIdToNode: DepartmentIdToNo
         }
 
         if (!children[node.parentId]) {
-            children[node.parentId] = Set<MapDepartmentNode>();
+            children[node.parentId] = [];
         }
 
         if (node.staffDepartmentId) {
@@ -30,7 +30,7 @@ export function buildDepartmentIdToChildren(departmentIdToNode: DepartmentIdToNo
             node.abbreviation = `${parent.abbreviation} Staff`;
         }
 
-        children[node.parentId] = children[node.parentId].add(Map(node));
+        children[node.parentId].push(node);
     }
 
     return children;

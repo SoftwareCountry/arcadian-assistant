@@ -7,24 +7,21 @@ import { SearchType } from '../../navigation/search-view';
 import { Department } from '../organization/department.model';
 import { LoadUserEmployeeFinished } from '../user/user.action';
 import { combineEpics } from 'redux-observable';
-import { redirectToEmployeeDetails$ } from './people.epics';
-import { MapDepartmentNode, DepartmentNode, EmployeeNode, EmployeeIdToNode } from './people.model';
+import { DepartmentNode } from './people.model';
 import { Map, Set } from 'immutable';
 
 export interface PeopleState {
-    departmentNodes: Set<MapDepartmentNode>;
-    headDepartment: Department;
+    departmentNodes: DepartmentNode[];
+    headDepartment: DepartmentNode;
     filter: string;
     selectedCompanyDepartmentId: string;
-    employeeNodes: EmployeeIdToNode;
 }
 
 const initState: PeopleState = {
-    departmentNodes: Set(),
+    departmentNodes: [],
     headDepartment: null,
     filter: '',
-    selectedCompanyDepartmentId: null,
-    employeeNodes: Map()
+    selectedCompanyDepartmentId: null
 };
 
 export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions | NavigationAction | 
@@ -48,54 +45,43 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
                 selectedCompanyDepartmentId: action.employee.departmentId
             };
         case 'LOAD-DEPARTMENTS-FINISHED':
-            const departmentNodes: Map<keyof DepartmentNode, DepartmentNode[keyof DepartmentNode]>[] = [];
+            const departmentNodes: DepartmentNode[] = [];
             const parentIds = Set<string>();
+            let headDepartment: DepartmentNode = null;
 
             for (let department of action.departments) {
-                const node: DepartmentNode = {
-                    departmentId: department.departmentId,
-                    parentId: department.parentDepartmentId,
-                    abbreviation: department.abbreviation,
-                    chiefId: department.chiefId,
-                    staffDepartmentId: null
-                };
+                const node: DepartmentNode = new DepartmentNode(
+                    department.departmentId,
+                    department.parentDepartmentId,
+                    department.abbreviation,
+                    department.chiefId,
+                    null
+                );
 
-                departmentNodes.push(Map(node));
+                departmentNodes.push(node);
+
+                if (!headDepartment && department.isHeadDepartment) {
+                    headDepartment = node;
+                }                
 
                 if (node.parentId && !parentIds.has(node.parentId)) {
-                    const staffNode: DepartmentNode = {
-                        departmentId: `[${node.parentId}-staff]`,
-                        parentId: node.parentId,
-                        abbreviation: null,
-                        chiefId: null,
-                        staffDepartmentId: node.parentId
-                    };
-                    departmentNodes.push(Map(staffNode));
+                    const staffNode: DepartmentNode = new DepartmentNode(
+                        `[${node.parentId}-staff]`,
+                        node.parentId,
+                        null,
+                        null,
+                        node.parentId
+                    );
+                    departmentNodes.push(staffNode);
                     parentIds.add(node.parentId);
                 }
             }
 
-            const headDepartment = action.departments.find(department => department.isHeadDepartment);
-
             return {
                 ...state,
-                departmentNodes: Set(departmentNodes),
+                departmentNodes: departmentNodes,
                 headDepartment: headDepartment
             };
-        case 'LOAD_EMPLOYEE_FINISHED': {
-            const employeeNode: EmployeeNode = {
-                employeeId: action.employee.employeeId,
-                departmentId: action.employee.departmentId,
-                name: action.employee.name,
-                position: action.employee.position,
-                photoUrl: action.employee.photoUrl
-            };
-
-            return {
-                ...state,
-                employeeNodes: state.employeeNodes.set(employeeNode.employeeId, Map(employeeNode))
-            };
-        }
 
         case 'SELECT-COMPANY-DEPARTMENT': 
             return {
@@ -114,7 +100,3 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
             return state;
     }
 };
-
-export const peopleEpics = combineEpics(
-    redirectToEmployeeDetails$ as any
-);

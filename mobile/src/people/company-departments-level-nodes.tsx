@@ -1,20 +1,21 @@
 import React, { Component } from 'react';
-import { MapDepartmentNode, EmployeeIdToNode, DepartmentIdToSelectedId, MapEmployeeNode } from '../reducers/people/people.model';
-import { Animated, PanResponder, PanResponderInstance, PanResponderGestureState, Easing, StyleSheet, View } from 'react-native';
+import { DepartmentIdToSelectedId, DepartmentNode } from '../reducers/people/people.model';
+import { Animated, PanResponder, PanResponderInstance, PanResponderGestureState, Easing, StyleSheet, View, Platform } from 'react-native';
 import { Set } from 'immutable';
 import { StyledText } from '../override/styled-text';
 import { companyDepartments } from './styles';
 import { CompanyDepartmentsLevelAnimatedNode } from './company-departments-level-animated-node';
+import { Employee } from '../reducers/organization/employee.model';
 
 interface CompanyDepartmentsLevelNodesProps {
     width: number;
     height: number;    
-    nodes: Set<MapDepartmentNode>;
-    chiefs: EmployeeIdToNode;
+    nodes: DepartmentNode[];
+    chiefs: Employee[];
     selectedDepartmentId: string;
     onPrevDepartment: (departmentId: string) => void;
     onNextDepartment: (departmentId: string) => void;
-    onPressChief: (employeeId: string) => void;
+    onPressChief: (employee: Employee) => void;
     loadEmployeesForDepartment: (departmentId: string) => void;
 }
 
@@ -65,8 +66,11 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
     }
 
     public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelNodesProps, nextState: CompanyDepartmentsLevelNodesState) {
-        return !this.props.nodes.equals(nextProps.nodes)
-            || !this.props.chiefs.equals(nextProps.chiefs)
+        const isNodesEqual = this.isNodesEqual(this.props.nodes, nextProps.nodes);
+        const isChiefsEqual = this.isChiefsEqual(this.props.chiefs, nextProps.chiefs);
+
+        return !isNodesEqual
+            || !isChiefsEqual
             || this.props.selectedDepartmentId !== nextProps.selectedDepartmentId
             || this.props.height !== nextProps.height
             || this.props.width !== nextProps.width
@@ -80,7 +84,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
     }
 
     public componentDidUpdate(prevProps: CompanyDepartmentsLevelNodesProps) {
-        if (this.props.selectedDepartmentId !== prevProps.selectedDepartmentId || !this.props.nodes.equals(prevProps.nodes)) {
+        if (this.props.selectedDepartmentId !== prevProps.selectedDepartmentId || !this.isNodesEqual(this.props.nodes, prevProps.nodes)) {
             this.state.xCoordinate.flattenOffset();
             this.scrollToSelectedDepartment();
             this.loadEmployeesForDepartment();
@@ -102,12 +106,11 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
                     {...this.panResponder.panHandlers}
                     style={nodesContainerStyles}>
                     {
-                        this.props.nodes.toArray().map((node, index) => {
-                            const chiefId = node.get('chiefId') as string;
-                            const chief = this.props.chiefs.get(chiefId);
+                        this.props.nodes.map((node, index) => {
+                            const chief = this.props.chiefs.find(x => x.employeeId === node.chiefId);
 
                             return <CompanyDepartmentsLevelAnimatedNode
-                                key={node.get('departmentId') as string}
+                                key={node.departmentId}
                                 index={index}
                                 node={node}
                                 chief={chief}
@@ -124,13 +127,57 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
         );
     }
 
+    private isChiefsEqual(a: Employee[], b: Employee[]) {
+        if (a === b) {
+            return true;
+        }
+
+        if (!a || !b) {
+            return false;
+        }
+        
+        if (a.length !== b.length) {
+            return false;
+        }
+
+        for (let i = 0; i < a.length; i++) {
+            if (!a[i].equals(b[i])) {
+                return false;
+            }
+        }        
+
+        return true;
+    }
+
+    private isNodesEqual(a: DepartmentNode[], b: DepartmentNode[]): boolean {
+        if (a === b) {
+            return true;
+        }
+
+        if (!a || !b) {
+            return false;
+        }
+
+        if (a.length !== b.length) {
+            return false;
+        }
+
+        for (let i = 0; i < a.length; i++) {
+            if (!a[i].equals(b[i])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private loadEmployeesForDepartment() {
         let selectedDepartmentId = this.props.selectedDepartmentId;
 
         if (!selectedDepartmentId) {
-            const first = this.props.nodes.first();
+            const first = this.props.nodes[0];
 
-            selectedDepartmentId = first.get('departmentId');
+            selectedDepartmentId = first.departmentId;
         }
 
         this.props.loadEmployeesForDepartment(selectedDepartmentId);
@@ -140,7 +187,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
         let coordinate = this.gap / 2;
 
         if (this.props.selectedDepartmentId) {
-            let index = this.props.nodes.toArray().findIndex(node => node.get('departmentId') === this.props.selectedDepartmentId);
+            let index = this.props.nodes.findIndex(node => node.departmentId === this.props.selectedDepartmentId);
 
             if (index === -1) {
                 return;
@@ -161,55 +208,49 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
     }
 
     private nextDepartment() {
-        const nodesArray = this.props.nodes.toArray();
         const index = !this.props.selectedDepartmentId 
             ? 0
-            : nodesArray.findIndex(node => node.get('departmentId') === this.props.selectedDepartmentId);
+            : this.props.nodes.findIndex(node => node.departmentId === this.props.selectedDepartmentId);
 
-        const nextNode = nodesArray[index + 1];
+        const nextNode = this.props.nodes[index + 1];
 
         if (!nextNode) {
             return;
         }
 
-        this.props.onNextDepartment(nextNode.get('departmentId') as string);
+        this.props.onNextDepartment(nextNode.departmentId);
     }
 
     private prevDepartment() {
-        const nodesArray = this.props.nodes.toArray();
-        const index = nodesArray.findIndex(node => node.get('departmentId') === this.props.selectedDepartmentId);
+        const index = this.props.nodes.findIndex(node => node.departmentId === this.props.selectedDepartmentId);
 
-        const prevNode = nodesArray[index - 1];
+        const prevNode = this.props.nodes[index - 1];
 
         if (!prevNode) {
             return;
         }
         
-        this.props.onPrevDepartment(prevNode.get('departmentId') as string);
+        this.props.onPrevDepartment(prevNode.departmentId);
     }
 
     private isLastNextPage(): boolean {
-        const nodesArray = this.props.nodes.toArray();
-
         let index = 0;
 
         if (this.props.selectedDepartmentId) {
-            index = nodesArray.findIndex(node => node.get('departmentId') === this.props.selectedDepartmentId);
+            index = this.props.nodes.findIndex(node => node.departmentId === this.props.selectedDepartmentId);
         }
         
-        return !nodesArray[index + 1];
+        return !this.props.nodes[index + 1];
     }
 
     private isFirstPrevPage(): boolean {
-        const nodesArray = this.props.nodes.toArray();
-
         let index = 0;
 
         if (this.props.selectedDepartmentId) {
-            index = nodesArray.findIndex(node => node.get('departmentId') === this.props.selectedDepartmentId);
+            index = this.props.nodes.findIndex(node => node.departmentId === this.props.selectedDepartmentId);
         }
         
-        return !nodesArray[index - 1];        
+        return !this.props.nodes[index - 1];        
     }
 
     private moveToPage(
@@ -234,7 +275,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
             toValue: toValue,
             duration: 90,
             easing: Easing.linear,
-            useNativeDriver: false
+            useNativeDriver: Platform.OS === 'android'
         }).start(() => {
             onMoveComplete && onMoveComplete();
             this.canSwipe = true;

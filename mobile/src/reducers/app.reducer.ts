@@ -19,7 +19,7 @@ import { SecuredApiClient } from '../auth/secured-api-client';
 import config from '../config';
 import { OAuthProcess } from '../auth/oauth-process';
 import { createReactNavigationReduxMiddleware, createReduxBoundAddListener } from 'react-navigation-redux-helpers';
-import { PeopleState, peopleReducer, peopleEpics  } from './people/people.reducer';
+import { PeopleState, peopleReducer } from './people/people.reducer';
 import { authEpics$, authReducer, AuthState } from './auth/auth.reducer';
 import { refreshEpics } from './refresh/refresh.reducer';
 
@@ -44,7 +44,6 @@ const rootEpic = combineEpics(
     errorsEpics as any, 
     userEpics as any, 
     feedsEpics as any,
-    peopleEpics as any, 
     calendarEpics as any, 
     authEpics$ as any, 
     refreshEpics as any);

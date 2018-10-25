@@ -1,11 +1,11 @@
-import { EmployeeIdToNode } from './people.model';
+import { EmployeeMap } from '../organization/employees.reducer';
 
-export function buildEmployeeNodes(employeesById: EmployeeIdToNode, term: string): EmployeeIdToNode {
+export function buildEmployeeNodes(employeesById: EmployeeMap, term: string): EmployeeMap {
     if (!term) {
         return employeesById;
     }
 
     return employeesById
-        .filter(employee => (employee.get('name') as string).toLowerCase().includes(term.toLowerCase()))
+        .filter(employee => employee.name.toLowerCase().includes(term.toLowerCase()))
         .toMap();
 }
