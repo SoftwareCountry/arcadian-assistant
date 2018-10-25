@@ -8,7 +8,7 @@ import { Feed } from '../reducers/feeds/feed.model';
 import { connect, Dispatch } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 
-import { FeedListItem } from './feed';
+import { FeedMessage } from './feed-message';
 import { LoadingView } from '../navigation/loading';
 
 import { screenStyles as styles } from './styles';
@@ -103,9 +103,9 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
         const { item } = itemInfo;
         const employee: Employee = this.props.employees.employeesById.get(item.employeeId);
         if (!employee) {
-            return <FeedListItem message={item} employee={null} onAvatarClicked={this.props.onAvatarClicked} />;
+            return <FeedMessage message={item} employee={null} onAvatarClicked={this.props.onAvatarClicked} />;
         } else {
-            return <FeedListItem message={item} employee={employee} onAvatarClicked={this.props.onAvatarClicked} />;
+            return <FeedMessage message={item} employee={employee} onAvatarClicked={this.props.onAvatarClicked} />;
         }
     }
 

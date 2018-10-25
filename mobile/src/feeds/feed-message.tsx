@@ -1,26 +1,23 @@
 import React from 'react';
 import { TouchableHighlight, StyleSheet, Platform, Text, View, Image, LayoutChangeEvent, TouchableOpacity } from 'react-native';
-import { LayoutEvent } from 'react-navigation';
-
 import { Avatar } from '../people/avatar';
 import { Feed } from '../reducers/feeds/feed.model';
 import { feedStyles as styles } from './styles';
 import { Employee } from '../reducers/organization/employee.model';
 import { StyledText } from '../override/styled-text';
-import { Dispatch, connect } from 'react-redux';
 
-interface FeedListItemProps {
+interface FeedMessageProps {
     message: Feed;
     employee: Employee;
     onAvatarClicked: (e: Employee) => void;
 }
 
-interface FeedListItemState {
+interface FeedMessageState {
     avatarHeight: number;
 }
 
-export class FeedListItem extends React.Component<FeedListItemProps, FeedListItemState> {
-    constructor(props: FeedListItemProps) {
+export class FeedMessage extends React.Component<FeedMessageProps, FeedMessageState> {
+    constructor(props: FeedMessageProps) {
         super(props);
         this.state = {
             avatarHeight: undefined
@@ -58,7 +55,6 @@ export class FeedListItem extends React.Component<FeedListItemProps, FeedListIte
                         <StyledText>
                             <Text style={styles.text}>{this.props.message.text}</Text>
                         </StyledText>
-                        <StyledText style={styles.tags}>#ArcadiaNews</StyledText>
                         <StyledText style={styles.date}>{formattedDate}</StyledText>
                     </View>
                 </View>
