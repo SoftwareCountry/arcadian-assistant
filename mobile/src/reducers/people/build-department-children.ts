@@ -1,13 +1,10 @@
-import { DepartmentIdToNode, DepartmentIdToChildren, DepartmentNode } from './people.model';
-import { Map, Set } from 'immutable';
+import { DepartmentIdToNode, DepartmentIdToChildren } from './people.model';
 import { EmployeeIdsGroupMap } from '../organization/employees.reducer';
 
 export function buildDepartmentIdToChildren(departmentIdToNode: DepartmentIdToNode, employeeIdsByDepartment: EmployeeIdsGroupMap): DepartmentIdToChildren {
-    const departmentsIds = Object.keys(departmentIdToNode);
     const children: DepartmentIdToChildren = {};
 
-    for (let departmentId of departmentsIds) {
-        const node = departmentIdToNode[departmentId];
+    for (let [, node] of departmentIdToNode.entries()) {
 
         if (!node.parentId) {
             continue;
@@ -19,7 +16,7 @@ export function buildDepartmentIdToChildren(departmentIdToNode: DepartmentIdToNo
 
         if (node.staffDepartmentId) {
             const employeesIds = employeeIdsByDepartment.get(node.parentId);
-            const parent = departmentIdToNode[node.parentId];
+            const parent = departmentIdToNode.get(node.parentId);
 
             if (!employeesIds 
                 || !employeesIds.size 

@@ -5,24 +5,21 @@ import { companyDepartmentLevelPeople } from './styles';
 import { CompanyDepartmentsLevelPeopleTouchable } from './company-departments-level-people-touchable';
 import { employeesAZComparer } from './employee-comparer';
 import { Avatar } from './avatar';
-import { EmployeeMap } from '../reducers/organization/employees.reducer';
 import { Employee } from '../reducers/organization/employee.model';
 
 interface CompanyDepartmentsLevelPeopleProps {
-    employeesById: EmployeeMap;
+    employees: Employee[];
     onPressEmployee: (employee: Employee) => void;
 }
 
 export class CompanyDepartmentsLevelPeople extends Component<CompanyDepartmentsLevelPeopleProps> {
     public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelPeopleProps) {
-        return !this.isEmployeesEqual(this.props.employeesById, nextProps.employeesById) 
+        return !this.isEmployeesEqual(this.props.employees, nextProps.employees) 
             || this.props.onPressEmployee !== nextProps.onPressEmployee;
     }
 
     public render() {
-        const employees: Employee[] = this.props.employeesById
-            .toArray()
-            .sort((a, b) => employeesAZComparer(a, b));
+        const employees: Employee[] = this.props.employees.sort(employeesAZComparer);
 
         return (
             <FlatList
@@ -36,7 +33,7 @@ export class CompanyDepartmentsLevelPeople extends Component<CompanyDepartmentsL
         );
     }
 
-    private isEmployeesEqual(a: EmployeeMap, b: EmployeeMap) {
+    private isEmployeesEqual(a: Employee[], b: Employee[]) {
         if (a === b) {
             return true;
         }
@@ -45,19 +42,12 @@ export class CompanyDepartmentsLevelPeople extends Component<CompanyDepartmentsL
             return false;
         }
         
-        if (a.equals(b)) {
-            return true;
-        }
-
-        const aArray = a.toArray();
-        const bArray = b.toArray();
-
-        if (aArray.length !== bArray.length) {
+        if (a.length !== b.length) {
             return false;
         }
 
-        for (let i = 0; i < aArray.length; i++) {
-            if (!aArray[i].equals(bArray[i])) {
+        for (let i = 0; i < a.length; i++) {
+            if (!a[i].equals(b[i])) {
                 return false;
             }
         }        

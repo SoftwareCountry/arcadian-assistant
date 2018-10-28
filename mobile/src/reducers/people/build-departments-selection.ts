@@ -5,13 +5,13 @@ export function buildDepartmentsSelection(
     selectedDepartmentId: string
 ): DepartmentIdToSelectedId {
     const departmentIdToSelectedId: DepartmentIdToSelectedId = {};
-    let selectedDepartment = departmentIdsToNodes[selectedDepartmentId];
-    let parent = selectedDepartment ? departmentIdsToNodes[selectedDepartment.parentId] : null;
+    let selectedDepartment = departmentIdsToNodes.get(selectedDepartmentId);
+    let parent = selectedDepartment ? departmentIdsToNodes.get(selectedDepartment.parentId) : null;
 
     while (parent) {
         departmentIdToSelectedId[parent.departmentId] = selectedDepartment.departmentId;
-        selectedDepartment = departmentIdsToNodes[parent.departmentId];
-        parent = selectedDepartment ? departmentIdsToNodes[selectedDepartment.parentId] : null;
+        selectedDepartment = departmentIdsToNodes.get(parent.departmentId);
+        parent = selectedDepartment ? departmentIdsToNodes.get(selectedDepartment.parentId) : null;
     }
 
     return departmentIdToSelectedId;

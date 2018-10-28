@@ -16,6 +16,7 @@ interface CompanyDepartmentsLevelProps {
     staffDepartmentId?: string;
     departmentIdToChildren: DepartmentIdToChildren;
     employeesById: EmployeeMap;
+    employeeIdsByDepartment: EmployeeIdsGroupMap;
     selection: DepartmentIdToSelectedId;
     onSelectedNode: (departmentId: string) => void;
     onPressEmployee: (employee: Employee) => void;
@@ -80,6 +81,7 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
                 staffDepartmentId={node.staffDepartmentId}
                 departmentIdToChildren={this.props.departmentIdToChildren}
                 employeesById={this.props.employeesById}
+                employeeIdsByDepartment={this.props.employeeIdsByDepartment}
                 selection={this.props.selection}
                 onSelectedNode={this.props.onSelectedNode}
                 onPressEmployee={this.props.onPressEmployee}
@@ -92,10 +94,19 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
             ? this.props.staffDepartmentId 
             : this.props.departmentId;
 
-        const people = this.props.employeesById.filter(employeeNode => employeeNode.departmentId === departmentId).toMap();
+        const employeeIds = this.props.employeeIdsByDepartment.get(departmentId);
+
+        if (!employeeIds) {
+            return null;
+        }
+
+        const employees = employeeIds
+            .map(employeeId => this.props.employeesById.get(employeeId))
+            .filter(x => !!x)
+            .toArray();
 
         return (
-            <CompanyDepartmentsLevelPeople employeesById={people} onPressEmployee={this.props.onPressEmployee} />
+            <CompanyDepartmentsLevelPeople employees={employees} onPressEmployee={this.props.onPressEmployee} />
         );
     }   
 }

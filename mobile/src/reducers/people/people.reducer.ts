@@ -4,21 +4,19 @@ import { LoadDepartmentsFinished, LoadEmployeeFinished } from '../organization/o
 import { PeopleActions } from './people.action';
 import { SearchActions } from '../search/search.action';
 import { SearchType } from '../../navigation/search-view';
-import { Department } from '../organization/department.model';
 import { LoadUserEmployeeFinished } from '../user/user.action';
-import { combineEpics } from 'redux-observable';
-import { DepartmentNode } from './people.model';
-import { Map, Set } from 'immutable';
+import { DepartmentNode, DepartmentIdToNode } from './people.model';
+import { appendRoot } from './append-root';
 
 export interface PeopleState {
-    departmentNodes: DepartmentNode[];
+    departmentIdToNodes: DepartmentIdToNode;
     headDepartment: DepartmentNode;
     filter: string;
     selectedCompanyDepartmentId: string;
 }
 
 const initState: PeopleState = {
-    departmentNodes: [],
+    departmentIdToNodes: new Map<string, DepartmentNode>(),
     headDepartment: null,
     filter: '',
     selectedCompanyDepartmentId: null
@@ -45,12 +43,11 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
                 selectedCompanyDepartmentId: action.employee.departmentId
             };
         case 'LOAD-DEPARTMENTS-FINISHED':
-            const departmentNodes: DepartmentNode[] = [];
-            const parentIds = Set<string>();
+            const departmentIdToNodes: DepartmentIdToNode = new Map<string, DepartmentNode>();
             let headDepartment: DepartmentNode = null;
 
             for (let department of action.departments) {
-                const node: DepartmentNode = new DepartmentNode(
+                const node = new DepartmentNode(
                     department.departmentId,
                     department.parentDepartmentId,
                     department.abbreviation,
@@ -58,28 +55,32 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
                     null
                 );
 
-                departmentNodes.push(node);
+                departmentIdToNodes.set(node.departmentId, node);
 
                 if (!headDepartment && department.isHeadDepartment) {
                     headDepartment = node;
                 }                
 
-                if (node.parentId && !parentIds.has(node.parentId)) {
-                    const staffNode: DepartmentNode = new DepartmentNode(
-                        `[${node.parentId}-staff]`,
+                const staffNodeId = `[${node.parentId}-staff]`;
+
+                if (!departmentIdToNodes.has(staffNodeId)) {
+                    const staffNode = new DepartmentNode(
+                        staffNodeId,
                         node.parentId,
                         null,
                         null,
                         node.parentId
                     );
-                    departmentNodes.push(staffNode);
-                    parentIds.add(node.parentId);
+
+                    departmentIdToNodes.set(staffNode.departmentId, staffNode);
                 }
             }
 
+            appendRoot(headDepartment, departmentIdToNodes);
+
             return {
                 ...state,
-                departmentNodes: departmentNodes,
+                departmentIdToNodes: departmentIdToNodes,
                 headDepartment: headDepartment
             };
 

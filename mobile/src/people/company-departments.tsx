@@ -2,14 +2,13 @@ import React, { Component } from 'react';
 import { CompanyDepartmentsLevel } from './company-departments-level';
 import { connect, MapStateToProps, MapDispatchToProps, Dispatch } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
-import { buildDepartmentIdToNode } from '../reducers/people/build-department-id-to-node';
 import { appendRoot, rootId } from '../reducers/people/append-root';
 import { filterDepartments } from '../reducers/people/filter-departments';
 import { buildBranchFromChildToParent } from '../reducers/people/build-branch-from-child-to-parent';
 import { buildDepartmentIdToChildren } from '../reducers/people/build-department-children';
 import { Department } from '../reducers/organization/department.model';
-import { DepartmentIdToChildren, DepartmentIdToSelectedId, DepartmentNode } from '../reducers/people/people.model';
-import { buildEmployeeNodes } from '../reducers/people/build-employee-nodes';
+import { DepartmentIdToChildren, DepartmentIdToSelectedId, DepartmentNode, DepartmentIdToNode } from '../reducers/people/people.model';
+import { filterEmployees } from '../reducers/people/filter-employees';
 import { buildDepartmentsSelection } from '../reducers/people/build-departments-selection';
 import { selectCompanyDepartment } from '../reducers/people/people.action';
 import { buildSelectedDepartmentId } from '../reducers/people/build-selected-department-id';
@@ -19,7 +18,7 @@ import { Employee } from '../reducers/organization/employee.model';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 
 interface CompanyDepartmentsStateProps {
-    departmentNodes: DepartmentNode[];
+    departmentIdToNode: DepartmentIdToNode;
     headDepartment: DepartmentNode;
     filter: string;
     selectedCompanyDepartmentId: string;
@@ -34,7 +33,7 @@ interface CompanyDepartmentsDispatchProps {
 }
 
 const mapStateToProps: MapStateToProps<CompanyDepartmentsStateProps, void, AppState> = (state: AppState) => ({
-    departmentNodes: state.people.departmentNodes,
+    departmentIdToNode: state.people.departmentIdToNodes,
     headDepartment: state.people.headDepartment,
     filter: state.people.filter,
     selectedCompanyDepartmentId: state.people.selectedCompanyDepartmentId,
@@ -58,7 +57,7 @@ type CompanyDepartmentsProps = CompanyDepartmentsStateProps & CompanyDepartments
 
 class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
     public shouldComponentUpdate(nextProps: CompanyDepartmentsProps) {
-        return !this.isNodesEqual(this.props.departmentNodes, nextProps.departmentNodes)
+        return !this.isNodesEqual(this.props.departmentIdToNode, nextProps.departmentIdToNode)
             || !this.isHeadDepartmentEqual(this.props.headDepartment, nextProps.headDepartment)
             || this.props.filter !== nextProps.filter
             || this.props.selectedCompanyDepartmentId !== nextProps.selectedCompanyDepartmentId
@@ -70,6 +69,7 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
 
         const {
             employeesById,
+            employeeIdsByDepartment,
             departmentIdToChildren,
             selection
         } = this.buildData();
@@ -79,6 +79,7 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
                 departmentId={rootId}
                 departmentIdToChildren={departmentIdToChildren}
                 employeesById={employeesById}
+                employeeIdsByDepartment={employeeIdsByDepartment}
                 selection={selection}
                 onSelectedNode={this.props.selectCompanyDepartment}
                 onPressEmployee={this.props.onPressEmployee}
@@ -87,19 +88,16 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
     }
 
     private buildData() {
-        const departmentIdToNode = buildDepartmentIdToNode(this.props.departmentNodes);
-
-        appendRoot(this.props.headDepartment, departmentIdToNode);
-    
-        const employeesById = buildEmployeeNodes(
+  
+        const employeesById = filterEmployees(
             this.props.employeesById, 
             this.props.filter);
     
-        let mapDepartmentIdToNode = departmentIdToNode;
+        let mapDepartmentIdToNode = this.props.departmentIdToNode;
         
         if (this.props.filter) {
-            const filteredDepartmentsNodes = filterDepartments(this.props.departmentNodes, employeesById);
-            mapDepartmentIdToNode = buildBranchFromChildToParent(filteredDepartmentsNodes, departmentIdToNode);
+            const filteredDepartmentsNodes = filterDepartments(this.props.departmentIdToNode, employeesById);
+            mapDepartmentIdToNode = buildBranchFromChildToParent(filteredDepartmentsNodes, this.props.departmentIdToNode);
         }
     
         const departmentIdToChildren = buildDepartmentIdToChildren(mapDepartmentIdToNode, this.props.employeeIdsByDepartment);
@@ -107,11 +105,12 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
         const selectedCompanyDepartmentId = buildSelectedDepartmentId(mapDepartmentIdToNode, employeesById, this.props.selectedCompanyDepartmentId);
     
         const selection = selectedCompanyDepartmentId 
-            ? buildDepartmentsSelection(departmentIdToNode, selectedCompanyDepartmentId)
+            ? buildDepartmentsSelection(this.props.departmentIdToNode, selectedCompanyDepartmentId)
             : {};
     
         return {
             employeesById: employeesById,
+            employeeIdsByDepartment: this.props.employeeIdsByDepartment,
             departmentIdToChildren: departmentIdToChildren,
             selection: selection
         };        
@@ -129,7 +128,7 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
         return a.equals(b);
     }
 
-    private isNodesEqual(a: DepartmentNode[], b: DepartmentNode[]): boolean {
+    private isNodesEqual(a: DepartmentIdToNode, b: DepartmentIdToNode): boolean {
         if (a === b) {
             return true;
         }
@@ -138,12 +137,12 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
             return false;
         }
 
-        if (a.length !== b.length) {
+        if (a.size !== b.size) {
             return false;
         }
 
-        for (let i = 0; i < a.length; i++) {
-            if (!a[i].equals(b[i])) {
+        for (let [, node] of a) {
+            if (!node.equals(b.get(node.departmentId))) {
                 return false;
             }
         }
@@ -166,10 +165,6 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
 
         const aArray = a.toArray();
         const bArray = b.toArray();
-
-        if (aArray.length !== bArray.length) {
-            return false;
-        }
 
         for (let i = 0; i < aArray.length; i++) {
             if (!aArray[i].equals(bArray[i])) {

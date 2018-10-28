@@ -1,4 +1,3 @@
-import { Department } from '../organization/department.model';
 import { DepartmentIdToNode, DepartmentNode } from './people.model';
 
 export const rootId = '[root]';
@@ -8,13 +7,13 @@ export function appendRoot(headDepartment: DepartmentNode | null, departmentIdsT
         return;
     }
 
-    departmentIdsToNodes[rootId] = new DepartmentNode(
+    departmentIdsToNodes.set(rootId, new DepartmentNode(
         rootId,
         null,
         null,
         null,
         null
-    );
+    ));
 
-    departmentIdsToNodes[headDepartment.departmentId].parentId = departmentIdsToNodes[rootId].departmentId;
+    departmentIdsToNodes.get(headDepartment.departmentId).parentId = rootId;
 }

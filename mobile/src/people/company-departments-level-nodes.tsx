@@ -172,15 +172,17 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
     }
 
     private loadEmployeesForDepartment() {
-        let selectedDepartmentId = this.props.selectedDepartmentId;
+        let selectedNode = this.props.nodes.find(node => node.departmentId === this.props.selectedDepartmentId);
 
-        if (!selectedDepartmentId) {
-            const first = this.props.nodes[0];
-
-            selectedDepartmentId = first.departmentId;
+        if (!selectedNode) {
+            selectedNode = this.props.nodes[0];
         }
 
-        this.props.loadEmployeesForDepartment(selectedDepartmentId);
+        if (selectedNode.staffDepartmentId) {
+            return;
+        }
+
+        this.props.loadEmployeesForDepartment(selectedNode.departmentId);
     }
 
     private scrollToSelectedDepartment() {

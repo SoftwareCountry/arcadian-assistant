@@ -6,7 +6,7 @@ export function buildSelectedDepartmentId(
     employeesById: EmployeeMap, 
     selectedCompanyDepartmentId: string
 ) {
-    if (departmentIdToNode[selectedCompanyDepartmentId]) {
+    if (departmentIdToNode.has(selectedCompanyDepartmentId)) {
         return selectedCompanyDepartmentId;
     }
 

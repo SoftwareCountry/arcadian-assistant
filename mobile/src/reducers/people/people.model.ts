@@ -1,5 +1,3 @@
-import { Map, Set } from 'immutable';
-
 export class DepartmentNode {
     constructor(
         public departmentId: string,
@@ -34,4 +32,4 @@ export interface DepartmentIdToSelectedId {
     [departmentId: string]: string;
 }
 
-export type DepartmentIdToNode = { [departmentId: string]: DepartmentNode };
+export type DepartmentIdToNode = Map<string, DepartmentNode>;
