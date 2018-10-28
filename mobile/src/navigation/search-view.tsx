@@ -73,8 +73,10 @@ class SearchViewImpl extends Component<SearchViewDispatchProps & SearchViewState
     }
 
     private onPress = () => {
+        if (this.state.isActive) {
+            this.props.clearFilter(this.props.type);
+        }        
         this.setState({isActive: !this.state.isActive});
-        this.props.clearFilter(this.props.type);
     }
 
     private changeText = (filter: string) => {
