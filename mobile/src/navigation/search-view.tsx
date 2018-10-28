@@ -45,10 +45,7 @@ class SearchViewImpl extends Component<SearchViewDispatchProps & SearchViewState
 
     public render() {
         const textInputStyles = StyleSheet.flatten([
-            styles.input,
-            {
-                display: this.state.isActive ? 'flex' : 'none'
-            }
+            styles.input
         ]);
 
         return <View style={styles.container}>
@@ -59,14 +56,18 @@ class SearchViewImpl extends Component<SearchViewDispatchProps & SearchViewState
                 />
             </TouchableOpacity>
             <View style={styles.inputContainer}>
-                <TextInput
-                    placeholder={'Search'}
-                    style={textInputStyles}
-                    underlineColorAndroid='transparent'
-                    autoCapitalize='none'
-                    onChangeText={this.changeText}
-                    value={this.props.filter}
-                />
+            {
+                this.state.isActive &&
+                    <TextInput
+                        autoFocus={true}
+                        placeholder={'Search'}
+                        style={textInputStyles}
+                        underlineColorAndroid='transparent'
+                        autoCapitalize='none'
+                        onChangeText={this.changeText}
+                        value={this.props.filter}
+                    />                
+            }
             </View>
         </View>;
     }
