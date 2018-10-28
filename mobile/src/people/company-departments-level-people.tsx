@@ -14,7 +14,7 @@ interface CompanyDepartmentsLevelPeopleProps {
 
 export class CompanyDepartmentsLevelPeople extends Component<CompanyDepartmentsLevelPeopleProps> {
     public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelPeopleProps) {
-        return !this.isEmployeesEqual(this.props.employees, nextProps.employees) 
+        return !this.areEmployeesEqual(this.props.employees, nextProps.employees) 
             || this.props.onPressEmployee !== nextProps.onPressEmployee;
     }
 
@@ -33,7 +33,7 @@ export class CompanyDepartmentsLevelPeople extends Component<CompanyDepartmentsL
         );
     }
 
-    private isEmployeesEqual(a: Employee[], b: Employee[]) {
+    private areEmployeesEqual(a: Employee[], b: Employee[]) {
         if (a === b) {
             return true;
         }

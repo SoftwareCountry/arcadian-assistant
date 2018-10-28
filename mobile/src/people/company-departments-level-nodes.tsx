@@ -66,8 +66,8 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
     }
 
     public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelNodesProps, nextState: CompanyDepartmentsLevelNodesState) {
-        const isNodesEqual = this.isNodesEqual(this.props.nodes, nextProps.nodes);
-        const isChiefsEqual = this.isChiefsEqual(this.props.chiefs, nextProps.chiefs);
+        const isNodesEqual = this.areNodesEqual(this.props.nodes, nextProps.nodes);
+        const isChiefsEqual = this.areChiefsEqual(this.props.chiefs, nextProps.chiefs);
 
         return !isNodesEqual
             || !isChiefsEqual
@@ -84,7 +84,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
     }
 
     public componentDidUpdate(prevProps: CompanyDepartmentsLevelNodesProps) {
-        if (this.props.selectedDepartmentId !== prevProps.selectedDepartmentId || !this.isNodesEqual(this.props.nodes, prevProps.nodes)) {
+        if (this.props.selectedDepartmentId !== prevProps.selectedDepartmentId || !this.areNodesEqual(this.props.nodes, prevProps.nodes)) {
             this.state.xCoordinate.flattenOffset();
             this.scrollToSelectedDepartment();
             this.loadEmployeesForDepartment();
@@ -127,7 +127,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
         );
     }
 
-    private isChiefsEqual(a: Employee[], b: Employee[]) {
+    private areChiefsEqual(a: Employee[], b: Employee[]) {
         if (a === b) {
             return true;
         }
@@ -149,7 +149,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
         return true;
     }
 
-    private isNodesEqual(a: DepartmentNode[], b: DepartmentNode[]): boolean {
+    private areNodesEqual(a: DepartmentNode[], b: DepartmentNode[]): boolean {
         if (a === b) {
             return true;
         }

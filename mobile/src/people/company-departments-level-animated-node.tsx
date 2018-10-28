@@ -141,7 +141,7 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
     public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelAnimatedNodeProps) {
         return this.props.index !== nextProps.index
             || !this.props.node.equals(nextProps.node)
-            || !this.isChiefEqual(this.props.chief, nextProps.chief)
+            || !this.isChiefSame(this.props.chief, nextProps.chief)
             || this.props.width !== nextProps.width
             || this.props.height !== nextProps.height
             || this.props.gap !== nextProps.gap
@@ -199,7 +199,7 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
         );
     }
 
-    private isChiefEqual(a: Employee, b: Employee): boolean {
+    private isChiefSame(a: Employee, b: Employee): boolean {
         if (a === b) {
             return true;
         }

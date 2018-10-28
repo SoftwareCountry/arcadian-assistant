@@ -50,11 +50,11 @@ type CompanyDepartmentsProps = CompanyDepartmentsStateProps & CompanyDepartments
 
 class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
     public shouldComponentUpdate(nextProps: CompanyDepartmentsProps) {
-        return !this.isNodesEqual(this.props.departmentIdToNode, nextProps.departmentIdToNode)
-            || !this.isHeadDepartmentEqual(this.props.headDepartment, nextProps.headDepartment)
+        return !this.areNodesEqual(this.props.departmentIdToNode, nextProps.departmentIdToNode)
+            || !this.isHeadDepartmentSame(this.props.headDepartment, nextProps.headDepartment)
             || this.props.filter !== nextProps.filter
             || this.props.selectedCompanyDepartmentId !== nextProps.selectedCompanyDepartmentId
-            || !this.isEmployeesEqual(this.props.employeesById, nextProps.employeesById)
+            || !this.areEmployeesEqual(this.props.employeesById, nextProps.employeesById)
             || !this.props.employeeIdsByDepartment.equals(nextProps.employeeIdsByDepartment);
     }
 
@@ -213,7 +213,7 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
         return departmentIdToSelectedId;
     }
 
-    private isHeadDepartmentEqual(a: DepartmentNode, b: DepartmentNode): boolean {
+    private isHeadDepartmentSame(a: DepartmentNode, b: DepartmentNode): boolean {
         if (a === b) {
             return true;
         }
@@ -225,7 +225,7 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
         return a.equals(b);
     }
 
-    private isNodesEqual(a: DepartmentIdToNode, b: DepartmentIdToNode): boolean {
+    private areNodesEqual(a: DepartmentIdToNode, b: DepartmentIdToNode): boolean {
         if (a === b) {
             return true;
         }
@@ -247,7 +247,7 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
         return true;
     }
 
-    private isEmployeesEqual(a: EmployeeMap, b: EmployeeMap) {
+    private areEmployeesEqual(a: EmployeeMap, b: EmployeeMap) {
         if (a === b) {
             return true;
         }
