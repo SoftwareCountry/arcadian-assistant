@@ -15,6 +15,7 @@ export interface PeopleState {
     departmentNodes: Set<MapDepartmentNode>;
     headDepartment: Department;
     filter: string;
+    isFilterActive: boolean;
     selectedCompanyDepartmentId: string;
     employeeNodes: EmployeeIdToNode;
 }
@@ -23,6 +24,7 @@ const initState: PeopleState = {
     departmentNodes: Set(),
     headDepartment: null,
     filter: '',
+    isFilterActive: false,
     selectedCompanyDepartmentId: null,
     employeeNodes: Map()
 };
@@ -110,6 +112,17 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
                     filter: action.filter,
                 };
             }
+            return state;
+
+        case 'ACTIVE-SEARCH-BY-TEXT-FILTER':
+            if (action.searchType === SearchType.People) {
+                return {
+                    ...state,
+                    isFilterActive: action.isActive
+                };
+            }
+            return state;
+
         default:
             return state;
     }
