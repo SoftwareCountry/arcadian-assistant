@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Animated, ViewStyle, Easing, Platform, TouchableOpacity } from 'react-native';
 import { StyledText } from '../override/styled-text';
-import { MapDepartmentNode, MapEmployeeNode } from '../reducers/people/people.model';
+import { DepartmentNode } from '../reducers/people/people.model';
 import { companyDepartmentsAnimatedNode } from './styles';
-import { is } from 'immutable';
 import { Avatar } from './avatar';
+import { EmployeeMap } from '../reducers/organization/employees.reducer';
+import { Employee } from '../reducers/organization/employee.model';
 
 interface Perspective {
     perspective: number;
@@ -125,13 +126,13 @@ class Animations {
 
 interface CompanyDepartmentsLevelAnimatedNodeProps {
     index: number;
-    node: MapDepartmentNode;
-    chief: MapEmployeeNode;
+    node: DepartmentNode;
+    chief: Employee;
     width: number;
     height: number;
     gap: number;
     xCoordinate: Animated.Value;
-    onPressChief: (employeeId: string) => void;
+    onPressChief: (employee: Employee) => void;
 }
 
 export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepartmentsLevelAnimatedNodeProps> {
@@ -140,7 +141,7 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
     public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelAnimatedNodeProps) {
         return this.props.index !== nextProps.index
             || !this.props.node.equals(nextProps.node)
-            || !is(this.props.chief, nextProps.chief)
+            || !this.isChiefSame(this.props.chief, nextProps.chief)
             || this.props.width !== nextProps.width
             || this.props.height !== nextProps.height
             || this.props.gap !== nextProps.gap
@@ -168,11 +169,11 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
 
         const { chief } = this.props;
         const photo = chief 
-            ? chief.get('photoUrl')
+            ? chief.photoUrl
             : null;
-        const chiefName = chief ? chief.get('name') : null;
-        const chiefPosition = chief ? chief.get('position') : null;
-        const showStaffIcon = !!this.props.node.get('staffDepartmentId');
+        const chiefName = chief ? chief.name : null;
+        const chiefPosition = chief ? chief.position : null;
+        const showStaffIcon = !!this.props.node.staffDepartmentId;
 
         return (
             <Animated.View style={containerStyles}>
@@ -191,11 +192,23 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
                         </StyledText>
                     </View>
                     <StyledText style={companyDepartmentsAnimatedNode.contentDepartmentAbbreviation}>
-                        {this.props.node.get('abbreviation')}
+                        {this.props.node.abbreviation}
                     </StyledText>
                 </Animated.View>
             </Animated.View>
         );
+    }
+
+    private isChiefSame(a: Employee, b: Employee): boolean {
+        if (a === b) {
+            return true;
+        }
+
+        if (!a || !b) {
+            return false;
+        }
+
+        return a.equals(b);
     }
 
     private calculateStyles() {
@@ -247,12 +260,8 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
     }
 
     private onPressChief = () => {
-        const employeeId = this.props.chief
-            ? this.props.chief.get('employeeId') as string
-            : null;
-
-        if (employeeId) {
-            this.props.onPressChief(employeeId);
+        if (this.props.chief) {
+            this.props.onPressChief(this.props.chief);
         }
     }
 }

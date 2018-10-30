@@ -1,33 +1,35 @@
-import { Map, Set } from 'immutable';
+export class DepartmentNode {
+    constructor(
+        public departmentId: string,
+        public parentId: string,
+        public abbreviation: string,
+        public chiefId: string,
+        public staffDepartmentId: string
+    ) {}
 
-export interface DepartmentNode {
-    departmentId: string;
-    parentId: string;
-    abbreviation: string;
-    chiefId: string;
-    staffDepartmentId: string;
+    public equals(obj: DepartmentNode) {
+        if (!obj) {
+            return false;
+        }
+
+        if (obj === this) {
+            return true;
+        }
+
+        return this.departmentId === obj.departmentId 
+            && this.parentId === obj.parentId
+            && this.abbreviation === obj.abbreviation
+            && this.chiefId === obj.chiefId
+            && this.staffDepartmentId === obj.staffDepartmentId;
+    }
 }
 
-export type MapDepartmentNode = Map<keyof DepartmentNode, DepartmentNode[keyof DepartmentNode]>;
-
 export interface DepartmentIdToChildren {
-    [departmentId: string]: Set<MapDepartmentNode>;
+    [departmentId: string]: DepartmentNode[];
 }
 
 export interface DepartmentIdToSelectedId {
     [departmentId: string]: string;
 }
 
-export type DepartmentIdToNode = { [departmentId: string]: DepartmentNode };
-
-export interface EmployeeNode {
-    employeeId: string;
-    departmentId: string;
-    name: string;
-    position: string;
-    photoUrl: string;
-}
-
-export type MapEmployeeNode = Map<keyof EmployeeNode, EmployeeNode[keyof EmployeeNode]>;
-
-export type EmployeeIdToNode = Map<string, MapEmployeeNode>;
+export type DepartmentIdToNode = Map<string, DepartmentNode>;

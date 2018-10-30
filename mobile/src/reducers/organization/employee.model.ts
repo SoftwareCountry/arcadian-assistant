@@ -51,4 +51,28 @@ export class Employee {
     @dataMember()
     @required({nullable: true})
     public roomNumber: string;
+
+    public equals(obj: Employee): boolean {
+        if (!obj) {
+            return false;
+        }
+
+        if (obj === this) {
+            return true;
+        }
+
+        return obj.employeeId === this.employeeId
+            && obj.name === this.name
+            && obj.email === this.email
+            && obj.sex === this.sex
+            && obj.photoUrl === this.photoUrl
+            && obj.position === this.position
+            && obj.departmentId === this.departmentId
+            && obj.mobilePhone === this.mobilePhone
+            && obj.birthDate.isSame(this.birthDate, 'day')
+            && obj.hireDate.isSame(this.hireDate, 'day')
+            && obj.hoursCredit === this.hoursCredit
+            && obj.vacationDaysLeft === this.vacationDaysLeft
+            && obj.roomNumber === this.roomNumber;
+    }
 }

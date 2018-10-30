@@ -3,33 +3,32 @@ import { companyDepartments, nodesContainerWidth, nodesContainerHeight } from '.
 import { View, Animated } from 'react-native';
 import { layout } from '../calendar/event-dialog/styles';
 import { StyledText } from '../override/styled-text';
-import { DepartmentIdToChildren, MapDepartmentNode, EmployeeIdToNode, DepartmentIdToSelectedId, MapEmployeeNode } from '../reducers/people/people.model';
+import { DepartmentIdToChildren, DepartmentIdToSelectedId, DepartmentNode } from '../reducers/people/people.model';
 import { Set, Map } from 'immutable';
 import { CompanyDepartmentsLevelNodes } from './company-departments-level-nodes';
-import { EmployeeIdsGroupMap } from '../reducers/organization/employees.reducer';
+import { EmployeeIdsGroupMap, EmployeeMap } from '../reducers/organization/employees.reducer';
 import { CompanyDepartmentsLevelPeople } from './company-departments-level-people';
 import { departmentAZComparer } from './department-comparer';
+import { Employee } from '../reducers/organization/employee.model';
 
 interface CompanyDepartmentsLevelProps {
     departmentId: string;
     staffDepartmentId?: string;
     departmentIdToChildren: DepartmentIdToChildren;
-    employeeIdToNode: EmployeeIdToNode;
+    employeesById: EmployeeMap;
+    employeeIdsByDepartment: EmployeeIdsGroupMap;
     selection: DepartmentIdToSelectedId;
     onSelectedNode: (departmentId: string) => void;
-    onPressEmployee: (employeeId: string) => void;
+    onPressEmployee: (employee: Employee) => void;
     loadEmployeesForDepartment: (departmentId: string) => void;
 }
 
 export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelProps> {
     public render() {
         const { departmentIdToChildren, departmentId } = this.props;
-        const nodes = departmentIdToChildren[departmentId] 
-            ? departmentIdToChildren[departmentId]
-                .sort((a, b) => departmentAZComparer(
-                    { abbreviation: a.get('abbreviation') as string },
-                    { abbreviation: b.get('abbreviation') as string }
-                )).toOrderedSet()
+        const children = departmentIdToChildren[departmentId];
+        const nodes = children && children.length !== 0
+            ? children.sort((a, b) => departmentAZComparer(a, b))
             : null;
 
         return (
@@ -44,9 +43,9 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
         );
     }
 
-    private renderNodes(nodes: Set<MapDepartmentNode>) {
+    private renderNodes(nodes: DepartmentNode[]) {
         const selectedDepartmentId = this.props.selection[this.props.departmentId];
-        const chiefs = this.getChiefs(nodes);
+        const chiefs = nodes.map(node => this.props.employeesById.get(node.chiefId)).filter(x => !!x);
 
         return (
             <CompanyDepartmentsLevelNodes
@@ -62,26 +61,27 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
         );
     }
 
-    private renderSubLevel(nodes: Set<MapDepartmentNode>): JSX.Element {
+    private renderSubLevel(nodes: DepartmentNode[]): JSX.Element {
         const selectedDepartmentId = this.props.selection[this.props.departmentId];
-        const selectedDepartmentNode = nodes.find(node => node.get('departmentId') === selectedDepartmentId);
+        const selectedDepartmentNode = nodes.find(node => node.departmentId === selectedDepartmentId);
 
         if (selectedDepartmentNode) {
             return this.renderDepartmentsLevel(selectedDepartmentNode);
         }
 
-        const first = nodes.first();
+        const first = nodes[0];
 
         return this.renderDepartmentsLevel(first);
     }
 
-    private renderDepartmentsLevel(node: MapDepartmentNode) {
+    private renderDepartmentsLevel(node: DepartmentNode) {
         return (
             <CompanyDepartmentsLevel
-                departmentId={node.get('departmentId') as string}
-                staffDepartmentId={node.get('staffDepartmentId') as string}
+                departmentId={node.departmentId}
+                staffDepartmentId={node.staffDepartmentId}
                 departmentIdToChildren={this.props.departmentIdToChildren}
-                employeeIdToNode={this.props.employeeIdToNode}
+                employeesById={this.props.employeesById}
+                employeeIdsByDepartment={this.props.employeeIdsByDepartment}
                 selection={this.props.selection}
                 onSelectedNode={this.props.onSelectedNode}
                 onPressEmployee={this.props.onPressEmployee}
@@ -94,18 +94,19 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
             ? this.props.staffDepartmentId 
             : this.props.departmentId;
 
-        const people = this.props.employeeIdToNode.filter(employeeNode => employeeNode.get('departmentId') === departmentId).toMap();
+        const employeeIds = this.props.employeeIdsByDepartment.get(departmentId);
+
+        if (!employeeIds) {
+            return null;
+        }
+
+        const employees = employeeIds
+            .map(employeeId => this.props.employeesById.get(employeeId))
+            .filter(x => !!x)
+            .toArray();
 
         return (
-            <CompanyDepartmentsLevelPeople employeeIdToNode={people} onPressEmployee={this.props.onPressEmployee} />
+            <CompanyDepartmentsLevelPeople employees={employees} onPressEmployee={this.props.onPressEmployee} />
         );
-    }
-
-    private getChiefs(nodes: Set<MapDepartmentNode>): EmployeeIdToNode {
-        const chiefIdToChiefs = nodes.map(node => {
-            const chiefId = node.get('chiefId') as string;
-            return [chiefId, this.props.employeeIdToNode.get(chiefId)];
-        });
-        return Map<string, MapEmployeeNode>(chiefIdToChiefs);
-    }    
+    }   
 }
