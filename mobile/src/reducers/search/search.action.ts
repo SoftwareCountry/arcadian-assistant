@@ -16,4 +16,12 @@ export const endSearch = (searchType: SearchType): SetFilter => {
     return { type: 'SEARCH-BY-TEXT-FILTER', filter: '', searchType};
 };
 
-export type SearchActions = SetFilter;
+export interface ActiveFilter extends Action {
+    type: 'ACTIVE-SEARCH-BY-TEXT-FILTER';
+    searchType: SearchType;
+    isActive: boolean;
+}
+
+export const activeFilter = (searchType: SearchType, isActive: boolean): ActiveFilter => ({ type: 'ACTIVE-SEARCH-BY-TEXT-FILTER', searchType, isActive });
+
+export type SearchActions = ActiveFilter | SetFilter;

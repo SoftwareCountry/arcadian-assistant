@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { AppState } from '../reducers/app.reducer';
 import { connect, Dispatch } from 'react-redux';
-import { startSearch, endSearch } from '../reducers/search/search.action';
+import { startSearch, endSearch, activeFilter } from '../reducers/search/search.action';
 import { ApplicationIcon } from '../override/application-icon';
 import { searchViewStyles as styles } from './search-view-styles';
 
@@ -11,31 +11,31 @@ export enum SearchType {
     People = 'People',
 }
 
-interface SearchViewState {
-    isActive: boolean;
-}
-
 interface SearchViewStateProps {
     filter: string;
     type: SearchType;
+    isActive: boolean;
 }
 
 const mapStateToPropsPeople = (state: AppState): SearchViewStateProps => ({
     filter: state.people.filter,
-    type: SearchType.People
+    type: SearchType.People,
+    isActive: state.people.isFilterActive
 });
 
 interface SearchViewDispatchProps {
     setFilter: (filter: string, type: SearchType) => void;
     clearFilter: (type: SearchType) => void;
+    activeFilter: (type: SearchType, isActive: boolean) => void;
 }
 
 const mapDispatchToProps = (dispatch: Dispatch<any>): SearchViewDispatchProps => ({
     setFilter: (filter, type) => dispatch(startSearch(filter, type)),
     clearFilter: (type) => dispatch(endSearch(type)),
+    activeFilter: (type, isActive: boolean) => dispatch(activeFilter(type, isActive))
 });
 
-class SearchViewImpl extends Component<SearchViewDispatchProps & SearchViewStateProps, SearchViewState> {
+class SearchViewImpl extends Component<SearchViewDispatchProps & SearchViewStateProps> {
     constructor(props: SearchViewDispatchProps & SearchViewStateProps) {
         super(props);
         this.state = {
@@ -45,35 +45,38 @@ class SearchViewImpl extends Component<SearchViewDispatchProps & SearchViewState
 
     public render() {
         const textInputStyles = StyleSheet.flatten([
-            styles.input,
-            {
-                display: this.state.isActive ? 'flex' : 'none'
-            }
+            styles.input
         ]);
 
         return <View style={styles.container}>
             <TouchableOpacity style={styles.iconsContainer} onPress={this.onPress}>
                 <ApplicationIcon
                     name={'search'}
-                    style={this.state.isActive ? styles.activeIcon : styles.inactiveIcon}
+                    style={this.props.isActive ? styles.activeIcon : styles.inactiveIcon}
                 />
             </TouchableOpacity>
             <View style={styles.inputContainer}>
-                <TextInput
-                    placeholder={'Search'}
-                    style={textInputStyles}
-                    underlineColorAndroid='transparent'
-                    autoCapitalize='none'
-                    onChangeText={this.changeText}
-                    value={this.props.filter}
-                />
+            {
+                this.props.isActive &&
+                    <TextInput
+                        autoFocus={true}
+                        placeholder={'Search'}
+                        style={textInputStyles}
+                        underlineColorAndroid='transparent'
+                        autoCapitalize='none'
+                        onChangeText={this.changeText}
+                        value={this.props.filter}
+                    />                
+            }
             </View>
         </View>;
     }
 
     private onPress = () => {
-        this.setState({isActive: !this.state.isActive});
-        this.props.clearFilter(this.props.type);
+        if (this.props.isActive) {
+            this.props.clearFilter(this.props.type);
+        }
+        this.props.activeFilter(this.props.type, !this.props.isActive);
     }
 
     private changeText = (filter: string) => {

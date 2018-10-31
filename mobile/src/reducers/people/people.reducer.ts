@@ -12,6 +12,7 @@ export interface PeopleState {
     departmentIdToNodes: DepartmentIdToNode;
     headDepartment: DepartmentNode;
     filter: string;
+    isFilterActive: boolean;
     selectedCompanyDepartmentId: string;
 }
 
@@ -19,7 +20,8 @@ const initState: PeopleState = {
     departmentIdToNodes: new Map<string, DepartmentNode>(),
     headDepartment: null,
     filter: '',
-    selectedCompanyDepartmentId: null
+    isFilterActive: false,
+    selectedCompanyDepartmentId: null,
 };
 
 export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions | NavigationAction | 
@@ -97,6 +99,17 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
                     filter: action.filter,
                 };
             }
+            return state;
+
+        case 'ACTIVE-SEARCH-BY-TEXT-FILTER':
+            if (action.searchType === SearchType.People) {
+                return {
+                    ...state,
+                    isFilterActive: action.isActive
+                };
+            }
+            return state;
+
         default:
             return state;
     }
