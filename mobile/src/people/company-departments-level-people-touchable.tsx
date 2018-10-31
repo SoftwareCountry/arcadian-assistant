@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { TouchableOpacity, Animated, Easing, StyleSheet } from 'react-native';
 import { companyDepartmentLevelPeople } from './styles';
+import { Employee } from '../reducers/organization/employee.model';
 
 interface CompanyDepartmentsLevelPeopleTouchableProps {
-    employeeId: string;
-    onPress: (employeeId: string) => void;
+    employee: Employee;
+    onPress: (employee: Employee) => void;
 }
 
 export class CompanyDepartmentsLevelPeopleTouchable extends Component<CompanyDepartmentsLevelPeopleTouchableProps> {
@@ -39,6 +40,6 @@ export class CompanyDepartmentsLevelPeopleTouchable extends Component<CompanyDep
     }
 
     private onPress = () => {
-        this.props.onPress(this.props.employeeId);
+        this.props.onPress(this.props.employee);
     }
 }
