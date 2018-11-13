@@ -1,12 +1,13 @@
-import { AsyncStorage } from 'react-native';
 import SInfo from 'react-native-sensitive-info';
+import { Platform } from 'react-native';
 
 export interface RefreshTokenStorage {
     storeToken(refreshToken: string | null): Promise<void>;
+
     getRefreshToken(): Promise<string>;
 }
 
-export class RefreshTokenFilesystemStorage implements RefreshTokenStorage {
+class RefreshTokenBaseStorage {
     private readonly keyName = 'refresh-token';
     private refreshToken: string = null;
 
@@ -20,7 +21,7 @@ export class RefreshTokenFilesystemStorage implements RefreshTokenStorage {
         });
     }
 
-    public async storeToken(refreshToken: string | null) {
+    public async storeToken(refreshToken: string | null, useTouchId: boolean) {
 
         if (!refreshToken) {
             this.refreshToken = null;
@@ -34,8 +35,33 @@ export class RefreshTokenFilesystemStorage implements RefreshTokenStorage {
                 keychainService: 'ArcadiaAssistant',
                 kSecAccessControl: 'kSecAccessControlTouchIDCurrentSet',
                 sharedPreferencesName: 'ArcadiaAssistantPreferences',
-                touchID: true,
+                touchID: useTouchId,
             });
         }
     }
 }
+
+export class RefreshTokenProtectedStorage extends RefreshTokenBaseStorage {
+
+    public async storeToken(refreshToken: string | null) {
+        await super.storeToken(refreshToken, true);
+    }
+}
+
+export class RefreshTokenUnprotectedStorage extends RefreshTokenBaseStorage {
+
+    public async storeToken(refreshToken: string | null) {
+        await super.storeToken(refreshToken, false);
+    }
+}
+
+export const createRefreshTokenStorage = (): RefreshTokenStorage => {
+
+    const isAndroid = Platform.OS === 'android';
+    const isSensorAvailable = !isAndroid && SInfo.isSensorAvailable();
+    console.debug(`Fingerprint sensor is ${isSensorAvailable ? ` available` : `NOT available`}`);
+
+    return isSensorAvailable ?
+        new RefreshTokenProtectedStorage() :
+        new RefreshTokenUnprotectedStorage();
+};
