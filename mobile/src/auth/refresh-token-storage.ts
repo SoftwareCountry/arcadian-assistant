@@ -21,7 +21,7 @@ class RefreshTokenBaseStorage {
         });
     }
 
-    public async storeToken(refreshToken: string | null, useTouchId: boolean) {
+    protected async storeToken(refreshToken: string | null, useTouchId: boolean) {
 
         if (!refreshToken) {
             this.refreshToken = null;
@@ -41,14 +41,14 @@ class RefreshTokenBaseStorage {
     }
 }
 
-export class RefreshTokenProtectedStorage extends RefreshTokenBaseStorage {
+export class RefreshTokenProtectedStorage extends RefreshTokenBaseStorage implements RefreshTokenStorage {
 
     public async storeToken(refreshToken: string | null) {
         await super.storeToken(refreshToken, true);
     }
 }
 
-export class RefreshTokenUnprotectedStorage extends RefreshTokenBaseStorage {
+export class RefreshTokenUnprotectedStorage extends RefreshTokenBaseStorage implements RefreshTokenStorage {
 
     public async storeToken(refreshToken: string | null) {
         await super.storeToken(refreshToken, false);
