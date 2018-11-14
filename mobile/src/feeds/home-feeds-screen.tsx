@@ -50,22 +50,6 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): FeedScreenDispatchProps =>
 class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenDispatchProps> {
     public static navigationOptions = navBar.configurate();
 
-     public shouldComponentUpdate(nextProps: FeedsScreenProps & FeedScreenDispatchProps) {
-        if (this.props.onAvatarClicked !== nextProps.onAvatarClicked
-            || this.props.feeds !== nextProps.feeds) {
-            return true;
-        }
-
-        const nothingChanged = nextProps.feeds.every((feed) => {
-            const employeeId = feed.employeeId;
-            const currentEmployeeRef = this.props.employees.employeesById.get(employeeId);
-            const nextEmployeeRef = nextProps.employees.employeesById.get(employeeId);
-            return currentEmployeeRef === nextEmployeeRef;
-        });
-
-        return !nothingChanged;
-    } 
-
     public render() {
         const feeds = this.sortedFeeds();
 

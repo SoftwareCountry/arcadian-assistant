@@ -1,6 +1,6 @@
 import { employeesReducer, EmployeesStore } from './employees.reducer';
 import { Employee } from './employee.model';
-import { loadEmployeeFinished } from './organization.action';
+import { loadEmployeesFinished } from './organization.action';
 
 describe('employees reducer', () => {
 
@@ -18,7 +18,7 @@ describe('employees reducer', () => {
         const id = 'test_id';
         employee.employeeId = id;
 
-        const state = employeesReducer(undefined, loadEmployeeFinished(employee));
+        const state = employeesReducer(undefined, loadEmployeesFinished([ employee ]));
         expect(state.employeesById.get(id)).toEqual(employee);
     });
 
@@ -29,7 +29,7 @@ describe('employees reducer', () => {
         employee.employeeId = id;
         employee.departmentId = depId;
 
-        const state = employeesReducer(undefined, loadEmployeeFinished(employee));
+        const state = employeesReducer(undefined, loadEmployeesFinished([ employee ]));
         expect(state.employeeIdsByDepartment.get(depId).has(id)).toBeTruthy();
     });
 
@@ -45,8 +45,8 @@ describe('employees reducer', () => {
         updatedEmployee.employeeId = id;
         updatedEmployee.departmentId = depId2;
 
-        let state = employeesReducer(undefined, loadEmployeeFinished(oldEmployee));
-        state = employeesReducer(state, loadEmployeeFinished(updatedEmployee));
+        let state = employeesReducer(undefined, loadEmployeesFinished([ oldEmployee ]));
+        state = employeesReducer(state, loadEmployeesFinished([ updatedEmployee ]));
 
         expect(state.employeesById.get(id)).toEqual(updatedEmployee);
         expect(state.employeeIdsByDepartment.get(depId1).has(id)).toBeFalsy();

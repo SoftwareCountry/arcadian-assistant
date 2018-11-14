@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 import { NavigationAction } from 'react-navigation';
-import { LoadDepartmentsFinished, LoadEmployeeFinished } from '../organization/organization.action';
+import { LoadDepartmentsFinished, LoadEmployeesFinished } from '../organization/organization.action';
 import { PeopleActions } from './people.action';
 import { SearchActions } from '../search/search.action';
 import { SearchType } from '../../navigation/search-view';
@@ -24,8 +24,8 @@ const initState: PeopleState = {
     selectedCompanyDepartmentId: null,
 };
 
-export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions | NavigationAction | 
-        LoadUserEmployeeFinished | LoadDepartmentsFinished | SearchActions | LoadEmployeeFinished): PeopleState => {
+export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions | NavigationAction |
+        LoadUserEmployeeFinished | LoadDepartmentsFinished | SearchActions | LoadEmployeesFinished): PeopleState => {
     switch (action.type) {
         case 'Navigation/NAVIGATE':
             if (action.routeName === 'Company') {
@@ -61,7 +61,7 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
 
                 if (!headDepartment && department.isHeadDepartment) {
                     headDepartment = node;
-                }                
+                }
 
                 const staffNodeId = `[${node.parentId}-staff]`;
 
@@ -86,7 +86,7 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
                 headDepartment: headDepartment
             };
 
-        case 'SELECT-COMPANY-DEPARTMENT': 
+        case 'SELECT-COMPANY-DEPARTMENT':
             return {
                 ...state,
                 selectedCompanyDepartmentId: action.departmentId
