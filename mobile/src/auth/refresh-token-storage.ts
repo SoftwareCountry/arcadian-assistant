@@ -33,7 +33,6 @@ class RefreshTokenBaseStorage {
             this.refreshToken = refreshToken;
             await SInfo.setItem(this.keyName, refreshToken, {
                 keychainService: 'ArcadiaAssistant',
-                kSecAccessControl: 'kSecAccessControlTouchIDCurrentSet',
                 sharedPreferencesName: 'ArcadiaAssistantPreferences',
                 touchID: useTouchId,
             });
