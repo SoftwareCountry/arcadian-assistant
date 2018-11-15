@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { LoginRequest } from './login-request';
 import { RefreshTokenStorage } from './refresh-token-storage';
 import { NotAuthenticatedState, AuthenticationState } from './authentication-state';
-import * as moment from 'moment';
+import moment from 'moment';
 
 //https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-protocols-oauth-code
 

@@ -1,7 +1,7 @@
 import { ajaxGetJSON, ajaxPost, ajaxPut, ajaxDelete } from 'rxjs/observable/dom/AjaxObservable';
 import { Observable } from 'rxjs/Observable';
 import { AuthenticationState, AuthenticatedState } from './authentication-state';
-import * as moment from 'moment';
+import moment from 'moment';
 
 export class SecuredApiClient {
 
