@@ -19,6 +19,8 @@ export class OAuthProcess {
 
     private readonly refreshIntervalSeconds = 30;
 
+    private readonly tokenValidDuration = moment.duration(5, 'm');
+
     private readonly authorizationCode: Subject<string> = new Subject<string>();
 
     private readonly refreshTokenSource: Subject<RefreshTokenRequest> = new Subject<RefreshTokenRequest>();
@@ -114,7 +116,7 @@ export class OAuthProcess {
                 isAuthenticated: true,
                 jwtToken: tokenResponse.accessToken,
                 refreshToken: tokenResponse.refreshToken,
-                validUntil: moment().add(this.refreshIntervalSeconds, 's'),
+                validUntil: moment().add(this.tokenValidDuration),
             });
         }
     }
