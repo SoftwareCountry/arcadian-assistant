@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { LoginRequest } from './login-request';
 import { RefreshTokenStorage } from './refresh-token-storage';
 import { NotAuthenticatedState, AuthenticationState } from './authentication-state';
+import * as moment from 'moment';
 
 //https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-protocols-oauth-code
 
@@ -16,7 +17,7 @@ export class OAuthProcess {
 
     public get authenticationState() { return this.authenticationStateSource.asObservable().distinctUntilChanged(); }
 
-    private readonly refreshIntervalSeconds = 15; //once in 5 minutes
+    private readonly refreshIntervalSeconds = 30;
 
     private readonly authorizationCode: Subject<string> = new Subject<string>();
 
@@ -113,7 +114,7 @@ export class OAuthProcess {
                 isAuthenticated: true,
                 jwtToken: tokenResponse.accessToken,
                 refreshToken: tokenResponse.refreshToken,
-                lastUpdated: new Date(),
+                validUntil: moment().add(this.refreshIntervalSeconds, 's'),
             });
         }
     }

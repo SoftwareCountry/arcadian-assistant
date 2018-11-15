@@ -1,6 +1,7 @@
 import { ajaxGetJSON, ajaxPost, ajaxPut, ajaxDelete } from 'rxjs/observable/dom/AjaxObservable';
 import { Observable } from 'rxjs/Observable';
 import { AuthenticationState, AuthenticatedState } from './authentication-state';
+import * as moment from 'moment';
 
 export class SecuredApiClient {
 
@@ -36,8 +37,7 @@ export class SecuredApiClient {
         return this.authState
             .first(x => {
                 if (x.isAuthenticated) {
-                    // Accept token only if it is fresh enough (< 5 min)
-                    return (Date.now() - x.lastUpdated.getTime()) < 5 * 60 * 1000;
+                    return moment().isBefore(x.validUntil);
                 }
                 return false;
             })
