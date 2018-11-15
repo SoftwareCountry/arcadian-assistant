@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Arcadia.Assistant.CSP\Arcadia.Assistant.CSP.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Health.Abstractions\Arcadia.Assistant.Health.Abstractions.csproj" />
   </ItemGroup>
 
