@@ -32,7 +32,7 @@
                             HireDate = x.HiringDate,
                             FireDate = x.FiringDate,
                             MobilePhone = x.MobilePhone,
-                            RoomNumber = x.RoomNumber,
+                            RoomNumber = x.RoomNumber != null ? x.RoomNumber.Trim() : null,
                             Position = x.Position.Title,
                             Sid = x.Sid.HasValue ? x.Sid.Value.ToString() : null,
                             DepartmentId = x.DepartmentId.HasValue ? x.DepartmentId.Value.ToString() : null,
