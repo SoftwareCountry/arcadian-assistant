@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import FingerprintScanner from 'react-native-fingerprint-scanner';
 import { FingerprintPopupStyle } from './fingerprint-popup.style';
-import { Image, Modal, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { Image, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import Modal from 'react-native-modal';
 
 //============================================================================
 interface FingerprintPopupState {
@@ -11,11 +12,13 @@ interface FingerprintPopupState {
 //============================================================================
 interface FingerprintPopupProps {
     isVisible: boolean;
-    onPopupClosed: (success: boolean) => void;
+    onPopupClose: () => void;
+    onPopupHidden: (success: boolean) => void;
 }
 
 //============================================================================
 export class FingerprintPopupAndroid extends Component<FingerprintPopupProps, FingerprintPopupState> {
+    private success = false;
 
     //----------------------------------------------------------------------------
     constructor(props: FingerprintPopupProps) {
@@ -23,6 +26,8 @@ export class FingerprintPopupAndroid extends Component<FingerprintPopupProps, Fi
 
         this.handleAuthenticationAttempt = this.handleAuthenticationAttempt.bind(this);
         this.fingerprintContainerColor = this.fingerprintContainerColor.bind(this);
+        this.descriptionColor = this.descriptionColor.bind(this);
+        this.descriptionText = this.descriptionText.bind(this);
 
         this.state = {
             error: false,
@@ -33,10 +38,12 @@ export class FingerprintPopupAndroid extends Component<FingerprintPopupProps, Fi
     public componentDidMount(): void {
         FingerprintScanner.authenticate({ onAttempt: this.handleAuthenticationAttempt })
             .then(() => {
-                this.props.onPopupClosed(true);
+                this.success = true;
+                this.props.onPopupClose();
             })
             .catch((error) => {
-                this.props.onPopupClosed(false);
+                this.success = false;
+                this.props.onPopupClose();
             });
     }
 
@@ -47,31 +54,29 @@ export class FingerprintPopupAndroid extends Component<FingerprintPopupProps, Fi
 
     //----------------------------------------------------------------------------
     public render() {
-        if (this.props.isVisible) {
-            return (
-                <Modal visible={this.props.isVisible} transparent={true} onRequestClose={() => {}}>
-                    <View style={FingerprintPopupStyle.view.flexContainer}>
-                        <View style={FingerprintPopupStyle.view.container}>
-                            <Text style={FingerprintPopupStyle.text.title}>{'Sign in'}</Text>
-                            <View style={[FingerprintPopupStyle.view.fingerImageContainer, this.fingerprintContainerColor()]}>
-                                <Image style={FingerprintPopupStyle.view.fingerImage}
-                                       source={require('./fingerprint_white_192x192.png')}/>
-                            </View>
-                            <Text style={[FingerprintPopupStyle.text.description, this.descriptionColor()]}>{this.descriptionText()}</Text>
-                            <TouchableOpacity style={FingerprintPopupStyle.view.button} onPress={() => {
-                                this.props.onPopupClosed(false);
-                            }}>
-                                <Text style={FingerprintPopupStyle.text.buttonText}>
-                                    CANCEL
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
+        return (
+            <Modal
+                isVisible={this.props.isVisible}
+                style={{ justifyContent: 'flex-end', margin: 0 }}
+                onModalHide={() => { this.props.onPopupHidden(this.success); }}>
+                <View style={FingerprintPopupStyle.view.container}>
+                    <Text style={FingerprintPopupStyle.text.title}>{'Sign in'}</Text>
+                    <View style={[FingerprintPopupStyle.view.fingerImageContainer, this.fingerprintContainerColor()]}>
+                        <Image style={FingerprintPopupStyle.view.fingerImage}
+                               source={require('./fingerprint_white_192x192.png')}/>
                     </View>
-                </Modal>
-            );
-        } else {
-            return null;
-        }
+                    <Text style={[FingerprintPopupStyle.text.description, this.descriptionColor()]}>{this.descriptionText()}</Text>
+                    <TouchableOpacity style={FingerprintPopupStyle.view.button} onPress={() => {
+                        this.success = false;
+                        this.props.onPopupClose();
+                    }}>
+                        <Text style={FingerprintPopupStyle.text.buttonText}>
+                            CANCEL
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            </Modal>
+        );
     }
 
     //----------------------------------------------------------------------------

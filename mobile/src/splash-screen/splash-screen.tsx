@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, Platform } from 'react-native';
+import { Image, Platform, View } from 'react-native';
 import { splashScreenStyles } from './styles';
 import { FingerprintPopupAndroid } from '../fingerprint-popup/fingerprint-popup.android';
 import { Action } from 'redux';
@@ -25,6 +25,7 @@ class SplashScreenImpl extends React.Component<SplashScreenDispatchProps, Splash
         super(props);
 
         this.onPopupClosed = this.onPopupClosed.bind(this);
+        this.onPopupHidden = this.onPopupHidden.bind(this);
 
         this.state = {
             fingerprintPopupVisible: true,
@@ -35,8 +36,8 @@ class SplashScreenImpl extends React.Component<SplashScreenDispatchProps, Splash
     public render() {
         return (
             <View style={splashScreenStyles.container}>
-                <View style={splashScreenStyles.imageContainer} >
-                    <Image source={require('./arcadia-logo.png')}  />
+                <View style={splashScreenStyles.imageContainer}>
+                    <Image source={require('./arcadia-logo.png')}/>
                 </View>
                 {this.fingerprintPopup()}
             </View>
@@ -53,18 +54,21 @@ class SplashScreenImpl extends React.Component<SplashScreenDispatchProps, Splash
         return (
             <FingerprintPopupAndroid
                 isVisible={this.state.fingerprintPopupVisible}
-                onPopupClosed={this.onPopupClosed}/>
+                onPopupClose={this.onPopupClosed}
+                onPopupHidden={this.onPopupHidden}/>
         );
     }
 
     //----------------------------------------------------------------------------
-    private onPopupClosed(success: boolean): void {
-
+    private onPopupClosed(): void {
         this.setState({
             ...this.state,
             fingerprintPopupVisible: false,
         });
+    }
 
+    //----------------------------------------------------------------------------
+    private onPopupHidden(success: boolean): void {
         if (success) {
             this.props.login();
         } else {

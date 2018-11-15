@@ -2,7 +2,7 @@ import { StyleSheet, ViewStyle } from 'react-native';
 
 //----------------------------------------------------------------------------
 const view = StyleSheet.create({
-    flexContainer: {
+    background: {
         flex: 1,
         justifyContent: 'flex-end',
         backgroundColor: '#00000099',
