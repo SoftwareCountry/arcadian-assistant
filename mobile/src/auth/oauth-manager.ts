@@ -1,4 +1,4 @@
-import { createRefreshTokenStorage, RefreshTokenProtectedStorage } from './refresh-token-storage';
+import { createRefreshTokenStorage } from './refresh-token-storage';
 import { OAuthProcess } from './oauth-process';
 
 export class OAuthManager {
