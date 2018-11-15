@@ -34,7 +34,13 @@ export class SecuredApiClient {
 
     private getHeaders(headers?: Object) {
         return this.authState
-            .first(x => x.isAuthenticated)
+            .first(x => {
+                if (x.isAuthenticated) {
+                    // Accept token only if it is fresh enough (< 5 min)
+                    return (Date.now() - x.lastUpdated.getTime()) < 5 * 60 * 1000;
+                }
+                return false;
+            })
             .map((x: AuthenticatedState) => ({
                 ...headers,
                 'Authorization': `Bearer ${x.jwtToken}`
