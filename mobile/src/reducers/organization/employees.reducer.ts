@@ -19,27 +19,33 @@ const defaultState: EmployeesStore = {
 
 export const employeesReducer: Reducer<EmployeesStore> = (state = defaultState, action: OrganizationActions) => {
     switch (action.type) {
-        case 'LOAD_EMPLOYEE_FINISHED':
-            let {employeesById, employeeIdsByDepartment} = state;
+        case 'LOAD_EMPLOYEES_FINISHED':
+            let { employeesById, employeeIdsByDepartment } = state;
 
-            const newEmployee = action.employee;
-            const oldEmployee = employeesById.get(newEmployee.employeeId);
-            if (oldEmployee !== undefined) {
-                //if department changed, remove a link from old collection
-                if (oldEmployee.departmentId !== newEmployee.departmentId) {
-                    employeeIdsByDepartment = employeeIdsByDepartment
-                        .update(oldEmployee.departmentId, Set(), oldColelction => oldColelction.remove(oldEmployee.employeeId));
+            for (const newEmployee of action.employees) {
+                const oldEmployee = employeesById.get(newEmployee.employeeId);
+                if (oldEmployee !== undefined) {
+
+                    if (oldEmployee.equals(newEmployee)) {
+                        continue;
+                    }
+
+                    //if department changed, remove a link from old collection
+                    if (oldEmployee.departmentId !== newEmployee.departmentId) {
+                        employeeIdsByDepartment = employeeIdsByDepartment
+                            .update(oldEmployee.departmentId, Set(), oldCollection => oldCollection.remove(oldEmployee.employeeId));
+                    }
                 }
+
+                employeeIdsByDepartment = employeeIdsByDepartment
+                    .update(newEmployee.departmentId, Set(), oldCollection => oldCollection.add(newEmployee.employeeId));
+
+                employeesById = employeesById.set(newEmployee.employeeId, newEmployee);
             }
-
-            employeeIdsByDepartment = employeeIdsByDepartment
-                .update(newEmployee.departmentId, Set(), oldCollection => oldCollection.add(newEmployee.employeeId));
-
-            employeesById = employeesById.set(newEmployee.employeeId, newEmployee);
 
             return {
                 employeeIdsByDepartment,
-                employeesById
+                employeesById,
             };
 
         default:
