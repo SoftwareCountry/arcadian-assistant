@@ -6,8 +6,8 @@ import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
 import { LoginRequest } from './login-request';
 import { RefreshTokenStorage } from './refresh-token-storage';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { NotAuthenticatedState, AuthenticationState } from './authentication-state';
+import moment from 'moment';
 
 //https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-protocols-oauth-code
 
@@ -17,7 +17,9 @@ export class OAuthProcess {
 
     public get authenticationState() { return this.authenticationStateSource.asObservable().distinctUntilChanged(); }
 
-    private readonly refreshIntervalSeconds = 15; //once in 5 minutes
+    private readonly refreshIntervalSeconds = 30;
+
+    private readonly tokenValidDuration = moment.duration(5, 'm');
 
     private readonly authorizationCode: Subject<string> = new Subject<string>();
 
@@ -36,7 +38,7 @@ export class OAuthProcess {
         authorizationUrl: string,
         tokenUrl: string,
         redirectUri: string,
-        private readonly refreshTokenStorage: RefreshTokenStorage) {        
+        private readonly refreshTokenStorage: RefreshTokenStorage) {
 
         this.loginRequest = new LoginRequest(clientId, redirectUri, authorizationUrl);
         this.accessCodeRequest = new AccessCodeRequest(clientId, redirectUri, tokenUrl);
@@ -85,7 +87,7 @@ export class OAuthProcess {
                 }
             } else {
                 console.debug('Using refresh token from the application storage');
-                //request refresh            
+                //request refresh
                 this.refreshTokenSource.next({ immediateRefresh: true, tokenValue: value });
             }
         }
@@ -110,7 +112,12 @@ export class OAuthProcess {
             this.authenticationStateSource.next(notAuthenticatedInstance);
         } else {
             this.refreshTokenSource.next( { tokenValue: tokenResponse.refreshToken, immediateRefresh: false });
-            this.authenticationStateSource.next({ isAuthenticated: true, jwtToken: tokenResponse.accessToken, refreshToken: tokenResponse.refreshToken });
+            this.authenticationStateSource.next({
+                isAuthenticated: true,
+                jwtToken: tokenResponse.accessToken,
+                refreshToken: tokenResponse.refreshToken,
+                validUntil: moment().add(this.tokenValidDuration),
+            });
         }
     }
 

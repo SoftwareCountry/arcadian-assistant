@@ -1,15 +1,13 @@
 import React, { Component } from 'react';
-import { DepartmentIdToSelectedId, DepartmentNode } from '../reducers/people/people.model';
+import { DepartmentNode } from '../reducers/people/people.model';
 import { Animated, PanResponder, PanResponderInstance, PanResponderGestureState, Easing, StyleSheet, View, Platform } from 'react-native';
-import { Set } from 'immutable';
-import { StyledText } from '../override/styled-text';
 import { companyDepartments } from './styles';
 import { CompanyDepartmentsLevelAnimatedNode } from './company-departments-level-animated-node';
 import { Employee } from '../reducers/organization/employee.model';
 
 interface CompanyDepartmentsLevelNodesProps {
     width: number;
-    height: number;    
+    height: number;
     nodes: DepartmentNode[];
     chiefs: Employee[];
     selectedDepartmentId: string;
@@ -43,7 +41,12 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
 
     public componentWillMount() {
         this.panResponder = PanResponder.create({
-            onMoveShouldSetPanResponderCapture: (evt, gestureState) => this.canSwipe,
+            onMoveShouldSetPanResponderCapture: (evt, gestureState) => {
+                if (Math.abs(gestureState.dx) < 8 && Math.abs(gestureState.dy) < 8) {
+                    return false;
+                }
+                return this.canSwipe;
+            },
             onPanResponderMove: Animated.event(
                 [
                     null,
@@ -135,7 +138,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
         if (!a || !b) {
             return false;
         }
-        
+
         if (a.length !== b.length) {
             return false;
         }
@@ -144,7 +147,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
             if (!a[i].equals(b[i])) {
                 return false;
             }
-        }        
+        }
 
         return true;
     }
@@ -179,8 +182,8 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
         }
 
         this.props.loadEmployeesForDepartment(
-            selectedNode.staffDepartmentId 
-                ? selectedNode.staffDepartmentId 
+            selectedNode.staffDepartmentId
+                ? selectedNode.staffDepartmentId
                 : selectedNode.departmentId);
     }
 
@@ -209,7 +212,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
     }
 
     private nextDepartment() {
-        const index = !this.props.selectedDepartmentId 
+        const index = !this.props.selectedDepartmentId
             ? 0
             : this.props.nodes.findIndex(node => node.departmentId === this.props.selectedDepartmentId);
 
@@ -230,7 +233,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
         if (!prevNode) {
             return;
         }
-        
+
         this.props.onPrevDepartment(prevNode.departmentId);
     }
 
@@ -240,7 +243,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
         if (this.props.selectedDepartmentId) {
             index = this.props.nodes.findIndex(node => node.departmentId === this.props.selectedDepartmentId);
         }
-        
+
         return !this.props.nodes[index + 1];
     }
 
@@ -250,8 +253,8 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
         if (this.props.selectedDepartmentId) {
             index = this.props.nodes.findIndex(node => node.departmentId === this.props.selectedDepartmentId);
         }
-        
-        return !this.props.nodes[index - 1];        
+
+        return !this.props.nodes[index - 1];
     }
 
     private moveToPage(
