@@ -55,9 +55,11 @@ class HomeFeedsScreenImpl extends React.Component<NavigationScreenProps & FeedsS
     private flatList = createRef<FlatList<any>>();
 
     public componentDidMount() {
-        this.props.navigation.setParams({
-            tabBarOnPress: this.scrollToTop
-        });
+        if (this.props.navigation) {
+            this.props.navigation.setParams({
+                tabBarOnPress: this.scrollToTop
+            });
+        }
     }
 
     public render() {
