@@ -30,6 +30,7 @@ export const feedStyles = StyleSheet.create({
     imgContainer: {
         marginTop: 5,
         flex: 2,
+        aspectRatio: 1,
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
         flexDirection: 'row'
