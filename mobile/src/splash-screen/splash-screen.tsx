@@ -5,6 +5,7 @@ import { FingerprintPopupAndroid } from '../fingerprint-popup/fingerprint-popup.
 import { Action } from 'redux';
 import { startLoginProcess, startLogoutProcess } from '../reducers/auth/auth.action';
 import { connect, Dispatch } from 'react-redux';
+import FingerprintScanner from 'react-native-fingerprint-scanner';
 
 //============================================================================
 interface SplashScreenState {
@@ -19,13 +20,14 @@ interface SplashScreenDispatchProps {
 
 //============================================================================
 class SplashScreenImpl extends React.Component<SplashScreenDispatchProps, SplashScreenState> {
+    private isSensorAvailable = false;
 
     //----------------------------------------------------------------------------
     constructor(props: SplashScreenDispatchProps) {
         super(props);
 
         this.state = {
-            fingerprintPopupVisible: true,
+            fingerprintPopupVisible: false,
         };
     }
 
@@ -42,9 +44,37 @@ class SplashScreenImpl extends React.Component<SplashScreenDispatchProps, Splash
     }
 
     //----------------------------------------------------------------------------
+    public componentWillMount(): void {
+        const isAndroid = Platform.OS === 'android';
+        if (isAndroid) {
+            FingerprintScanner.isSensorAvailable()
+                .then((biometry) => {
+                    const isSensorAvailable = biometry === 'Fingerprint';
+                    this.handleSensorAvailability(isSensorAvailable);
+                })
+                .catch((_) => {
+                    this.handleSensorAvailability(false);
+                });
+        }
+    }
+
+    //----------------------------------------------------------------------------
+    private handleSensorAvailability = (isSensorAvailable: boolean) => {
+        this.isSensorAvailable = isSensorAvailable;
+        if (!isSensorAvailable) {
+            this.props.login();
+        } else {
+            this.setState({
+                ...this.state,
+                fingerprintPopupVisible: true,
+            });
+        }
+    }
+
+    //----------------------------------------------------------------------------
     private fingerprintPopup(): JSX.Element | null {
         const isIOS = Platform.OS === 'ios';
-        if (isIOS) {
+        if (isIOS || !this.isSensorAvailable) {
             return null;
         }
 
@@ -66,6 +96,10 @@ class SplashScreenImpl extends React.Component<SplashScreenDispatchProps, Splash
 
     //----------------------------------------------------------------------------
     private onPopupHidden = (success: boolean): void => {
+        if (success === undefined) {
+            return;
+        }
+
         if (success) {
             this.props.login();
         } else {
