@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect, Dispatch, MapStateToProps } from 'react-redux';
 import { Map } from 'immutable';
-import { View, StyleSheet, ScrollView, Linking, TouchableOpacity, ViewStyle } from 'react-native';
+import {View, StyleSheet, ScrollView, Linking, TouchableOpacity, ViewStyle, StyleProp} from 'react-native';
 
 import { layoutStyles, contentStyles, tileStyles, contactStyles } from '../profile/styles';
 import { Chevron } from '../profile/chevron';
@@ -95,7 +95,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             const calendarEvents = events.get(this.props.employee.employeeId);
             const nextCalendarEvents = nextEvents.get(nextProps.employee.employeeId);
 
-            return calendarEvents !== nextCalendarEvents;            
+            return calendarEvents !== nextCalendarEvents;
         }
 
         return false;
@@ -170,6 +170,14 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         return text ? text.toUpperCase() : text;
     }
 
+    private tileStyle = (transparent: boolean): StyleProp<ViewStyle> => {
+        if (transparent) {
+            return [tileStyles.tile, {backgroundColor: 'transparent'}];
+        } else {
+            return tileStyles.tile;
+        }
+    };
+
     private getTiles(employee: Employee) {
         const tilesData: TileData[] = [
             {
@@ -213,13 +221,13 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             {
                 tile.payload !== null ?
                     <TouchableOpacity onPress={tile.onPress}>
-                    <View style={tileStyles.tile}>
+                    <View style={this.tileStyle(tile.onPress === null)}>
                         <View style={tileStyles.iconContainer}>
                             <ApplicationIcon name={tile.icon} size={tile.size} style={tile.style} />
                         </View>
                         <StyledText style={tileStyles.text}>{tile.label}</StyledText>
                     </View></TouchableOpacity>
-                : <View style={tileStyles.tile}>
+                : <View style={this.tileStyle(tile.onPress === null)}>
                     <View style={tileStyles.iconContainer}>
                         <ApplicationIcon name={tile.icon} size={tile.size} style={tile.style} />
                     </View>
