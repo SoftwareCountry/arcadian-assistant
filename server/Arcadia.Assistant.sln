@@ -47,9 +47,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Security"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Arcadia.Assistant.SQL", "Arcadia.Assistant.SQL\Arcadia.Assistant.SQL.sqlproj", "{7646080E-D877-4EE1-986D-AC5D2EADBF63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Health", "Arcadia.Assistant.Health\Arcadia.Assistant.Health.csproj", "{3DF90A39-07F4-4D96-B891-76E7ECFF781E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Health.Abstractions", "Arcadia.Assistant.Health.Abstractions\Arcadia.Assistant.Health.Abstractions.csproj", "{B3EF656C-FD38-4B05-A31A-B5715350B665}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Health.Abstractions", "Arcadia.Assistant.Health.Abstractions\Arcadia.Assistant.Health.Abstractions.csproj", "{B3EF656C-FD38-4B05-A31A-B5715350B665}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -126,10 +124,6 @@ Global
 		{7646080E-D877-4EE1-986D-AC5D2EADBF63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7646080E-D877-4EE1-986D-AC5D2EADBF63}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7646080E-D877-4EE1-986D-AC5D2EADBF63}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3DF90A39-07F4-4D96-B891-76E7ECFF781E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3DF90A39-07F4-4D96-B891-76E7ECFF781E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3DF90A39-07F4-4D96-B891-76E7ECFF781E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3DF90A39-07F4-4D96-B891-76E7ECFF781E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B3EF656C-FD38-4B05-A31A-B5715350B665}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B3EF656C-FD38-4B05-A31A-B5715350B665}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3EF656C-FD38-4B05-A31A-B5715350B665}.Release|Any CPU.ActiveCfg = Release|Any CPU
