@@ -2,6 +2,10 @@ import { StyleSheet, ViewStyle } from 'react-native';
 
 //----------------------------------------------------------------------------
 const view = StyleSheet.create({
+    modal: {
+        justifyContent: 'flex-end',
+        margin: 0,
+    },
     background: {
         flex: 1,
         justifyContent: 'flex-end',
@@ -17,14 +21,14 @@ const view = StyleSheet.create({
         paddingHorizontal: 24,
         paddingVertical: 24,
     },
-    fingerImageContainer: {
+    fingerprintImageContainer: {
         justifyContent: 'center',
         alignItems: 'center',
         width: 64,
         height: 64,
         borderRadius: 32
     },
-    fingerImage: {
+    fingerprintImage: {
         width: 36,
         height: 36,
     },

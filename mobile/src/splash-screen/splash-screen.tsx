@@ -24,9 +24,6 @@ class SplashScreenImpl extends React.Component<SplashScreenDispatchProps, Splash
     constructor(props: SplashScreenDispatchProps) {
         super(props);
 
-        this.onPopupClosed = this.onPopupClosed.bind(this);
-        this.onPopupHidden = this.onPopupHidden.bind(this);
-
         this.state = {
             fingerprintPopupVisible: true,
         };
@@ -60,7 +57,7 @@ class SplashScreenImpl extends React.Component<SplashScreenDispatchProps, Splash
     }
 
     //----------------------------------------------------------------------------
-    private onPopupClosed(): void {
+    private onPopupClosed = (): void => {
         this.setState({
             ...this.state,
             fingerprintPopupVisible: false,
@@ -68,7 +65,7 @@ class SplashScreenImpl extends React.Component<SplashScreenDispatchProps, Splash
     }
 
     //----------------------------------------------------------------------------
-    private onPopupHidden(success: boolean): void {
+    private onPopupHidden = (success: boolean): void => {
         if (success) {
             this.props.login();
         } else {

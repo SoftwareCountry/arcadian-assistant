@@ -20,14 +20,11 @@ interface FingerprintPopupProps {
 export class FingerprintPopupAndroid extends Component<FingerprintPopupProps, FingerprintPopupState> {
     private success = false;
 
+    private fingerprintImage = require('./fingerprint_white_192x192.png');
+
     //----------------------------------------------------------------------------
     constructor(props: FingerprintPopupProps) {
         super(props);
-
-        this.handleAuthenticationAttempt = this.handleAuthenticationAttempt.bind(this);
-        this.fingerprintContainerColor = this.fingerprintContainerColor.bind(this);
-        this.descriptionColor = this.descriptionColor.bind(this);
-        this.descriptionText = this.descriptionText.bind(this);
 
         this.state = {
             error: false,
@@ -57,44 +54,59 @@ export class FingerprintPopupAndroid extends Component<FingerprintPopupProps, Fi
         return (
             <Modal
                 isVisible={this.props.isVisible}
-                style={{ justifyContent: 'flex-end', margin: 0 }}
-                onModalHide={() => { this.props.onPopupHidden(this.success); }}>
+                style={FingerprintPopupStyle.view.modal}
+                onModalHide={this.onModalHide}>
+
                 <View style={FingerprintPopupStyle.view.container}>
+
                     <Text style={FingerprintPopupStyle.text.title}>{'Sign in'}</Text>
-                    <View style={[FingerprintPopupStyle.view.fingerImageContainer, this.fingerprintContainerColor()]}>
-                        <Image style={FingerprintPopupStyle.view.fingerImage}
-                               source={require('./fingerprint_white_192x192.png')}/>
+
+                    <View style={[FingerprintPopupStyle.view.fingerprintImageContainer, this.fingerprintContainerColor()]}>
+                        <Image style={FingerprintPopupStyle.view.fingerprintImage}
+                               source={this.fingerprintImage}/>
                     </View>
+
                     <Text style={[FingerprintPopupStyle.text.description, this.descriptionColor()]}>{this.descriptionText()}</Text>
-                    <TouchableOpacity style={FingerprintPopupStyle.view.button} onPress={() => {
-                        this.success = false;
-                        this.props.onPopupClose();
-                    }}>
+
+                    <TouchableOpacity style={FingerprintPopupStyle.view.button} onPress={this.onCancel}>
                         <Text style={FingerprintPopupStyle.text.buttonText}>
                             CANCEL
                         </Text>
                     </TouchableOpacity>
+
                 </View>
+
             </Modal>
         );
     }
 
     //----------------------------------------------------------------------------
-    private fingerprintContainerColor(): StyleProp<ViewStyle> {
+    private onCancel = () => {
+        this.success = false;
+        this.props.onPopupClose();
+    }
+
+    //----------------------------------------------------------------------------
+    private onModalHide = () => {
+        this.props.onPopupHidden(this.success);
+    }
+
+    //----------------------------------------------------------------------------
+    private fingerprintContainerColor = (): StyleProp<ViewStyle> => {
         return {
             backgroundColor: this.state.error ? '#ea3d13' : '#2fafcc',
         };
     }
 
     //----------------------------------------------------------------------------
-    private descriptionColor(): StyleProp<TextStyle> {
+    private descriptionColor = (): StyleProp<TextStyle> => {
         return {
             color: this.state.error ? '#ea3d13' : '#a5a5a5',
         };
     }
 
     //----------------------------------------------------------------------------
-    private descriptionText(): string {
+    private descriptionText = (): string => {
         if (!this.state.error) {
             return 'Touch the fingerprint sensor';
         }
@@ -103,7 +115,7 @@ export class FingerprintPopupAndroid extends Component<FingerprintPopupProps, Fi
     }
 
     //----------------------------------------------------------------------------
-    private handleAuthenticationAttempt(error: Error): void {
+    private handleAuthenticationAttempt = (error: Error): void => {
         this.setState({
             error: !!error,
         });
