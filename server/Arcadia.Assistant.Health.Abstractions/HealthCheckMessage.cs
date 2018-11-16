@@ -2,11 +2,6 @@
 {
     public class HealthCheckMessage
     {
-        public HealthCheckMessage(HealthCheckType checkType)
-        {
-            CheckType = checkType;
-        }
-
-        public HealthCheckType CheckType { get; }
+        public static readonly HealthCheckMessage Instance = new HealthCheckMessage();
     }
 }

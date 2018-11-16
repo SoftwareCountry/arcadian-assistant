@@ -1,5 +1,7 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -19,24 +21,16 @@
 
         [Route("/api/ping/health")]
         [HttpGet]
-        [ProducesResponseType(typeof(ApplicationHealthModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<ApplicationHealthModelEntry>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetApplicationHealth(CancellationToken cancellationToken)
         {
-            var tasks = new[]
-            {
-                this.healthService.GetIsServerAlive(cancellationToken),
-                this.healthService.GetIs1CAlive(cancellationToken),
-                this.healthService.GetIsDatabaseAlive(cancellationToken)
-            };
+            var healthStateDict = await this.healthService.GetHealthState(cancellationToken);
 
-            var result = await Task.WhenAll(tasks);
+            var result = healthStateDict
+                .Select(kvp => new ApplicationHealthModelEntry(kvp.Key, kvp.Value))
+                .ToList();
 
-            return this.Ok(new ApplicationHealthModel
-            {
-                IsServerAlive = result[0],
-                Is1CAlive = result[1],
-                IsDatabaseAlive = result[2]
-            });
+            return this.Ok(result);
         }
     }
 }
