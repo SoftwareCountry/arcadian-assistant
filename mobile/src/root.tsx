@@ -4,8 +4,8 @@ import { OAuthProcess } from './auth/oauth-process';
 import { Provider } from 'react-redux';
 import { storeFactory } from './reducers/app.reducer';
 import { AppWithNavigationState } from './app';
-
 import config from './config';
+import { Modal, Platform, Text } from 'react-native';
 
 export class Root extends Component<{}> {
     private oauthProcess: OAuthProcess;
@@ -18,16 +18,12 @@ export class Root extends Component<{}> {
         config.oauth.tenant,
         config.oauth.redirectUri);
 
-        /*
-      this.oauthProcess.forgetUser()
-        .then(x => this.oauthProcess.login())
-        .catch(console.error);
-*/
-
-      this.oauthProcess.login().catch(console.error);
-      //this.oauthProcess.authenticationState.forEach(console.log);
+      const isIOS = Platform.OS === 'ios';
+      if (isIOS) {
+          this.oauthProcess.login().catch(console.error);
+      }
     }
-  
+
     public render() {
       return (
         <Provider store={storeFactory(this.oauthProcess)}>
@@ -35,8 +31,8 @@ export class Root extends Component<{}> {
         </Provider>
       );
     }
-  
-    public componentWillUnmount() {  
+
+    public componentWillUnmount() {
       if (this.oauthProcess) {
         this.oauthProcess.dispose();
       }
