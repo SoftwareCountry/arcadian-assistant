@@ -44,8 +44,6 @@ export const peopleTabBarOnPressHandler: TabBarOnPress = options => {
 
 };
 
-export const calendarTabBarOnPressHandlerDraft = firstScrollableItemInStackNavigatorTabBarOnPressHandler;
-
 export const calendarTabBarOnPressHandler: TabBarOnPress = options => {
     if (options.scene.focused && options.scene.route) {
 

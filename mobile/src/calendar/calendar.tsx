@@ -5,6 +5,7 @@ import { OnSelectedDayCallback } from './calendar-page';
 import { CalendarPager } from './calendar-pager';
 import { CalendarActions, selectCalendarDay, nextCalendarPage, prevCalendarPage } from '../reducers/calendar/calendar.action';
 import { WeekModel, DayModel, CalendarSelection, ReadOnlyIntervalsModel, CalendarPageModel } from '../reducers/calendar/calendar.model';
+import {NavigationScreenProps} from 'react-navigation';
 
 interface CalendarProps {
     pages: CalendarPageModel[];
@@ -19,7 +20,16 @@ interface CalendarDispatchProps {
     prevCalendarPage: () => void;
 }
 
-export class CalendarImpl extends Component<CalendarProps & CalendarDispatchProps> {
+export class CalendarImpl extends Component<NavigationScreenProps & CalendarProps & CalendarDispatchProps> {
+
+    public componentDidMount() {
+        if (this.props.navigation) {
+            this.props.navigation.setParams({
+                tabBarOnPress: this.onSelectedDay
+            });
+        }
+    }
+
     public render() {
         return <CalendarPager
                     onSelectedDay={this.onSelectedDay}
