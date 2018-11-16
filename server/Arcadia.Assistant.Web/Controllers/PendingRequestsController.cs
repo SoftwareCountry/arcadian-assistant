@@ -52,9 +52,10 @@
                 return this.Forbid();
             }
 
-            var actor = this.actorsFactory.ActorOf(PendingActionsRequest.CreateProps(this.pathBuilder, this.timeoutSettings));
+            var actor = this.actorsFactory.ActorOf(PendingActionsRequest.CreateProps(this.pathBuilder));
             var calendarEvents = await actor.Ask<PendingActionsRequest.GetPendingActions.Response>(
-                new PendingActionsRequest.GetPendingActions(user.Metadata),
+                // Further DependentDepartmentsPendingActions should be retrieved from user preferences
+                new PendingActionsRequest.GetPendingActions(user.Metadata, PendingActionsRequest.DependentDepartmentsPendingActions.HeadsOnly),
                 this.timeoutSettings.Timeout,
                 token);
 
