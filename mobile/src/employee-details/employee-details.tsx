@@ -176,7 +176,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         } else {
             return tileStyles.tile;
         }
-    };
+    }
 
     private getTiles(employee: Employee) {
         const tilesData: TileData[] = [
@@ -286,8 +286,8 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
         return <View>
             <StyledText style={layoutStyles.header}>EVENTS</StyledText>
-            <EmployeeDetailsEventsList 
-                events={employeeToCalendarEvents} 
+            <EmployeeDetailsEventsList
+                events={employeeToCalendarEvents}
                 eventSetNewStatusAction={this.props.eventSetNewStatusAction}
                 hoursToIntervalTitle={this.props.hoursToIntervalTitle}
                 canApprove={canApprove}
