@@ -6,6 +6,7 @@ import { CalendarScreen } from '../calendar/calendar-screen';
 import { ProfileScreen } from '../profile/profile-screen';
 import { TabNavigationOptionsFactory } from '../tabbar/tab-navigation-options-factory';
 import { PeopleScreen } from '../people/people-screen';
+import {calendarTabBarOnPressHandler, feedsTabBarOnPressHandler, peopleTabBarOnPressHandler} from './tab-bar-on-press-handlers';
 
 const navOptionsFactory = new TabNavigationOptionsFactory();
 
@@ -14,7 +15,7 @@ const tabbarModel: NavigationRouteConfigMap = {
     News: {
         screen: FeedsScreen,
         path: '/',
-        navigationOptions: navOptionsFactory.create('Feeds', 'feeds')
+        navigationOptions: navOptionsFactory.create('Feeds', 'feeds', feedsTabBarOnPressHandler)
     },
     People: {
         screen: PeopleScreen,
@@ -24,7 +25,7 @@ const tabbarModel: NavigationRouteConfigMap = {
     Calendar: {
         screen: CalendarScreen,
         path: '/calendar',
-        navigationOptions: navOptionsFactory.create('Calendar', 'calendar')
+        navigationOptions: navOptionsFactory.create('Calendar', 'calendar', calendarTabBarOnPressHandler)
     },
     Profile: {
         screen: ProfileScreen,
@@ -33,4 +34,4 @@ const tabbarModel: NavigationRouteConfigMap = {
     }
 };
 
-export default tabbarModel; 
+export default tabbarModel;
