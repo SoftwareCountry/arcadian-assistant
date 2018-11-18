@@ -58,7 +58,8 @@
             {
                 DepartmentId = this.DepartmentId,
                 AscendantDepartmentId = this.AscendantDepartmentId,
-                DepartmentHeadEmployeeId = this.DepartmentHeadEmployeeId
+                DepartmentHeadEmployeeId = this.DepartmentHeadEmployeeId,
+                IncludeDirectDescendantDepartments = this.IncludeDirectDescendantDepartments 
             };
             return copy;
         }
