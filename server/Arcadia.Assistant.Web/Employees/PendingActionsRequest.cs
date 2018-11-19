@@ -1,6 +1,5 @@
 ﻿namespace Arcadia.Assistant.Web.Employees
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -11,20 +10,19 @@
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.Server.Interop;
-    using Arcadia.Assistant.Web.Configuration;
 
     public class PendingActionsRequest : UntypedActor, ILogReceive
     {
         private readonly ActorSelection organization;
 
-        public PendingActionsRequest(ActorPathsBuilder actorsPathsBuilder, ITimeoutSettings timeoutSettings)
+        public PendingActionsRequest(ActorPathsBuilder actorsPathsBuilder)
         {
             this.organization = Context.ActorSelection(actorsPathsBuilder.Get(WellKnownActorPaths.Organization));
             // this.SetReceiveTimeout(timeoutSettings.Timeout);
         }
 
-        public static Props CreateProps(ActorPathsBuilder actorsPathsBuilder, ITimeoutSettings timeoutSettings)
-            => Props.Create(() => new PendingActionsRequest(actorsPathsBuilder, timeoutSettings));
+        public static Props CreateProps(ActorPathsBuilder actorsPathsBuilder)
+            => Props.Create(() => new PendingActionsRequest(actorsPathsBuilder));
 
         private IActorRef requestor;
 
@@ -34,7 +32,7 @@
             {
                 case GetPendingActions request:
                     this.requestor = this.Sender;
-                    this.Become(this.GatherEmployeeInfo(request.Approver));
+                    this.Become(this.GatherEmployeeInfo(request.Approver, request.DependentDepartmentsPendingActions));
                     break;
 
                 default:
@@ -57,9 +55,14 @@
             }
         }
 
-        private UntypedReceive GatherEmployeeInfo(EmployeeMetadata approver)
+        private UntypedReceive GatherEmployeeInfo(
+            EmployeeMetadata approver,
+            DependentDepartmentsPendingActions dependentDepartmentsPendingActions)
         {
-            this.organization.Tell(DepartmentsQuery.Create().WithHead(approver.EmployeeId));
+            this.organization.Tell(
+                DepartmentsQuery.Create()
+                    .WithHead(approver.EmployeeId)
+                    .IncludeDirectDescendants());
 
             void OnMessage(object message)
             {
@@ -69,12 +72,35 @@
                         this.FinishProcessing();
                         break;
 
-                    //case DepartmentsQuery.Response response when response.Equals()
-
                     case DepartmentsQuery.Response response:
+                        var ownDepartmentsEmployees = response.Departments
+                            .Where(d => d.Department.ChiefId == approver.EmployeeId)
+                            .SelectMany(d => d.Employees);
 
-                        var subordinates = response.Departments
-                            .SelectMany(x => x.Employees)
+                        var otherDepartmentsEmployees = response.Departments
+                            .Where(d => d.Department.ChiefId != approver.EmployeeId)
+                            .Select(d => new
+                            {
+                                d.Department.ChiefId,
+                                Employees = d.Employees.Where(e =>
+                                {
+                                    if (dependentDepartmentsPendingActions == DependentDepartmentsPendingActions.All)
+                                    {
+                                        return true;
+                                    }
+
+                                    if (dependentDepartmentsPendingActions == DependentDepartmentsPendingActions.HeadsOnly)
+                                    {
+                                        return e.Metadata.EmployeeId == d.Department.ChiefId;
+                                    }
+
+                                    return false;
+                                })
+                            })
+                            .SelectMany(x => x.Employees);
+
+                        var subordinates = ownDepartmentsEmployees
+                            .Union(otherDepartmentsEmployees)
                             .GroupBy(x => x.Metadata.EmployeeId)
                             .Select(x => x.First())
                             .ToList();
@@ -154,9 +180,12 @@
         {
             public EmployeeMetadata Approver { get; }
 
-            public GetPendingActions(EmployeeMetadata approver)
+            public DependentDepartmentsPendingActions DependentDepartmentsPendingActions { get; }
+
+            public GetPendingActions(EmployeeMetadata approver, DependentDepartmentsPendingActions dependentDepartmentsPendingActions)
             {
                 this.Approver = approver;
+                DependentDepartmentsPendingActions = dependentDepartmentsPendingActions;
             }
 
             public class Response
@@ -168,6 +197,13 @@
                     this.EventsByEmployeeId = eventsByEmployeeId;
                 }
             }
+        }
+
+        public enum DependentDepartmentsPendingActions
+        {
+            None,
+            HeadsOnly,
+            All
         }
     }
 }
