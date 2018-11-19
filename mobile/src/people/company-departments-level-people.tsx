@@ -14,7 +14,7 @@ interface CompanyDepartmentsLevelPeopleProps {
 
 export class CompanyDepartmentsLevelPeople extends Component<CompanyDepartmentsLevelPeopleProps> {
     public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelPeopleProps) {
-        return !this.areEmployeesEqual(this.props.employees, nextProps.employees) 
+        return !this.areEmployeesEqual(this.props.employees, nextProps.employees)
             || this.props.onPressEmployee !== nextProps.onPressEmployee;
     }
 
@@ -41,7 +41,7 @@ export class CompanyDepartmentsLevelPeople extends Component<CompanyDepartmentsL
         if (!a || !b) {
             return false;
         }
-        
+
         if (a.length !== b.length) {
             return false;
         }
@@ -50,10 +50,10 @@ export class CompanyDepartmentsLevelPeople extends Component<CompanyDepartmentsL
             if (!a[i].equals(b[i])) {
                 return false;
             }
-        }        
+        }
 
         return true;
-    }    
+    }
 
     private keyExtractor = (item: Employee): string => item.employeeId;
 
