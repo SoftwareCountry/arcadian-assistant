@@ -61,8 +61,8 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
         return this.props.feeds.size > 0 ?
             <FlatList
                 style={styles.view}
-                keyExtractor={this.keyExtractor}
-                ItemSeparatorComponent={this.itemSeparator}
+                keyExtractor={HomeFeedsScreenImpl.keyExtractor}
+                ItemSeparatorComponent={HomeFeedsScreenImpl.itemSeparator}
                 data={feeds}
                 extraData={this.props.employees}
                 renderItem={this.renderItem}
@@ -76,18 +76,6 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     }
 
     //----------------------------------------------------------------------------
-    // noinspection JSMethodCanBeStatic
-    private keyExtractor(item: Feed) {
-        return item ? item.messageId : '';
-    }
-
-    //----------------------------------------------------------------------------
-    // noinspection JSMethodCanBeStatic
-    private itemSeparator() {
-        return <View style={styles.separator}/>;
-    }
-
-    //----------------------------------------------------------------------------
     private sortedFeeds() {
         return this.props.feeds.toArray().sort((x, y) => {
             return ((y.datePosted.valueOf() - x.datePosted.valueOf()) || (y.employeeId < x.employeeId ? -1 : 1));
@@ -95,7 +83,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     }
 
     //----------------------------------------------------------------------------
-    private footer = (): JSX.Element => {
+    private footer = (): React.ReactElement<any> => {
         return (
             <View style={listStyles.footer}>
                 <ActivityIndicator color={baseColor}/>
@@ -126,6 +114,16 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
         if (this.props.user) {
             this.props.fetchNewFeeds();
         }
+    }
+
+    //----------------------------------------------------------------------------
+    private static keyExtractor(item: Feed): string {
+        return item ? item.messageId : '';
+    }
+
+    //----------------------------------------------------------------------------
+    private static itemSeparator(): React.ReactElement<any> {
+        return <View style={styles.separator}/>;
     }
 }
 
