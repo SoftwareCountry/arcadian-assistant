@@ -4,7 +4,7 @@ import moment from 'moment';
 
 export type TabBarOnPress = (options: { scene: TabScene, jumpToIndex: (index: number) => void }) => void;
 
-const firstScrollableItemInStackNavigatorTabBarOnPressHandler: TabBarOnPress = options => {
+export const feedsTabBarOnPressHandler: TabBarOnPress = options => {
     if (options.scene.focused && options.scene.route) {
 
         let route = options.scene.route as NavigationStateRoute<any>;
@@ -24,8 +24,6 @@ const firstScrollableItemInStackNavigatorTabBarOnPressHandler: TabBarOnPress = o
 
     options.jumpToIndex(options.scene.index);
 };
-
-export const feedsTabBarOnPressHandler = firstScrollableItemInStackNavigatorTabBarOnPressHandler;
 
 export const peopleTabBarOnPressHandler: TabBarOnPress = options => {
     if (options.scene.focused && options.scene.route) {
