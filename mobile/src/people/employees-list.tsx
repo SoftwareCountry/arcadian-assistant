@@ -1,4 +1,4 @@
-import React, {createRef} from 'react';
+import React from 'react';
 import { FlatList, View, ListRenderItemInfo } from 'react-native';
 
 import { Employee } from '../reducers/organization/employee.model';
@@ -14,7 +14,7 @@ export interface EmployeesListProps {
 
 export class EmployeesList extends React.Component<NavigationScreenProps & EmployeesListProps> {
 
-    private flatList = createRef<FlatList<any>>();
+    private flatList: any;
 
     public componentDidMount() {
         if (this.props.navigation) {
@@ -29,7 +29,7 @@ export class EmployeesList extends React.Component<NavigationScreenProps & Emplo
 
         return <View style={styles.view}>
                     <FlatList
-                        ref = {this.flatList}
+                        ref = {(ref) => { this.flatList = ref; }}
                         data={employees}
                         keyExtractor={this.keyExtractor}
                         renderItem={this.renderItem} />
@@ -37,7 +37,8 @@ export class EmployeesList extends React.Component<NavigationScreenProps & Emplo
     }
 
     public scrollToTop = () => {
-        this.flatList.current.scrollToIndex({index: 0, animated: true});
+        const list = this.flatList as FlatList<any>;
+        list.scrollToIndex({index: 0, animated: true});
     }
 
     private keyExtractor = (item: Employee) => item.employeeId;

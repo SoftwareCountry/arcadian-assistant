@@ -29,7 +29,7 @@ class CurrentPeopleDepartmentImpl extends React.Component<CurrentPeopleDepartmen
         const departmentId = this.props.navigation.getParam('departmentId', undefined);
         const customEmployeesPredicate = (employee: Employee) => employee.departmentId === departmentId;
 
-        return <PeopleDepartment customEmployeesPredicate={customEmployeesPredicate} employees={this.props.employees}/>;
+        return <PeopleDepartment customEmployeesPredicate={customEmployeesPredicate} employees={this.props.employees} navigation={this.props.navigation}/>;
     }
 }
 

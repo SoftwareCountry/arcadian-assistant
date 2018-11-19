@@ -7,7 +7,7 @@ export type TabBarOnPress = (options: { scene: TabScene, jumpToIndex: (index: nu
 export const feedsTabBarOnPressHandler: TabBarOnPress = options => {
     if (options.scene.focused && options.scene.route) {
 
-        const route = options.scene.route as NavigationStateRoute<any>;
+        const route = options.scene.route as NavigationStateRoute;
 
         if (route.routes && route.routes[0]) {
 
@@ -28,7 +28,7 @@ export const feedsTabBarOnPressHandler: TabBarOnPress = options => {
 export const peopleTabBarOnPressHandler: TabBarOnPress = options => {
     if (options.scene.focused && options.scene.route) {
 
-        const route = options.scene.route as NavigationStateRoute<any>;
+        const route = options.scene.route as NavigationStateRoute;
 
         if (route && route.params) {
             const tabBarOnPress = route.params.tabBarOnPress as () => void;
@@ -45,7 +45,7 @@ export const peopleTabBarOnPressHandler: TabBarOnPress = options => {
 export const calendarTabBarOnPressHandler: TabBarOnPress = options => {
     if (options.scene.focused && options.scene.route) {
 
-        const route = options.scene.route as NavigationStateRoute<any>;
+        const route = options.scene.route as NavigationStateRoute;
 
         if (route.routes && route.routes[0]) {
 

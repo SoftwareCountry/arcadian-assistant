@@ -1,4 +1,4 @@
-import React, {createRef} from 'react';
+import React from 'react';
 import {FlatList, ListRenderItemInfo, View} from 'react-native';
 import {TopNavBar} from '../navigation/top-nav-bar';
 
@@ -52,7 +52,7 @@ class HomeFeedsScreenImpl extends React.Component<NavigationScreenProps & FeedsS
 
     public static navigationOptions = navBar.configurate();
 
-    private flatList = createRef<FlatList<any>>();
+    private flatList: any;
 
     public componentDidMount() {
         if (this.props.navigation) {
@@ -66,7 +66,7 @@ class HomeFeedsScreenImpl extends React.Component<NavigationScreenProps & FeedsS
         const feeds = this.sortedFeeds();
 
         return this.props.feeds.size > 0 ?
-            <FlatList ref={this.flatList}
+            <FlatList ref={(ref) => { this.flatList = ref; }}
                       style={styles.view}
                       keyExtractor={this.keyExtractor}
                       ItemSeparatorComponent={this.itemSeparator}
@@ -82,7 +82,8 @@ class HomeFeedsScreenImpl extends React.Component<NavigationScreenProps & FeedsS
     }
 
     private scrollToTop = () => {
-        this.flatList.current.scrollToIndex({index: 0, animated: true});
+        const list = this.flatList as FlatList<any>;
+        list.scrollToIndex({index: 0, animated: true});
     }
 
     private keyExtractor(item: Feed) {

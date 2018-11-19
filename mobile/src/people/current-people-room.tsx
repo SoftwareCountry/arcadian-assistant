@@ -8,6 +8,7 @@ import {Employee} from '../reducers/organization/employee.model';
 import {PeopleRoom} from './people-room';
 import {Action, Dispatch} from 'redux';
 import {loadEmployeesForRoom} from '../reducers/organization/organization.action';
+import { PeopleDepartment } from './people-department';
 
 interface ExtendedNavigationScreenProp<P> extends NavigationScreenProp<NavigationRoute> {
     getParam: <T extends keyof P>(param: T, fallback?: P[T]) => P[T];
@@ -48,7 +49,7 @@ class CurrentPeopleRoomImpl extends React.Component<CurrentPeopleRoomProps & Cur
         const roomNumber = this.props.navigation.getParam('roomNumber', undefined);
         const customEmployeesPredicate = (employee: Employee) => employee.roomNumber === roomNumber;
 
-        return <PeopleRoom customEmployeesPredicate={customEmployeesPredicate} employees={this.props.employees}/>;
+        return <PeopleRoom customEmployeesPredicate={customEmployeesPredicate} employees={this.props.employees} navigation={this.props.navigation}/>;
     }
 }
 
