@@ -40,8 +40,8 @@
 
                     break;
 
-                case GetVacationRegistryStatusMessage _:
-                    this.Sender.Tell(new GetVacationRegistryStatusMessage.GetVacationRegistryStatusResponse(this.lastErrorMessage));
+                case GetHealthCheckStatusMessage _:
+                    this.Sender.Tell(new GetHealthCheckStatusMessage.GetHealthCheckStatusResponse(this.lastErrorMessage));
                     break;
 
                 case Refresh _:

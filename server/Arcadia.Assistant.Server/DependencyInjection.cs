@@ -1,5 +1,6 @@
 ﻿namespace Arcadia.Assistant.Server
 {
+    using Akka.Actor;
     using Arcadia.Assistant.DI;
 
     using Autofac;
