@@ -37,18 +37,18 @@ interface ContentAnimation {
 
 class Animations {
 
-    private static perspective: Perspective[] = Platform.OS === 'android' 
-        ? [{ 
+    private static perspective: Perspective[] = Platform.OS === 'android'
+        ? [{
             // https://facebook.github.io/react-native/docs/animations#bear-in-mind:
             // without this line this Animation will not render on Android while working fine on iOS
-            // ¯\_(ツ)_/¯        
+            // ¯\_(ツ)_/¯
             perspective: 1000
         }] : [];
 
     public static scaleAnimation = (
-        index: number, 
-        width: number, 
-        gap: number, 
+        index: number,
+        width: number,
+        gap: number,
         xCoordinate: Animated.Value
     ): ScaleAnimation => ({
         transform: [
@@ -72,24 +72,24 @@ class Animations {
             ],
             outputRange: [0.3, 1.2, 0.3]
         })
-    })
+    });
 
 	public static stickyContainerAnimation = (
-        index: number, 
-        width: number, 
-        height: number, 
+        index: number,
+        width: number,
+        height: number,
         xCoordinate: Animated.Value
     ): StickyContainerAnimation => ({
         transform: [
             ...Animations.perspective,
             Animations.horizontalStickyAnimation(index, width, height, xCoordinate)
         ]
-	})
+	});
 
 	public static contentAnimation = (
-        index: number, 
-        width: number, 
-        height: number, 
+        index: number,
+        width: number,
+        height: number,
         xCoordinate: Animated.Value
     ): ContentAnimation => ({
         transform: [
@@ -104,12 +104,12 @@ class Animations {
             ],
             outputRange: [-0.8, 1, 0]
         })
-    })
+    });
 
 	private static horizontalStickyAnimation = (
-        index: number, 
-        width: number, 
-        height: number, 
+        index: number,
+        width: number,
+        height: number,
         xCoordinate: Animated.Value
     ): HorizontalStickyAnimation => ({
         translateX: xCoordinate.interpolate({
@@ -121,7 +121,7 @@ class Animations {
             ],
             outputRange: [width - height, width - height, 0, 0]
         })
-    })    
+    });
 }
 
 interface CompanyDepartmentsLevelAnimatedNodeProps {
@@ -159,16 +159,16 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
     }
 
     public render() {
-        const { 
-            containerStyles, 
-            stickyContainerStyles, 
-            scaleContainerStyles, 
+        const {
+            containerStyles,
+            stickyContainerStyles,
+            scaleContainerStyles,
             contentStyles,
             touchableStyles
         } = this.calculateStyles();
 
         const { chief } = this.props;
-        const photo = chief 
+        const photo = chief
             ? chief.photoUrl
             : null;
         const chiefName = chief ? chief.name : null;
@@ -263,5 +263,5 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
         if (this.props.chief) {
             this.props.onPressChief(this.props.chief);
         }
-    }
+    };
 }

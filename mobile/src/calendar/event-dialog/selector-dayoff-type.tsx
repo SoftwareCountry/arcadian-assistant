@@ -53,13 +53,13 @@ export class SelectorDayoffType extends Component<SelectorDayoffTypeProps, Selec
 
     private onContainerLayout = (e: LayoutChangeEvent) => {
         this.setState({ containerHeight: e.nativeEvent.layout.height });
-    }
+    };
 
     private onDayoffSelected = () => {
         this.props.onTypeSelected(HoursCreditType.DaysOff);
-    }
+    };
 
     private onWorkoutSelected = () => {
         this.props.onTypeSelected(HoursCreditType.Workout);
-    }
+    };
 }

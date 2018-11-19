@@ -34,17 +34,17 @@ class ChangeVacationStartDateEventDialogImpl extends Component<ChangeVacationSta
 
     private back = () => {
         this.props.back();
-    }
+    };
 
     private confirmStartDateChange = () => {
         const { intervals, changeVacationEndDate } = this.props;
 
         changeVacationEndDate();
-    }
+    };
 
     private closeDialog = () => {
         this.props.closeDialog();
-    }
+    };
 
     public get text(): string {
         const { intervals: { vacation }, selectedSingleDay } = this.props;

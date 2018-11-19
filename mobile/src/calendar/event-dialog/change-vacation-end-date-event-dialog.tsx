@@ -46,7 +46,7 @@ class ChangeVacationEndDateEventDialogImpl extends Component<ChangeVacationEndDa
 
     private back = () => {
         this.props.back();
-    }
+    };
 
     private confirmEndDateChange = () => {
         const { interval, userEmployee, intervals: { vacation } } = this.props;
@@ -56,11 +56,11 @@ class ChangeVacationEndDateEventDialogImpl extends Component<ChangeVacationEndDa
             vacation.calendarEvent,
             interval.startDay.date,
             interval.endDay.date);
-    }
+    };
 
     private closeDialog = () => {
         this.props.closeDialog();
-    }
+    };
 
     public get text(): string {
         const { interval } = this.props;

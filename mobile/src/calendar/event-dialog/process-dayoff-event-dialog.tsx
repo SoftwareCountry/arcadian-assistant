@@ -31,15 +31,15 @@ class ProcessDayoffEventDialogImpl extends Component<ProcessDayoffEventDialogPro
 
     private onCancelClick = () => {
         this.props.cancelDialog();
-    }
+    };
 
     private onAcceptClick = () => {
         this.props.confirmStartDate();
-    }
+    };
 
     private onCloseClick = () => {
         this.props.cancelDialog();
-    }
+    };
 
     public get text(): string {
         return `Your dayoff starts on ${this.props.startDay.date.format(eventDialogTextDateFormat)}`;

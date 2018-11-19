@@ -18,7 +18,7 @@ export class CompanyDepartmentsLevelPeopleTouchable extends Component<CompanyDep
             easing: Easing.linear,
             useNativeDriver: true
         }).start();
-    }    
+    }
 
     public render() {
         const listItemStyles = StyleSheet.flatten([
@@ -41,5 +41,5 @@ export class CompanyDepartmentsLevelPeopleTouchable extends Component<CompanyDep
 
     private onPress = () => {
         this.props.onPress(this.props.employee);
-    }
+    };
 }

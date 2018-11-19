@@ -63,11 +63,11 @@ export class CalendarActionButton extends Component<CalendarActionButtonProps, C
         this.setState({
             buttonHeight: e.nativeEvent.layout.height
         });
-    }
+    };
 
     private onButtonEditorPress = () => {
         this.props.onPress();
-    }
+    };
 }
 
 export const CalendarActionButtonSeparator = () => <View style={calendarActionsStyles.separator}></View>;

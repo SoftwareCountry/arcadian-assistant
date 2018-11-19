@@ -55,16 +55,16 @@ export class ProlongSickLeaveEventDialogImpl extends Component<ProlongSickLeaveE
 
     private onCancelClick = () => {
         this.props.back();
-    }
+    };
 
     private onAcceptClick = () => {
         const { userEmployee, intervalsBySingleDaySelection: { sickleave }, intervalSelection, confirmProlong } = this.props;
         confirmProlong(userEmployee.employeeId, sickleave.calendarEvent, intervalSelection.endDay.date);
-    }
+    };
 
     private onCloseClick = () => {
         this.props.closeDialog();
-    }
+    };
 
     private isProlongEndDateValid(): boolean {
         const { intervalSelection, intervalsBySingleDaySelection: { sickleave } } = this.props;

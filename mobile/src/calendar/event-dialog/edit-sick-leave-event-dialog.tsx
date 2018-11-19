@@ -38,17 +38,17 @@ class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogPro
 
     private cancelAction = () => {
         this.props.prolong();
-    }
+    };
 
     private acceptAction = () => {
         const { userEmployee, intervals } = this.props;
 
         this.props.completeSickLeave(userEmployee.employeeId, intervals.sickleave.calendarEvent);
-    }
+    };
 
     private closeDialog = () => {
         this.props.closeDialog();
-    }
+    };
 
     public get text(): string {
         const startDate = this.getSickLeaveStartDate();

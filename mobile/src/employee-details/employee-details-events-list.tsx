@@ -74,7 +74,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
         const isOutdated = item.calendarEvent.dates.endDate.isSameOrBefore(now, 'date');
 
         const eventsContainerFlattened = StyleSheet.flatten([
-            eventsContainer, 
+            eventsContainer,
             {
                 width: Dimensions.get('window').width,
                 opacity: isOutdated ? 0.40 : 1
@@ -91,7 +91,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
                             <CalendarEventIcon type={item.calendarEvent.type} style={eventIcon} />
                         </View>
                         {
-                            this.props.showUserAvatar ? 
+                            this.props.showUserAvatar ?
                             <View style={avatarContainer}>
                                 <Avatar photoUrl={item.employee.photoUrl} style={avatarOuterFrame} imageStyle={avatarImage} />
                             </View> : null
@@ -102,17 +102,17 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
                         <StyledText style={eventDetails}>{descriptionStatus}</StyledText>
                         <StyledText style={eventDetails}>{this.descriptionFromTo(item.calendarEvent)}</StyledText>
                     </View>
-                    <EventManagementToolset 
-                        event={item.calendarEvent} 
-                        employeeId={item.employee.employeeId} 
+                    <EventManagementToolset
+                        event={item.calendarEvent}
+                        employeeId={item.employee.employeeId}
                         eventSetNewStatusAction={this.props.eventSetNewStatusAction}
                         canApprove={this.props.canApprove}
-                        canReject={this.props.canReject} 
+                        canReject={this.props.canReject}
                     />
                 </View>
             </View>
         );
-    }
+    };
 
     private descriptionFromTo(event: CalendarEvent): string {
         let description: string;

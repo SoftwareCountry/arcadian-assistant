@@ -91,17 +91,17 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
         } else {
             return <FeedMessage message={item} employee={employee} onAvatarClicked={this.props.onAvatarClicked} />;
         }
-    }
+    };
 
     private endReached = () => {
         if (this.props.user) {
             this.props.fetchOldFeeds();
         }
-    }
+    };
 
     private onRefresh = () => {
         this.props.fetchNewFeeds();
-    }
+    };
 }
 
 export const HomeFeedsScreen = connect(mapStateToProps, mapDispatchToProps)(HomeFeedsScreenImpl);

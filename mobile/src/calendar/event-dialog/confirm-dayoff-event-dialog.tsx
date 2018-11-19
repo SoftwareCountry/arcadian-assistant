@@ -58,7 +58,7 @@ class ConfirmDayoffEventDialogImpl extends Component<ConfirmDayoffEventDialogPro
 
     private onCancelClick = () => {
         this.props.cancelDialog();
-    }
+    };
 
     private onAcceptClick = () => {
         const { startDay, isWorkout, confirmDayoff, userEmployee } = this.props;
@@ -68,15 +68,15 @@ class ConfirmDayoffEventDialogImpl extends Component<ConfirmDayoffEventDialogPro
             startDay.date,
             isWorkout,
             this.state.selectedIntervalType);
-    }
+    };
 
     private onCloseClick = () => {
         this.props.closeDialog();
-    }
+    };
 
     private onDayoffTypeSelected = (selectedType: IntervalType) => {
         this.setState({ selectedIntervalType: selectedType });
-    }
+    };
 
     public get text(): string {
         const startDate = this.props.startDay.date.format(eventDialogTextDateFormat);

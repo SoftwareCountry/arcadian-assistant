@@ -29,5 +29,5 @@ export class EmployeesList extends React.Component<EmployeesListProps> {
         const { item } = itemInfo;
 
         return <EmployeesListItem id={item.employeeId} employee={item} onItemClicked={this.props.onItemClicked}/>;
-    }
+    };
 }
