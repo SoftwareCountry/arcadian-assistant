@@ -27,7 +27,7 @@
             var healthStateDict = await this.healthService.GetHealthState(cancellationToken);
 
             var result = healthStateDict
-                .Select(kvp => new ApplicationHealthModelEntry(kvp.Key, kvp.Value))
+                .Select(kvp => new ApplicationHealthModelEntry(kvp.Key, kvp.Value.Value, kvp.Value.Details))
                 .ToList();
 
             return this.Ok(result);

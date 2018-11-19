@@ -4,11 +4,11 @@
 
     public class HealthCheckMessageResponse
     {
-        public HealthCheckMessageResponse(IDictionary<string, bool> healthState)
+        public HealthCheckMessageResponse(IDictionary<string, HealthState> healthStates)
         {
-            HealthState = healthState;
+            HealthStates = healthStates;
         }
 
-        public IDictionary<string, bool> HealthState { get; }
+        public IDictionary<string, HealthState> HealthStates { get; }
     }
 }

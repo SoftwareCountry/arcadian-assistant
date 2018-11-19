@@ -17,10 +17,12 @@
 
         private Dictionary<string, double> employeeIdsToDaysLeft = new Dictionary<string, double>();
 
+        private string lastErrorMessage;
+
         public ArcadiaVacationRegistry(VacationsQueryExecutor vacationsQueryExecutor, IRefreshInformation refreshInformation)
         {
             this.vacationsQueryExecutor = vacationsQueryExecutor;
-            Context.System.Scheduler.ScheduleTellRepeatedly(TimeSpan.Zero, TimeSpan.FromMinutes(refreshInformation.IntervalInMinutes), this.Self, new Refresh(), this.Self );
+            Context.System.Scheduler.ScheduleTellRepeatedly(TimeSpan.Zero, TimeSpan.FromMinutes(refreshInformation.IntervalInMinutes), this.Self, new Refresh(), this.Self);
         }
 
         protected override void OnReceive(object message)
@@ -38,20 +40,30 @@
 
                     break;
 
+                case GetVacationRegistryStatusMessage _:
+                    this.Sender.Tell(new GetVacationRegistryStatusMessage.GetVacationRegistryStatusResponse(this.lastErrorMessage));
+                    break;
+
                 case Refresh _:
                     this.logger.Info("Updating vacations information...");
                     this.vacationsQueryExecutor
                         .Fetch()
-                        .PipeTo(this.Self, success: x => new RefreshSuccess(x),  failure: x => new RefreshFailed(x));
+                        .PipeTo(this.Self, success: x => new RefreshSuccess(x), failure: x => new RefreshFailed(x));
                     break;
 
                 case RefreshSuccess m:
                     this.logger.Info("Vacations registry is updated");
                     this.employeeIdsToDaysLeft = m.EmployeesToDaysLeft;
+
+                    this.lastErrorMessage = null;
+
                     break;
 
                 case RefreshFailed e:
                     this.logger.Error(e.Exception, $"Failed to load vacations information: {e.Exception.Message}");
+
+                    this.lastErrorMessage = e.Exception.Message;
+
                     break;
 
                 default:

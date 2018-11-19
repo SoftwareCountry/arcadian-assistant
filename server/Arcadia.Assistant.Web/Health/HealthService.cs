@@ -23,7 +23,7 @@
             this.timeoutSettings = timeoutSettings;
         }
 
-        public async Task<IDictionary<string, bool>> GetHealthState(CancellationToken cancellationToken)
+        public async Task<IDictionary<string, HealthState>> GetHealthState(CancellationToken cancellationToken)
         {
             var healthActor = this.actorSystem.ActorSelection(this.pathsBuilder.Get(WellKnownActorPaths.Health));
 
@@ -34,18 +34,22 @@
                     this.timeoutSettings.Timeout * 2,
                     cancellationToken);
 
-                // What to do if concrete implementation already returned dictionary with such key?
-                healthCheckResponse.HealthState[WellKnownHealthStateName.Server] = true;
+                healthCheckResponse.HealthStates[WellKnownHealthStateName.Server] = this.GetServerHealthState(true);
 
-                return healthCheckResponse.HealthState;
+                return healthCheckResponse.HealthStates;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return new Dictionary<string, bool>
+                return new Dictionary<string, HealthState>
                 {
-                    { WellKnownHealthStateName.Server, false }
+                    { WellKnownHealthStateName.Server, this.GetServerHealthState(false, ex.Message) }
                 };
             }
+        }
+
+        private HealthState GetServerHealthState(bool isServerAlive, string details = null)
+        {
+            return new HealthState(isServerAlive, details);
         }
     }
 }
