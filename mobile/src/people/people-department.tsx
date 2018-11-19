@@ -1,5 +1,5 @@
-import React, {createRef} from 'react';
-import {connect, connectAdvanced, Dispatch, MapStateToProps} from 'react-redux';
+import React from 'react';
+import {connect, Dispatch, MapStateToProps} from 'react-redux';
 
 import {EmployeesList} from './employees-list';
 import {AppState} from '../reducers/app.reducer';
@@ -42,7 +42,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeesListDispatchProps
 });
 
 export class PeopleDepartmentImpl extends React.Component<NavigationScreenProps & PeopleDepartmentStateProps & EmployeesListDispatchProps & PeopleDepartmentPropsOwnProps> {
-    
+
     public shouldComponentUpdate(nextProps: PeopleDepartmentStateProps & EmployeesListDispatchProps & PeopleDepartmentPropsOwnProps) {
         if (this.props.employees === nextProps.employees
             && this.props.userEmployee === nextProps.userEmployee
@@ -65,4 +65,4 @@ export class PeopleDepartmentImpl extends React.Component<NavigationScreenProps 
 
 }
 
-export const PeopleDepartment = connect(mapStateToProps, mapDispatchToProps, null, {withRef: true})(PeopleDepartmentImpl);
+export const PeopleDepartment = connect(mapStateToProps, mapDispatchToProps)(PeopleDepartmentImpl);

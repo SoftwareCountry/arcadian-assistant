@@ -7,14 +7,14 @@ export type TabBarOnPress = (options: { scene: TabScene, jumpToIndex: (index: nu
 export const feedsTabBarOnPressHandler: TabBarOnPress = options => {
     if (options.scene.focused && options.scene.route) {
 
-        let route = options.scene.route as NavigationStateRoute<any>;
+        const route = options.scene.route as NavigationStateRoute<any>;
 
         if (route.routes && route.routes[0]) {
 
             const stackNavigation = route.routes[0];
 
             if (stackNavigation && stackNavigation.params && stackNavigation.params.tabBarOnPress) {
-                let tabBarOnPress = stackNavigation.params.tabBarOnPress as () => void;
+                const tabBarOnPress = stackNavigation.params.tabBarOnPress as () => void;
                 tabBarOnPress();
             }
         }
@@ -28,10 +28,10 @@ export const feedsTabBarOnPressHandler: TabBarOnPress = options => {
 export const peopleTabBarOnPressHandler: TabBarOnPress = options => {
     if (options.scene.focused && options.scene.route) {
 
-        let route = options.scene.route as NavigationStateRoute<any>;
+        const route = options.scene.route as NavigationStateRoute<any>;
 
         if (route && route.params) {
-            let tabBarOnPress = route.params.tabBarOnPress as () => void;
+            const tabBarOnPress = route.params.tabBarOnPress as () => void;
             tabBarOnPress();
         }
 
@@ -45,14 +45,14 @@ export const peopleTabBarOnPressHandler: TabBarOnPress = options => {
 export const calendarTabBarOnPressHandler: TabBarOnPress = options => {
     if (options.scene.focused && options.scene.route) {
 
-        let route = options.scene.route as NavigationStateRoute<any>;
+        const route = options.scene.route as NavigationStateRoute<any>;
 
         if (route.routes && route.routes[0]) {
 
             const stackNavigation = route.routes[0];
 
             if (stackNavigation && stackNavigation.params && stackNavigation.params.tabBarOnPress) {
-                let tabBarOnPress = stackNavigation.params.tabBarOnPress as OnSelectedDayCallback;
+                const tabBarOnPress = stackNavigation.params.tabBarOnPress as OnSelectedDayCallback;
                 tabBarOnPress({
                     date: moment(), today: true, belongsToCurrentMonth: true
                 });
