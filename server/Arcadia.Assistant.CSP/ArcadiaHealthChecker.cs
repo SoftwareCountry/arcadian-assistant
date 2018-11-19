@@ -1,11 +1,13 @@
 ﻿namespace Arcadia.Assistant.CSP
 {
+    using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Akka.Actor;
     using Health.Abstractions;
     using Organization.Abstractions;
 
-    public class ArcadiaHealthChecker : HealthChecker, ILogReceive
+    public class ArcadiaHealthChecker : HealthChecker
     {
         private const string HealthStateName = "Vacations Registry";
         private readonly IActorRef vacationsRegistry;
@@ -15,22 +17,17 @@
             vacationsRegistry = Context.ActorOf(VacationsRegistry.GetProps, "vacations-registry");
         }
 
-        protected override void OnReceive(object message)
+        protected override async Task<HealthCheckMessageResponse> GetHealthStates()
         {
-            switch (message)
+            try
             {
-                case HealthCheckMessage _:
-                    this.vacationsRegistry.Ask<GetVacationRegistryStatusMessage.GetVacationRegistryStatusResponse>(
-                            GetVacationRegistryStatusMessage.Instance)
-                        .PipeTo(
-                            this.Sender,
-                            success: x => new HealthCheckMessageResponse(this.GetHealthResultDictionary(x.Message)),
-                            failure: ex => new HealthCheckMessageResponse(this.GetHealthResultDictionary(ex.Message)));
-                    break;
-
-                default:
-                    Unhandled(message);
-                    break;
+                var result = await this.vacationsRegistry.Ask<GetVacationRegistryStatusMessage.GetVacationRegistryStatusResponse>(
+                    GetVacationRegistryStatusMessage.Instance);
+                return new HealthCheckMessageResponse(this.GetHealthResultDictionary(result.Message));
+            }
+            catch (Exception ex)
+            {
+                return new HealthCheckMessageResponse(this.GetHealthResultDictionary(ex.Message));
             }
         }
 
