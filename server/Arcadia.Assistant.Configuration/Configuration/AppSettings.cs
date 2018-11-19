@@ -1,5 +1,6 @@
 ﻿namespace Arcadia.Assistant.Configuration.Configuration
 {
+    using System;
     using System.ComponentModel.DataAnnotations;
 
     public class AppSettings
@@ -10,6 +11,11 @@
         [Required]
         public OrganizationSettings Organization { get; set; }
 
+        [Required]
+        public int TimeoutSeconds { get; set; }
+
         public ApplicationInsightsSettings ApplicationInsights { get; set; }
+
+        public TimeSpan Timeout => TimeSpan.FromSeconds(this.TimeoutSeconds);
     }
 }

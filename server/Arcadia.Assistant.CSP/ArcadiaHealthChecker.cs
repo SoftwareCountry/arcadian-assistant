@@ -1,10 +1,10 @@
 ﻿namespace Arcadia.Assistant.CSP
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Akka.Actor;
+    using Configuration.Configuration;
     using Health.Abstractions;
 
     public class ArcadiaHealthChecker : HealthChecker
@@ -14,6 +14,13 @@
         private const string EmployeesInfoStorageActorPath = @"/user/organization/employees/employees-storage";
 
         private readonly string[] HealthStateNames = new[] { "Vacations Registry", "Departments Storage", "Employees Info Storage" };
+
+        private readonly AppSettings settings;
+
+        public ArcadiaHealthChecker(AppSettings settings)
+        {
+            this.settings = settings;
+        }
 
         protected override async Task<HealthCheckMessageResponse> GetHealthStates()
         {
@@ -42,7 +49,8 @@
             try
             {
                 var result = await actor.Ask<GetHealthCheckStatusMessage.GetHealthCheckStatusResponse>(
-                    GetHealthCheckStatusMessage.Instance);
+                    GetHealthCheckStatusMessage.Instance,
+                    settings.Timeout);
                 return new HealthState(result.Message == null, result.Message);
             }
             catch (Exception ex)
