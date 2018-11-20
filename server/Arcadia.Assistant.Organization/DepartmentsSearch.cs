@@ -96,7 +96,8 @@
 
             if (this.departmentsQuery.IncludeDirectDescendantDepartments)
             {
-                resultList.AddRange(resultList.SelectMany(d => GetDescendants(d.Department.DepartmentId, this.departmentFindings, 1)));
+                var dependentDepartments = resultList.SelectMany(d => GetDescendants(d.Department.DepartmentId, this.departmentFindings, 1));
+                resultList.AddRange(dependentDepartments);
             }
 
             return resultList;
