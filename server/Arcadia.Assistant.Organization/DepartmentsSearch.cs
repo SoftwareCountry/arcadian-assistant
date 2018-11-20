@@ -145,14 +145,12 @@
                 return new List<DepartmentContainer>();
             }
 
-            var allDepartmentsList = allDepartments.ToList();
-
-            var children = allDepartmentsList
+            var children = allDepartments
                 .Where(x => x.Department.ParentDepartmentId == departmentId)
                 .ToList();
 
             var descendants = children
-                .SelectMany(child => GetDescendants(child.Department.DepartmentId, allDepartmentsList, maxNestingLevel, nestingLevel + 1))
+                .SelectMany(child => GetDescendants(child.Department.DepartmentId, allDepartments, maxNestingLevel, nestingLevel + 1))
                 .ToList();
 
             return children
