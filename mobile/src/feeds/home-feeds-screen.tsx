@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, View, ListRenderItemInfo } from 'react-native';
+import { ActivityIndicator, FlatList, ListRenderItemInfo, View } from 'react-native';
 import { TopNavBar } from '../navigation/top-nav-bar';
 
 import { Employee } from '../reducers/organization/employee.model';
@@ -11,14 +11,16 @@ import { AppState } from '../reducers/app.reducer';
 import { FeedMessage } from './feed-message';
 import { LoadingView } from '../navigation/loading';
 
-import { screenStyles as styles } from './styles';
+import { baseColor, listStyles, screenStyles as styles } from './styles';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 import { fetchNewFeeds, fetchOldFeeds } from '../reducers/feeds/feeds.action';
 import { FeedsById } from '../reducers/feeds/feeds.reducer';
 import { Moment } from 'moment';
 
+//============================================================================
 const navBar = new TopNavBar('Feeds');
 
+//============================================================================
 interface FeedsScreenProps {
     feeds: FeedsById;
     employees: EmployeesStore;
@@ -27,6 +29,7 @@ interface FeedsScreenProps {
     user: string;
 }
 
+//============================================================================
 interface FeedScreenDispatchProps {
     onAvatarClicked: (employee: Employee) => void;
     fetchNewFeeds: () => void;
@@ -47,60 +50,80 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): FeedScreenDispatchProps =>
     fetchOldFeeds: () => dispatch(fetchOldFeeds()),
 });
 
+//============================================================================
 class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenDispatchProps> {
     public static navigationOptions = navBar.configurate();
 
+    //----------------------------------------------------------------------------
     public render() {
         const feeds = this.sortedFeeds();
 
         return this.props.feeds.size > 0 ?
-                <FlatList
-                    style={styles.view}
-                    keyExtractor={this.keyExtractor}
-                    ItemSeparatorComponent={this.itemSeparator}
-                    data={feeds}
-                    extraData={this.props.employees}
-                    renderItem={this.renderItem}
-                    onEndReached={this.endReached}
-                    onEndReachedThreshold={0}
-                    refreshing={false}
-                    onRefresh={this.onRefresh}
-                />
-        : <LoadingView/>;
+            <FlatList
+                style={styles.view}
+                keyExtractor={HomeFeedsScreenImpl.keyExtractor}
+                ItemSeparatorComponent={HomeFeedsScreenImpl.itemSeparator}
+                data={feeds}
+                extraData={this.props.employees}
+                renderItem={this.renderItem}
+                onEndReached={this.endReached}
+                onEndReachedThreshold={0.2}
+                refreshing={false}
+                onRefresh={this.onRefresh}
+                ListFooterComponent={this.footer}
+            /> :
+            <LoadingView/>;
     }
 
-    private keyExtractor(item: Feed) {
-        return item ? item.messageId : '';
-    }
-
-    private itemSeparator() {
-        return <View style={styles.separator}></View>;
-    }
-
+    //----------------------------------------------------------------------------
     private sortedFeeds() {
         return this.props.feeds.toArray().sort((x, y) => {
             return ((y.datePosted.valueOf() - x.datePosted.valueOf()) || (y.employeeId < x.employeeId ? -1 : 1));
         });
     }
 
+    //----------------------------------------------------------------------------
+    private footer = (): React.ReactElement<any> => {
+        return (
+            <View style={listStyles.footer}>
+                <ActivityIndicator color={baseColor}/>
+            </View>
+        );
+    }
+
+    //----------------------------------------------------------------------------
     private renderItem = (itemInfo: ListRenderItemInfo<Feed>) => {
         const { item } = itemInfo;
         const employee: Employee = this.props.employees.employeesById.get(item.employeeId);
         if (!employee) {
-            return <FeedMessage message={item} employee={null} onAvatarClicked={this.props.onAvatarClicked} />;
+            return <FeedMessage message={item} employee={null} onAvatarClicked={this.props.onAvatarClicked}/>;
         } else {
-            return <FeedMessage message={item} employee={employee} onAvatarClicked={this.props.onAvatarClicked} />;
+            return <FeedMessage message={item} employee={employee} onAvatarClicked={this.props.onAvatarClicked}/>;
         }
     }
 
+    //----------------------------------------------------------------------------
     private endReached = () => {
         if (this.props.user) {
             this.props.fetchOldFeeds();
         }
     }
 
+    //----------------------------------------------------------------------------
     private onRefresh = () => {
-        this.props.fetchNewFeeds();
+        if (this.props.user) {
+            this.props.fetchNewFeeds();
+        }
+    }
+
+    //----------------------------------------------------------------------------
+    private static keyExtractor(item: Feed): string {
+        return item ? item.messageId : '';
+    }
+
+    //----------------------------------------------------------------------------
+    private static itemSeparator(): React.ReactElement<any> {
+        return <View style={styles.separator}/>;
     }
 }
 
