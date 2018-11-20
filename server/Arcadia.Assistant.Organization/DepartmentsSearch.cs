@@ -96,7 +96,10 @@
 
             if (this.departmentsQuery.IncludeDirectDescendantDepartments)
             {
-                resultList.AddRange(resultList.SelectMany(d => GetDescendants(d.Department.DepartmentId, this.departmentFindings, 1)));
+                var descendantDepartments = resultList
+                    .SelectMany(d => GetDescendants(d.Department.DepartmentId, this.departmentFindings, 1))
+                    .ToList();
+                resultList.AddRange(descendantDepartments);
             }
 
             return resultList;
@@ -137,7 +140,7 @@
             int maxNestingLevel = 0,
             int nestingLevel = 0)
         {
-            if (maxNestingLevel != 0 && nestingLevel > maxNestingLevel)
+            if (maxNestingLevel != 0 && nestingLevel >= maxNestingLevel)
             {
                 return new List<DepartmentContainer>();
             }
@@ -146,9 +149,13 @@
                 .Where(x => x.Department.ParentDepartmentId == departmentId)
                 .ToList();
 
-            children.AddRange(children.SelectMany(child => GetDescendants(child.Department.DepartmentId, allDepartments, maxNestingLevel, nestingLevel + 1)));
+            var descendants = children
+                .SelectMany(child => GetDescendants(child.Department.DepartmentId, allDepartments, maxNestingLevel, nestingLevel + 1))
+                .ToList();
 
-            return children;
+            return children
+                .Union(descendants)
+                .ToList();
         }
 
         private class StartSearch
