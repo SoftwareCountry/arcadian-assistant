@@ -23,8 +23,8 @@
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-
     using Swashbuckle.AspNetCore.Swagger;
+    using ZNetCS.AspNetCore.Authentication.Basic;
 
     public class Startup
     {
@@ -32,8 +32,8 @@
         {
             var configBuilder = new ConfigurationBuilder()
                 .SetBasePath(environment.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional:false, reloadOnChange:true)
-                .AddJsonFile($"appsettings.{environment.EnvironmentName}.json", optional:true)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{environment.EnvironmentName}.json", optional: true)
                 .AddHoconContent("akka.conf", "Akka", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
@@ -75,18 +75,27 @@
                         //x.CustomSchemaIds(t => t.FullName);
                     });
 
+            services.AddScoped<AuthenticationEvents>();
+
             services
                 .AddAuthentication(options => { options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme; })
                 .AddJwtBearer(
                     jwtOptions =>
-                        {
-                            jwtOptions.Audience = appSettings.Security.ClientId;
-                            jwtOptions.MetadataAddress = appSettings.Security.OpenIdConfigurationUrl;
-                            jwtOptions.Events = new JwtEventsHandler();
-                        });
+                    {
+                        jwtOptions.Audience = appSettings.Security.ClientId;
+                        jwtOptions.MetadataAddress = appSettings.Security.OpenIdConfigurationUrl;
+                        jwtOptions.Events = new JwtEventsHandler();
+                    })
+                .AddBasicAuthentication(
+                    options =>
+                    {
+                        options.Realm = "Test Realm";
+                        options.EventsType = typeof(AuthenticationEvents);
+                    });
 
             services
-                .AddAuthorization(options => options.AddPolicy(Policies.UserIsEmployee, policy => policy.Requirements.Add(new UserIsEmployeeRequirement())));
+                .AddAuthorization(options => options.AddPolicy(Policies.UserIsEmployee, policy => policy.Requirements.Add(new UserIsEmployeeRequirement())))
+                .AddAuthorization(options => options.AddPolicy(Policies.UserIsHealth, policy => policy.Requirements.Add(new UserIsHealthRequirement())));
         }
 
         // ReSharper disable once UnusedMember.Global
@@ -113,6 +122,7 @@
             builder.RegisterType<HealthService>().As<IHealthService>();
 
             builder.RegisterType<UserIsEmployeeHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
+            builder.RegisterType<UserIsHealthHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
             builder.RegisterType<EmployeePermissionsHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
             builder.RegisterType<EditCalendarEventsPermissionHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
 
