@@ -64,7 +64,8 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
                     this.canSwipe = false;
                     this.moveToPage(gesture, this.props.width - this.gap, () => this.prevDepartment(), this.isFirstPrevPage());
                 }
-            }
+            },
+            onPanResponderTerminationRequest: (e, gesture) => false,
         });
     }
 
