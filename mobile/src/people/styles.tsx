@@ -118,6 +118,7 @@ export const companyDepartmentLevelPeople = StyleSheet.create({
         flex: 1
     },
     listItemContent: {
+        marginLeft: contentMargin * 0.7,
         flex: 5,
         flexDirection: 'row',
         alignItems: 'center'
