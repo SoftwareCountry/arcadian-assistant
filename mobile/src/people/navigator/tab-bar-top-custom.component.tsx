@@ -61,22 +61,22 @@ class TabBarTopCustomImpl extends React.Component<TabBarTopProps & TabBarTopCust
 }
 
 //----------------------------------------------------------------------------
+function getDepartment(state: AppState, employee: Optional<Employee>): Optional<Department> {
+    if (!state.organization || !employee) {
+        return null;
+    }
+
+    const { departments } = state.organization;
+    return departments.find((d) => d.departmentId === employee.departmentId);
+}
+
+//----------------------------------------------------------------------------
+function getEmployee(state: AppState): Optional<Employee> {
+    return state.organization.employees.employeesById.get(state.userInfo.employeeId, null);
+}
+
+//----------------------------------------------------------------------------
 const stateToProps = (state: AppState): TabBarTopCustomProps => {
-
-    const getDepartment = (st: AppState, emp: Optional<Employee>): Optional<Department> => {
-
-        if (!state.organization || !emp) {
-            return null;
-        }
-
-        const { departments } = state.organization;
-        return departments.find((d) => d.departmentId === emp.departmentId);
-    };
-
-    const getEmployee = (st: AppState): Optional<Employee> => {
-        return st.organization.employees.employeesById.get(st.userInfo.employeeId, undefined);
-    };
-
     const employee = getEmployee(state);
     const department = getDepartment(state, employee);
 
