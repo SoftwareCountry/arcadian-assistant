@@ -31,12 +31,12 @@
                 .Select(kvp => new ApplicationHealthModelEntry(kvp.Key, kvp.Value.Value, kvp.Value.Details))
                 .ToList();
 
-            if (result.Any(x => !x.StateValue))
+            if (result.All(x => x.StateValue))
             {
-                return this.StatusCode(StatusCodes.Status503ServiceUnavailable, result);
+                return this.Ok(result);
             }
 
-            return this.Ok(result);
+            return this.StatusCode(StatusCodes.Status503ServiceUnavailable, result);
         }
     }
 }

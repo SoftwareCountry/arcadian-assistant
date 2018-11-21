@@ -61,36 +61,43 @@
         {
             try
             {
-                using (var context = this.contextFactory())
-                {
-                    var arcEmployees = new CspEmployeeQuery(context).Get();
-
-                    var allDepartments = await context
-                        .Department
-                        .Where(x => (x.IsDelete != true) && (x.CompanyId == this.configuration.CompanyId))
-                        .GroupJoin(arcEmployees, d => d.ChiefId, e => e.Id, this.mapDepartment)
-                        .GroupJoin(arcEmployees, d => d.DepartmentId, e => e.DepartmentId.ToString(), this.countEmployees)
-                        .ToListAsync();
-
-                    var head = allDepartments.FirstOrDefault(x => x.Info.IsHeadDepartment && (x.Info.Abbreviation == this.configuration.HeadDepartmentAbbreviation));
-
-                    if (head == null)
-                    {
-                        return new LoadAllDepartments.Response(new DepartmentInfo[0]);
-                    }
-
-                    var processedIds = new HashSet<string>() { head.Info.DepartmentId };
-                    var tree = new DepartmentsTreeNode(head.Info, head.PeopleCount, this.CreateTree(allDepartments, head.Info.DepartmentId, processedIds));
-
-                    var departments = tree.AsEnumerable().Where(x => x.CountAllEmployees() != 0).Select(x => x.DepartmentInfo).ToList();
-
-                    return new LoadAllDepartments.Response(departments);
-                }
+                var departments = await GetAllDepartmentsInternal();
+                this.lastErrorMessage = null;
+                return departments;
             }
             catch (Exception ex)
             {
                 this.lastErrorMessage = ex.Message;
                 throw;
+            }
+        }
+
+        private async Task<LoadAllDepartments.Response> GetAllDepartmentsInternal()
+        {
+            using (var context = this.contextFactory())
+            {
+                var arcEmployees = new CspEmployeeQuery(context).Get();
+
+                var allDepartments = await context
+                    .Department
+                    .Where(x => (x.IsDelete != true) && (x.CompanyId == this.configuration.CompanyId))
+                    .GroupJoin(arcEmployees, d => d.ChiefId, e => e.Id, this.mapDepartment)
+                    .GroupJoin(arcEmployees, d => d.DepartmentId, e => e.DepartmentId.ToString(), this.countEmployees)
+                    .ToListAsync();
+
+                var head = allDepartments.FirstOrDefault(x => x.Info.IsHeadDepartment && (x.Info.Abbreviation == this.configuration.HeadDepartmentAbbreviation));
+
+                if (head == null)
+                {
+                    return new LoadAllDepartments.Response(new DepartmentInfo[0]);
+                }
+
+                var processedIds = new HashSet<string>() { head.Info.DepartmentId };
+                var tree = new DepartmentsTreeNode(head.Info, head.PeopleCount, this.CreateTree(allDepartments, head.Info.DepartmentId, processedIds));
+
+                var departments = tree.AsEnumerable().Where(x => x.CountAllEmployees() != 0).Select(x => x.DepartmentInfo).ToList();
+
+                return new LoadAllDepartments.Response(departments);
             }
         }
 

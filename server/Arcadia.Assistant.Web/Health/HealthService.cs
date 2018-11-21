@@ -31,7 +31,7 @@
             {
                 var healthCheckResponse = await healthActor.Ask<HealthCheckMessageResponse>(
                     HealthCheckMessage.Instance,
-                    this.timeoutSettings.Timeout * 2,
+                    this.timeoutSettings.Timeout,
                     cancellationToken);
 
                 healthCheckResponse.HealthStates[WellKnownHealthStateName.Server] = this.GetServerHealthState(true);

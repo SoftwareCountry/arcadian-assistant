@@ -15,7 +15,7 @@
                     break;
 
                 default:
-                    Unhandled(message);
+                    this.Unhandled(message);
                     break;
             }
         }
