@@ -25,11 +25,16 @@ project.xcworkspace
 
 # Android/IntelliJ
 #
+android/.idea/
+android/**/*.iml
 build/
-.idea
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
 .gradle
 local.properties
-*.iml
 
 # node.js
 #

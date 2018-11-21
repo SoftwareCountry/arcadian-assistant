@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { View, LayoutChangeEvent } from 'react-native';
+import { View } from 'react-native';
 import { daysCountersStyles } from './styles';
 import { DaysCounter, EmptyDaysCounter } from './days-counter';
 import { DaysCountersModel } from '../../reducers/calendar/days-counters.model';
 import { AppState } from '../../reducers/app.reducer';
 import { connect } from 'react-redux';
-import { SelectedDay } from './selected-day';
-import { DayModel } from '../../reducers/calendar/calendar.model';
+import { LoadingView } from '../../navigation/loading';
 
 interface DaysCountersProps {
     daysCounters: DaysCountersModel;
@@ -16,6 +15,14 @@ class DaysCountersImpl extends Component<DaysCountersProps> {
 
     public render() {
         const { daysCounters: { allVacationDays, hoursCredit } } = this.props;
+
+        if (!allVacationDays && !hoursCredit) {
+            return (
+                <View style={daysCountersStyles.container}>
+                    <LoadingView/>
+                </View>
+            );
+        }
 
         const vacationCounter = allVacationDays
             ? <DaysCounter  textValue={allVacationDays.toString()}

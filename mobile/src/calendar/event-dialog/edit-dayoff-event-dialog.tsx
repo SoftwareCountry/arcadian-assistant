@@ -34,17 +34,17 @@ class EditDayoffEventDialogImpl extends Component<EditDayoffEventDialogProps & E
 
     private onCancelClick = () => {
         this.props.closeDialog();
-    }
+    };
 
     private onAcceptClick = () => {
         const { selectedIntervals: { dayoff }, userEmployee, cancelProcessDayoff } = this.props;
 
         cancelProcessDayoff(userEmployee.employeeId, dayoff.calendarEvent);
-    }
+    };
 
     private onCloseClick = () => {
         this.props.closeDialog();
-    }
+    };
 
     public get text(): string {
         const { selectedIntervals: { dayoff } } = this.props;

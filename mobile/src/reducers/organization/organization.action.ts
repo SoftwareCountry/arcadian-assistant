@@ -23,12 +23,12 @@ export interface LoadEmployee extends Action {
 
 export const loadEmployee = (employeeId: string): LoadEmployee => ({ type: 'LOAD_EMPLOYEE', employeeId });
 
-export interface LoadEmployeeFinished extends Action {
-    type: 'LOAD_EMPLOYEE_FINISHED';
-    employee: Employee;
+export interface LoadEmployeesFinished extends Action {
+    type: 'LOAD_EMPLOYEES_FINISHED';
+    employees: Employee[];
 }
 
-export const loadEmployeeFinished = (employee: Employee): LoadEmployeeFinished => ({ type: 'LOAD_EMPLOYEE_FINISHED', employee });
+export const loadEmployeesFinished = (employees: Employee[]): LoadEmployeesFinished => ({ type: 'LOAD_EMPLOYEES_FINISHED', employees });
 
 export interface LoadEmployeesForDepartment extends Action {
     type: 'LOAD_EMPLOYEES_FOR_DEPARTMENT';
@@ -46,4 +46,4 @@ export const loadEmployeesForRoom = (roomNumber: string): LoadEmployeesForRoom =
 
 export type OrganizationActions =
     LoadDepartments | LoadDepartmentsFinished |
-    LoadEmployee | LoadEmployeesForDepartment | LoadEmployeesForRoom | LoadEmployeeFinished;
+    LoadEmployee | LoadEmployeesForDepartment | LoadEmployeesForRoom | LoadEmployeesFinished;

@@ -37,17 +37,17 @@ class EditVacationEventDialogImpl extends Component<EditVacationEventDialogProps
     private cancelVacation = () => {
         const { intervals: { vacation }, userEmployee, cancelVacation } = this.props;
         cancelVacation(userEmployee.employeeId, vacation.calendarEvent);
-    }
+    };
 
     private changeVacation = () => {
         const { userEmployee, intervals, changeVacationStartDate } = this.props;
 
         changeVacationStartDate();
-    }
+    };
 
     private closeDialog = () => {
         this.props.closeDialog();
-    }
+    };
 
     public get text(): string {
         const { intervals: { vacation } } = this.props;

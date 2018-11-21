@@ -33,15 +33,15 @@ export class CalendarImpl extends Component<CalendarProps & CalendarDispatchProp
 
     private onSelectedDay: OnSelectedDayCallback = (day) => {
         this.props.selectCalendarDay(day);
-    }
+    };
 
     private onNextPage = () => {
         this.props.nextCalendarPage();
-    }
+    };
 
     private onPrevPage = () => {
         this.props.prevCalendarPage();
-    }
+    };
 }
 
 const mapStateToProps = (state: AppState): CalendarProps => ({

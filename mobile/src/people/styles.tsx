@@ -8,7 +8,6 @@ export const employeesListStyles  = StyleSheet.create({
         backgroundColor: '#FFF'
     },
     view: {
-        paddingTop: 5,
         backgroundColor: '#FFF'
     },
 });
@@ -91,14 +90,14 @@ export const companyDepartmentsAnimatedNode = StyleSheet.create({
         marginLeft: contentMargin,
         justifyContent: 'space-between',
         marginTop: contentMargin,
-        marginBottom: contentMargin 
+        marginBottom: contentMargin
     },
     contentPosition: {
         fontSize: 10
     },
     contentDepartmentAbbreviation: {
         fontSize: 9,
-        color: '#2FAFCC',        
+        color: '#2FAFCC',
     }
 });
 
@@ -109,9 +108,9 @@ export const companyDepartmentLevelPeople = StyleSheet.create({
         paddingRight: screenHeight * 0.02
     },
     listItem: {
-        flexDirection: 'row', 
+        flexDirection: 'row',
         flex: 1,
-        height: screenHeight * 0.052,
+        height: screenHeight * 0.07,
         marginTop: screenHeight * 0.005,
         marginBottom: screenHeight * 0.005
     },
@@ -119,6 +118,7 @@ export const companyDepartmentLevelPeople = StyleSheet.create({
         flex: 1
     },
     listItemContent: {
+        marginLeft: contentMargin * 0.7,
         flex: 5,
         flexDirection: 'row',
         alignItems: 'center'
@@ -129,5 +129,5 @@ export const companyDepartmentLevelPeople = StyleSheet.create({
     },
     listItemPosition: {
         fontSize: 11
-    }    
+    }
 });

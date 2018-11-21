@@ -95,7 +95,7 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
                 weekHeight: PixelRatio.roundToNearestPixel(e.nativeEvent.layout.height)
             });
         }
-    }
+    };
 
     private renderWeek(week: WeekModel) {
         return (
@@ -108,7 +108,7 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
     }
 
     private onLayoutWeekDayContainer = (e: LayoutChangeEvent) => {
-        // TODO: Workaround for https://github.com/facebook/react-native/issues/18137 
+        // TODO: Workaround for https://github.com/facebook/react-native/issues/18137
         if (!this.state.weekDayContainerWidth) {
             const paddings = weekCalendarStyles.paddingLeft + weekCalendarStyles.paddingRight;
             const daysPerWeek = 7;
@@ -116,7 +116,7 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
             const width = PixelRatio.roundToNearestPixel(calendarWidth / daysPerWeek);
             this.setState({ weekDayContainerWidth: width });
         }
-    }
+    };
 
     private renderDay(day: DayModel) {
         const intervalModels = this.getIntervalsByDate(day.date);
@@ -190,7 +190,7 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
     }
 
     private renderIntervalSelection(day: DayModel) {
-        if (!this.props.selection 
+        if (!this.props.selection
             || !this.props.selection.interval
             || !this.props.selection.interval.startDay
             || !this.props.selection.interval.endDay

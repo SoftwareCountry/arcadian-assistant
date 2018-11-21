@@ -1,6 +1,16 @@
 import { StyleSheet } from 'react-native';
 
 const screenPadding = 19;
+export const baseColor = '#2FAFCC';
+
+export const listStyles = StyleSheet.create({
+    footer: {
+        height: 40,
+        backgroundColor: 'transparent',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+});
 
 export const screenStyles = StyleSheet.create({
     view: {
@@ -30,6 +40,7 @@ export const feedStyles = StyleSheet.create({
     imgContainer: {
         marginTop: 5,
         flex: 2,
+        aspectRatio: 1,
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
         flexDirection: 'row'

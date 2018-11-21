@@ -45,7 +45,7 @@ export class DayoffActionButton extends Component<DayoffActionButtonProps> {
         }
 
         dayoffCase.action();
-    }
+    };
 
     private disableCalendarAction() {
         const dayoffCase = this.dayoffCases();

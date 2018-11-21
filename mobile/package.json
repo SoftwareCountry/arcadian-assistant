@@ -34,6 +34,8 @@
     "moment": "^2.20.1",
     "react": "^16.5.0",
     "react-native": "^0.57.2",
+    "react-native-fingerprint-scanner": "^2.5.0",
+    "react-native-modal": "^7.0.0",
     "react-native-sensitive-info": "5.2.0",
     "react-native-sf-authentication-session": "^0.1.1",
     "react-native-vector-icons": "^4.4.2",

@@ -67,17 +67,17 @@ export class SelectorDayoffDuration extends Component<SelectorDayoffDurationProp
 
     private onContainerLayout = (e: LayoutChangeEvent) => {
         this.setState({ containerHeight: e.nativeEvent.layout.height });
-    }
+    };
 
     private onFirstHalfSelected = () => {
         this.props.onIntervalTypeSelected(IntervalType.IntervalLeftBoundary);
-    }
+    };
 
     private onSecondHalfSelected = () => {
         this.props.onIntervalTypeSelected(IntervalType.IntervalRightBoundary);
-    }
+    };
 
     private onFullDaySelected = () => {
         this.props.onIntervalTypeSelected(IntervalType.IntervalFullBoundary);
-    }
+    };
 }

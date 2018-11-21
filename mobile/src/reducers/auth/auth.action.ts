@@ -6,9 +6,10 @@ export const startLoginProcess = (): StartLoginProcess => ({ type: 'START-LOGIN-
 
 export interface StartLogoutProcess {
     type: 'START-LOGOUT-PROCESS';
+    force: boolean;
 }
 
-export const startLogoutProcess = (): StartLogoutProcess => ({ type: 'START-LOGOUT-PROCESS' });
+export const startLogoutProcess = (force: boolean = false): StartLogoutProcess => ({ type: 'START-LOGOUT-PROCESS', force });
 
 export interface UserLoggedIn {
     type: 'USER-LOGGED-IN';

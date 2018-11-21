@@ -25,7 +25,11 @@ export const startLoginProcessEpic$ = (action$: ActionsObservable<StartLoginProc
 export const startLogoutProcessEpic$ = (action$: ActionsObservable<StartLogoutProcess>, state: AppState, dep: DependenciesContainer) =>
     action$.ofType('START-LOGOUT-PROCESS')
         .map(x => {
-            showAlert('Are you sure you want to logout?', 'Logout', 'Cancel', 
+            if (x.force) {
+                dep.oauthProcess.logout();
+                return;
+            }
+            showAlert('Are you sure you want to logout?', 'Logout', 'Cancel',
                       () => dep.oauthProcess.logout(), () => {});
         })
         .ignoreElements();
@@ -45,7 +49,7 @@ export const listenerAuthStateEpic$ = (action$: ActionsObservable<any>, state: A
         );
 
 
-export const jwtTokenEpic$ = (action$: ActionsObservable<any>, state: AppState, dep: DependenciesContainer) => 
+export const jwtTokenEpic$ = (action$: ActionsObservable<any>, state: AppState, dep: DependenciesContainer) =>
     dep.oauthProcess.authenticationState
         .pipe(
             map(x => x.isAuthenticated ? jwtTokenSet(x.jwtToken) : jwtTokenSet(null))

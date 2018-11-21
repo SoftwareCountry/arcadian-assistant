@@ -1,6 +1,7 @@
 import { ajaxGetJSON, ajaxPost, ajaxPut, ajaxDelete } from 'rxjs/observable/dom/AjaxObservable';
 import { Observable } from 'rxjs/Observable';
 import { AuthenticationState, AuthenticatedState } from './authentication-state';
+import moment from 'moment';
 
 export class SecuredApiClient {
 
@@ -34,7 +35,12 @@ export class SecuredApiClient {
 
     private getHeaders(headers?: Object) {
         return this.authState
-            .first(x => x.isAuthenticated)
+            .first(x => {
+                if (x.isAuthenticated) {
+                    return moment().isBefore(x.validUntil);
+                }
+                return false;
+            })
             .map((x: AuthenticatedState) => ({
                 ...headers,
                 'Authorization': `Bearer ${x.jwtToken}`

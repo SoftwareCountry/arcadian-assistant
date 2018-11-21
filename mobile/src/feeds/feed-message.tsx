@@ -12,31 +12,14 @@ interface FeedMessageProps {
     onAvatarClicked: (e: Employee) => void;
 }
 
-interface FeedMessageState {
-    avatarHeight: number;
-}
-
-export class FeedMessage extends React.Component<FeedMessageProps, FeedMessageState> {
-    constructor(props: FeedMessageProps) {
-        super(props);
-        this.state = {
-            avatarHeight: undefined
-        };
-    }
-
+export class FeedMessage extends React.Component<FeedMessageProps> {
     public render() {
         const message = this.props.message;
         const employee = this.props.employee;
         const photo = employee ? employee.photoUrl : null;
         const formattedDate = message.datePosted.format('MMMM D, YYYY');
 
-        const imgContainerStyle = StyleSheet.flatten([
-            styles.imgContainer,
-            this.state.avatarHeight
-                ? { height: this.state.avatarHeight }
-                : {}
-        ]);
-        const isDisabledClick = (this.props.employee) ? false : true;
+        const isDisabledClick = !this.props.employee;
 
         const avatarContent = isDisabledClick ?
             <Avatar photoUrl={photo} /> :
@@ -47,7 +30,7 @@ export class FeedMessage extends React.Component<FeedMessageProps, FeedMessageSt
         return (
             <View>
                 <View style={styles.layout}>
-                    <View style={imgContainerStyle} onLayout={this.onAvatarContainerLayout}>
+                    <View style={styles.imgContainer}>
                         {avatarContent}
                     </View>
                     <View style={styles.info}>
@@ -62,13 +45,7 @@ export class FeedMessage extends React.Component<FeedMessageProps, FeedMessageSt
         );
     }
 
-    private onAvatarContainerLayout = (evt: LayoutChangeEvent) => {
-        const layout = evt.nativeEvent.layout;
-        this.setState({
-            avatarHeight: Math.max(layout.height, layout.width)
-        });
-    }
     private onAvatarClicked = () => {
         this.props.onAvatarClicked(this.props.employee);
-    }
+    };
 }
