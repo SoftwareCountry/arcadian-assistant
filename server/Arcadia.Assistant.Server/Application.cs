@@ -6,18 +6,14 @@
     using Akka.Actor;
     using Akka.Configuration;
     using Akka.DI.AutoFac;
-    using Akka.DI.Core;
-
-    using Arcadia.Assistant.Configuration.Configuration;
 
     using Autofac;
 
-    using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.Extensions.Configuration;
 
     public class Application : IDisposable
     {
-        protected readonly IConfigurationRoot config;
+        protected readonly IConfigurationRoot Config;
 
         private IContainer container;
 
@@ -25,21 +21,21 @@
 
         public Application(IConfigurationRoot config)
         {
-            this.config = config;
+            this.Config = config;
         }
 
         public ServerActorsCollection ServerActors { get; private set; }
 
         public void Start()
         {
-            var akkaConfig = ConfigurationFactory.ParseString(this.config["Akka"]);
+            var akkaConfig = ConfigurationFactory.ParseString(this.Config["Akka"]);
 
             this.ActorSystem = ActorSystem.Create("arcadia-assistant", akkaConfig);
             this.OnStart(this.ActorSystem);
 
             var di = new DependencyInjection();
 
-            this.container = di.GetContainer(this.config);
+            this.container = di.GetContainer(this.Config);
 
             // ReSharper disable once ObjectCreationAsStatement
             new AutoFacDependencyResolver(this.container, this.ActorSystem);

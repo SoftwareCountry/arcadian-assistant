@@ -3,13 +3,28 @@
     using Arcadia.Assistant.Configuration.Configuration;
 
     using Microsoft.ApplicationInsights.Extensibility;
-    using Microsoft.Extensions.Configuration;
+
+    using NLog;
 
     public class AppInsightTelemetry
     {
-        public void Setup(AppSettings settings)
+        private readonly AppSettings settings;
+
+        private static readonly ILogger Log = LogManager.GetCurrentClassLogger();
+
+        public AppInsightTelemetry(AppSettings settings)
         {
-            TelemetryConfiguration.Active.InstrumentationKey = settings.ApplicationInsights?.InstrumentationKey;
+            this.settings = settings;
+        }
+
+        public void Setup()
+        {
+            TelemetryConfiguration.Active.InstrumentationKey = this.settings.ApplicationInsights?.InstrumentationKey;
+            Log.Info($"TelemetryConfiguration is set to {TelemetryConfiguration.Active.InstrumentationKey}");
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

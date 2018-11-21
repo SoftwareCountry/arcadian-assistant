@@ -28,7 +28,7 @@
 
             var settings = config.Get<AppSettings>();
 
-            new AppInsightTelemetry().Setup(settings);
+            new AppInsightTelemetry(settings).Setup();
 
             using (var app = new Application(config))
             {
