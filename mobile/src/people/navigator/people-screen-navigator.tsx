@@ -1,12 +1,20 @@
-import { TabNavigatorConfig, TabBarTop, TabNavigator } from 'react-navigation';
+import { NavigationRouteConfigMap, TabNavigator, TabNavigatorConfig } from 'react-navigation';
 import React from 'react';
 import peopleScreenNavigatorStyles from './styles';
-import peopleScreenNavigatorModel from './people-screen-navigator-model';
-import { RootNavigator } from '../../tabbar/tab-navigator';
+import { PeopleCompanyFiltered, PeopleDepartmentFiltered, PeopleRoomFiltered } from '../people-filtered';
+import { TabBarTopCustom } from './tab-bar-top-custom.component';
 
+//============================================================================
+enum PeopleScreenNavigationRouteName {
+    department = 'PeopleScreenNavigationRouteName.department',
+    room = 'PeopleScreenNavigationRouteName.room',
+    company = 'PeopleScreenNavigationRouteName.company',
+}
+
+//----------------------------------------------------------------------------
 const peopleScreenNavigatorConfig: TabNavigatorConfig = {
     tabBarPosition: 'top',
-    tabBarComponent: TabBarTop, 
+    tabBarComponent: TabBarTopCustom,
     swipeEnabled: false,
     animationEnabled: false,
     lazy: true,
@@ -19,7 +27,24 @@ const peopleScreenNavigatorConfig: TabNavigatorConfig = {
     },
 };
 
-export const  PeopleScreenNavigator = TabNavigator(
+//----------------------------------------------------------------------------
+const peopleScreenNavigatorModel: NavigationRouteConfigMap = {
+    [PeopleScreenNavigationRouteName.department]: {
+        screen: PeopleDepartmentFiltered,
+        path: '/people/department',
+    },
+    [PeopleScreenNavigationRouteName.room]: {
+        screen: PeopleRoomFiltered,
+        path: '/people/room',
+    },
+    [PeopleScreenNavigationRouteName.company]: {
+        screen: PeopleCompanyFiltered,
+        path: '/people/company',
+    }
+};
+
+//----------------------------------------------------------------------------
+export const PeopleScreenNavigator = TabNavigator(
     peopleScreenNavigatorModel,
     peopleScreenNavigatorConfig
 );
