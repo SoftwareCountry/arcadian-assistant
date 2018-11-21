@@ -34,6 +34,7 @@ interface AuthDispatchProps {
     refresh: () => void;
     loadPendingRequests: () => void;
 }
+
 const mapDispatchToProps = (dispatch: Dispatch<AuthActions>): AuthDispatchProps => ({
     refresh: () => dispatch(refresh()),
     loadPendingRequests: () => dispatch(loadPendingRequests()),
@@ -69,23 +70,31 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
     }
 
     public render() {
+        return <SafeAreaView style={profileScreenStyles.profileContainer}>
+            <View style={profileScreenStyles.logoutContainer}>
+                <LogoutView/>
+            </View>
+            <View style={profileScreenStyles.employeeDetailsContainer}>
+                {this.renderEmployeeDetails()}
+            </View>
+        </SafeAreaView>;
+    }
+
+    private renderEmployeeDetails() {
         const employee = this.props.employee;
         const department = this.props.departments && employee ? this.props.departments.find((d) => d.departmentId === employee.departmentId) : null;
         const employeesToRequests = this.props.requests.mapKeys(employeeId => this.props.employees.employeesById.get(employeeId)).toMap();
 
         return employee && department ?
-            <ScrollView refreshControl= { <RefreshControl refreshing={false} onRefresh= {this.onRefresh} />} >
-                <SafeAreaView style={profileScreenStyles.profileContainer}>
-                    <LogoutView/>
-                    <EmployeeDetails
-                        department={department}
-                        employee={employee}
-                        layoutStylesChevronPlaceholder={layoutStyles.chevronPlaceholder}
-                        requests={employeesToRequests}
-                    />
-                </SafeAreaView>
+            <ScrollView refreshControl={<RefreshControl refreshing={false} onRefresh={this.onRefresh}/>}>
+                <EmployeeDetails
+                    department={department}
+                    employee={employee}
+                    layoutStylesChevronPlaceholder={layoutStyles.chevronPlaceholder}
+                    requests={employeesToRequests}
+                />
             </ScrollView>
-            : <LoadingView></LoadingView>;
+            : <LoadingView/>;
     }
 
     private onRefresh = () => {
