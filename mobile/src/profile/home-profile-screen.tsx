@@ -1,19 +1,20 @@
-import React, {Component} from 'react';
-import {Department} from '../reducers/organization/department.model';
-import {AppState} from '../reducers/app.reducer';
-import {connect, Dispatch} from 'react-redux';
-import {RefreshControl, SafeAreaView, ScrollView, View} from 'react-native';
-import {Employee} from '../reducers/organization/employee.model';
-import {layoutStyles, profileScreenStyles} from './styles';
-import {EmployeeDetails} from '../employee-details/employee-details';
-import {AuthActions} from '../reducers/auth/auth.action';
-import {refresh} from '../reducers/refresh/refresh.action';
-import {loadPendingRequests} from '../reducers/calendar/pending-requests/pending-requests.action';
-import {EmployeesStore} from '../reducers/organization/employees.reducer';
-import {Map} from 'immutable';
-import {CalendarEvent} from '../reducers/calendar/calendar-event.model';
-import {LogoutView} from '../navigation/logout-view';
-import {LoadingView} from '../navigation/loading';
+import React, { Component } from 'react';
+import { Department } from '../reducers/organization/department.model';
+import { AppState } from '../reducers/app.reducer';
+import { connect, Dispatch } from 'react-redux';
+import { StyledText } from '../override/styled-text';
+import { View, SafeAreaView, ScrollView, RefreshControl } from 'react-native';
+import { Employee } from '../reducers/organization/employee.model';
+import { profileScreenStyles, layoutStyles } from './styles';
+import { EmployeeDetails } from '../employee-details/employee-details';
+import { AuthActions } from '../reducers/auth/auth.action';
+import { refresh } from '../reducers/refresh/refresh.action';
+import { loadPendingRequests } from '../reducers/calendar/pending-requests/pending-requests.action';
+import { EmployeesStore } from '../reducers/organization/employees.reducer';
+import { Map } from 'immutable';
+import { CalendarEvent } from '../reducers/calendar/calendar-event.model';
+import { LogoutView } from '../navigation/logout-view';
+import { LoadingView } from '../navigation/loading';
 
 interface ProfileScreenProps {
     employees: EmployeesStore;
