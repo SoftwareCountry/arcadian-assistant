@@ -2,22 +2,34 @@
 {
     using System.Security.Claims;
     using System.Threading.Tasks;
+
     using Configuration;
+    using ZNetCS.AspNetCore.Authentication.Basic;
     using ZNetCS.AspNetCore.Authentication.Basic.Events;
 
     public class AuthenticationEvents : BasicAuthenticationEvents
     {
-        private readonly IHealthEndpointAuthenticationSettings _healthEndpointAuthenticationSettings;
+        private readonly IHealthEndpointAuthenticationSettings authenticationSettings;
 
-        public AuthenticationEvents(IHealthEndpointAuthenticationSettings healthEndpointAuthenticationSettings)
+        public AuthenticationEvents(IHealthEndpointAuthenticationSettings authenticationSettings)
         {
-            this._healthEndpointAuthenticationSettings = healthEndpointAuthenticationSettings;
+            this.authenticationSettings = authenticationSettings;
         }
 
         public override Task ValidatePrincipalAsync(ValidatePrincipalContext context)
         {
-            var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, "Test User", "Test Issuer") }));
-            context.Principal = principal;
+            if (context.UserName == this.authenticationSettings.Login &&
+                context.Password == this.authenticationSettings.Password)
+            {
+                var identity = new ClaimsIdentity(
+                    new[]
+                    {
+                        new Claim(ClaimTypes.Name, context.UserName, context.Options.ClaimsIssuer)
+                    },
+                    BasicAuthenticationDefaults.AuthenticationScheme);
+
+                context.Principal = new ClaimsPrincipal(identity);
+            }
 
             return Task.CompletedTask;
         }

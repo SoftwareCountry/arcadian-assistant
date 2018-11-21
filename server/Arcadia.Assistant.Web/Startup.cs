@@ -1,8 +1,6 @@
 ﻿namespace Arcadia.Assistant.Web
 {
     using System.Collections.Generic;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
     using Akka.Actor;
     using Akka.Configuration;
 
@@ -26,7 +24,6 @@
     using Microsoft.Extensions.DependencyInjection;
     using Swashbuckle.AspNetCore.Swagger;
     using ZNetCS.AspNetCore.Authentication.Basic;
-    using ZNetCS.AspNetCore.Authentication.Basic.Events;
 
     public class Startup
     {
@@ -77,7 +74,7 @@
                         //x.CustomSchemaIds(t => t.FullName);
                     });
 
-            //services.AddScoped<AuthenticationEvents>();
+            services.AddScoped<AuthenticationEvents>();
 
             services
                 .AddAuthentication(options => { options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme; })
@@ -89,48 +86,27 @@
                         jwtOptions.Events = new JwtEventsHandler();
                     })
                 .AddBasicAuthentication(
-                    options =>
+                    basicOptions =>
                     {
-                        options.Realm = this.AppSettings.HealthEndpointAuthentication.Realm;
-                        options.Events = new BasicAuthenticationEvents
-                        {
-                            OnValidatePrincipal = context =>
-                            {
-                                if (context.UserName == this.AppSettings.HealthEndpointAuthentication.Login &&
-                                    context.Password == this.AppSettings.HealthEndpointAuthentication.Password)
-                                {
-                                    var principal = new ClaimsPrincipal(
-                                        new ClaimsIdentity(
-                                            new[]
-                                            {
-                                                new Claim(ClaimTypes.Name, context.UserName, context.Options.ClaimsIssuer)
-                                            }));
-
-                                    context.Principal = principal;
-                                }
-
-                                return Task.CompletedTask;
-                            }
-                        };
+                        basicOptions.Realm = this.AppSettings.HealthEndpointAuthentication.Realm;
+                        basicOptions.EventsType = typeof(AuthenticationEvents);
                     });
 
             services
                 .AddAuthorization(options =>
                 {
-                    //var jwtPolicyBuilder = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme);
-                    //jwtPolicyBuilder = jwtPolicyBuilder.AddRequirements(new UserIsEmployeeRequirement());
+                    options.AddPolicy(Policies.UserIsEmployee, policy =>
+                    {
+                        policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
+                        policy.Requirements.Add(new UserIsEmployeeRequirement());
+                    });
 
-                    //options.AddPolicy();
-
-                    options.AddPolicy(Policies.UserIsEmployee, policy => policy.Requirements.Add(new UserIsEmployeeRequirement()));
                     options.AddPolicy(Policies.UserIsHealth, policy =>
                     {
                         policy.AddAuthenticationSchemes(BasicAuthenticationDefaults.AuthenticationScheme);
-                        //policy.RequireAuthenticatedUser();
                         policy.Requirements.Add(new UserIsHealthRequirement());
                     });
                 });
-            //.AddAuthorization(options => options.AddPolicy(Policies.UserIsHealth, policy => policy.Requirements.Add(new UserIsHealthRequirement())));
         }
 
         // ReSharper disable once UnusedMember.Global

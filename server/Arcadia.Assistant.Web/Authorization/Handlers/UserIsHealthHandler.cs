@@ -8,7 +8,11 @@
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsHealthRequirement requirement)
         {
-            context.Succeed(requirement);
+            if (context.User.Identity.IsAuthenticated)
+            {
+                context.Succeed(requirement);
+            }
+
             return Task.CompletedTask;
         }
     }
