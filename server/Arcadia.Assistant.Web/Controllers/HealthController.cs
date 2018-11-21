@@ -5,15 +5,11 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    using Authorization;
     using Health;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Models;
-    using ZNetCS.AspNetCore.Authentication.Basic;
 
-    [Authorize(Policies.UserIsHealth, AuthenticationSchemes = BasicAuthenticationDefaults.AuthenticationScheme)]
     public class HealthController : Controller
     {
         private readonly IHealthService healthService;
