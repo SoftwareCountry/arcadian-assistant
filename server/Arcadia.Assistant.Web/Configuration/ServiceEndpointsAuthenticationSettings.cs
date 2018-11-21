@@ -2,7 +2,7 @@
 {
     using System.ComponentModel.DataAnnotations;
 
-    public class HealthEndpointAuthenticationSettings : IHealthEndpointAuthenticationSettings
+    public class ServiceEndpointsAuthenticationSettings : IServiceEndpointsAuthenticationSettings
     {
         [Required]
         public string Realm { get; set; }

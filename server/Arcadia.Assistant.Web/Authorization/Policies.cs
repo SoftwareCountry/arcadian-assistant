@@ -4,6 +4,6 @@
     {
         public const string UserIsEmployee = "UserIsEmployee";
 
-        public const string UserIsHealth = "UserIsHealth";
+        public const string UserIsServiceUser = "UserIsServiceUser";
     }
 }

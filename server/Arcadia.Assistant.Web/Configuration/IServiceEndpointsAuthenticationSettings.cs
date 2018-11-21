@@ -1,6 +1,6 @@
 ﻿namespace Arcadia.Assistant.Web.Configuration
 {
-    public interface IHealthEndpointAuthenticationSettings
+    public interface IServiceEndpointsAuthenticationSettings
     {
         string Realm { get; }
 

@@ -17,7 +17,7 @@
         public SecuritySettings Security { get; set; }
 
         [Required]
-        public HealthEndpointAuthenticationSettings HealthEndpointAuthentication { get; set; }
+        public ServiceEndpointsAuthenticationSettings ServiceEndpointsAuthentication { get; set; }
 
         public string Akka { get; set; }
     }

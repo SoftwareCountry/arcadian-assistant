@@ -88,7 +88,7 @@
                 .AddBasicAuthentication(
                     basicOptions =>
                     {
-                        basicOptions.Realm = this.AppSettings.HealthEndpointAuthentication.Realm;
+                        basicOptions.Realm = this.AppSettings.ServiceEndpointsAuthentication.Realm;
                         basicOptions.EventsType = typeof(AuthenticationEvents);
                     });
 
@@ -101,10 +101,10 @@
                         policy.Requirements.Add(new UserIsEmployeeRequirement());
                     });
 
-                    options.AddPolicy(Policies.UserIsHealth, policy =>
+                    options.AddPolicy(Policies.UserIsServiceUser, policy =>
                     {
                         policy.AddAuthenticationSchemes(BasicAuthenticationDefaults.AuthenticationScheme);
-                        policy.Requirements.Add(new UserIsHealthRequirement());
+                        policy.Requirements.Add(new ServiceUserRequirement());
                     });
                 });
         }
@@ -125,7 +125,7 @@
 
             builder.RegisterInstance(appSettings).As<ITimeoutSettings>();
             builder.RegisterInstance(appSettings.Security).As<ISecuritySettings>();
-            builder.RegisterInstance(appSettings.HealthEndpointAuthentication).As<IHealthEndpointAuthenticationSettings>();
+            builder.RegisterInstance(appSettings.ServiceEndpointsAuthentication).As<IServiceEndpointsAuthenticationSettings>();
             builder.RegisterInstance(actorSystem).As<IActorRefFactory>();
             builder.RegisterInstance(pathsBuilder).AsSelf();
 
@@ -134,7 +134,7 @@
             builder.RegisterType<HealthService>().As<IHealthService>();
 
             builder.RegisterType<UserIsEmployeeHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
-            builder.RegisterType<UserIsHealthHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
+            builder.RegisterType<ServiceUserHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
             builder.RegisterType<EmployeePermissionsHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
             builder.RegisterType<EditCalendarEventsPermissionHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
 

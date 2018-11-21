@@ -4,9 +4,9 @@
     using Microsoft.AspNetCore.Authorization;
     using Requirements;
 
-    public class UserIsHealthHandler : AuthorizationHandler<UserIsHealthRequirement>
+    public class ServiceUserHandler : AuthorizationHandler<ServiceUserRequirement>
     {
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsHealthRequirement requirement)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ServiceUserRequirement requirement)
         {
             if (context.User.Identity.IsAuthenticated)
             {

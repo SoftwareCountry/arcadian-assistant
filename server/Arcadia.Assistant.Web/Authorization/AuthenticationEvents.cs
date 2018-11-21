@@ -9,9 +9,9 @@
 
     public class AuthenticationEvents : BasicAuthenticationEvents
     {
-        private readonly IHealthEndpointAuthenticationSettings authenticationSettings;
+        private readonly IServiceEndpointsAuthenticationSettings authenticationSettings;
 
-        public AuthenticationEvents(IHealthEndpointAuthenticationSettings authenticationSettings)
+        public AuthenticationEvents(IServiceEndpointsAuthenticationSettings authenticationSettings)
         {
             this.authenticationSettings = authenticationSettings;
         }

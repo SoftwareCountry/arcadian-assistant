@@ -2,7 +2,7 @@
 {
     using Microsoft.AspNetCore.Authorization;
 
-    public class UserIsHealthRequirement:IAuthorizationRequirement
+    public class ServiceUserRequirement : IAuthorizationRequirement
     {
     }
 }
