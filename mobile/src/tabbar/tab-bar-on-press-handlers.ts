@@ -1,10 +1,8 @@
-import {NavigationStateRoute, TabScene} from 'react-navigation';
-import {OnSelectedDayCallback} from '../calendar/calendar-page';
-import moment from 'moment';
+import { NavigationStateRoute, TabScene } from 'react-navigation';
 
 export type TabBarOnPress = (options: { scene: TabScene, jumpToIndex: (index: number) => void }) => void;
 
-export const feedsTabBarOnPressHandler: TabBarOnPress = options => {
+const defaultTabBarOnPressHandler: TabBarOnPress = options => {
     if (options.scene.focused && options.scene.route) {
 
         const route = options.scene.route as NavigationStateRoute;
@@ -25,6 +23,9 @@ export const feedsTabBarOnPressHandler: TabBarOnPress = options => {
     options.jumpToIndex(options.scene.index);
 };
 
+export const feedsTabBarOnPressHandler = defaultTabBarOnPressHandler;
+export const calendarTabBarOnPressHandler = defaultTabBarOnPressHandler;
+
 export const peopleTabBarOnPressHandler: TabBarOnPress = options => {
     if (options.scene.focused && options.scene.route) {
 
@@ -40,27 +41,4 @@ export const peopleTabBarOnPressHandler: TabBarOnPress = options => {
 
     options.jumpToIndex(options.scene.index);
 
-};
-
-export const calendarTabBarOnPressHandler: TabBarOnPress = options => {
-    if (options.scene.focused && options.scene.route) {
-
-        const route = options.scene.route as NavigationStateRoute;
-
-        if (route.routes && route.routes[0]) {
-
-            const stackNavigation = route.routes[0];
-
-            if (stackNavigation && stackNavigation.params && stackNavigation.params.tabBarOnPress) {
-                const tabBarOnPress = stackNavigation.params.tabBarOnPress as OnSelectedDayCallback;
-                tabBarOnPress({
-                    date: moment(), today: true, belongsToCurrentMonth: true
-                });
-            }
-        }
-
-        return;
-    }
-
-    options.jumpToIndex(options.scene.index);
 };

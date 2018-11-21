@@ -15,7 +15,7 @@ import { prevCalendarPageReducer } from './prev-calendar-page.reducer';
 import { createCalendarPagesInitState } from './calendar-pages-init-state';
 import {NavigationActions} from 'react-navigation';
 import init = NavigationActions.init;
-import {resetCalendarPageReducer} from './specs/reset-calendar-page.reducer';
+import {resetCalendarPagesReducer} from './reset-calendar-pages.reducer';
 
 
 export interface IntervalsSubState {
@@ -121,13 +121,11 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
 
             return newState;
         case 'SELECT-CALENDAR-DAY':
-            const initPagesState = resetCalendarPageReducer(state, action);
             const singleDayState = singleDaySelectionReducer(state, action);
             const intervalState = intervalSelectionReducer(state, action);
 
             return {
                 ...state,
-                ...initPagesState,
                 ...singleDayState,
                 ...intervalState
             };
@@ -144,6 +142,13 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
             return {
                 ...state,
                 ...prevCalendarPageState
+            };
+        case 'RESET-CALENDAR-PAGES':
+            const initPageState = resetCalendarPagesReducer(state, action);
+
+            return {
+                ...state,
+                ...initPageState
             };
         case 'CALENDAR-SELECTION-MODE':
             const selectionState = calendarSelectionModeReducer(state, action);
