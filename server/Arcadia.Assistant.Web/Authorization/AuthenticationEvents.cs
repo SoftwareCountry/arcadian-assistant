@@ -2,12 +2,16 @@
 {
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using Configuration;
     using ZNetCS.AspNetCore.Authentication.Basic.Events;
 
     public class AuthenticationEvents : BasicAuthenticationEvents
     {
-        public AuthenticationEvents()
+        private readonly IHealthEndpointAuthenticationSettings _healthEndpointAuthenticationSettings;
+
+        public AuthenticationEvents(IHealthEndpointAuthenticationSettings healthEndpointAuthenticationSettings)
         {
+            this._healthEndpointAuthenticationSettings = healthEndpointAuthenticationSettings;
         }
 
         public override Task ValidatePrincipalAsync(ValidatePrincipalContext context)

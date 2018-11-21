@@ -11,9 +11,8 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Models;
-    using ZNetCS.AspNetCore.Authentication.Basic;
 
-    [Authorize(Policies.UserIsHealth, AuthenticationSchemes = BasicAuthenticationDefaults.AuthenticationScheme)]
+    [Authorize(Policies.UserIsHealth)]
     public class HealthController : Controller
     {
         private readonly IHealthService healthService;
@@ -29,6 +28,8 @@
         [ProducesResponseType(typeof(IEnumerable<ApplicationHealthModelEntry>), StatusCodes.Status503ServiceUnavailable)]
         public async Task<IActionResult> GetApplicationHealth(CancellationToken cancellationToken)
         {
+            return this.Ok(this.User.Identity);
+
             var healthStateDict = await this.healthService.GetHealthState(cancellationToken);
 
             var result = healthStateDict
