@@ -5,21 +5,31 @@ import tabBarStyles from './tab-bar-styles';
 import { StyledText } from '../override/styled-text';
 import { ApplicationIcon, ApplicationIconBold } from '../override/application-icon';
 
+//============================================================================
 export class TabNavigationOptionsFactory {
+
+    //----------------------------------------------------------------------------
     public create(label: string, iconName: string): NavigationTabScreenOptions {
         return {
             tabBarLabel: this.getTabBarLabel(label),
             tabBarIcon: ({ tintColor, focused }) => {
                 if (focused) {
-                    return <ApplicationIconBold name={iconName} size={Platform.OS === 'ios' ? Dimensions.get('window').width * 0.08 : Dimensions.get('window').width * 0.04} style={tabBarStyles.tabImages} ></ApplicationIconBold>;
+                    return <ApplicationIconBold
+                        name={iconName}
+                        size={Platform.OS === 'ios' ? Dimensions.get('window').width * 0.08 : Dimensions.get('window').width * 0.04}
+                        style={tabBarStyles.tabImages}/>;
                 } else {
-                    return <ApplicationIcon name={iconName} size={Platform.OS === 'ios' ? Dimensions.get('window').width * 0.08 : Dimensions.get('window').width * 0.04} style={tabBarStyles.tabImages} ></ApplicationIcon>;
+                    return <ApplicationIcon
+                        name={iconName}
+                        size={Platform.OS === 'ios' ? Dimensions.get('window').width * 0.08 : Dimensions.get('window').width * 0.04}
+                        style={tabBarStyles.tabImages}/>;
                 }
             }
 
         };
     }
 
+    //----------------------------------------------------------------------------
     private getTabBarLabel(label: string) {
         return Platform.OS === 'ios'
             ? label

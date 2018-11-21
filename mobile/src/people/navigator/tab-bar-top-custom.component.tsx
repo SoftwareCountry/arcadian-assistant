@@ -1,0 +1,92 @@
+import React, { ReactElement } from 'react';
+import { Employee } from '../../reducers/organization/employee.model';
+import { Department } from '../../reducers/organization/department.model';
+import { TabBarTop, TabBarTopProps, TabScene } from 'react-navigation';
+import { connect } from 'react-redux';
+import { AppState } from '../../reducers/app.reducer';
+import { Platform } from 'react-native';
+import { StyledText } from '../../override/styled-text';
+import tabBarStyles from '../../tabbar/tab-bar-styles';
+
+//============================================================================
+type Nullable<P> = P | null;
+
+//============================================================================
+interface TabBarTopCustomProps {
+    employee: Employee | null;
+    department: Department | null;
+}
+
+//============================================================================
+class TabBarTopCustomImpl extends React.Component<TabBarTopProps & TabBarTopCustomProps> {
+
+    //----------------------------------------------------------------------------
+    public render(): React.ReactNode {
+        const { employee, department } = this.props;
+
+        return (
+            <TabBarTop
+                {...this.props}
+                getLabel={(scene) => {
+                    return this.getLabel(scene, employee, department);
+                }}
+            />
+        );
+    }
+
+    //----------------------------------------------------------------------------
+    private getLabel = (scene: TabScene, employee: Nullable<Employee>, department: Nullable<Department>): React.ReactNode | string => {
+        switch (scene.index) {
+            case 0:
+                return this.styleTabBarLabel(department ? department.abbreviation : 'Department');
+            case 1:
+                return this.styleTabBarLabel(employee ? 'Room ' + employee.roomNumber : 'Room');
+            case 2:
+                return this.styleTabBarLabel('Company');
+            default:
+                return '';
+        }
+    }
+
+    //----------------------------------------------------------------------------
+    private styleTabBarLabel = (label: string): string | ReactElement<any> => {
+        return Platform.OS === 'ios'
+            ? label
+            : <StyledText
+                numberOfLines={1}
+                ellipsizeMode={'tail'}
+                style={tabBarStyles.tabBarLabel}>{label}
+            </StyledText>;  //TODO: fix text width issue on narrow screens
+    }
+}
+
+//----------------------------------------------------------------------------
+const stateToProps = (state: AppState): TabBarTopCustomProps => {
+
+    const getDepartment = (st: AppState, emp: Nullable<Employee>): Nullable<Department> => {
+
+        if (!state.organization || !emp) {
+            return null;
+        }
+
+        const { departments } = state.organization;
+        const dep = departments.find((d) => d.departmentId === emp.departmentId);
+
+        return dep !== undefined ? dep : null;
+    };
+
+    const getEmployee = (st: AppState): Nullable<Employee> => {
+        return st.organization.employees.employeesById.get(st.userInfo.employeeId, null);
+    };
+
+    const employee = getEmployee(state);
+    const department = getDepartment(state, employee);
+
+    return {
+        employee,
+        department,
+    };
+};
+
+//----------------------------------------------------------------------------
+export const TabBarTopCustom = connect<TabBarTopCustomProps, {}, TabBarTopProps, AppState>(stateToProps)(TabBarTopCustomImpl);
