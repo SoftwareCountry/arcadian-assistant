@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import { daysCountersStyles } from './styles';
 import { DaysCounter, EmptyDaysCounter } from './days-counter';
 import { DaysCountersModel } from '../../reducers/calendar/days-counters.model';
@@ -11,10 +11,17 @@ interface DaysCountersProps {
     daysCounters: DaysCountersModel;
 }
 
-class DaysCountersImpl extends Component<DaysCountersProps> {
+interface ExplicitDaysCountersProps {
+    explicitCounters?: DaysCountersModel;
+    explicitStyle?: StyleProp<ViewStyle>;
+}
+
+class DaysCountersImpl extends Component<DaysCountersProps & ExplicitDaysCountersProps> {
 
     public render() {
-        const { daysCounters: { allVacationDays, hoursCredit } } = this.props;
+        const { allVacationDays, hoursCredit } = this.props.explicitCounters ?
+            this.props.explicitCounters :
+            this.props.daysCounters;
 
         if (!allVacationDays && !hoursCredit) {
             return (
@@ -43,16 +50,21 @@ class DaysCountersImpl extends Component<DaysCountersProps> {
             : <EmptyDaysCounter />;
 
         return (
-            <View style={daysCountersStyles.container}>
+            <View style={this.containerStyle()}>
                     { vacationCounter }
                     { daysoffCounter }
             </View>
         );
     }
+
+    private containerStyle = (): StyleProp<ViewStyle> => {
+            return [daysCountersStyles.container, this.props.explicitStyle];
+    };
 }
 
-const mapStateToProps = (state: AppState): DaysCountersProps => ({
-    daysCounters: state.calendar.daysCounters
+const mapStateToProps = (state: AppState, ownProps: ExplicitDaysCountersProps): DaysCountersProps & ExplicitDaysCountersProps => ({
+    daysCounters: state.calendar.daysCounters,
+    ...ownProps,
 });
 
 export const DaysCounters = connect(mapStateToProps)(DaysCountersImpl);

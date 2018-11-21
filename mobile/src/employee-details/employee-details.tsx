@@ -18,6 +18,11 @@ import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calenda
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
 import { UserEmployeePermissions } from '../reducers/user/user-employee-permissions.model';
 import { loadUserEmployeePermissions } from '../reducers/user/user.action';
+import {DaysCounters} from '../calendar/days-counters/days-counters';
+import { daysCountersStyles } from '../calendar/days-counters/styles';
+import { DaysCounter, EmptyDaysCounter } from '../calendar/days-counters/days-counter';
+import { DaysCountersModel, HoursCreditCounter, VacationDaysCounter } from '../reducers/calendar/days-counters.model';
+import { ConvertHoursCreditToDays } from '../reducers/calendar/convert-hours-credit-to-days';
 
 interface TileData {
     label: string;
@@ -154,6 +159,9 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                         </View>
 
                         {
+                            this.renderDaysCounters(employee)
+                        }
+                        {
                             this.renderPendingRequests()
                         }
                         {
@@ -165,6 +173,27 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                 </View>
         );
     }
+
+    private renderDaysCounters = (employee: Employee) => {
+        const allVacationDaysCounter = new VacationDaysCounter(employee.vacationDaysLeft);
+
+        const daysConverter = new ConvertHoursCreditToDays();
+        const calculatedDays = daysConverter.convert(employee.hoursCredit);
+
+        const hoursCreditCounter = new HoursCreditCounter(employee.hoursCredit, calculatedDays.days, calculatedDays.rest);
+
+        const counters: DaysCountersModel = {
+            allVacationDays: allVacationDaysCounter,
+            hoursCredit: hoursCreditCounter,
+        };
+
+        if (employee.vacationDaysLeft !== null || employee.hoursCredit !== null) {
+            return <DaysCounters explicitCounters={counters}
+                                 explicitStyle={{ marginBottom: 30, marginTop: -30, }}/>;
+        } else {
+            return null;
+        }
+    };
 
     private uppercase(text: string) {
         return text ? text.toUpperCase() : text;
