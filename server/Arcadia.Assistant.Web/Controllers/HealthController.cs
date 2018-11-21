@@ -23,7 +23,7 @@
             this.healthService = healthService;
         }
 
-        [Route("/api/ping/health")]
+        [Route("/api/health")]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<ApplicationHealthModelEntry>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IEnumerable<ApplicationHealthModelEntry>), StatusCodes.Status503ServiceUnavailable)]
