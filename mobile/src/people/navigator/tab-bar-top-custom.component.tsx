@@ -40,7 +40,7 @@ class TabBarTopCustomImpl extends React.Component<TabBarTopProps & TabBarTopCust
             case 0:
                 return this.styleTabBarLabel(department ? department.abbreviation : 'Department');
             case 1:
-                return this.styleTabBarLabel(employee ? 'Room ' + employee.roomNumber : 'Room');
+                return this.styleTabBarLabel(employee ? `Room ${employee.roomNumber}` : 'Room');
             case 2:
                 return this.styleTabBarLabel('Company');
             default:
