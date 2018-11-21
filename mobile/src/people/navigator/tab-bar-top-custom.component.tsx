@@ -9,7 +9,7 @@ import { StyledText } from '../../override/styled-text';
 import tabBarStyles from '../../tabbar/tab-bar-styles';
 
 //============================================================================
-type Nullable<P> = P | null;
+type Optional<P> = P | null | undefined;
 
 //============================================================================
 interface TabBarTopCustomProps {
@@ -35,7 +35,7 @@ class TabBarTopCustomImpl extends React.Component<TabBarTopProps & TabBarTopCust
     }
 
     //----------------------------------------------------------------------------
-    private getLabel = (scene: TabScene, employee: Nullable<Employee>, department: Nullable<Department>): React.ReactNode | string => {
+    private getLabel = (scene: TabScene, employee: Optional<Employee>, department: Optional<Department>): React.ReactNode | string => {
         switch (scene.index) {
             case 0:
                 return this.styleTabBarLabel(department ? department.abbreviation : 'Department');
@@ -63,20 +63,18 @@ class TabBarTopCustomImpl extends React.Component<TabBarTopProps & TabBarTopCust
 //----------------------------------------------------------------------------
 const stateToProps = (state: AppState): TabBarTopCustomProps => {
 
-    const getDepartment = (st: AppState, emp: Nullable<Employee>): Nullable<Department> => {
+    const getDepartment = (st: AppState, emp: Optional<Employee>): Optional<Department> => {
 
         if (!state.organization || !emp) {
             return null;
         }
 
         const { departments } = state.organization;
-        const dep = departments.find((d) => d.departmentId === emp.departmentId);
-
-        return dep !== undefined ? dep : null;
+        return departments.find((d) => d.departmentId === emp.departmentId);
     };
 
-    const getEmployee = (st: AppState): Nullable<Employee> => {
-        return st.organization.employees.employeesById.get(st.userInfo.employeeId, null);
+    const getEmployee = (st: AppState): Optional<Employee> => {
+        return st.organization.employees.employeesById.get(st.userInfo.employeeId, undefined);
     };
 
     const employee = getEmployee(state);
