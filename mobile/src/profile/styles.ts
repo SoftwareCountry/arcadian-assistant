@@ -79,7 +79,7 @@ export const layoutStyles = StyleSheet.create({
         justifyContent: 'center'
     },
     chevronPlaceholder: {
-        height: placeholderHeight - chevronHeight * 0.5,
+        height: Math.round(placeholderHeight - chevronHeight * 0.5),
         backgroundColor: chevronColor
     }
 });
