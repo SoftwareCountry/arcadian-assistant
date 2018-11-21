@@ -66,7 +66,7 @@ class SearchViewImpl extends Component<SearchViewDispatchProps & SearchViewState
                         autoCapitalize='none'
                         onChangeText={this.changeText}
                         value={this.props.filter}
-                    />                
+                    />
             }
             </View>
         </View>;
@@ -77,11 +77,11 @@ class SearchViewImpl extends Component<SearchViewDispatchProps & SearchViewState
             this.props.clearFilter(this.props.type);
         }
         this.props.activeFilter(this.props.type, !this.props.isActive);
-    }
+    };
 
     private changeText = (filter: string) => {
         this.props.setFilter(filter, this.props.type);
-    }
+    };
 }
 
 export const SearchViewPeople = connect(mapStateToPropsPeople, mapDispatchToProps)(SearchViewImpl);

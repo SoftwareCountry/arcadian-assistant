@@ -176,7 +176,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         } else {
             return tileStyles.tile;
         }
-    }
+    };
 
     private getTiles(employee: Employee) {
         const tilesData: TileData[] = [
@@ -319,17 +319,17 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
     private openCompany = () => {
         return this.props.onCompanyClicked(this.props.employee.departmentId);
-    }
+    };
 
     private openDepartment = () => {
         this.props.openDepartment(this.props.employee.departmentId);
-    }
+    };
 
     private openRoom = () => {
         if (this.props.employee.roomNumber) {
             this.props.openRoom(this.props.employee.roomNumber);
         }
-    }
+    };
 }
 
 export const EmployeeDetails = connect(mapStateToProps, mapDispatchToProps)(EmployeeDetailsImpl);

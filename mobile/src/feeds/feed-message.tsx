@@ -47,5 +47,5 @@ export class FeedMessage extends React.Component<FeedMessageProps> {
 
     private onAvatarClicked = () => {
         this.props.onAvatarClicked(this.props.employee);
-    }
+    };
 }

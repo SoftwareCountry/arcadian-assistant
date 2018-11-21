@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { daysCounterStyles } from './styles';
 import { StyledText } from '../../override/styled-text';
 import { ApplicationIcon } from '../../override/application-icon';
+import { LoadingView } from '../../navigation/loading';
 
 interface DaysCounterProps {
     textValue: string;
@@ -38,4 +39,8 @@ export class DaysCounter extends Component<DaysCounterProps> {
     }
 }
 
-export const EmptyDaysCounter = () => (<View style={daysCounterStyles.container}></View>);
+export const EmptyDaysCounter = () => (
+    <View style={daysCounterStyles.container}>
+        <LoadingView/>
+    </View>
+);

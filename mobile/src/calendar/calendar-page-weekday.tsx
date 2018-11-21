@@ -104,7 +104,7 @@ class WeekDayTouchableHandler {
 
     public onTouchStart = (event: GestureResponderEvent) => {
         this.pageX = event.nativeEvent.pageX;
-    }
+    };
 
     public onTouchEnd = (event: GestureResponderEvent) => {
         // if we detect a horizontal swipe (x coordinate has been changed between start and end events),
@@ -112,7 +112,7 @@ class WeekDayTouchableHandler {
         if (this.pageX === event.nativeEvent.pageX) {
             this.onPressUp();
         }
-    }
+    };
 }
 
 export class WeekDayTouchable extends Component<WeekDayTouchableProps> {

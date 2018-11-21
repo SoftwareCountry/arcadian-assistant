@@ -84,26 +84,26 @@ export class FingerprintPopupAndroid extends Component<FingerprintPopupProps, Fi
     private onCancel = () => {
         this.success = false;
         this.props.onPopupClose();
-    }
+    };
 
     //----------------------------------------------------------------------------
     private onModalHide = () => {
         this.props.onPopupHidden(this.success);
-    }
+    };
 
     //----------------------------------------------------------------------------
     private fingerprintContainerColor = (): StyleProp<ViewStyle> => {
         return {
             backgroundColor: this.state.error ? '#ea3d13' : '#2fafcc',
         };
-    }
+    };
 
     //----------------------------------------------------------------------------
     private descriptionColor = (): StyleProp<TextStyle> => {
         return {
             color: this.state.error ? '#ea3d13' : '#a5a5a5',
         };
-    }
+    };
 
     //----------------------------------------------------------------------------
     private descriptionText = (): string => {
@@ -112,12 +112,12 @@ export class FingerprintPopupAndroid extends Component<FingerprintPopupProps, Fi
         }
 
         return 'Not recognized';
-    }
+    };
 
     //----------------------------------------------------------------------------
     private handleAuthenticationAttempt = (error: Error): void => {
         this.setState({
             error: !!error,
         });
-    }
+    };
 }

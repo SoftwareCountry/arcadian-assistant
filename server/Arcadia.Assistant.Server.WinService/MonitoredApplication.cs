@@ -6,6 +6,7 @@
 
     using Arcadia.Assistant.Configuration.Configuration;
 
+    using Microsoft.ApplicationInsights;
     using Microsoft.Extensions.Configuration;
 
     using NLog;
@@ -24,8 +25,8 @@
         protected override void OnStart(ActorSystem actorSystem)
         {
             base.OnStart(actorSystem);
-            
-            var instrumentationKey = this.config.Get<AppSettings>().ApplicationInsights.InstrumentationKey;
+
+            var instrumentationKey = this.Config.Get<AppSettings>().ApplicationInsights.InstrumentationKey;
             Log.Info($"AppInsights key is {instrumentationKey}");
             if (!string.IsNullOrWhiteSpace(instrumentationKey))
             {

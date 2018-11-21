@@ -17,7 +17,7 @@ interface ChooseTypeDayoffEventDialogDispatchProps {
 }
 
 interface ChooseTypeDayoffEventDialogProps {
-    chosenType : HoursCreditType; 
+    chosenType : HoursCreditType;
 }
 
 interface ChooseTypeDayoffEventDialogState {
@@ -53,19 +53,19 @@ class ChooseTypeDayoffEventDialogImpl extends Component<ChooseTypeDayoffEventDia
 
     private onDayoffTypeSelected = (selectedType: HoursCreditType) => {
         this.setState({ selectedHoursCreditType: selectedType });
-    }
+    };
 
     private onCancelClick = () => {
         this.props.cancelDialog();
-    }
+    };
 
     private onAcceptClick = () => {
         this.props.confirmChosenType(this.state.selectedHoursCreditType === HoursCreditType.Workout);
-    }
+    };
 
     private onCloseClick = () => {
         this.props.closeDialog();
-    }
+    };
 
     public get text(): string {
         const hoursCreditTypeToText = this.hoursCreditTypeToText[this.state.selectedHoursCreditType];
@@ -80,9 +80,9 @@ const mapStateToProps = (state: AppState): ChooseTypeDayoffEventDialogProps => (
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ChooseTypeDayoffEventDialogDispatchProps => ({
     cancelDialog: () => { dispatch(openEventDialog(EventDialogType.ProcessDayoff)); },
-    confirmChosenType: (isWorkout: boolean) => { 
-        dispatch(chosenTypeDayoff(isWorkout)); 
-        dispatch(openEventDialog(EventDialogType.ConfirmDayoffStartDate)); 
+    confirmChosenType: (isWorkout: boolean) => {
+        dispatch(chosenTypeDayoff(isWorkout));
+        dispatch(openEventDialog(EventDialogType.ConfirmDayoffStartDate));
     },
     closeDialog: () => { dispatch(closeEventDialog()); }
 });

@@ -58,7 +58,7 @@ export class App extends Component<AppProps> {
 
         dispatch(NavigationActions.back());
         return true;
-    }
+    };
 }
 
 const mapStateToProps = (state: AppState) => ({

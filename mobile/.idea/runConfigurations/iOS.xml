@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="iOS" type="ReactNative" factoryName="React Native">
+    <node-interpreter value="project" />
+    <react-native value="/usr/local/lib/node_modules/react-native-cli" />
+    <platform value="IOS" />
+    <run-arguments value="--simulator &quot;iPhone XR&quot;" />
+    <envs />
+    <only-packager />
+    <browser value="98ca6316-2f89-46d9-a9e5-fa9e2b0625b3" />
+    <method v="2">
+      <option name="TypeScript.Before.Run" enabled="true" FAIL_ON_ERROR="true" CONFIG_PATH="$PROJECT_DIR$/tsconfig.json" />
+    </method>
+  </configuration>
+</component>

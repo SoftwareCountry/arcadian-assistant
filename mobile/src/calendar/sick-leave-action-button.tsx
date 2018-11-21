@@ -19,10 +19,10 @@ export class SickLeaveActionButton extends Component<SickLeaveActionButtonProps>
         const disableCalendarAction = this.disableCalendarAction();
 
         return (
-            <CalendarActionButton 
-                title={this.title} 
-                borderColor={CalendarEventsColor.sickLeave} 
-                onPress={this.onSickLeaveAction} 
+            <CalendarActionButton
+                title={this.title}
+                borderColor={CalendarEventsColor.sickLeave}
+                onPress={this.onSickLeaveAction}
                 disabled={this.props.disabled || disableCalendarAction} />
         );
     }
@@ -43,7 +43,7 @@ export class SickLeaveActionButton extends Component<SickLeaveActionButtonProps>
         } else {
             cancel();
         }
-    }
+    };
 
     private disableCalendarAction(): boolean {
         const { interval, allIntervals } = this.props;

@@ -31,7 +31,7 @@
 
             var settings = config.Get<AppSettings>();
 
-            new AppInsightTelemetry().Setup(settings);
+            new AppInsightTelemetry(settings).Setup();
 
             this.application = new MonitoredApplication(config);
             this.application.Start();

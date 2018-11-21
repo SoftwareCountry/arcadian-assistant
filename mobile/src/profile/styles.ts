@@ -37,6 +37,14 @@ export const profileScreenStyles = StyleSheet.create({
     profileContainer: {
         flex: 1,
         backgroundColor: chevronColor
+    },
+    employeeDetailsContainer: {
+        flex: 1,
+        backgroundColor: 'white'
+    },
+    logoutContainer: {
+        marginTop: 5,
+        marginBottom: 10
     }
 });
 
@@ -71,7 +79,7 @@ export const layoutStyles = StyleSheet.create({
         justifyContent: 'center'
     },
     chevronPlaceholder: {
-        height: placeholderHeight - chevronHeight * 0.5,
+        height: Math.round(placeholderHeight - chevronHeight * 0.5),
         backgroundColor: chevronColor
     }
 });

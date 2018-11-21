@@ -59,12 +59,8 @@
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ForDepartment([FromQuery] string departmentId, [FromQuery] string roomNumber, CancellationToken token)
         {
-            if (this.Request.Query.Count == 0)
-            {
-                return this.BadRequest("At least one query parameter must be specified");
-            }
-
             var query = new EmployeesQuery();
+
             if (!string.IsNullOrWhiteSpace(departmentId))
             {
                 query = query.ForDepartment(departmentId);
