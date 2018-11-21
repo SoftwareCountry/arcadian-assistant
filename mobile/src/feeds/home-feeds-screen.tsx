@@ -11,7 +11,7 @@ import { AppState } from '../reducers/app.reducer';
 import { FeedMessage } from './feed-message';
 import { LoadingView } from '../navigation/loading';
 
-import { baseColor, listStyles, screenStyles as styles } from './styles';
+import { baseColor, ListStyle, ScreenStyle } from './home-feeds-screen.styles';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 import { fetchNewFeeds, fetchOldFeeds } from '../reducers/feeds/feeds.action';
 import { FeedsById } from '../reducers/feeds/feeds.reducer';
@@ -60,7 +60,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
 
         return this.props.feeds.size > 0 ?
             <FlatList
-                style={styles.view}
+                style={ScreenStyle.view}
                 keyExtractor={HomeFeedsScreenImpl.keyExtractor}
                 ItemSeparatorComponent={HomeFeedsScreenImpl.itemSeparator}
                 data={feeds}
@@ -85,7 +85,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     //----------------------------------------------------------------------------
     private footer = (): React.ReactElement<any> => {
         return (
-            <View style={listStyles.footer}>
+            <View style={ListStyle.footer}>
                 <ActivityIndicator color={baseColor}/>
             </View>
         );
@@ -94,12 +94,8 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     //----------------------------------------------------------------------------
     private renderItem = (itemInfo: ListRenderItemInfo<Feed>) => {
         const { item } = itemInfo;
-        const employee: Employee = this.props.employees.employeesById.get(item.employeeId);
-        if (!employee) {
-            return <FeedMessage message={item} employee={null} onAvatarClicked={this.props.onAvatarClicked}/>;
-        } else {
-            return <FeedMessage message={item} employee={employee} onAvatarClicked={this.props.onAvatarClicked}/>;
-        }
+        const employee: Employee = this.props.employees.employeesById.get(item.employeeId, null);
+        return <FeedMessage message={item} employee={employee} onAvatarClicked={this.props.onAvatarClicked}/>;
     };
 
     //----------------------------------------------------------------------------
@@ -123,7 +119,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
 
     //----------------------------------------------------------------------------
     private static itemSeparator(): React.ReactElement<any> {
-        return <View style={styles.separator}/>;
+        return <View style={ScreenStyle.separator}/>;
     }
 }
 
