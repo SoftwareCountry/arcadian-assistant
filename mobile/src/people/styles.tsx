@@ -8,7 +8,6 @@ export const employeesListStyles  = StyleSheet.create({
         backgroundColor: '#FFF'
     },
     view: {
-        paddingTop: 5,
         backgroundColor: '#FFF'
     },
 });

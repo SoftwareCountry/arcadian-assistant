@@ -6,6 +6,7 @@ import { AppState } from '../reducers/app.reducer';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Employee } from '../reducers/organization/employee.model';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
+import { LoadingView } from '../navigation/loading';
 
 interface PeopleRoomPropsOwnProps {
     employees: EmployeesStore;
@@ -20,7 +21,7 @@ interface PeopleRoomStateProps {
 
 type PeopleDepartmentProps = PeopleRoomStateProps & PeopleRoomPropsOwnProps;
 
-const mapStateToProps: MapStateToProps<PeopleRoomStateProps, PeopleRoomPropsOwnProps, AppState> = 
+const mapStateToProps: MapStateToProps<PeopleRoomStateProps, PeopleRoomPropsOwnProps, AppState> =
     (state: AppState, ownProps: PeopleRoomPropsOwnProps): PeopleRoomStateProps => {
         const userEmployee = state.organization.employees.employeesById.get(state.userInfo.employeeId);
         const defaultEmployeesPredicate = (employee: Employee) => userEmployee && employee.roomNumber === userEmployee.roomNumber;
@@ -55,7 +56,9 @@ class PeopleRoomImpl extends React.Component<PeopleRoomStateProps & EmployeesLis
 
     public render() {
         const employees = this.props.employees.employeesById.toArray().filter(this.props.employeesPredicate);
-
+        if (employees.length === 0) {
+            return <LoadingView/>;
+        }
         return <EmployeesList employees={employees} onItemClicked={this.props.onItemClicked}/>;
     }
 }
