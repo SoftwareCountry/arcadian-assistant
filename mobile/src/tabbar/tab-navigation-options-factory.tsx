@@ -4,6 +4,7 @@ import { Dimensions, Platform } from 'react-native';
 import tabBarStyles from './tab-bar-styles';
 import { StyledText } from '../override/styled-text';
 import { ApplicationIcon, ApplicationIconBold } from '../override/application-icon';
+import { TabBarLabel } from './tab-bar-label.component';
 
 //============================================================================
 export class TabNavigationOptionsFactory {
@@ -38,12 +39,6 @@ export class TabNavigationOptionsFactory {
     //----------------------------------------------------------------------------
     // noinspection JSMethodCanBeStatic
     private getTabBarLabel(label: string) {
-
-        const labelStyled =
-            <StyledText numberOfLines={1} ellipsizeMode={'tail'} style={tabBarStyles.tabBarLabel}>
-                {label}
-            </StyledText>; //TODO: fix text width issue on narrow screens
-
-        return Platform.OS === 'ios' ? label : labelStyled;
+        return Platform.OS === 'ios' ? label : <TabBarLabel label={label}/>;
     }
 }

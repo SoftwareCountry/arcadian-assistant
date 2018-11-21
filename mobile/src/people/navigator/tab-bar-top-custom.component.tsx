@@ -7,6 +7,7 @@ import { AppState } from '../../reducers/app.reducer';
 import { Platform } from 'react-native';
 import { StyledText } from '../../override/styled-text';
 import tabBarStyles from '../../tabbar/tab-bar-styles';
+import { TabBarLabel } from '../../tabbar/tab-bar-label.component';
 
 //============================================================================
 type Optional<P> = P | null | undefined;
@@ -50,13 +51,7 @@ class TabBarTopCustomImpl extends React.Component<TabBarTopProps & TabBarTopCust
 
     //----------------------------------------------------------------------------
     private styleTabBarLabel = (label: string): string | ReactElement<any> => {
-        return Platform.OS === 'ios'
-            ? label
-            : <StyledText
-                numberOfLines={1}
-                ellipsizeMode={'tail'}
-                style={tabBarStyles.tabBarLabel}>{label}
-            </StyledText>;  //TODO: fix text width issue on narrow screens
+        return Platform.OS === 'ios' ? label : <TabBarLabel label={label}/>;
     }
 }
 
