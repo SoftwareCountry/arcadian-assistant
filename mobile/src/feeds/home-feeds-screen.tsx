@@ -89,7 +89,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
                 <ActivityIndicator color={baseColor}/>
             </View>
         );
-    }
+    };
 
     //----------------------------------------------------------------------------
     private renderItem = (itemInfo: ListRenderItemInfo<Feed>) => {
@@ -100,21 +100,21 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
         } else {
             return <FeedMessage message={item} employee={employee} onAvatarClicked={this.props.onAvatarClicked}/>;
         }
-    }
+    };
 
     //----------------------------------------------------------------------------
     private endReached = () => {
         if (this.props.user) {
             this.props.fetchOldFeeds();
         }
-    }
+    };
 
     //----------------------------------------------------------------------------
     private onRefresh = () => {
         if (this.props.user) {
             this.props.fetchNewFeeds();
         }
-    }
+    };
 
     //----------------------------------------------------------------------------
     private static keyExtractor(item: Feed): string {

@@ -19,10 +19,10 @@ interface ClaimSickLeaveEventDialogProps {
 
 class ClaimSickLeaveEventDialogImpl extends Component<ClaimSickLeaveEventDialogProps & ClaimSickLeaveEventDialogDispatchProps> {
     public render() {
-        return <EventDialogBase 
-                    title={'Select date to Start your Sick Leave'} 
+        return <EventDialogBase
+                    title={'Select date to Start your Sick Leave'}
                     text={this.text}
-                    icon={'sick_leave'} 
+                    icon={'sick_leave'}
                     cancelLabel={'Back'}
                     acceptLabel={'Confirm'}
                     onAcceptPress={this.onAcceptClick}
@@ -32,15 +32,15 @@ class ClaimSickLeaveEventDialogImpl extends Component<ClaimSickLeaveEventDialogP
 
     private onCancelClick = () => {
         this.props.cancelDialog();
-    }
+    };
 
     private onAcceptClick = () => {
         this.props.confirmStartDate();
-    }
+    };
 
     private onCloseClick = () => {
         this.props.cancelDialog();
-    }
+    };
 
     public get text(): string {
         return `Your sick leave starts on ${this.props.startDay.date.format(eventDialogTextDateFormat)}`;

@@ -73,5 +73,5 @@ export class CompanyDepartmentsLevelPeople extends Component<CompanyDepartmentsL
                 </View>
             </CompanyDepartmentsLevelPeopleTouchable>
         );
-    }
+    };
 }

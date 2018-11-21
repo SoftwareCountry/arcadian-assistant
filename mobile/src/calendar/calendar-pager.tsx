@@ -69,7 +69,7 @@ export class CalendarPager extends Component<CalendarPagerProps, CalendarPagerSt
         });
     }
 
-    public render() {        
+    public render() {
         const [
             translateXProperty,
         ] = this.state.coordinates.getTranslateTransform() as [{'translateX': any }];
@@ -155,5 +155,5 @@ export class CalendarPager extends Component<CalendarPagerProps, CalendarPagerSt
             width: e.nativeEvent.layout.width,
             height: e.nativeEvent.layout.height
         });
-    }
+    };
 }

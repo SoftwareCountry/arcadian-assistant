@@ -71,16 +71,16 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
     public render() {
         const employee = this.props.employee;
         const department = this.props.departments && employee ? this.props.departments.find((d) => d.departmentId === employee.departmentId) : null;
-        const employeesToRequests = this.props.requests.mapKeys(employeeId => this.props.employees.employeesById.get(employeeId)).toMap();        
+        const employeesToRequests = this.props.requests.mapKeys(employeeId => this.props.employees.employeesById.get(employeeId)).toMap();
 
         return employee && department ?
             <ScrollView refreshControl= { <RefreshControl refreshing={false} onRefresh= {this.onRefresh} />} >
                 <SafeAreaView style={profileScreenStyles.profileContainer}>
                     <LogoutView/>
-                    <EmployeeDetails 
-                        department={department} 
-                        employee={employee} 
-                        layoutStylesChevronPlaceholder={layoutStyles.chevronPlaceholder} 
+                    <EmployeeDetails
+                        department={department}
+                        employee={employee}
+                        layoutStylesChevronPlaceholder={layoutStyles.chevronPlaceholder}
                         requests={employeesToRequests}
                     />
                 </SafeAreaView>
@@ -88,9 +88,9 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
             : <LoadingView></LoadingView>;
     }
 
-    private onRefresh = () => {    
+    private onRefresh = () => {
         this.props.refresh();
-    }
+    };
 }
 
 export const HomeProfileScreen = connect(mapStateToProps, mapDispatchToProps)(ProfileScreenImpl);

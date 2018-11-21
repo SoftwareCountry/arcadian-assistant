@@ -16,11 +16,11 @@ interface EventManagementToolsetProps {
 export class EventManagementToolset extends Component<EventManagementToolsetProps> {
     public onApprove = () => {
         this.updateCalendarEvent(this.props.event, CalendarEventStatus.Approved);
-    }
+    };
 
     public onReject = () => {
         this.updateCalendarEvent(this.props.event, CalendarEventStatus.Rejected);
-    }
+    };
 
     public render() {
         const { toolsetContainer, approveIcon, rejectIcon } = layoutStylesForEventManagementToolset;

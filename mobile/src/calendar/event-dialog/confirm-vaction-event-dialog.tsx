@@ -25,10 +25,10 @@ interface ClaimVacationEventDialogProps {
 
 class ConfirmVacationEventDialogImpl extends Component<ClaimVacationEventDialogProps & ClaimVacationEventDialogDispatchProps> {
     public render() {
-        return <EventDialogBase 
-                    title={'Select date to Complete your Vacation'} 
+        return <EventDialogBase
+                    title={'Select date to Complete your Vacation'}
                     text={this.text}
-                    icon={'vacation'} 
+                    icon={'vacation'}
                     cancelLabel={'Back'}
                     acceptLabel={'Confirm'}
                     onAcceptPress={this.acceptAction}
@@ -39,15 +39,15 @@ class ConfirmVacationEventDialogImpl extends Component<ClaimVacationEventDialogP
 
     private cancelAction = () => {
         this.props.back();
-    }
+    };
 
     private acceptAction = () => {
         this.props.confirmVacation(this.props.userEmployee.employeeId, this.props.startDay.date, this.props.endDay.date);
-    }
+    };
 
     private closeDialog = () => {
         this.props.closeDialog();
-    }
+    };
 
     private get text(): string {
         return `Your vacation starts on ${this.props.startDay.date.format(eventDialogTextDateFormat)}${this.props.endDay ? ` and completes on ${this.props.endDay.date.format(eventDialogTextDateFormat)}` : ''}`;

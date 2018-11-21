@@ -78,15 +78,15 @@ export class EventDialogBaseImpl extends Component<EventDialogBaseProps> {
 
     private close = () => {
         this.props.onClosePress();
-    }
+    };
 
     private cancel = () => {
         this.props.onCancelPress();
-    }
+    };
 
     private accept = () => {
         this.props.onAcceptPress();
-    }
+    };
 }
 
 const mapStateToProps: MapStateToProps<EventDialogBaseProps, EventDialogBaseOwnProps, AppState> = (state, ownProps) => ({
