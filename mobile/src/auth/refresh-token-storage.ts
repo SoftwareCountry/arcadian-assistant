@@ -58,7 +58,6 @@ export const createRefreshTokenStorage = (): RefreshTokenStorage => {
 
     const isAndroid = Platform.OS === 'android';
     const isSensorAvailable = !isAndroid && SInfo.isSensorAvailable();
-    console.debug(`Fingerprint sensor is ${isSensorAvailable ? ` available` : `NOT available`}`);
 
     return isSensorAvailable ?
         new RefreshTokenProtectedStorage() :
