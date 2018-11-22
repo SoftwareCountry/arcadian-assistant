@@ -2,32 +2,21 @@ import React, { Component } from 'react';
 import { StyleProp, View, ViewStyle } from 'react-native';
 import { daysCountersStyles } from './styles';
 import { DaysCounter, EmptyDaysCounter } from './days-counter';
-import { DaysCountersModel } from '../../reducers/calendar/days-counters.model';
-import { AppState } from '../../reducers/app.reducer';
-import { connect } from 'react-redux';
+import { HoursCreditCounter, VacationDaysCounter } from '../../reducers/calendar/days-counters.model';
 import { LoadingView } from '../../navigation/loading';
+import { ConvertHoursCreditToDays } from '../../reducers/calendar/convert-hours-credit-to-days';
+import { Employee } from '../../reducers/organization/employee.model';
 
 interface DaysCountersProps {
-    daysCounters: DaysCountersModel;
+    employee: Employee;
+    additionalStyle?: StyleProp<ViewStyle>;
 }
 
-interface ExplicitDaysCountersProps {
-    explicitCounters?: DaysCountersModel;
-    explicitStyle?: StyleProp<ViewStyle>;
-}
-
-class DaysCountersImpl extends Component<DaysCountersProps & ExplicitDaysCountersProps> {
+export class DaysCounters extends Component<DaysCountersProps> {
 
     public render() {
-
-        const shouldUseExplicitValues = this.props.explicitCounters &&
-            (this.props.explicitCounters.hoursCredit || this.props.explicitCounters.allVacationDays);
-
-        const { allVacationDays, hoursCredit } = shouldUseExplicitValues ?
-            this.props.explicitCounters :
-            this.props.daysCounters;
-
-        if (!shouldUseExplicitValues && !allVacationDays && !hoursCredit) {
+        const { vacationDaysLeft, hoursCredit} = this.props.employee;
+        if (!vacationDaysLeft && !hoursCredit) {
             return (
                 <View style={daysCountersStyles.container}>
                     <LoadingView/>
@@ -35,18 +24,25 @@ class DaysCountersImpl extends Component<DaysCountersProps & ExplicitDaysCounter
             );
         }
 
-        const vacationCounter = allVacationDays
-            ? <DaysCounter  textValue={allVacationDays.toString()}
-                            title={allVacationDays.title}
+        const allVacationDaysCounter = new VacationDaysCounter(vacationDaysLeft);
+
+        const daysConverter = new ConvertHoursCreditToDays();
+        const calculatedDays = daysConverter.convert(hoursCredit);
+
+        const hoursCreditCounter = new HoursCreditCounter(hoursCredit, calculatedDays.days, calculatedDays.rest);
+
+        const vacationCounter = allVacationDaysCounter
+            ? <DaysCounter  textValue={allVacationDaysCounter.toString()}
+                            title={allVacationDaysCounter.title}
                             icon={{
                                 name: 'vacation',
                                 size: 30
                             }} />
             : <EmptyDaysCounter />;
 
-        const daysoffCounter = hoursCredit
-            ? <DaysCounter  textValue={hoursCredit.toString()}
-                            title={hoursCredit.title}
+        const daysoffCounter = hoursCreditCounter
+            ? <DaysCounter  textValue={hoursCreditCounter.toString()}
+                            title={hoursCreditCounter.title}
                             icon={{
                                 name: 'dayoff',
                                 size: 30
@@ -62,13 +58,6 @@ class DaysCountersImpl extends Component<DaysCountersProps & ExplicitDaysCounter
     }
 
     private containerStyle = (): StyleProp<ViewStyle> => {
-            return [daysCountersStyles.container, this.props.explicitStyle];
+            return [daysCountersStyles.container, this.props.additionalStyle];
     };
 }
-
-const mapStateToProps = (state: AppState, ownProps: ExplicitDaysCountersProps): DaysCountersProps & ExplicitDaysCountersProps => ({
-    daysCounters: state.calendar.daysCounters,
-    ...ownProps,
-});
-
-export const DaysCounters = connect(mapStateToProps)(DaysCountersImpl);
