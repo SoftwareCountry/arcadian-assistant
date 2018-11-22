@@ -27,10 +27,11 @@ export const fetchNewFeedsEpic$ = (action$: ActionsObservable<fAction.FetchNewFe
         .switchMap(x => {
             const toDate = moment();
             const fromDate = appState.getState().feeds.toDate ? appState.getState().feeds.toDate : moment().subtract(pagingPeriodDays, 'days');
+
             return deps.apiClient.getJSON(`/feeds/messages?fromDate=${fromDate.format('YYYY-MM-DD')}&toDate=${toDate.format('YYYY-MM-DD')}`)
                 .pipe(
                     handleHttpErrors(),
-                    map((y) => ({ fromDate: appState.getState().feeds.fromDate, toDate: toDate, payload: y }))
+                    map((y) => ({ fromDate, toDate, payload: y }))
                 );
         })
         .flatMap(x => {
@@ -46,7 +47,7 @@ export const fetchOldFeedsEpic$ = (action$: ActionsObservable<fAction.FetchOldFe
             return deps.apiClient.getJSON(`/feeds/messages?fromDate=${fromDate.format('YYYY-MM-DD')}&toDate=${toDate.format('YYYY-MM-DD')}`)
                 .pipe(
                     handleHttpErrors(),
-                    map((y) => ({ fromDate: fromDate, toDate: appState.getState().feeds.toDate, payload: y }))
+                    map((y) => ({ fromDate, toDate, payload: y }))
                 );
         })
         .flatMap(x => {

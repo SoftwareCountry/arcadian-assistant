@@ -18,16 +18,20 @@ export const searchViewStyles = StyleSheet.create({
     inputContainer: {
         flex: 10
     },
-    activeIcon: {
-        color: 'white', 
-        fontSize: 24,
+    buttonContainer: {
+        flex: 3,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
-    inactiveIcon: {
-        color: 'white', 
+    icon: {
+        color: 'white',
         fontSize: 18,
     },
     input: {
         color: 'white'
+    },
+    cancel: {
+        color: 'white',
     },
     loadingContainer: {
         flex: 1,
