@@ -15,6 +15,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using UserPreferences;
 
     [Route("api/pending-requests")]
     [Authorize]
@@ -55,7 +56,7 @@
             var actor = this.actorsFactory.ActorOf(PendingActionsRequest.CreateProps(this.pathBuilder));
             var calendarEvents = await actor.Ask<PendingActionsRequest.GetPendingActions.Response>(
                 // Further DependentDepartmentsPendingActions should be retrieved from user preferences
-                new PendingActionsRequest.GetPendingActions(user.Metadata, PendingActionsRequest.DependentDepartmentsPendingActions.HeadsOnly),
+                new PendingActionsRequest.GetPendingActions(user.Metadata, DependentDepartmentsPendingActions.HeadsOnly),
                 this.timeoutSettings.Timeout,
                 token);
 
