@@ -51,7 +51,7 @@ class TabBarTopCustomImpl extends React.Component<TabBarTopProps & TabBarTopCust
 
     //----------------------------------------------------------------------------
     private styleTabBarLabel = (label: string): string | ReactElement<any> => {
-        return Platform.OS === 'ios' ? label : <TabBarLabel label={label}/>;
+        return <TabBarLabel label={label}/>;
     };
 }
 
