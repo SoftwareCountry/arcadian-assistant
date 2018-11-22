@@ -3,6 +3,7 @@
     using Akka.Actor;
     using Akka.DI.Core;
 
+    using Arcadia.Assistant.Calendar.SickLeave;
     using Arcadia.Assistant.Feeds;
     using Arcadia.Assistant.Helpdesk;
     using Arcadia.Assistant.Organization;
@@ -24,6 +25,8 @@
             var health = this.actorSystem.ActorOf(this.actorSystem.DI().Props<HealthChecker>(), WellKnownActorPaths.Health);
             var helpdesk = this.actorSystem.ActorOf(Props.Create(() => new HelpdeskActor()), WellKnownActorPaths.Helpdesk);
             var feeds = this.actorSystem.ActorOf(Props.Create(() => new SharedFeedsActor(departments)), WellKnownActorPaths.SharedFeeds);
+
+            this.actorSystem.ActorOf(this.actorSystem.DI().Props<SendEmailSickLeaveActor>(), "send-sick-leave-email");
 
             return new ServerActorsCollection(departments, health, helpdesk, feeds);
         }

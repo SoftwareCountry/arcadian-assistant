@@ -1,7 +1,7 @@
 ﻿namespace Arcadia.Assistant.Calendar.SickLeave
 {
+    using System;
     using Akka.Actor;
-    using Akka.DI.Core;
     using Akka.Event;
 
     using Configuration.Configuration;
@@ -22,9 +22,9 @@
         {
             this.mailConfig = mailConfig;
             this.smtpConfig = smtpConfig;
-        }
 
-        public static Props GetProps() => Context.DI().Props<SendEmailSickLeaveActor>();
+            Context.System.EventStream.Subscribe<SendNotification>(this.Self);
+        }
 
         protected override void OnReceive(object message)
         {
@@ -34,7 +34,15 @@
                     break;
 
                 case SendNotification notification:
-                    this.SendEmail(notification);
+                    try
+                    {
+                        this.SendEmail(notification);
+                    }
+                    catch (Exception ex)
+                    {
+                        this.logger.Error(ex.Message);
+                    }
+
                     break;
 
                 default:
