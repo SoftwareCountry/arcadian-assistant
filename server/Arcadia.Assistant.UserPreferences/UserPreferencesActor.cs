@@ -29,20 +29,13 @@
                     break;
 
                 case SaveUserPreferencesMessage msg:
-                    try
-                    {
-                        var @event = new UserChangesPreferencesEvent(msg.UserId, msg.UserPreferences);
+                    var @event = new UserChangesPreferencesEvent(msg.UserId, msg.UserPreferences);
 
-                        this.Persist(@event, evt =>
-                        {
-                            this.OnUserChangesPreferences(evt);
-                            this.Sender.Tell(new SaveUserPreferencesMessage.Success());
-                        });
-                    }
-                    catch (Exception ex)
+                    this.Persist(@event, evt =>
                     {
-                        this.Sender.Tell(new SaveUserPreferencesMessage.Error(ex.Message));
-                    }
+                        this.OnUserChangesPreferences(evt);
+                        this.Sender.Tell(new SaveUserPreferencesMessage.Response());
+                    });
 
                     break;
 
