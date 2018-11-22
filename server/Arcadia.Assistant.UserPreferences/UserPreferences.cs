@@ -14,18 +14,5 @@
         public bool PushNotifications { get; set; }
 
         public DependentDepartmentsPendingActions DependentDepartmentsPendingActions { get; set; }
-
-        public override bool Equals(object obj)
-        {
-            if (!(obj is UserPreferences preferences))
-            {
-                return false;
-            }
-
-            return
-                this.EmailNotifications == preferences.EmailNotifications &&
-                this.PushNotifications == preferences.PushNotifications &&
-                this.DependentDepartmentsPendingActions == preferences.DependentDepartmentsPendingActions;
-        }
     }
 }
