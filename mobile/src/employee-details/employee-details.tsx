@@ -174,7 +174,12 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         );
     }
 
-    private renderDaysCounters = (employee: Employee) => {
+    private renderDaysCounters(employee: Employee) {
+
+        if (employee.vacationDaysLeft === null && employee.hoursCredit === null) {
+            return null;
+        }
+
         const allVacationDaysCounter = new VacationDaysCounter(employee.vacationDaysLeft);
 
         const daysConverter = new ConvertHoursCreditToDays();
@@ -182,18 +187,18 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
         const hoursCreditCounter = new HoursCreditCounter(employee.hoursCredit, calculatedDays.days, calculatedDays.rest);
 
-        const counters: DaysCountersModel = {
-            allVacationDays: allVacationDaysCounter,
-            hoursCredit: hoursCreditCounter,
-        };
+        if (allVacationDaysCounter !== null || hoursCreditCounter !== null) {
+            const counters: DaysCountersModel = {
+                allVacationDays: allVacationDaysCounter,
+                hoursCredit: hoursCreditCounter,
+            };
 
-        if (employee.vacationDaysLeft !== null || employee.hoursCredit !== null) {
             return <DaysCounters explicitCounters={counters}
                                  explicitStyle={{ marginBottom: 30, marginTop: -30, }}/>;
         } else {
             return null;
         }
-    };
+    }
 
     private uppercase(text: string) {
         return text ? text.toUpperCase() : text;

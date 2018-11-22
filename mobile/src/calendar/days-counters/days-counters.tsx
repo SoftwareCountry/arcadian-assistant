@@ -19,11 +19,15 @@ interface ExplicitDaysCountersProps {
 class DaysCountersImpl extends Component<DaysCountersProps & ExplicitDaysCountersProps> {
 
     public render() {
-        const { allVacationDays, hoursCredit } = this.props.explicitCounters ?
+
+        const shouldUseExplicitValues = this.props.explicitCounters &&
+            (this.props.explicitCounters.hoursCredit || this.props.explicitCounters.allVacationDays);
+
+        const { allVacationDays, hoursCredit } = shouldUseExplicitValues ?
             this.props.explicitCounters :
             this.props.daysCounters;
 
-        if (!allVacationDays && !hoursCredit) {
+        if (!shouldUseExplicitValues && !allVacationDays && !hoursCredit) {
             return (
                 <View style={daysCountersStyles.container}>
                     <LoadingView/>
