@@ -32,11 +32,6 @@
                 this.timeoutSettings.Timeout,
                 cancellationToken);
 
-            if (response.UserPreferences == null)
-            {
-                return UserPreferencesModel.Default;
-            }
-
             return new UserPreferencesModel
             {
                 EmailNotifications = response.UserPreferences.EmailNotifications,

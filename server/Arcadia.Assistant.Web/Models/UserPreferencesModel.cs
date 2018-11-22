@@ -5,13 +5,6 @@
 
     public class UserPreferencesModel
     {
-        public static UserPreferencesModel Default = new UserPreferencesModel
-        {
-            EmailNotifications = true,
-            PushNotifications = true,
-            DependentDepartmentsPendingActions = DependentDepartmentsPendingActions.HeadsOnly
-        };
-
         [Required]
         public bool EmailNotifications { get; set; }
 

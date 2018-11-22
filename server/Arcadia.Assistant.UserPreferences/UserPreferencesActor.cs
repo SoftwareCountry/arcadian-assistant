@@ -17,18 +17,25 @@
             switch (message)
             {
                 case GetUserPreferencesMessage msg:
+                    if (!this.userPreferencesById.ContainsKey(msg.UserId))
+                    {
+                        this.Self.Tell(new SaveUserPreferencesMessage(msg.UserId, UserPreferences.Default));
+                    }
+
                     var userPreferences = this.userPreferencesById.ContainsKey(msg.UserId)
                         ? this.userPreferencesById[msg.UserId]
-                        : null;
+                        : UserPreferences.Default;
                     this.Sender.Tell(new GetUserPreferencesMessage.Response(userPreferences));
                     break;
 
                 case SaveUserPreferencesMessage msg:
                     try
                     {
-                        this.Persist(msg, m =>
+                        var @event = new UserChangesPreferencesEvent(msg.UserId, msg.UserPreferences);
+
+                        this.Persist(@event, evt =>
                         {
-                            this.SaveUserPreferences(msg.UserId, msg.UserPreferences);
+                            this.OnUserChangesPreferences(evt);
                             this.Sender.Tell(new SaveUserPreferencesMessage.Success());
                         });
                     }
@@ -49,15 +56,25 @@
         {
             switch (message)
             {
-                case SaveUserPreferencesMessage msg:
-                    this.SaveUserPreferences(msg.UserId, msg.UserPreferences);
+                case UserChangesPreferencesEvent evt:
+                    this.OnUserChangesPreferences(evt);
                     break;
             }
         }
 
+        private void OnUserChangesPreferences(UserChangesPreferencesEvent @event)
+        {
+            this.SaveUserPreferences(@event.UserId, @event.UserPreferences);
+        }
+
         private void SaveUserPreferences(string userId, UserPreferences userPreferences)
         {
-            this.userPreferencesById[userId] = userPreferences;
+            this.userPreferencesById.TryGetValue(userId, out var existingPreferences);
+
+            if (existingPreferences?.Equals(userPreferences) != true)
+            {
+                this.userPreferencesById[userId] = userPreferences;
+            }
         }
     }
 }
