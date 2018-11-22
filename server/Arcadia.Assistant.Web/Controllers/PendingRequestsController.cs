@@ -28,17 +28,20 @@
         private readonly ITimeoutSettings timeoutSettings;
 
         private readonly IActorRefFactory actorsFactory;
+        private readonly IUserPreferences userPreferences;
 
         public PendingRequestsController(
             IUserEmployeeSearch userEmployeeSearch,
             ActorPathsBuilder pathBuilder,
             ITimeoutSettings timeoutSettings,
-            IActorRefFactory actorsFactory)
+            IActorRefFactory actorsFactory,
+            IUserPreferences userPreferences)
         {
             this.userEmployeeSearch = userEmployeeSearch;
             this.pathBuilder = pathBuilder;
             this.timeoutSettings = timeoutSettings;
             this.actorsFactory = actorsFactory;
+            this.userPreferences = userPreferences;
         }
 
         [Route("")]
@@ -53,10 +56,11 @@
                 return this.Forbid();
             }
 
+            var preferences = await this.userPreferences.GetUserPreferences(user.Metadata.EmployeeId, token);
+
             var actor = this.actorsFactory.ActorOf(PendingActionsRequest.CreateProps(this.pathBuilder));
             var calendarEvents = await actor.Ask<PendingActionsRequest.GetPendingActions.Response>(
-                // Further DependentDepartmentsPendingActions should be retrieved from user preferences
-                new PendingActionsRequest.GetPendingActions(user.Metadata, DependentDepartmentsPendingActions.HeadsOnly),
+                new PendingActionsRequest.GetPendingActions(user.Metadata, preferences.DependentDepartmentsPendingActions),
                 this.timeoutSettings.Timeout,
                 token);
 

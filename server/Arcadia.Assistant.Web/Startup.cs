@@ -25,6 +25,7 @@
     using Microsoft.Extensions.DependencyInjection;
 
     using Swashbuckle.AspNetCore.Swagger;
+    using UserPreferences;
 
     public class Startup
     {
@@ -32,8 +33,8 @@
         {
             var configBuilder = new ConfigurationBuilder()
                 .SetBasePath(environment.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional:false, reloadOnChange:true)
-                .AddJsonFile($"appsettings.{environment.EnvironmentName}.json", optional:true)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{environment.EnvironmentName}.json", optional: true)
                 .AddHoconContent("akka.conf", "Akka", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
@@ -110,6 +111,7 @@
 
             builder.RegisterType<EmployeesRegistry>().As<IEmployeesRegistry>();
             builder.RegisterType<UserEmployeeSearch>().As<IUserEmployeeSearch>();
+            builder.RegisterType<UserPreferences.UserPreferences>().As<IUserPreferences>();
 
             builder.RegisterType<UserIsEmployeeHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
             builder.RegisterType<EmployeePermissionsHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();

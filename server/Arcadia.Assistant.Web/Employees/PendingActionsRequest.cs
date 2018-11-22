@@ -10,7 +10,7 @@
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.Server.Interop;
-    using UserPreferences;
+    using Arcadia.Assistant.UserPreferences;
 
     public class PendingActionsRequest : UntypedActor, ILogReceive
     {
