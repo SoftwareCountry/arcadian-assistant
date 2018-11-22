@@ -187,17 +187,13 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
         const hoursCreditCounter = new HoursCreditCounter(employee.hoursCredit, calculatedDays.days, calculatedDays.rest);
 
-        if (allVacationDaysCounter !== null || hoursCreditCounter !== null) {
-            const counters: DaysCountersModel = {
-                allVacationDays: allVacationDaysCounter,
-                hoursCredit: hoursCreditCounter,
-            };
+        const counters: DaysCountersModel = {
+            allVacationDays: allVacationDaysCounter,
+            hoursCredit: hoursCreditCounter,
+        };
 
-            return <DaysCounters explicitCounters={counters}
-                                 explicitStyle={{ marginBottom: 30, marginTop: -30, }}/>;
-        } else {
-            return null;
-        }
+        return <DaysCounters explicitCounters={counters}
+                             explicitStyle={{ marginBottom: 30, marginTop: -30, }}/>;
     }
 
     private uppercase(text: string) {
