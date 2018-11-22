@@ -111,7 +111,7 @@
 
             builder.RegisterType<EmployeesRegistry>().As<IEmployeesRegistry>();
             builder.RegisterType<UserEmployeeSearch>().As<IUserEmployeeSearch>();
-            builder.RegisterType<UserPreferences.UserPreferences>().As<IUserPreferences>();
+            builder.RegisterType<UserPreferences.UserPreferencesService>().As<IUserPreferencesService>();
 
             builder.RegisterType<UserIsEmployeeHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
             builder.RegisterType<EmployeePermissionsHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();

@@ -1,5 +1,6 @@
 ﻿namespace Arcadia.Assistant.UserPreferences
 {
+    using System;
     using System.Collections.Generic;
 
     using Akka.Actor;
@@ -7,7 +8,7 @@
 
     public class UserPreferencesActor : UntypedPersistentActor
     {
-        private readonly Dictionary<string, UserPreferences> userPreferences = new Dictionary<string, UserPreferences>();
+        private readonly Dictionary<string, UserPreferences> userPreferencesById = new Dictionary<string, UserPreferences>();
 
         public override string PersistenceId => "user-preferences";
 
@@ -16,14 +17,26 @@
             switch (message)
             {
                 case GetUserPreferencesMessage msg:
-                    var preferences = this.userPreferences.ContainsKey(msg.UserId)
-                        ? this.userPreferences[msg.UserId]
+                    var userPreferences = this.userPreferencesById.ContainsKey(msg.UserId)
+                        ? this.userPreferencesById[msg.UserId]
                         : null;
-                    this.Sender.Tell(new GetUserPreferencesMessage.Response(preferences));
+                    this.Sender.Tell(new GetUserPreferencesMessage.Response(userPreferences));
                     break;
 
                 case SaveUserPreferencesMessage msg:
-                    this.SaveUserPreferences(msg.UserId, msg.UserPreferences);
+                    try
+                    {
+                        this.Persist(msg, m =>
+                        {
+                            this.SaveUserPreferences(msg.UserId, msg.UserPreferences);
+                            this.Sender.Tell(new SaveUserPreferencesMessage.Success());
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        this.Sender.Tell(new SaveUserPreferencesMessage.Error(ex.Message));
+                    }
+
                     break;
 
                 default:
@@ -42,9 +55,9 @@
             }
         }
 
-        private void SaveUserPreferences(string userId, UserPreferences preferences)
+        private void SaveUserPreferences(string userId, UserPreferences userPreferences)
         {
-            this.userPreferences[userId] = preferences;
+            this.userPreferencesById[userId] = userPreferences;
         }
     }
 }

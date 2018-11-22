@@ -1,5 +1,6 @@
 ﻿namespace Arcadia.Assistant.Web.UserPreferences
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -9,12 +10,12 @@
     using Models;
     using Server.Interop;
 
-    public class UserPreferences : IUserPreferences
+    public class UserPreferencesService : IUserPreferencesService
     {
         private readonly ITimeoutSettings timeoutSettings;
         private readonly ActorSelection userPreferencesActor;
 
-        public UserPreferences(
+        public UserPreferencesService(
             IActorRefFactory actorsFactory,
             ActorPathsBuilder actorPathsBuilder,
             ITimeoutSettings timeoutSettings)
@@ -44,12 +45,19 @@
             };
         }
 
-        public Task SaveUserPreferences(
+        public Task<SaveUserPreferencesMessage.Response> SaveUserPreferences(
             string userId,
             UserPreferencesModel userPreferencesModel,
             CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            var userPreferences = new UserPreferences
+            {
+                EmailNotifications = userPreferencesModel.EmailNotifications,
+                PushNotifications = userPreferencesModel.PushNotifications,
+                DependentDepartmentsPendingActions = userPreferencesModel.DependentDepartmentsPendingActions
+            };
+
+            return this.userPreferencesActor.Ask<SaveUserPreferencesMessage.Response>(new SaveUserPreferencesMessage(userId, userPreferences));
         }
     }
 }

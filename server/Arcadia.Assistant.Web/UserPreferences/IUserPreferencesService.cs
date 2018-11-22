@@ -2,12 +2,13 @@
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using Assistant.UserPreferences;
     using Models;
 
-    public interface IUserPreferences
+    public interface IUserPreferencesService
     {
         Task<UserPreferencesModel> GetUserPreferences(string userId, CancellationToken cancellationToken);
 
-        Task SaveUserPreferences(string userId, UserPreferencesModel userPreferencesModel, CancellationToken cancellationToken);
+        Task<SaveUserPreferencesMessage.Response> SaveUserPreferences(string userId, UserPreferencesModel userPreferencesModel, CancellationToken cancellationToken);
     }
 }
