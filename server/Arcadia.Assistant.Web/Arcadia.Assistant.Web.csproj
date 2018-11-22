@@ -33,6 +33,7 @@
     <PackageReference Include="NLog" Version="4.5.11" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.7.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="1.1.0" />
+    <PackageReference Include="ZNetCS.AspNetCore.Authentication.Basic" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,6 +44,7 @@
     <ProjectReference Include="..\Arcadia.Assistant.Calendar.Abstractions\Arcadia.Assistant.Calendar.Abstractions.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Configuration\Arcadia.Assistant.Configuration.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Feeds\Arcadia.Assistant.Feeds.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.Health.Abstractions\Arcadia.Assistant.Health.Abstractions.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Organization.Abstractions\Arcadia.Assistant.Organization.Abstractions.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Security\Arcadia.Assistant.Security.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Server.Interop\Arcadia.Assistant.Server.Interop.csproj" />
