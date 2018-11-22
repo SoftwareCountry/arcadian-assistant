@@ -95,15 +95,11 @@
             services
                 .AddAuthorization(options =>
                 {
-                    options.AddPolicy(Policies.UserIsEmployee, policy =>
-                    {
-                        policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
-                        policy.Requirements.Add(new UserIsEmployeeRequirement());
-                    });
+                    options.AddPolicy(Policies.UserIsEmployee, policy => policy.Requirements.Add(new UserIsEmployeeRequirement()));
 
-                    options.AddPolicy(Policies.UserIsServiceUser, policy =>
+                    options.AddPolicy(Policies.ServiceEndpoint, policy =>
                     {
-                        policy.AddAuthenticationSchemes(BasicAuthenticationDefaults.AuthenticationScheme);
+                        policy.AddAuthenticationSchemes(BasicAuthenticationDefaults.AuthenticationScheme, JwtBearerDefaults.AuthenticationScheme);
                         policy.RequireAuthenticatedUser();
                     });
                 });

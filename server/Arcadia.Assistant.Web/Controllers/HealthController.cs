@@ -12,7 +12,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Models;
 
-    [Authorize(Policies.UserIsServiceUser)]
+    [Authorize(Policies.ServiceEndpoint)]
     public class HealthController : Controller
     {
         private readonly IHealthService healthService;
