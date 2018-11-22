@@ -104,7 +104,7 @@
                     options.AddPolicy(Policies.UserIsServiceUser, policy =>
                     {
                         policy.AddAuthenticationSchemes(BasicAuthenticationDefaults.AuthenticationScheme);
-                        policy.Requirements.Add(new ServiceUserRequirement());
+                        policy.RequireAuthenticatedUser();
                     });
                 });
         }
@@ -134,7 +134,6 @@
             builder.RegisterType<HealthService>().As<IHealthService>();
 
             builder.RegisterType<UserIsEmployeeHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
-            builder.RegisterType<ServiceUserHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
             builder.RegisterType<EmployeePermissionsHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
             builder.RegisterType<EditCalendarEventsPermissionHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
 
