@@ -36,10 +36,10 @@
 
             this.employeeFeed = Context.ActorOf(FeedActor.GetProps(), "feed");
             var sendEmailActor = Context.ActorOf(SendEmailSickLeaveActor.GetProps(), "sendEmail");
-            sendEmailActor.Tell(new SendEmailSickLeaveActor.SetEmployeesActor(Context.Parent));
+            //sendEmailActor.Tell(new SendEmailSickLeaveActor.SetEmployeesActor(Context.Parent));
 
             var vacationsActor = Context.ActorOf(EmployeeVacationsActor.CreateProps(this.employeeMetadata.EmployeeId, this.employeeFeed, vacationsRegistry), "vacations");
-            var sickLeavesActor = Context.ActorOf(EmployeeSickLeaveActor.CreateProps(this.employeeMetadata.EmployeeId, sendEmailActor), "sick-leaves");
+            var sickLeavesActor = Context.ActorOf(EmployeeSickLeaveActor.CreateProps(this.employeeMetadata, sendEmailActor), "sick-leaves");
             var workHoursActor = Context.ActorOf(EmployeeWorkHoursActor.CreateProps(this.employeeMetadata.EmployeeId), "work-hours");
             Context.Watch(vacationsActor);
             Context.Watch(sickLeavesActor);

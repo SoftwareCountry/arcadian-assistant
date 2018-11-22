@@ -7,23 +7,26 @@
 
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.SickLeave.Events;
+    using Arcadia.Assistant.Organization.Abstractions;
 
     public class EmployeeSickLeaveActor : CalendarEventsStorageBase
     {
+        private readonly EmployeeMetadata employee;
         private readonly IActorRef sickLeaveNotifications;
 
-        public EmployeeSickLeaveActor(string employeeId, IActorRef sickLeaveNotifications)
-            : base(employeeId)
+        public EmployeeSickLeaveActor(EmployeeMetadata employee, IActorRef sickLeaveNotifications)
+            : base(employee.EmployeeId)
         {
             this.PersistenceId = $"employee-sickleaves-{this.EmployeeId}";
+            this.employee = employee;
             this.sickLeaveNotifications = sickLeaveNotifications;
         }
 
         public override string PersistenceId { get; }
 
-        public static Props CreateProps(string employeeId, IActorRef sickLeaveNotifications)
+        public static Props CreateProps(EmployeeMetadata employee, IActorRef sickLeaveNotifications)
         {
-            return Props.Create(() => new EmployeeSickLeaveActor(employeeId, sickLeaveNotifications));
+            return Props.Create(() => new EmployeeSickLeaveActor(employee, sickLeaveNotifications));
         }
 
         protected override void OnRecover(object message)
@@ -68,10 +71,10 @@
                 TimeStamp = DateTimeOffset.Now
             };
             this.Persist(newEvent, e =>
-                {
-                    this.OnSickLeaveRequest(e);
-                    onUpsert(this.EventsById[eventId]);
-                });
+            {
+                this.OnSickLeaveRequest(e);
+                onUpsert(this.EventsById[eventId]);
+            });
         }
 
         protected override void UpdateCalendarEvent(CalendarEvent oldEvent, CalendarEvent newEvent, OnSuccessfulUpsertCallback onUpsert)
@@ -114,22 +117,22 @@
 
                     case SickLeaveStatuses.Approved:
                         this.Persist(new SickLeaveIsApproved()
-                            {
-                                EventId = newEvent.EventId,
-                                TimeStamp = DateTimeOffset.Now
-                            }, e =>
-                                {
-                                    this.OnSickleaveApproved(e);
-                                    this.SendSickLeaveApprovedMessage(e);
-                                });
+                        {
+                            EventId = newEvent.EventId,
+                            TimeStamp = DateTimeOffset.Now
+                        }, e =>
+                        {
+                            this.OnSickleaveApproved(e);
+                            this.SendSickLeaveApprovedMessage(e);
+                        });
                         break;
 
                     case SickLeaveStatuses.Rejected:
                         this.Persist(new SickLeaveIsRejected()
-                            {
-                                EventId = newEvent.EventId,
-                                TimeStamp = DateTimeOffset.Now
-                            }, this.OnSickLeaveRejected);
+                        {
+                            EventId = newEvent.EventId,
+                            TimeStamp = DateTimeOffset.Now
+                        }, this.OnSickLeaveRejected);
                         break;
                 }
             }
@@ -193,7 +196,7 @@
         {
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
-                this.sickLeaveNotifications.Tell(new SendEmailSickLeaveActor.SendNotification(calendarEvent));
+                this.sickLeaveNotifications.Tell(new SendEmailSickLeaveActor.SendNotification(this.employee, calendarEvent));
             }
         }
 
