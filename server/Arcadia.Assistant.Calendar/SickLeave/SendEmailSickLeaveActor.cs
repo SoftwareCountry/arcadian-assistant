@@ -1,7 +1,6 @@
 ﻿namespace Arcadia.Assistant.Calendar.SickLeave
 {
     using System;
-    using Akka.Actor;
     using Akka.Event;
 
     using Configuration.Configuration;
@@ -10,9 +9,10 @@
     using MimeKit;
 
     using Arcadia.Assistant.Calendar.Abstractions;
+    using Arcadia.Assistant.Notifications.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions;
 
-    public class SendEmailSickLeaveActor : UntypedActor
+    public class SendEmailSickLeaveActor : BaseNotificationsActor
     {
         private readonly IEmailSettings mailConfig;
         private readonly ISmtpSettings smtpConfig;
@@ -22,18 +22,16 @@
         {
             this.mailConfig = mailConfig;
             this.smtpConfig = smtpConfig;
-
-            Context.System.EventStream.Subscribe<SendNotification>(this.Self);
         }
 
-        protected override void OnReceive(object message)
+        protected override void HandleNotificationPayload(object payload)
         {
-            switch (message)
+            switch (payload)
             {
-                case SendNotification notification when notification.Employee == null:
+                case SickLeaveNotification notification when notification.Employee == null:
                     break;
 
-                case SendNotification notification:
+                case SickLeaveNotification notification:
                     try
                     {
                         this.SendEmail(notification);
@@ -44,14 +42,10 @@
                     }
 
                     break;
-
-                default:
-                    this.Unhandled(message);
-                    break;
             }
         }
 
-        private void SendEmail(SendNotification notification)
+        private void SendEmail(SickLeaveNotification notification)
         {
             using (var client = new SmtpClient())
             {
@@ -80,22 +74,22 @@
             return message;
         }
 
-        private string GetNotificationText(SendNotification notification)
+        private string GetNotificationText(SickLeaveNotification notification)
         {
             return string.Format(this.mailConfig.Body, notification.Employee.Name, notification.CalendarEvent.Dates.StartDate.ToString("D"));
         }
 
-        public sealed class SendNotification
+        public sealed class SickLeaveNotification
         {
+            public SickLeaveNotification(EmployeeMetadata employee, CalendarEvent calendarEvent)
+            {
+                this.Employee = employee;
+                this.CalendarEvent = calendarEvent;
+            }
+
             public EmployeeMetadata Employee { get; }
 
             public CalendarEvent CalendarEvent { get; }
-
-            public SendNotification(EmployeeMetadata employee, CalendarEvent calendarEvent)
-            {
-                Employee = employee;
-                this.CalendarEvent = calendarEvent;
-            }
         }
     }
 }

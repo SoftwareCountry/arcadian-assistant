@@ -7,6 +7,7 @@
 
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.SickLeave.Events;
+    using Arcadia.Assistant.Notifications.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions;
 
     public class EmployeeSickLeaveActor : CalendarEventsStorageBase
@@ -194,7 +195,8 @@
         {
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
-                Context.System.EventStream.Publish(new SendEmailSickLeaveActor.SendNotification(this.employee, calendarEvent));
+                var notificationPayload = new SendEmailSickLeaveActor.SickLeaveNotification(this.employee, calendarEvent);
+                Context.System.EventStream.Publish(new NotificationEventBusMessage(notificationPayload));
             }
         }
 

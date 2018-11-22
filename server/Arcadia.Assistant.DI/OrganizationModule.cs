@@ -2,7 +2,6 @@
 {
     using Autofac;
 
-    using Arcadia.Assistant.Calendar.SickLeave;
     using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.CSP;
     using Arcadia.Assistant.CSP.Vacations;
@@ -30,8 +29,6 @@
 
             builder.RegisterType<ArcadiaVacationRegistry>().As<VacationsRegistry>();
             builder.RegisterType<VacationsQueryExecutor>().AsSelf();
-
-            builder.RegisterType<SendEmailSickLeaveActor>().AsSelf();
         }
     }
 }
