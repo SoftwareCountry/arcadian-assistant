@@ -56,7 +56,7 @@
                 return this.Forbid();
             }
 
-            var userPreferences = await this.userPreferencesService.GetUserPreferences(user.Metadata.EmployeeId, token);
+            var userPreferences = await this.userPreferencesService.GetUserPreferences(this.User.Identity.Name, token);
 
             var actor = this.actorsFactory.ActorOf(PendingActionsRequest.CreateProps(this.pathBuilder));
             var calendarEvents = await actor.Ask<PendingActionsRequest.GetPendingActions.Response>(

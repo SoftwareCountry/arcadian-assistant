@@ -1,6 +1,5 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using Assistant.UserPreferences;
@@ -17,34 +16,24 @@
     public class UserPreferencesController : Controller
     {
         private readonly IUserPreferencesService userPreferencesService;
-        private readonly IUserEmployeeSearch userEmployeeSearch;
 
-        public UserPreferencesController(IUserPreferencesService userPreferencesService, IUserEmployeeSearch userEmployeeSearch)
+        public UserPreferencesController(IUserPreferencesService userPreferencesService)
         {
             this.userPreferencesService = userPreferencesService;
-            this.userEmployeeSearch = userEmployeeSearch;
         }
 
         [HttpGet]
         [ProducesResponseType(typeof(UserPreferencesModel), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetUserPreferences(CancellationToken cancellationToken)
         {
-            var user = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, cancellationToken);
-            if (user == null)
-            {
-                return this.Forbid();
-            }
-
             var userPreferences = await this.userPreferencesService.GetUserPreferences(
-                user.Metadata.EmployeeId,
+                this.User.Identity.Name,
                 cancellationToken);
             return this.Ok(userPreferences);
         }
 
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> SaveUserPreferences(
             UserPreferencesModel userPreferencesModel,
@@ -55,24 +44,15 @@
                 return this.BadRequest();
             }
 
-            var user = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, cancellationToken);
-            if (user == null)
-            {
-                return this.Forbid();
-            }
-
             var response = await this.userPreferencesService.SaveUserPreferences(
-                user.Metadata.EmployeeId,
+                this.User.Identity.Name,
                 userPreferencesModel,
                 cancellationToken);
 
             switch (response)
             {
-                case SaveUserPreferencesMessage.Success _:
+                case SaveUserPreferencesMessage.Response _:
                     return this.NoContent();
-
-                case SaveUserPreferencesMessage.Error error:
-                    return this.BadRequest(error.ErrorMessage);
 
                 default:
                     return this.StatusCode(StatusCodes.Status500InternalServerError);
