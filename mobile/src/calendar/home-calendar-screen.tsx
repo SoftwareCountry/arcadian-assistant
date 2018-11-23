@@ -35,7 +35,7 @@ class CalendarScreenImplementation extends Component<CalendarScreenProps> {
 const mapStateToProps = (state: AppState): CalendarScreenProps => {
     const employeeId = state.userInfo.employeeId;
     return {
-        employee: state.userInfo.employeeId == null ? null : state.organization.employees.employeesById.get(state.userInfo.employeeId)
+        employee: employeeId == null ? null : state.organization.employees.employeesById.get(employeeId)
     };
 };
 
