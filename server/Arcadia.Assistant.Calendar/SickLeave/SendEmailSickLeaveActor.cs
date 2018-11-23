@@ -28,7 +28,7 @@
         {
             switch (payload)
             {
-                case SickLeaveNotification notification when notification.Employee == null:
+                case SickLeaveNotification notification when notification.EmployeeName == null:
                     break;
 
                 case SickLeaveNotification notification:
@@ -38,7 +38,7 @@
                     }
                     catch (Exception ex)
                     {
-                        this.logger.Error(ex.Message);
+                        this.logger.Warning(ex.Message);
                     }
 
                     break;
@@ -49,7 +49,7 @@
         {
             using (var client = new SmtpClient())
             {
-                this.logger.Debug("Sending a sick leave email notification for user {0}", notification.Employee.Name);
+                this.logger.Debug("Sending a sick leave email notification for user {0}", notification.EmployeeName);
                 var msg = this.CreateMimeMessage(this.GetNotificationText(notification));
 
                 client.Connect(
@@ -59,7 +59,7 @@
                 client.Authenticate(this.smtpConfig.User, this.smtpConfig.Password);
                 client.Send(msg);
                 client.Disconnect(true);
-                this.logger.Debug("Sick leave email notification for user {0} was succesfully sent", notification.Employee.Name);
+                this.logger.Debug("Sick leave email notification for user {0} was succesfully sent", notification.EmployeeName);
             }
         }
 
@@ -76,20 +76,20 @@
 
         private string GetNotificationText(SickLeaveNotification notification)
         {
-            return string.Format(this.mailConfig.Body, notification.Employee.Name, notification.CalendarEvent.Dates.StartDate.ToString("D"));
+            return string.Format(this.mailConfig.Body, notification.EmployeeName, notification.StartDate.ToString("D"));
         }
 
         public sealed class SickLeaveNotification
         {
-            public SickLeaveNotification(EmployeeMetadata employee, CalendarEvent calendarEvent)
+            public SickLeaveNotification(string employeeName, DateTime startDate)
             {
-                this.Employee = employee;
-                this.CalendarEvent = calendarEvent;
+                this.EmployeeName = employeeName;
+                this.StartDate = startDate;
             }
 
-            public EmployeeMetadata Employee { get; }
+            public string EmployeeName { get; }
 
-            public CalendarEvent CalendarEvent { get; }
+            public DateTime StartDate { get; }
         }
     }
 }

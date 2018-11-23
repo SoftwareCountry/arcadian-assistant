@@ -195,7 +195,9 @@
         {
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
-                var notificationPayload = new SendEmailSickLeaveActor.SickLeaveNotification(this.employee, calendarEvent);
+                var notificationPayload = new SendEmailSickLeaveActor.SickLeaveNotification(
+                    this.employee.Name,
+                    calendarEvent.Dates.StartDate);
                 Context.System.EventStream.Publish(new NotificationEventBusMessage(notificationPayload));
             }
         }
