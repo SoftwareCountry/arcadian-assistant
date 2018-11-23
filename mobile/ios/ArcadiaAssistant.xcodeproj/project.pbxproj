@@ -38,6 +38,7 @@
 		86DA8A50F2D44941B01326A9 /* libAppCenterReactNativeCrashes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CFE6260F975A4FBE9E934D18 /* libAppCenterReactNativeCrashes.a */; };
 		AC1CD46A284D40858BC0A31F /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 64B3870ACAA84AEBAC42A0A6 /* EvilIcons.ttf */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
+		B81EDAD9D1754E64B21BACD1 /* libReactNativeConfig.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 09C4D93509034784A9526BA8 /* libReactNativeConfig.a */; };
 		BFD0278726E44AD394BF2069 /* libAppCenterReactNativeAnalytics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9DDFF4ACAAB449E9E57B4AC /* libAppCenterReactNativeAnalytics.a */; };
 		CB02B501F8354425B6ECA252 /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D4FEAF4C9AB442BA9F7F2F7E /* Feather.ttf */; };
 		D54731A77FBA84CB1CAA5E43 /* libPods-ArcadiaAssistantTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB823EB2ABE03BBCC3A0EA60 /* libPods-ArcadiaAssistantTests.a */; };
@@ -355,6 +356,20 @@
 			remoteGlobalIDString = 358F4ED71D1E81A9004DF814;
 			remoteInfo = RCTBlob;
 		};
+		D33DEE1F21A83417008695EB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ADEF53663E0A4B2796E84C77 /* ReactNativeConfig.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EB2648DF1C7BE17A00B8F155;
+			remoteInfo = ReactNativeConfig;
+		};
+		D33DEE2121A83417008695EB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ADEF53663E0A4B2796E84C77 /* ReactNativeConfig.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3DF7F6AC203AA09B00D0EAB7;
+			remoteInfo = "ReactNativeConfig-tvOS";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -368,6 +383,7 @@
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* ArcadiaAssistantTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ArcadiaAssistantTests.m; sourceTree = "<group>"; };
 		020F0ACA7F5049308CF20505 /* libRNSensitiveInfo.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNSensitiveInfo.a; sourceTree = "<group>"; };
+		09C4D93509034784A9526BA8 /* libReactNativeConfig.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libReactNativeConfig.a; sourceTree = "<group>"; };
 		139105B61AF99BAD00B5F7CC /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = "../node_modules/react-native/Libraries/Settings/RCTSettings.xcodeproj"; sourceTree = "<group>"; };
 		139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = "../node_modules/react-native/Libraries/WebSocket/RCTWebSocket.xcodeproj"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* ArcadiaAssistant.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ArcadiaAssistant.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -414,6 +430,7 @@
 		97F364A02A7149BEB21F7974 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
 		9D0E06A9EA5049CDB5E05544 /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
+		ADEF53663E0A4B2796E84C77 /* ReactNativeConfig.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = ReactNativeConfig.xcodeproj; path = "../node_modules/react-native-config/ios/ReactNativeConfig.xcodeproj"; sourceTree = "<group>"; };
 		B3DEAEACAA544863A06F9583 /* aa-iconfont-bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "aa-iconfont-bold.ttf"; path = "../assets/fonts/aa-iconfont-bold.ttf"; sourceTree = "<group>"; };
 		B54281EB789D654431BAD6E3 /* Pods-ArcadiaAssistant-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ArcadiaAssistant-tvOSTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ArcadiaAssistant-tvOSTests/Pods-ArcadiaAssistant-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		B641C71C12E387EF19786BC2 /* Pods-ArcadiaAssistant-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ArcadiaAssistant-tvOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-ArcadiaAssistant-tvOS/Pods-ArcadiaAssistant-tvOS.release.xcconfig"; sourceTree = "<group>"; };
@@ -466,6 +483,7 @@
 				2E91E1B1F3C7C699607D9D47 /* libPods-ArcadiaAssistant.a in Frameworks */,
 				BFD0278726E44AD394BF2069 /* libAppCenterReactNativeAnalytics.a in Frameworks */,
 				86DA8A50F2D44941B01326A9 /* libAppCenterReactNativeCrashes.a in Frameworks */,
+				B81EDAD9D1754E64B21BACD1 /* libReactNativeConfig.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -653,6 +671,7 @@
 				535FE0FFDE7B493C8A653CB4 /* libAppCenterReactNative.a */,
 				D9DDFF4ACAAB449E9E57B4AC /* libAppCenterReactNativeAnalytics.a */,
 				CFE6260F975A4FBE9E934D18 /* libAppCenterReactNativeCrashes.a */,
+				09C4D93509034784A9526BA8 /* libReactNativeConfig.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -686,6 +705,7 @@
 				C5A6DA0B712A448AB4014354 /* AppCenterReactNative.xcodeproj */,
 				C3EEF7910F1A4A71939B26D2 /* AppCenterReactNativeAnalytics.xcodeproj */,
 				DCA5B9CC2C6C47649C82A2A0 /* AppCenterReactNativeCrashes.xcodeproj */,
+				ADEF53663E0A4B2796E84C77 /* ReactNativeConfig.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -802,6 +822,15 @@
 				7C9B0F69CAB04598921F9248 /* CenturyGothic.ttf */,
 			);
 			name = Resources;
+			sourceTree = "<group>";
+		};
+		D33DEE1B21A83417008695EB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D33DEE2021A83417008695EB /* libReactNativeConfig.a */,
+				D33DEE2221A83417008695EB /* libReactNativeConfig-tvOS.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -937,6 +966,10 @@
 				{
 					ProductGroup = 146834001AC3E56700842450 /* Products */;
 					ProjectRef = 146833FF1AC3E56700842450 /* React.xcodeproj */;
+				},
+				{
+					ProductGroup = D33DEE1B21A83417008695EB /* Products */;
+					ProjectRef = ADEF53663E0A4B2796E84C77 /* ReactNativeConfig.xcodeproj */;
 				},
 				{
 					ProductGroup = 8F91398420C55EF400564483 /* Products */;
@@ -1261,6 +1294,20 @@
 			remoteRef = ADBDB9261DFEBF0700ED6528 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		D33DEE2021A83417008695EB /* libReactNativeConfig.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libReactNativeConfig.a;
+			remoteRef = D33DEE1F21A83417008695EB /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D33DEE2221A83417008695EB /* libReactNativeConfig-tvOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libReactNativeConfig-tvOS.a";
+			remoteRef = D33DEE2121A83417008695EB /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -1420,6 +1467,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1457,6 +1505,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1485,8 +1534,12 @@
 					"$(SRCROOT)/../node_modules/appcenter/ios/AppCenterReactNative",
 					"$(SRCROOT)/../node_modules/appcenter-analytics/ios/AppCenterReactNativeAnalytics",
 					"$(SRCROOT)/../node_modules/appcenter-crashes/ios/AppCenterReactNativeCrashes",
+					"$(SRCROOT)/../node_modules/react-native-config/ios/ReactNativeConfig",
 				);
 				INFOPLIST_FILE = ArcadiaAssistant/Info.plist;
+				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
+				INFOPLIST_PREFIX_HEADER = "${BUILD_DIR}/GeneratedInfoPlistDotEnv.h";
+				INFOPLIST_PREPROCESS = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -1521,8 +1574,12 @@
 					"$(SRCROOT)/../node_modules/appcenter/ios/AppCenterReactNative",
 					"$(SRCROOT)/../node_modules/appcenter-analytics/ios/AppCenterReactNativeAnalytics",
 					"$(SRCROOT)/../node_modules/appcenter-crashes/ios/AppCenterReactNativeCrashes",
+					"$(SRCROOT)/../node_modules/react-native-config/ios/ReactNativeConfig",
 				);
 				INFOPLIST_FILE = ArcadiaAssistant/Info.plist;
+				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
+				INFOPLIST_PREFIX_HEADER = "${BUILD_DIR}/GeneratedInfoPlistDotEnv.h";
+				INFOPLIST_PREPROCESS = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
