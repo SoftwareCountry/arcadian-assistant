@@ -15,14 +15,15 @@ interface DaysCountersProps {
 export class DaysCounters extends Component<DaysCountersProps> {
 
     public render() {
-        const { vacationDaysLeft, hoursCredit} = this.props.employee;
-        if (!vacationDaysLeft && !hoursCredit) {
+        if (this.props.employee == null || this.props.employee.vacationDaysLeft == null || this.props.employee.hoursCredit == null) {
             return (
                 <View style={daysCountersStyles.container}>
                     <LoadingView/>
                 </View>
             );
         }
+
+        const { vacationDaysLeft, hoursCredit} = this.props.employee;
 
         const allVacationDaysCounter = new VacationDaysCounter(vacationDaysLeft);
 
