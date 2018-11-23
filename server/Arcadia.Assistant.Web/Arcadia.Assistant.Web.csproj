@@ -48,6 +48,7 @@
     <ProjectReference Include="..\Arcadia.Assistant.Organization.Abstractions\Arcadia.Assistant.Organization.Abstractions.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Security\Arcadia.Assistant.Security.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Server.Interop\Arcadia.Assistant.Server.Interop.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.UserPreferences\Arcadia.Assistant.UserPreferences.csproj" />
   </ItemGroup>
 
 

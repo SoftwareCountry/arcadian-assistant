@@ -10,6 +10,7 @@
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.Server.Interop;
+    using Arcadia.Assistant.UserPreferences;
 
     public class PendingActionsRequest : UntypedActor, ILogReceive
     {
@@ -197,13 +198,6 @@
                     this.EventsByEmployeeId = eventsByEmployeeId;
                 }
             }
-        }
-
-        public enum DependentDepartmentsPendingActions
-        {
-            None,
-            HeadsOnly,
-            All
         }
     }
 }

@@ -8,6 +8,7 @@
     using Arcadia.Assistant.Organization;
     using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.Health.Abstractions;
+    using Arcadia.Assistant.UserPreferences;
 
     public class ActorSystemBuilder
     {
@@ -24,8 +25,9 @@
             var health = this.actorSystem.ActorOf(this.actorSystem.DI().Props<HealthChecker>(), WellKnownActorPaths.Health);
             var helpdesk = this.actorSystem.ActorOf(Props.Create(() => new HelpdeskActor()), WellKnownActorPaths.Helpdesk);
             var feeds = this.actorSystem.ActorOf(Props.Create(() => new SharedFeedsActor(departments)), WellKnownActorPaths.SharedFeeds);
+            var userPreferences = this.actorSystem.ActorOf(this.actorSystem.DI().Props<UserPreferencesActor>(), WellKnownActorPaths.UserPreferences);
 
-            return new ServerActorsCollection(departments, health, helpdesk, feeds);
+            return new ServerActorsCollection(departments, health, helpdesk, feeds, userPreferences);
         }
     }
 }
