@@ -1,13 +1,13 @@
 ﻿namespace Arcadia.Assistant.DI
 {
+    using Autofac;
+
+    using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.CSP;
     using Arcadia.Assistant.CSP.Vacations;
     using Arcadia.Assistant.Organization;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.UserPreferences;
-
-    using Autofac;
-    using Configuration.Configuration;
 
     public class OrganizationModule : Module
     {

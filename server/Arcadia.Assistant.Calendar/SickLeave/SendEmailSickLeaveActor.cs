@@ -1,27 +1,22 @@
 ﻿namespace Arcadia.Assistant.Calendar.SickLeave
 {
     using System;
-    using System.Linq;
-    using Akka.Actor;
-    using Akka.DI.Core;
     using Akka.Event;
 
-    using Arcadia.Assistant.Calendar.Abstractions;
-
-    using MimeKit;
     using Configuration.Configuration;
     using MailKit.Net.Smtp;
     using MailKit.Security;
-    using Events;
-    using Organization.Abstractions;
-    using Organization.Abstractions.OrganizationRequests;
+    using MimeKit;
 
-    public class SendEmailSickLeaveActor : UntypedActor
+    using Arcadia.Assistant.Calendar.Abstractions;
+    using Arcadia.Assistant.Notifications.Abstractions;
+    using Arcadia.Assistant.Organization.Abstractions;
+
+    public class SendEmailSickLeaveActor : BaseNotificationsActor
     {
         private readonly IEmailSettings mailConfig;
         private readonly ISmtpSettings smtpConfig;
         private readonly ILoggingAdapter logger = Context.GetLogger();
-        private IActorRef employeesActor;
 
         public SendEmailSickLeaveActor(IEmailSettings mailConfig, ISmtpSettings smtpConfig)
         {
@@ -29,54 +24,32 @@
             this.smtpConfig = smtpConfig;
         }
 
-        public static Props GetProps()
+        protected override void HandleNotificationPayload(object payload)
         {
-            return Context.DI().Props<SendEmailSickLeaveActor>();
-        }
-
-        protected override void OnReceive(object message)
-        {
-            switch (message)
+            switch (payload)
             {
-                case SendNotification notification:
-                    if (this.employeesActor != null)
+                case SickLeaveNotification notification when notification.EmployeeName == null:
+                    break;
+
+                case SickLeaveNotification notification:
+                    try
                     {
-                        //TODO: Fix hardcode
-                        this.employeesActor
-                            .Ask<EmployeesQuery.Response>(new EmployeesQuery().WithId(notification.CalendarEvent.EmployeeId), TimeSpan.FromSeconds(10))
-                            .ContinueWith(task => new SendNotificationEnd(task.Result, notification.CalendarEvent.Dates))
-                            .PipeTo(this.Self);
+                        this.SendEmail(notification);
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        this.logger.Warning($"Employees actor ref is not set in sending email actor. {Context.Self}");
+                        this.logger.Warning(ex.Message);
                     }
 
-                    break;
-
-                //TODO: I hate this, remove...
-                case SetEmployeesActor actor:
-                    this.employeesActor = actor.EmployeesActor;
-                    break;
-
-                case SendNotificationEnd notification when notification.Employee == null:
-                    break;
-
-                case SendNotificationEnd notification:
-                    this.SendEmail(notification);
-                    break;
-
-                default:
-                    this.Unhandled(message);
                     break;
             }
         }
 
-        private void SendEmail(SendNotificationEnd notification)
+        private void SendEmail(SickLeaveNotification notification)
         {
             using (var client = new SmtpClient())
             {
-                this.logger.Debug("Sending a sick leave email notification for user {0}", notification.Employee.Metadata.Name);
+                this.logger.Debug("Sending a sick leave email notification for user {0}", notification.EmployeeName);
                 var msg = this.CreateMimeMessage(this.GetNotificationText(notification));
 
                 client.Connect(
@@ -86,7 +59,7 @@
                 client.Authenticate(this.smtpConfig.User, this.smtpConfig.Password);
                 client.Send(msg);
                 client.Disconnect(true);
-                this.logger.Debug("Sick leave email notification for user {0} was succesfully sent", notification.Employee.Metadata.Name);
+                this.logger.Debug("Sick leave email notification for user {0} was succesfully sent", notification.EmployeeName);
             }
         }
 
@@ -101,42 +74,22 @@
             return message;
         }
 
-        private string GetNotificationText(SendNotificationEnd notification)
+        private string GetNotificationText(SickLeaveNotification notification)
         {
-            return string.Format(this.mailConfig.Body, notification.Employee.Metadata.Name, notification.DatesPeriod.StartDate.ToString("D"));
+            return string.Format(this.mailConfig.Body, notification.EmployeeName, notification.StartDate.ToString("D"));
         }
 
-        private sealed class SendNotificationEnd
+        public sealed class SickLeaveNotification
         {
-            public SendNotificationEnd(EmployeesQuery.Response response, DatesPeriod datesPeriod)
+            public SickLeaveNotification(string employeeName, DateTime startDate)
             {
-                this.DatesPeriod = datesPeriod;
-                this.Employee = response.Employees.FirstOrDefault();
+                this.EmployeeName = employeeName;
+                this.StartDate = startDate;
             }
 
-            public DatesPeriod DatesPeriod { get; }
+            public string EmployeeName { get; }
 
-            public EmployeeContainer Employee { get; }
-        }
-
-        public sealed class SetEmployeesActor
-        {
-            public SetEmployeesActor(IActorRef emplActor)
-            {
-                this.EmployeesActor = emplActor;
-            }
-
-            public IActorRef EmployeesActor { get; }
-        }
-
-        public sealed class SendNotification
-        {
-            public CalendarEvent CalendarEvent { get; }
-
-            public SendNotification(CalendarEvent calendarEvent)
-            {
-                this.CalendarEvent = calendarEvent;
-            }
+            public DateTime StartDate { get; }
         }
     }
 }

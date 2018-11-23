@@ -4,26 +4,45 @@
     using System.Linq;
 
     using Akka.Actor;
+    using Akka.Event;
 
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.SickLeave.Events;
+    using Arcadia.Assistant.Notifications.Abstractions;
+    using Arcadia.Assistant.Organization.Abstractions;
 
     public class EmployeeSickLeaveActor : CalendarEventsStorageBase
     {
-        private readonly IActorRef sickLeaveNotifications;
+        private EmployeeMetadata employee;
 
-        public EmployeeSickLeaveActor(string employeeId, IActorRef sickLeaveNotifications)
-            : base(employeeId)
+        public EmployeeSickLeaveActor(EmployeeMetadata employee)
+            : base(employee.EmployeeId)
         {
             this.PersistenceId = $"employee-sickleaves-{this.EmployeeId}";
-            this.sickLeaveNotifications = sickLeaveNotifications;
+            this.employee = employee;
+
+            Context.System.EventStream.Subscribe<EmployeeMetadataUpdatedEventBusMessage>(this.Self);
         }
 
         public override string PersistenceId { get; }
 
-        public static Props CreateProps(string employeeId, IActorRef sickLeaveNotifications)
+        public static Props CreateProps(EmployeeMetadata employee)
         {
-            return Props.Create(() => new EmployeeSickLeaveActor(employeeId, sickLeaveNotifications));
+            return Props.Create(() => new EmployeeSickLeaveActor(employee));
+        }
+
+        protected override void OnCommand(object message)
+        {
+            switch (message)
+            {
+                case EmployeeMetadataUpdatedEventBusMessage msg:
+                    this.employee = msg.EmployeeMetadata;
+                    break;
+
+                default:
+                    base.OnCommand(message);
+                    break;
+            }
         }
 
         protected override void OnRecover(object message)
@@ -68,10 +87,10 @@
                 TimeStamp = DateTimeOffset.Now
             };
             this.Persist(newEvent, e =>
-                {
-                    this.OnSickLeaveRequest(e);
-                    onUpsert(this.EventsById[eventId]);
-                });
+            {
+                this.OnSickLeaveRequest(e);
+                onUpsert(this.EventsById[eventId]);
+            });
         }
 
         protected override void UpdateCalendarEvent(CalendarEvent oldEvent, CalendarEvent newEvent, OnSuccessfulUpsertCallback onUpsert)
@@ -114,22 +133,22 @@
 
                     case SickLeaveStatuses.Approved:
                         this.Persist(new SickLeaveIsApproved()
-                            {
-                                EventId = newEvent.EventId,
-                                TimeStamp = DateTimeOffset.Now
-                            }, e =>
-                                {
-                                    this.OnSickleaveApproved(e);
-                                    this.SendSickLeaveApprovedMessage(e);
-                                });
+                        {
+                            EventId = newEvent.EventId,
+                            TimeStamp = DateTimeOffset.Now
+                        }, e =>
+                        {
+                            this.OnSickleaveApproved(e);
+                            this.SendSickLeaveApprovedMessage(e);
+                        });
                         break;
 
                     case SickLeaveStatuses.Rejected:
                         this.Persist(new SickLeaveIsRejected()
-                            {
-                                EventId = newEvent.EventId,
-                                TimeStamp = DateTimeOffset.Now
-                            }, this.OnSickLeaveRejected);
+                        {
+                            EventId = newEvent.EventId,
+                            TimeStamp = DateTimeOffset.Now
+                        }, this.OnSickLeaveRejected);
                         break;
                 }
             }
@@ -193,7 +212,10 @@
         {
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
-                this.sickLeaveNotifications.Tell(new SendEmailSickLeaveActor.SendNotification(calendarEvent));
+                var notificationPayload = new SendEmailSickLeaveActor.SickLeaveNotification(
+                    this.employee.Name,
+                    calendarEvent.Dates.StartDate);
+                Context.System.EventStream.Publish(new NotificationEventBusMessage(notificationPayload));
             }
         }
 
