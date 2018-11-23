@@ -1,15 +1,11 @@
 import React from 'react';
 import { ActivityIndicator, FlatList, ListRenderItemInfo, SafeAreaView, View } from 'react-native';
-import { TopNavBar } from '../navigation/top-nav-bar';
-
 import { Employee } from '../reducers/organization/employee.model';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Feed } from '../reducers/feeds/feed.model';
 import { connect, Dispatch } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
-
 import { FeedMessage } from './feed-message';
-
 import { baseColor, ListStyle, ScreenStyle } from './home-feeds-screen.styles';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 import { fetchNewFeeds, fetchOldFeeds } from '../reducers/feeds/feeds.action';
@@ -17,9 +13,6 @@ import { FeedsById } from '../reducers/feeds/feeds.reducer';
 import { Moment } from 'moment';
 import { NavigationScreenConfig, NavigationStackScreenOptions } from 'react-navigation';
 import { LoadingView } from '../navigation/loading';
-
-//============================================================================
-const navBar = new TopNavBar('Feeds');
 
 //============================================================================
 interface FeedsScreenProps {
@@ -64,7 +57,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
         const feeds = this.sortedFeeds();
 
         return this.props.feeds.size > 0 ?
-            <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
+            <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
                 <FlatList
                     style={ScreenStyle.view}
                     keyExtractor={HomeFeedsScreenImpl.keyExtractor}
@@ -79,7 +72,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
                     ListFooterComponent={this.footer}
                 />
             </SafeAreaView> :
-            <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
+            <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
                 <LoadingView/>
             </SafeAreaView>;
     }
