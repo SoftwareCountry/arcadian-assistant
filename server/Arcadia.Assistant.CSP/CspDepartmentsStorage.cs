@@ -6,6 +6,7 @@
     using System.Linq.Expressions;
     using System.Threading.Tasks;
 
+    using Akka.Actor;
     using Arcadia.Assistant.CSP.Model;
     using Arcadia.Assistant.Organization.Abstractions;
 
@@ -17,10 +18,26 @@
 
         private readonly CspConfiguration configuration;
 
+        private string lastErrorMessage;
+
         public CspDepartmentsStorage(Func<ArcadiaCspContext> contextFactory, CspConfiguration configuration)
         {
             this.contextFactory = contextFactory;
             this.configuration = configuration;
+        }
+
+        protected override void OnReceive(object message)
+        {
+            switch (message)
+            {
+                case GetHealthCheckStatusMessage _:
+                    this.Sender.Tell(new GetHealthCheckStatusMessage.GetHealthCheckStatusResponse(this.lastErrorMessage));
+                    break;
+
+                default:
+                    base.OnReceive(message);
+                    break;
+            }
         }
 
         private readonly Expression<Func<Department, IEnumerable<Employee>, DepartmentInfo>> mapDepartment =
@@ -41,6 +58,21 @@
                 };
 
         protected override async Task<LoadAllDepartments.Response> GetAllDepartments()
+        {
+            try
+            {
+                var departments = await GetAllDepartmentsInternal();
+                this.lastErrorMessage = null;
+                return departments;
+            }
+            catch (Exception ex)
+            {
+                this.lastErrorMessage = ex.Message;
+                throw;
+            }
+        }
+
+        private async Task<LoadAllDepartments.Response> GetAllDepartmentsInternal()
         {
             using (var context = this.contextFactory())
             {

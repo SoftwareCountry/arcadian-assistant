@@ -6,9 +6,9 @@ import { TabBarTopCustom } from './tab-bar-top-custom.component';
 
 //============================================================================
 enum PeopleScreenNavigationRouteName {
-    department = 'PeopleScreenNavigationRouteName.department',
-    room = 'PeopleScreenNavigationRouteName.room',
-    company = 'PeopleScreenNavigationRouteName.company',
+    department = 'Department',
+    room = 'Room',
+    company = 'Company',
 }
 
 //----------------------------------------------------------------------------

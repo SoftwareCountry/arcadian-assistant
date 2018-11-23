@@ -39,6 +39,6 @@ export class TabNavigationOptionsFactory {
     //----------------------------------------------------------------------------
     // noinspection JSMethodCanBeStatic
     private getTabBarLabel(label: string) {
-        return Platform.OS === 'ios' ? label : <TabBarLabel label={label}/>;
+        return <TabBarLabel label={label}/>;
     }
 }
