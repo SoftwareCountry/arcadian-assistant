@@ -14,11 +14,12 @@ export const openCompanyAction = (departmentId: string) => NavigationActions.nav
 
 export interface CurrentDepartmentNavigationParams {
     departmentId: string;
+    departmentAbbreviation: string;
 }
 
-export const openDepartmentAction = (departmentId: string) => NavigationActions.navigate({
+export const openDepartmentAction = (departmentId: string, departmentAbbreviation: string) => NavigationActions.navigate({
     routeName: 'CurrentDepartment',
-    params: { departmentId } as CurrentDepartmentNavigationParams
+    params: { departmentId, departmentAbbreviation } as CurrentDepartmentNavigationParams
 });
 
 export interface CurrentRoomNavigationParams {
