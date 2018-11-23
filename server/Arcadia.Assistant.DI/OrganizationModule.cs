@@ -7,6 +7,7 @@
     using Arcadia.Assistant.CSP.Vacations;
     using Arcadia.Assistant.Organization;
     using Arcadia.Assistant.Organization.Abstractions;
+    using Arcadia.Assistant.UserPreferences;
 
     public class OrganizationModule : Module
     {
@@ -29,6 +30,8 @@
 
             builder.RegisterType<ArcadiaVacationRegistry>().As<VacationsRegistry>();
             builder.RegisterType<VacationsQueryExecutor>().AsSelf();
+
+            builder.RegisterType<UserPreferencesActor>().AsSelf();
         }
     }
 }

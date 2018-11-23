@@ -23,6 +23,7 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Swashbuckle.AspNetCore.Swagger;
+    using UserPreferences;
     using ZNetCS.AspNetCore.Authentication.Basic;
 
     public class Startup
@@ -128,6 +129,7 @@
             builder.RegisterType<EmployeesRegistry>().As<IEmployeesRegistry>();
             builder.RegisterType<UserEmployeeSearch>().As<IUserEmployeeSearch>();
             builder.RegisterType<HealthService>().As<IHealthService>();
+            builder.RegisterType<UserPreferences.UserPreferencesService>().As<IUserPreferencesService>();
 
             builder.RegisterType<UserIsEmployeeHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
             builder.RegisterType<EmployeePermissionsHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
