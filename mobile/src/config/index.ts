@@ -2,12 +2,12 @@ import Config from 'react-native-config';
 
 const config = Object.freeze({
 
-    apiUrl: Config.apiUrl,
+    apiUrl: Config.apiUrl as string,
 
     oauth: Object.freeze({
-        redirectUri: Config.oauthRedirectUri,
-        clientId: Config.oauthClientId,
-        tenant: Config.oauthTenant,
+        redirectUri: Config.oauthRedirectUri as string,
+        clientId: Config.oauthClientId as string,
+        tenant: Config.oauthTenant as string,
     })
 });
 
