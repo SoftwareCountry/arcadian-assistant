@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect, Dispatch, MapStateToProps } from 'react-redux';
 import { Map } from 'immutable';
-import {View, StyleSheet, ScrollView, Linking, TouchableOpacity, ViewStyle, StyleProp} from 'react-native';
+import { Linking, ScrollView, StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 
-import { layoutStyles, contentStyles, tileStyles, contactStyles } from '../profile/styles';
+import { contactStyles, contentStyles, layoutStyles, tileStyles } from '../profile/styles';
 import { Chevron } from '../profile/chevron';
 import { Avatar } from '../people/avatar';
 import { AppState } from '../reducers/app.reducer';
@@ -13,11 +13,12 @@ import { StyledText } from '../override/styled-text';
 import { Employee } from '../reducers/organization/employee.model';
 import { ApplicationIcon } from '../override/application-icon';
 import { openCompanyAction, openDepartmentAction, openRoomAction } from './employee-details-dispatcher';
-import { loadCalendarEvents, calendarEventSetNewStatus } from '../reducers/calendar/calendar.action';
+import { calendarEventSetNewStatus, loadCalendarEvents } from '../reducers/calendar/calendar.action';
 import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
 import { UserEmployeePermissions } from '../reducers/user/user-employee-permissions.model';
 import { loadUserEmployeePermissions } from '../reducers/user/user.action';
+import { DaysCounters } from '../calendar/days-counters/days-counters';
 
 interface TileData {
     label: string;
@@ -53,7 +54,7 @@ const mapStateToProps: MapStateToProps<EmployeeDetailsProps, EmployeeDetailsOwnP
     userEmployeePermissions: state.userInfo.permissions
 });
 
-const TileSeparator = () => <View style = {tileStyles.separator}></View>;
+const TileSeparator = () => <View style = {tileStyles.separator}/>;
 
 interface EmployeeDetailsDispatchProps {
     onCompanyClicked: (departmentId: string) => void;
@@ -154,6 +155,9 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                         </View>
 
                         {
+                            this.renderDaysCounters(employee)
+                        }
+                        {
                             this.renderPendingRequests()
                         }
                         {
@@ -164,6 +168,15 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                     </ScrollView>
                 </View>
         );
+    }
+
+    private renderDaysCounters(employee: Employee) {
+        if (employee.vacationDaysLeft === null && employee.hoursCredit === null) {
+            return null;
+        }
+
+        return <DaysCounters employee={employee}
+                             additionalStyle={{ marginBottom: 30, marginTop: -30, }}/>;
     }
 
     private uppercase(text: string) {
