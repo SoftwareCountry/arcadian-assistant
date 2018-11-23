@@ -293,29 +293,29 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         const calculatedDays = daysConverter.convert(hoursCredit);
 
         const hoursCreditCounter = new HoursCreditCounter(hoursCredit, calculatedDays.days, calculatedDays.rest);
+        const vacationTitle = 'vacation';
+        const dayoffTitle = 'dayoff';
 
-        return (
-            <View>
-                <View style={contactStyles.container}>
-                    <View style={contactStyles.iconContainer}>
-                        <ApplicationIcon name='vacation' size={35} style={contactStyles.icon}/>
-                    </View>
-                    <View style={contactStyles.textContainer}>
-                        <StyledText style={contactStyles.title}>{'Days of vacation left:'}</StyledText>
-                        <StyledText style={contactStyles.text}>{allVacationDaysCounter.toString()}</StyledText>
-                    </View>
+        return [
+            <View style={contactStyles.container}>
+                <View style={contactStyles.iconContainer}>
+                    <ApplicationIcon name={vacationTitle} size={35} style={contactStyles.icon}/>
                 </View>
-                <View style={contactStyles.container}>
-                    <View style={contactStyles.iconContainer}>
-                        <ApplicationIcon name='dayoff' size={35} style={contactStyles.icon}/>
-                    </View>
-                    <View style={contactStyles.textContainer}>
-                        <StyledText style={contactStyles.title}>{'Daysoff available:'}</StyledText>
-                        <StyledText style={contactStyles.text}>{hoursCreditCounter.toString()}</StyledText>
-                    </View>
+                <View style={contactStyles.textContainer}>
+                    <StyledText style={contactStyles.title}>{'Days of vacation left:'}</StyledText>
+                    <StyledText style={contactStyles.text}>{allVacationDaysCounter.toString()}</StyledText>
+                </View>
+            </View>,
+            <View style={contactStyles.container}>
+                <View style={contactStyles.iconContainer}>
+                    <ApplicationIcon name={dayoffTitle} size={35} style={contactStyles.icon}/>
+                </View>
+                <View style={contactStyles.textContainer}>
+                    <StyledText style={contactStyles.title}>{'Daysoff available:'}</StyledText>
+                    <StyledText style={contactStyles.text}>{hoursCreditCounter.toString()}</StyledText>
                 </View>
             </View>
-        );
+        ];
     }
 
 
