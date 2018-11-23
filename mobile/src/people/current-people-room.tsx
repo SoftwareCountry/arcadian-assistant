@@ -1,5 +1,10 @@
 import React from 'react';
-import {NavigationRoute, NavigationScreenProp} from 'react-navigation';
+import {
+    NavigationRoute,
+    NavigationScreenConfig,
+    NavigationScreenProp,
+    NavigationStackScreenOptions
+} from 'react-navigation';
 import {CurrentRoomNavigationParams} from '../employee-details/employee-details-dispatcher';
 import {EmployeesStore} from '../reducers/organization/employees.reducer';
 import {AppState} from '../reducers/app.reducer';
@@ -8,6 +13,9 @@ import {Employee} from '../reducers/organization/employee.model';
 import {PeopleRoom} from './people-room';
 import {Action, Dispatch} from 'redux';
 import {loadEmployeesForRoom} from '../reducers/organization/organization.action';
+import topNavBarStyles from '../navigation/top-nav-bar-styles';
+import { Platform, StatusBar, View } from 'react-native';
+import { StyledText } from '../override/styled-text';
 
 interface ExtendedNavigationScreenProp<P> extends NavigationScreenProp<NavigationRoute> {
     getParam: <T extends keyof P>(param: T, fallback?: P[T]) => P[T];
@@ -38,6 +46,20 @@ const dispatchToProps = (dispatch: Dispatch<Action>) => {
 };
 
 class CurrentPeopleRoomImpl extends React.Component<CurrentPeopleRoomProps & CurrentPeopleDispatchProps & NavigationProps> {
+    public static navigationOptions: NavigationScreenConfig<NavigationStackScreenOptions> = {
+        headerTitle: 'Header Title',
+        headerTitleStyle: {
+            fontFamily: 'CenturyGothic',
+            fontSize: 14,
+            color: 'white',
+            textAlign: 'center'
+        },
+        headerStyle: {
+            height: Platform.OS === 'ios' ? 50 : 30,
+            marginTop: 0,
+            backgroundColor: '#2FAFCC'
+        }
+    };
 
     public componentDidMount() {
         const roomNumber = this.props.navigation.getParam('roomNumber', undefined);

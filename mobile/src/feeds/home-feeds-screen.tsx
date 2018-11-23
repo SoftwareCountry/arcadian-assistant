@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, FlatList, ListRenderItemInfo, View } from 'react-native';
+import { ActivityIndicator, FlatList, ListRenderItemInfo, Platform, View } from 'react-native';
 import { TopNavBar } from '../navigation/top-nav-bar';
 
 import { Employee } from '../reducers/organization/employee.model';
@@ -16,6 +16,7 @@ import { openEmployeeDetailsAction } from '../employee-details/employee-details-
 import { fetchNewFeeds, fetchOldFeeds } from '../reducers/feeds/feeds.action';
 import { FeedsById } from '../reducers/feeds/feeds.reducer';
 import { Moment } from 'moment';
+import { NavigationScreenConfig, NavigationStackScreenOptions } from 'react-navigation';
 
 //============================================================================
 const navBar = new TopNavBar('Feeds');
@@ -52,7 +53,20 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): FeedScreenDispatchProps =>
 
 //============================================================================
 class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenDispatchProps> {
-    public static navigationOptions = navBar.configurate();
+    public static navigationOptions: NavigationScreenConfig<NavigationStackScreenOptions> = {
+        headerTitle: 'Feeds',
+        headerTitleStyle: {
+            fontFamily: 'CenturyGothic',
+            fontSize: 14,
+            color: 'white',
+            textAlign: 'center'
+        },
+        headerStyle: {
+            height: Platform.OS === 'ios' ? 50 : 30,
+            marginTop: 0,
+            backgroundColor: '#2FAFCC'
+        }
+    };
 
     //----------------------------------------------------------------------------
     public render() {
