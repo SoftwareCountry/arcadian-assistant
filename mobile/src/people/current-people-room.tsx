@@ -16,6 +16,7 @@ import { Action, Dispatch } from 'redux';
 import { loadEmployeesForRoom } from '../reducers/organization/organization.action';
 import { SafeAreaView, View } from 'react-native';
 import { StyledText } from '../override/styled-text';
+import Style from '../layout/style';
 
 //============================================================================
 interface ExtendedNavigationScreenProp<P> extends NavigationScreenProp<NavigationRoute> {
@@ -78,15 +79,8 @@ class CurrentPeopleRoomImpl extends React.Component<CurrentPeopleRoomProps & Cur
 
         return {
             headerTitle: roomNumber ? `Room ${roomNumber}` : '',
-            headerTitleStyle: {
-                fontFamily: 'CenturyGothic',
-                fontSize: 14,
-                color: 'white',
-                textAlign: 'center'
-            },
-            headerStyle: {
-                backgroundColor: '#2FAFCC'
-            }
+            headerTitleStyle: Style.navigation.title,
+            headerStyle: Style.navigation.header,
         };
     };
 }

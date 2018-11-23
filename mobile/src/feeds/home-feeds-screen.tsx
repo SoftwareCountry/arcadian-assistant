@@ -13,6 +13,7 @@ import { FeedsById } from '../reducers/feeds/feeds.reducer';
 import { Moment } from 'moment';
 import { NavigationScreenConfig, NavigationStackScreenOptions } from 'react-navigation';
 import { LoadingView } from '../navigation/loading';
+import Style from '../layout/style';
 
 //============================================================================
 interface FeedsScreenProps {
@@ -48,37 +49,45 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): FeedScreenDispatchProps =>
 class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenDispatchProps> {
     public static navigationOptions: NavigationScreenConfig<NavigationStackScreenOptions> = {
         headerStyle: {
-            backgroundColor: '#2FAFCC'
+            backgroundColor: Style.color.base
         }
     };
 
     //----------------------------------------------------------------------------
-    public render() {
+    public render(): React.ReactNode {
         const feeds = this.sortedFeeds();
-
-        return this.props.feeds.size > 0 ?
-            <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-                <FlatList
-                    style={ScreenStyle.view}
-                    keyExtractor={HomeFeedsScreenImpl.keyExtractor}
-                    ItemSeparatorComponent={HomeFeedsScreenImpl.itemSeparator}
-                    data={feeds}
-                    extraData={this.props.employees}
-                    renderItem={this.renderItem}
-                    onEndReached={this.endReached}
-                    onEndReachedThreshold={0.2}
-                    refreshing={false}
-                    onRefresh={this.onRefresh}
-                    ListFooterComponent={this.footer}
-                />
-            </SafeAreaView> :
-            <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-                <LoadingView/>
-            </SafeAreaView>;
+        return feeds.length > 0 ? this.renderFeeds(feeds) : this.renderLoading();
     }
 
     //----------------------------------------------------------------------------
-    private sortedFeeds() {
+    private renderFeeds(feeds: Feed[]): React.ReactNode {
+        return <SafeAreaView style={Style.view.safeArea}>
+            <FlatList
+                style={ScreenStyle.view}
+                keyExtractor={HomeFeedsScreenImpl.keyExtractor}
+                ItemSeparatorComponent={HomeFeedsScreenImpl.itemSeparator}
+                data={feeds}
+                extraData={this.props.employees}
+                renderItem={this.renderItem}
+                onEndReached={this.endReached}
+                onEndReachedThreshold={0.2}
+                refreshing={false}
+                onRefresh={this.onRefresh}
+                ListFooterComponent={this.footer}
+            />
+        </SafeAreaView>;
+    }
+
+    //----------------------------------------------------------------------------
+    // noinspection JSMethodCanBeStatic
+    private renderLoading(): React.ReactNode {
+        return <SafeAreaView style={Style.view.safeArea}>
+            <LoadingView/>
+        </SafeAreaView>;
+    }
+
+    //----------------------------------------------------------------------------
+    private sortedFeeds(): Feed[] {
         return this.props.feeds.toArray().sort((x, y) => {
             return ((y.datePosted.valueOf() - x.datePosted.valueOf()) || (y.employeeId < x.employeeId ? -1 : 1));
         });

@@ -1,21 +1,23 @@
 import React, { Component } from 'react';
 import { SafeAreaView, View } from 'react-native';
-import styles from '../layout/styles';
 import { Calendar } from './calendar';
 import { Agenda } from './agenda';
 import { DaysCounters } from './days-counters/days-counters';
+import Style from '../layout/style';
 
 //============================================================================
 export class CalendarScreenImpl extends Component {
+    //----------------------------------------------------------------------------
     public static navigationOptions = {
         headerStyle: {
-            backgroundColor: '#2FAFCC'
+            backgroundColor: Style.color.base
         }
     };
 
+    //----------------------------------------------------------------------------
     public render() {
-        return <SafeAreaView style={{ flex: 1, backgroundColor: '#fff', }}>
-            <View style={styles.container}>
+        return <SafeAreaView style={Style.view.safeArea}>
+            <View style={Style.view.container}>
                 <DaysCounters/>
                 <Calendar/>
                 <Agenda/>

@@ -13,6 +13,7 @@ import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
 import { Employee } from '../reducers/organization/employee.model';
 import { SafeAreaView } from 'react-native';
+import Style from '../layout/style';
 
 //============================================================================
 interface ExtendedNavigationScreenProp<P> extends NavigationScreenProp<NavigationRoute> {
@@ -54,15 +55,8 @@ class CurrentPeopleDepartmentImpl extends React.Component<CurrentPeopleDepartmen
 
         return {
             headerTitle: departmentAbbreviation ? `${departmentAbbreviation}` : '',
-            headerTitleStyle: {
-                fontFamily: 'CenturyGothic',
-                fontSize: 14,
-                color: 'white',
-                textAlign: 'center'
-            },
-            headerStyle: {
-                backgroundColor: '#2FAFCC'
-            }
+            headerTitleStyle: Style.navigation.title,
+            headerStyle: Style.navigation.header,
         };
     };
 }
