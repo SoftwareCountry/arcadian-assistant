@@ -41,7 +41,7 @@ class CurrentPeopleDepartmentImpl extends React.Component<CurrentPeopleDepartmen
         const departmentId = this.props.navigation.getParam('departmentId', undefined);
         const customEmployeesPredicate = (employee: Employee) => employee.departmentId === departmentId;
 
-        return <SafeAreaView>
+        return <SafeAreaView style={Style.view.safeArea}>
             <PeopleDepartment
                 customEmployeesPredicate={customEmployeesPredicate}
                 employees={this.props.employees}/>

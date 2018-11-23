@@ -65,7 +65,7 @@ class CurrentPeopleRoomImpl extends React.Component<CurrentPeopleRoomProps & Cur
         const roomNumber = this.props.navigation.getParam('roomNumber', undefined);
         const customEmployeesPredicate = (employee: Employee) => employee.roomNumber === roomNumber;
 
-        return <SafeAreaView>
+        return <SafeAreaView style={Style.view.safeArea}>
             <PeopleRoom
                 customEmployeesPredicate={customEmployeesPredicate}
                 employees={this.props.employees}/>
