@@ -18,10 +18,8 @@ import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calenda
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
 import { UserEmployeePermissions } from '../reducers/user/user-employee-permissions.model';
 import { loadUserEmployeePermissions } from '../reducers/user/user.action';
-import { daysCounterStyles } from '../calendar/days-counters/styles';
 import { HoursCreditCounter, VacationDaysCounter } from '../reducers/calendar/days-counters.model';
 import { ConvertHoursCreditToDays } from '../reducers/calendar/convert-hours-credit-to-days';
-import { DaysCounter, EmptyDaysCounter } from '../calendar/days-counters/days-counter';
 
 interface TileData {
     label: string;
@@ -159,7 +157,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                                 }
                             </View>
                         </View>
-                        
+
                         {
                             this.renderPendingRequests()
                         }
