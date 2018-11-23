@@ -4,6 +4,7 @@
     using System.Linq;
 
     using Akka.Actor;
+    using Akka.Event;
 
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.SickLeave.Events;
@@ -12,13 +13,15 @@
 
     public class EmployeeSickLeaveActor : CalendarEventsStorageBase
     {
-        private readonly EmployeeMetadata employee;
+        private EmployeeMetadata employee;
 
         public EmployeeSickLeaveActor(EmployeeMetadata employee)
             : base(employee.EmployeeId)
         {
             this.PersistenceId = $"employee-sickleaves-{this.EmployeeId}";
             this.employee = employee;
+
+            Context.System.EventStream.Subscribe<EmployeeMetadataUpdatedEventBusMessage>(this.Self);
         }
 
         public override string PersistenceId { get; }
@@ -26,6 +29,20 @@
         public static Props CreateProps(EmployeeMetadata employee)
         {
             return Props.Create(() => new EmployeeSickLeaveActor(employee));
+        }
+
+        protected override void OnCommand(object message)
+        {
+            switch (message)
+            {
+                case EmployeeMetadataUpdatedEventBusMessage msg:
+                    this.employee = msg.EmployeeMetadata;
+                    break;
+
+                default:
+                    base.OnCommand(message);
+                    break;
+            }
         }
 
         protected override void OnRecover(object message)

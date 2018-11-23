@@ -30,7 +30,7 @@
 
             this.actorSystem.ActorOf(this.actorSystem.DI().Props<SendEmailSickLeaveActor>(), "send-sick-leave-email");
 
-            return new ServerActorsCollection(departments, health, helpdesk, feeds);
+            return new ServerActorsCollection(departments, health, helpdesk, feeds, userPreferences);
         }
     }
 }
