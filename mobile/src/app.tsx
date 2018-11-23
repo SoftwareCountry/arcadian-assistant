@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { BackHandler, Modal, Text } from 'react-native';
-
+import { BackHandler } from 'react-native';
 import { RootNavigator } from './tabbar/tab-navigator';
 import { AppState } from './reducers/app.reducer';
 import { connect, Dispatch } from 'react-redux';
@@ -9,6 +8,7 @@ import { AddListener, createReduxBoundAddListener } from 'react-navigation-redux
 import { WelcomeScreen } from './welcome-screen/welcome-screen';
 import { AuthState } from './reducers/auth/auth.reducer';
 import { SplashScreen } from './splash-screen/splash-screen';
+import { routeComponents } from './navigation/routes';
 
 interface AppProps {
     dispatch: Dispatch<any>;
@@ -51,12 +51,13 @@ export class App extends Component<AppProps> {
     }
 
     private onBackPress = () => {
-        const { dispatch, nav } = this.props;
-        if (nav.index === 0) {
+        const { dispatch, nav: currentState } = this.props;
+        const popAction = NavigationActions.pop({ n: 1 });
+        const nextState = RootNavigator.router.getStateForAction(popAction, currentState);
+        if (routeComponents(currentState).equals(routeComponents(nextState))) {
             return false;
         }
-
-        dispatch(NavigationActions.back());
+        dispatch(popAction);
         return true;
     };
 }
