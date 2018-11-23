@@ -15,6 +15,7 @@
     using Helpdesk;
     using Interop;
     using Microsoft.Extensions.Configuration;
+    using Notifications.Abstractions;
     using Organization;
     using UserPreferences;
 
@@ -82,7 +83,9 @@
             this.ActorSystem.ActorOf(Props.Create(() => new SharedFeedsActor(departments)), WellKnownActorPaths.SharedFeeds);
             this.ActorSystem.ActorOf(this.ActorSystem.DI().Props<UserPreferencesActor>(), WellKnownActorPaths.UserPreferences);
 
-            this.ActorSystem.ActorOf(this.ActorSystem.DI().Props<SendEmailSickLeaveActor>(), "send-sick-leave-email");
+            var sickLeaveEmailNotification = this.ActorSystem.ActorOf(this.ActorSystem.DI().Props<SendEmailSickLeaveActor>(), "send-sick-leave-email");
+
+            this.ActorSystem.ActorOf(Props.Create(() => new NotificationsActor(sickLeaveEmailNotification)), "notifications");
         }
     }
 }
