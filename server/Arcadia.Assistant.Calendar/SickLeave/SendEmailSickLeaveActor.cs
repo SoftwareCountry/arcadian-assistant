@@ -19,8 +19,6 @@
         {
             this.mailConfig = mailConfig;
             this.smtpConfig = smtpConfig;
-
-            logger.Debug("Sick leave email actor created: {0}", this.Self.Path.Name);
         }
 
         protected override void OnReceive(object message)
