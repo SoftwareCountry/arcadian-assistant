@@ -15,7 +15,7 @@
     using Helpdesk;
     using Interop;
     using Microsoft.Extensions.Configuration;
-    using Notifications.Abstractions;
+    using Notifications;
     using Organization;
     using UserPreferences;
 

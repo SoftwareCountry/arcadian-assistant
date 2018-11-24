@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.Notifications.Abstractions
+﻿namespace Arcadia.Assistant.Notifications
 {
     using System.Collections.Generic;
     using System.Linq;

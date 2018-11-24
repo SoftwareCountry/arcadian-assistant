@@ -51,7 +51,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Health.Ab
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.UserPreferences", "Arcadia.Assistant.UserPreferences\Arcadia.Assistant.UserPreferences.csproj", "{9AC93BE1-326D-4154-855A-A892B5D81F77}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Notifications.Abstractions", "Arcadia.Assistant.Notifications.Abstractions\Arcadia.Assistant.Notifications.Abstractions.csproj", "{7C9387AA-F0A8-4D28-A1E3-54B616CE3D38}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Notifications", "Arcadia.Assistant.Notifications\Arcadia.Assistant.Notifications.csproj", "{7C9387AA-F0A8-4D28-A1E3-54B616CE3D38}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
