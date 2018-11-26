@@ -6,18 +6,10 @@
     using Akka.Actor;
     using Akka.Configuration;
     using Akka.DI.AutoFac;
-    using Akka.DI.Core;
 
     using Autofac;
-    using Calendar.SickLeave;
-    using Feeds;
-    using Health.Abstractions;
-    using Helpdesk;
-    using Interop;
+
     using Microsoft.Extensions.Configuration;
-    using Notifications;
-    using Organization;
-    using UserPreferences;
 
     public class Application : IDisposable
     {
@@ -31,6 +23,8 @@
         {
             this.Config = config;
         }
+
+        public ServerActorsCollection ServerActors { get; private set; }
 
         public void Start()
         {
@@ -46,7 +40,16 @@
             // ReSharper disable once ObjectCreationAsStatement
             new AutoFacDependencyResolver(this.container, this.ActorSystem);
 
-            CreateRootActors();
+            var builder = new ActorSystemBuilder(this.ActorSystem);
+            this.ServerActors = builder.AddRootActors();
+        }
+
+        protected virtual void OnStart(ActorSystem actorSystem)
+        {
+        }
+
+        protected virtual void OnStop(ActorSystem actorSystem)
+        {
         }
 
         public async Task Stop()
@@ -64,27 +67,8 @@
             this.ActorSystem?.Dispose();
             this.container.Dispose();
             this.ActorSystem = null;
+            this.ServerActors = null;
             this.container = null;
-        }
-
-        protected virtual void OnStart(ActorSystem actorSystem)
-        {
-        }
-
-        protected virtual void OnStop(ActorSystem actorSystem)
-        {
-        }
-
-        private void CreateRootActors()
-        {
-            var departments = this.ActorSystem.ActorOf(this.ActorSystem.DI().Props<OrganizationActor>(), WellKnownActorPaths.Organization);
-            this.ActorSystem.ActorOf(this.ActorSystem.DI().Props<HealthChecker>(), WellKnownActorPaths.Health);
-            this.ActorSystem.ActorOf(Props.Create(() => new HelpdeskActor()), WellKnownActorPaths.Helpdesk);
-            this.ActorSystem.ActorOf(Props.Create(() => new SharedFeedsActor(departments)), WellKnownActorPaths.SharedFeeds);
-            this.ActorSystem.ActorOf(this.ActorSystem.DI().Props<UserPreferencesActor>(), WellKnownActorPaths.UserPreferences);
-
-            var sickLeaveEmailActorProps = this.ActorSystem.DI().Props<SendEmailSickLeaveActor>();
-            this.ActorSystem.ActorOf(Props.Create(() => new NotificationsActor(sickLeaveEmailActorProps)), "notifications");
         }
     }
 }
