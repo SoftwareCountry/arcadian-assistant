@@ -18,7 +18,8 @@ import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calenda
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
 import { UserEmployeePermissions } from '../reducers/user/user-employee-permissions.model';
 import { loadUserEmployeePermissions } from '../reducers/user/user.action';
-import { DaysCounters } from '../calendar/days-counters/days-counters';
+import { HoursCreditCounter, VacationDaysCounter } from '../reducers/calendar/days-counters.model';
+import { ConvertHoursCreditToDays } from '../reducers/calendar/convert-hours-credit-to-days';
 
 interface TileData {
     label: string;
@@ -151,12 +152,12 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                         <View style={contentStyles.contactsContainer}>
                             <View>
                                 {contacts}
+                                {
+                                    this.renderDaysCounters(employee)
+                                }
                             </View>
                         </View>
 
-                        {
-                            this.renderDaysCounters(employee)
-                        }
                         {
                             this.renderPendingRequests()
                         }
@@ -168,15 +169,6 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                     </ScrollView>
                 </View>
         );
-    }
-
-    private renderDaysCounters(employee: Employee) {
-        if (employee.vacationDaysLeft === null && employee.hoursCredit === null) {
-            return null;
-        }
-
-        return <DaysCounters employee={employee}
-                             additionalStyle={{ marginBottom: 30, marginTop: -30, }}/>;
     }
 
     private uppercase(text: string) {
@@ -287,6 +279,45 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             </TouchableOpacity>
         ));
     }
+
+    private renderDaysCounters(employee: Employee) {
+        if (employee.vacationDaysLeft === null && employee.hoursCredit === null) {
+            return null;
+        }
+
+        const { vacationDaysLeft, hoursCredit } = this.props.employee;
+
+        const allVacationDaysCounter = new VacationDaysCounter(vacationDaysLeft);
+
+        const daysConverter = new ConvertHoursCreditToDays();
+        const calculatedDays = daysConverter.convert(hoursCredit);
+
+        const hoursCreditCounter = new HoursCreditCounter(hoursCredit, calculatedDays.days, calculatedDays.rest);
+        const vacationTitle = 'vacation';
+        const dayoffTitle = 'dayoff';
+
+        return [
+            <View style={contactStyles.container}>
+                <View style={contactStyles.iconContainer}>
+                    <ApplicationIcon name={vacationTitle} size={35} style={contactStyles.icon}/>
+                </View>
+                <View style={contactStyles.textContainer}>
+                    <StyledText style={contactStyles.title}>{'Days of vacation left:'}</StyledText>
+                    <StyledText style={contactStyles.text}>{allVacationDaysCounter.toString()}</StyledText>
+                </View>
+            </View>,
+            <View style={contactStyles.container}>
+                <View style={contactStyles.iconContainer}>
+                    <ApplicationIcon name={dayoffTitle} size={35} style={contactStyles.icon}/>
+                </View>
+                <View style={contactStyles.textContainer}>
+                    <StyledText style={contactStyles.title}>{'Daysoff available:'}</StyledText>
+                    <StyledText style={contactStyles.text}>{hoursCreditCounter.toString()}</StyledText>
+                </View>
+            </View>
+        ];
+    }
+
 
     private renderEmployeeEvents(events: CalendarEvent[], userPermissions: UserEmployeePermissions) {
         if (!events || !events.length || !this.props.employee) {
