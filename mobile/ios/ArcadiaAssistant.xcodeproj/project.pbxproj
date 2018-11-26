@@ -26,7 +26,6 @@
 		140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		162FDC1E2903449788B2AE48 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 422A5F622D6B418D8A69B759 /* Zocial.ttf */; };
-		1A7C01C8672F40F1B763BADF /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5202EF7A13774E01A2DE166E /* AppCenter-Config.plist */; };
 		2E91E1B1F3C7C699607D9D47 /* libPods-ArcadiaAssistant.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CBEE7CC97CBBC0F1B9DCDC24 /* libPods-ArcadiaAssistant.a */; };
 		35FC4B793DDB420A8219DA36 /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8C7B05C4BD90420B8B507F44 /* Entypo.ttf */; };
 		47E5BFD50BA046F985361947 /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1401C1DA5B97473E844EFD19 /* MaterialIcons.ttf */; };
@@ -404,7 +403,6 @@
 		47B320AB0C49C811061239E9 /* Pods-ArcadiaAssistant-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ArcadiaAssistant-tvOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ArcadiaAssistant-tvOS/Pods-ArcadiaAssistant-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		4ECB6F36DF22428DBA874C87 /* libRNVectorIcons.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNVectorIcons.a; sourceTree = "<group>"; };
 		500E8EA82F3BB526773299C6 /* Pods-ArcadiaAssistant.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ArcadiaAssistant.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ArcadiaAssistant/Pods-ArcadiaAssistant.debug.xcconfig"; sourceTree = "<group>"; };
-		5202EF7A13774E01A2DE166E /* AppCenter-Config.plist */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.xml; name = "AppCenter-Config.plist"; path = "ArcadiaAssistant/AppCenter-Config.plist"; sourceTree = "<group>"; };
 		535FE0FFDE7B493C8A653CB4 /* libAppCenterReactNative.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libAppCenterReactNative.a; sourceTree = "<group>"; };
 		554DF58F5558D24F3FF391B7 /* Pods-ArcadiaAssistantTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ArcadiaAssistantTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ArcadiaAssistantTests/Pods-ArcadiaAssistantTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
@@ -729,7 +727,6 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				D1165D35EE9D4B3DA9DA7985 /* Resources */,
 				7D5924DD1FAC6E3F0030A1A9 /* Recovered References */,
-				5202EF7A13774E01A2DE166E /* AppCenter-Config.plist */,
 				C8BFE6A9C4E74FC2A970AA00 /* Pods */,
 				2CFB0EFD975D09C768658B0E /* Frameworks */,
 			);
@@ -1331,7 +1328,6 @@
 				47E5BFD50BA046F985361947 /* MaterialIcons.ttf in Resources */,
 				51AB02247D30490584A16AD8 /* Octicons.ttf in Resources */,
 				162FDC1E2903449788B2AE48 /* Zocial.ttf in Resources */,
-				1A7C01C8672F40F1B763BADF /* AppCenter-Config.plist in Resources */,
 				FE8337E8645648FEB15BBD71 /* aa-iconfont-bold.ttf in Resources */,
 				0DE6E1C750A64F42A8AD4404 /* aa-iconfont.ttf in Resources */,
 				4D74914FB8C14CA18D49FE62 /* CenturyGothic.ttf in Resources */,
