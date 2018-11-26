@@ -297,7 +297,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         const dayoffTitle = 'dayoff';
 
         return [
-            <View style={contactStyles.container}>
+            <View key={vacationTitle} style={contactStyles.container}>
                 <View style={contactStyles.iconContainer}>
                     <ApplicationIcon name={vacationTitle} size={35} style={contactStyles.icon}/>
                 </View>
@@ -306,7 +306,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                     <StyledText style={contactStyles.text}>{allVacationDaysCounter.toString()}</StyledText>
                 </View>
             </View>,
-            <View style={contactStyles.container}>
+            <View key={dayoffTitle} style={contactStyles.container}>
                 <View style={contactStyles.iconContainer}>
                     <ApplicationIcon name={dayoffTitle} size={35} style={contactStyles.icon}/>
                 </View>
