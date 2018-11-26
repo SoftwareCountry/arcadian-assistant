@@ -5,7 +5,9 @@ import android.app.Application;
 import com.facebook.react.ReactApplication;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import com.hieuvp.fingerprint.ReactNativeFingerprintScannerPackage;
+import com.microsoft.appcenter.reactnative.shared.AppCenterReactNativeShared;
 import com.oblador.vectoricons.VectorIconsPackage;
+
 import br.com.classapp.RNSensitiveInfo.RNSensitiveInfoPackage;
 
 import com.microsoft.appcenter.reactnative.crashes.AppCenterReactNativeCrashesPackage;
@@ -19,44 +21,52 @@ import com.facebook.soloader.SoLoader;
 import java.util.Arrays;
 import java.util.List;
 
+//============================================================================
 public class MainApplication extends Application implements ReactApplication {
-
-  private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
-    @Override
-    public boolean getUseDeveloperSupport() {
-      return BuildConfig.DEBUG;
+    //----------------------------------------------------------------------------
+    static {
+        AppCenterReactNativeShared.setAppSecret(BuildConfig.appCenterSecretId);
     }
 
-    @Override
-    protected List<ReactPackage> getPackages() {
-      return Arrays.<ReactPackage>asList(
-          new MainReactPackage(),
-            new ReactNativeConfigPackage(),
-            new ReactNativeFingerprintScannerPackage(),
-            new VectorIconsPackage(),
-            new RNSensitiveInfoPackage(),
-            new AppCenterReactNativeCrashesPackage(MainApplication.this, getResources().getString(R.string.appCenterCrashes_whenToSendCrashes)),
-            new AppCenterReactNativeAnalyticsPackage(MainApplication.this, getResources().getString(R.string.appCenterAnalytics_whenToEnableAnalytics)),
-            new AppCenterReactNativePackage(MainApplication.this),
-              new AuthenticationSessionPackage()
+    //----------------------------------------------------------------------------
+    private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
+        @Override
+        public boolean getUseDeveloperSupport() {
+            return BuildConfig.DEBUG;
+        }
 
-      );
+        @Override
+        protected List<ReactPackage> getPackages() {
+            return Arrays.asList(
+                    new MainReactPackage(),
+                    new ReactNativeConfigPackage(),
+                    new ReactNativeFingerprintScannerPackage(),
+                    new VectorIconsPackage(),
+                    new RNSensitiveInfoPackage(),
+                    new AppCenterReactNativeCrashesPackage(MainApplication.this, getResources().getString(R.string.appCenterCrashes_whenToSendCrashes)),
+                    new AppCenterReactNativeAnalyticsPackage(MainApplication.this, getResources().getString(R.string.appCenterAnalytics_whenToEnableAnalytics)),
+                    new AppCenterReactNativePackage(MainApplication.this),
+                    new AuthenticationSessionPackage()
+
+            );
+        }
+
+        @Override
+        protected String getJSMainModuleName() {
+            return "artifacts/index";
+        }
+    };
+
+    //----------------------------------------------------------------------------
+    @Override
+    public ReactNativeHost getReactNativeHost() {
+        return mReactNativeHost;
     }
 
+    //----------------------------------------------------------------------------
     @Override
-    protected String getJSMainModuleName() {
-      return "artifacts/index";
+    public void onCreate() {
+        super.onCreate();
+        SoLoader.init(this, /* native exopackage */ false);
     }
-  };
-
-  @Override
-  public ReactNativeHost getReactNativeHost() {
-    return mReactNativeHost;
-  }
-
-  @Override
-  public void onCreate() {
-    super.onCreate();
-    SoLoader.init(this, /* native exopackage */ false);
-  }
 }
