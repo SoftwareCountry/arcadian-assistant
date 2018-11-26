@@ -39,9 +39,7 @@ export class FeedMessage extends React.Component<FeedMessageProps> {
                     </View>
                     <View style={FeedStyle.info}>
                         <StyledText style={FeedStyle.title}>{this.props.message.title}</StyledText>
-                        <StyledText>
-                            <Text style={FeedStyle.text}>{this.props.message.text}</Text>
-                        </StyledText>
+                        <StyledText style={FeedStyle.text}>{this.props.message.text}</StyledText>
                         <StyledText style={FeedStyle.date}>{formattedDate}</StyledText>
                     </View>
                 </View>

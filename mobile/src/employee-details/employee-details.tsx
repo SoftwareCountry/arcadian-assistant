@@ -62,7 +62,7 @@ interface EmployeeDetailsDispatchProps {
     loadCalendarEvents: (employeeId: string) => void;
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
     loadUserEmployeePermissions: (employeeId: string) => void;
-    openDepartment: (departmentId: string) => void;
+    openDepartment: (departmentId: string, departmentAbbreviation: string) => void;
     openRoom: (departmentId: string) => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchProps => ({
@@ -70,7 +70,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchPro
     loadCalendarEvents: (employeeId: string) => dispatch(loadCalendarEvents(employeeId)),
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status)),
     loadUserEmployeePermissions: (employeeId: string) => { dispatch(loadUserEmployeePermissions(employeeId)); },
-    openDepartment: (departmentId: string) => { dispatch(openDepartmentAction(departmentId)); },
+    openDepartment: (departmentId: string, departmentAbbreviation: string) => { dispatch(openDepartmentAction(departmentId, departmentAbbreviation)); },
     openRoom: (departmentId: string) => { dispatch(openRoomAction(departmentId)); }
 });
 
@@ -366,7 +366,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
     };
 
     private openDepartment = () => {
-        this.props.openDepartment(this.props.employee.departmentId);
+        this.props.openDepartment(this.props.employee.departmentId, this.props.department.abbreviation);
     };
 
     private openRoom = () => {

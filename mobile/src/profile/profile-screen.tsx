@@ -9,9 +9,6 @@ const routeConfig: NavigationRouteConfigMap = {
     PeopleHomeScreen: {
         screen: HomeProfileScreen,
         path: '/',
-        navigationOptions: {
-            header: null,
-        }
     },
     CurrentDepartment: {
         screen: CurrentPeopleDepartment,
