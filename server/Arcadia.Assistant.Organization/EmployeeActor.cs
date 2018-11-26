@@ -39,10 +39,6 @@
             var vacationsActor = Context.ActorOf(EmployeeVacationsActor.CreateProps(this.employeeMetadata.EmployeeId, this.employeeFeed, vacationsRegistry), "vacations");
             var sickLeavesActor = Context.ActorOf(EmployeeSickLeaveActor.CreateProps(this.employeeMetadata), "sick-leaves");
             var workHoursActor = Context.ActorOf(EmployeeWorkHoursActor.CreateProps(this.employeeMetadata.EmployeeId), "work-hours");
-            Context.Watch(vacationsActor);
-            Context.Watch(sickLeavesActor);
-            Context.Watch(workHoursActor);
-
             var calendarActor = Context.ActorOf(EmployeeCalendarActor.CreateProps(this.employeeMetadata.EmployeeId, vacationsActor, workHoursActor, sickLeavesActor), "all-calendar-events");
 
             this.calendar = new EmployeeCalendarContainer(vacationsActor, workHoursActor, sickLeavesActor, calendarActor);
@@ -68,11 +64,6 @@
                     this.UpdateEmployeeMetadata(newInfo.Information.Metadata);
                     break;
 
-                //TODO: get rid of it somehow, now it monitors that actors were able to restore.
-                case Terminated t:
-                    Context.Stop(this.Self);
-                    break;
-
                 default:
                     this.Unhandled(message);
                     break;
@@ -83,7 +74,7 @@
         {
             switch (message)
             {
-                case EmployeeChangedDepartment ev:
+                case EmployeeChangedDepartment _:
                     break;
 
                 case EmployeeChangedName ev:
