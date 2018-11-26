@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Department } from '../reducers/organization/department.model';
 import { AppState } from '../reducers/app.reducer';
 import { connect, Dispatch } from 'react-redux';
-import { RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
+import { RefreshControl, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
 import { Employee } from '../reducers/organization/employee.model';
 import { layoutStyles, profileScreenStyles } from './styles';
 import { EmployeeDetails } from '../employee-details/employee-details';
@@ -15,6 +15,7 @@ import { CalendarEvent } from '../reducers/calendar/calendar-event.model';
 import { LogoutView } from '../navigation/logout-view';
 import { LoadingView } from '../navigation/loading';
 import Style from '../layout/style';
+import { NavigationScreenConfig, NavigationStackScreenOptions } from 'react-navigation';
 
 //============================================================================
 interface ProfileScreenProps {
@@ -32,6 +33,15 @@ interface AuthDispatchProps {
 
 //============================================================================
 class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps> {
+
+    //----------------------------------------------------------------------------
+    public static navigationOptions: NavigationScreenConfig<NavigationStackScreenOptions> = {
+        headerStyle: {
+            ...StyleSheet.flatten(Style.navigation.header),
+            borderBottomColor: 'transparent',
+        },
+        headerRight: <LogoutView/>,
+    };
 
     //----------------------------------------------------------------------------
     public componentDidMount() {
@@ -66,9 +76,6 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
     //----------------------------------------------------------------------------
     public render() {
         return <SafeAreaView style={profileScreenStyles.profileContainer}>
-            <View style={profileScreenStyles.logoutContainer}>
-                <LogoutView/>
-            </View>
             <View style={profileScreenStyles.employeeDetailsContainer}>
                 {this.renderEmployeeDetails()}
             </View>
