@@ -75,7 +75,7 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
 
     //----------------------------------------------------------------------------
     public render() {
-        return <SafeAreaView style={profileScreenStyles.profileContainer}>
+        return <SafeAreaView style={Style.view.safeArea}>
             <View style={profileScreenStyles.employeeDetailsContainer}>
                 {this.renderEmployeeDetails()}
             </View>
