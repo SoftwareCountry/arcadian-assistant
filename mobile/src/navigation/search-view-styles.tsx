@@ -1,11 +1,10 @@
-import { StyleSheet, Platform } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export const searchViewStyles = StyleSheet.create({
     container: {
+        flex: 1,
         paddingLeft: 5,
         paddingRight: 5,
-        paddingTop: Platform.OS === 'ios' ? 45 : 0,
-        height: Platform.OS === 'ios' ? 65 : 40,
         backgroundColor: '#2FAFCC',
         flexDirection: 'row',
         alignItems: 'center'
