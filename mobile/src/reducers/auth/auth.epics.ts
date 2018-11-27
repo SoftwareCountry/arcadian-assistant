@@ -1,12 +1,19 @@
-import { ActionsObservable, ofType, combineEpics } from 'redux-observable';
+import { ActionsObservable } from 'redux-observable';
 import { Observable } from 'rxjs/Observable';
-import { DependenciesContainer, AppState } from '../app.reducer';
-import { StartLoginProcess, StartLogoutProcess, startLoginProcess, startLogoutProcess, userLoggedIn, userLoggedOut, jwtTokenSet } from '../auth/auth.action';
+import { AppState, DependenciesContainer } from '../app.reducer';
+import {
+    AuthActionType,
+    jwtTokenSet,
+    StartLoginProcess,
+    StartLogoutProcess,
+    userLoggedIn,
+    userLoggedOut
+} from './auth.action';
 import { refresh } from '../refresh/refresh.action';
 import { handleHttpErrors } from '../errors/errors.epics';
-import { flatMap, distinctUntilChanged, map, filter } from 'rxjs/operators';
+import { distinctUntilChanged, flatMap, map } from 'rxjs/operators';
 import { Alert } from 'react-native';
-import { AuthenticationState, AuthenticatedState } from '../../auth/authentication-state';
+import { AuthenticationState } from '../../auth/authentication-state';
 import { Action } from 'redux';
 
 
@@ -18,12 +25,12 @@ function showAlert(message: string, okButtonTitle: string, rejectButtonTitle: st
 }
 
 export const startLoginProcessEpic$ = (action$: ActionsObservable<StartLoginProcess>, state: AppState, dep: DependenciesContainer) =>
-    action$.ofType('START-LOGIN-PROCESS')
+    action$.ofType(AuthActionType.startLoginProcess)
         .do(x => dep.oauthProcess.login())
         .ignoreElements();
 
 export const startLogoutProcessEpic$ = (action$: ActionsObservable<StartLogoutProcess>, state: AppState, dep: DependenciesContainer) =>
-    action$.ofType('START-LOGOUT-PROCESS')
+    action$.ofType(AuthActionType.startLogoutProcess)
         .map(x => {
             if (x.force) {
                 dep.oauthProcess.logout();
