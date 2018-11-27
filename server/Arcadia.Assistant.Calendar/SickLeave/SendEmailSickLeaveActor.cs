@@ -1,6 +1,7 @@
 ﻿namespace Arcadia.Assistant.Calendar.SickLeave
 {
     using System;
+    using Akka.Actor;
     using Akka.Event;
 
     using Configuration.Configuration;
@@ -8,11 +9,7 @@
     using MailKit.Security;
     using MimeKit;
 
-    using Arcadia.Assistant.Calendar.Abstractions;
-    using Arcadia.Assistant.Notifications.Abstractions;
-    using Arcadia.Assistant.Organization.Abstractions;
-
-    public class SendEmailSickLeaveActor : BaseNotificationsActor
+    public class SendEmailSickLeaveActor : UntypedActor
     {
         private readonly IEmailSettings mailConfig;
         private readonly ISmtpSettings smtpConfig;
@@ -24,23 +21,19 @@
             this.smtpConfig = smtpConfig;
         }
 
-        protected override void HandleNotificationPayload(object payload)
+        protected override void OnReceive(object message)
         {
-            switch (payload)
+            switch (message)
             {
                 case SickLeaveNotification notification when notification.EmployeeName == null:
                     break;
 
                 case SickLeaveNotification notification:
-                    try
-                    {
-                        this.SendEmail(notification);
-                    }
-                    catch (Exception ex)
-                    {
-                        this.logger.Warning(ex.Message);
-                    }
+                    this.SendEmail(notification);
+                    break;
 
+                default:
+                    this.Unhandled(message);
                     break;
             }
         }
