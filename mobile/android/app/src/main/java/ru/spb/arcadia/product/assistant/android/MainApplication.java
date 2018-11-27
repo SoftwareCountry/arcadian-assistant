@@ -13,6 +13,7 @@ import com.microsoft.appcenter.reactnative.analytics.AppCenterReactNativeAnalyti
 import com.microsoft.appcenter.reactnative.appcenter.AppCenterReactNativePackage;
 import com.microsoft.appcenter.reactnative.crashes.AppCenterReactNativeCrashesPackage;
 import com.microsoft.appcenter.reactnative.push.AppCenterReactNativePushPackage;
+import com.microsoft.appcenter.reactnative.shared.AppCenterReactNativeShared;
 import com.oblador.vectoricons.VectorIconsPackage;
 
 import java.util.Arrays;
