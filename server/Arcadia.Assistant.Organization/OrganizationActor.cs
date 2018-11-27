@@ -1,23 +1,21 @@
 ﻿namespace Arcadia.Assistant.Organization
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
 
     using Akka.Actor;
     using Akka.Event;
 
+    using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
-    using Configuration.Configuration;
 
     public class OrganizationActor : UntypedActor, ILogReceive, IWithUnboundedStash
     {
-        private readonly IActorRef employeesActor;
-
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
+        private readonly IActorRef employeesActor;
         private readonly IActorRef departmentsActor;
+        private readonly IActorRef vacationApprovalsCheckerActor;
 
         public IStash Stash { get; set; }
 
@@ -25,6 +23,7 @@
         {
             this.employeesActor = Context.ActorOf(EmployeesActor.GetProps(), "employees");
             this.departmentsActor = Context.ActorOf(DepartmentsActor.GetProps(this.employeesActor), "departments");
+            this.vacationApprovalsCheckerActor = Context.ActorOf(VacationApprovalsChecker.GetProps(), "vacation-approvals-checker");
 
             Context.System.Scheduler.ScheduleTellRepeatedly(
                 TimeSpan.Zero,
@@ -50,6 +49,10 @@
 
                 case EmployeesQuery query:
                     this.employeesActor.Forward(query);
+                    break;
+
+                case GetNextVacationRequestApprover msg:
+                    this.vacationApprovalsCheckerActor.Forward(msg);
                     break;
 
                 default:

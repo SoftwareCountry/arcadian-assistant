@@ -33,8 +33,6 @@
             var sickLeaveEmailActorProps = this.actorSystem.DI().Props<SendEmailSickLeaveActor>();
             this.actorSystem.ActorOf(Props.Create(() => new NotificationsActor(sickLeaveEmailActorProps)), "notifications");
 
-            this.actorSystem.ActorOf(this.actorSystem.DI().Props<VacationApprovalsChecker>(), WellKnownActorPaths.VacationApprovalsChecker);
-
             return new ServerActorsCollection(departments, health, helpdesk, feeds, userPreferences);
         }
     }
