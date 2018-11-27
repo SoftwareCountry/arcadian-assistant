@@ -3,23 +3,23 @@ package ru.spb.arcadia.product.assistant.android;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
-import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
-import com.hieuvp.fingerprint.ReactNativeFingerprintScannerPackage;
-import com.microsoft.appcenter.reactnative.shared.AppCenterReactNativeShared;
-import com.oblador.vectoricons.VectorIconsPackage;
-
-import br.com.classapp.RNSensitiveInfo.RNSensitiveInfoPackage;
-
-import com.microsoft.appcenter.reactnative.crashes.AppCenterReactNativeCrashesPackage;
-import com.microsoft.appcenter.reactnative.analytics.AppCenterReactNativeAnalyticsPackage;
-import com.microsoft.appcenter.reactnative.appcenter.AppCenterReactNativePackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
+import com.hieuvp.fingerprint.ReactNativeFingerprintScannerPackage;
+import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
+import com.microsoft.appcenter.reactnative.analytics.AppCenterReactNativeAnalyticsPackage;
+import com.microsoft.appcenter.reactnative.appcenter.AppCenterReactNativePackage;
+import com.microsoft.appcenter.reactnative.crashes.AppCenterReactNativeCrashesPackage;
+import com.microsoft.appcenter.reactnative.push.AppCenterReactNativePushPackage;
+import com.microsoft.appcenter.reactnative.shared.AppCenterReactNativeShared;
+import com.oblador.vectoricons.VectorIconsPackage;
 
 import java.util.Arrays;
 import java.util.List;
+
+import br.com.classapp.RNSensitiveInfo.RNSensitiveInfoPackage;
 
 //============================================================================
 public class MainApplication extends Application implements ReactApplication {
@@ -39,6 +39,7 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             return Arrays.asList(
                     new MainReactPackage(),
+                    new AppCenterReactNativePushPackage(MainApplication.this),
                     new ReactNativeConfigPackage(),
                     new ReactNativeFingerprintScannerPackage(),
                     new VectorIconsPackage(),

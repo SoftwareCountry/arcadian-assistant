@@ -7,6 +7,7 @@
 
 #import "AppDelegate.h"
 #import <AppCenterReactNativeShared/AppCenterReactNativeShared.h>
+#import <AppCenterReactNativePush/AppCenterReactNativePush.h>
 #import <AppCenterReactNativeCrashes/AppCenterReactNativeCrashes.h>
 #import <AppCenterReactNativeAnalytics/AppCenterReactNativeAnalytics.h>
 #import <AppCenterReactNative/AppCenterReactNative.h>
@@ -23,6 +24,7 @@
 {
     NSString* appSecret = [ReactNativeConfig envFor:@"appCenterSecretId"];
     [AppCenterReactNativeShared setAppSecret:appSecret];
+    [AppCenterReactNativePush register];  // Initialize AppCenter push
     [AppCenterReactNativeCrashes registerWithAutomaticProcessing];  // Initialize AppCenter crashes
     [AppCenterReactNativeAnalytics registerWithInitiallyEnabled:true];  // Initialize AppCenter analytics
     [AppCenterReactNative register];  // Initialize AppCenter
