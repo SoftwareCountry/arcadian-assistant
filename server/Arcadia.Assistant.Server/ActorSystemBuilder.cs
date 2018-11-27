@@ -11,6 +11,7 @@
     using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.Health.Abstractions;
     using Arcadia.Assistant.UserPreferences;
+    using Organization.Abstractions;
 
     public class ActorSystemBuilder
     {
@@ -31,6 +32,8 @@
 
             var sickLeaveEmailActorProps = this.actorSystem.DI().Props<SendEmailSickLeaveActor>();
             this.actorSystem.ActorOf(Props.Create(() => new NotificationsActor(sickLeaveEmailActorProps)), "notifications");
+
+            this.actorSystem.ActorOf(this.actorSystem.DI().Props<VacationApprovalsChecker>(), WellKnownActorPaths.VacationApprovalsChecker);
 
             return new ServerActorsCollection(departments, health, helpdesk, feeds, userPreferences);
         }
