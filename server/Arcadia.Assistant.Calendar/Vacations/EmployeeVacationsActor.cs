@@ -1,6 +1,7 @@
 ﻿namespace Arcadia.Assistant.Calendar.Vacations
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
 
     using Akka.Actor;
@@ -11,6 +12,7 @@
     using Arcadia.Assistant.Feeds;
     using Arcadia.Assistant.Feeds.Messages;
     using Arcadia.Assistant.Organization.Abstractions;
+    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public class EmployeeVacationsActor : CalendarEventsStorageBase
     {
@@ -21,6 +23,8 @@
         private readonly TimeSpan timeoutSetting;
 
         public override string PersistenceId { get; }
+
+        private readonly Dictionary<string, List<string>> approvalsByEvent = new Dictionary<string, List<string>>();
 
         //private int vacationsCredit = 28;
 
@@ -57,18 +61,19 @@
         {
             var eventId = calendarEvent.EventId;
             var newEvent = new VacationIsRequested()
-                {
-                    EmployeeId = this.EmployeeId,
-                    EventId = eventId,
-                    StartDate = calendarEvent.Dates.StartDate,
-                    EndDate = calendarEvent.Dates.EndDate,
-                    TimeStamp = DateTimeOffset.Now
-                };
+            {
+                EmployeeId = this.EmployeeId,
+                EventId = eventId,
+                StartDate = calendarEvent.Dates.StartDate,
+                EndDate = calendarEvent.Dates.EndDate,
+                TimeStamp = DateTimeOffset.Now
+            };
             this.Persist(newEvent, e =>
-                {
-                    this.OnVacationRequested(e);
-                    onUpsert(this.EventsById[eventId]);
-                });
+            {
+                this.OnVacationRequested(e);
+                this.Self.Tell(new ProcessVacationApprovalsMessage(eventId));
+                onUpsert(this.EventsById[eventId]);
+            });
         }
 
         protected override void OnCommand(object message)
@@ -80,6 +85,57 @@
                         .Ask<VacationsRegistry.GetVacationInfo.Response>(new VacationsRegistry.GetVacationInfo(this.EmployeeId))
                         .ContinueWith(x => new GetVacationsCredit.Response(x.Result.VacationsCredit))
                         .PipeTo(this.Sender);
+                    break;
+
+                case VacationApproveMessage msg:
+                    var @event = new VacationIsApprovedOnce
+                    {
+                        EventId = msg.EventId,
+                        TimeStamp = DateTimeOffset.Now,
+                        UserId = msg.ApproverId
+                    };
+
+                    this.Persist(@event, ev =>
+                    {
+                        this.OnVacationApprovedOnce(ev);
+                        this.Self.Tell(new ProcessVacationApprovalsMessage(msg.EventId));
+                        this.Sender.Tell(VacationApproveMessage.Response.Instance);
+                    });
+                    break;
+
+                case ProcessVacationApprovalsMessage msg:
+                    if (!this.approvalsByEvent.TryGetValue(msg.EventId, out var approvals))
+                    {
+                        approvals = new List<string>();
+                    }
+
+                    var getNextApproverMessage = new GetNextVacationRequestApprover(this.EmployeeId, approvals);
+
+                    this.vacationApprovalsChecker
+                        .Ask<GetNextVacationRequestApprover.Response>(getNextApproverMessage)
+                        .ContinueWith(task => new ProcessVacationApprovalsMessage.Response(msg.EventId, task.Result.NextApproverEmployeeId))
+                        .PipeTo(this.Self);
+                    break;
+
+                case ProcessVacationApprovalsMessage.Response msg:
+                    if (msg.NextApproverId == null)
+                    {
+                        var oldEvent = this.EventsById[msg.EventId];
+
+                        var newEvent = new CalendarEvent(
+                            oldEvent.EventId,
+                            oldEvent.Type,
+                            oldEvent.Dates,
+                            VacationStatuses.Approved,
+                            oldEvent.EmployeeId
+                        );
+
+                        this.UpdateCalendarEvent(oldEvent, newEvent, ev => { });
+                    }
+                    else
+                    {
+                        // It should publish message to Event Bus that new approver is required
+                    }
 
                     break;
 
@@ -94,12 +150,12 @@
             if (oldEvent.Dates != newEvent.Dates)
             {
                 var eventToPersist = new VacationDatesAreEdited()
-                    {
-                        EventId = newEvent.EventId,
-                        StartDate = newEvent.Dates.StartDate,
-                        EndDate = newEvent.Dates.EndDate,
-                        TimeStamp = DateTimeOffset.Now
-                    };
+                {
+                    EventId = newEvent.EventId,
+                    StartDate = newEvent.Dates.StartDate,
+                    EndDate = newEvent.Dates.EndDate,
+                    TimeStamp = DateTimeOffset.Now
+                };
                 this.Persist(eventToPersist, this.OnVacationDatesEdit);
             }
 
@@ -109,26 +165,26 @@
                 {
                     case VacationStatuses.Approved:
                         this.Persist(new VacationIsApproved()
-                            {
-                                EventId = newEvent.EventId,
-                                TimeStamp = DateTimeOffset.Now
-                            }, this.OnVacationApproved);                    
+                        {
+                            EventId = newEvent.EventId,
+                            TimeStamp = DateTimeOffset.Now
+                        }, this.OnVacationApproved);
                         break;
 
                     case VacationStatuses.Cancelled:
                         this.Persist(new VacationIsCancelled()
-                            {
-                                EventId = newEvent.EventId,
-                                TimeStamp = DateTimeOffset.Now
-                            }, this.OnVacationCancel);
+                        {
+                            EventId = newEvent.EventId,
+                            TimeStamp = DateTimeOffset.Now
+                        }, this.OnVacationCancel);
                         break;
 
                     case VacationStatuses.Rejected:
                         this.Persist(new VacationIsRejected()
-                            {
-                                EventId = newEvent.EventId,
-                                TimeStamp = DateTimeOffset.Now,
-                            }, this.OnVacationRejected);
+                        {
+                            EventId = newEvent.EventId,
+                            TimeStamp = DateTimeOffset.Now,
+                        }, this.OnVacationRejected);
                         break;
                 }
             }
@@ -169,6 +225,10 @@
                     this.OnVacationApproved(ev);
                     break;
 
+                case VacationIsApprovedOnce ev:
+                    this.OnVacationApprovedOnce(ev);
+                    break;
+
                 case VacationIsCancelled ev:
                     this.OnVacationCancel(ev);
                     break;
@@ -201,6 +261,23 @@
                 var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, message.TimeStamp.Date);
                 this.employeeFeed.Tell(new PostMessage(msg));
             }
+        }
+
+        private void OnVacationApprovedOnce(VacationIsApprovedOnce message)
+        {
+            var calendarEvent = this.EventsById[message.EventId];
+
+            if (!this.approvalsByEvent.TryGetValue(message.EventId, out var approvals))
+            {
+                approvals = new List<string>();
+                this.approvalsByEvent[message.EventId] = approvals;
+            }
+
+            approvals.Add(message.UserId);
+
+            var text = $"Vacation from {calendarEvent.Dates.StartDate.ToLongDateString()} to {calendarEvent.Dates.EndDate.ToLongDateString()} got one new approval";
+            var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, message.TimeStamp.Date);
+            this.employeeFeed.Tell(new PostMessage(msg));
         }
 
         private void OnVacationCancel(VacationIsCancelled message)
