@@ -1,7 +1,6 @@
-import { Reducer } from 'redux';
 import { combineEpics } from 'redux-observable';
-import { startLoginProcessEpic$, startLogoutProcessEpic$, listenerAuthStateEpic$, jwtTokenEpic$ } from './auth.epics';
-import { AuthActions } from './auth.action';
+import { jwtTokenEpic$, listenerAuthStateEpic$, startLoginProcessEpic$, startLogoutProcessEpic$ } from './auth.epics';
+import { AuthActions, AuthActionType } from './auth.action';
 
 export const authEpics$ = combineEpics(
     startLoginProcessEpic$ as any,
@@ -25,7 +24,7 @@ const initState: AuthState = {
 
 export const authReducer = (state: AuthState = initState, action: AuthActions): AuthState => {
     switch (action.type) {
-        case 'USER-LOGGED-IN':
+        case AuthActionType.userLoggedIn:
             return {
                 ...state,
                 authInfo: {
@@ -33,7 +32,7 @@ export const authReducer = (state: AuthState = initState, action: AuthActions): 
                     isAuthenticated: true,
                 }
             };
-        case 'USER-LOGGED-OUT':
+        case AuthActionType.userLoggedOut:
             return {
                 ...state,
                 authInfo: {
@@ -42,7 +41,7 @@ export const authReducer = (state: AuthState = initState, action: AuthActions): 
                 }
             };
 
-        case 'JWT-TOKEN-SET':
+        case AuthActionType.jwtTokenSet:
             return {
                 ...state,
                 authInfo: {

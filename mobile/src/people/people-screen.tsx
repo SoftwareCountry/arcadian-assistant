@@ -6,14 +6,13 @@ import { PeopleScreenNavigator } from './navigator/people-screen-navigator';
 import { SearchViewPeople } from '../navigation/search-view';
 import { CurrentPeopleDepartment } from './current-people-department';
 import { CurrentPeopleRoom } from './current-people-room';
-import { CompanyDepartments } from './company-departments';
 
 const routeConfig: NavigationRouteConfigMap = {
     PeopleHomeScreen: {
         screen: PeopleScreenNavigator,
         path: '/',
-        navigationOptions: {
-            header: <SearchViewPeople/>
+        navigationOptions:  {
+            headerTitle: <SearchViewPeople/>,
         }
     },
     CurrentProfile: {

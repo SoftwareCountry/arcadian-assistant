@@ -1,22 +1,21 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import { daysCountersStyles } from './styles';
 import { DaysCounter, EmptyDaysCounter } from './days-counter';
-import { DaysCountersModel } from '../../reducers/calendar/days-counters.model';
-import { AppState } from '../../reducers/app.reducer';
-import { connect } from 'react-redux';
+import { HoursCreditCounter, VacationDaysCounter } from '../../reducers/calendar/days-counters.model';
 import { LoadingView } from '../../navigation/loading';
+import { ConvertHoursCreditToDays } from '../../reducers/calendar/convert-hours-credit-to-days';
+import { Employee } from '../../reducers/organization/employee.model';
 
 interface DaysCountersProps {
-    daysCounters: DaysCountersModel;
+    employee: Employee;
+    additionalStyle?: StyleProp<ViewStyle>;
 }
 
-class DaysCountersImpl extends Component<DaysCountersProps> {
+export class DaysCounters extends Component<DaysCountersProps> {
 
     public render() {
-        const { daysCounters: { allVacationDays, hoursCredit } } = this.props;
-
-        if (!allVacationDays && !hoursCredit) {
+        if (this.props.employee == null || this.props.employee.vacationDaysLeft == null || this.props.employee.hoursCredit == null) {
             return (
                 <View style={daysCountersStyles.container}>
                     <LoadingView/>
@@ -24,18 +23,27 @@ class DaysCountersImpl extends Component<DaysCountersProps> {
             );
         }
 
-        const vacationCounter = allVacationDays
-            ? <DaysCounter  textValue={allVacationDays.toString()}
-                            title={allVacationDays.title}
+        const { vacationDaysLeft, hoursCredit} = this.props.employee;
+
+        const allVacationDaysCounter = new VacationDaysCounter(vacationDaysLeft);
+
+        const daysConverter = new ConvertHoursCreditToDays();
+        const calculatedDays = daysConverter.convert(hoursCredit);
+
+        const hoursCreditCounter = new HoursCreditCounter(hoursCredit, calculatedDays.days, calculatedDays.rest);
+
+        const vacationCounter = allVacationDaysCounter
+            ? <DaysCounter  textValue={allVacationDaysCounter.toString()}
+                            title={allVacationDaysCounter.title}
                             icon={{
                                 name: 'vacation',
                                 size: 30
                             }} />
             : <EmptyDaysCounter />;
 
-        const daysoffCounter = hoursCredit
-            ? <DaysCounter  textValue={hoursCredit.toString()}
-                            title={hoursCredit.title}
+        const daysoffCounter = hoursCreditCounter
+            ? <DaysCounter  textValue={hoursCreditCounter.toString()}
+                            title={hoursCreditCounter.title}
                             icon={{
                                 name: 'dayoff',
                                 size: 30
@@ -43,16 +51,14 @@ class DaysCountersImpl extends Component<DaysCountersProps> {
             : <EmptyDaysCounter />;
 
         return (
-            <View style={daysCountersStyles.container}>
+            <View style={this.containerStyle()}>
                     { vacationCounter }
                     { daysoffCounter }
             </View>
         );
     }
+
+    private containerStyle = (): StyleProp<ViewStyle> => {
+            return [daysCountersStyles.container, this.props.additionalStyle];
+    };
 }
-
-const mapStateToProps = (state: AppState): DaysCountersProps => ({
-    daysCounters: state.calendar.daysCounters
-});
-
-export const DaysCounters = connect(mapStateToProps)(DaysCountersImpl);

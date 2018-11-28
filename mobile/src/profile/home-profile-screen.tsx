@@ -2,10 +2,9 @@ import React, { Component } from 'react';
 import { Department } from '../reducers/organization/department.model';
 import { AppState } from '../reducers/app.reducer';
 import { connect, Dispatch } from 'react-redux';
-import { StyledText } from '../override/styled-text';
-import { View, SafeAreaView, ScrollView, RefreshControl } from 'react-native';
+import { RefreshControl, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
 import { Employee } from '../reducers/organization/employee.model';
-import { profileScreenStyles, layoutStyles } from './styles';
+import { layoutStyles, profileScreenStyles } from './styles';
 import { EmployeeDetails } from '../employee-details/employee-details';
 import { AuthActions } from '../reducers/auth/auth.action';
 import { refresh } from '../reducers/refresh/refresh.action';
@@ -15,7 +14,10 @@ import { Map } from 'immutable';
 import { CalendarEvent } from '../reducers/calendar/calendar-event.model';
 import { LogoutView } from '../navigation/logout-view';
 import { LoadingView } from '../navigation/loading';
+import Style from '../layout/style';
+import { NavigationScreenConfig, NavigationStackScreenOptions } from 'react-navigation';
 
+//============================================================================
 interface ProfileScreenProps {
     employees: EmployeesStore;
     employee: Employee;
@@ -23,28 +25,30 @@ interface ProfileScreenProps {
     requests: Map<string, CalendarEvent[]>;
 }
 
-const mapStateToProps = (state: AppState): ProfileScreenProps => ({
-    employees: state.organization.employees,
-    employee: state.organization.employees.employeesById.get(state.userInfo.employeeId),
-    departments: state.organization.departments,
-    requests: state.calendar.pendingRequests.requests
-});
-
+//============================================================================
 interface AuthDispatchProps {
     refresh: () => void;
     loadPendingRequests: () => void;
 }
 
-const mapDispatchToProps = (dispatch: Dispatch<AuthActions>): AuthDispatchProps => ({
-    refresh: () => dispatch(refresh()),
-    loadPendingRequests: () => dispatch(loadPendingRequests()),
-});
-
+//============================================================================
 class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps> {
+
+    //----------------------------------------------------------------------------
+    public static navigationOptions: NavigationScreenConfig<NavigationStackScreenOptions> = {
+        headerStyle: {
+            ...StyleSheet.flatten(Style.navigation.header),
+            borderBottomColor: 'transparent',
+        },
+        headerRight: <LogoutView/>,
+    };
+
+    //----------------------------------------------------------------------------
     public componentDidMount() {
         this.props.loadPendingRequests();
     }
 
+    //----------------------------------------------------------------------------
     public shouldComponentUpdate(nextProps: ProfileScreenProps & AuthDispatchProps) {
         const employees = this.props.employees.employeesById;
         const nextEmployees = nextProps.employees.employeesById;
@@ -69,17 +73,16 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
         return false;
     }
 
+    //----------------------------------------------------------------------------
     public render() {
-        return <SafeAreaView style={profileScreenStyles.profileContainer}>
-            <View style={profileScreenStyles.logoutContainer}>
-                <LogoutView/>
-            </View>
+        return <SafeAreaView style={Style.view.safeArea}>
             <View style={profileScreenStyles.employeeDetailsContainer}>
                 {this.renderEmployeeDetails()}
             </View>
         </SafeAreaView>;
     }
 
+    //----------------------------------------------------------------------------
     private renderEmployeeDetails() {
         const employee = this.props.employee;
         const department = this.props.departments && employee ? this.props.departments.find((d) => d.departmentId === employee.departmentId) : null;
@@ -97,9 +100,25 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
             : <LoadingView/>;
     }
 
+    //----------------------------------------------------------------------------
     private onRefresh = () => {
         this.props.refresh();
     };
 }
 
-export const HomeProfileScreen = connect(mapStateToProps, mapDispatchToProps)(ProfileScreenImpl);
+//----------------------------------------------------------------------------
+const stateToProps = (state: AppState): ProfileScreenProps => ({
+    employees: state.organization.employees,
+    employee: state.organization.employees.employeesById.get(state.userInfo.employeeId),
+    departments: state.organization.departments,
+    requests: state.calendar.pendingRequests.requests
+});
+
+//----------------------------------------------------------------------------
+const dispatchToProps = (dispatch: Dispatch<AuthActions>): AuthDispatchProps => ({
+    refresh: () => dispatch(refresh()),
+    loadPendingRequests: () => dispatch(loadPendingRequests()),
+});
+
+//----------------------------------------------------------------------------
+export const HomeProfileScreen = connect(stateToProps, dispatchToProps)(ProfileScreenImpl);
