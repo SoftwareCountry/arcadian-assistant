@@ -1,6 +1,7 @@
 import { dataMember, required } from 'santee-dcts';
-import { ajaxPost } from 'rxjs/observable/dom/AjaxObservable';
 import { deserialize } from 'santee-dcts/src/deserializer';
+import { ajax } from 'rxjs/ajax';
+import { map } from 'rxjs/operators';
 
 interface AccessCodeRequestParamsBase {
     'client_id': string;
@@ -67,8 +68,9 @@ export class AccessCodeRequest {
     }
 
     private performRequest(params: AccessCodeRequestParams) {
-        return ajaxPost(this.tokenUrl, params)
-            .map(x => deserialize(x.response, TokenResponse));
+        return ajax.post(this.tokenUrl, params).pipe(
+            map(x => deserialize(x.response, TokenResponse))
+        );
     }
 
     private getDefaultParams(): AccessCodeRequestParamsBase {

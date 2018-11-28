@@ -1,6 +1,6 @@
 import React, { Component, Fragment, PureComponent } from 'react';
 import moment, { Moment } from 'moment';
-import { View, StyleSheet, LayoutChangeEvent, PixelRatio, Dimensions } from 'react-native';
+import {View, StyleSheet, LayoutChangeEvent, PixelRatio, Dimensions, ViewStyle} from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { calendarStyles, calendarIntervalStyles, CalendarEventsColor, weekCalendarStyles } from './styles';
 import { DayModel, WeekModel, IntervalModel, IntervalType, CalendarSelection, ReadOnlyIntervalsModel } from '../reducers/calendar/calendar.model';
@@ -205,18 +205,18 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
         }
 
         if (startDay.date.isSame(endDay.date, 'day')) {
-            return <IntervalBoundary size={this.state.weekHeight} color={color} boundary={'full'} style={calendarIntervalStyles.selection} />;
+            return <IntervalBoundary size={this.state.weekHeight} color={color} boundary={'full'} style={calendarIntervalStyles.selection as ViewStyle} />;
         }
 
         if (day.date.isSame(startDay.date, 'day')) {
-            return <StartInterval size={this.state.weekHeight} color={color} style={calendarIntervalStyles.selection} />;
+            return <StartInterval size={this.state.weekHeight} color={color} style={calendarIntervalStyles.selection as ViewStyle} />;
         }
 
         if (day.date.isSame(endDay.date, 'day')) {
-            return <EndInterval size={this.state.weekHeight} color={color} style={calendarIntervalStyles.selection} />;
+            return <EndInterval size={this.state.weekHeight} color={color} style={calendarIntervalStyles.selection as ViewStyle} />;
         }
 
-        return <Interval size={this.state.weekHeight} color={color} style={calendarIntervalStyles.selection} />;
+        return <Interval size={this.state.weekHeight} color={color} style={calendarIntervalStyles.selection as ViewStyle} />;
     }
 
     private renderInterval(interval: IntervalModel, elementKey: number): JSX.Element | null {

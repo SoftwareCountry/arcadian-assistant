@@ -5,13 +5,14 @@ import { CalendarEventStatus, CalendarEvent, CalendarEventType, DatesInterval } 
 import { deserialize } from 'santee-dcts';
 import { loadCalendarEvents } from './calendar.action';
 import { loadFailedError } from '../errors/errors.action';
-import { Observable } from 'rxjs/Observable';
 import { closeEventDialog } from './event-dialog/event-dialog.action';
 import { getEventsAndPendingRequests } from './calendar.epics';
+import { catchError, flatMap, map } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 export const sickLeaveSavedEpic$ = (action$: ActionsObservable<ConfirmClaimSickLeave>, state: AppState, deps: DependenciesContainer) =>
-    action$.ofType('CONFIRM-CLAIM-SICK-LEAVE')
-        .flatMap(x => {
+    action$.ofType('CONFIRM-CLAIM-SICK-LEAVE').pipe(
+        flatMap(x => {
             const calendarEvents = new CalendarEvent();
 
             calendarEvents.type = CalendarEventType.Sickleave;
@@ -27,15 +28,18 @@ export const sickLeaveSavedEpic$ = (action$: ActionsObservable<ConfirmClaimSickL
             return deps.apiClient.post(
                 `/employees/${x.employeeId}/events`,
                 calendarEvents,
-                { 'Content-Type': 'application/json' }
-            ).map(obj => deserialize(obj.response, CalendarEvent))
-            .pipe(getEventsAndPendingRequests(x.employeeId));
-        })
-        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+                {'Content-Type': 'application/json'}
+            ).pipe(
+                map(obj => deserialize(obj.response, CalendarEvent)),
+                getEventsAndPendingRequests(x.employeeId)
+            );
+        }),
+        catchError((e: Error) => of(loadFailedError(e.message))),
+    );
 
 export const sickLeaveCompletedEpic$ = (action$: ActionsObservable<CompleteSickLeave>, state: AppState, deps: DependenciesContainer) =>
-    action$.ofType('COMPLETE-SICK-LEAVE')
-        .flatMap(x => {
+    action$.ofType('COMPLETE-SICK-LEAVE').pipe(
+        flatMap(x => {
 
             const requestBody = {...x.calendarEvent};
 
@@ -46,12 +50,13 @@ export const sickLeaveCompletedEpic$ = (action$: ActionsObservable<CompleteSickL
                 requestBody,
                 { 'Content-Type': 'application/json' }
             ).pipe(getEventsAndPendingRequests(x.employeeId));
-        })
-        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+        }),
+        catchError((e: Error) => of(loadFailedError(e.message))),
+    );
 
 export const sickLeaveProlongedEpic$ = (action$: ActionsObservable<ConfirmProlongSickLeave>, state: AppState, deps: DependenciesContainer) =>
-    action$.ofType('CONFIRM-PROLONG-SICK-LEAVE')
-        .flatMap(x => {
+    action$.ofType('CONFIRM-PROLONG-SICK-LEAVE').pipe(
+        flatMap(x => {
 
             const requestBody = {...x.calendarEvent};
 
@@ -64,12 +69,13 @@ export const sickLeaveProlongedEpic$ = (action$: ActionsObservable<ConfirmProlon
                 requestBody,
                 { 'Content-Type': 'application/json' }
             ).pipe(getEventsAndPendingRequests(x.employeeId));
-        })
-        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+        }),
+        catchError((e: Error) => of(loadFailedError(e.message))),
+    );
 
 export const sickLeaveCanceledEpic$ = (action$: ActionsObservable<CancelSickLeave>, state: AppState, deps: DependenciesContainer) =>
-    action$.ofType('CANCEL-SICK-LEAVE')
-        .flatMap(x => {
+    action$.ofType('CANCEL-SICK-LEAVE').pipe(
+        flatMap(x => {
 
             const requestBody = {...x.calendarEvent};
 
@@ -80,5 +86,6 @@ export const sickLeaveCanceledEpic$ = (action$: ActionsObservable<CancelSickLeav
                 requestBody,
                 { 'Content-Type': 'application/json' }
             ).pipe(getEventsAndPendingRequests(x.employeeId));
-        })
-        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+        }),
+        catchError((e: Error) => of(loadFailedError(e.message))),
+    );

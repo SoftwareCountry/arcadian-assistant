@@ -1,11 +1,12 @@
 import { ActionsObservable } from 'redux-observable';
 import moment from 'moment';
-import { Observable } from 'rxjs';
 import { DayModel } from '../calendar.model';
 import { CalendarEvent, DatesInterval, CalendarEventStatus, CalendarEventType } from '../calendar-event.model';
 import { CalendarEvents } from '../calendar-events.model';
 import { intervalsBySingleDaySelectionEpic$ } from '../calendar.epics';
 import { SelectCalendarDay, LoadCalendarEventsFinished, selectCalendarDay, loadCalendarEventsFinished, selectIntervalsBySingleDaySelection } from '../calendar.action';
+import { Action } from 'redux';
+import { concat, Observable, of } from 'rxjs';
 
 describe('intervalsBySingleDaySelectionEpic', () => {
     let action$: ActionsObservable<SelectCalendarDay | LoadCalendarEventsFinished >;
@@ -37,14 +38,14 @@ describe('intervalsBySingleDaySelectionEpic', () => {
         createdCalendarEvent.status = CalendarEventStatus.Requested;
         createdCalendarEvent.type = CalendarEventType.Sickleave;
 
-        action$ = new ActionsObservable(Observable.concat(
-            Observable.of(selectCalendarDay(day)),
-            Observable.of(loadCalendarEventsFinished(new CalendarEvents([loadedCalendarEvent]), employeeId))
+        action$ = new ActionsObservable(concat(
+            of(selectCalendarDay(day)),
+            of(loadCalendarEventsFinished(new CalendarEvents([loadedCalendarEvent]), employeeId))
         ));
     });
 
     it('should select intervals by single day selection', (done) => {
-        intervalsBySingleDaySelectionEpic$(action$).subscribe(x => {
+        intervalsBySingleDaySelectionEpic$(action$).subscribe((x: Action) => {
             expect(x).toEqual(selectIntervalsBySingleDaySelection());
             done();
         });

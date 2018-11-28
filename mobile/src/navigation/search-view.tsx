@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet, Keyboard } from 'react-native';
 import { AppState } from '../reducers/app.reducer';
-import { connect, Dispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import { startSearch, endSearch, activeFilter } from '../reducers/search/search.action';
 import { ApplicationIcon } from '../override/application-icon';
 import { searchViewStyles as styles } from './search-view-styles';
 import { StyledText } from '../override/styled-text';
+import { Action, Dispatch } from 'redux';
 
 //============================================================================
 export enum SearchType {
@@ -31,7 +32,7 @@ interface SearchViewDispatchProps {
     activeFilter: (type: SearchType, isActive: boolean) => void;
 }
 
-const mapDispatchToProps = (dispatch: Dispatch<any>): SearchViewDispatchProps => ({
+const mapDispatchToProps = (dispatch: Dispatch<Action>): SearchViewDispatchProps => ({
     setFilter: (filter, type) => dispatch(startSearch(filter, type)),
     clearFilter: (type) => dispatch(endSearch(type)),
     activeFilter: (type, isActive: boolean) => dispatch(activeFilter(type, isActive))

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import moment from 'moment';
-import { Map, Set, Iterable } from 'immutable';
-import { View, StyleSheet, FlatList, ListRenderItemInfo, Dimensions } from 'react-native';
+import { Map, Set } from 'immutable';
+import {View, StyleSheet, FlatList, ListRenderItemInfo, Dimensions, ViewStyle} from 'react-native';
 
 import { StyledText } from '../override/styled-text';
 import { ApplicationIcon } from '../override/application-icon';
@@ -58,6 +58,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
                     } as EmployeeDetailItem))
             )
             .flatten()
+            .toIndexedSeq()
             .toArray();
     }
 
@@ -88,12 +89,12 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
                 <View style={eventRow}>
                     <View style={leftIconsStyle}>
                         <View style={typeIconContainerStyle}>
-                            <CalendarEventIcon type={item.calendarEvent.type} style={eventIcon} />
+                            <CalendarEventIcon type={item.calendarEvent.type} style={eventIcon as ViewStyle} />
                         </View>
                         {
                             this.props.showUserAvatar ?
                             <View style={avatarContainer}>
-                                <Avatar photoUrl={item.employee.photoUrl} style={avatarOuterFrame} imageStyle={avatarImage} />
+                                <Avatar photoUrl={item.employee.photoUrl} style={avatarOuterFrame as ViewStyle} imageStyle={avatarImage as ViewStyle} />
                             </View> : null
                         }
                     </View>

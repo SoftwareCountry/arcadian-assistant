@@ -1,5 +1,5 @@
 import React from 'react';
-import { connect, Dispatch, MapStateToProps } from 'react-redux';
+import { connect, MapStateToProps } from 'react-redux';
 
 import { EmployeesList } from './employees-list';
 import { AppState } from '../reducers/app.reducer';
@@ -7,6 +7,7 @@ import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Employee } from '../reducers/organization/employee.model';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 import { LoadingView } from '../navigation/loading';
+import { Action, Dispatch } from 'redux';
 
 interface PeopleRoomPropsOwnProps {
     employees: EmployeesStore;
@@ -36,7 +37,7 @@ const mapStateToProps: MapStateToProps<PeopleRoomStateProps, PeopleRoomPropsOwnP
 interface EmployeesListDispatchProps {
     onItemClicked: (employee: Employee) => void;
 }
-const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeesListDispatchProps => ({
+const mapDispatchToProps = (dispatch: Dispatch<Action>): EmployeesListDispatchProps => ({
     onItemClicked: (employee: Employee) => dispatch(openEmployeeDetailsAction(employee))
 });
 
@@ -55,7 +56,7 @@ class PeopleRoomImpl extends React.Component<PeopleRoomStateProps & EmployeesLis
     }
 
     public render() {
-        const employees = this.props.employees.employeesById.toArray().filter(this.props.employeesPredicate);
+        const employees = this.props.employees.employeesById.toIndexedSeq().toArray().filter(this.props.employeesPredicate);
         if (employees.length === 0) {
             return <LoadingView/>;
         }

@@ -3,7 +3,7 @@ import { ActivityIndicator, FlatList, ListRenderItemInfo, SafeAreaView, View } f
 import { Employee } from '../reducers/organization/employee.model';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Feed } from '../reducers/feeds/feed.model';
-import { connect, Dispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 import { FeedMessage } from './feed-message';
 import { baseColor, ListStyle, ScreenStyle } from './home-feeds-screen.styles';
@@ -11,9 +11,10 @@ import { openEmployeeDetailsAction } from '../employee-details/employee-details-
 import { fetchNewFeeds, fetchOldFeeds } from '../reducers/feeds/feeds.action';
 import { FeedsById } from '../reducers/feeds/feeds.reducer';
 import { Moment } from 'moment';
-import { NavigationScreenConfig, NavigationStackScreenOptions } from 'react-navigation';
 import { LoadingView } from '../navigation/loading';
 import Style from '../layout/style';
+import { Action, Dispatch } from 'redux';
+import { NavigationScreenConfig, NavigationStackScreenOptions } from 'react-navigation';
 
 //============================================================================
 interface FeedsScreenProps {
@@ -39,7 +40,7 @@ const mapStateToProps = (state: AppState): FeedsScreenProps => ({
     user: state.userInfo.employeeId,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<any>): FeedScreenDispatchProps => ({
+const mapDispatchToProps = (dispatch: Dispatch<Action>): FeedScreenDispatchProps => ({
     onAvatarClicked: (employee: Employee) => dispatch(openEmployeeDetailsAction(employee)),
     fetchNewFeeds: () => dispatch(fetchNewFeeds()),
     fetchOldFeeds: () => dispatch(fetchOldFeeds()),
@@ -88,7 +89,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
 
     //----------------------------------------------------------------------------
     private sortedFeeds(): Feed[] {
-        return this.props.feeds.toArray().sort((x, y) => {
+        return this.props.feeds.toIndexedSeq().toArray().sort((x, y) => {
             return ((y.datePosted.valueOf() - x.datePosted.valueOf()) || (y.employeeId < x.employeeId ? -1 : 1));
         });
     }

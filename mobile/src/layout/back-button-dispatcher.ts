@@ -1,10 +1,10 @@
 import { NavigationActions } from 'react-navigation';
-import { Dispatch } from 'react-redux';
+import {Action, Dispatch} from 'redux';
 
 export interface WithBackButtonProps {
     onBackClick: () => void;
 }
 
-export const mapBackButtonDispatchToProps = (dispatch: Dispatch<any>) => ({
+export const mapBackButtonDispatchToProps = (dispatch: Dispatch<Action>) => ({
     onBackClick: () => dispatch(NavigationActions.back())
 });

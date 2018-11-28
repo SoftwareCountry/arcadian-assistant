@@ -2,16 +2,16 @@ import React, { Component } from 'react';
 import { Department } from '../reducers/organization/department.model';
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
-import { SafeAreaView } from 'react-native';
+import {SafeAreaView, ViewStyle} from 'react-native';
 import { profileScreenStyles } from '../profile/styles';
 import { EmployeeDetails } from './employee-details';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
 import { NavigationRoute } from 'react-navigation';
 import { Employee } from '../reducers/organization/employee.model';
 import { LoadingView } from '../navigation/loading';
- 
+
 interface EmployeeDetailsProps {
-    departments: Department[]; 
+    departments: Department[];
 }
 
 interface NavigationProps {
@@ -32,10 +32,10 @@ export class EmployeeDetailsScreenImpl extends Component<EmployeeDetailsProps & 
 
         return employee && department ?
             <SafeAreaView style={profileScreenStyles.profileContainer}>
-                <EmployeeDetails 
-                    department={department} 
-                    employee={employee} 
-                    layoutStylesChevronPlaceholder = {layoutStylesForEmployeeDetailsScreen.chevronPlaceholder}
+                <EmployeeDetails
+                    department={department}
+                    employee={employee}
+                    layoutStylesChevronPlaceholder = {layoutStylesForEmployeeDetailsScreen.chevronPlaceholder as ViewStyle}
                 />
             </SafeAreaView>
             : <LoadingView></LoadingView>;

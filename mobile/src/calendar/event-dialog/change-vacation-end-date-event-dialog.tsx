@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base';
 import { AppState } from '../../reducers/app.reducer';
-import { Dispatch } from 'redux';
+import { Action, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { EventDialogActions, closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { ExtractedIntervals, IntervalSelection } from '../../reducers/calendar/calendar.model';
@@ -79,7 +79,7 @@ const mapStateToProps = (state: AppState): ChangeVacationEndDateEventDialogProps
     intervals: state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ChangeVacationEndDateEventDialogDispatchProps => ({
+const mapDispatchToProps = (dispatch: Dispatch<Action>): ChangeVacationEndDateEventDialogDispatchProps => ({
     back: () => { dispatch(openEventDialog(EventDialogType.ChangeVacationStartDate)); },
     confirmChangeVacation: (
         employeeId: string,

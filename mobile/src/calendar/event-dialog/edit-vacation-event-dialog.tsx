@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base';
 import { AppState } from '../../reducers/app.reducer';
-import { Dispatch } from 'redux';
+import {Action, Dispatch} from 'redux';
 import { connect } from 'react-redux';
 import { EventDialogActions, closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { DayModel, IntervalModel, ExtractedIntervals } from '../../reducers/calendar/calendar.model';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
 import { CalendarEventType, CalendarEvent } from '../../reducers/calendar/calendar-event.model';
-import { сancelVacation } from '../../reducers/calendar/vacation.action';
+import { cancelVacation } from '../../reducers/calendar/vacation.action';
 import { Employee } from '../../reducers/organization/employee.model';
 
 interface EditVacationEventDialogDispatchProps {
@@ -29,23 +29,23 @@ class EditVacationEventDialogImpl extends Component<EditVacationEventDialogProps
                     icon={'vacation'}
                     cancelLabel={'Cancel'}
                     acceptLabel={'Change'}
-                    onAcceptPress={this.changeVacation}
-                    onCancelPress={this.cancelVacation}
-                    onClosePress={this.closeDialog} />;
+                    onAcceptPress={this.onAcceptPress}
+                    onCancelPress={this.onCancelPress}
+                    onClosePress={this.onCloseDialog} />;
     }
 
-    private cancelVacation = () => {
-        const { intervals: { vacation }, userEmployee, cancelVacation } = this.props;
-        cancelVacation(userEmployee.employeeId, vacation.calendarEvent);
+    private onCancelPress = () => {
+        const { intervals: { vacation }, userEmployee } = this.props;
+        this.props.cancelVacation(userEmployee.employeeId, vacation.calendarEvent);
     };
 
-    private changeVacation = () => {
+    private onAcceptPress = () => {
         const { userEmployee, intervals, changeVacationStartDate } = this.props;
 
         changeVacationStartDate();
     };
 
-    private closeDialog = () => {
+    private onCloseDialog = () => {
         this.props.closeDialog();
     };
 
@@ -64,8 +64,8 @@ const mapStateToProps = (state: AppState): EditVacationEventDialogProps => ({
     userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): EditVacationEventDialogDispatchProps => ({
-    cancelVacation: (employeeId: string, calendarEvent: CalendarEvent) => { dispatch(сancelVacation(employeeId, calendarEvent)); },
+const mapDispatchToProps = (dispatch: Dispatch<Action>): EditVacationEventDialogDispatchProps => ({
+    cancelVacation: (employeeId: string, calendarEvent: CalendarEvent) => { dispatch(cancelVacation(employeeId, calendarEvent)); },
     changeVacationStartDate: () => { dispatch(openEventDialog(EventDialogType.ChangeVacationStartDate)); },
     closeDialog: () => { dispatch(closeEventDialog()); }
 });

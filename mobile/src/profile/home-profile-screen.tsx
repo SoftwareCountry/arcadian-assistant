@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Department } from '../reducers/organization/department.model';
 import { AppState } from '../reducers/app.reducer';
-import { connect, Dispatch } from 'react-redux';
-import { RefreshControl, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
+import { connect } from 'react-redux';
+import {RefreshControl, SafeAreaView, ScrollView, StyleSheet, View, ViewStyle} from 'react-native';
 import { Employee } from '../reducers/organization/employee.model';
 import { layoutStyles, profileScreenStyles } from './styles';
 import { EmployeeDetails } from '../employee-details/employee-details';
@@ -16,6 +16,7 @@ import { LogoutView } from '../navigation/logout-view';
 import { LoadingView } from '../navigation/loading';
 import Style from '../layout/style';
 import { NavigationScreenConfig, NavigationStackScreenOptions } from 'react-navigation';
+import { Action, Dispatch } from 'redux';
 
 //============================================================================
 interface ProfileScreenProps {
@@ -93,7 +94,7 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
                 <EmployeeDetails
                     department={department}
                     employee={employee}
-                    layoutStylesChevronPlaceholder={layoutStyles.chevronPlaceholder}
+                    layoutStylesChevronPlaceholder={layoutStyles.chevronPlaceholder as ViewStyle}
                     requests={employeesToRequests}
                 />
             </ScrollView>
@@ -115,7 +116,7 @@ const stateToProps = (state: AppState): ProfileScreenProps => ({
 });
 
 //----------------------------------------------------------------------------
-const dispatchToProps = (dispatch: Dispatch<AuthActions>): AuthDispatchProps => ({
+const dispatchToProps = (dispatch: Dispatch<Action>): AuthDispatchProps => ({
     refresh: () => dispatch(refresh()),
     loadPendingRequests: () => dispatch(loadPendingRequests()),
 });

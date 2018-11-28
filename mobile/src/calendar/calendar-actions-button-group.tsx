@@ -8,7 +8,7 @@ import { IntervalsModel, DayModel, IntervalModel, ExtractedIntervals, ReadOnlyIn
 import { VacationActionButton } from './vacation-action-button';
 import { DayoffActionButton } from './dayoff-action-button';
 import { SickLeaveActionButton } from './sick-leave-action-button';
-import { Dispatch } from 'redux';
+import {Action, Dispatch} from 'redux';
 import { CalendarActions } from '../reducers/calendar/calendar.action';
 import { openEventDialog } from '../reducers/calendar/event-dialog/event-dialog.action';
 import { EventDialogType } from '../reducers/calendar/event-dialog/event-dialog-type.model';
@@ -75,7 +75,7 @@ const mapStateToProps = (state: AppState): ActionButtonGroupProps => ({
     disableActionButtons: state.calendar.calendarEvents.disableCalendarActionsButtonGroup
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>): ActionButtonsGroupDispatchProps => ({
+const mapDispatchToProps = (dispatch: Dispatch<Action>): ActionButtonsGroupDispatchProps => ({
     sickLeaveActions: {
         claim: () => { dispatch(openEventDialog(EventDialogType.ClaimSickLeave)); },
         edit: () => { dispatch(openEventDialog(EventDialogType.EditSickLeave)); },

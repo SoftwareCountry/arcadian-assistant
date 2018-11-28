@@ -4,12 +4,12 @@ import { ApplicationIcon } from '../override/application-icon';
 import { ViewStyle } from 'react-native';
 
 interface CalednarEventIconProps {
-    type: string;
+    type: CalendarEventType;
     style: ViewStyle;
 }
 
 export class CalendarEventIcon extends Component<CalednarEventIconProps> {
-    private readonly eventTypeToGlyphIcon = {
+    private readonly eventTypeToGlyphIcon: { [ key in CalendarEventType]: string } = {
         [CalendarEventType.Dayoff]: 'dayoff',
         [CalendarEventType.Vacation]: 'vacation',
         [CalendarEventType.Sickleave]: 'sick_leave',

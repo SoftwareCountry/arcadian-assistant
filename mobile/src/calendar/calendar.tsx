@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { connect, Dispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 import { OnSelectedDayCallback } from './calendar-page';
 import { CalendarPager } from './calendar-pager';
 import { CalendarActions, selectCalendarDay, nextCalendarPage, prevCalendarPage } from '../reducers/calendar/calendar.action';
 import { WeekModel, DayModel, CalendarSelection, ReadOnlyIntervalsModel, CalendarPageModel } from '../reducers/calendar/calendar.model';
+import { Action, Dispatch } from 'redux';
 
 interface CalendarProps {
     pages: CalendarPageModel[];
@@ -51,7 +52,7 @@ const mapStateToProps = (state: AppState): CalendarProps => ({
     disableCalendarDaysBefore: state.calendar.calendarEvents.disableCalendarDaysBefore
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>): CalendarDispatchProps => ({
+const mapDispatchToProps = (dispatch: Dispatch<Action>): CalendarDispatchProps => ({
     selectCalendarDay: (day: DayModel) => { dispatch(selectCalendarDay(day)); },
     nextCalendarPage: () => { dispatch(nextCalendarPage()); },
     prevCalendarPage: () => { dispatch(prevCalendarPage()); }

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View } from 'react-native';
 import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base';
 import { AppState } from '../../reducers/app.reducer';
-import { Dispatch } from 'redux';
+import {Action, Dispatch} from 'redux';
 import { connect } from 'react-redux';
 import { EventDialogActions, closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { DayModel } from '../../reducers/calendar/calendar.model';
@@ -60,7 +60,7 @@ const mapStateToProps = (state: AppState): ClaimSickLeaveEventDialogProps => ({
     userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ClaimSickLeaveEventDialogDispatchProps => ({
+const mapDispatchToProps = (dispatch: Dispatch<Action>): ClaimSickLeaveEventDialogDispatchProps => ({
     back: () => { dispatch(openEventDialog(EventDialogType.ClaimSickLeave)); },
     confirmSickLeave: (employeeId: string, startDate: Moment, endDate: Moment) => { dispatch(confirmSickLeave(employeeId, startDate, endDate)); },
     closeDialog: () => { dispatch(closeEventDialog()); }

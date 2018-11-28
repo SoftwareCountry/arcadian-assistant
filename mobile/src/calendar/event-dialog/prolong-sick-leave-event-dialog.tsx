@@ -5,11 +5,12 @@ import { DayModel, ExtractedIntervals, IntervalSelection } from '../../reducers/
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
 import { openEventDialog, closeEventDialog, EventDialogActions } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { confirmProlongSickLeave } from '../../reducers/calendar/sick-leave.action';
-import { connect, Dispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import { Employee } from '../../reducers/organization/employee.model';
 import { Moment } from 'moment';
 import { selectIntervalsBySingleDaySelection } from '../../reducers/calendar/calendar.action';
 import { CalendarEvent } from '../../reducers/calendar/calendar-event.model';
+import { Action, Dispatch } from 'redux';
 
 interface ProlongSickLeaveEventDialogDispatchProps {
     back: () => void;
@@ -91,7 +92,7 @@ const mapStateToProps = (state: AppState): ProlongSickLeaveEventDialogProps => (
     userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ProlongSickLeaveEventDialogDispatchProps => ({
+const mapDispatchToProps = (dispatch: Dispatch<Action>): ProlongSickLeaveEventDialogDispatchProps => ({
     back: () => { dispatch(openEventDialog(EventDialogType.EditSickLeave)); },
     confirmProlong: (employeeId: string, calendarEvent: CalendarEvent, prolongedEndDate: Moment) => { dispatch(confirmProlongSickLeave(employeeId, calendarEvent, prolongedEndDate)); },
     closeDialog: () => { dispatch(closeEventDialog()); }

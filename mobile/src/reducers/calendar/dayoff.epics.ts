@@ -4,15 +4,16 @@ import { AppState, DependenciesContainer } from '../app.reducer';
 import { CalendarEvent, CalendarEventType, CalendarEventStatus, DatesInterval } from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
 import { loadCalendarEvents } from './calendar.action';
-import { Observable } from 'rxjs';
+import {Observable, of} from 'rxjs';
 import { loadFailedError } from '../errors/errors.action';
 import { IntervalType } from './calendar.model';
 import { IntervalTypeConverter } from './interval-type-converter';
 import { getEventsAndPendingRequests } from './calendar.epics';
+import { catchError, flatMap, map, tap } from 'rxjs/operators';
 
 export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff>, state: AppState, deps: DependenciesContainer) =>
-    action$.ofType('CONFIRM-PROCESS-DAYOFF')
-        .flatMap(x => {
+    action$.ofType('CONFIRM-PROCESS-DAYOFF').pipe(
+        flatMap(x => {
             const calendarEvents = new CalendarEvent();
 
             calendarEvents.type = x.isWorkout ? CalendarEventType.Workout : CalendarEventType.Dayoff;
@@ -34,14 +35,16 @@ export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff
                 `/employees/${x.employeeId}/events`,
                 calendarEvents,
                 { 'Content-Type': 'application/json' }
-            ).map(obj => deserialize(obj.response, CalendarEvent))
-            .pipe(getEventsAndPendingRequests(x.employeeId));
-        })
-        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+            ).pipe(
+                map(obj => deserialize(obj.response, CalendarEvent)),
+            ).pipe(getEventsAndPendingRequests(x.employeeId));
+        }),
+        catchError((e: Error) => of(loadFailedError(e.message)))
+    );
 
 export const dayoffCanceledEpic$ = (action$: ActionsObservable<CancelDayoff>, state: AppState, deps: DependenciesContainer) =>
-    action$.ofType('CANCEL-DAYOFF')
-        .flatMap(x => {
+    action$.ofType('CANCEL-DAYOFF').pipe(
+        flatMap(x => {
             const requestBody = {...x.calendarEvent};
 
             requestBody.status = CalendarEventStatus.Cancelled;
@@ -51,5 +54,6 @@ export const dayoffCanceledEpic$ = (action$: ActionsObservable<CancelDayoff>, st
                 requestBody,
                 { 'Content-Type': 'application/json' }
             ).pipe(getEventsAndPendingRequests(x.employeeId));
-        })
-        .catch((e: Error) => Observable.of(loadFailedError(e.message)));
+        }),
+        catchError((e: Error) => of(loadFailedError(e.message))),
+    );

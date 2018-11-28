@@ -1,4 +1,10 @@
-import { TabNavigator, TabNavigatorConfig } from 'react-navigation';
+import {
+    createAppContainer,
+    createBottomTabNavigator,
+    NavigationContainer,
+    NavigationRouteConfigMap,
+    TabNavigatorConfig
+} from 'react-navigation';
 import React from 'react';
 import tabBarStyles from './tab-bar-styles';
 import tabbarModel from './tab-bar-model';
@@ -17,7 +23,7 @@ const tabNavigatorConfig: TabNavigatorConfig = {
     lazy: true
 };
 
-export const RootNavigator = TabNavigator(
+export const RootNavigator = createAppContainer(createBottomTabNavigator(
     tabbarModel,
     tabNavigatorConfig,
-);
+));

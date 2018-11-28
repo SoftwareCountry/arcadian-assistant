@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, LayoutChangeEvent, TouchableOpacity } from 'react-native';
+import {View, LayoutChangeEvent, TouchableOpacity, ViewStyle} from 'react-native';
 import { IntervalBoundary } from '../calendar-page-interval-boundary';
 import { switchDayoffTypeStyles } from './styles';
 import { CalendarEventsColor } from '../styles';
@@ -32,8 +32,8 @@ export class SelectorDayoffType extends Component<SelectorDayoffTypeProps, Selec
                                 color={CalendarEventsColor.dayoff}
                                 boundary={'full'}
                                 size={this.state.containerHeight}
-                                style={switchDayoffTypeStyles.intervalBoundary}
-                                circleStyle={switchDayoffTypeStyles.intervalBoundary} />
+                                style={switchDayoffTypeStyles.intervalBoundary as ViewStyle}
+                                circleStyle={switchDayoffTypeStyles.intervalBoundary as ViewStyle} />
                         </TouchableOpacity>
 
                         <TouchableOpacity onPress={this.onWorkoutSelected}>
@@ -41,8 +41,8 @@ export class SelectorDayoffType extends Component<SelectorDayoffTypeProps, Selec
                                 color={CalendarEventsColor.workout}
                                 boundary={'full'}
                                 size={this.state.containerHeight}
-                                style={switchDayoffTypeStyles.intervalBoundary}
-                                circleStyle={switchDayoffTypeStyles.intervalBoundary} />
+                                style={switchDayoffTypeStyles.intervalBoundary as ViewStyle}
+                                circleStyle={switchDayoffTypeStyles.intervalBoundary as ViewStyle} />
                         </TouchableOpacity>
                     </View>
                 : null

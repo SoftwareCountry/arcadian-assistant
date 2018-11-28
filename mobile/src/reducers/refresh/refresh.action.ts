@@ -1,4 +1,6 @@
-export interface Refresh {
+import { Action } from 'redux';
+
+export interface Refresh extends Action  {
     type: 'REFRESH';
 }
 

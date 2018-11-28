@@ -3,14 +3,15 @@ import { ActionsObservable } from 'redux-observable';
 import { calendarSelectionMode, CalendarSelectionModeType, selectIntervalsBySingleDaySelection, disableCalendarSelection, CalendarActions, disableSelectIntervalsBySingleDaySelection } from '../calendar.action';
 import { CalendarEventsColor } from '../../../calendar/styles';
 import { EventDialogType } from './event-dialog-type.model';
-import { Observable } from 'rxjs';
+import {from, Observable, of} from 'rxjs';
 import { VacationActions } from '../vacation.action';
 import { SickLeaveActions } from '../sick-leave.action';
 import { DayoffActions } from '../dayoff.action';
+import { flatMap, map } from 'rxjs/operators';
 
-export const openEventDialogEpic$ = (action$: ActionsObservable<EventDialogActions>) =>
-    action$.ofType('OPEN-EVENT-DIALOG')
-        .map((x: OpenEventDialog) => {
+export const openEventDialogEpic$ = (action$: ActionsObservable<OpenEventDialog>) =>
+    action$.ofType('OPEN-EVENT-DIALOG').pipe(
+        map((x: OpenEventDialog) => {
 
             switch (x.dialogType) {
                 case EventDialogType.ClaimSickLeave:
@@ -56,18 +57,19 @@ export const openEventDialogEpic$ = (action$: ActionsObservable<EventDialogActio
                     return calendarSelectionMode(CalendarSelectionModeType.SingleDay);
             }
 
-        }).flatMap((x: CalendarActions | CalendarActions[]) => 
-            Array.isArray(x) ? Observable.from(x) : Observable.of(x)
-        );
+        }),
+        flatMap((x: CalendarActions | CalendarActions[]) =>
+            Array.isArray(x) ? from(x) : of(x)
+        ));
 
 export const closeEventDialogEpic$ = (action$: ActionsObservable<EventDialogActions>) =>
-    action$.ofType('CLOSE-EVENT-DIALOG')
-        .flatMap(x => Observable.of<CalendarActions | EventDialogActions>(
+    action$.ofType('CLOSE-EVENT-DIALOG').pipe(
+        flatMap(x => of<CalendarActions | EventDialogActions>(
             calendarSelectionMode(CalendarSelectionModeType.SingleDay),
             disableSelectIntervalsBySingleDaySelection(false),
             selectIntervalsBySingleDaySelection(),
             stopEventDialogProgress()
-        ));
+        )));
 
 export const startEventDialogProgressEpic$ = (action$: ActionsObservable<VacationActions | SickLeaveActions | DayoffActions>) =>
     action$.ofType(
@@ -81,4 +83,5 @@ export const startEventDialogProgressEpic$ = (action$: ActionsObservable<Vacatio
         'CANCEL-VACACTION',
         'CONFIRM-PROLONG-SICK-LEAVE',
         'COMPLETE-SICK-LEAVE'
-    ).map(x => startEventDialogProgress());
+    ).pipe(
+        map(x => startEventDialogProgress()));

@@ -2,15 +2,16 @@ import { CalendarEvent, CalendarEventStatus } from './calendar-event.model';
 import { DayModel, CalendarSelection } from './calendar.model';
 import { SickLeaveActions } from './sick-leave.action';
 import { CalendarEvents } from './calendar-events.model';
+import { Action } from 'redux';
 
-export interface LoadCalendarEvents {
+export interface LoadCalendarEvents extends Action {
     type: 'LOAD-CALENDAR-EVENTS';
     employeeId: string;
 }
 
 export const loadCalendarEvents = (employeeId: string): LoadCalendarEvents => ({ type: 'LOAD-CALENDAR-EVENTS', employeeId });
 
-export interface LoadCalendarEventsFinished {
+export interface LoadCalendarEventsFinished extends Action {
     type: 'LOAD-CALENDAR-EVENTS-FINISHED';
     calendarEvents: CalendarEvents;
     employeeId: string;
@@ -18,7 +19,7 @@ export interface LoadCalendarEventsFinished {
 
 export const loadCalendarEventsFinished = (calendarEvents: CalendarEvents, employeeId: string): LoadCalendarEventsFinished => ({ type: 'LOAD-CALENDAR-EVENTS-FINISHED', calendarEvents, employeeId });
 
-export interface CalendarEventSetNewStatus {
+export interface CalendarEventSetNewStatus extends Action {
     type: 'CALENDAR-EVENT-NEW-STATUS';
     employeeId: string;
     calendarEvent: CalendarEvent;
@@ -27,20 +28,20 @@ export interface CalendarEventSetNewStatus {
 
 export const calendarEventSetNewStatus = (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus): CalendarEventSetNewStatus => ({ type: 'CALENDAR-EVENT-NEW-STATUS', calendarEvent, employeeId, status });
 
-export interface SelectCalendarDay {
+export interface SelectCalendarDay extends Action {
     type: 'SELECT-CALENDAR-DAY';
     day: DayModel;
 }
 
 export const selectCalendarDay = (day: DayModel): SelectCalendarDay => ({ type: 'SELECT-CALENDAR-DAY', day });
 
-export interface NextCalendarPage {
+export interface NextCalendarPage extends Action {
     type: 'NEXT-CALENDAR-PAGE';
 }
 
 export const nextCalendarPage = (): NextCalendarPage => ({ type: 'NEXT-CALENDAR-PAGE' });
 
-export interface PrevCalendarPage {
+export interface PrevCalendarPage extends Action {
     type: 'PREV-CALENDAR-PAGE';
 }
 
@@ -51,7 +52,7 @@ export enum CalendarSelectionModeType {
     Interval = 'Interval'
 }
 
-export interface CalendarSelectionMode {
+export interface CalendarSelectionMode extends Action {
     type: 'CALENDAR-SELECTION-MODE';
     selectionMode: CalendarSelectionModeType;
     color: string;
@@ -59,7 +60,7 @@ export interface CalendarSelectionMode {
 
 export const calendarSelectionMode = (selectionMode: CalendarSelectionModeType, color: string = null): CalendarSelectionMode => ({ type: 'CALENDAR-SELECTION-MODE', selectionMode, color });
 
-export interface SelectIntervalsBySingleDaySelection {
+export interface SelectIntervalsBySingleDaySelection extends Action {
     type: 'SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION';
 }
 
@@ -70,10 +71,10 @@ export interface DisableCalendarSelection {
     disable: boolean;
 }
 
-export const disableCalendarSelection = (disable: boolean): DisableCalendarSelection => 
+export const disableCalendarSelection = (disable: boolean): DisableCalendarSelection =>
     ({ type: 'DISABLE-CALENDAR-SELECTION', disable });
 
-export interface DisableSelectIntervalsBySingleDaySelection {
+export interface DisableSelectIntervalsBySingleDaySelection extends Action {
     type: 'DISABLE-SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION';
     disable: boolean;
 }

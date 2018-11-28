@@ -3,6 +3,7 @@ package ru.spb.arcadia.product.assistant.android;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -15,6 +16,9 @@ import com.microsoft.appcenter.reactnative.crashes.AppCenterReactNativeCrashesPa
 import com.microsoft.appcenter.reactnative.push.AppCenterReactNativePushPackage;
 import com.microsoft.appcenter.reactnative.shared.AppCenterReactNativeShared;
 import com.oblador.vectoricons.VectorIconsPackage;
+import com.facebook.react.ReactActivityDelegate;
+import com.facebook.react.ReactRootView;
+import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,6 +43,7 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             return Arrays.asList(
                     new MainReactPackage(),
+            new RNGestureHandlerPackage(),
                     new AppCenterReactNativePushPackage(MainApplication.this),
                     new ReactNativeConfigPackage(),
                     new ReactNativeFingerprintScannerPackage(),
@@ -68,5 +73,15 @@ public class MainApplication extends Application implements ReactApplication {
     public void onCreate() {
         super.onCreate();
         SoLoader.init(this, /* native exopackage */ false);
+    }
+
+    @Override
+    protected ReactActivityDelegate createReactActivityDelegate() {
+        return new ReactActivityDelegate(this, getMainComponentName()) {
+            @Override
+            protected ReactRootView createRootView() {
+                return new RNGestureHandlerEnabledRootView(MainActivity.this);
+            }
+        };
     }
 }

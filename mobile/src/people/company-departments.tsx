@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { CompanyDepartmentsLevel } from './company-departments-level';
-import { connect, MapStateToProps, MapDispatchToProps, Dispatch } from 'react-redux';
+import { connect, MapStateToProps, MapDispatchToProps } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 import { rootId } from '../reducers/people/append-root';
 import { DepartmentIdToChildren, DepartmentIdToSelectedId, DepartmentNode, DepartmentIdToNode } from '../reducers/people/people.model';
@@ -11,6 +11,7 @@ import { Employee } from '../reducers/organization/employee.model';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 import { ScrollView } from 'react-native';
 import { LoadingView } from '../navigation/loading';
+import { Action, Dispatch } from 'redux';
 
 interface CompanyDepartmentsStateProps {
     departmentIdToNode: DepartmentIdToNode;
@@ -36,7 +37,7 @@ const mapStateToProps: MapStateToProps<CompanyDepartmentsStateProps, void, AppSt
     employeeIdsByDepartment: state.organization.employees.employeeIdsByDepartment
 });
 
-const mapDispatchToProps: MapDispatchToProps<CompanyDepartmentsDispatchProps, void> = (dispatch: Dispatch<any>) => ({
+const mapDispatchToProps: MapDispatchToProps<CompanyDepartmentsDispatchProps, void> = (dispatch: Dispatch<Action>) => ({
     selectCompanyDepartment: (departmentId: string) => {
         dispatch(selectCompanyDepartment(departmentId));
     },
@@ -122,7 +123,7 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
     }
 
     private filterDepartments(employeesById: EmployeeMap): DepartmentIdToNode {
-        const employees = employeesById.toArray();
+        const employees = employeesById.toIndexedSeq().toArray();
         const array = Array.from(this.props.departmentIdToNode.entries());
 
         const filteredDepartmentNodes = array.filter(([, departmentNode]) => {
@@ -197,7 +198,7 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
             return this.props.selectedCompanyDepartmentId;
         }
 
-        const firstEmployee = employeesById.first();
+        const firstEmployee = employeesById.first(null);
 
         return firstEmployee
             ? firstEmployee.departmentId
@@ -265,8 +266,8 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
             return true;
         }
 
-        const aArray = a.toArray();
-        const bArray = b.toArray();
+        const aArray = a.toIndexedSeq().toArray();
+        const bArray = b.toIndexedSeq().toArray();
 
         for (let i = 0; i < aArray.length; i++) {
             if (!aArray[i].equals(bArray[i])) {

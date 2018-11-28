@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base';
 import { AppState } from '../../reducers/app.reducer';
-import { Dispatch } from 'redux';
+import { Action, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { EventDialogActions, closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { DayModel, IntervalType } from '../../reducers/calendar/calendar.model';
@@ -29,7 +29,7 @@ interface ConfirmDayoffEventDialogState {
 }
 
 class ConfirmDayoffEventDialogImpl extends Component<ConfirmDayoffEventDialogProps & ConfirmDayoffEventDialogDispatchProps, ConfirmDayoffEventDialogState> {
-    private readonly intervalTypeToText = {
+    private readonly intervalTypeToText: { [key: string]: string } = {
         [IntervalType.IntervalLeftBoundary]: 'a first half day',
         [IntervalType.IntervalRightBoundary]: 'a second half day',
         [IntervalType.IntervalFullBoundary]: 'a full day'
@@ -93,7 +93,7 @@ const mapStateToProps = (state: AppState): ConfirmDayoffEventDialogProps => ({
     userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ConfirmDayoffEventDialogDispatchProps => ({
+const mapDispatchToProps = (dispatch: Dispatch<Action>): ConfirmDayoffEventDialogDispatchProps => ({
     cancelDialog: () => { dispatch(openEventDialog(EventDialogType.ChooseTypeDayoff)); },
     confirmDayoff: (
         employeeId: string,

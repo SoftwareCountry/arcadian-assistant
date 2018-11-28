@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { connect, Dispatch, MapStateToProps } from 'react-redux';
+import { connect, MapStateToProps } from 'react-redux';
 import { Map } from 'immutable';
 import { Linking, ScrollView, StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 
@@ -20,6 +20,7 @@ import { UserEmployeePermissions } from '../reducers/user/user-employee-permissi
 import { loadUserEmployeePermissions } from '../reducers/user/user.action';
 import { HoursCreditCounter, VacationDaysCounter } from '../reducers/calendar/days-counters.model';
 import { ConvertHoursCreditToDays } from '../reducers/calendar/convert-hours-credit-to-days';
+import { Action, Dispatch } from 'redux';
 
 interface TileData {
     label: string;
@@ -65,7 +66,7 @@ interface EmployeeDetailsDispatchProps {
     openDepartment: (departmentId: string, departmentAbbreviation: string) => void;
     openRoom: (departmentId: string) => void;
 }
-const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchProps => ({
+const mapDispatchToProps = (dispatch: Dispatch<Action>): EmployeeDetailsDispatchProps => ({
     onCompanyClicked: (departmentId: string) => dispatch( openCompanyAction(departmentId)),
     loadCalendarEvents: (employeeId: string) => dispatch(loadCalendarEvents(employeeId)),
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status)),

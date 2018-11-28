@@ -26,6 +26,7 @@
 		140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		162FDC1E2903449788B2AE48 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 422A5F622D6B418D8A69B759 /* Zocial.ttf */; };
+		2978F099943B4B66A8439B5A /* libRNGestureHandler.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3671A87148CD427C9320C926 /* libRNGestureHandler.a */; };
 		2E91E1B1F3C7C699607D9D47 /* libPods-ArcadiaAssistant.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CBEE7CC97CBBC0F1B9DCDC24 /* libPods-ArcadiaAssistant.a */; };
 		35FC4B793DDB420A8219DA36 /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8C7B05C4BD90420B8B507F44 /* Entypo.ttf */; };
 		47E5BFD50BA046F985361947 /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1401C1DA5B97473E844EFD19 /* MaterialIcons.ttf */; };
@@ -349,6 +350,20 @@
 			remoteGlobalIDString = BF8FCF941BFFB184000FCD37;
 			remoteInfo = RNSensitiveInfo;
 		};
+		933A3D5121AECCC3009C261D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8070C9BF504549C88161DD60 /* RNVectorIcons.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A39873CE1EA65EE60051E01A;
+			remoteInfo = "RNVectorIcons-tvOS";
+		};
+		933A3D5621AECCC3009C261D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BDECB148C0F647E09605F3ED /* RNGestureHandler.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RNGestureHandler;
+		};
 		ADBDB9261DFEBF0700ED6528 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */;
@@ -405,6 +420,7 @@
 		18B1051145BD4F19864A2ED0 /* RNSensitiveInfo.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNSensitiveInfo.xcodeproj; path = "../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo.xcodeproj"; sourceTree = "<group>"; };
 		2285D8CB7B094200A90098E2 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		29FB9749DEDD47CF96CC34A0 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
+		3671A87148CD427C9320C926 /* libRNGestureHandler.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNGestureHandler.a; sourceTree = "<group>"; };
 		3BC074B8E52C7D9302A6F111 /* libPods-ArcadiaAssistant-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ArcadiaAssistant-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		40A62B584CC243779639C086 /* AppCenterReactNativePush.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = AppCenterReactNativePush.xcodeproj; path = "../node_modules/appcenter-push/ios/AppCenterReactNativePush.xcodeproj"; sourceTree = "<group>"; };
 		422A5F622D6B418D8A69B759 /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
@@ -443,6 +459,7 @@
 		B54281EB789D654431BAD6E3 /* Pods-ArcadiaAssistant-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ArcadiaAssistant-tvOSTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ArcadiaAssistant-tvOSTests/Pods-ArcadiaAssistant-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		B641C71C12E387EF19786BC2 /* Pods-ArcadiaAssistant-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ArcadiaAssistant-tvOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-ArcadiaAssistant-tvOS/Pods-ArcadiaAssistant-tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		BB823EB2ABE03BBCC3A0EA60 /* libPods-ArcadiaAssistantTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ArcadiaAssistantTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BDECB148C0F647E09605F3ED /* RNGestureHandler.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNGestureHandler.xcodeproj; path = "../node_modules/react-native-gesture-handler/ios/RNGestureHandler.xcodeproj"; sourceTree = "<group>"; };
 		C3EEF7910F1A4A71939B26D2 /* AppCenterReactNativeAnalytics.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = AppCenterReactNativeAnalytics.xcodeproj; path = "../node_modules/appcenter-analytics/ios/AppCenterReactNativeAnalytics.xcodeproj"; sourceTree = "<group>"; };
 		C5A6DA0B712A448AB4014354 /* AppCenterReactNative.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = AppCenterReactNative.xcodeproj; path = ../node_modules/appcenter/ios/AppCenterReactNative.xcodeproj; sourceTree = "<group>"; };
 		C620AFBA06618B28A211EA21 /* Pods-ArcadiaAssistant.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ArcadiaAssistant.release.xcconfig"; path = "Pods/Target Support Files/Pods-ArcadiaAssistant/Pods-ArcadiaAssistant.release.xcconfig"; sourceTree = "<group>"; };
@@ -493,6 +510,7 @@
 				86DA8A50F2D44941B01326A9 /* libAppCenterReactNativeCrashes.a in Frameworks */,
 				B81EDAD9D1754E64B21BACD1 /* libReactNativeConfig.a in Frameworks */,
 				E0F755C3BBBF46A89E115BA0 /* libAppCenterReactNativePush.a in Frameworks */,
+				2978F099943B4B66A8439B5A /* libRNGestureHandler.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -682,6 +700,7 @@
 				CFE6260F975A4FBE9E934D18 /* libAppCenterReactNativeCrashes.a */,
 				09C4D93509034784A9526BA8 /* libReactNativeConfig.a */,
 				8DCB02F060E04DC6A0860424 /* libAppCenterReactNativePush.a */,
+				3671A87148CD427C9320C926 /* libRNGestureHandler.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -690,6 +709,7 @@
 			isa = PBXGroup;
 			children = (
 				7D5924FD1FAC6E450030A1A9 /* libRNVectorIcons.a */,
+				933A3D5221AECCC3009C261D /* libRNVectorIcons-tvOS.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -717,6 +737,7 @@
 				DCA5B9CC2C6C47649C82A2A0 /* AppCenterReactNativeCrashes.xcodeproj */,
 				ADEF53663E0A4B2796E84C77 /* ReactNativeConfig.xcodeproj */,
 				40A62B584CC243779639C086 /* AppCenterReactNativePush.xcodeproj */,
+				BDECB148C0F647E09605F3ED /* RNGestureHandler.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -785,6 +806,14 @@
 			isa = PBXGroup;
 			children = (
 				8F91398820C55EF400564483 /* libRNSensitiveInfo.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		933A3D5321AECCC3009C261D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				933A3D5721AECCC3009C261D /* libRNGestureHandler.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -992,6 +1021,10 @@
 				{
 					ProductGroup = D33DEE1B21A83417008695EB /* Products */;
 					ProjectRef = ADEF53663E0A4B2796E84C77 /* ReactNativeConfig.xcodeproj */;
+				},
+				{
+					ProductGroup = 933A3D5321AECCC3009C261D /* Products */;
+					ProjectRef = BDECB148C0F647E09605F3ED /* RNGestureHandler.xcodeproj */;
 				},
 				{
 					ProductGroup = 8F91398420C55EF400564483 /* Products */;
@@ -1309,6 +1342,20 @@
 			remoteRef = 8F91398720C55EF400564483 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		933A3D5221AECCC3009C261D /* libRNVectorIcons-tvOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libRNVectorIcons-tvOS.a";
+			remoteRef = 933A3D5121AECCC3009C261D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		933A3D5721AECCC3009C261D /* libRNGestureHandler.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNGestureHandler.a;
+			remoteRef = 933A3D5621AECCC3009C261D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1497,6 +1544,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1536,6 +1584,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1566,6 +1615,7 @@
 					"$(SRCROOT)/../node_modules/appcenter-crashes/ios/AppCenterReactNativeCrashes",
 					"$(SRCROOT)/../node_modules/react-native-config/ios/ReactNativeConfig",
 					"$(SRCROOT)/../node_modules/appcenter-push/ios/AppCenterReactNativePush",
+					"$(SRCROOT)/../node_modules/react-native-gesture-handler/ios/**",
 				);
 				INFOPLIST_FILE = ArcadiaAssistant/Info.plist;
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
@@ -1607,6 +1657,7 @@
 					"$(SRCROOT)/../node_modules/appcenter-crashes/ios/AppCenterReactNativeCrashes",
 					"$(SRCROOT)/../node_modules/react-native-config/ios/ReactNativeConfig",
 					"$(SRCROOT)/../node_modules/appcenter-push/ios/AppCenterReactNativePush",
+					"$(SRCROOT)/../node_modules/react-native-gesture-handler/ios/**",
 				);
 				INFOPLIST_FILE = ArcadiaAssistant/Info.plist;
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
