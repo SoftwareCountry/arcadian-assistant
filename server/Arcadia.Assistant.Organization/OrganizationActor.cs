@@ -19,11 +19,11 @@
 
         public IStash Stash { get; set; }
 
-        public OrganizationActor(IRefreshInformation refreshInformation)
+        public OrganizationActor(IRefreshInformation refreshInformation, TimeSpan timeoutSetting)
         {
-            this.employeesActor = Context.ActorOf(EmployeesActor.GetProps(), "employees");
-            this.departmentsActor = Context.ActorOf(DepartmentsActor.GetProps(this.employeesActor), "departments");
             this.vacationApprovalsCheckerActor = Context.ActorOf(VacationApprovalsChecker.GetProps(), "vacation-approvals-checker");
+            this.employeesActor = Context.ActorOf(EmployeesActor.GetProps(this.vacationApprovalsCheckerActor, timeoutSetting), "employees");
+            this.departmentsActor = Context.ActorOf(DepartmentsActor.GetProps(this.employeesActor), "departments");
 
             Context.System.Scheduler.ScheduleTellRepeatedly(
                 TimeSpan.Zero,

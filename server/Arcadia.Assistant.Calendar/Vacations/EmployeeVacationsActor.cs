@@ -17,22 +17,40 @@
         private readonly IActorRef employeeFeed;
 
         private readonly IActorRef vacationsRegistry;
+        private readonly IActorRef vacationApprovalsChecker;
+        private readonly TimeSpan timeoutSetting;
 
         public override string PersistenceId { get; }
 
         //private int vacationsCredit = 28;
 
-        public EmployeeVacationsActor(string employeeId, IActorRef employeeFeed, IActorRef vacationsRegistry)
-            : base(employeeId)
+        public EmployeeVacationsActor(string employeeId,
+            IActorRef employeeFeed,
+            IActorRef vacationsRegistry,
+            IActorRef vacationApprovalsChecker,
+            TimeSpan timeoutSetting
+        ) : base(employeeId)
         {
             this.employeeFeed = employeeFeed;
             this.vacationsRegistry = vacationsRegistry;
+            this.vacationApprovalsChecker = vacationApprovalsChecker;
+            this.timeoutSetting = timeoutSetting;
             this.PersistenceId = $"employee-vacations-{this.EmployeeId}";
         }
 
-        public static Props CreateProps(string employeeId, IActorRef employeeFeed, IActorRef vacationsRegistry)
+        public static Props CreateProps(
+            string employeeId,
+            IActorRef employeeFeed,
+            IActorRef vacationsRegistry,
+            IActorRef vacationApprovalsChecker,
+            TimeSpan timeoutSetting)
         {
-            return Props.Create(() => new EmployeeVacationsActor(employeeId, employeeFeed, vacationsRegistry));
+            return Props.Create(() => new EmployeeVacationsActor(
+                employeeId,
+                employeeFeed,
+                vacationsRegistry,
+                vacationApprovalsChecker,
+                timeoutSetting));
         }
 
         protected override void InsertCalendarEvent(CalendarEvent calendarEvent, OnSuccessfulUpsertCallback onUpsert)
