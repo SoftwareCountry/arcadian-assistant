@@ -39,6 +39,7 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
         headerStyle: {
             ...StyleSheet.flatten(Style.navigation.header),
             borderBottomColor: 'transparent',
+            elevation: 0,
         },
         headerRight: <LogoutView/>,
     };
