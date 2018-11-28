@@ -26,8 +26,9 @@
 
         protected override Message GetDateMessageForEmployee(EmployeeMetadata employee, DateTime date)
         {
+            var pronoun = employee.Sex == Sex.Female ? "her" : "his";
             var title = employee.Name;
-            var text = $"{employee.Name} turns {employee.AgeAt(date)}! Happy Birthday!";
+            var text = $"{employee.Name} celebrates {pronoun} birthday on {date.ToString("MMMM dd")}!";
             var message = new Message($"employee-birthday-{employee.EmployeeId}-at-{date}", employee.EmployeeId, title, text, date);
 
             return message;
