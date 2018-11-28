@@ -14,6 +14,7 @@ interface PeopleDepartmentPropsOwnProps {
 }
 
 interface PeopleDepartmentStateProps {
+    isLoading: boolean;
     employees: EmployeesStore;
     userEmployee: Employee;
     employeesPredicate: (employee: Employee) => boolean;
@@ -27,6 +28,7 @@ const mapStateToProps: MapStateToProps<PeopleDepartmentProps, PeopleDepartmentPr
     const defaultEmployeesPredicate = (employee: Employee) => userEmployee && employee.departmentId === userEmployee.departmentId;
 
     return ({
+        isLoading: state.organization.employees.employeesById.isEmpty(),
         employees: ownProps.employees,
         userEmployee,
         employeesPredicate: ownProps.customEmployeesPredicate ? ownProps.customEmployeesPredicate : defaultEmployeesPredicate
@@ -57,7 +59,7 @@ export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentStateP
 
     public render() {
         const employees = this.props.employees.employeesById.filter(this.props.employeesPredicate).toArray();
-        if (employees.length === 0) {
+        if (this.props.isLoading) {
             return <LoadingView/>;
         }
         return <EmployeesList employees={employees} onItemClicked={this.props.onItemClicked}/>;

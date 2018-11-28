@@ -14,6 +14,7 @@ interface PeopleRoomPropsOwnProps {
 }
 
 interface PeopleRoomStateProps {
+    isLoading: boolean;
     employees: EmployeesStore;
     userEmployee: Employee;
     employeesPredicate: (employee: Employee) => boolean;
@@ -27,6 +28,7 @@ const mapStateToProps: MapStateToProps<PeopleRoomStateProps, PeopleRoomPropsOwnP
         const defaultEmployeesPredicate = (employee: Employee) => userEmployee && employee.roomNumber === userEmployee.roomNumber;
 
         return ({
+            isLoading: state.organization.employees.employeesById.isEmpty(),
             employees: ownProps.employees,
             userEmployee,
             employeesPredicate: ownProps.customEmployeesPredicate ? ownProps.customEmployeesPredicate : defaultEmployeesPredicate
@@ -56,7 +58,7 @@ class PeopleRoomImpl extends React.Component<PeopleRoomStateProps & EmployeesLis
 
     public render() {
         const employees = this.props.employees.employeesById.toArray().filter(this.props.employeesPredicate);
-        if (employees.length === 0) {
+        if (this.props.isLoading) {
             return <LoadingView/>;
         }
         return <EmployeesList employees={employees} onItemClicked={this.props.onItemClicked}/>;

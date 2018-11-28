@@ -16,7 +16,9 @@ interface PeopleProps {
 
 const mapStateToProps = (state: AppState): PeopleProps => ({
     employees: filterEmployees(state.organization.employees, state.people.filter),
-    loaded: state.organization.departments && state.organization.departments.length > 0,
+    loaded: state.organization.departments
+        && state.organization.departments.length > 0
+        && !state.organization.employees.employeesById.isEmpty(),
 });
 
 class PeopleCompanyFilteredImpl extends React.Component<PeopleProps> {
@@ -31,7 +33,7 @@ class PeopleRoomFilteredImpl extends React.Component<PeopleProps> {
     }
 
     public render() {
-        return !this.props.employees ? <LoadingView/> : <PeopleRoom employees={this.props.employees}/>;
+        return !this.props.loaded ? <LoadingView/> : <PeopleRoom employees={this.props.employees}/>;
     }
 }
 
@@ -41,7 +43,7 @@ class PeopleDepartmentFilteredImpl extends React.Component<PeopleProps> {
     }
 
     public render() {
-        return !this.props.employees ? <LoadingView/> : <PeopleDepartment employees={this.props.employees}/>;
+        return !this.props.loaded ? <LoadingView/> : <PeopleDepartment employees={this.props.employees}/>;
     }
 }
 
