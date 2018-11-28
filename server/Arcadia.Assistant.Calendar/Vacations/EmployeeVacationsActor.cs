@@ -104,11 +104,7 @@
                     break;
 
                 case ProcessVacationApprovalsMessage msg:
-                    if (!this.approvalsByEvent.TryGetValue(msg.EventId, out var approvals))
-                    {
-                        approvals = new List<string>();
-                    }
-
+                    var approvals = this.approvalsByEvent[msg.EventId];
                     var getNextApproverMessage = new GetNextVacationRequestApprover(this.EmployeeId, approvals);
 
                     this.vacationApprovalsChecker
@@ -240,6 +236,7 @@
             var datesPeriod = new DatesPeriod(message.StartDate, message.EndDate);
             var calendarEvent = new CalendarEvent(message.EventId, CalendarEventTypes.Vacation, datesPeriod, VacationStatuses.Requested, this.EmployeeId);
             this.EventsById[message.EventId] = calendarEvent;
+            this.approvalsByEvent[message.EventId] = new List<string>();
         }
 
         private void OnVacationDatesEdit(VacationDatesAreEdited message)
@@ -266,12 +263,7 @@
         private void OnVacationApprovedOnce(VacationIsApprovedOnce message)
         {
             var calendarEvent = this.EventsById[message.EventId];
-
-            if (!this.approvalsByEvent.TryGetValue(message.EventId, out var approvals))
-            {
-                approvals = new List<string>();
-                this.approvalsByEvent[message.EventId] = approvals;
-            }
+            var approvals = this.approvalsByEvent[message.EventId];
 
             approvals.Add(message.UserId);
 
