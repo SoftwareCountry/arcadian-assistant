@@ -30,7 +30,6 @@ class TabBarTopCustomImpl extends React.Component<TabBarTopProps & TabBarTopCust
                 getLabelText={(param) => {
                     return this.getLabel(param, employee, department);
                 }}
-                labelStyle={tabBarStyles.tabBarLabel as TextStyle}
             />
         );
     }

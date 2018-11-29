@@ -6,6 +6,7 @@ import { PeopleScreenNavigator } from './navigator/people-screen-navigator';
 import { SearchViewPeople } from '../navigation/search-view';
 import { CurrentPeopleDepartment } from './current-people-department';
 import { CurrentPeopleRoom } from './current-people-room';
+import Style from '../layout/style';
 
 const routeConfig: NavigationRouteConfigMap = {
     PeopleHomeScreen: {
@@ -13,6 +14,9 @@ const routeConfig: NavigationRouteConfigMap = {
         path: '/',
         navigationOptions:  {
             headerTitle: <SearchViewPeople/>,
+            headerStyle: {
+                backgroundColor: Style.color.base
+            },
         }
     },
     CurrentProfile: {
