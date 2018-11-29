@@ -1012,6 +1012,14 @@ declare module 'react-navigation' {
         drawConfig?: TabNavigatorConfig
     ): NavigationContainer;
 
+    export interface TabLabelTextParam {
+        route: {
+            key: string,
+            params: any,
+            routeName: string,
+        }
+    }
+
     export interface TabBarTopProps {
         activeTintColor: string;
         inactiveTintColor: string;
@@ -1024,7 +1032,7 @@ declare module 'react-navigation' {
         tabBarPosition: string;
         navigation: NavigationScreenProp<NavigationState>;
         jumpToIndex: (index: number) => void;
-        getLabel: (scene: TabScene) => React.ReactNode | string;
+        getLabelText: (r: TabLabelTextParam) => string;
         getOnPress: (
             previousScene: NavigationRoute,
             scene: TabScene
@@ -1071,8 +1079,8 @@ declare module 'react-navigation' {
         showIcon?: boolean;
     }
 
-    export const TabBarTop: React.ComponentType<TabBarTopProps>;
-    export const TabBarBottom: React.ComponentType<TabBarBottomProps>;
+    export const MaterialTopTabBar: React.ComponentType<TabBarTopProps>;
+    export const BottomTabBar: React.ComponentType<TabBarBottomProps>;
 
     /**
      * NavigationActions
