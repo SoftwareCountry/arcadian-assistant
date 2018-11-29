@@ -37,16 +37,17 @@
             var parentDepartment = allDepartments.FirstOrDefault(d => d.DepartmentId == employeeDepartment.ParentDepartmentId);
             var isEmployeeChief = employeeDepartment.ChiefId == employeeId;
 
-            var neededApprovals = new List<string>();
+            string mainApproverId = null;
+            string secondApproverId = null;
 
             if (this.sdoDepartmentRegex.Match(employeeDepartment.Name).Success)
             {
                 if (!isEmployeeChief)
                 {
-                    neededApprovals.Add(employeeDepartment.ChiefId);
+                    secondApproverId = employeeDepartment.ChiefId;
                 }
 
-                neededApprovals.Add(parentDepartment?.ChiefId);
+                mainApproverId = parentDepartment?.ChiefId;
             }
             else if (employeeDepartment.IsHeadDepartment && employeeDepartment.ChiefId == employeeId)
             {
@@ -56,15 +57,27 @@
             {
                 if (!isEmployeeChief)
                 {
-                    neededApprovals.Add(employeeDepartment.ChiefId);
+                    mainApproverId = employeeDepartment.ChiefId;
                 }
                 else
                 {
-                    neededApprovals.Add(parentDepartment?.ChiefId);
+                    mainApproverId = parentDepartment?.ChiefId;
                 }
             }
 
-            return neededApprovals.FirstOrDefault(i => !existingApprovals.Contains(i));
+            var existingApprovalsList = existingApprovals.ToList();
+
+            if (existingApprovalsList.Contains(mainApproverId))
+            {
+                return null;
+            }
+
+            if (existingApprovalsList.Contains(secondApproverId))
+            {
+                return mainApproverId;
+            }
+
+            return secondApproverId ?? mainApproverId;
         }
 
         private async Task<string> GetEmployeeDepartmentId(string employeeId)
