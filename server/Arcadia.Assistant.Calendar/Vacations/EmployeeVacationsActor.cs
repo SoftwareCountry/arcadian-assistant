@@ -112,28 +112,6 @@
             }
         }
 
-        private void ProcessVacationApprovals(ProcessVacationApprovals.Response response)
-        {
-            if (response.NextApproverId == null)
-            {
-                var oldEvent = this.EventsById[response.EventId];
-
-                var newEvent = new CalendarEvent(
-                    oldEvent.EventId,
-                    oldEvent.Type,
-                    oldEvent.Dates,
-                    VacationStatuses.Approved,
-                    oldEvent.EmployeeId
-                );
-
-                this.UpdateCalendarEvent(oldEvent, newEvent, ev => { });
-            }
-            else
-            {
-                // It should publish message to Event Bus that new approver is required
-            }
-        }
-
         protected override void UpdateCalendarEvent(CalendarEvent oldEvent, CalendarEvent newEvent, OnSuccessfulUpsertCallback onUpsert)
         {
             if (oldEvent.Dates != newEvent.Dates)
@@ -186,13 +164,12 @@
             return VacationStatuses.Requested;
         }
 
-        protected override bool IsStatusTransitionAllowed(CalendarEvent oldCalendarEvent, CalendarEvent newCalendarEvent)
+        protected override bool IsStatusTransitionAllowed(string oldCalendarEventStatus, string newCalendarEventStatus)
         {
-            return VacationStatuses.All.Contains(newCalendarEvent.Status)
-                && (oldCalendarEvent.Status != VacationStatuses.Cancelled)
-                && (oldCalendarEvent.Status != VacationStatuses.Rejected)
-                && (newCalendarEvent.Status != this.GetInitialStatus())
-                && (newCalendarEvent.Status != VacationStatuses.Approved);
+            return VacationStatuses.All.Contains(newCalendarEventStatus)
+                && (oldCalendarEventStatus != VacationStatuses.Cancelled)
+                && (oldCalendarEventStatus != VacationStatuses.Rejected)
+                && (newCalendarEventStatus != this.GetInitialStatus());
         }
 
         protected override void OnRecover(object message)
@@ -225,21 +202,58 @@
             }
         }
 
-        private void ApproveVacation(ApproveVacation approveVacation)
+        private void ApproveVacation(ApproveVacation message)
         {
+            var calendarEvent = this.EventsById[message.EventId];
+            var approvals = this.approvalsByEvent[message.EventId];
+            if (!this.IsStatusTransitionAllowed(calendarEvent.Status, VacationStatuses.Approved))
+            {
+                var errorMessage = $"Event {message.EventId}. Status transition {calendarEvent.Status} -> {VacationStatuses.Approved} is not allowed for {calendarEvent.Type}";
+                this.Sender.Tell(new ApproveVacation.BadRequestResponse(errorMessage));
+                return;
+            }
+
+            if (approvals.Contains(message.ApproverId) || calendarEvent.Status == VacationStatuses.Approved)
+            {
+                this.Sender.Tell(Abstractions.Messages.ApproveVacation.SuccessResponse.Instance);
+                return;
+            }
+
             var @event = new UserGrantedVacationApproval
             {
-                EventId = approveVacation.EventId,
+                EventId = message.EventId,
                 TimeStamp = DateTimeOffset.Now,
-                ApproverId = approveVacation.ApproverId
+                ApproverId = message.ApproverId
             };
 
             this.Persist(@event, ev =>
             {
                 this.OnUserGrantedVacationApproval(ev);
-                this.Self.Tell(new ProcessVacationApprovals(approveVacation.EventId));
-                this.Sender.Tell(Abstractions.Messages.ApproveVacation.Response.Instance);
+                this.Self.Tell(new ProcessVacationApprovals(message.EventId));
+                this.Sender.Tell(Abstractions.Messages.ApproveVacation.SuccessResponse.Instance);
             });
+        }
+
+        private void ProcessVacationApprovals(ProcessVacationApprovals.SuccessResponse successResponse)
+        {
+            if (successResponse.NextApproverId == null)
+            {
+                var oldEvent = this.EventsById[successResponse.EventId];
+
+                var newEvent = new CalendarEvent(
+                    oldEvent.EventId,
+                    oldEvent.Type,
+                    oldEvent.Dates,
+                    VacationStatuses.Approved,
+                    oldEvent.EmployeeId
+                );
+
+                this.UpdateCalendarEvent(oldEvent, newEvent, ev => { });
+            }
+            else
+            {
+                // It should publish message to Event Bus that new approver is required
+            }
         }
 
         private void OnVacationRequested(VacationIsRequested message)

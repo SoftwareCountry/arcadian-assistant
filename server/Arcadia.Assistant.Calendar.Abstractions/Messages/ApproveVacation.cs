@@ -12,9 +12,23 @@
 
         public string ApproverId { get; }
 
-        public class Response
+        public abstract class Response
         {
-            public static readonly Response Instance = new Response();
+        }
+
+        public class SuccessResponse : Response
+        {
+            public static readonly SuccessResponse Instance = new SuccessResponse();
+        }
+
+        public class BadRequestResponse : Response
+        {
+            public BadRequestResponse(string message)
+            {
+                this.Message = message;
+            }
+
+            public string Message { get; }
         }
     }
 }

@@ -161,12 +161,12 @@
             return SickLeaveStatuses.Requested;
         }
 
-        protected override bool IsStatusTransitionAllowed(CalendarEvent oldCalendarEvent, CalendarEvent newCalendarEvent)
+        protected override bool IsStatusTransitionAllowed(string oldCalendarEventStatus, string newCalendarEventStatus)
         {
-            return SickLeaveStatuses.All.Contains(newCalendarEvent.Status)
-                && (oldCalendarEvent.Status != SickLeaveStatuses.Cancelled)
-                && (oldCalendarEvent.Status != SickLeaveStatuses.Completed)
-                && (newCalendarEvent.Status != this.GetInitialStatus());
+            return SickLeaveStatuses.All.Contains(newCalendarEventStatus)
+                && (oldCalendarEventStatus != SickLeaveStatuses.Cancelled)
+                && (oldCalendarEventStatus != SickLeaveStatuses.Completed)
+                && (newCalendarEventStatus != this.GetInitialStatus());
         }
 
         private void OnSickLeaveRequest(SickLeaveIsRequested message)

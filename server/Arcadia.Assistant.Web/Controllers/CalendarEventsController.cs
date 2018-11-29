@@ -194,9 +194,16 @@
             {
                 var currentUserEmployee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, token);
                 var message = new ApproveVacation(eventId, currentUserEmployee.Metadata.EmployeeId);
-                await employee.Calendar.VacationsActor.Ask(message, this.timeoutSettings.Timeout, token);
+                var approveResponse = await employee.Calendar.VacationsActor.Ask(message, this.timeoutSettings.Timeout, token);
 
-                return this.NoContent();
+                switch (approveResponse)
+                {
+                    case ApproveVacation.SuccessResponse _:
+                        return this.NoContent();
+
+                    case ApproveVacation.BadRequestResponse err:
+                        return this.BadRequest(err.Message);
+                }
             }
 
             var calendarEvent = new CalendarEvent(eventId, model.Type, model.Dates, model.Status, employee.Metadata.EmployeeId);
