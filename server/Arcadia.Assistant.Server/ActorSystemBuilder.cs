@@ -11,7 +11,6 @@
     using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.Health.Abstractions;
     using Arcadia.Assistant.UserPreferences;
-    using Organization.Abstractions;
 
     public class ActorSystemBuilder
     {
