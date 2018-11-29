@@ -15,14 +15,14 @@
 
         private readonly IActorRef employeesActor;
         private readonly IActorRef departmentsActor;
-        private readonly IActorRef vacationApprovalsCheckerActor;
 
         public IStash Stash { get; set; }
 
         public OrganizationActor(IRefreshInformation refreshInformation, TimeSpan timeoutSetting)
         {
-            this.vacationApprovalsCheckerActor = Context.ActorOf(VacationApprovalsChecker.GetProps(), "vacation-approvals-checker");
-            this.employeesActor = Context.ActorOf(EmployeesActor.GetProps(this.vacationApprovalsCheckerActor, timeoutSetting), "employees");
+            var vacationApprovalsCheckerActor = Context.ActorOf(VacationApprovalsChecker.GetProps(), "vacation-approvals-checker");
+
+            this.employeesActor = Context.ActorOf(EmployeesActor.GetProps(vacationApprovalsCheckerActor, timeoutSetting), "employees");
             this.departmentsActor = Context.ActorOf(DepartmentsActor.GetProps(this.employeesActor), "departments");
 
             Context.System.Scheduler.ScheduleTellRepeatedly(
@@ -49,10 +49,6 @@
 
                 case EmployeesQuery query:
                     this.employeesActor.Forward(query);
-                    break;
-
-                case GetNextVacationRequestApprover msg:
-                    this.vacationApprovalsCheckerActor.Forward(msg);
                     break;
 
                 default:

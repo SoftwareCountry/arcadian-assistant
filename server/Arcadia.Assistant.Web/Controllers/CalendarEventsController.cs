@@ -193,7 +193,7 @@
             if (model.Status == VacationStatuses.Approved)
             {
                 var currentUserEmployee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, token);
-                var message = new VacationApproveMessage(eventId, currentUserEmployee.Metadata.EmployeeId);
+                var message = new ApproveVacation(eventId, currentUserEmployee.Metadata.EmployeeId);
                 await employee.Calendar.VacationsActor.Ask(message, this.timeoutSettings.Timeout, token);
 
                 return this.NoContent();

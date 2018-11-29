@@ -4,7 +4,7 @@
     using System.Runtime.Serialization;
 
     [DataContract]
-    public class VacationIsApprovedOnce
+    public class UserGrantedVacationApproval
     {
         [DataMember]
         public string EventId { get; set; }
@@ -13,6 +13,6 @@
         public DateTimeOffset TimeStamp { get; set; }
 
         [DataMember]
-        public string UserId { get; set; }
+        public string ApproverId { get; set; }
     }
 }

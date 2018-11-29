@@ -71,7 +71,7 @@
             this.Persist(newEvent, e =>
             {
                 this.OnVacationRequested(e);
-                this.Self.Tell(new ProcessVacationApprovalsMessage(eventId));
+                this.Self.Tell(new ProcessVacationApprovals(eventId));
                 onUpsert(this.EventsById[eventId]);
             });
         }
@@ -89,33 +89,21 @@
                         .PipeTo(this.Sender);
                     break;
 
-                case VacationApproveMessage msg:
-                    var @event = new VacationIsApprovedOnce
-                    {
-                        EventId = msg.EventId,
-                        TimeStamp = DateTimeOffset.Now,
-                        UserId = msg.ApproverId
-                    };
-
-                    this.Persist(@event, ev =>
-                    {
-                        this.OnVacationApprovedOnce(ev);
-                        this.Self.Tell(new ProcessVacationApprovalsMessage(msg.EventId));
-                        this.Sender.Tell(VacationApproveMessage.Response.Instance);
-                    });
+                case ApproveVacation msg:
+                    this.ApproveVacation(msg);
                     break;
 
-                case ProcessVacationApprovalsMessage msg:
+                case ProcessVacationApprovals msg:
                     var approvals = this.approvalsByEvent[msg.EventId];
                     var getNextApproverMessage = new GetNextVacationRequestApprover(this.EmployeeId, approvals);
 
                     this.vacationApprovalsChecker
                         .Ask<GetNextVacationRequestApprover.Response>(getNextApproverMessage, this.timeoutSetting)
-                        .ContinueWith(task => new ProcessVacationApprovalsMessage.Response(msg.EventId, task.Result.NextApproverEmployeeId))
+                        .ContinueWith(task => new ProcessVacationApprovals.Response(msg.EventId, task.Result.NextApproverEmployeeId))
                         .PipeTo(this.Self);
                     break;
 
-                case ProcessVacationApprovalsMessage.Response msg:
+                case ProcessVacationApprovals.Response msg:
                     if (msg.NextApproverId == null)
                     {
                         var oldEvent = this.EventsById[msg.EventId];
@@ -224,14 +212,31 @@
                     this.OnVacationApproved(ev);
                     break;
 
-                case VacationIsApprovedOnce ev:
-                    this.OnVacationApprovedOnce(ev);
+                case UserGrantedVacationApproval ev:
+                    this.OnUserGrantedVacationApproval(ev);
                     break;
 
                 case VacationIsCancelled ev:
                     this.OnVacationCancel(ev);
                     break;
             }
+        }
+
+        private void ApproveVacation(ApproveVacation approveVacation)
+        {
+            var @event = new UserGrantedVacationApproval
+            {
+                EventId = approveVacation.EventId,
+                TimeStamp = DateTimeOffset.Now,
+                ApproverId = approveVacation.ApproverId
+            };
+
+            this.Persist(@event, ev =>
+            {
+                this.OnUserGrantedVacationApproval(ev);
+                this.Self.Tell(new ProcessVacationApprovals(approveVacation.EventId));
+                this.Sender.Tell(Abstractions.Messages.ApproveVacation.Response.Instance);
+            });
         }
 
         private void OnVacationRequested(VacationIsRequested message)
@@ -263,12 +268,12 @@
             }
         }
 
-        private void OnVacationApprovedOnce(VacationIsApprovedOnce message)
+        private void OnUserGrantedVacationApproval(UserGrantedVacationApproval message)
         {
             var calendarEvent = this.EventsById[message.EventId];
             var approvals = this.approvalsByEvent[message.EventId];
 
-            approvals.Add(message.UserId);
+            approvals.Add(message.ApproverId);
 
             var text = $"Vacation from {calendarEvent.Dates.StartDate.ToLongDateString()} to {calendarEvent.Dates.EndDate.ToLongDateString()} got one new approval";
             var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, message.TimeStamp.Date);

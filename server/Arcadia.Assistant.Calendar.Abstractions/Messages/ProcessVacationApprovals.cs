@@ -1,8 +1,8 @@
 ﻿namespace Arcadia.Assistant.Calendar.Abstractions.Messages
 {
-    public class ProcessVacationApprovalsMessage
+    public class ProcessVacationApprovals
     {
-        public ProcessVacationApprovalsMessage(string eventId)
+        public ProcessVacationApprovals(string eventId)
         {
             this.EventId = eventId;
         }
