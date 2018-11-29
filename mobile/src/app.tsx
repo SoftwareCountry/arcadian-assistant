@@ -28,7 +28,7 @@ export class App extends Component<AppProps & AppOwnProps> {
         if (this.props.authentication.authInfo.isAuthenticated) {
             return <RootNavigator ref={(navigationRef: NavigationContainerComponent) => {
                 this.props.navigationService.setNavigatorRef(navigationRef);
-                console.log(navigationRef);
+                console.log('navigationRef:' + navigationRef);
             }}/>;
         } else {
             return <WelcomeScreen/>;

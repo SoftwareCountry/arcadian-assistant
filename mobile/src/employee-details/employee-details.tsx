@@ -12,7 +12,6 @@ import { Department } from '../reducers/organization/department.model';
 import { StyledText } from '../override/styled-text';
 import { Employee } from '../reducers/organization/employee.model';
 import { ApplicationIcon } from '../override/application-icon';
-import { openCompanyAction, openDepartmentAction, openRoomAction } from './employee-details-dispatcher';
 import { calendarEventSetNewStatus, loadCalendarEvents } from '../reducers/calendar/calendar.action';
 import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
@@ -21,6 +20,7 @@ import { loadUserEmployeePermissions } from '../reducers/user/user.action';
 import { HoursCreditCounter, VacationDaysCounter } from '../reducers/calendar/days-counters.model';
 import { ConvertHoursCreditToDays } from '../reducers/calendar/convert-hours-credit-to-days';
 import { Action, Dispatch } from 'redux';
+import { openCompany, openDepartment, openRoom } from '../navigation/navigation.actions';
 
 interface TileData {
     label: string;
@@ -67,12 +67,12 @@ interface EmployeeDetailsDispatchProps {
     openRoom: (departmentId: string) => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<Action>): EmployeeDetailsDispatchProps => ({
-    onCompanyClicked: (departmentId: string) => dispatch( openCompanyAction(departmentId)),
+    onCompanyClicked: (departmentId: string) => dispatch( openCompany(departmentId)),
     loadCalendarEvents: (employeeId: string) => dispatch(loadCalendarEvents(employeeId)),
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status)),
     loadUserEmployeePermissions: (employeeId: string) => { dispatch(loadUserEmployeePermissions(employeeId)); },
-    openDepartment: (departmentId: string, departmentAbbreviation: string) => { dispatch(openDepartmentAction(departmentId, departmentAbbreviation)); },
-    openRoom: (departmentId: string) => { dispatch(openRoomAction(departmentId)); }
+    openDepartment: (departmentId: string, departmentAbbreviation: string) => { dispatch(openDepartment(departmentId, departmentAbbreviation)); },
+    openRoom: (departmentId: string) => { dispatch(openRoom(departmentId)); }
 });
 
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {

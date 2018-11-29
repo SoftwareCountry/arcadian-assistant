@@ -8,10 +8,10 @@ import { selectCompanyDepartment } from '../reducers/people/people.action';
 import { EmployeeMap, EmployeeIdsGroupMap } from '../reducers/organization/employees.reducer';
 import { loadEmployeesForDepartment } from '../reducers/organization/organization.action';
 import { Employee } from '../reducers/organization/employee.model';
-import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 import { ScrollView } from 'react-native';
 import { LoadingView } from '../navigation/loading';
 import { Action, Dispatch } from 'redux';
+import { openEmployeeDetails } from '../navigation/navigation.actions';
 
 interface CompanyDepartmentsStateProps {
     departmentIdToNode: DepartmentIdToNode;
@@ -45,7 +45,7 @@ const mapDispatchToProps: MapDispatchToProps<CompanyDepartmentsDispatchProps, vo
         dispatch(loadEmployeesForDepartment(departmentId));
     },
     onPressEmployee: (employee: Employee) => {
-        dispatch(openEmployeeDetailsAction(employee));
+        dispatch(openEmployeeDetails(employee));
     }
 });
 

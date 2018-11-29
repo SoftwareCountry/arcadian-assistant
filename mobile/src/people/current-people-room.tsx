@@ -3,10 +3,9 @@ import {
     Header, HeaderProps, NavigationParams,
     NavigationRoute,
     NavigationScreenConfig,
-    NavigationScreenProp,
+    NavigationScreenProp, NavigationScreenProps,
     NavigationStackScreenOptions
 } from 'react-navigation';
-import { CurrentRoomNavigationParams } from '../employee-details/employee-details-dispatcher';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
@@ -17,16 +16,6 @@ import { loadEmployeesForRoom } from '../reducers/organization/organization.acti
 import { SafeAreaView, View } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import Style from '../layout/style';
-
-//============================================================================
-interface ExtendedNavigationScreenProp<P> extends NavigationScreenProp<NavigationRoute> {
-    getParam: <T extends keyof P>(param: T, fallback?: P[T]) => P[T];
-}
-
-//============================================================================
-interface NavigationProps {
-    navigation: ExtendedNavigationScreenProp<CurrentRoomNavigationParams>;
-}
 
 //============================================================================
 interface CurrentPeopleRoomProps {
@@ -53,7 +42,7 @@ const dispatchToProps = (dispatch: Dispatch<Action>) => {
 };
 
 //============================================================================
-class CurrentPeopleRoomImpl extends React.Component<CurrentPeopleRoomProps & CurrentPeopleDispatchProps & NavigationProps> {
+class CurrentPeopleRoomImpl extends React.Component<CurrentPeopleRoomProps & CurrentPeopleDispatchProps & NavigationScreenProps> {
     //----------------------------------------------------------------------------
     public componentDidMount() {
         const roomNumber = this.props.navigation.getParam('roomNumber', undefined);
@@ -74,7 +63,7 @@ class CurrentPeopleRoomImpl extends React.Component<CurrentPeopleRoomProps & Cur
 
     //----------------------------------------------------------------------------
     public static navigationOptions: NavigationScreenConfig<NavigationStackScreenOptions> = (navigationOptionsContainer) => {
-        const navigation = navigationOptionsContainer.navigation as ExtendedNavigationScreenProp<NavigationParams>;
+        const navigation = navigationOptionsContainer.navigation;
         const roomNumber = navigation.getParam('roomNumber', undefined);
 
         return {

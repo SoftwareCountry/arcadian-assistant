@@ -16,6 +16,8 @@ import {peopleReducer, PeopleState} from './people/people.reducer';
 import {authEpics$, authReducer, AuthState} from './auth/auth.reducer';
 import {refreshEpics} from './refresh/refresh.reducer';
 import { NavigationService } from '../navigation/navigation.service';
+import { NavigationDependenciesContainer } from '../navigation/navigation-dependencies-container';
+import { navigationEpics$ } from '../navigation/navigation.epics';
 
 export interface AppState {
     helpdesk?: HelpdeskState;
@@ -37,7 +39,8 @@ const rootEpic = combineEpics(
     feedsEpics as any,
     calendarEpics as any,
     authEpics$ as any,
-    refreshEpics as any);
+    refreshEpics as any,
+    navigationEpics$ as any, );
 
 const reducers = combineReducers<AppState>({
     helpdesk: helpdeskReducer,
@@ -57,17 +60,16 @@ const rootReducer = (state: AppState, action: Action) => {
     return reducers(state, action);
 };
 
-export interface DependenciesContainer {
+export interface DependenciesContainer extends NavigationDependenciesContainer {
     apiClient: SecuredApiClient;
     oauthProcess: OAuthProcess;
-    navigationService: NavigationService;
 }
 
-export const storeFactory = (oauthProcess: OAuthProcess) => {
+export const storeFactory = (oauthProcess: OAuthProcess, navigationService: NavigationService) => {
     const dependencies: DependenciesContainer = {
         apiClient: new SecuredApiClient(config.apiUrl, oauthProcess.authenticationState as any),
         oauthProcess: oauthProcess,
-        navigationService: new NavigationService(),
+        navigationService: navigationService,
     };
 
     const epicMiddleware = createEpicMiddleware({dependencies});

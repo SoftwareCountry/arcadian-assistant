@@ -29,11 +29,9 @@ export class Root extends Component<{}> {
     }
 
     public render() {
-      const navigationService = this.navigationService;
-
       return (
-        <Provider store={storeFactory(this.oauthProcess)}>
-          <AppWithNavigationState navigationService={navigationService}/>
+        <Provider store={storeFactory(this.oauthProcess, this.navigationService)}>
+          <AppWithNavigationState navigationService={this.navigationService}/>
         </Provider>
       );
     }
@@ -42,5 +40,7 @@ export class Root extends Component<{}> {
       if (this.oauthProcess) {
         this.oauthProcess.dispose();
       }
+
+      this.navigationService.dispose();
     }
   }

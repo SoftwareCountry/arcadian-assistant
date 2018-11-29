@@ -5,9 +5,9 @@ import { EmployeesList } from './employees-list';
 import { AppState } from '../reducers/app.reducer';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Employee } from '../reducers/organization/employee.model';
-import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 import { LoadingView } from '../navigation/loading';
 import { Action, Dispatch } from 'redux';
+import { openEmployeeDetails } from '../navigation/navigation.actions';
 
 interface PeopleRoomPropsOwnProps {
     employees: EmployeesStore;
@@ -38,7 +38,7 @@ interface EmployeesListDispatchProps {
     onItemClicked: (employee: Employee) => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<Action>): EmployeesListDispatchProps => ({
-    onItemClicked: (employee: Employee) => dispatch(openEmployeeDetailsAction(employee))
+    onItemClicked: (employee: Employee) => dispatch(openEmployeeDetails(employee))
 });
 
 class PeopleRoomImpl extends React.Component<PeopleRoomStateProps & EmployeesListDispatchProps> {
