@@ -24,7 +24,7 @@ export enum IntervalType {
 }
 
 export interface IntervalModel {
-    intervalType: IntervalType;
+    intervalType: Optional<IntervalType>;
     calendarEvent: CalendarEvent;
     boundary: boolean;
 }
@@ -93,9 +93,9 @@ export interface SingleSelection {
 }
 
 export interface IntervalSelection {
-    startDay: DayModel;
-    endDay: DayModel;
-    color: string;
+    startDay: Optional<DayModel>;
+    endDay: Optional<DayModel>;
+    color: Optional<string>;
 }
 
 export interface CalendarSelection {

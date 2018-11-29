@@ -3,6 +3,7 @@ import { DayModel, CalendarSelection } from './calendar.model';
 import { SickLeaveActions } from './sick-leave.action';
 import { CalendarEvents } from './calendar-events.model';
 import { Action } from 'redux';
+import { Optional } from 'types';
 
 export interface LoadCalendarEvents extends Action {
     type: 'LOAD-CALENDAR-EVENTS';
@@ -55,10 +56,10 @@ export enum CalendarSelectionModeType {
 export interface CalendarSelectionMode extends Action {
     type: 'CALENDAR-SELECTION-MODE';
     selectionMode: CalendarSelectionModeType;
-    color: string;
+    color: Optional<string>;
 }
 
-export const calendarSelectionMode = (selectionMode: CalendarSelectionModeType, color: string = null): CalendarSelectionMode => ({ type: 'CALENDAR-SELECTION-MODE', selectionMode, color });
+export const calendarSelectionMode = (selectionMode: CalendarSelectionModeType, color: Optional<string> = null): CalendarSelectionMode => ({ type: 'CALENDAR-SELECTION-MODE', selectionMode, color });
 
 export interface SelectIntervalsBySingleDaySelection extends Action {
     type: 'SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION';
