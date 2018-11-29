@@ -5,6 +5,7 @@
     using System.Linq;
 
     using Akka.Actor;
+    using Akka.Event;
 
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
@@ -16,6 +17,8 @@
 
     public class EmployeeVacationsActor : CalendarEventsStorageBase
     {
+        private readonly ILoggingAdapter logger = Context.GetLogger();
+
         private readonly IActorRef employeeFeed;
 
         private readonly IActorRef vacationsRegistry;
@@ -98,12 +101,25 @@
                         .Ask<GetNextVacationRequestApprover.Response>(
                             new GetNextVacationRequestApprover(this.EmployeeId, this.approvalsByEvent[msg.EventId]),
                             this.timeoutSetting)
-                        .ContinueWith(task => new ProcessVacationApprovals.Response(msg.EventId, task.Result.NextApproverEmployeeId))
+                        .ContinueWith<ProcessVacationApprovals.Response>(task =>
+                        {
+                            if (task.Result is GetNextVacationRequestApprover.ErrorResponse err)
+                            {
+                                return new ProcessVacationApprovals.ErrorResponse(msg.EventId, err.Message);
+                            }
+
+                            var resp = (GetNextVacationRequestApprover.SuccessResponse)task.Result;
+                            return new ProcessVacationApprovals.SuccessResponse(msg.EventId, resp.NextApproverEmployeeId);
+                        })
                         .PipeTo(this.Self);
                     break;
 
-                case ProcessVacationApprovals.Response msg:
+                case ProcessVacationApprovals.SuccessResponse msg:
                     this.ProcessVacationApprovals(msg);
+                    break;
+
+                case ProcessVacationApprovals.ErrorResponse msg:
+                    this.logger.Warning($"Failed to get next approver for the event {msg.EventId}");
                     break;
 
                 default:

@@ -14,14 +14,28 @@
 
         public IEnumerable<string> ExistingApprovals { get; }
 
-        public class Response
+        public abstract class Response
         {
-            public Response(string nextApproverEmployeeId)
+        }
+
+        public class SuccessResponse : Response
+        {
+            public SuccessResponse(string nextApproverEmployeeId)
             {
                 this.NextApproverEmployeeId = nextApproverEmployeeId;
             }
 
             public string NextApproverEmployeeId { get; }
+        }
+
+        public class ErrorResponse : Response
+        {
+            public ErrorResponse(string message)
+            {
+                this.Message = message;
+            }
+
+            public string Message { get; }
         }
     }
 }

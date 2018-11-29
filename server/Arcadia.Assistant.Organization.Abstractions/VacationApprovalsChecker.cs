@@ -21,7 +21,10 @@
             {
                 case GetNextVacationRequestApprover msg:
                     this.GetNextApprover(msg.EmployeeId, msg.ExistingApprovals)
-                        .PipeTo(this.Sender, success: r => new GetNextVacationRequestApprover.Response(r));
+                        .PipeTo(
+                            this.Sender,
+                            success: r => new GetNextVacationRequestApprover.SuccessResponse(r),
+                            failure: err => new GetNextVacationRequestApprover.ErrorResponse(err.Message));
                     break;
 
                 default:
