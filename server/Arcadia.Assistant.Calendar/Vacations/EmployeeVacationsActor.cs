@@ -82,7 +82,9 @@
             {
                 case GetVacationsCredit _:
                     this.vacationsRegistry
-                        .Ask<VacationsRegistry.GetVacationInfo.Response>(new VacationsRegistry.GetVacationInfo(this.EmployeeId))
+                        .Ask<VacationsRegistry.GetVacationInfo.Response>(
+                            new VacationsRegistry.GetVacationInfo(this.EmployeeId),
+                            this.timeoutSetting)
                         .ContinueWith(x => new GetVacationsCredit.Response(x.Result.VacationsCredit))
                         .PipeTo(this.Sender);
                     break;
@@ -108,7 +110,7 @@
                     var getNextApproverMessage = new GetNextVacationRequestApprover(this.EmployeeId, approvals);
 
                     this.vacationApprovalsChecker
-                        .Ask<GetNextVacationRequestApprover.Response>(getNextApproverMessage)
+                        .Ask<GetNextVacationRequestApprover.Response>(getNextApproverMessage, this.timeoutSetting)
                         .ContinueWith(task => new ProcessVacationApprovalsMessage.Response(msg.EventId, task.Result.NextApproverEmployeeId))
                         .PipeTo(this.Self);
                     break;
