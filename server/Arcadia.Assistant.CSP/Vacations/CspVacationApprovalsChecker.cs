@@ -16,17 +16,9 @@
     public class CspVacationApprovalsChecker : VacationApprovalsChecker
     {
         private const string DepartmentsStorageActorPath = @"/user/organization/departments/departments-storage";
-
-        private readonly Func<ArcadiaCspContext> contextFactory;
-        private readonly AppSettings settings;
+        private const string EmployeesStorageActorPath = @"/user/organization/employees/employees-storage";
 
         private readonly Regex sdoDepartmentRegex = new Regex(@"SDO\..+\..+");
-
-        public CspVacationApprovalsChecker(Func<ArcadiaCspContext> contextFactory, AppSettings settings)
-        {
-            this.contextFactory = contextFactory;
-            this.settings = settings;
-        }
 
         protected override async Task<string> GetNextApprover(string employeeId, IEnumerable<string> existingApprovals)
         {
@@ -37,17 +29,17 @@
             var parentDepartment = allDepartments.FirstOrDefault(d => d.DepartmentId == employeeDepartment.ParentDepartmentId);
             var isEmployeeChief = employeeDepartment.ChiefId == employeeId;
 
-            string mainApproverId = null;
-            string secondApproverId = null;
+            string finalApprover = null;
+            string preliminaryApprover = null;
 
             if (this.sdoDepartmentRegex.Match(employeeDepartment.Name).Success)
             {
                 if (!isEmployeeChief)
                 {
-                    secondApproverId = employeeDepartment.ChiefId;
+                    preliminaryApprover = employeeDepartment.ChiefId;
                 }
 
-                mainApproverId = parentDepartment?.ChiefId;
+                finalApprover = parentDepartment?.ChiefId;
             }
             else if (employeeDepartment.IsHeadDepartment && employeeDepartment.ChiefId == employeeId)
             {
@@ -57,40 +49,40 @@
             {
                 if (!isEmployeeChief)
                 {
-                    mainApproverId = employeeDepartment.ChiefId;
+                    finalApprover = employeeDepartment.ChiefId;
                 }
                 else
                 {
-                    mainApproverId = parentDepartment?.ChiefId;
+                    finalApprover = parentDepartment?.ChiefId;
                 }
             }
 
             var existingApprovalsList = existingApprovals.ToList();
 
-            if (existingApprovalsList.Contains(mainApproverId))
+            if (existingApprovalsList.Contains(finalApprover))
             {
                 return null;
             }
 
-            if (existingApprovalsList.Contains(secondApproverId))
+            if (existingApprovalsList.Contains(preliminaryApprover))
             {
-                return mainApproverId;
+                return finalApprover;
             }
 
-            return secondApproverId ?? mainApproverId;
+            return preliminaryApprover ?? finalApprover;
         }
 
         private async Task<string> GetEmployeeDepartmentId(string employeeId)
         {
-            using (var context = this.contextFactory())
-            {
-                var employeeDepartmentId = await new CspEmployeeQuery(context)
-                    .Get()
-                    .Where(e => e.Id.ToString() == employeeId)
-                    .Select(x => x.DepartmentId.HasValue ? x.DepartmentId.Value.ToString() : null)
-                    .FirstAsync();
-                return employeeDepartmentId;
-            }
+            var employeesActor = Context.ActorSelection(EmployeesStorageActorPath);
+
+            var allEmployees = await employeesActor.Ask<EmployeesInfoStorage.LoadAllEmployees.Response>(
+                EmployeesInfoStorage.LoadAllEmployees.Instance
+            );
+
+            return allEmployees.Employees
+                .FirstOrDefault(e => e.Metadata.EmployeeId == employeeId)
+                ?.Metadata.DepartmentId;
         }
 
         private async Task<List<DepartmentInfo>> GetDepartments()
@@ -98,8 +90,8 @@
             var departmentsActor = Context.ActorSelection(DepartmentsStorageActorPath);
 
             var allDepartmentsResponse = await departmentsActor.Ask<DepartmentsStorage.LoadAllDepartments.Response>(
-                DepartmentsStorage.LoadAllDepartments.Instance,
-                this.settings.Timeout);
+                DepartmentsStorage.LoadAllDepartments.Instance
+            );
             return allDepartmentsResponse.Departments.ToList();
         }
     }
