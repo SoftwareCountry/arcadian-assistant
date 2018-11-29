@@ -1,4 +1,5 @@
 import { Action } from 'redux';
+import { Nullable } from 'types';
 
 export interface StartLoginProcess extends Action {
     type: 'START-LOGIN-PROCESS';
@@ -27,9 +28,9 @@ export const userLoggedOut = (): UserLoggedOut => ({ type: 'USER-LOGGED-OUT' });
 
 export interface JwtTokenSet extends Action {
     type: 'JWT-TOKEN-SET';
-    jwtToken: string;
+    jwtToken: Nullable<string>;
 }
 
-export const jwtTokenSet = (jwtToken: string | null): JwtTokenSet => ({ type: 'JWT-TOKEN-SET', jwtToken });
+export const jwtTokenSet = (jwtToken: Nullable<string>): JwtTokenSet => ({ type: 'JWT-TOKEN-SET', jwtToken });
 
 export type AuthActions = StartLoginProcess | StartLogoutProcess | UserLoggedIn | UserLoggedOut | JwtTokenSet;

@@ -70,7 +70,7 @@ export class LoginRequest {
 
         const searchParams = new URLSearchParams();
 
-        function addOptionalParam(name: string, value: string) {
+        function addOptionalParam(name: string, value: string | undefined) {
             if (value) {
                 searchParams.append(name, value);
             }

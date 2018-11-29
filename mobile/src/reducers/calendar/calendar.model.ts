@@ -1,6 +1,7 @@
 import moment, { Moment } from 'moment';
 import { CalendarEvent, CalendarEventType, CalendarEventStatus } from './calendar-event.model';
 import { IntervalsMetadata, ReadOnlyIntervalsMetadata } from './calendar-intervals-metadata.model';
+import { Nullable, Optional } from 'types';
 
 export interface DayModel {
     date: Moment;
@@ -88,7 +89,7 @@ export class IntervalsModel implements ReadOnlyIntervalsModel {
 }
 
 export interface SingleSelection {
-    day: DayModel;
+    day: Optional<DayModel>;
 }
 
 export interface IntervalSelection {
@@ -99,15 +100,15 @@ export interface IntervalSelection {
 
 export interface CalendarSelection {
     single: SingleSelection;
-    interval: IntervalSelection;
+    interval: Optional<IntervalSelection>;
 }
 
 export class ExtractedIntervals {
-    public readonly vacation: IntervalModel;
-    public readonly dayoff: IntervalModel;
-    public readonly sickleave: IntervalModel;
+    public readonly vacation: Optional<IntervalModel> = null;
+    public readonly dayoff: Optional<IntervalModel> = null;
+    public readonly sickleave: Optional<IntervalModel> = null;
 
-    constructor(intervals: IntervalModel[]) {
+    constructor(intervals: Optional<IntervalModel[]>) {
         if (intervals) {
             this.vacation = intervals.find(x => x.calendarEvent.type === CalendarEventType.Vacation);
             this.dayoff = intervals.find(x => x.calendarEvent.type === CalendarEventType.Dayoff || x.calendarEvent.type === CalendarEventType.Workout);

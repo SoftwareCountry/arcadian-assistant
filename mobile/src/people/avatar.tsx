@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, Image, StyleSheet, ViewStyle, ImageStyle, LayoutChangeEvent } from 'react-native';
 import { connect } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
+import { Optional } from 'types';
 
 const styles = StyleSheet.create({
     container: {
@@ -22,19 +23,19 @@ const styles = StyleSheet.create({
 });
 
 export interface AvatarOwnProps {
-    photoUrl : string;
+    photoUrl : Optional<string>;
     style?: ViewStyle;
     imageStyle?: ViewStyle;
     useDefaultForEmployeesList?: boolean;
 }
 
 export interface AvatarReduxProps {
-    jwtToken: string;
+    jwtToken: Optional<string>;
 }
 
 function mapStateToProps(state: AppState): AvatarReduxProps {
     return {
-        jwtToken: state.authentication.authInfo.jwtToken
+        jwtToken: state.authentication && state.authentication.authInfo ? state.authentication.authInfo.jwtToken : null,
     };
 }
 
@@ -83,19 +84,17 @@ class AvatarImpl extends Component<AvatarProps, AvatarState> {
                 height: this.state.size
             },
             this.props.style,
-            this.state.visible ?
-                {}
-                : { display: 'none' }
+            this.state.visible ? {} : { display: 'none' }
         ]);
 
-        const imgSize = (outerFrameFlattenStyle.width as number) - outerFrameFlattenStyle.borderWidth * 2;
+        const imgSize = (outerFrameFlattenStyle.width as number) - outerFrameFlattenStyle.borderWidth! * 2;
         const imageFlattenStyle = StyleSheet.flatten([
             styles.image,
             {
                 width: imgSize,
                 height: imgSize,
                 borderRadius: imgSize * 0.5,
-                borderWidth: outerFrameFlattenStyle.borderWidth * 2 //by design it seems to be twice thicker than container border
+                borderWidth: outerFrameFlattenStyle.borderWidth! * 2 //by design it seems to be twice thicker than container border
             },
             this.props.imageStyle
         ]);

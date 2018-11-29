@@ -6,6 +6,7 @@ import { NotAuthenticatedState, AuthenticationState } from './authentication-sta
 import moment from 'moment';
 import { distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import { concat, interval, merge, Observable, of, ReplaySubject, Subject, Subscription } from 'rxjs';
+import { Optional } from 'types';
 
 //https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-protocols-oauth-code
 
@@ -21,7 +22,7 @@ export class OAuthProcess {
 
     private readonly authorizationCode: Subject<string> = new Subject<string>();
 
-    private readonly refreshTokenSource: Subject<RefreshTokenRequest> = new Subject<RefreshTokenRequest>();
+    private readonly refreshTokenSource: Subject<Optional<RefreshTokenRequest>> = new Subject<Optional<RefreshTokenRequest>>();
  
     private readonly authenticationStateSource = new ReplaySubject<AuthenticationState>(1);
 
@@ -47,8 +48,8 @@ export class OAuthProcess {
         const refreshTokenObtainedAccessCodes = this.refreshTokenSource.pipe(
             switchMap(request => this.getPeriodicalRefreshTokens(request)),
             switchMap(token => {
-                if (token === null) {
-                    return of<TokenResponse>(null);
+                if (!token) {
+                    return of<Optional<TokenResponse>>(null);
                 }
 
                 return this.accessCodeRequest.refresh(token);
@@ -68,7 +69,7 @@ export class OAuthProcess {
     }
 
     public async login() {
-        let value: string = undefined;
+        let value: Optional<string> = undefined;
         try {
             value = await this.refreshTokenStorage.getRefreshToken();
         } catch (e) {
@@ -103,10 +104,10 @@ export class OAuthProcess {
         this.refreshTokenSource.next(null);
     }
 
-    private onNewTokenObtained(tokenResponse: TokenResponse) {
+    private onNewTokenObtained(tokenResponse: Optional<TokenResponse>) {
         this.storeRefreshToken(tokenResponse ? tokenResponse.refreshToken : null);
 
-        if (tokenResponse === null) {
+        if (!tokenResponse) {
             this.authenticationStateSource.next(notAuthenticatedInstance);
         } else {
             this.refreshTokenSource.next( { tokenValue: tokenResponse.refreshToken, immediateRefresh: false });
@@ -144,8 +145,8 @@ export class OAuthProcess {
         }
     }
 
-    private getPeriodicalRefreshTokens(request: RefreshTokenRequest): Observable<string> {
-        if (request === null) {
+    private getPeriodicalRefreshTokens(request: Optional<RefreshTokenRequest>): Observable<Optional<string>> {
+        if (!request) {
             return of(null);
         }
 

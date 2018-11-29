@@ -13,14 +13,15 @@ import { UserInfoState } from '../user/user-info.reducer';
 import { nextCalendarPageReducer } from './next-calendar-page.reducer';
 import { prevCalendarPageReducer } from './prev-calendar-page.reducer';
 import { createCalendarPagesInitState } from './calendar-pages-init-state';
+import { Optional } from 'types';
 
 
 export interface IntervalsSubState {
-    intervals: ReadOnlyIntervalsModel;
+    intervals: Optional<ReadOnlyIntervalsModel>;
 }
 
 export interface DisableCalendarDaysBeforeSubState {
-    disableCalendarDaysBefore: DayModel;
+    disableCalendarDaysBefore: Optional<DayModel>;
 }
 
 export interface SelectionSubState {
@@ -29,7 +30,7 @@ export interface SelectionSubState {
 
 export interface EventsMapSubState {
     events: Map<string, CalendarEvent[]>;
-    userEmployeeId: string;
+    userEmployeeId: Optional<string>;
 }
 
 export interface CalendarPagesSubState {
@@ -49,7 +50,6 @@ export interface CalendarEventsState extends
 }
 
 const createInitState = (): CalendarEventsState => {
-    const builder = new CalendarWeeksBuilder();
     const date = moment();
     const [
         prevPage,
@@ -57,7 +57,7 @@ const createInitState = (): CalendarEventsState => {
         nextPage
      ] = createCalendarPagesInitState(date);
 
-    let todayModel: DayModel = null;
+    let todayModel: Optional<DayModel> = null;
     for (let week of currentPage.weeks) {
         todayModel = week.days.find(day => day.today);
 
@@ -100,7 +100,7 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
             let {events} = state;
 
             events = events.set(action.employeeId, action.calendarEvents.all);
-            
+
             newState = {
                 ...state,
                 events: events
@@ -152,7 +152,7 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 return state;
             }
 
-            const intervalsBySingleDay = state.intervals
+            const intervalsBySingleDay = state.intervals && state.selection.single.day
                 ? state.intervals.get(state.selection.single.day.date)
                 : null;
 

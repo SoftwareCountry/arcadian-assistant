@@ -5,9 +5,10 @@ import { OrganizationActions } from '../organization/organization.action';
 import { UserActions } from './user.action';
 import { UserEmployeePermissions } from './user-employee-permissions.model';
 import { Map } from 'immutable';
+import { Nullable } from 'types';
 
 export interface UserInfoState {
-    employeeId: string;
+    employeeId: Nullable<string>;
     permissions: Map<string, UserEmployeePermissions>;
 }
 

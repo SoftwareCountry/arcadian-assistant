@@ -12,6 +12,7 @@ import { ScrollView } from 'react-native';
 import { LoadingView } from '../navigation/loading';
 import { Action, Dispatch } from 'redux';
 import { openEmployeeDetails } from '../navigation/navigation.actions';
+import { Optional } from 'types';
 
 interface CompanyDepartmentsStateProps {
     departmentIdToNode: DepartmentIdToNode;
@@ -180,7 +181,7 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
 
                 if (!employeesIds
                     || !employeesIds.size
-                    || (employeesIds.size === 1 && employeesIds.has(parent.chiefId))) {
+                    || (employeesIds.size === 1 && parent && employeesIds.has(parent.chiefId))) {
                         continue;
                 }
 
@@ -193,7 +194,7 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
         return children;
     }
 
-    private buildSelectedDepartmentId(departmentIdToNode: DepartmentIdToNode, employeesById: EmployeeMap): string {
+    private buildSelectedDepartmentId(departmentIdToNode: DepartmentIdToNode, employeesById: EmployeeMap): Optional<string> {
         if (departmentIdToNode.has(this.props.selectedCompanyDepartmentId)) {
             return this.props.selectedCompanyDepartmentId;
         }

@@ -28,7 +28,7 @@ export const fetchNewFeedsEpic$ = (action$: ActionsObservable<fAction.FetchNewFe
         filter(() => !!state$.value.feeds),
         switchMap(x => {
             const toDate = moment();
-            const fromDate = state$.value.feeds.toDate ? state$.value.feeds.toDate : moment().subtract(pagingPeriodDays, 'days');
+            const fromDate = state$.value.feeds!.toDate ? state$.value.feeds!.toDate! : moment().subtract(pagingPeriodDays, 'days');
 
             return deps.apiClient.getJSON(`/feeds/messages?fromDate=${fromDate.format('YYYY-MM-DD')}&toDate=${toDate.format('YYYY-MM-DD')}`)
                 .pipe(
@@ -45,8 +45,8 @@ export const fetchOldFeedsEpic$ = (action$: ActionsObservable<fAction.FetchOldFe
         withLatestFrom(state$),
         filter(() => !!state$.value.feeds),
         switchMap(x => {
-            const toDate = state$.value.feeds.fromDate ? state$.value.feeds.fromDate : moment();
-            const fromDate = state$.value.feeds.fromDate ? state$.value.feeds.fromDate.clone().subtract(pagingPeriodDays, 'days') : moment().subtract(pagingPeriodDays, 'days');
+            const toDate = state$.value.feeds!.fromDate ? state$.value.feeds!.fromDate! : moment();
+            const fromDate = state$.value.feeds!.fromDate ? state$.value.feeds!.fromDate!.clone().subtract(pagingPeriodDays, 'days') : moment().subtract(pagingPeriodDays, 'days');
 
             return deps.apiClient.getJSON(`/feeds/messages?fromDate=${fromDate.format('YYYY-MM-DD')}&toDate=${toDate.format('YYYY-MM-DD')}`)
                 .pipe(
@@ -60,4 +60,4 @@ export const fetchOldFeedsEpic$ = (action$: ActionsObservable<fAction.FetchOldFe
 
 export const loadFeedsFinishedEpic$ = (action$: ActionsObservable<fAction.LoadFeedsFinished>) =>
     action$.ofType('LOAD_FEEDS_FINISHED').pipe(
-        flatMap(x => x.feeds.filter(y => y.employeeId !== null).map(feed => oAction.loadEmployee(feed.employeeId))));
+        flatMap(x => x.feeds.filter(y => y.employeeId !== null).map(feed => oAction.loadEmployee(feed.employeeId!))));

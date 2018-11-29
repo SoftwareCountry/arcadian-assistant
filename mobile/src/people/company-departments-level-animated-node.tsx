@@ -6,6 +6,7 @@ import { companyDepartmentsAnimatedNode } from './styles';
 import { Avatar } from './avatar';
 import { EmployeeMap } from '../reducers/organization/employees.reducer';
 import { Employee } from '../reducers/organization/employee.model';
+import { Optional } from 'types';
 
 interface Perspective {
     perspective: number;
@@ -127,7 +128,7 @@ class Animations {
 interface CompanyDepartmentsLevelAnimatedNodeProps {
     index: number;
     node: DepartmentNode;
-    chief: Employee;
+    chief: Optional<Employee>;
     width: number;
     height: number;
     gap: number;
@@ -168,9 +169,7 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
         } = this.calculateStyles();
 
         const { chief } = this.props;
-        const photo = chief
-            ? chief.photoUrl
-            : null;
+        const photo = chief ? chief.photoUrl : null;
         const chiefName = chief ? chief.name : null;
         const chiefPosition = chief ? chief.position : null;
         const showStaffIcon = !!this.props.node.staffDepartmentId;
@@ -199,13 +198,13 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
         );
     }
 
-    private isChiefSame(a: Employee, b: Employee): boolean {
-        if (a === b) {
-            return true;
-        }
-
+    private isChiefSame(a: Optional<Employee>, b: Optional<Employee>): boolean {
         if (!a || !b) {
             return false;
+        }
+
+        if (a === b) {
+            return true;
         }
 
         return a.equals(b);

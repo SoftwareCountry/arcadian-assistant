@@ -1,29 +1,30 @@
 import {dataMember, required} from 'santee-dcts';
 import { Employee } from './employee.model';
+import { Nullable } from 'types';
 
 export class Department {
 
     @dataMember()
     @required()
-    public departmentId: string;
+    public departmentId: string = '';
 
     @dataMember()
     @required()
-    public abbreviation: string;
+    public abbreviation: string = '';
 
     @dataMember()
     @required()
-    public name: string;
+    public name: string = '';
 
     @dataMember()
     @required({ nullable: true })
-    public parentDepartmentId: string;
+    public parentDepartmentId: Nullable<string> = null;
 
     @dataMember()
     @required({ nullable: true })
-    public chiefId: string;
+    public chiefId: Nullable<string> = null;
 
     @dataMember()
     @required({ nullable: true })
-    public isHeadDepartment: boolean;
+    public isHeadDepartment: Nullable<boolean> = null;
 }

@@ -24,7 +24,7 @@ export const loadTicketTemplatesEpic$ = (action$: ActionsObservable<TicketAction
         map(x => [tempMessage, tempMessage2]),
         map(x => loadTicketTemplatesFinished(x)));
 
-export const ticketTemplatesReducer: Reducer<TicketTemplate[]> = (state = null, action: TicketAction) => {
+export const ticketTemplatesReducer: Reducer<TicketTemplate[]> = (state = Array<TicketTemplate>(), action: TicketAction) => {
     switch (action.type) {
         case 'LOAD-TICKET-TEMPLATES-FINISHED':
             return [...action.templates];

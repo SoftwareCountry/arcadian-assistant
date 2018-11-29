@@ -11,7 +11,7 @@ import { AppState, DependenciesContainer } from '../app.reducer';
 import { Employee } from './employee.model';
 import { loadFailedError } from '../errors/errors.action';
 import { handleHttpErrors } from '../errors/errors.epics';
-import { catchError, flatMap, groupBy, map, mergeAll, switchMap } from 'rxjs/operators';
+import { catchError, filter, flatMap, groupBy, map, mergeAll, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 
 export const loadEmployeeEpic$ = (action$: ActionsObservable<LoadEmployee>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
@@ -40,7 +40,7 @@ export const loadDepartmentsEpic$ = (action$: ActionsObservable<LoadDepartments>
 export const loadChiefsEpic$ = (action$: ActionsObservable<LoadDepartmentsFinished>) => action$.pipe(
     ofType('LOAD-DEPARTMENTS-FINISHED'),
     map(action => action.departments.filter(department => !!department.chiefId)),
-    flatMap(departments => departments.map(department => loadEmployee(department.chiefId))),
+    flatMap(departments => departments.map(department => loadEmployee(department.chiefId!))),
 );
 
 export const loadEmployeesForDepartmentEpic$ = (action$: ActionsObservable<LoadEmployeesForDepartment>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
@@ -76,7 +76,8 @@ export const loadEmployeesForUserDepartmentEpic$ = (action$: ActionsObservable<L
 
 export const loadEmployeesForUserRoomEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>) => action$.pipe(
     ofType('LOAD-USER-EMPLOYEE-FINISHED'),
-    map(x => loadEmployeesForRoom(x.employee.roomNumber)),
+    filter(action => { return action.employee.roomNumber !== null }),
+    map(x => loadEmployeesForRoom(x.employee.roomNumber!)),
 );
 
 export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(

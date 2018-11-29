@@ -1,15 +1,10 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import { Employee } from '../../reducers/organization/employee.model';
 import { Department } from '../../reducers/organization/department.model';
-import { MaterialTopTabBar, NavigationRoute, TabBarTopProps, TabLabelTextParam } from 'react-navigation';
+import { MaterialTopTabBar, TabBarTopProps, TabLabelTextParam } from 'react-navigation';
 import { connect } from 'react-redux';
 import { AppState } from '../../reducers/app.reducer';
-import { TabBarLabel } from '../../tabbar/tab-bar-label.component';
-import tabBarStyles from '../../tabbar/tab-bar-styles';
-import { TextStyle } from 'react-native';
-
-//============================================================================
-type Optional<P> = P | null | undefined;
+import { Optional } from 'types';
 
 //============================================================================
 interface TabBarTopCustomProps {

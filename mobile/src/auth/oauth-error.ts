@@ -1,3 +1,3 @@
 export class OauthError extends Error {
-    public message: string;
+    public message: string = '';
 }
