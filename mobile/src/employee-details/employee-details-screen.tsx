@@ -2,31 +2,34 @@ import React, { Component } from 'react';
 import { Department } from '../reducers/organization/department.model';
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
-import {SafeAreaView, ViewStyle} from 'react-native';
+import { SafeAreaView, StyleSheet, ViewStyle } from 'react-native';
 import { profileScreenStyles } from '../profile/styles';
 import { EmployeeDetails } from './employee-details';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
-import { NavigationRoute } from 'react-navigation';
-import { Employee } from '../reducers/organization/employee.model';
+import { NavigationScreenConfig, NavigationScreenProps, NavigationStackScreenOptions } from 'react-navigation';
 import { LoadingView } from '../navigation/loading';
+import Style from '../layout/style';
 
 interface EmployeeDetailsProps {
     departments: Department[];
-}
-
-interface NavigationProps {
-    navigation: {
-        state: NavigationRoute //TODO: this should be taken from redux state instead.
-    };
 }
 
 const mapStateToProps = (state: AppState): EmployeeDetailsProps => ({
     departments: state.organization.departments,
 });
 
-export class EmployeeDetailsScreenImpl extends Component<EmployeeDetailsProps & NavigationProps> {
+export class EmployeeDetailsScreenImpl extends Component<EmployeeDetailsProps & NavigationScreenProps> {
+
+    //----------------------------------------------------------------------------
+    public static navigationOptions: NavigationScreenConfig<NavigationStackScreenOptions> = {
+        headerStyle: {
+            ...StyleSheet.flatten(Style.navigation.header),
+            borderBottomColor: 'transparent',
+        },
+    };
+
     public render() {
-        const employee = this.props.navigation.state.params.employee as Employee;
+        const employee = this.props.navigation.getParam('employee', undefined);
 
         const department = this.props.departments.find((d: Department) => d.departmentId === employee.departmentId);
 
