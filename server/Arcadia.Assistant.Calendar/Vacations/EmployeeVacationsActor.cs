@@ -198,7 +198,8 @@
             return VacationStatuses.All.Contains(newCalendarEvent.Status)
                 && (oldCalendarEvent.Status != VacationStatuses.Cancelled)
                 && (oldCalendarEvent.Status != VacationStatuses.Rejected)
-                && (newCalendarEvent.Status != this.GetInitialStatus());
+                && (newCalendarEvent.Status != this.GetInitialStatus())
+                && (newCalendarEvent.Status != VacationStatuses.Approved);
         }
 
         protected override void OnRecover(object message)
