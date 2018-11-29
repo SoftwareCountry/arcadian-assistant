@@ -94,40 +94,43 @@
                     break;
 
                 case ProcessVacationApprovals msg:
-                    var approvals = this.approvalsByEvent[msg.EventId];
-                    var getNextApproverMessage = new GetNextVacationRequestApprover(this.EmployeeId, approvals);
-
                     this.vacationApprovalsChecker
-                        .Ask<GetNextVacationRequestApprover.Response>(getNextApproverMessage, this.timeoutSetting)
+                        .Ask<GetNextVacationRequestApprover.Response>(
+                            new GetNextVacationRequestApprover(this.EmployeeId, this.approvalsByEvent[msg.EventId]),
+                            this.timeoutSetting)
                         .ContinueWith(task => new ProcessVacationApprovals.Response(msg.EventId, task.Result.NextApproverEmployeeId))
                         .PipeTo(this.Self);
                     break;
 
                 case ProcessVacationApprovals.Response msg:
-                    if (msg.NextApproverId == null)
-                    {
-                        var oldEvent = this.EventsById[msg.EventId];
-
-                        var newEvent = new CalendarEvent(
-                            oldEvent.EventId,
-                            oldEvent.Type,
-                            oldEvent.Dates,
-                            VacationStatuses.Approved,
-                            oldEvent.EmployeeId
-                        );
-
-                        this.UpdateCalendarEvent(oldEvent, newEvent, ev => { });
-                    }
-                    else
-                    {
-                        // It should publish message to Event Bus that new approver is required
-                    }
-
+                    this.ProcessVacationApprovals(msg);
                     break;
 
                 default:
                     base.OnCommand(message);
                     break;
+            }
+        }
+
+        private void ProcessVacationApprovals(ProcessVacationApprovals.Response response)
+        {
+            if (response.NextApproverId == null)
+            {
+                var oldEvent = this.EventsById[response.EventId];
+
+                var newEvent = new CalendarEvent(
+                    oldEvent.EventId,
+                    oldEvent.Type,
+                    oldEvent.Dates,
+                    VacationStatuses.Approved,
+                    oldEvent.EmployeeId
+                );
+
+                this.UpdateCalendarEvent(oldEvent, newEvent, ev => { });
+            }
+            else
+            {
+                // It should publish message to Event Bus that new approver is required
             }
         }
 
