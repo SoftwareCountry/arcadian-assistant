@@ -5,6 +5,8 @@ import { MaterialTopTabBar, NavigationRoute, TabBarTopProps, TabLabelTextParam }
 import { connect } from 'react-redux';
 import { AppState } from '../../reducers/app.reducer';
 import { TabBarLabel } from '../../tabbar/tab-bar-label.component';
+import tabBarStyles from '../../tabbar/tab-bar-styles';
+import { TextStyle } from 'react-native';
 
 //============================================================================
 type Optional<P> = P | null | undefined;
@@ -28,6 +30,7 @@ class TabBarTopCustomImpl extends React.Component<TabBarTopProps & TabBarTopCust
                 getLabelText={(param) => {
                     return this.getLabel(param, employee, department);
                 }}
+                labelStyle={tabBarStyles.tabBarLabel as TextStyle}
             />
         );
     }
@@ -45,11 +48,6 @@ class TabBarTopCustomImpl extends React.Component<TabBarTopProps & TabBarTopCust
             default:
                 return '';
         }
-    };
-
-    //----------------------------------------------------------------------------
-    private styleTabBarLabel = (label: string): string | ReactElement<any> => {
-        return <TabBarLabel label={label}/>;
     };
 }
 
