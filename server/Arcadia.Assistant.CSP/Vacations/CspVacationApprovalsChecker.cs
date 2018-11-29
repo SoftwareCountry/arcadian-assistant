@@ -1,6 +1,5 @@
 ﻿namespace Arcadia.Assistant.CSP.Vacations
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.RegularExpressions;
@@ -8,9 +7,6 @@
 
     using Akka.Actor;
 
-    using Configuration.Configuration;
-    using Microsoft.EntityFrameworkCore;
-    using Model;
     using Organization.Abstractions;
 
     public class CspVacationApprovalsChecker : VacationApprovalsChecker
@@ -22,9 +18,12 @@
 
         protected override async Task<string> GetNextApprover(string employeeId, IEnumerable<string> existingApprovals)
         {
-            var allDepartments = await this.GetDepartments();
+            var employeesActor = Context.ActorSelection(EmployeesStorageActorPath);
+            var departmentsActor = Context.ActorSelection(DepartmentsStorageActorPath);
 
-            var employeeDepartmentId = await this.GetEmployeeDepartmentId(employeeId);
+            var allDepartments = await this.GetDepartments(departmentsActor);
+            var employeeDepartmentId = await this.GetEmployeeDepartmentId(employeesActor, employeeId);
+
             var employeeDepartment = allDepartments.First(d => d.DepartmentId == employeeDepartmentId);
             var parentDepartment = allDepartments.FirstOrDefault(d => d.DepartmentId == employeeDepartment.ParentDepartmentId);
             var isEmployeeChief = employeeDepartment.ChiefId == employeeId;
@@ -72,10 +71,8 @@
             return preliminaryApprover ?? finalApprover;
         }
 
-        private async Task<string> GetEmployeeDepartmentId(string employeeId)
+        private async Task<string> GetEmployeeDepartmentId(ActorSelection employeesActor, string employeeId)
         {
-            var employeesActor = Context.ActorSelection(EmployeesStorageActorPath);
-
             var allEmployees = await employeesActor.Ask<EmployeesInfoStorage.LoadAllEmployees.Response>(
                 EmployeesInfoStorage.LoadAllEmployees.Instance
             );
@@ -85,10 +82,8 @@
                 ?.Metadata.DepartmentId;
         }
 
-        private async Task<List<DepartmentInfo>> GetDepartments()
+        private async Task<List<DepartmentInfo>> GetDepartments(ActorSelection departmentsActor)
         {
-            var departmentsActor = Context.ActorSelection(DepartmentsStorageActorPath);
-
             var allDepartmentsResponse = await departmentsActor.Ask<DepartmentsStorage.LoadAllDepartments.Response>(
                 DepartmentsStorage.LoadAllDepartments.Instance
             );
