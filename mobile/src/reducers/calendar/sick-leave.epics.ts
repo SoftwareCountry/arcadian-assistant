@@ -1,4 +1,4 @@
-import { ActionsObservable } from 'redux-observable';
+import { ActionsObservable, StateObservable } from 'redux-observable';
 import { CompleteSickLeave, ConfirmClaimSickLeave, ConfirmProlongSickLeave, CancelSickLeave } from './sick-leave.action';
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { CalendarEventStatus, CalendarEvent, CalendarEventType, DatesInterval } from './calendar-event.model';
@@ -10,7 +10,7 @@ import { getEventsAndPendingRequests } from './calendar.epics';
 import { catchError, flatMap, map } from 'rxjs/operators';
 import { of } from 'rxjs';
 
-export const sickLeaveSavedEpic$ = (action$: ActionsObservable<ConfirmClaimSickLeave>, state: AppState, deps: DependenciesContainer) =>
+export const sickLeaveSavedEpic$ = (action$: ActionsObservable<ConfirmClaimSickLeave>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('CONFIRM-CLAIM-SICK-LEAVE').pipe(
         flatMap(x => {
             const calendarEvents = new CalendarEvent();
@@ -37,7 +37,7 @@ export const sickLeaveSavedEpic$ = (action$: ActionsObservable<ConfirmClaimSickL
         catchError((e: Error) => of(loadFailedError(e.message))),
     );
 
-export const sickLeaveCompletedEpic$ = (action$: ActionsObservable<CompleteSickLeave>, state: AppState, deps: DependenciesContainer) =>
+export const sickLeaveCompletedEpic$ = (action$: ActionsObservable<CompleteSickLeave>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('COMPLETE-SICK-LEAVE').pipe(
         flatMap(x => {
 
@@ -54,7 +54,7 @@ export const sickLeaveCompletedEpic$ = (action$: ActionsObservable<CompleteSickL
         catchError((e: Error) => of(loadFailedError(e.message))),
     );
 
-export const sickLeaveProlongedEpic$ = (action$: ActionsObservable<ConfirmProlongSickLeave>, state: AppState, deps: DependenciesContainer) =>
+export const sickLeaveProlongedEpic$ = (action$: ActionsObservable<ConfirmProlongSickLeave>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('CONFIRM-PROLONG-SICK-LEAVE').pipe(
         flatMap(x => {
 
@@ -73,7 +73,7 @@ export const sickLeaveProlongedEpic$ = (action$: ActionsObservable<ConfirmProlon
         catchError((e: Error) => of(loadFailedError(e.message))),
     );
 
-export const sickLeaveCanceledEpic$ = (action$: ActionsObservable<CancelSickLeave>, state: AppState, deps: DependenciesContainer) =>
+export const sickLeaveCanceledEpic$ = (action$: ActionsObservable<CancelSickLeave>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('CANCEL-SICK-LEAVE').pipe(
         flatMap(x => {
 

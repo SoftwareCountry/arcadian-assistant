@@ -1,4 +1,4 @@
-import { ActionsObservable, ofType, combineEpics } from 'redux-observable';
+import { ActionsObservable, ofType, combineEpics, StateObservable } from 'redux-observable';
 import { DependenciesContainer, AppState } from '../app.reducer';
 import { StartLoginProcess, StartLogoutProcess, startLoginProcess, startLogoutProcess, userLoggedIn, userLoggedOut, jwtTokenSet } from '../auth/auth.action';
 import { refresh } from '../refresh/refresh.action';
@@ -17,13 +17,13 @@ function showAlert(message: string, okButtonTitle: string, rejectButtonTitle: st
         [{ text: okButtonTitle, onPress: () => okButton() }, { text: rejectButtonTitle, onPress: () => rejectButton() }]);
 }
 
-export const startLoginProcessEpic$ = (action$: ActionsObservable<StartLoginProcess>, state: AppState, dep: DependenciesContainer) =>
+export const startLoginProcessEpic$ = (action$: ActionsObservable<StartLoginProcess>, _: StateObservable<AppState>, dep: DependenciesContainer) =>
     action$.ofType('START-LOGIN-PROCESS').pipe(
         tap(x => dep.oauthProcess.login()),
         ignoreElements(),
     );
 
-export const startLogoutProcessEpic$ = (action$: ActionsObservable<StartLogoutProcess>, state: AppState, dep: DependenciesContainer) =>
+export const startLogoutProcessEpic$ = (action$: ActionsObservable<StartLogoutProcess>, _: StateObservable<AppState>, dep: DependenciesContainer) =>
     action$.ofType('START-LOGOUT-PROCESS').pipe(
         map(x => {
             if (x.force) {
@@ -40,7 +40,7 @@ export const startLogoutProcessEpic$ = (action$: ActionsObservable<StartLogoutPr
         ignoreElements()
     );
 
-export const listenerAuthStateEpic$ = (action$: ActionsObservable<any>, state: AppState, dep: DependenciesContainer) =>
+export const listenerAuthStateEpic$ = (action$: ActionsObservable<any>, _: StateObservable<AppState>, dep: DependenciesContainer) =>
     dep.oauthProcess.authenticationState
         .pipe(
             handleHttpErrors(),
@@ -55,7 +55,7 @@ export const listenerAuthStateEpic$ = (action$: ActionsObservable<any>, state: A
         );
 
 
-export const jwtTokenEpic$ = (action$: ActionsObservable<any>, state: AppState, dep: DependenciesContainer) =>
+export const jwtTokenEpic$ = (action$: ActionsObservable<any>, _: StateObservable<AppState>, dep: DependenciesContainer) =>
     dep.oauthProcess.authenticationState
         .pipe(
             map((x: AuthenticationState) => x.isAuthenticated ? jwtTokenSet(x.jwtToken) : jwtTokenSet(null))

@@ -1,5 +1,5 @@
 import { LoadUserEmployeeFinished } from '../user/user.action';
-import { ActionsObservable, ofType } from 'redux-observable';
+import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
 import { deserializeArray } from 'santee-dcts';
 import {
     loadCalendarEventsFinished, SelectIntervalsBySingleDaySelection, selectIntervalsBySingleDaySelection, SelectCalendarDay, LoadCalendarEventsFinished, LoadCalendarEvents, loadCalendarEvents,
@@ -16,18 +16,18 @@ import {catchError, flatMap, groupBy, map, mergeAll, mergeMap, switchMap} from '
 import {from, Observable, of, pipe} from 'rxjs';
 import { loadPendingRequests } from './pending-requests/pending-requests.action';
 
-export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, state: AppState, deps: DependenciesContainer) =>
+export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('LOAD-USER-EMPLOYEE-FINISHED').pipe(
         map(x => loadCalendarEvents(x.employee.employeeId)),
         catchError((e: Error) => of(loadFailedError(e.message))),
     );
 
-export const loadCalendarEventsFinishedEpic$ = (action$: ActionsObservable<LoadCalendarEventsFinished>, state: AppState, deps: DependenciesContainer) =>
+export const loadCalendarEventsFinishedEpic$ = (action$: ActionsObservable<LoadCalendarEventsFinished>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('LOAD-CALENDAR-EVENTS-FINISHED').pipe(
         map(x => closeEventDialog()),
     );
 
-export const loadCalendarEventsEpic$ = (action$: ActionsObservable<LoadCalendarEvents>, state: AppState, deps: DependenciesContainer) =>
+export const loadCalendarEventsEpic$ = (action$: ActionsObservable<LoadCalendarEvents>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('LOAD-CALENDAR-EVENTS').pipe(
         groupBy(x => x.employeeId),
         map(x =>
@@ -61,7 +61,7 @@ export const calendarSelectionModeEpic$ = (action$: ActionsObservable<CalendarSe
         map(x => disableCalendarSelection(false)),
     );
 
-export const calendarEventSetNewStatusEpic$ = (action$: ActionsObservable<CalendarEventSetNewStatus>, state: AppState, deps: DependenciesContainer) =>
+export const calendarEventSetNewStatusEpic$ = (action$: ActionsObservable<CalendarEventSetNewStatus>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('CALENDAR-EVENT-NEW-STATUS').pipe(
         flatMap(x => {
             const requestBody = { ...x.calendarEvent };

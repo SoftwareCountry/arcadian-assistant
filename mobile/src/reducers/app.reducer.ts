@@ -1,5 +1,4 @@
 import {Action, applyMiddleware, combineReducers, createStore} from 'redux';
-import {AppState} from './app.reducer';
 import {helpdeskEpics, helpdeskReducer, HelpdeskState} from './helpdesk/helpdesk.reducer';
 import {combineEpics, createEpicMiddleware} from 'redux-observable';
 //import { createLogger } from 'redux-logger';
@@ -72,6 +71,9 @@ export const storeFactory = (oauthProcess: OAuthProcess) => {
     };
 
     const epicMiddleware = createEpicMiddleware({dependencies});
+    const store = createStore(rootReducer, {}, applyMiddleware(epicMiddleware));
 
-    return createStore(rootReducer, {}, applyMiddleware(epicMiddleware));
+    epicMiddleware.run(rootEpic);
+
+    return store;
 };

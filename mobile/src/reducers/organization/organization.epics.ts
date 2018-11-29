@@ -1,4 +1,4 @@
-import {ActionsObservable, ofType} from 'redux-observable';
+import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
 import {
     LoadDepartments, loadDepartmentsFinished, LoadDepartmentsFinished, loadDepartments,
     loadEmployeesFinished, LoadEmployeesForDepartment, LoadEmployeesForRoom, loadEmployeesForDepartment,
@@ -14,7 +14,7 @@ import { handleHttpErrors } from '../errors/errors.epics';
 import { catchError, flatMap, groupBy, map, mergeAll, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 
-export const loadEmployeeEpic$ = (action$: ActionsObservable<LoadEmployee>, state: AppState, deps: DependenciesContainer) => action$.pipe(
+export const loadEmployeeEpic$ = (action$: ActionsObservable<LoadEmployee>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
     ofType('LOAD_EMPLOYEE'),
     groupBy(action => action.employeeId),
     map(x => x.pipe(
@@ -27,7 +27,7 @@ export const loadEmployeeEpic$ = (action$: ActionsObservable<LoadEmployee>, stat
     map(employee => loadEmployeesFinished([ employee ])),
 );
 
-export const loadDepartmentsEpic$ = (action$: ActionsObservable<LoadDepartments>, state: AppState, deps: DependenciesContainer) => action$.pipe(
+export const loadDepartmentsEpic$ = (action$: ActionsObservable<LoadDepartments>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
     ofType('LOAD-DEPARTMENTS'),
     switchMap(() => deps.apiClient.getJSON(`/departments`).pipe(
         map(obj => deserializeArray(obj as any, Department)),
@@ -43,7 +43,7 @@ export const loadChiefsEpic$ = (action$: ActionsObservable<LoadDepartmentsFinish
     flatMap(departments => departments.map(department => loadEmployee(department.chiefId))),
 );
 
-export const loadEmployeesForDepartmentEpic$ = (action$: ActionsObservable<LoadEmployeesForDepartment>, state: AppState, deps: DependenciesContainer) => action$.pipe(
+export const loadEmployeesForDepartmentEpic$ = (action$: ActionsObservable<LoadEmployeesForDepartment>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
     ofType('LOAD_EMPLOYEES_FOR_DEPARTMENT'),
     groupBy(action => action.departmentId),
     map(x =>
@@ -56,7 +56,7 @@ export const loadEmployeesForDepartmentEpic$ = (action$: ActionsObservable<LoadE
     map(loadEmployeesFinished)
 );
 
-export const loadEmployeesForRoomEpic$ = (action$: ActionsObservable<LoadEmployeesForRoom>, state: AppState, deps: DependenciesContainer) => action$.pipe(
+export const loadEmployeesForRoomEpic$ = (action$: ActionsObservable<LoadEmployeesForRoom>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
     ofType('LOAD_EMPLOYEES_FOR_ROOM'),
     groupBy(action => action.roomNumber),
     map(x => x.pipe(
@@ -79,7 +79,7 @@ export const loadEmployeesForUserRoomEpic$ = (action$: ActionsObservable<LoadUse
     map(x => loadEmployeesForRoom(x.employee.roomNumber)),
 );
 
-export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, state: AppState, deps: DependenciesContainer) => action$.pipe(
+export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
     ofType('LOAD-USER-EMPLOYEE-FINISHED'),
     map(x =>  loadDepartments()),
     catchError((e: Error) => of(loadFailedError(e.message))),

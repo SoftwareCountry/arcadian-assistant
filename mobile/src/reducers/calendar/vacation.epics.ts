@@ -1,6 +1,6 @@
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { ConfirmClaimVacation, CancelVacation, ConfirmVacationChange } from './vacation.action';
-import { ActionsObservable } from 'redux-observable';
+import { ActionsObservable, StateObservable } from 'redux-observable';
 import { CalendarEvent, CalendarEventType, CalendarEventStatus, DatesInterval } from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
 import { loadCalendarEvents } from './calendar.action';
@@ -9,7 +9,7 @@ import { getEventsAndPendingRequests } from './calendar.epics';
 import { catchError, flatMap, map } from 'rxjs/operators';
 import { of } from 'rxjs';
 
-export const vacationSavedEpic$ = (action$: ActionsObservable<ConfirmClaimVacation>, state: AppState, deps: DependenciesContainer) =>
+export const vacationSavedEpic$ = (action$: ActionsObservable<ConfirmClaimVacation>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('CONFIRM-VACATION').pipe(
         flatMap(x => {
             const calendarEvents = new CalendarEvent();
@@ -35,7 +35,7 @@ export const vacationSavedEpic$ = (action$: ActionsObservable<ConfirmClaimVacati
         catchError((e: Error) => of(loadFailedError(e.message))),
     );
 
-export const vacationCanceledEpic$ = (action$: ActionsObservable<CancelVacation>, state: AppState, deps: DependenciesContainer) =>
+export const vacationCanceledEpic$ = (action$: ActionsObservable<CancelVacation>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('CANCEL-VACACTION').pipe(
         flatMap(x => {
             const requestBody = {...x.calendarEvent};
@@ -51,7 +51,7 @@ export const vacationCanceledEpic$ = (action$: ActionsObservable<CancelVacation>
         catchError((e: Error) => of(loadFailedError(e.message))),
     );
 
-export const vacationChangedEpic$ = (action$: ActionsObservable<ConfirmVacationChange>, state: AppState, deps: DependenciesContainer) =>
+export const vacationChangedEpic$ = (action$: ActionsObservable<ConfirmVacationChange>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('CONFIRM-VACATION-CHANGE').pipe(
         flatMap(x => {
             const requestBody = {...x.calendarEvent};
