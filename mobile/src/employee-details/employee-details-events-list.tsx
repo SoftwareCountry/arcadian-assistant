@@ -16,7 +16,7 @@ import { Nullable } from 'types';
 interface EmployeeDetailsEventsListProps {
     events: Map<Employee, CalendarEvent[]>;
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
-    hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => string;
+    hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => Nullable<string>;
     showUserAvatar?: boolean;
     canApprove: boolean;
     canReject: boolean;

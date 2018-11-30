@@ -10,7 +10,7 @@ import {SplashScreen} from './splash-screen/splash-screen';
 import { NavigationService } from './navigation/navigation.service';
 
 interface AppProps {
-    authentication: AuthState;
+    authentication: AuthState | undefined;
 }
 
 interface AppOwnProps {
@@ -19,7 +19,7 @@ interface AppOwnProps {
 
 export class App extends Component<AppProps & AppOwnProps> {
     public render() {
-        if (!this.props.authentication.authInfo) {
+        if(!this.props.authentication || !this.props.authentication.authInfo){
             return (
                 <SplashScreen/>
             );

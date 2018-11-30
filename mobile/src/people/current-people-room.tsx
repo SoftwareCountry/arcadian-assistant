@@ -16,6 +16,7 @@ import { loadEmployeesForRoom } from '../reducers/organization/organization.acti
 import { SafeAreaView, View } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import Style from '../layout/style';
+import { Map } from 'immutable';
 
 //============================================================================
 interface CurrentPeopleRoomProps {
@@ -29,7 +30,10 @@ interface CurrentPeopleDispatchProps {
 
 //----------------------------------------------------------------------------
 const stateToProps = (state: AppState): CurrentPeopleRoomProps => ({
-    employees: state.organization.employees
+    employees: state.organization ? state.organization.employees : {
+        employeesById: Map(),
+        employeeIdsByDepartment: Map()
+    }
 });
 
 //----------------------------------------------------------------------------

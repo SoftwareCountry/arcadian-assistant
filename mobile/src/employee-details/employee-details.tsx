@@ -21,14 +21,16 @@ import { HoursCreditCounter, VacationDaysCounter } from '../reducers/calendar/da
 import { ConvertHoursCreditToDays } from '../reducers/calendar/convert-hours-credit-to-days';
 import { Action, Dispatch } from 'redux';
 import { openCompany, openDepartment, openRoom } from '../navigation/navigation.actions';
+import { Nullable } from 'types';
+import { IntervalTypeConverter } from '../reducers/calendar/interval-type-converter';
 
 interface TileData {
     label: string;
     icon: string;
     style: ViewStyle;
     size: number;
-    payload: string;
-    onPress: () => void;
+    payload: Nullable<string>;
+    onPress: Nullable<() => void>;
 }
 
 interface EmployeeDetailsOwnProps {
@@ -40,8 +42,8 @@ interface EmployeeDetailsOwnProps {
 
 interface EmployeeDetailsStateProps {
     events: Map<string, CalendarEvent[]>;
-    hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => string;
-    userEmployeePermissions: Map<string, UserEmployeePermissions>;
+    hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => Nullable<string>;
+    userEmployeePermissions: Nullable<Map<string, UserEmployeePermissions>>;
 }
 
 type EmployeeDetailsProps = EmployeeDetailsOwnProps & EmployeeDetailsStateProps;
@@ -50,10 +52,10 @@ const mapStateToProps: MapStateToProps<EmployeeDetailsProps, EmployeeDetailsOwnP
     employee: ownProps.employee,
     department: ownProps.department,
     layoutStylesChevronPlaceholder: ownProps.layoutStylesChevronPlaceholder,
-    events: state.calendar.calendarEvents.events,
+    events: state.calendar ? state.calendar.calendarEvents.events : Map(),
     requests: ownProps.requests,
-    hoursToIntervalTitle: state.calendar.pendingRequests.hoursToIntervalTitle,
-    userEmployeePermissions: state.userInfo.permissions
+    hoursToIntervalTitle: state.calendar ? state.calendar.pendingRequests.hoursToIntervalTitle : IntervalTypeConverter.hoursToIntervalTitle,
+    userEmployeePermissions: state.userInfo ? state.userInfo.permissions : null,
 });
 
 const TileSeparator = () => <View style = {tileStyles.separator}/>;
@@ -86,10 +88,19 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             return true;
         }
 
-        if (!this.props.userEmployeePermissions.equals(nextProps.userEmployeePermissions)) {
+        const userEmployeePermissions = this.props.userEmployeePermissions;
+        const nextUserEmployeePermissions = nextProps.userEmployeePermissions;
 
-            const permissions = this.props.userEmployeePermissions.get(this.props.employee.employeeId);
-            const nextPermissions = nextProps.userEmployeePermissions.get(nextProps.employee.employeeId);
+        if (userEmployeePermissions !== nextUserEmployeePermissions) {
+            return true;
+        }
+
+        if (userEmployeePermissions &&
+            nextUserEmployeePermissions &&
+            !userEmployeePermissions.equals(nextUserEmployeePermissions)) {
+
+            const permissions = userEmployeePermissions.get(this.props.employee.employeeId, null);
+            const nextPermissions = nextUserEmployeePermissions.get(nextProps.employee.employeeId, null);
 
             return !permissions || !permissions.equals(nextPermissions);
         }
@@ -112,16 +123,16 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
     public render() {
         const { employee, department, userEmployeePermissions } = this.props;
 
-        if (!employee || !department) {
+        if (!employee || !department || !userEmployeePermissions) {
             return null;
         }
 
-        const permissions = userEmployeePermissions.get(employee.employeeId);
+        const permissions = userEmployeePermissions.get(employee.employeeId, null);
 
         const tiles = this.getTiles(employee);
         const contacts = this.getContacts(employee);
 
-        let events = this.props.events.get(employee.employeeId);
+        let events = this.props.events.get(employee.employeeId, null);
 
         return (
                 <View style={layoutStyles.container}>
@@ -226,7 +237,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             <View style={tileStyles.container}>
             {
                 tile.payload !== null ?
-                    <TouchableOpacity onPress={tile.onPress}>
+                    <TouchableOpacity onPress={tile.onPress ? tile.onPress : undefined}>
                     <View style={this.tileStyle(tile.onPress === null)}>
                         <View style={tileStyles.iconContainer}>
                             <ApplicationIcon name={tile.icon} size={tile.size} style={tile.style} />
@@ -293,7 +304,9 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         const daysConverter = new ConvertHoursCreditToDays();
         const calculatedDays = daysConverter.convert(hoursCredit);
 
-        const hoursCreditCounter = new HoursCreditCounter(hoursCredit, calculatedDays.days, calculatedDays.rest);
+        const hoursCreditCounter = new HoursCreditCounter(hoursCredit,
+            calculatedDays.days ? calculatedDays.days : null,
+            calculatedDays.rest ? calculatedDays.rest : null);
         const vacationTitle = 'vacation';
         const dayoffTitle = 'dayoff';
 
@@ -320,8 +333,8 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
     }
 
 
-    private renderEmployeeEvents(events: CalendarEvent[], userPermissions: UserEmployeePermissions) {
-        if (!events || !events.length || !this.props.employee) {
+    private renderEmployeeEvents(events: Nullable<CalendarEvent[]>, userPermissions: Nullable<UserEmployeePermissions>) {
+        if (!events || !events.length || !this.props.employee || !userPermissions) {
             return null;
         }
 

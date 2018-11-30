@@ -9,7 +9,6 @@ import { loadTicketTemplates } from '../reducers/helpdesk/tickets.actions';
 import { Action, Dispatch } from 'redux';
 
 interface HelpdeskScreenProps {
-    ticketTemplates: TicketTemplate[];
     ticketTemplatesAreLoaded: boolean;
 }
 
@@ -18,8 +17,7 @@ interface HelpdeskScreenDispatchProps extends WithBackButtonProps {
 }
 
 const mapStateToProps = (state: AppState): HelpdeskScreenProps => ({
-    ticketTemplates: state.helpdesk.ticketTemplates,
-    ticketTemplatesAreLoaded: !!state.helpdesk.ticketTemplates
+    ticketTemplatesAreLoaded: !!state.helpdesk && !!state.helpdesk.ticketTemplates,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>): HelpdeskScreenDispatchProps => ({
@@ -38,7 +36,7 @@ class HelpdeskScreenImpl extends Component<HelpdeskScreenProps & HelpdeskScreenD
 
         return <ScrollView>
                 {progressBar}
-                <Button title='Back' onPress={ () => this.props.onBackClick() } ></Button>
+                <Button title='Back' onPress={ () => this.props.onBackClick() } />
             </ScrollView>;
     }
 }

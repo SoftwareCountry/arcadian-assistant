@@ -1,8 +1,8 @@
-import { Optional } from 'types';
+import { Nullable, Optional } from 'types';
 
 interface DaysCounter {
     title: [string, string];
-    days: number;
+    days: Nullable<number>;
 
     toString(): Optional<string>;
 }
@@ -10,7 +10,7 @@ interface DaysCounter {
 export class VacationDaysCounter implements DaysCounter {
     public readonly title: [string, string] = ['days', 'of vacation left'];
 
-    constructor(public readonly days: number) {
+    constructor(public readonly days: Nullable<number>) {
     }
 
     public toString() {
@@ -30,9 +30,9 @@ export enum HoursCreditType {
 export class HoursCreditCounter implements DaysCounter {
 
     constructor(
-        public readonly hours: number,
-        public readonly days: number,
-        public readonly rest: string
+        public readonly hours: Nullable<number>,
+        public readonly days: Nullable<number>,
+        public readonly rest: Nullable<string>
     ) {
     }
 
@@ -62,7 +62,7 @@ export class HoursCreditCounter implements DaysCounter {
     }
 
     private get type(): HoursCreditType {
-        return this.hours > 0
+        return this.hours && this.hours > 0
             ? HoursCreditType.Workout
             : HoursCreditType.DaysOff;
     }

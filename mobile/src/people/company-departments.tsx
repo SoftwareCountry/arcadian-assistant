@@ -12,15 +12,15 @@ import { ScrollView } from 'react-native';
 import { LoadingView } from '../navigation/loading';
 import { Action, Dispatch } from 'redux';
 import { openEmployeeDetails } from '../navigation/navigation.actions';
-import { Optional } from 'types';
+import { Nullable, Optional } from 'types';
 
 interface CompanyDepartmentsStateProps {
-    departmentIdToNode: DepartmentIdToNode;
-    headDepartment: DepartmentNode;
+    departmentIdToNode: Nullable<DepartmentIdToNode>;
+    headDepartment: Nullable<DepartmentNode>;
     filter: string;
-    selectedCompanyDepartmentId: string;
-    employeesById: EmployeeMap;
-    employeeIdsByDepartment: EmployeeIdsGroupMap;
+    selectedCompanyDepartmentId: Nullable<string>;
+    employeesById: Nullable<EmployeeMap>;
+    employeeIdsByDepartment: Nullable<EmployeeIdsGroupMap>;
 }
 
 interface CompanyDepartmentsDispatchProps {
@@ -30,12 +30,12 @@ interface CompanyDepartmentsDispatchProps {
 }
 
 const mapStateToProps: MapStateToProps<CompanyDepartmentsStateProps, void, AppState> = (state: AppState) => ({
-    departmentIdToNode: state.people.departmentIdToNodes,
-    headDepartment: state.people.headDepartment,
-    filter: state.people.filter,
-    selectedCompanyDepartmentId: state.people.selectedCompanyDepartmentId,
-    employeesById: state.organization.employees.employeesById,
-    employeeIdsByDepartment: state.organization.employees.employeeIdsByDepartment
+    departmentIdToNode: state.people ? state.people.departmentIdToNodes : null,
+    headDepartment: state.people ? state.people.headDepartment : null,
+    filter: state.people ? state.people.filter : '',
+    selectedCompanyDepartmentId: state.people ? state.people.selectedCompanyDepartmentId : null,
+    employeesById: state.organization ? state.organization.employees.employeesById : null,
+    employeeIdsByDepartment: state.organization ? state.organization.employees.employeeIdsByDepartment : null,
 });
 
 const mapDispatchToProps: MapDispatchToProps<CompanyDepartmentsDispatchProps, void> = (dispatch: Dispatch<Action>) => ({
@@ -59,7 +59,7 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
             || this.props.filter !== nextProps.filter
             || this.props.selectedCompanyDepartmentId !== nextProps.selectedCompanyDepartmentId
             || !this.areEmployeesEqual(this.props.employeesById, nextProps.employeesById)
-            || !this.props.employeeIdsByDepartment.equals(nextProps.employeeIdsByDepartment);
+            || !this.areEmployeeIdsGroupMapsEqual(this.props.employeeIdsByDepartment, nextProps.employeeIdsByDepartment);
     }
 
     public render() {
@@ -113,7 +113,11 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
         };
     }
 
-    private filterEmployees(): EmployeeMap {
+    private filterEmployees(): Nullable<EmployeeMap> {
+        if (!this.props.employeesById) {
+            return null;
+        }
+
         if (!this.props.filter) {
             return this.props.employeesById;
         }
@@ -162,8 +166,12 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
         return newDepartmentIdsToNodes;
     }
 
-    private buildDepartmentIdToChildren(departmentIdToNode: DepartmentIdToNode): DepartmentIdToChildren {
+    private buildDepartmentIdToChildren(departmentIdToNode: Nullable<DepartmentIdToNode>): DepartmentIdToChildren {
         const children: DepartmentIdToChildren = {};
+
+        if (!departmentIdToNode) {
+            return children;
+        }
 
         for (let [, node] of departmentIdToNode.entries()) {
 
@@ -194,7 +202,11 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
         return children;
     }
 
-    private buildSelectedDepartmentId(departmentIdToNode: DepartmentIdToNode, employeesById: EmployeeMap): Optional<string> {
+    private buildSelectedDepartmentId(departmentIdToNode: Nullable<DepartmentIdToNode>, employeesById: EmployeeMap): Optional<string> {
+        if (!departmentIdToNode || !this.props.selectedCompanyDepartmentId) {
+            return null;
+        }
+
         if (departmentIdToNode.has(this.props.selectedCompanyDepartmentId)) {
             return this.props.selectedCompanyDepartmentId;
         }
@@ -220,7 +232,7 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
         return departmentIdToSelectedId;
     }
 
-    private isHeadDepartmentSame(a: DepartmentNode, b: DepartmentNode): boolean {
+    private isHeadDepartmentSame(a: Nullable<DepartmentNode>, b: Nullable<DepartmentNode>): boolean {
         if (a === b) {
             return true;
         }
@@ -232,7 +244,7 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
         return a.equals(b);
     }
 
-    private areNodesEqual(a: DepartmentIdToNode, b: DepartmentIdToNode): boolean {
+    private areNodesEqual(a: Nullable<DepartmentIdToNode>, b: Nullable<DepartmentIdToNode>): boolean {
         if (a === b) {
             return true;
         }
@@ -246,7 +258,8 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
         }
 
         for (let [, node] of a) {
-            if (!node.equals(b.get(node.departmentId))) {
+            const x = b.get(node.departmentId)
+            if (!node.equals(x ? x : null)) {
                 return false;
             }
         }
@@ -254,7 +267,7 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
         return true;
     }
 
-    private areEmployeesEqual(a: EmployeeMap, b: EmployeeMap) {
+    private areEmployeesEqual(a: Nullable<EmployeeMap>, b: Nullable<EmployeeMap>) {
         if (a === b) {
             return true;
         }
@@ -277,6 +290,20 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
         }
 
         return true;
+    }
+
+    private areEmployeeIdsGroupMapsEqual(a: Nullable<EmployeeIdsGroupMap>, b: Nullable<EmployeeIdsGroupMap>) {
+        if (a === b) {
+            return true;
+        }
+
+        if (!a || !b) {
+            return false;
+        }
+
+        if (a.equals(b)) {
+            return true;
+        }
     }
 }
 

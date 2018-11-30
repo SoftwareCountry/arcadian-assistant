@@ -4,7 +4,7 @@ import { Department } from '../../reducers/organization/department.model';
 import { MaterialTopTabBar, TabBarTopProps, TabLabelTextParam } from 'react-navigation';
 import { connect } from 'react-redux';
 import { AppState } from '../../reducers/app.reducer';
-import { Optional } from 'types';
+import { Nullable, Optional } from 'types';
 
 //============================================================================
 interface TabBarTopCustomProps {
@@ -46,18 +46,19 @@ class TabBarTopCustomImpl extends React.Component<TabBarTopProps & TabBarTopCust
 }
 
 //----------------------------------------------------------------------------
-function getDepartment(state: AppState, employee: Optional<Employee>): Optional<Department> {
+function getDepartment(state: AppState, employee: Optional<Employee>): Nullable<Department> {
     if (!state.organization || !employee) {
         return null;
     }
 
     const { departments } = state.organization;
-    return departments.find((d) => d.departmentId === employee.departmentId);
+    const department = departments.find((d) => d.departmentId === employee.departmentId);
+    return department ? department : null;
 }
 
 //----------------------------------------------------------------------------
-function getEmployee(state: AppState): Optional<Employee> {
-    return state.organization.employees.employeesById.get(state.userInfo.employeeId, null);
+function getEmployee(state: AppState): Nullable<Employee> {
+    return (state.organization && state.userInfo && state.userInfo.employeeId) ? state.organization.employees.employeesById.get(state.userInfo.employeeId, null) : null;
 }
 
 //----------------------------------------------------------------------------

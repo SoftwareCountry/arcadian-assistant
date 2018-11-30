@@ -52,7 +52,7 @@ export class WeekDayCircle extends Component<WeekDayCircleProps> {
             {
                 width: innerCircleSize,
                 height: innerCircleSize,
-                borderRadius: circleStyles.borderRadius - (circleStyles.borderRadius * intervalMargin),
+                borderRadius: circleStyles.borderRadius! - (circleStyles.borderRadius! * intervalMargin),
                 backgroundColor: this.isSelectedDay(day)
                     ? '#2FAFCC'
                     : 'transparent'
@@ -96,7 +96,7 @@ interface WeekDayTouchableProps {
 
 // Use native events instead of TouchableOpacity, which uses PanResponder under the hood.
 class WeekDayTouchableHandler {
-    private pageX: number;
+    private pageX: number = 0;
 
     constructor(
         private readonly onPressUp: () => void

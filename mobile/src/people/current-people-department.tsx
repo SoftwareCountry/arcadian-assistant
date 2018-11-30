@@ -13,6 +13,7 @@ import { connect } from 'react-redux';
 import { Employee } from '../reducers/organization/employee.model';
 import { SafeAreaView } from 'react-native';
 import Style from '../layout/style';
+import { Map } from 'immutable';
 
 //============================================================================
 interface CurrentPeopleDepartmentProps {
@@ -21,7 +22,10 @@ interface CurrentPeopleDepartmentProps {
 
 //----------------------------------------------------------------------------
 const stateToProps = (state: AppState): CurrentPeopleDepartmentProps => ({
-    employees: state.organization.employees
+    employees: state.organization ? state.organization.employees : {
+        employeesById: Map(),
+        employeeIdsByDepartment: Map()
+    }
 });
 
 //============================================================================

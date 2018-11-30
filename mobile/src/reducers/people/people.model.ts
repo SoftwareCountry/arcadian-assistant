@@ -9,7 +9,7 @@ export class DepartmentNode {
         public staffDepartmentId: Nullable<string>
     ) {}
 
-    public equals(obj: DepartmentNode) {
+    public equals(obj: Nullable<DepartmentNode>) {
         if (!obj) {
             return false;
         }

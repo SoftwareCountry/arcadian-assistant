@@ -21,7 +21,7 @@ export class UserEmployeePermissions {
         return this.permissionsNames.has('rejectCalendarEvents');
     }
 
-    public equals(obj: UserEmployeePermissions): boolean {
+    public equals(obj: UserEmployeePermissions | null): boolean {
         if (!obj) {
             return false;
         }

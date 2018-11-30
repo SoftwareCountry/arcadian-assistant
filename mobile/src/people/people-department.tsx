@@ -8,6 +8,7 @@ import { Employee } from '../reducers/organization/employee.model';
 import { LoadingView } from '../navigation/loading';
 import { Action, Dispatch } from 'redux';
 import { openEmployeeDetails } from '../navigation/navigation.actions';
+import { Optional } from 'types';
 
 interface PeopleDepartmentPropsOwnProps {
     employees: EmployeesStore;
@@ -16,7 +17,7 @@ interface PeopleDepartmentPropsOwnProps {
 
 interface PeopleDepartmentStateProps {
     employees: EmployeesStore;
-    userEmployee: Employee;
+    userEmployee: Optional<Employee>;
     employeesPredicate: (employee: Employee) => boolean;
 }
 
@@ -24,14 +25,20 @@ type PeopleDepartmentProps = PeopleDepartmentStateProps & PeopleDepartmentPropsO
 
 const mapStateToProps: MapStateToProps<PeopleDepartmentProps, PeopleDepartmentPropsOwnProps, AppState> =
         (state: AppState, ownProps: PeopleDepartmentPropsOwnProps): PeopleDepartmentStateProps => {
-    const userEmployee = state.organization.employees.employeesById.get(state.userInfo.employeeId);
-    const defaultEmployeesPredicate = (employee: Employee) => userEmployee && employee.departmentId === userEmployee.departmentId;
+            const userEmployee = getEmployee(state);
+            const defaultEmployeesPredicate = (employee: Employee) => !!userEmployee && employee.departmentId === userEmployee.departmentId;
 
-    return ({
-        employees: ownProps.employees,
-        userEmployee,
-        employeesPredicate: ownProps.customEmployeesPredicate ? ownProps.customEmployeesPredicate : defaultEmployeesPredicate
-    });
+            function getEmployee(state: AppState): Optional<Employee> {
+                return (state.organization && state.userInfo && state.userInfo.employeeId) ?
+                    state.organization.employees.employeesById.get(state.userInfo.employeeId) :
+                    undefined;
+            }
+
+            return ({
+                employees: ownProps.employees,
+                userEmployee,
+                employeesPredicate: ownProps.customEmployeesPredicate ? ownProps.customEmployeesPredicate : defaultEmployeesPredicate
+            });
 };
 
 interface EmployeesListDispatchProps {

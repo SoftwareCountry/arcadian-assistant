@@ -1,10 +1,17 @@
-import React, { Component, Fragment, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import moment, { Moment } from 'moment';
-import {View, StyleSheet, LayoutChangeEvent, PixelRatio, Dimensions, ViewStyle} from 'react-native';
+import { Dimensions, LayoutChangeEvent, PixelRatio, StyleSheet, View, ViewStyle } from 'react-native';
 import { StyledText } from '../override/styled-text';
-import { calendarStyles, calendarIntervalStyles, CalendarEventsColor, weekCalendarStyles } from './styles';
-import { DayModel, WeekModel, IntervalModel, IntervalType, CalendarSelection, ReadOnlyIntervalsModel } from '../reducers/calendar/calendar.model';
-import { StartInterval, EndInterval, Interval } from './calendar-page-interval';
+import { CalendarEventsColor, calendarIntervalStyles, calendarStyles, weekCalendarStyles } from './styles';
+import {
+    CalendarSelection,
+    DayModel,
+    IntervalModel,
+    IntervalType,
+    ReadOnlyIntervalsModel,
+    WeekModel
+} from '../reducers/calendar/calendar.model';
+import { EndInterval, Interval, StartInterval } from './calendar-page-interval';
 import { WeekDay, WeekDayCircle, WeekDayTouchable } from './calendar-page-weekday';
 import { IntervalBoundary } from './calendar-page-interval-boundary';
 
@@ -133,7 +140,7 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
 
         return (
             <View style={weekDayContainerStyles} key={`${day.date.week()}-${day.date.date()}`} onLayout={this.onLayoutWeekDayContainer}>
-                <WeekDay hide={this.state.weekDayContainerWidth === 0 || (this.props.hidePrevNextMonthDays && !day.belongsToCurrentMonth)}>
+                <WeekDay hide={this.state.weekDayContainerWidth === 0 || (!!this.props.hidePrevNextMonthDays && !day.belongsToCurrentMonth)}>
                     <WeekDayTouchable onSelectedDay={this.props.onSelectedDay} day={day} disabled={disableDay} />
                     {
                         this.renderSingleSelection(day, intervalModels)
@@ -160,16 +167,16 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
     }
 
     private getIntervalsByDate(date: moment.Moment): IntervalModel[] | null {
-        if (!this.props.intervals) {
+        if (!this.props.intervals || !this.props.intervals.get(date)) {
             return null;
         }
 
         const intervals = this.props.intervals.get(date);
 
-        return intervals;
+        return intervals ? intervals : null;
     }
 
-    private renderIntervals(intervals: IntervalModel[]) {
+    private renderIntervals(intervals: IntervalModel[] | null) {
         if (!intervals) {
             return null;
         }
@@ -177,16 +184,17 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
         return intervals.map((interval, index) => this.renderInterval(interval, index));
     }
 
-    private renderSingleSelection(day: DayModel, intervalModels: IntervalModel[]) {
+    private renderSingleSelection(day: DayModel, intervalModels: IntervalModel[] | null): React.ReactNode {
         if (!this.props.selection
             || !this.props.selection.single
-            || !this.props.selection.single.day) {
-                return null;
+            || !this.props.selection.single.day
+            || !intervalModels) {
+            return null;
         }
 
         const dayTextColor = this.getDayTextColor(intervalModels);
 
-        return <WeekDayCircle day={day} selectedDay={this.props.selection.single.day} weekHeight={this.state.weekHeight} customTextColor={dayTextColor} />;
+        return <WeekDayCircle day={day} selectedDay={this.props.selection.single.day} weekHeight={this.state.weekHeight} customTextColor={dayTextColor ? dayTextColor: undefined} />;
     }
 
     private renderIntervalSelection(day: DayModel) {

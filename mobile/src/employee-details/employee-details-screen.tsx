@@ -15,7 +15,7 @@ interface EmployeeDetailsProps {
 }
 
 const mapStateToProps = (state: AppState): EmployeeDetailsProps => ({
-    departments: state.organization.departments,
+    departments: state.organization ? state.organization.departments : Array(),
 });
 
 export class EmployeeDetailsScreenImpl extends Component<EmployeeDetailsProps & NavigationScreenProps> {
