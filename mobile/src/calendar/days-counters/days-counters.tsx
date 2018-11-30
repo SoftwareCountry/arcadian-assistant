@@ -23,7 +23,7 @@ export class DaysCounters extends Component<DaysCountersProps> {
             );
         }
 
-        const { vacationDaysLeft, hoursCredit} = this.props.employee;
+        const { vacationDaysLeft, hoursCredit } = this.props.employee;
 
         const allVacationDaysCounter = new VacationDaysCounter(vacationDaysLeft);
 
@@ -32,38 +32,38 @@ export class DaysCounters extends Component<DaysCountersProps> {
 
 
         const vacationCounter = allVacationDaysCounter
-            ? <DaysCounter  textValue={allVacationDaysCounter.toString()}
-                            title={allVacationDaysCounter.title}
-                            icon={{
-                                name: 'vacation',
-                                size: 30
-                            }} />
-            : <EmptyDaysCounter />;
+            ? <DaysCounter textValue={allVacationDaysCounter.toString()}
+                           title={allVacationDaysCounter.title}
+                           icon={{
+                               name: 'vacation',
+                               size: 30
+                           }}/>
+            : <EmptyDaysCounter/>;
 
-        if (!calculatedDays.days ){
+        if (!calculatedDays.days) {
             return null;
         }
 
         const hoursCreditCounter = calculatedDays.rest ? new HoursCreditCounter(hoursCredit, calculatedDays.days, calculatedDays.rest) : null;
 
         const daysoffCounter = hoursCreditCounter
-            ? <DaysCounter  textValue={hoursCreditCounter.toString()}
-                            title={hoursCreditCounter.title}
-                            icon={{
-                                name: 'dayoff',
-                                size: 30
-                            }} />
-            : <EmptyDaysCounter />;
+            ? <DaysCounter textValue={hoursCreditCounter.toString()}
+                           title={hoursCreditCounter.title}
+                           icon={{
+                               name: 'dayoff',
+                               size: 30
+                           }}/>
+            : <EmptyDaysCounter/>;
 
         return (
             <View style={this.containerStyle()}>
-                    { vacationCounter }
-                    { daysoffCounter }
+                {vacationCounter}
+                {daysoffCounter}
             </View>
         );
     }
 
     private containerStyle = (): StyleProp<ViewStyle> => {
-            return [daysCountersStyles.container, this.props.additionalStyle];
+        return [daysCountersStyles.container, this.props.additionalStyle];
     };
 }

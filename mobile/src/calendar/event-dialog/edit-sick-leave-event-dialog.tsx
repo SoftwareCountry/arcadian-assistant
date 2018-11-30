@@ -26,14 +26,14 @@ interface EditSickLeaveEventDialogProps {
 class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogProps & EditSickLeaveEventDialogDispatchProps> {
     public render() {
         return <EventDialogBase
-                    title={'Hey! Hope you feel better'}
-                    text={this.text}
-                    icon={'sick_leave'}
-                    cancelLabel={'Prolong'}
-                    acceptLabel={'Complete'}
-                    onAcceptPress={this.acceptAction}
-                    onCancelPress={this.cancelAction}
-                    onClosePress={this.closeDialog} />;
+            title={'Hey! Hope you feel better'}
+            text={this.text}
+            icon={'sick_leave'}
+            cancelLabel={'Prolong'}
+            acceptLabel={'Complete'}
+            onAcceptPress={this.acceptAction}
+            onCancelPress={this.cancelAction}
+            onClosePress={this.closeDialog}/>;
     }
 
     private cancelAction = () => {
@@ -70,17 +70,22 @@ class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogPro
 }
 
 const mapStateToProps = (state: AppState): EditSickLeaveEventDialogProps => {
-
     return {
         intervals: state.calendar ? state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection : undefined,
         userEmployee: getEmployee(state),
-    }
+    };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>): EditSickLeaveEventDialogDispatchProps => ({
-    prolong: () => { dispatch(openEventDialog(EventDialogType.ProlongSickLeave)); },
-    closeDialog: () => { dispatch(closeEventDialog()); },
-    completeSickLeave: (employeeId: string, calendarEvent: CalendarEvent) => { dispatch(completeSickLeave(employeeId, calendarEvent)); }
+    prolong: () => {
+        dispatch(openEventDialog(EventDialogType.ProlongSickLeave));
+    },
+    closeDialog: () => {
+        dispatch(closeEventDialog());
+    },
+    completeSickLeave: (employeeId: string, calendarEvent: CalendarEvent) => {
+        dispatch(completeSickLeave(employeeId, calendarEvent));
+    }
 });
 
 export const EditSickLeaveEventDialog = connect(mapStateToProps, mapDispatchToProps)(EditSickLeaveEventDialogImpl);

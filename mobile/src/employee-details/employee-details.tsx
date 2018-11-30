@@ -58,7 +58,7 @@ const mapStateToProps: MapStateToProps<EmployeeDetailsProps, EmployeeDetailsOwnP
     userEmployeePermissions: state.userInfo ? state.userInfo.permissions : null,
 });
 
-const TileSeparator = () => <View style = {tileStyles.separator}/>;
+const TileSeparator = () => <View style={tileStyles.separator}/>;
 
 interface EmployeeDetailsDispatchProps {
     onCompanyClicked: (departmentId: string) => void;
@@ -68,13 +68,20 @@ interface EmployeeDetailsDispatchProps {
     openDepartment: (departmentId: string, departmentAbbreviation: string) => void;
     openRoom: (departmentId: string) => void;
 }
+
 const mapDispatchToProps = (dispatch: Dispatch<Action>): EmployeeDetailsDispatchProps => ({
-    onCompanyClicked: (departmentId: string) => dispatch( openCompany(departmentId)),
+    onCompanyClicked: (departmentId: string) => dispatch(openCompany(departmentId)),
     loadCalendarEvents: (employeeId: string) => dispatch(loadCalendarEvents(employeeId)),
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status)),
-    loadUserEmployeePermissions: (employeeId: string) => { dispatch(loadUserEmployeePermissions(employeeId)); },
-    openDepartment: (departmentId: string, departmentAbbreviation: string) => { dispatch(openDepartment(departmentId, departmentAbbreviation)); },
-    openRoom: (departmentId: string) => { dispatch(openRoom(departmentId)); }
+    loadUserEmployeePermissions: (employeeId: string) => {
+        dispatch(loadUserEmployeePermissions(employeeId));
+    },
+    openDepartment: (departmentId: string, departmentAbbreviation: string) => {
+        dispatch(openDepartment(departmentId, departmentAbbreviation));
+    },
+    openRoom: (departmentId: string) => {
+        dispatch(openRoom(departmentId));
+    }
 });
 
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
@@ -135,15 +142,16 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         let events = this.props.events.get(employee.employeeId, null);
 
         return (
-                <View style={layoutStyles.container}>
-                    <View style={this.props.layoutStylesChevronPlaceholder}></View>
-                    <View>
-                        <Chevron />
-                        <View style={layoutStyles.avatarContainer}>
-                            <Avatar photoUrl={employee.photoUrl} imageStyle={{ borderWidth: 0 }} style={{ borderWidth: 3 }} />
-                        </View>
+            <View style={layoutStyles.container}>
+                <View style={this.props.layoutStylesChevronPlaceholder}></View>
+                <View>
+                    <Chevron/>
+                    <View style={layoutStyles.avatarContainer}>
+                        <Avatar photoUrl={employee.photoUrl} imageStyle={{ borderWidth: 0 }}
+                                style={{ borderWidth: 3 }}/>
                     </View>
-                    <ScrollView style={layoutStyles.scrollView} alwaysBounceVertical = {false}>
+                </View>
+                <ScrollView style={layoutStyles.scrollView} alwaysBounceVertical={false}>
                     <View style={layoutStyles.content}>
                         <StyledText style={contentStyles.name}>
                             {employee.name}
@@ -178,8 +186,8 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                         }
 
                     </View>
-                    </ScrollView>
-                </View>
+                </ScrollView>
+            </View>
         );
     }
 
@@ -189,7 +197,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
     private tileStyle = (transparent: boolean): StyleProp<ViewStyle> => {
         if (transparent) {
-            return [tileStyles.tile, {backgroundColor: 'transparent'}];
+            return [tileStyles.tile, { backgroundColor: 'transparent' }];
         } else {
             return tileStyles.tile;
         }
@@ -234,27 +242,27 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
         return tilesData.map((tile, index) => (
             <React.Fragment key={tile.label}>
-            <View style={tileStyles.container}>
-            {
-                tile.payload !== null ?
-                    <TouchableOpacity onPress={tile.onPress ? tile.onPress : undefined}>
-                    <View style={this.tileStyle(tile.onPress === null)}>
-                        <View style={tileStyles.iconContainer}>
-                            <ApplicationIcon name={tile.icon} size={tile.size} style={tile.style} />
-                        </View>
-                        <StyledText style={tileStyles.text}>{tile.label}</StyledText>
-                    </View></TouchableOpacity>
-                : <View style={this.tileStyle(tile.onPress === null)}>
-                    <View style={tileStyles.iconContainer}>
-                        <ApplicationIcon name={tile.icon} size={tile.size} style={tile.style} />
-                    </View>
-                    <StyledText style={tileStyles.text}>{tile.label}</StyledText>
+                <View style={tileStyles.container}>
+                    {
+                        tile.payload !== null ?
+                            <TouchableOpacity onPress={tile.onPress ? tile.onPress : undefined}>
+                                <View style={this.tileStyle(tile.onPress === null)}>
+                                    <View style={tileStyles.iconContainer}>
+                                        <ApplicationIcon name={tile.icon} size={tile.size} style={tile.style}/>
+                                    </View>
+                                    <StyledText style={tileStyles.text}>{tile.label}</StyledText>
+                                </View></TouchableOpacity>
+                            : <View style={this.tileStyle(tile.onPress === null)}>
+                                <View style={tileStyles.iconContainer}>
+                                    <ApplicationIcon name={tile.icon} size={tile.size} style={tile.style}/>
+                                </View>
+                                <StyledText style={tileStyles.text}>{tile.label}</StyledText>
+                            </View>
+                    }
                 </View>
-            }
-            </View>
-            {
-                lastIndex !== index ? <TileSeparator key = {`${tile.label}-${index}`} /> : null
-            }
+                {
+                    lastIndex !== index ? <TileSeparator key={`${tile.label}-${index}`}/> : null
+                }
             </React.Fragment>
         ));
     }
@@ -280,8 +288,8 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         return contactsData.filter(c => c.text && c.text.length > 0).map((contact) => (
             <TouchableOpacity key={contact.title} onPress={this.openLink(`${contact.prefix}${contact.text}`)}>
                 <View style={contactStyles.container}>
-                    <View style={contactStyles.iconContainer} >
-                        <ApplicationIcon name={contact.icon} size={contact.size} style={contactStyles.icon} />
+                    <View style={contactStyles.iconContainer}>
+                        <ApplicationIcon name={contact.icon} size={contact.size} style={contactStyles.icon}/>
                     </View>
                     <View style={contactStyles.textContainer}>
                         <StyledText style={contactStyles.title}>{contact.title}</StyledText>
@@ -304,7 +312,8 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         const daysConverter = new ConvertHoursCreditToDays();
         const calculatedDays = daysConverter.convert(hoursCredit);
 
-        const hoursCreditCounter = new HoursCreditCounter(hoursCredit,
+        const hoursCreditCounter = new HoursCreditCounter(
+            hoursCredit,
             calculatedDays.days ? calculatedDays.days : null,
             calculatedDays.rest ? calculatedDays.rest : null);
         const vacationTitle = 'vacation';
@@ -338,7 +347,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             return null;
         }
 
-        const employeeToCalendarEvents = Map<Employee, CalendarEvent[]>([ [ this.props.employee, events ] ]);
+        const employeeToCalendarEvents = Map<Employee, CalendarEvent[]>([[this.props.employee, events]]);
         const canApprove = userPermissions ? userPermissions.canApproveCalendarEvents : false;
         const canReject = userPermissions ? userPermissions.canRejectCalendarEvents : false;
 
@@ -367,7 +376,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                 hoursToIntervalTitle={this.props.hoursToIntervalTitle}
                 showUserAvatar={true}
                 canApprove={true}
-                canReject={true} />
+                canReject={true}/>
         </React.Fragment>;
     }
 

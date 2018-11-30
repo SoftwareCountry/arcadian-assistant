@@ -11,7 +11,7 @@ export class Feed {
 
     @dataMember()
     @required()
-    public messageId: string = '';
+    public messageId = '';
 
     @dataMember()
     @required({ nullable: true })
@@ -19,11 +19,11 @@ export class Feed {
 
     @dataMember()
     @required()
-    public title: string = '';
+    public title = '';
 
     @dataMember()
     @required()
-    public text: string = '';
+    public text = '';
 
     @dataMember(datePostedDecoratorParams)
     @required()

@@ -38,7 +38,7 @@ const rootEpic = combineEpics(
     calendarEpics as any,
     authEpics$ as any,
     refreshEpics as any,
-    navigationEpics$ as any,);
+    navigationEpics$ as any);
 
 const reducers = combineReducers<AppState>({
     helpdesk: helpdeskReducer,

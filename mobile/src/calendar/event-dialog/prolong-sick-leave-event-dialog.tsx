@@ -30,15 +30,15 @@ export class ProlongSickLeaveEventDialogImpl extends Component<ProlongSickLeaveE
         const disableAccept = !this.isProlongEndDateValid();
 
         return <EventDialogBase
-                    title={'Select date to Prolong your Sick Leave'}
-                    text={this.text}
-                    icon={'sick_leave'}
-                    cancelLabel={'Back'}
-                    acceptLabel={'Confirm'}
-                    onAcceptPress={this.onAcceptClick}
-                    onCancelPress={this.onCancelClick}
-                    onClosePress={this.onCloseClick}
-                    disableAccept={disableAccept} />;
+            title={'Select date to Prolong your Sick Leave'}
+            text={this.text}
+            icon={'sick_leave'}
+            cancelLabel={'Back'}
+            acceptLabel={'Confirm'}
+            onAcceptPress={this.onAcceptClick}
+            onCancelPress={this.onCancelClick}
+            onClosePress={this.onCloseClick}
+            disableAccept={disableAccept}/>;
     }
 
     public get text(): string {
@@ -71,7 +71,8 @@ export class ProlongSickLeaveEventDialogImpl extends Component<ProlongSickLeaveE
             return;
         }
 
-        this.props.confirmProlong(this.props.userEmployee.employeeId,
+        this.props.confirmProlong(
+            this.props.userEmployee.employeeId,
             this.props.intervalsBySingleDaySelection.sickleave.calendarEvent,
             this.props.intervalSelection.endDay.date);
     };
@@ -106,9 +107,15 @@ const mapStateToProps = (state: AppState): ProlongSickLeaveEventDialogProps => (
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>): ProlongSickLeaveEventDialogDispatchProps => ({
-    back: () => { dispatch(openEventDialog(EventDialogType.EditSickLeave)); },
-    confirmProlong: (employeeId: string, calendarEvent: CalendarEvent, prolongedEndDate: Moment) => { dispatch(confirmProlongSickLeave(employeeId, calendarEvent, prolongedEndDate)); },
-    closeDialog: () => { dispatch(closeEventDialog()); }
+    back: () => {
+        dispatch(openEventDialog(EventDialogType.EditSickLeave));
+    },
+    confirmProlong: (employeeId: string, calendarEvent: CalendarEvent, prolongedEndDate: Moment) => {
+        dispatch(confirmProlongSickLeave(employeeId, calendarEvent, prolongedEndDate));
+    },
+    closeDialog: () => {
+        dispatch(closeEventDialog());
+    }
 });
 
 export const ProlongSickLeaveEventDialog = connect(mapStateToProps, mapDispatchToProps)(ProlongSickLeaveEventDialogImpl);

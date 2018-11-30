@@ -2,11 +2,10 @@ import React, { Component } from 'react';
 import { Department } from '../reducers/organization/department.model';
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
-import {RefreshControl, SafeAreaView, ScrollView, StyleSheet, View, ViewStyle} from 'react-native';
+import { RefreshControl, SafeAreaView, ScrollView, StyleSheet, View, ViewStyle } from 'react-native';
 import { Employee } from '../reducers/organization/employee.model';
 import { layoutStyles, profileScreenStyles } from './styles';
 import { EmployeeDetails } from '../employee-details/employee-details';
-import { AuthActions } from '../reducers/auth/auth.action';
 import { refresh } from '../reducers/refresh/refresh.action';
 import { loadPendingRequests } from '../reducers/calendar/pending-requests/pending-requests.action';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
@@ -117,7 +116,9 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
 
         const requests = this.props.requests;
         const employeesToRequests = requests ? requests
-            .filter((event, employeeId) => { return employees.employeesById.get(employeeId) !== undefined })
+            .filter((event, employeeId) => {
+                return employees.employeesById.get(employeeId) !== undefined;
+            })
             .mapKeys(employeeId => employees.employeesById.get(employeeId)!) : undefined;
 
         return (
@@ -139,24 +140,25 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
 }
 
 //----------------------------------------------------------------------------
+function getEmployeesStore(state: AppState): Optional<EmployeesStore> {
+    return state.organization ? state.organization.employees : undefined;
+}
+
+//----------------------------------------------------------------------------
+function getDepartment(state: AppState, employee: Optional<Employee>): Optional<Department> {
+    if (!state.organization || !employee) {
+        return undefined;
+    }
+
+    const departments = state.organization.departments;
+    return departments && employee ?
+        departments.find((d) => d.departmentId === employee.departmentId) :
+        undefined;
+}
+
+//----------------------------------------------------------------------------
 const stateToProps = (state: AppState): ProfileScreenProps => {
-    function getEmployeesStore(state: AppState): Optional<EmployeesStore> {
-        return state.organization ? state.organization.employees : undefined;
-    }
-
-   function getDepartment(state: AppState, employee: Optional<Employee>): Optional<Department> {
-        if (!state.organization || !employee) {
-            return undefined;
-        }
-
-        const departments = state.organization.departments;
-        return departments && employee ?
-            departments.find((d) => d.departmentId === employee.departmentId) :
-            undefined;
-    }
-
     const employee = getEmployee(state);
-
     return {
         employees: getEmployeesStore(state),
         employee: employee,

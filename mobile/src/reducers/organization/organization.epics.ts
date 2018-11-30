@@ -76,7 +76,7 @@ export const loadEmployeesForUserDepartmentEpic$ = (action$: ActionsObservable<L
 
 export const loadEmployeesForUserRoomEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>) => action$.pipe(
     ofType('LOAD-USER-EMPLOYEE-FINISHED'),
-    filter(action => { return action.employee.roomNumber !== null }),
+    filter(action => { return action.employee.roomNumber !== null; }),
     map(x => loadEmployeesForRoom(x.employee.roomNumber!)),
 );
 

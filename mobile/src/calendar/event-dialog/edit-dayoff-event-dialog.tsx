@@ -3,7 +3,7 @@ import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base'
 import { AppState } from '../../reducers/app.reducer';
 import { Action, Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { EventDialogActions, closeEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
+import { closeEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { ExtractedIntervals } from '../../reducers/calendar/calendar.model';
 import { cancelDayoff } from '../../reducers/calendar/dayoff.action';
 import { CalendarEvent } from '../../reducers/calendar/calendar-event.model';
@@ -24,14 +24,14 @@ interface EditDayoffEventDialogProps {
 class EditDayoffEventDialogImpl extends Component<EditDayoffEventDialogProps & EditDayoffEventDialogDispatchProps> {
     public render() {
         return <EventDialogBase
-                    title={'Cancel your dayoff'}
-                    text={this.text}
-                    icon={'dayoff'}
-                    cancelLabel={'Back'}
-                    acceptLabel={'Cancel'}
-                    onAcceptPress={this.onAcceptClick}
-                    onCancelPress={this.onCancelClick}
-                    onClosePress={this.onCloseClick} />;
+            title={'Cancel your dayoff'}
+            text={this.text}
+            icon={'dayoff'}
+            cancelLabel={'Back'}
+            acceptLabel={'Cancel'}
+            onAcceptPress={this.onAcceptClick}
+            onCancelPress={this.onCancelClick}
+            onClosePress={this.onCloseClick}/>;
     }
 
     private onCancelClick = () => {
@@ -39,11 +39,11 @@ class EditDayoffEventDialogImpl extends Component<EditDayoffEventDialogProps & E
     };
 
     private onAcceptClick = () => {
-        if(!this.props.selectedIntervals || !this.props.selectedIntervals.dayoff || !this.props.userEmployee){
+        if (!this.props.selectedIntervals || !this.props.selectedIntervals.dayoff || !this.props.userEmployee) {
             return;
         }
 
-       this.props.cancelProcessDayoff(this.props.userEmployee.employeeId, this.props.selectedIntervals.dayoff.calendarEvent);
+        this.props.cancelProcessDayoff(this.props.userEmployee.employeeId, this.props.selectedIntervals.dayoff.calendarEvent);
     };
 
     private onCloseClick = () => {
@@ -51,7 +51,7 @@ class EditDayoffEventDialogImpl extends Component<EditDayoffEventDialogProps & E
     };
 
     public get text(): string {
-        if(!this.props.selectedIntervals || !this.props.selectedIntervals.dayoff ){
+        if (!this.props.selectedIntervals || !this.props.selectedIntervals.dayoff) {
             return '';
         }
         const date = this.props.selectedIntervals.dayoff.calendarEvent.dates.startDate.format(eventDialogTextDateFormat);
@@ -66,8 +66,12 @@ const mapStateToProps = (state: AppState): EditDayoffEventDialogProps => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>): EditDayoffEventDialogDispatchProps => ({
-    closeDialog: () => { dispatch(closeEventDialog()); },
-    cancelProcessDayoff: (employeeId: string, calendarEvent: CalendarEvent) => { dispatch(cancelDayoff(employeeId, calendarEvent)); }
+    closeDialog: () => {
+        dispatch(closeEventDialog());
+    },
+    cancelProcessDayoff: (employeeId: string, calendarEvent: CalendarEvent) => {
+        dispatch(cancelDayoff(employeeId, calendarEvent));
+    }
 });
 
 export const EditDayoffEventDialog = connect(mapStateToProps, mapDispatchToProps)(EditDayoffEventDialogImpl);

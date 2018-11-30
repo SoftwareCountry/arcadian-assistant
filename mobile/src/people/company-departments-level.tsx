@@ -49,7 +49,7 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
                 if (!this.props.employeesById) {
                     return null;
                 }
-                return this.props.employeesById.get(node.chiefId!)
+                return this.props.employeesById.get(node.chiefId!);
             })
             .filter(chief => !!chief)
             .map(chief => chief!);

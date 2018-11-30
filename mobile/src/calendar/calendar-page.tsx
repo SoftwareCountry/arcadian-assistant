@@ -194,7 +194,7 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
 
         const dayTextColor = this.getDayTextColor(intervalModels);
 
-        return <WeekDayCircle day={day} selectedDay={this.props.selection.single.day} weekHeight={this.state.weekHeight} customTextColor={dayTextColor ? dayTextColor: undefined} />;
+        return <WeekDayCircle day={day} selectedDay={this.props.selection.single.day} weekHeight={this.state.weekHeight} customTextColor={dayTextColor ? dayTextColor : undefined} />;
     }
 
     private renderIntervalSelection(day: DayModel) {

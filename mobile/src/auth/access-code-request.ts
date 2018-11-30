@@ -24,29 +24,29 @@ type AccessCodeRequestParams = AccessCodeRequestWithAuthCodeParams | AccessCodeR
 export class TokenResponse {
     @dataMember({ fieldName: 'access_token' })
     @required()
-    public accessToken: string = '';
+    public accessToken = '';
 
     @dataMember({ fieldName: 'token_type' })
-    public tokenType: string= '';
+    public tokenType = '';
 
     @dataMember({ fieldName: 'expires_in' })
-    public expiresIn: string = '';
+    public expiresIn = '';
 
     @dataMember({ fieldName: 'expires_on' })
-    public expiresOn: string = '';
+    public expiresOn = '';
 
     @dataMember()
-    public resource: string = '';
+    public resource = '';
 
     @dataMember({ fieldName: 'refresh_token' })
     @required()
-    public refreshToken: string = '';
+    public refreshToken = '';
 
     @dataMember()
-    public scope: string = '';
+    public scope = '';
 
     @dataMember({ fieldName: 'id_token' })
-    public idToken: string = '';
+    public idToken = '';
 }
 
 export class AccessCodeRequest {

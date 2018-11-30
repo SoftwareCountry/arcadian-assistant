@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, PixelRatio, TouchableOpacity, GestureResponderEvent } from 'react-native';
+import { GestureResponderEvent, PixelRatio, StyleSheet, View } from 'react-native';
 import { calendarStyles, intervalMargin } from './styles';
 import { DayModel } from '../reducers/calendar/calendar.model';
 import { OnSelectedDayCallback } from './calendar-page';
 import { StyledText } from '../override/styled-text';
-import { Moment } from 'moment';
 
 export const WeekDay = (props: { hide: boolean, children: any[] }) =>
     props.hide
@@ -96,11 +95,12 @@ interface WeekDayTouchableProps {
 
 // Use native events instead of TouchableOpacity, which uses PanResponder under the hood.
 class WeekDayTouchableHandler {
-    private pageX: number = 0;
+    private pageX = 0;
 
     constructor(
         private readonly onPressUp: () => void
-    ) { }
+    ) {
+    }
 
     public onTouchStart = (event: GestureResponderEvent) => {
         this.pageX = event.nativeEvent.pageX;

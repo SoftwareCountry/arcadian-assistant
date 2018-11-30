@@ -5,7 +5,7 @@ export class UserEmployeePermissions {
 
     @dataMember()
     @required()
-    public employeeId: string = '';
+    public employeeId = '';
 
     @dataMember({
         customDeserializer: (names: string[]) => Set(names)

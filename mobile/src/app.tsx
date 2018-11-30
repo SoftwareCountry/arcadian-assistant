@@ -1,12 +1,12 @@
-import React, {Component} from 'react';
-import {BackHandler} from 'react-native';
-import {RootNavigator} from './tabbar/tab-navigator';
-import {AppState} from './reducers/app.reducer';
-import {connect} from 'react-redux';
-import {NavigationContainerComponent} from 'react-navigation';
-import {WelcomeScreen} from './welcome-screen/welcome-screen';
-import {AuthState} from './reducers/auth/auth.reducer';
-import {SplashScreen} from './splash-screen/splash-screen';
+import React, { Component } from 'react';
+import { BackHandler } from 'react-native';
+import { RootNavigator } from './tabbar/tab-navigator';
+import { AppState } from './reducers/app.reducer';
+import { connect } from 'react-redux';
+import { NavigationContainerComponent } from 'react-navigation';
+import { WelcomeScreen } from './welcome-screen/welcome-screen';
+import { AuthState } from './reducers/auth/auth.reducer';
+import { SplashScreen } from './splash-screen/splash-screen';
 import { NavigationService } from './navigation/navigation.service';
 
 interface AppProps {
@@ -19,7 +19,7 @@ interface AppOwnProps {
 
 export class App extends Component<AppProps & AppOwnProps> {
     public render() {
-        if(!this.props.authentication || !this.props.authentication.authInfo){
+        if (!this.props.authentication || !this.props.authentication.authInfo) {
             return (
                 <SplashScreen/>
             );

@@ -216,12 +216,12 @@ describe('CalendarEvents', () => {
 
         expect(intervals).toBeDefined();
         expect(intervals![2].intervalType).toBe(IntervalType.Interval);
-        expect(intervals![2].calendarEvent.type).toBe(CalendarEventType.Vacation);!
+        expect(intervals![2].calendarEvent.type).toBe(CalendarEventType.Vacation);
         expect(intervals![2].calendarEvent.dates.startDate).toBe(event3.dates.startDate);
         expect(intervals![2].calendarEvent.dates.endDate).toBe(event3.dates.endDate);
 
         intervals = intervalsModel.get(moment({ day: 3, month: 0, year: 2018 }))!;
-!
+
         expect(intervals).toBeDefined();
         expect(intervals![2].intervalType).toBe(IntervalType.EndInterval);
         expect(intervals![2].calendarEvent.type).toBe(CalendarEventType.Vacation);

@@ -33,11 +33,11 @@ export class DatesInterval {
 
     @dataMember()
     @required()
-    public startWorkingHour: number = 0;
+    public startWorkingHour = 0;
 
     @dataMember()
     @required()
-    public finishWorkingHour: number = 0;
+    public finishWorkingHour = 0;
 
     public toJSON(): Object {
         const overrided: { [key in keyof DatesInterval]?: any } = {
@@ -54,7 +54,7 @@ export class DatesInterval {
 export class CalendarEvent {
     @dataMember()
     @required()
-    public calendarEventId: string = '';
+    public calendarEventId = '';
 
     @dataMember()
     @required()
