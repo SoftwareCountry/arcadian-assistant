@@ -8,6 +8,8 @@ import { ExtractedIntervals } from '../../reducers/calendar/calendar.model';
 import { CalendarEvent } from '../../reducers/calendar/calendar-event.model';
 import { cancelSickLeave } from '../../reducers/calendar/sick-leave.action';
 import { Employee } from '../../reducers/organization/employee.model';
+import { getEmployee } from '../../utils/utils';
+import { Optional } from 'types';
 
 interface CancelSickLeaveEventDialogDispatchProps {
     cancelSickLeave: (employeeId: string, calendarEvent: CalendarEvent) => void;
@@ -15,8 +17,8 @@ interface CancelSickLeaveEventDialogDispatchProps {
 }
 
 interface CancelSickLeaveEventDialogProps {
-    intervals: ExtractedIntervals;
-    userEmployee: Employee;
+    intervals: Optional<ExtractedIntervals>;
+    userEmployee: Optional<Employee>;
 }
 
 class CancelSickLeaveEventDialogImpl extends Component<CancelSickLeaveEventDialogProps & CancelSickLeaveEventDialogDispatchProps> {
@@ -37,9 +39,11 @@ class CancelSickLeaveEventDialogImpl extends Component<CancelSickLeaveEventDialo
     };
 
     private acceptAction = () => {
-        const { userEmployee, intervals } = this.props;
+        if(!this.props.intervals || !this.props.intervals.sickleave || !this.props.userEmployee){
+            return;
+        }
 
-        this.props.cancelSickLeave(userEmployee.employeeId, intervals.sickleave.calendarEvent);
+        this.props.cancelSickLeave(this.props.userEmployee.employeeId, this.props.intervals.sickleave.calendarEvent);
     };
 
     private closeDialog = () => {
@@ -47,16 +51,19 @@ class CancelSickLeaveEventDialogImpl extends Component<CancelSickLeaveEventDialo
     };
 
     public get text(): string {
-        const { intervals: { sickleave } } = this.props;
-        const startDate = sickleave.calendarEvent.dates.startDate.format(eventDialogTextDateFormat);
+        if(!this.props.intervals || !this.props.intervals.sickleave){
+            return '';
+        }
+
+        const startDate = this.props.intervals.sickleave.calendarEvent.dates.startDate.format(eventDialogTextDateFormat);
 
         return `Your sick leave starts on ${startDate}`;
     }
 }
 
 const mapStateToProps = (state: AppState): CancelSickLeaveEventDialogProps => ({
-    intervals: state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection,
-    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
+    intervals: state.calendar ? state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection : undefined,
+    userEmployee: getEmployee(state),
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>): CancelSickLeaveEventDialogDispatchProps => ({

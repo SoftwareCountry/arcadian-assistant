@@ -5,11 +5,12 @@ import { MaterialTopTabBar, TabBarTopProps, TabLabelTextParam } from 'react-navi
 import { connect } from 'react-redux';
 import { AppState } from '../../reducers/app.reducer';
 import { Nullable, Optional } from 'types';
+import { getEmployee } from '../../utils/utils';
 
 //============================================================================
 interface TabBarTopCustomProps {
-    employee: Employee | null;
-    department: Department | null;
+    employee: Optional<Employee>;
+    department: Nullable<Department>;
 }
 
 //============================================================================
@@ -56,12 +57,7 @@ function getDepartment(state: AppState, employee: Optional<Employee>): Nullable<
     return department ? department : null;
 }
 
-//----------------------------------------------------------------------------
-function getEmployee(state: AppState): Nullable<Employee> {
-    return (state.organization && state.userInfo && state.userInfo.employeeId) ? state.organization.employees.employeesById.get(state.userInfo.employeeId, null) : null;
-}
-
-//----------------------------------------------------------------------------
+///----------------------------------------------------------------------------
 const stateToProps = (state: AppState): TabBarTopCustomProps => {
     const employee = getEmployee(state);
     const department = getDepartment(state, employee);

@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
 import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base';
 import { AppState } from '../../reducers/app.reducer';
-import { DayModel, ExtractedIntervals, IntervalSelection } from '../../reducers/calendar/calendar.model';
+import { ExtractedIntervals, IntervalSelection } from '../../reducers/calendar/calendar.model';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
-import { openEventDialog, closeEventDialog, EventDialogActions } from '../../reducers/calendar/event-dialog/event-dialog.action';
+import { closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { confirmProlongSickLeave } from '../../reducers/calendar/sick-leave.action';
 import { connect } from 'react-redux';
 import { Employee } from '../../reducers/organization/employee.model';
 import { Moment } from 'moment';
-import { selectIntervalsBySingleDaySelection } from '../../reducers/calendar/calendar.action';
 import { CalendarEvent } from '../../reducers/calendar/calendar-event.model';
 import { Action, Dispatch } from 'redux';
+import { getEmployee } from '../../utils/utils';
+import { Optional } from 'types';
 
 interface ProlongSickLeaveEventDialogDispatchProps {
     back: () => void;
@@ -19,9 +20,9 @@ interface ProlongSickLeaveEventDialogDispatchProps {
 }
 
 interface ProlongSickLeaveEventDialogProps {
-    intervalsBySingleDaySelection: ExtractedIntervals;
-    intervalSelection: IntervalSelection;
-    userEmployee: Employee;
+    intervalsBySingleDaySelection: Optional<ExtractedIntervals>;
+    intervalSelection: Optional<IntervalSelection>;
+    userEmployee: Optional<Employee>;
 }
 
 export class ProlongSickLeaveEventDialogImpl extends Component<ProlongSickLeaveEventDialogDispatchProps & ProlongSickLeaveEventDialogProps> {
@@ -41,6 +42,11 @@ export class ProlongSickLeaveEventDialogImpl extends Component<ProlongSickLeaveE
     }
 
     public get text(): string {
+        if (!this.props.intervalsBySingleDaySelection || !this.props.intervalsBySingleDaySelection.sickleave ||
+            !this.props.intervalSelection || !this.props.intervalSelection.endDay) {
+            return '';
+        }
+
         const { intervalsBySingleDaySelection: { sickleave } } = this.props;
 
         const startDate = sickleave
@@ -59,8 +65,15 @@ export class ProlongSickLeaveEventDialogImpl extends Component<ProlongSickLeaveE
     };
 
     private onAcceptClick = () => {
-        const { userEmployee, intervalsBySingleDaySelection: { sickleave }, intervalSelection, confirmProlong } = this.props;
-        confirmProlong(userEmployee.employeeId, sickleave.calendarEvent, intervalSelection.endDay.date);
+        if (!this.props.userEmployee || !this.props.intervalsBySingleDaySelection ||
+            !this.props.intervalsBySingleDaySelection.sickleave || !this.props.intervalSelection ||
+            !this.props.intervalSelection.endDay || !this.props.intervalSelection.endDay.date) {
+            return;
+        }
+
+        this.props.confirmProlong(this.props.userEmployee.employeeId,
+            this.props.intervalsBySingleDaySelection.sickleave.calendarEvent,
+            this.props.intervalSelection.endDay.date);
     };
 
     private onCloseClick = () => {
@@ -68,28 +81,28 @@ export class ProlongSickLeaveEventDialogImpl extends Component<ProlongSickLeaveE
     };
 
     private isProlongEndDateValid(): boolean {
-        const { intervalSelection, intervalsBySingleDaySelection: { sickleave } } = this.props;
-
-        if (!sickleave) {
+        if (!this.props.userEmployee || !this.props.intervalsBySingleDaySelection ||
+            !this.props.intervalsBySingleDaySelection.sickleave || !this.props.intervalSelection ||
+            !this.props.intervalSelection.endDay || !this.props.intervalSelection.endDay.date) {
             return false;
         }
 
-        const selectedEndDate = intervalSelection && intervalSelection.endDay
-            ? intervalSelection.endDay.date
+        const selectedEndDate = this.props.intervalSelection && this.props.intervalSelection.endDay
+            ? this.props.intervalSelection.endDay.date
             : null;
 
         if (!selectedEndDate) {
             return false;
         }
 
-        return selectedEndDate.isAfter(sickleave.calendarEvent.dates.endDate, 'days');
+        return selectedEndDate.isAfter(this.props.intervalsBySingleDaySelection.sickleave.calendarEvent.dates.endDate, 'days');
     }
 }
 
 const mapStateToProps = (state: AppState): ProlongSickLeaveEventDialogProps => ({
-    intervalsBySingleDaySelection: state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection,
-    intervalSelection: state.calendar.calendarEvents.selection.interval,
-    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
+    intervalsBySingleDaySelection: state.calendar ? state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection : undefined,
+    intervalSelection: state.calendar ? state.calendar.calendarEvents.selection.interval : undefined,
+    userEmployee: getEmployee(state)
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>): ProlongSickLeaveEventDialogDispatchProps => ({

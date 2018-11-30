@@ -10,6 +10,7 @@ import { confirmSickLeave } from '../../reducers/calendar/sick-leave.action';
 import moment, { Moment } from 'moment';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
 import { Optional } from 'types';
+import { getEmployee } from '../../utils/utils';
 
 interface ClaimSickLeaveEventDialogDispatchProps {
     back: () => void;
@@ -59,12 +60,6 @@ class ConfirmSickLeaveEventDialogImpl extends Component<ClaimSickLeaveEventDialo
 }
 
 const mapStateToProps = (state: AppState): ClaimSickLeaveEventDialogProps => {
-
-    function getEmployee(state: AppState): Optional<Employee> {
-        return (state.organization && state.userInfo && state.userInfo.employeeId) ?
-            state.organization.employees.employeesById.get(state.userInfo.employeeId) :
-            undefined;
-    }
 
     return {
         startDay: state.calendar && state.calendar.calendarEvents.selection.interval && state.calendar.calendarEvents.selection.interval.startDay ? state.calendar.calendarEvents.selection.interval.startDay : {

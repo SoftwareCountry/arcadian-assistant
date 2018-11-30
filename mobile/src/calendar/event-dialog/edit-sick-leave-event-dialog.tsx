@@ -10,6 +10,7 @@ import { CalendarEvent } from '../../reducers/calendar/calendar-event.model';
 import { completeSickLeave } from '../../reducers/calendar/sick-leave.action';
 import { Employee } from '../../reducers/organization/employee.model';
 import { Nullable, Optional } from 'types';
+import { getEmployee } from '../../utils/utils';
 
 interface EditSickLeaveEventDialogDispatchProps {
     prolong: () => void;
@@ -69,12 +70,6 @@ class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogPro
 }
 
 const mapStateToProps = (state: AppState): EditSickLeaveEventDialogProps => {
-
-    function getEmployee(state: AppState): Optional<Employee> {
-        return (state.organization && state.userInfo && state.userInfo.employeeId) ?
-            state.organization.employees.employeesById.get(state.userInfo.employeeId) :
-            undefined;
-    }
 
     return {
         intervals: state.calendar ? state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection : undefined,

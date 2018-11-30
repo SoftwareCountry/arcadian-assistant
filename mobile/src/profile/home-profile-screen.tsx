@@ -18,6 +18,7 @@ import Style from '../layout/style';
 import { NavigationScreenConfig, NavigationStackScreenOptions } from 'react-navigation';
 import { Action, Dispatch } from 'redux';
 import { Optional } from 'types';
+import { getEmployee } from '../utils/utils';
 
 //============================================================================
 interface ProfileScreenProps {
@@ -143,13 +144,7 @@ const stateToProps = (state: AppState): ProfileScreenProps => {
         return state.organization ? state.organization.employees : undefined;
     }
 
-    function getEmployee(state: AppState): Optional<Employee> {
-        return (state.organization && state.userInfo && state.userInfo.employeeId) ?
-            state.organization.employees.employeesById.get(state.userInfo.employeeId) :
-            undefined;
-    }
-
-    function getDepartment(state: AppState, employee: Optional<Employee>): Optional<Department> {
+   function getDepartment(state: AppState, employee: Optional<Employee>): Optional<Department> {
         if (!state.organization || !employee) {
             return undefined;
         }

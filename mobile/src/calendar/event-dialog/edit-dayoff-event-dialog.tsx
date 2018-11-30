@@ -8,6 +8,8 @@ import { ExtractedIntervals } from '../../reducers/calendar/calendar.model';
 import { cancelDayoff } from '../../reducers/calendar/dayoff.action';
 import { CalendarEvent } from '../../reducers/calendar/calendar-event.model';
 import { Employee } from '../../reducers/organization/employee.model';
+import { getEmployee } from '../../utils/utils';
+import { Optional } from 'types';
 
 interface EditDayoffEventDialogDispatchProps {
     closeDialog: () => void;
@@ -15,8 +17,8 @@ interface EditDayoffEventDialogDispatchProps {
 }
 
 interface EditDayoffEventDialogProps {
-    selectedIntervals: ExtractedIntervals;
-    userEmployee: Employee;
+    selectedIntervals: Optional<ExtractedIntervals>;
+    userEmployee: Optional<Employee>;
 }
 
 class EditDayoffEventDialogImpl extends Component<EditDayoffEventDialogProps & EditDayoffEventDialogDispatchProps> {
@@ -37,9 +39,11 @@ class EditDayoffEventDialogImpl extends Component<EditDayoffEventDialogProps & E
     };
 
     private onAcceptClick = () => {
-        const { selectedIntervals: { dayoff }, userEmployee, cancelProcessDayoff } = this.props;
+        if(!this.props.selectedIntervals || !this.props.selectedIntervals.dayoff || !this.props.userEmployee){
+            return;
+        }
 
-        cancelProcessDayoff(userEmployee.employeeId, dayoff.calendarEvent);
+       this.props.cancelProcessDayoff(this.props.userEmployee.employeeId, this.props.selectedIntervals.dayoff.calendarEvent);
     };
 
     private onCloseClick = () => {
@@ -47,17 +51,18 @@ class EditDayoffEventDialogImpl extends Component<EditDayoffEventDialogProps & E
     };
 
     public get text(): string {
-        const { selectedIntervals: { dayoff } } = this.props;
-
-        const date = dayoff.calendarEvent.dates.startDate.format(eventDialogTextDateFormat);
+        if(!this.props.selectedIntervals || !this.props.selectedIntervals.dayoff ){
+            return '';
+        }
+        const date = this.props.selectedIntervals.dayoff.calendarEvent.dates.startDate.format(eventDialogTextDateFormat);
 
         return `Your dayoff starts on ${date}`;
     }
 }
 
 const mapStateToProps = (state: AppState): EditDayoffEventDialogProps => ({
-    selectedIntervals: state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection,
-    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
+    selectedIntervals: state.calendar ? state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection : undefined,
+    userEmployee: getEmployee(state),
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>): EditDayoffEventDialogDispatchProps => ({

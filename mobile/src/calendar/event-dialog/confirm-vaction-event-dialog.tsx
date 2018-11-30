@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
 import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base';
 import { AppState } from '../../reducers/app.reducer';
-import {Action, Dispatch} from 'redux';
+import { Action, Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { EventDialogActions, closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
+import { closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { DayModel } from '../../reducers/calendar/calendar.model';
 import { Employee } from '../../reducers/organization/employee.model';
 import { confirmVacation } from '../../reducers/calendar/vacation.action';
-import { Moment } from 'moment';
+import moment, { Moment } from 'moment';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
+import { getEmployee } from '../../utils/utils';
+import { Optional } from 'types';
 
 interface ClaimVacationEventDialogDispatchProps {
     back: () => void;
@@ -20,7 +21,7 @@ interface ClaimVacationEventDialogDispatchProps {
 interface ClaimVacationEventDialogProps {
     startDay: DayModel;
     endDay: DayModel;
-    userEmployee: Employee;
+    userEmployee: Optional<Employee>;
 }
 
 class ConfirmVacationEventDialogImpl extends Component<ClaimVacationEventDialogProps & ClaimVacationEventDialogDispatchProps> {
@@ -42,6 +43,10 @@ class ConfirmVacationEventDialogImpl extends Component<ClaimVacationEventDialogP
     };
 
     private acceptAction = () => {
+        if (!this.props.userEmployee) {
+            return;
+        }
+
         this.props.confirmVacation(this.props.userEmployee.employeeId, this.props.startDay.date, this.props.endDay.date);
     };
 
@@ -55,9 +60,21 @@ class ConfirmVacationEventDialogImpl extends Component<ClaimVacationEventDialogP
 }
 
 const mapStateToProps = (state: AppState): ClaimVacationEventDialogProps => ({
-    startDay: state.calendar.calendarEvents.selection.interval.startDay,
-    endDay: state.calendar.calendarEvents.selection.interval.endDay,
-    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
+    startDay: state.calendar && state.calendar.calendarEvents && state.calendar.calendarEvents.selection &&
+    state.calendar.calendarEvents.selection.interval && state.calendar.calendarEvents.selection.interval.startDay ?
+        state.calendar.calendarEvents.selection.interval.startDay : {
+        date: moment(),
+        today: true,
+        belongsToCurrentMonth: true
+    },
+    endDay: state.calendar && state.calendar.calendarEvents && state.calendar.calendarEvents.selection &&
+    state.calendar.calendarEvents.selection.interval && state.calendar.calendarEvents.selection.interval.endDay ?
+        state.calendar.calendarEvents.selection.interval.endDay : {
+            date: moment(),
+            today: true,
+            belongsToCurrentMonth: true
+        },
+    userEmployee: getEmployee(state),
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>): ClaimVacationEventDialogDispatchProps => ({

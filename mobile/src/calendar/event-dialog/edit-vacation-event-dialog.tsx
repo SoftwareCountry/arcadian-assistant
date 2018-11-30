@@ -9,6 +9,8 @@ import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dial
 import { CalendarEventType, CalendarEvent } from '../../reducers/calendar/calendar-event.model';
 import { cancelVacation } from '../../reducers/calendar/vacation.action';
 import { Employee } from '../../reducers/organization/employee.model';
+import { getEmployee } from '../../utils/utils';
+import { Optional } from 'types';
 
 interface EditVacationEventDialogDispatchProps {
     cancelVacation: (employeeId: string, calendarEvent: CalendarEvent) => void;
@@ -17,8 +19,8 @@ interface EditVacationEventDialogDispatchProps {
 }
 
 interface EditVacationEventDialogProps {
-    intervals: ExtractedIntervals;
-    userEmployee: Employee;
+    intervals: Optional<ExtractedIntervals>;
+    userEmployee: Optional<Employee>;
 }
 
 class EditVacationEventDialogImpl extends Component<EditVacationEventDialogProps & EditVacationEventDialogDispatchProps> {
@@ -35,8 +37,11 @@ class EditVacationEventDialogImpl extends Component<EditVacationEventDialogProps
     }
 
     private onCancelPress = () => {
-        const { intervals: { vacation }, userEmployee } = this.props;
-        this.props.cancelVacation(userEmployee.employeeId, vacation.calendarEvent);
+        if(!this.props.intervals || !this.props.intervals.vacation || !this.props.userEmployee){
+            return;
+        }
+
+        this.props.cancelVacation(this.props.userEmployee.employeeId, this.props.intervals.vacation.calendarEvent);
     };
 
     private onAcceptPress = () => {
@@ -50,18 +55,20 @@ class EditVacationEventDialogImpl extends Component<EditVacationEventDialogProps
     };
 
     public get text(): string {
-        const { intervals: { vacation } } = this.props;
+        if(!this.props.intervals || !this.props.intervals.vacation){
+            return '';
+        }
 
-        const startDate = vacation.calendarEvent.dates.startDate.format(eventDialogTextDateFormat);
-        const endDate = vacation.calendarEvent.dates.endDate.format(eventDialogTextDateFormat);
+        const startDate = this.props.intervals.vacation.calendarEvent.dates.startDate.format(eventDialogTextDateFormat);
+        const endDate = this.props.intervals.vacation.calendarEvent.dates.endDate.format(eventDialogTextDateFormat);
 
         return `Your vacation starts on ${startDate} and completets on ${endDate}.`;
     }
 }
 
 const mapStateToProps = (state: AppState): EditVacationEventDialogProps => ({
-    intervals: state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection,
-    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
+    intervals: state.calendar ? state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection : undefined,
+    userEmployee: getEmployee(state),
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>): EditVacationEventDialogDispatchProps => ({

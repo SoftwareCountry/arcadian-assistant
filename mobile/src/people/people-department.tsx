@@ -9,6 +9,7 @@ import { LoadingView } from '../navigation/loading';
 import { Action, Dispatch } from 'redux';
 import { openEmployeeDetails } from '../navigation/navigation.actions';
 import { Optional } from 'types';
+import { getEmployee } from '../utils/utils';
 
 interface PeopleDepartmentPropsOwnProps {
     employees: EmployeesStore;
@@ -27,12 +28,6 @@ const mapStateToProps: MapStateToProps<PeopleDepartmentProps, PeopleDepartmentPr
         (state: AppState, ownProps: PeopleDepartmentPropsOwnProps): PeopleDepartmentStateProps => {
             const userEmployee = getEmployee(state);
             const defaultEmployeesPredicate = (employee: Employee) => !!userEmployee && employee.departmentId === userEmployee.departmentId;
-
-            function getEmployee(state: AppState): Optional<Employee> {
-                return (state.organization && state.userInfo && state.userInfo.employeeId) ?
-                    state.organization.employees.employeesById.get(state.userInfo.employeeId) :
-                    undefined;
-            }
 
             return ({
                 employees: ownProps.employees,
