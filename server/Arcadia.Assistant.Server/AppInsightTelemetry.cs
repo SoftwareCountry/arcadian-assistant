@@ -9,12 +9,8 @@
     using Microsoft.ApplicationInsights.Extensibility.PerfCounterCollector;
     using Microsoft.ApplicationInsights.Extensibility.PerfCounterCollector.QuickPulse;
 
-    using NLog;
-
     public class AppInsightTelemetry : IDisposable
     {
-        private static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-
         private readonly TelemetryConfiguration configuration;
 
         public AppInsightTelemetry(TelemetryConfiguration configuration)
@@ -52,7 +48,7 @@
                 };
         }
 
-        protected virtual IEnumerable<ITelemetryModule> GetModules()
+        protected virtual IList<ITelemetryModule> GetModules()
         {
             return new List<ITelemetryModule>()
                 {
