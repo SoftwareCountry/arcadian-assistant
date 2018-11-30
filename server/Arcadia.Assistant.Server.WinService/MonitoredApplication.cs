@@ -21,7 +21,7 @@
             : base(config)
         {
             var settings = config.Get<AppSettings>();
-            this.telemetry = new AppInsightTelemetryFactory(settings).Create();
+            this.telemetry = new WinAppInsightsTelemetryFactory(settings).Create();
         }
 
         protected override void OnStart(ActorSystem actorSystem)

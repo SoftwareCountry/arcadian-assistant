@@ -14,6 +14,7 @@
         protected override void OnStart(string[] args)
         {
             this.host = new ApplicationHost(args);
+            this.host.Start();
         }
 
         protected override void OnStop()
