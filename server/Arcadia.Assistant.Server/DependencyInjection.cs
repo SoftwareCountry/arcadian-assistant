@@ -19,7 +19,7 @@
             container.RegisterModule(new DatabaseModule(config["ConnectionStrings:ArcadiaCSP"]));
 
             var organizationSettings = settings.Organization;
-            container.RegisterModule(new OrganizationModule(organizationSettings.RefreshInformation));
+            container.RegisterModule(new OrganizationModule(organizationSettings.RefreshInformation, settings.Timeout));
 
             var mailSettings = settings.Messaging;
             container.RegisterModule(new NotificationsModule(mailSettings.Smtp, mailSettings.SickLeave));

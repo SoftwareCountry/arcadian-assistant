@@ -28,13 +28,16 @@
 
             var settings = config.Get<AppSettings>();
 
-            new AppInsightTelemetry(settings).Setup();
-
-            using (var app = new Application(config))
+            var factory = new AppInsightTelemetryFactory(settings);
+            using (var telemetry = factory.Create())
             {
-                app.Start();
-                Console.CancelKeyPress += OnExit;
-                Closing.WaitOne();
+                telemetry.Run();
+                using (var app = new Application(config))
+                {
+                    app.Start();
+                    Console.CancelKeyPress += OnExit;
+                    Closing.WaitOne();
+                }
             }
         }
 

@@ -4,12 +4,15 @@
     using System.Runtime.Serialization;
 
     [DataContract]
-    public sealed class VacationIsApproved
+    public class UserGrantedVacationApproval
     {
         [DataMember]
         public string EventId { get; set; }
 
         [DataMember]
         public DateTimeOffset TimeStamp { get; set; }
+
+        [DataMember]
+        public string ApproverId { get; set; }
     }
 }

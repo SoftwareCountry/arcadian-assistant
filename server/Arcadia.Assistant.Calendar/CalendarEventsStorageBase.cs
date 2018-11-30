@@ -65,7 +65,7 @@
                     try
                     {
                         var oldEvent = this.EventsById[cmd.Event.EventId];
-                        if ((oldEvent.Status != cmd.Event.Status) && !this.IsStatusTransitionAllowed(oldEvent, cmd.Event))
+                        if ((oldEvent.Status != cmd.Event.Status) && !this.IsStatusTransitionAllowed(oldEvent.Status, cmd.Event.Status))
                         {
                             throw new Exception($"Event {cmd.Event.EventId}. Status transition {oldEvent.Status} -> {cmd.Event.Status} is not allowed for {oldEvent.Type}");
                         }
@@ -94,6 +94,6 @@
 
         protected abstract string GetInitialStatus();
 
-        protected abstract bool IsStatusTransitionAllowed(CalendarEvent oldCalendarEvent, CalendarEvent newCalendarEvent);
+        protected abstract bool IsStatusTransitionAllowed(string oldCalendarEventStatus, string newCalendarEventStatus);
     }
 }
