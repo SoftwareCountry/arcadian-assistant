@@ -1,3 +1,7 @@
+/******************************************************************************
+ * Copyright (c) Arcadia, Inc. All rights reserved.
+ ******************************************************************************/
+
 import React from 'react';
 import { TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { StyledText } from '../override/styled-text';
@@ -28,24 +32,19 @@ class RadioButtonComponent extends React.Component<RadioButtonProps> {
     public render() {
         const opacity = this.props.disabled ? 0.2 : 1;
 
-        let layout: ViewStyle = { flexDirection: 'row' };
-        let margin: ViewStyle = { marginLeft: 10 };
+        let layout: ViewStyle;
+        let textStyle: TextStyle;
         if (this.props.layout === 'column') {
-            layout = { alignItems: 'center' };
-            margin = { marginTop: 10 };
+            layout = radioButtonsGroupStyles.layoutColumn;
+            textStyle = radioButtonsGroupStyles.textColumn;
+        } else {
+            layout = radioButtonsGroupStyles.layoutRow;
+            textStyle = radioButtonsGroupStyles.textRow;
         }
-        let textStyle: TextStyle = {
-            ...margin,
-            alignSelf: 'center',
-        };
-        textStyle = {
-            ...textStyle,
-            ...this.props.labelStyle,
-        };
 
         return (
             <TouchableOpacity
-                style={[layout, { opacity, marginHorizontal: 10, marginVertical: 5 }]}
+                style={[ layout, { opacity } ]}
                 onPress={() => {
                     if (!this.props.disabled) {
                         this.props.onPress(this.props.label);
@@ -59,7 +58,6 @@ class RadioButtonComponent extends React.Component<RadioButtonProps> {
                             width: this.props.size,
                             height: this.props.size,
                             borderRadius: this.props.size / 2,
-                            alignSelf: 'center'
                         },
                     ]}>
                     {this.props.selected &&
@@ -72,7 +70,7 @@ class RadioButtonComponent extends React.Component<RadioButtonProps> {
                         }}
                     />}
                 </View>
-                <StyledText style={textStyle}>{this.props.label}</StyledText>
+                <StyledText style={[ textStyle, this.props.labelStyle ]}>{this.props.label}</StyledText>
             </TouchableOpacity>
         );
     }

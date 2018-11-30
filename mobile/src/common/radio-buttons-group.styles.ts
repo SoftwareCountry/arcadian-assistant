@@ -1,5 +1,10 @@
+/******************************************************************************
+ * Copyright (c) Arcadia, Inc. All rights reserved.
+ ******************************************************************************/
+
 import { StyleSheet } from 'react-native';
 
+//============================================================================
 export const radioButtonsGroupStyles = StyleSheet.create({
     container: {
         flex: 1,
@@ -58,5 +63,24 @@ export const radioButtonsGroupStyles = StyleSheet.create({
         borderWidth: 2,
         justifyContent: 'center',
         alignItems: 'center',
+        alignSelf: 'center',
+    },
+    textRow: {
+        alignSelf: 'center',
+        marginLeft: 10,
+    },
+    textColumn: {
+        alignSelf: 'center',
+        marginTop: 10,
+    },
+    layoutRow: {
+        flexDirection: 'row',
+        marginHorizontal: 10,
+        marginVertical: 5,
+    },
+    layoutColumn: {
+        alignItems: 'center',
+        marginHorizontal: 10,
+        marginVertical: 5,
     },
 });
