@@ -24,15 +24,19 @@ const initState: AuthState = {
 };
 
 export const authReducer = (state: AuthState = initState, action: AuthActions): AuthState => {
+    const jwtToken = state.authInfo ? state.authInfo.jwtToken : null;
+    const isAuthenticated = state.authInfo ? state.authInfo.isAuthenticated : false;
+
     switch (action.type) {
         case 'USER-LOGGED-IN':
             return {
                 ...state,
                 authInfo: {
-                    ...state.authInfo,
+                    jwtToken: jwtToken,
                     isAuthenticated: true,
                 }
             };
+
         case 'USER-LOGGED-OUT':
             return {
                 ...state,
@@ -46,7 +50,7 @@ export const authReducer = (state: AuthState = initState, action: AuthActions): 
             return {
                 ...state,
                 authInfo: {
-                    ...state.authInfo,
+                    isAuthenticated: isAuthenticated,
                     jwtToken: action.jwtToken
                 }
             };

@@ -1,17 +1,17 @@
-import { dataMember, required } from 'santee-dcts';
-import { ConvertHoursCreditToDays } from './convert-hours-credit-to-days';
-import moment from 'moment';
+import { Optional } from 'types';
 
 interface DaysCounter {
     title: [string, string];
     days: number;
-    toString(): string;
+
+    toString(): Optional<string>;
 }
 
-export class VacationDaysCounter implements DaysCounter  {
+export class VacationDaysCounter implements DaysCounter {
     public readonly title: [string, string] = ['days', 'of vacation left'];
 
-    constructor(public readonly days: number) { }
+    constructor(public readonly days: number) {
+    }
 
     public toString() {
         if (this.days == null) {
@@ -33,7 +33,8 @@ export class HoursCreditCounter implements DaysCounter {
         public readonly hours: number,
         public readonly days: number,
         public readonly rest: string
-    ) { }
+    ) {
+    }
 
     public toString() {
         if (this.hours == null) {
@@ -65,9 +66,4 @@ export class HoursCreditCounter implements DaysCounter {
             ? HoursCreditType.Workout
             : HoursCreditType.DaysOff;
     }
-}
-
-export class DaysCountersModel {
-    public allVacationDays: VacationDaysCounter;
-    public hoursCredit: HoursCreditCounter;
 }

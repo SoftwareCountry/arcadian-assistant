@@ -1,4 +1,5 @@
 import { IntervalType } from './calendar.model';
+import { Nullable } from 'types';
 
 interface IntervalTypeConverterRule {
     readonly startHour: number;
@@ -52,7 +53,7 @@ export class IntervalTypeConverter {
         new IntervalFullBoundaryRule()
     ];
 
-    public static hoursToIntervalType(startWorkingHour: number, finishWorkingHour: number): IntervalType | null {
+    public static hoursToIntervalType(startWorkingHour: number, finishWorkingHour: number): Nullable<IntervalType> {
         const rule = IntervalTypeConverter.rules.find(x => x.includes(startWorkingHour, finishWorkingHour));
 
         if (!rule) {
@@ -62,7 +63,7 @@ export class IntervalTypeConverter {
         return rule.intervalType;
     }
 
-    public static intervalTypeToHours(intervalType: IntervalType): { startHour: number, finishHour: number } | null {
+    public static intervalTypeToHours(intervalType: IntervalType): Nullable<{ startHour: number, finishHour: number }> {
         const rule = IntervalTypeConverter.rules.find(x => x.intervalType === intervalType);
 
         if (!rule) {

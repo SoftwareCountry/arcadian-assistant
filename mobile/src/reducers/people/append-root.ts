@@ -1,8 +1,9 @@
 import { DepartmentIdToNode, DepartmentNode } from './people.model';
+import { Nullable } from 'types';
 
 export const rootId = '[root]';
 
-export function appendRoot(headDepartment: DepartmentNode | null, departmentIdsToNodes: DepartmentIdToNode) {
+export function appendRoot(headDepartment: Nullable<DepartmentNode>, departmentIdsToNodes: DepartmentIdToNode) {
     if (!headDepartment) {
         return;
     }
@@ -15,5 +16,8 @@ export function appendRoot(headDepartment: DepartmentNode | null, departmentIdsT
         null
     ));
 
-    departmentIdsToNodes.get(headDepartment.departmentId).parentId = rootId;
+    const node = departmentIdsToNodes.get(headDepartment.departmentId);
+    if (node) {
+        node.parentId = rootId;
+    }
 }

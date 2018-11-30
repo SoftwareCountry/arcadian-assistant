@@ -11,6 +11,7 @@ import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calenda
 import { EventManagementToolset } from './event-management-toolset';
 import { Employee } from '../reducers/organization/employee.model';
 import { CalendarEventIcon } from '../calendar/calendar-event-icon';
+import { Nullable } from 'types';
 
 interface EmployeeDetailsEventsListProps {
     events: Map<Employee, CalendarEvent[]>;
@@ -40,7 +41,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
         );
     }
 
-    private prepareEvents(): EmployeeDetailItem[] {
+    private prepareEvents(): Nullable<EmployeeDetailItem[]> {
         const { events } = this.props;
 
         if (!events) {
@@ -128,7 +129,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
     }
 
     private descriptionStatus(event: CalendarEvent): string {
-        let description: string;
+        let description = '';
 
         if (event.isRequested) {
             description = `requests ${event.type.toLowerCase()}`;

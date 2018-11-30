@@ -1,10 +1,10 @@
 import { EventDialogActions } from './event-dialog.action';
 import { EventDialogType } from './event-dialog-type.model';
 import { HoursCreditType } from '../days-counters.model';
-import { chosenTypeDayoff } from '../dayoff.action';
+import { Optional } from 'types';
 
 export interface EventDialogState {
-    dialogType: EventDialogType;
+    dialogType: Optional<EventDialogType>;
     chosenHoursCreditType: HoursCreditType;
     inProgress: boolean;
 }

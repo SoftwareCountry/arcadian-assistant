@@ -7,13 +7,14 @@ import { SearchType } from '../../navigation/search-view';
 import { LoadUserEmployeeFinished } from '../user/user.action';
 import { DepartmentNode, DepartmentIdToNode } from './people.model';
 import { appendRoot } from './append-root';
+import { Nullable } from 'types';
 
 export interface PeopleState {
     departmentIdToNodes: DepartmentIdToNode;
-    headDepartment: DepartmentNode;
+    headDepartment: Nullable<DepartmentNode>;
     filter: string;
     isFilterActive: boolean;
-    selectedCompanyDepartmentId: string;
+    selectedCompanyDepartmentId: Nullable<string>;
 }
 
 const initState: PeopleState = {
@@ -46,7 +47,7 @@ export const peopleReducer: Reducer<PeopleState> = (state = initState, action: P
             };
         case 'LOAD-DEPARTMENTS-FINISHED':
             const departmentIdToNodes: DepartmentIdToNode = new Map<string, DepartmentNode>();
-            let headDepartment: DepartmentNode = null;
+            let headDepartment: Nullable<DepartmentNode> = null;
 
             for (let department of action.departments) {
                 const node = new DepartmentNode(
