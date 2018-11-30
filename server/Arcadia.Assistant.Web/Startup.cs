@@ -95,7 +95,7 @@
                         basicOptions.EventsType = typeof(AuthenticationEvents);
                     });
 
-			services.AddSingleton<ITelemetryInitializer, WebTelemetryInitializer>();
+            services.AddSingleton<ITelemetryInitializer, WebTelemetryInitializer>();
             services
                 .AddAuthorization(options =>
                 {
@@ -107,8 +107,6 @@
                         policy.RequireAuthenticatedUser();
                     });
                 });
-
-            
         }
 
         // ReSharper disable once UnusedMember.Global
