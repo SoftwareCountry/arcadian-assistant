@@ -1,36 +1,30 @@
 ﻿namespace Arcadia.Assistant.DI
 {
     using System;
-    using System.Collections.Generic;
-    using System.Data.Services.Client;
-    using System.Linq;
-    using System.Net;
-    using System.Threading.Tasks;
+    using Autofac;
 
-    using Arcadia.Assistant.Calendar.Abstractions;
+    using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.CSP;
     using Arcadia.Assistant.CSP.Vacations;
     using Arcadia.Assistant.Organization;
     using Arcadia.Assistant.Organization.Abstractions;
-
-    using Autofac;
-    using Configuration.Configuration;
-
-    using Microsoft.EntityFrameworkCore;
+    using Arcadia.Assistant.UserPreferences;
 
     public class OrganizationModule : Module
     {
         private readonly IRefreshInformation refreshInformation;
+        private readonly TimeSpan timeoutSetting;
 
-        public OrganizationModule(IRefreshInformation refreshInformation)
+        public OrganizationModule(IRefreshInformation refreshInformation, TimeSpan timeoutSetting)
         {
             this.refreshInformation = refreshInformation;
+            this.timeoutSetting = timeoutSetting;
         }
 
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<EmployeesActor>().AsSelf();
-            builder.Register(ctx => new OrganizationActor(this.refreshInformation));
+            builder.Register(ctx => new OrganizationActor(this.refreshInformation, this.timeoutSetting));
 
             builder.RegisterType<DepartmentsStorage>().AsSelf();
 
@@ -39,6 +33,9 @@
 
             builder.RegisterType<ArcadiaVacationRegistry>().As<VacationsRegistry>();
             builder.RegisterType<VacationsQueryExecutor>().AsSelf();
+            builder.RegisterType<CspVacationApprovalsChecker>().As<VacationApprovalsChecker>();
+
+            builder.RegisterType<UserPreferencesActor>().AsSelf();
         }
     }
 }

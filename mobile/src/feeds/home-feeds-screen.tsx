@@ -1,24 +1,19 @@
 import React from 'react';
-import { ActivityIndicator, FlatList, ListRenderItemInfo, View } from 'react-native';
-import { TopNavBar } from '../navigation/top-nav-bar';
-
+import { ActivityIndicator, FlatList, ListRenderItemInfo, SafeAreaView, View } from 'react-native';
 import { Employee } from '../reducers/organization/employee.model';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Feed } from '../reducers/feeds/feed.model';
 import { connect, Dispatch } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
-
 import { FeedMessage } from './feed-message';
-import { LoadingView } from '../navigation/loading';
-
-import { baseColor, listStyles, screenStyles as styles } from './styles';
+import { baseColor, ListStyle, ScreenStyle } from './home-feeds-screen.styles';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 import { fetchNewFeeds, fetchOldFeeds } from '../reducers/feeds/feeds.action';
 import { FeedsById } from '../reducers/feeds/feeds.reducer';
 import { Moment } from 'moment';
-
-//============================================================================
-const navBar = new TopNavBar('Feeds');
+import { NavigationScreenConfig, NavigationStackScreenOptions } from 'react-navigation';
+import { LoadingView } from '../navigation/loading';
+import Style from '../layout/style';
 
 //============================================================================
 interface FeedsScreenProps {
@@ -52,15 +47,23 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): FeedScreenDispatchProps =>
 
 //============================================================================
 class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenDispatchProps> {
-    public static navigationOptions = navBar.configurate();
+    public static navigationOptions: NavigationScreenConfig<NavigationStackScreenOptions> = {
+        headerStyle: {
+            backgroundColor: Style.color.base
+        }
+    };
 
     //----------------------------------------------------------------------------
-    public render() {
+    public render(): React.ReactNode {
         const feeds = this.sortedFeeds();
+        return feeds.length > 0 ? this.renderFeeds(feeds) : this.renderLoading();
+    }
 
-        return this.props.feeds.size > 0 ?
+    //----------------------------------------------------------------------------
+    private renderFeeds(feeds: Feed[]): React.ReactNode {
+        return <SafeAreaView style={Style.view.safeArea}>
             <FlatList
-                style={styles.view}
+                style={ScreenStyle.view}
                 keyExtractor={HomeFeedsScreenImpl.keyExtractor}
                 ItemSeparatorComponent={HomeFeedsScreenImpl.itemSeparator}
                 data={feeds}
@@ -71,12 +74,20 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
                 refreshing={false}
                 onRefresh={this.onRefresh}
                 ListFooterComponent={this.footer}
-            /> :
-            <LoadingView/>;
+            />
+        </SafeAreaView>;
     }
 
     //----------------------------------------------------------------------------
-    private sortedFeeds() {
+    // noinspection JSMethodCanBeStatic
+    private renderLoading(): React.ReactNode {
+        return <SafeAreaView style={Style.view.safeArea}>
+            <LoadingView/>
+        </SafeAreaView>;
+    }
+
+    //----------------------------------------------------------------------------
+    private sortedFeeds(): Feed[] {
         return this.props.feeds.toArray().sort((x, y) => {
             return ((y.datePosted.valueOf() - x.datePosted.valueOf()) || (y.employeeId < x.employeeId ? -1 : 1));
         });
@@ -85,36 +96,32 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     //----------------------------------------------------------------------------
     private footer = (): React.ReactElement<any> => {
         return (
-            <View style={listStyles.footer}>
+            <View style={ListStyle.footer}>
                 <ActivityIndicator color={baseColor}/>
             </View>
         );
-    }
+    };
 
     //----------------------------------------------------------------------------
     private renderItem = (itemInfo: ListRenderItemInfo<Feed>) => {
         const { item } = itemInfo;
-        const employee: Employee = this.props.employees.employeesById.get(item.employeeId);
-        if (!employee) {
-            return <FeedMessage message={item} employee={null} onAvatarClicked={this.props.onAvatarClicked}/>;
-        } else {
-            return <FeedMessage message={item} employee={employee} onAvatarClicked={this.props.onAvatarClicked}/>;
-        }
-    }
+        const employee: Employee = this.props.employees.employeesById.get(item.employeeId, null);
+        return <FeedMessage message={item} employee={employee} onAvatarClicked={this.props.onAvatarClicked}/>;
+    };
 
     //----------------------------------------------------------------------------
     private endReached = () => {
         if (this.props.user) {
             this.props.fetchOldFeeds();
         }
-    }
+    };
 
     //----------------------------------------------------------------------------
     private onRefresh = () => {
         if (this.props.user) {
             this.props.fetchNewFeeds();
         }
-    }
+    };
 
     //----------------------------------------------------------------------------
     private static keyExtractor(item: Feed): string {
@@ -123,7 +130,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
 
     //----------------------------------------------------------------------------
     private static itemSeparator(): React.ReactElement<any> {
-        return <View style={styles.separator}/>;
+        return <View style={ScreenStyle.separator}/>;
     }
 }
 

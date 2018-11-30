@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 const screenPadding = 19;
 export const baseColor = '#2FAFCC';
 
-export const listStyles = StyleSheet.create({
+export const ListStyle = StyleSheet.create({
     footer: {
         height: 40,
         backgroundColor: 'transparent',
@@ -12,7 +12,7 @@ export const listStyles = StyleSheet.create({
     },
 });
 
-export const screenStyles = StyleSheet.create({
+export const ScreenStyle = StyleSheet.create({
     view: {
         flex: 1,
         backgroundColor: '#FFF'
@@ -27,7 +27,7 @@ export const screenStyles = StyleSheet.create({
     }
 });
 
-export const feedStyles = StyleSheet.create({
+export const FeedStyle = StyleSheet.create({
     layout: {
         flex: 1,
         flexDirection: 'row',

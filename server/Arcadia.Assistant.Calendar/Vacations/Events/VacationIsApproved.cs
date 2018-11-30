@@ -11,8 +11,5 @@
 
         [DataMember]
         public DateTimeOffset TimeStamp { get; set; }
-
-        [DataMember]
-        public string UserId { get; set; }
     }
 }

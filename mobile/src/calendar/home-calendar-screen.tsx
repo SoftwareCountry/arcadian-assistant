@@ -1,22 +1,50 @@
-import React, { Component } from 'react';
-import { View, Text } from 'react-native';
-import styles from '../layout/styles';
-import { calendarScreenLayout } from './styles';
+import React from 'react';
+import { SafeAreaView, View } from 'react-native';
 import { Calendar } from './calendar';
 import { Agenda } from './agenda';
-import { TopNavBar } from '../navigation/top-nav-bar';
 import { DaysCounters } from './days-counters/days-counters';
+import Style from '../layout/style';
+import { connect } from 'react-redux';
+import { AppState } from '../reducers/app.reducer';
+import { Employee } from '../reducers/organization/employee.model';
 
-const navBar =  new TopNavBar('');
+//============================================================================
+interface CalendarScreenProps {
+    employee: Employee;
+}
 
-export class CalendarScreenImpl extends Component {
-    public static navigationOptions = navBar.configurate();
+//============================================================================
+class CalendarScreenImpl extends React.Component<CalendarScreenProps> {
 
+    //----------------------------------------------------------------------------
+    public static navigationOptions = {
+        headerStyle: {
+            backgroundColor: Style.color.base
+        }
+    };
+
+    //----------------------------------------------------------------------------
     public render() {
-        return <View style={styles.container}>
-            <DaysCounters />
-            <Calendar />
-            <Agenda />
-        </View>;
+
+        const { employee } = this.props;
+
+        return <SafeAreaView style={Style.view.safeArea}>
+            <View style={Style.view.container}>
+                <DaysCounters employee={employee}/>
+                <Calendar/>
+                <Agenda/>
+            </View>
+        </SafeAreaView>;
     }
 }
+
+//----------------------------------------------------------------------------
+const stateToProps = (state: AppState): CalendarScreenProps => {
+    const employeeId = state.userInfo.employeeId;
+    return {
+        employee: employeeId == null ? null : state.organization.employees.employeesById.get(employeeId)
+    };
+};
+
+//----------------------------------------------------------------------------
+export const CalendarScreenComponent = connect(stateToProps)(CalendarScreenImpl);

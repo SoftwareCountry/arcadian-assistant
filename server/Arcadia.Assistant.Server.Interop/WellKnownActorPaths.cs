@@ -4,8 +4,12 @@
     {
         public static readonly string Organization = "organization";
 
+        public static readonly string Health = "health";
+
         public static readonly string Helpdesk = "helpdesk";
 
         public static readonly string SharedFeeds = "shared-feeds";
+
+        public static readonly string UserPreferences = "user-preferences";
     }
 }

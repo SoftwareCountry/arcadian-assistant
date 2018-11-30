@@ -6,6 +6,7 @@ import { AppState } from '../reducers/app.reducer';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Employee } from '../reducers/organization/employee.model';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
+import { LoadingView } from '../navigation/loading';
 
 interface PeopleDepartmentPropsOwnProps {
     employees: EmployeesStore;
@@ -13,6 +14,7 @@ interface PeopleDepartmentPropsOwnProps {
 }
 
 interface PeopleDepartmentStateProps {
+    isLoading: boolean;
     employees: EmployeesStore;
     userEmployee: Employee;
     employeesPredicate: (employee: Employee) => boolean;
@@ -20,12 +22,13 @@ interface PeopleDepartmentStateProps {
 
 type PeopleDepartmentProps = PeopleDepartmentStateProps & PeopleDepartmentPropsOwnProps;
 
-const mapStateToProps: MapStateToProps<PeopleDepartmentProps, PeopleDepartmentPropsOwnProps, AppState> = 
+const mapStateToProps: MapStateToProps<PeopleDepartmentProps, PeopleDepartmentPropsOwnProps, AppState> =
         (state: AppState, ownProps: PeopleDepartmentPropsOwnProps): PeopleDepartmentStateProps => {
     const userEmployee = state.organization.employees.employeesById.get(state.userInfo.employeeId);
     const defaultEmployeesPredicate = (employee: Employee) => userEmployee && employee.departmentId === userEmployee.departmentId;
 
     return ({
+        isLoading: state.organization.employees.employeesById.isEmpty(),
         employees: ownProps.employees,
         userEmployee,
         employeesPredicate: ownProps.customEmployeesPredicate ? ownProps.customEmployeesPredicate : defaultEmployeesPredicate
@@ -41,7 +44,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeesListDispatchProps
 
 export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentStateProps & EmployeesListDispatchProps & PeopleDepartmentPropsOwnProps> {
     public shouldComponentUpdate(nextProps: PeopleDepartmentStateProps & EmployeesListDispatchProps & PeopleDepartmentPropsOwnProps) {
-        if (this.props.employees === nextProps.employees 
+        if (this.props.employees === nextProps.employees
             && this.props.userEmployee === nextProps.userEmployee
             && this.props.employeesPredicate === nextProps.employeesPredicate
             && this.props.onItemClicked === nextProps.onItemClicked) {
@@ -56,7 +59,9 @@ export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentStateP
 
     public render() {
         const employees = this.props.employees.employeesById.filter(this.props.employeesPredicate).toArray();
-
+        if (this.props.isLoading) {
+            return <LoadingView/>;
+        }
         return <EmployeesList employees={employees} onItemClicked={this.props.onItemClicked}/>;
     }
 }

@@ -16,10 +16,10 @@ export class VacationActionButton extends Component<VacationActionButtonProps> {
         const disableActionButton = this.disableCalendarAction();
 
         return (
-            <CalendarActionButton 
-                title={this.title} 
-                borderColor={CalendarEventsColor.vacation} 
-                onPress={this.onVacationAction} 
+            <CalendarActionButton
+                title={this.title}
+                borderColor={CalendarEventsColor.vacation}
+                onPress={this.onVacationAction}
                 disabled={this.props.disabled || disableActionButton} />
         );
     }
@@ -36,7 +36,7 @@ export class VacationActionButton extends Component<VacationActionButtonProps> {
         } else {
             this.props.edit();
         }
-    }
+    };
 
     private disableCalendarAction(): boolean {
         const { interval, allIntervals } = this.props;

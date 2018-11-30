@@ -69,7 +69,7 @@ class SplashScreenImpl extends React.Component<SplashScreenDispatchProps, Splash
                 fingerprintPopupVisible: true,
             });
         }
-    }
+    };
 
     //----------------------------------------------------------------------------
     private fingerprintPopup(): JSX.Element | null {
@@ -92,7 +92,7 @@ class SplashScreenImpl extends React.Component<SplashScreenDispatchProps, Splash
             ...this.state,
             fingerprintPopupVisible: false,
         });
-    }
+    };
 
     //----------------------------------------------------------------------------
     private onPopupHidden = (success: boolean): void => {
@@ -105,7 +105,7 @@ class SplashScreenImpl extends React.Component<SplashScreenDispatchProps, Splash
         } else {
             this.props.logout();
         }
-    }
+    };
 }
 
 //----------------------------------------------------------------------------

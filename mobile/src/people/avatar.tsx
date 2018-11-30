@@ -66,7 +66,7 @@ class AvatarImpl extends Component<AvatarProps, AvatarState> {
             borderRadius: size * .5,
             visible: true
         });
-    }
+    };
 
     public render() {
         if (!this.state.size) {
@@ -101,7 +101,7 @@ class AvatarImpl extends Component<AvatarProps, AvatarState> {
         ]);
 
         const image = this.props.photoUrl && this.props.jwtToken
-            ? 
+            ?
             {
                 uri: this.props.photoUrl,
                 headers: {

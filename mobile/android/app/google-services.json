@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "451070944918",
+    "firebase_url": "https://arcadianassistantdev.firebaseio.com",
+    "project_id": "arcadianassistantdev",
+    "storage_bucket": "arcadianassistantdev.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:451070944918:android:046c7f6214cc2e6e",
+        "android_client_info": {
+          "package_name": "ru.spb.arcadia.product.assistant.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "451070944918-dekg6ssrasdtkednd4lfteb71284bek5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvi34QJOKLL-mf4o-rBLKjS4i8tl2ZIa0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

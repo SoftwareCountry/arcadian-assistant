@@ -16,6 +16,9 @@
         [Required]
         public SecuritySettings Security { get; set; }
 
+        [Required]
+        public ServiceEndpointsAuthenticationSettings ServiceEndpointsAuthentication { get; set; }
+
         public string Akka { get; set; }
     }
 }

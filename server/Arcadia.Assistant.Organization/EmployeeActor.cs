@@ -26,7 +26,12 @@
 
         private readonly EmployeeCalendarContainer calendar;
 
-        public EmployeeActor(EmployeeStoredInformation storedInformation, IActorRef imageResizer, IActorRef vacationsRegistry)
+        public EmployeeActor(
+            EmployeeStoredInformation storedInformation,
+            IActorRef imageResizer,
+            IActorRef vacationsRegistry,
+            IActorRef vacationApprovalsChecker,
+            TimeSpan timeoutSetting)
         {
             this.employeeMetadata = storedInformation.Metadata;
             this.PersistenceId = $"employee-info-{Uri.EscapeDataString(this.employeeMetadata.EmployeeId)}";
@@ -35,11 +40,16 @@
             this.photo.Tell(new PhotoActor.SetSource(storedInformation.Photo));
 
             this.employeeFeed = Context.ActorOf(FeedActor.GetProps(), "feed");
-            var sendEmailActor = Context.ActorOf(SendEmailSickLeaveActor.GetProps(), "sendEmail");
-            sendEmailActor.Tell(new SendEmailSickLeaveActor.SetEmployeesActor(Context.Parent));
 
-            var vacationsActor = Context.ActorOf(EmployeeVacationsActor.CreateProps(this.employeeMetadata.EmployeeId, this.employeeFeed, vacationsRegistry), "vacations");
-            var sickLeavesActor = Context.ActorOf(EmployeeSickLeaveActor.CreateProps(this.employeeMetadata.EmployeeId, sendEmailActor), "sick-leaves");
+            var vacationsActor = Context.ActorOf(
+                EmployeeVacationsActor.CreateProps(
+                    this.employeeMetadata.EmployeeId,
+                    this.employeeFeed,
+                    vacationsRegistry,
+                    vacationApprovalsChecker,
+                    timeoutSetting),
+                "vacations");
+            var sickLeavesActor = Context.ActorOf(EmployeeSickLeaveActor.CreateProps(this.employeeMetadata), "sick-leaves");
             var workHoursActor = Context.ActorOf(EmployeeWorkHoursActor.CreateProps(this.employeeMetadata.EmployeeId), "work-hours");
             Context.Watch(vacationsActor);
             Context.Watch(sickLeavesActor);
@@ -74,7 +84,7 @@
                 case Terminated t:
                     Context.Stop(this.Self);
                     break;
-                    
+
                 default:
                     this.Unhandled(message);
                     break;
@@ -103,12 +113,12 @@
             if (informationMetadata.Position != this.employeeMetadata.Position)
             {
                 var ev = new EmployeeChangedPosition()
-                    {
-                        EmployeeId = this.employeeMetadata.EmployeeId,
-                        NewPosition = informationMetadata.Position,
-                        OldPosition = this.employeeMetadata.Position,
-                        TimeStamp = DateTimeOffset.UtcNow
-                    };
+                {
+                    EmployeeId = this.employeeMetadata.EmployeeId,
+                    NewPosition = informationMetadata.Position,
+                    OldPosition = this.employeeMetadata.Position,
+                    TimeStamp = DateTimeOffset.UtcNow
+                };
                 this.Persist(ev, this.OnEmployeePositionChange);
                 this.employeeMetadata.Position = ev.NewPosition;
             }
@@ -116,12 +126,12 @@
             if (informationMetadata.Name != this.employeeMetadata.Name)
             {
                 var ev = new EmployeeChangedName()
-                    {
-                        EmployeeId = this.employeeMetadata.EmployeeId,
-                        NewName = informationMetadata.Name,
-                        OldName = this.employeeMetadata.Name,
-                        TimeStamp = DateTimeOffset.UtcNow
-                    };
+                {
+                    EmployeeId = this.employeeMetadata.EmployeeId,
+                    NewName = informationMetadata.Name,
+                    OldName = this.employeeMetadata.Name,
+                    TimeStamp = DateTimeOffset.UtcNow
+                };
 
                 this.Persist(ev, this.OnEmployeeNameChange);
                 this.employeeMetadata.Name = informationMetadata.Name;
@@ -134,6 +144,8 @@
             }
 
             this.employeeMetadata = informationMetadata;
+
+            Context.System.EventStream.Publish(new EmployeeMetadataUpdatedEventBusMessage(this.employeeMetadata));
         }
 
         private void OnEmployeePositionChange(EmployeeChangedPosition ev)
@@ -177,7 +189,16 @@
             }
         }
 
-        public static Props GetProps(EmployeeStoredInformation employeeStoredInformation, IActorRef imageResizer, IActorRef vacationsRegistry) =>
-            Props.Create(() => new EmployeeActor(employeeStoredInformation, imageResizer, vacationsRegistry));
+        public static Props GetProps(EmployeeStoredInformation employeeStoredInformation,
+            IActorRef imageResizer,
+            IActorRef vacationsRegistry,
+            IActorRef vacationApprovalsChecker,
+            TimeSpan timeoutSetting
+        ) => Props.Create(() => new EmployeeActor(
+            employeeStoredInformation,
+            imageResizer,
+            vacationsRegistry,
+            vacationApprovalsChecker,
+            timeoutSetting));
     }
 }

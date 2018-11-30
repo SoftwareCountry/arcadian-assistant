@@ -1,11 +1,10 @@
-import { StyleSheet, Platform } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export const searchViewStyles = StyleSheet.create({
     container: {
+        flex: 1,
         paddingLeft: 5,
         paddingRight: 5,
-        paddingTop: Platform.OS === 'ios' ? 45 : 0,
-        height: Platform.OS === 'ios' ? 65 : 40,
         backgroundColor: '#2FAFCC',
         flexDirection: 'row',
         alignItems: 'center'
@@ -18,16 +17,20 @@ export const searchViewStyles = StyleSheet.create({
     inputContainer: {
         flex: 10
     },
-    activeIcon: {
-        color: 'white', 
-        fontSize: 24,
+    buttonContainer: {
+        flex: 3,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
-    inactiveIcon: {
-        color: 'white', 
+    icon: {
+        color: 'white',
         fontSize: 18,
     },
     input: {
         color: 'white'
+    },
+    cancel: {
+        color: 'white',
     },
     loadingContainer: {
         flex: 1,

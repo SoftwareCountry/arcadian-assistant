@@ -1,29 +1,28 @@
 ﻿namespace Arcadia.Assistant.Organization
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
 
     using Akka.Actor;
     using Akka.Event;
 
+    using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
-    using Configuration.Configuration;
 
     public class OrganizationActor : UntypedActor, ILogReceive, IWithUnboundedStash
     {
-        private readonly IActorRef employeesActor;
-
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
+        private readonly IActorRef employeesActor;
         private readonly IActorRef departmentsActor;
 
         public IStash Stash { get; set; }
 
-        public OrganizationActor(IRefreshInformation refreshInformation)
+        public OrganizationActor(IRefreshInformation refreshInformation, TimeSpan timeoutSetting)
         {
-            this.employeesActor = Context.ActorOf(EmployeesActor.GetProps(), "employees");
+            var vacationApprovalsCheckerActor = Context.ActorOf(VacationApprovalsChecker.GetProps(), "vacation-approvals-checker");
+
+            this.employeesActor = Context.ActorOf(EmployeesActor.GetProps(vacationApprovalsCheckerActor, timeoutSetting), "employees");
             this.departmentsActor = Context.ActorOf(DepartmentsActor.GetProps(this.employeesActor), "departments");
 
             Context.System.Scheduler.ScheduleTellRepeatedly(

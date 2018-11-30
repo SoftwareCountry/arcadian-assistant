@@ -6,6 +6,7 @@ import { AppState } from '../reducers/app.reducer';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Employee } from '../reducers/organization/employee.model';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
+import { LoadingView } from '../navigation/loading';
 
 interface PeopleRoomPropsOwnProps {
     employees: EmployeesStore;
@@ -13,6 +14,7 @@ interface PeopleRoomPropsOwnProps {
 }
 
 interface PeopleRoomStateProps {
+    isLoading: boolean;
     employees: EmployeesStore;
     userEmployee: Employee;
     employeesPredicate: (employee: Employee) => boolean;
@@ -20,12 +22,13 @@ interface PeopleRoomStateProps {
 
 type PeopleDepartmentProps = PeopleRoomStateProps & PeopleRoomPropsOwnProps;
 
-const mapStateToProps: MapStateToProps<PeopleRoomStateProps, PeopleRoomPropsOwnProps, AppState> = 
+const mapStateToProps: MapStateToProps<PeopleRoomStateProps, PeopleRoomPropsOwnProps, AppState> =
     (state: AppState, ownProps: PeopleRoomPropsOwnProps): PeopleRoomStateProps => {
         const userEmployee = state.organization.employees.employeesById.get(state.userInfo.employeeId);
         const defaultEmployeesPredicate = (employee: Employee) => userEmployee && employee.roomNumber === userEmployee.roomNumber;
 
         return ({
+            isLoading: state.organization.employees.employeesById.isEmpty(),
             employees: ownProps.employees,
             userEmployee,
             employeesPredicate: ownProps.customEmployeesPredicate ? ownProps.customEmployeesPredicate : defaultEmployeesPredicate
@@ -55,7 +58,9 @@ class PeopleRoomImpl extends React.Component<PeopleRoomStateProps & EmployeesLis
 
     public render() {
         const employees = this.props.employees.employeesById.toArray().filter(this.props.employeesPredicate);
-
+        if (this.props.isLoading) {
+            return <LoadingView/>;
+        }
         return <EmployeesList employees={employees} onItemClicked={this.props.onItemClicked}/>;
     }
 }

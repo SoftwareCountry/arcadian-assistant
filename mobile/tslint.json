@@ -91,7 +91,7 @@
     ],
     "one-variable-per-declaration": [ true ],
     "quotemark": [ true, "single", "avoid-escape"],
-    "semicolon": [ true, "always" ],
+    "semicolon": [ true, "always", "strict-bound-class-methods" ],
     "variable-name": [ true, "check-format", "allow-pascal-case", "ban-keywords" ],
     "whitespace": [
       true,

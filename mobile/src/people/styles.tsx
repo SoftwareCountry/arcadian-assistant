@@ -8,7 +8,6 @@ export const employeesListStyles  = StyleSheet.create({
         backgroundColor: '#FFF'
     },
     view: {
-        paddingTop: 5,
         backgroundColor: '#FFF'
     },
 });
@@ -119,6 +118,7 @@ export const companyDepartmentLevelPeople = StyleSheet.create({
         flex: 1
     },
     listItemContent: {
+        marginLeft: contentMargin * 0.7,
         flex: 5,
         flexDirection: 'row',
         alignItems: 'center'

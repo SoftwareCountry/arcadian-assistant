@@ -140,12 +140,12 @@
             return WorkHoursChangeStatuses.Requested;
         }
 
-        protected override bool IsStatusTransitionAllowed(CalendarEvent oldCalendarEvent, CalendarEvent newCalendarEvent)
+        protected override bool IsStatusTransitionAllowed(string oldCalendarEventStatus, string newCalendarEventStatus)
         {
-            return WorkHoursChangeStatuses.All.Contains(newCalendarEvent.Status)
-                && (oldCalendarEvent.Status != WorkHoursChangeStatuses.Cancelled)
-                && (oldCalendarEvent.Status != WorkHoursChangeStatuses.Rejected)
-                && (newCalendarEvent.Status != this.GetInitialStatus());
+            return WorkHoursChangeStatuses.All.Contains(newCalendarEventStatus)
+                && (oldCalendarEventStatus != WorkHoursChangeStatuses.Cancelled)
+                && (oldCalendarEventStatus != WorkHoursChangeStatuses.Rejected)
+                && (newCalendarEventStatus != this.GetInitialStatus());
         }
 
         private void OnChangeRequested(WorkHoursChangeIsRequested message)

@@ -39,6 +39,6 @@ export class Chevron extends Component<ChevronProps, ChevronState> {
         this.setState({
             chevronWidth: e.nativeEvent.layout.width as any
         });
-    }
+    };
 }
 

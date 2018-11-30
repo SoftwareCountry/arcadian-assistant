@@ -15,6 +15,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using UserPreferences;
 
     [Route("api/pending-requests")]
     [Authorize]
@@ -27,17 +28,20 @@
         private readonly ITimeoutSettings timeoutSettings;
 
         private readonly IActorRefFactory actorsFactory;
+        private readonly IUserPreferencesService userPreferencesService;
 
         public PendingRequestsController(
             IUserEmployeeSearch userEmployeeSearch,
             ActorPathsBuilder pathBuilder,
             ITimeoutSettings timeoutSettings,
-            IActorRefFactory actorsFactory)
+            IActorRefFactory actorsFactory,
+            IUserPreferencesService userPreferencesService)
         {
             this.userEmployeeSearch = userEmployeeSearch;
             this.pathBuilder = pathBuilder;
             this.timeoutSettings = timeoutSettings;
             this.actorsFactory = actorsFactory;
+            this.userPreferencesService = userPreferencesService;
         }
 
         [Route("")]
@@ -52,10 +56,11 @@
                 return this.Forbid();
             }
 
+            var userPreferences = await this.userPreferencesService.GetUserPreferences(this.User.Identity.Name, token);
+
             var actor = this.actorsFactory.ActorOf(PendingActionsRequest.CreateProps(this.pathBuilder));
             var calendarEvents = await actor.Ask<PendingActionsRequest.GetPendingActions.Response>(
-                // Further DependentDepartmentsPendingActions should be retrieved from user preferences
-                new PendingActionsRequest.GetPendingActions(user.Metadata, PendingActionsRequest.DependentDepartmentsPendingActions.HeadsOnly),
+                new PendingActionsRequest.GetPendingActions(user.Metadata, userPreferences.DependentDepartmentsPendingActions),
                 this.timeoutSettings.Timeout,
                 token);
 

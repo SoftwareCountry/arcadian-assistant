@@ -1,7 +1,6 @@
 ﻿namespace Arcadia.Assistant.Web
 {
     using System.Collections.Generic;
-
     using Akka.Actor;
     using Akka.Configuration;
 
@@ -12,6 +11,7 @@
     using Arcadia.Assistant.Web.Authorization.Requirements;
     using Arcadia.Assistant.Web.Configuration;
     using Arcadia.Assistant.Web.Employees;
+    using Arcadia.Assistant.Web.Health;
     using Arcadia.Assistant.Web.Infrastructure;
     using Arcadia.Assistant.Web.Users;
 
@@ -24,8 +24,9 @@
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-
     using Swashbuckle.AspNetCore.Swagger;
+    using UserPreferences;
+    using ZNetCS.AspNetCore.Authentication.Basic;
 
     public class Startup
     {
@@ -33,8 +34,8 @@
         {
             var configBuilder = new ConfigurationBuilder()
                 .SetBasePath(environment.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional:false, reloadOnChange:true)
-                .AddJsonFile($"appsettings.{environment.EnvironmentName}.json", optional:true)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{environment.EnvironmentName}.json", optional: true)
                 .AddHoconContent("akka.conf", "Akka", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
@@ -76,20 +77,38 @@
                         //x.CustomSchemaIds(t => t.FullName);
                     });
 
+            services.AddScoped<AuthenticationEvents>();
+
             services
                 .AddAuthentication(options => { options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme; })
                 .AddJwtBearer(
                     jwtOptions =>
-                        {
-                            jwtOptions.Audience = appSettings.Security.ClientId;
-                            jwtOptions.MetadataAddress = appSettings.Security.OpenIdConfigurationUrl;
-                            jwtOptions.Events = new JwtEventsHandler();
-                        });
+                    {
+                        jwtOptions.Audience = appSettings.Security.ClientId;
+                        jwtOptions.MetadataAddress = appSettings.Security.OpenIdConfigurationUrl;
+                        jwtOptions.Events = new JwtEventsHandler();
+                    })
+                .AddBasicAuthentication(
+                    basicOptions =>
+                    {
+                        basicOptions.Realm = this.AppSettings.ServiceEndpointsAuthentication.Realm;
+                        basicOptions.EventsType = typeof(AuthenticationEvents);
+                    });
 
+			services.AddSingleton<ITelemetryInitializer, WebTelemetryInitializer>();
             services
-                .AddAuthorization(options => options.AddPolicy(Policies.UserIsEmployee, policy => policy.Requirements.Add(new UserIsEmployeeRequirement())));
+                .AddAuthorization(options =>
+                {
+                    options.AddPolicy(Policies.UserIsEmployee, policy => policy.Requirements.Add(new UserIsEmployeeRequirement()));
 
-            services.AddSingleton<ITelemetryInitializer, WebTelemetryInitializer>();
+                    options.AddPolicy(Policies.ServiceEndpoint, policy =>
+                    {
+                        policy.AddAuthenticationSchemes(BasicAuthenticationDefaults.AuthenticationScheme, JwtBearerDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                    });
+                });
+
+            
         }
 
         // ReSharper disable once UnusedMember.Global
@@ -108,11 +127,14 @@
 
             builder.RegisterInstance(appSettings).As<ITimeoutSettings>();
             builder.RegisterInstance(appSettings.Security).As<ISecuritySettings>();
+            builder.RegisterInstance(appSettings.ServiceEndpointsAuthentication).As<IServiceEndpointsAuthenticationSettings>();
             builder.RegisterInstance(actorSystem).As<IActorRefFactory>();
             builder.RegisterInstance(pathsBuilder).AsSelf();
 
             builder.RegisterType<EmployeesRegistry>().As<IEmployeesRegistry>();
             builder.RegisterType<UserEmployeeSearch>().As<IUserEmployeeSearch>();
+            builder.RegisterType<HealthService>().As<IHealthService>();
+            builder.RegisterType<UserPreferencesService>().As<IUserPreferencesService>();
 
             builder.RegisterType<UserIsEmployeeHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
             builder.RegisterType<EmployeePermissionsHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();

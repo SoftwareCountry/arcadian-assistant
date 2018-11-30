@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect, Dispatch, MapStateToProps } from 'react-redux';
 import { Map } from 'immutable';
-import {View, StyleSheet, ScrollView, Linking, TouchableOpacity, ViewStyle, StyleProp} from 'react-native';
+import { Linking, ScrollView, StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 
-import { layoutStyles, contentStyles, tileStyles, contactStyles } from '../profile/styles';
+import { contactStyles, contentStyles, layoutStyles, tileStyles } from '../profile/styles';
 import { Chevron } from '../profile/chevron';
 import { Avatar } from '../people/avatar';
 import { AppState } from '../reducers/app.reducer';
@@ -13,11 +13,13 @@ import { StyledText } from '../override/styled-text';
 import { Employee } from '../reducers/organization/employee.model';
 import { ApplicationIcon } from '../override/application-icon';
 import { openCompanyAction, openDepartmentAction, openRoomAction } from './employee-details-dispatcher';
-import { loadCalendarEvents, calendarEventSetNewStatus } from '../reducers/calendar/calendar.action';
+import { calendarEventSetNewStatus, loadCalendarEvents } from '../reducers/calendar/calendar.action';
 import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
 import { UserEmployeePermissions } from '../reducers/user/user-employee-permissions.model';
 import { loadUserEmployeePermissions } from '../reducers/user/user.action';
+import { HoursCreditCounter, VacationDaysCounter } from '../reducers/calendar/days-counters.model';
+import { ConvertHoursCreditToDays } from '../reducers/calendar/convert-hours-credit-to-days';
 
 interface TileData {
     label: string;
@@ -53,14 +55,14 @@ const mapStateToProps: MapStateToProps<EmployeeDetailsProps, EmployeeDetailsOwnP
     userEmployeePermissions: state.userInfo.permissions
 });
 
-const TileSeparator = () => <View style = {tileStyles.separator}></View>;
+const TileSeparator = () => <View style = {tileStyles.separator}/>;
 
 interface EmployeeDetailsDispatchProps {
     onCompanyClicked: (departmentId: string) => void;
     loadCalendarEvents: (employeeId: string) => void;
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
     loadUserEmployeePermissions: (employeeId: string) => void;
-    openDepartment: (departmentId: string) => void;
+    openDepartment: (departmentId: string, departmentAbbreviation: string) => void;
     openRoom: (departmentId: string) => void;
 }
 const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchProps => ({
@@ -68,7 +70,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchPro
     loadCalendarEvents: (employeeId: string) => dispatch(loadCalendarEvents(employeeId)),
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status)),
     loadUserEmployeePermissions: (employeeId: string) => { dispatch(loadUserEmployeePermissions(employeeId)); },
-    openDepartment: (departmentId: string) => { dispatch(openDepartmentAction(departmentId)); },
+    openDepartment: (departmentId: string, departmentAbbreviation: string) => { dispatch(openDepartmentAction(departmentId, departmentAbbreviation)); },
     openRoom: (departmentId: string) => { dispatch(openRoomAction(departmentId)); }
 });
 
@@ -150,6 +152,9 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                         <View style={contentStyles.contactsContainer}>
                             <View>
                                 {contacts}
+                                {
+                                    this.renderDaysCounters(employee)
+                                }
                             </View>
                         </View>
 
@@ -176,7 +181,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         } else {
             return tileStyles.tile;
         }
-    }
+    };
 
     private getTiles(employee: Employee) {
         const tilesData: TileData[] = [
@@ -275,6 +280,45 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         ));
     }
 
+    private renderDaysCounters(employee: Employee) {
+        if (employee.vacationDaysLeft === null && employee.hoursCredit === null) {
+            return null;
+        }
+
+        const { vacationDaysLeft, hoursCredit } = this.props.employee;
+
+        const allVacationDaysCounter = new VacationDaysCounter(vacationDaysLeft);
+
+        const daysConverter = new ConvertHoursCreditToDays();
+        const calculatedDays = daysConverter.convert(hoursCredit);
+
+        const hoursCreditCounter = new HoursCreditCounter(hoursCredit, calculatedDays.days, calculatedDays.rest);
+        const vacationTitle = 'vacation';
+        const dayoffTitle = 'dayoff';
+
+        return [
+            <View key={vacationTitle} style={contactStyles.container}>
+                <View style={contactStyles.iconContainer}>
+                    <ApplicationIcon name={vacationTitle} size={35} style={contactStyles.icon}/>
+                </View>
+                <View style={contactStyles.textContainer}>
+                    <StyledText style={contactStyles.title}>{'Days of vacation left:'}</StyledText>
+                    <StyledText style={contactStyles.text}>{allVacationDaysCounter.toString()}</StyledText>
+                </View>
+            </View>,
+            <View key={dayoffTitle} style={contactStyles.container}>
+                <View style={contactStyles.iconContainer}>
+                    <ApplicationIcon name={dayoffTitle} size={35} style={contactStyles.icon}/>
+                </View>
+                <View style={contactStyles.textContainer}>
+                    <StyledText style={contactStyles.title}>{'Daysoff available:'}</StyledText>
+                    <StyledText style={contactStyles.text}>{hoursCreditCounter.toString()}</StyledText>
+                </View>
+            </View>
+        ];
+    }
+
+
     private renderEmployeeEvents(events: CalendarEvent[], userPermissions: UserEmployeePermissions) {
         if (!events || !events.length || !this.props.employee) {
             return null;
@@ -319,17 +363,17 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
     private openCompany = () => {
         return this.props.onCompanyClicked(this.props.employee.departmentId);
-    }
+    };
 
     private openDepartment = () => {
-        this.props.openDepartment(this.props.employee.departmentId);
-    }
+        this.props.openDepartment(this.props.employee.departmentId, this.props.department.abbreviation);
+    };
 
     private openRoom = () => {
         if (this.props.employee.roomNumber) {
             this.props.openRoom(this.props.employee.roomNumber);
         }
-    }
+    };
 }
 
 export const EmployeeDetails = connect(mapStateToProps, mapDispatchToProps)(EmployeeDetailsImpl);

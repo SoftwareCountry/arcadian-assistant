@@ -27,10 +27,12 @@
         private Dictionary<string, IActorRef> EmployeesById { get; } = new Dictionary<string, IActorRef>();
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
+        private readonly IActorRef vacationApprovalsChecker;
+        private readonly TimeSpan timeoutSetting;
 
         public IStash Stash { get; set; }
 
-        public EmployeesActor()
+        public EmployeesActor(IActorRef vacationApprovalsChecker, TimeSpan timeoutSetting)
         {
             this.employeesInfoStorage = Context.ActorOf(EmployeesInfoStorage.GetProps, "employees-storage");
             this.logger.Info($"Image resizers pool size: {ResizersCount}");
@@ -39,6 +41,9 @@
                 "image-resizer");
 
             this.vacationsRegistry = Context.ActorOf(VacationsRegistry.GetProps, "vacations-registry");
+
+            this.vacationApprovalsChecker = vacationApprovalsChecker;
+            this.timeoutSetting = timeoutSetting;
         }
 
         protected override void OnReceive(object message)
@@ -76,7 +81,7 @@
         private UntypedReceive EmployeesLoadRequested(IActorRef initiator)
         {
             var agentsToRespondAboutRefreshing = new List<IActorRef> { initiator };
-            return message => this.LoadingEmployees(message, agentsToRespondAboutRefreshing );
+            return message => this.LoadingEmployees(message, agentsToRespondAboutRefreshing);
         }
 
         private void LoadingEmployees(object message, List<IActorRef> actorsToRespondAboutRefreshing)
@@ -113,7 +118,7 @@
         private void RecreateEmployeeAgents(IReadOnlyCollection<EmployeeStoredInformation> allEmployees)
         {
             var removedIds = this.EmployeesById.Keys.Except(allEmployees.Select(x => x.Metadata.EmployeeId)).ToList();
-            
+
 
             foreach (var removedId in removedIds)
             {
@@ -133,7 +138,12 @@
                 else
                 {
                     employee = Context.ActorOf(
-                        EmployeeActor.GetProps(employeeNewInfo, this.imageResizer, this.vacationsRegistry),
+                        EmployeeActor.GetProps(
+                            employeeNewInfo,
+                            this.imageResizer,
+                            this.vacationsRegistry,
+                            this.vacationApprovalsChecker,
+                            this.timeoutSetting),
                         $"employee-{Uri.EscapeDataString(employeeNewInfo.Metadata.EmployeeId)}");
 
                     this.EmployeesById[employeeNewInfo.Metadata.EmployeeId] = employee;
@@ -155,6 +165,7 @@
             }
         }
 
-        public static Props GetProps() => Context.DI().Props<EmployeesActor>();
+        public static Props GetProps(IActorRef vacationApprovalsChecker, TimeSpan timeoutSetting) =>
+            Props.Create(() => new EmployeesActor(vacationApprovalsChecker, timeoutSetting));
     }
 }

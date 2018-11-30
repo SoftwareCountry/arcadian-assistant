@@ -1,12 +1,11 @@
-import { createStore, combineReducers, Reducer, applyMiddleware, Action, Middleware } from 'redux';
-import { List } from 'immutable';
+import { createStore, combineReducers, applyMiddleware, Action } from 'redux';
 import { AppState } from './app.reducer';
 import { HelpdeskState, helpdeskReducer, helpdeskEpics } from './helpdesk/helpdesk.reducer';
 import { navigationReducer, navigationMiddlewareKeyReducer } from './navigation.reducer';
 import { NavigationState } from 'react-navigation';
 import { combineEpics, createEpicMiddleware, Epic } from 'redux-observable';
-//import { createLogger } from 'redux-logger';
-import logger from 'redux-logger';
+// import { createLogger } from 'redux-logger';
+// import logger from 'redux-logger';
 import { errorsEpics } from './errors/errors.reducer';
 
 import 'rxjs/Rx';
@@ -18,15 +17,16 @@ import { CalendarState, calendarReducer, calendarEpics } from './calendar/calend
 import { SecuredApiClient } from '../auth/secured-api-client';
 import config from '../config';
 import { OAuthProcess } from '../auth/oauth-process';
-import { createReactNavigationReduxMiddleware, createReduxBoundAddListener } from 'react-navigation-redux-helpers';
+import { createReactNavigationReduxMiddleware } from 'react-navigation-redux-helpers';
 import { PeopleState, peopleReducer } from './people/people.reducer';
 import { authEpics$, authReducer, AuthState } from './auth/auth.reducer';
 import { refreshEpics } from './refresh/refresh.reducer';
+import { AuthActionType } from './auth/auth.action';
 
 export interface AppState {
     helpdesk?: HelpdeskState;
     organization?: OrganizationState;
-    
+
     nav?: NavigationState;
     navigationMiddlewareKey: string;
 
@@ -35,17 +35,17 @@ export interface AppState {
     calendar?: CalendarState;
     people?: PeopleState;
 
-    authentication?: AuthState;  
+    authentication?: AuthState;
 }
 
 const rootEpic = combineEpics(
-    helpdeskEpics as any, 
-    organizationEpics as any, 
-    errorsEpics as any, 
-    userEpics as any, 
+    helpdeskEpics as any,
+    organizationEpics as any,
+    errorsEpics as any,
+    userEpics as any,
     feedsEpics as any,
-    calendarEpics as any, 
-    authEpics$ as any, 
+    calendarEpics as any,
+    authEpics$ as any,
     refreshEpics as any);
 
 const reducers = combineReducers<AppState>({
@@ -62,11 +62,11 @@ const reducers = combineReducers<AppState>({
 });
 
 const rootReducer = (state: AppState, action: Action) => {
-    if (action.type === 'USER-LOGGED-OUT') {
-      state = undefined;
+    if (action.type === AuthActionType.userLoggedOut) {
+        state = undefined;
     }
     return reducers(state, action);
-  };
+};
 
 export interface DependenciesContainer {
     apiClient: SecuredApiClient;

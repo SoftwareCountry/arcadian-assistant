@@ -10,6 +10,7 @@ import { loadEmployeesForDepartment } from '../reducers/organization/organizatio
 import { Employee } from '../reducers/organization/employee.model';
 import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 import { ScrollView } from 'react-native';
+import { LoadingView } from '../navigation/loading';
 
 interface CompanyDepartmentsStateProps {
     departmentIdToNode: DepartmentIdToNode;
@@ -81,7 +82,7 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
                         onPressEmployee={this.props.onPressEmployee}
                         loadEmployeesForDepartment={this.props.loadEmployeesForDepartment}/>
                 </ScrollView>
-            ) : null;
+            ) : <LoadingView/>;
     }
 
     private buildData() {
