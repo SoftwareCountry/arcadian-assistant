@@ -21,7 +21,7 @@ interface SearchViewStateProps {
 }
 
 const mapStateToPropsPeople = (state: AppState): SearchViewStateProps => ({
-    filter: state.people.filter,
+    filter: state.people ? state.people.filter : '',
     type: SearchType.People,
 });
 

@@ -22,12 +22,10 @@ import { navigationEpics$ } from '../navigation/navigation.epics';
 export interface AppState {
     helpdesk?: HelpdeskState;
     organization?: OrganizationState;
-
     userInfo?: UserInfoState;
     feeds?: FeedsState;
     calendar?: CalendarState;
     people?: PeopleState;
-
     authentication?: AuthState;
 }
 

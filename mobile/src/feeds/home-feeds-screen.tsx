@@ -15,14 +15,13 @@ import Style from '../layout/style';
 import { Action, Dispatch } from 'redux';
 import { NavigationScreenConfig, NavigationStackScreenOptions } from 'react-navigation';
 import { openEmployeeDetails } from '../navigation/navigation.actions';
+import { Map } from 'immutable';
+import { Nullable, Optional } from 'types';
 
 //============================================================================
 interface FeedsScreenProps {
-    feeds: FeedsById;
-    employees: EmployeesStore;
-    toDate: Moment;
-    fromDate: Moment;
-    user: string;
+    feeds: Optional<FeedsById>;
+    employees: Optional<EmployeesStore>;
 }
 
 //============================================================================
@@ -33,11 +32,8 @@ interface FeedScreenDispatchProps {
 }
 
 const mapStateToProps = (state: AppState): FeedsScreenProps => ({
-    feeds: state.feeds.feeds,
-    employees: state.organization.employees,
-    toDate: state.feeds.toDate,
-    fromDate: state.feeds.fromDate,
-    user: state.userInfo.employeeId,
+    feeds: state.feeds ? state.feeds.feeds : undefined,
+    employees: state.organization ? state.organization.employees : undefined,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>): FeedScreenDispatchProps => ({
@@ -56,8 +52,11 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
 
     //----------------------------------------------------------------------------
     public render(): React.ReactNode {
-        const feeds = this.sortedFeeds();
-        return feeds.length > 0 ? this.renderFeeds(feeds) : this.renderLoading();
+        if (!this.isReadyToRenderFeeds(this.props.feeds, this.props.employees)) {
+            return this.renderLoading();
+        }
+
+        return this.renderFeeds(this.sortedFeeds(this.props.feeds));
     }
 
     //----------------------------------------------------------------------------
@@ -88,10 +87,30 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     }
 
     //----------------------------------------------------------------------------
-    private sortedFeeds(): Feed[] {
-        return this.props.feeds.toIndexedSeq().toArray().sort((x, y) => {
-            return ((y.datePosted.valueOf() - x.datePosted.valueOf()) || (y.employeeId < x.employeeId ? -1 : 1));
+    // noinspection JSMethodCanBeStatic
+    private sortedFeeds(feeds: Optional<FeedsById>): Feed[] {
+        if (!feeds || !feeds.count()) {
+            return Array();
+        }
+
+        return feeds.toIndexedSeq().toArray().sort((feed1, feed2) => {
+            const dif = feed2.datePosted.valueOf() - feed1.datePosted.valueOf();
+            if (dif !== 0) {
+                return dif;
+            }
+
+            if (!feed1.employeeId || !feed2.employeeId) {
+                return 0;
+            }
+
+            return feed2.employeeId < feed1.employeeId ? -1 : 1;
         });
+    }
+
+    //----------------------------------------------------------------------------
+    // noinspection JSMethodCanBeStatic
+    private isReadyToRenderFeeds(feeds: Optional<FeedsById>, employees: Optional<EmployeesStore>): boolean {
+        return !(!feeds || !feeds.count() || !employees);
     }
 
     //----------------------------------------------------------------------------
@@ -106,22 +125,26 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     //----------------------------------------------------------------------------
     private renderItem = (itemInfo: ListRenderItemInfo<Feed>) => {
         const { item } = itemInfo;
-        const employee: Employee = this.props.employees.employeesById.get(item.employeeId, null);
+
+        let employee: Nullable<Employee> = null;
+        if (this.props.employees && item.employeeId) {
+            employee = this.props.employees.employeesById.get(item.employeeId, null);
+        }
+        if (!employee) {
+            return <FeedMessage message={item}/>;
+        }
+
         return <FeedMessage message={item} employee={employee} onAvatarClicked={this.props.onAvatarClicked}/>;
     };
 
     //----------------------------------------------------------------------------
     private endReached = () => {
-        if (this.props.user) {
-            this.props.fetchOldFeeds();
-        }
+        this.props.fetchOldFeeds();
     };
 
     //----------------------------------------------------------------------------
     private onRefresh = () => {
-        if (this.props.user) {
-            this.props.fetchNewFeeds();
-        }
+        this.props.fetchNewFeeds();
     };
 
     //----------------------------------------------------------------------------
