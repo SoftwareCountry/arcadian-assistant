@@ -15,7 +15,7 @@ export class VacationDaysCounter implements DaysCounter {
 
     public toString() {
         if (this.days == null) {
-            return null;
+            return '';
         }
 
         return this.days.toString();
@@ -38,7 +38,7 @@ export class HoursCreditCounter implements DaysCounter {
 
     public toString() {
         if (this.hours == null) {
-            return null;
+            return '';
         }
 
         if (this.hours === 0) {

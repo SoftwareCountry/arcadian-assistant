@@ -6,6 +6,7 @@ import { Moment } from 'moment';
 import { DayModel } from '../../reducers/calendar/calendar.model';
 import { AppState } from '../../reducers/app.reducer';
 import { connect } from 'react-redux';
+import moment from 'moment';
 
 interface SelectedDayProps {
     selectedCalendarDay: DayModel;
@@ -32,7 +33,9 @@ class SelectedDayImpl extends Component<SelectedDayProps> {
 }
 
 const mapStateToProps = (state: AppState): SelectedDayProps => ({
-    selectedCalendarDay: state.calendar.calendarEvents.selection.single.day
+    selectedCalendarDay: state.calendar && state.calendar.calendarEvents.selection.single.day ?  state.calendar.calendarEvents.selection.single.day : {
+        date: moment(), today: true, belongsToCurrentMonth: true,
+    }
 });
 
 export const SelectedDay = connect(mapStateToProps)(SelectedDayImpl);

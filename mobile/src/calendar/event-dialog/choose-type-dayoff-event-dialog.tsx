@@ -1,14 +1,18 @@
 import React, { Component } from 'react';
-import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base';
+import { EventDialogBase } from './event-dialog-base';
 import { AppState } from '../../reducers/app.reducer';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { EventDialogActions, closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
+import {
+    closeEventDialog,
+    EventDialogActions,
+    openEventDialog
+} from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { chosenTypeDayoff } from '../../reducers/calendar/dayoff.action';
-import { DayModel } from '../../reducers/calendar/calendar.model';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
 import { HoursCreditType } from '../../reducers/calendar/days-counters.model';
 import { SelectorDayoffType } from './selector-dayoff-type';
+import { Optional } from 'types';
 
 interface ChooseTypeDayoffEventDialogDispatchProps {
     cancelDialog: () => void;
@@ -17,11 +21,11 @@ interface ChooseTypeDayoffEventDialogDispatchProps {
 }
 
 interface ChooseTypeDayoffEventDialogProps {
-    chosenType : HoursCreditType;
+    chosenType : Optional<HoursCreditType>;
 }
 
 interface ChooseTypeDayoffEventDialogState {
-    selectedHoursCreditType: HoursCreditType;
+    selectedHoursCreditType: Optional<HoursCreditType>;
 }
 
 class ChooseTypeDayoffEventDialogImpl extends Component<ChooseTypeDayoffEventDialogProps & ChooseTypeDayoffEventDialogDispatchProps, ChooseTypeDayoffEventDialogState> {
@@ -68,14 +72,14 @@ class ChooseTypeDayoffEventDialogImpl extends Component<ChooseTypeDayoffEventDia
     };
 
     public get text(): string {
-        const hoursCreditTypeToText = this.hoursCreditTypeToText[this.state.selectedHoursCreditType];
+        const hoursCreditTypeToText = this.state.selectedHoursCreditType ? this.hoursCreditTypeToText[this.state.selectedHoursCreditType] : '';
 
         return `Type is ${hoursCreditTypeToText}`;
     }
 }
 
 const mapStateToProps = (state: AppState): ChooseTypeDayoffEventDialogProps => ({
-    chosenType: state.calendar.eventDialog.chosenHoursCreditType
+    chosenType: state.calendar ? state.calendar.eventDialog.chosenHoursCreditType : undefined
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ChooseTypeDayoffEventDialogDispatchProps => ({

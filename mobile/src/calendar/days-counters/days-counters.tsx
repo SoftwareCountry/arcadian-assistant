@@ -30,7 +30,6 @@ export class DaysCounters extends Component<DaysCountersProps> {
         const daysConverter = new ConvertHoursCreditToDays();
         const calculatedDays = daysConverter.convert(hoursCredit);
 
-        const hoursCreditCounter = new HoursCreditCounter(hoursCredit, calculatedDays.days, calculatedDays.rest);
 
         const vacationCounter = allVacationDaysCounter
             ? <DaysCounter  textValue={allVacationDaysCounter.toString()}
@@ -40,6 +39,12 @@ export class DaysCounters extends Component<DaysCountersProps> {
                                 size: 30
                             }} />
             : <EmptyDaysCounter />;
+
+        if (!calculatedDays.days ){
+            return null;
+        }
+
+        const hoursCreditCounter = calculatedDays.rest ? new HoursCreditCounter(hoursCredit, calculatedDays.days, calculatedDays.rest) : null;
 
         const daysoffCounter = hoursCreditCounter
             ? <DaysCounter  textValue={hoursCreditCounter.toString()}

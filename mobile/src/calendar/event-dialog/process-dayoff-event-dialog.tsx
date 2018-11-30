@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { EventDialogActions, closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { DayModel } from '../../reducers/calendar/calendar.model';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
+import moment from 'moment';
 
 interface ProcessDayoffEventDialogDispatchProps {
     cancelDialog: () => void;
@@ -47,7 +48,9 @@ class ProcessDayoffEventDialogImpl extends Component<ProcessDayoffEventDialogPro
 }
 
 const mapStateToProps = (state: AppState): ProcessDayoffEventDialogProps => ({
-    startDay: state.calendar.calendarEvents.selection.single.day
+    startDay: state.calendar && state.calendar.calendarEvents.selection.single.day ?  state.calendar.calendarEvents.selection.single.day : {
+        date: moment(), today: true, belongsToCurrentMonth: true,
+    }
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ProcessDayoffEventDialogDispatchProps => ({

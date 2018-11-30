@@ -90,7 +90,7 @@ export class EventDialogBaseImpl extends Component<EventDialogBaseProps> {
 }
 
 const mapStateToProps: MapStateToProps<EventDialogBaseProps, EventDialogBaseOwnProps, AppState> = (state, ownProps) => ({
-    inProgress: state.calendar.eventDialog.inProgress,
+    inProgress: state.calendar ? state.calendar.eventDialog.inProgress : false,
     icon: ownProps.icon,
     title: ownProps.title,
     text: ownProps.text,

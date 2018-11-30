@@ -5,15 +5,19 @@ import { DayModel, ReadOnlyIntervalsModel } from '../reducers/calendar/calendar.
 import { AppState } from '../reducers/app.reducer';
 import { CalendarEventsColor, legendStyles as styles } from './styles';
 import { StyledText } from '../override/styled-text';
+import { Nullable, Optional } from 'types';
+import moment from 'moment';
 
 interface CalendarLegendProps {
-    intervals: ReadOnlyIntervalsModel;
+    intervals: Optional<ReadOnlyIntervalsModel>;
     selectedDay: DayModel;
 }
 
 const mapStateToProps = (state: AppState): CalendarLegendProps => ({
-    intervals: state.calendar.calendarEvents.intervals,
-    selectedDay: state.calendar.calendarEvents.selection.single.day
+    intervals: state.calendar ? state.calendar.calendarEvents.intervals : undefined,
+    selectedDay: state.calendar && state.calendar.calendarEvents.selection.single.day ?  state.calendar.calendarEvents.selection.single.day : {
+        date: moment(), today: true, belongsToCurrentMonth: true,
+    }
 });
 
 class CalendarLegendImpl extends Component<CalendarLegendProps> {
@@ -23,7 +27,7 @@ class CalendarLegendImpl extends Component<CalendarLegendProps> {
             const style = StyleSheet.flatten([styles.marker, { backgroundColor: CalendarEventsColor.getColor(type) }]);
             return (
                 <View key={type + index} style={styles.itemContainer}>
-                    <View style={style}></View>
+                    <View style={style}/>
                     <StyledText style={styles.label}>{type}</StyledText>
                 </View>
             );

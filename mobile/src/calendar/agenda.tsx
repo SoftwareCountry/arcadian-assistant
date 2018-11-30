@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { agendaStyles, agendaSelectedDayStyles } from './styles';
+import { agendaSelectedDayStyles, agendaStyles } from './styles';
 import { StyleSheet, View } from 'react-native';
 import { CalendarActionsButtonGroup } from './calendar-actions-button-group';
 import { CalendarLegend } from './calendar-legend';
@@ -8,17 +8,22 @@ import { EventDialog } from './event-dialog/event-dialog';
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
 import { EventDialogType } from '../reducers/calendar/event-dialog/event-dialog-type.model';
+import { Optional } from 'types';
 
 interface AgendaProps {
-    dialogType: EventDialogType;
+    dialogType: Optional<EventDialogType>;
 }
 
 const mapStateToProps = (state: AppState): AgendaProps => ({
-    dialogType: state.calendar.eventDialog.dialogType
+    dialogType: state.calendar ? state.calendar.eventDialog.dialogType : undefined
 });
 
 export class AgendaImpl extends Component<AgendaProps> {
     public render() {
+        if (!this.props.dialogType) {
+            return null;
+        }
+
         const dialogOpened = !!this.props.dialogType;
 
         const displayNone = StyleSheet.flatten({ display: 'none' });
