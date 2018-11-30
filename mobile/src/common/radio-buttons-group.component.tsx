@@ -3,6 +3,7 @@ import { TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { radioButtonsGroupStyles } from './radio-buttons-group.styles';
 
+//============================================================================
 export interface RadioButton {
     selectionIndex: number;
     label: string;
@@ -15,12 +16,15 @@ export interface RadioButton {
     size?: number;
 }
 
+//============================================================================
 interface RadioButtonProps extends RadioButton {
     onPress: (label: string) => void;
 }
 
+//============================================================================
 class RadioButtonComponent extends React.Component<RadioButtonProps> {
 
+    //----------------------------------------------------------------------------
     public render() {
         const opacity = this.props.disabled ? 0.2 : 1;
 
@@ -74,18 +78,22 @@ class RadioButtonComponent extends React.Component<RadioButtonProps> {
     }
 }
 
+//============================================================================
 interface RadioGroupProps {
     flexDirection?: string;
     radioButtons: RadioButton[];
     onPress: (data: RadioButton[]) => void;
 }
 
+//============================================================================
 interface RadioGroupState {
     radioButtons: RadioButton[];
 }
 
+//============================================================================
 export class RadioGroup extends React.Component<RadioGroupProps, RadioGroupState> {
 
+    //----------------------------------------------------------------------------
     constructor(props: RadioGroupProps) {
         super(props);
 
@@ -94,6 +102,7 @@ export class RadioGroup extends React.Component<RadioGroupProps, RadioGroupState
         };
     }
 
+    //----------------------------------------------------------------------------
     public render() {
         return (
             <View style={radioButtonsGroupStyles.radioButtonContainer}>
@@ -117,29 +126,43 @@ export class RadioGroup extends React.Component<RadioGroupProps, RadioGroupState
         );
     }
 
+    //----------------------------------------------------------------------------
     private validate(buttons: RadioButton[]) {
-        let selected = false; // Variable to check if "selected: true" for more than one button.
-        buttons.map(button => {
-            button.color = button.color ? button.color : '#444';
-            button.disabled = button.disabled ? button.disabled : false;
-            button.layout = button.layout ? button.layout : 'row';
-            button.selected = button.selected ? button.selected : false;
-            if (button.selected) {
-                if (selected) {
-                    button.selected = false; // Making "selected: false", if "selected: true" is assigned for more than one button.
-                    console.log('Found "selected: true" for more than one button');
+        let anotherButtonIsSelected = false;
+
+        const validated: RadioButton[] = Array();
+        buttons.forEach(function (button) {
+            let copy: RadioButton = {
+                selectionIndex: button.selectionIndex,
+                label: button.label,
+            };
+
+            copy.color = button.color ? button.color : '#444';
+            copy.disabled = button.disabled ? button.disabled : false;
+            copy.layout = button.layout ? button.layout : 'row';
+            copy.selected = button.selected ? button.selected : false;
+            if (copy.selected) {
+                if (anotherButtonIsSelected) {
+                    copy.selected = false;
+                    console.warn('Found "selected: true" for more than one button');
                 } else {
-                    selected = true;
+                    anotherButtonIsSelected = true;
                 }
             }
-            button.size = button.size ? button.size : 24;
+            copy.size = button.size ? button.size : 24;
+            copy.labelStyle = button.labelStyle;
+
+            validated.push(copy);
         });
-        if (!selected) {
-            buttons[0].selected = true;
+
+        if (!anotherButtonIsSelected) {
+            validated[0].selected = true;
         }
-        return buttons;
+
+        return validated;
     }
 
+    //----------------------------------------------------------------------------
     private onPress = (label: string) => {
         const radioButtons = this.state.radioButtons;
         const selectedIndex = radioButtons.findIndex(e => e.selected === true);
