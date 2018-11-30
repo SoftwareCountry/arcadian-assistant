@@ -11,11 +11,13 @@
     using Arcadia.Assistant.Web.Authorization.Requirements;
     using Arcadia.Assistant.Web.Configuration;
     using Arcadia.Assistant.Web.Employees;
+    using Arcadia.Assistant.Web.Health;
     using Arcadia.Assistant.Web.Infrastructure;
     using Arcadia.Assistant.Web.Users;
 
     using Autofac;
-    using Health;
+
+    using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
@@ -93,6 +95,7 @@
                         basicOptions.EventsType = typeof(AuthenticationEvents);
                     });
 
+            services.AddSingleton<ITelemetryInitializer, WebTelemetryInitializer>();
             services
                 .AddAuthorization(options =>
                 {
@@ -129,7 +132,7 @@
             builder.RegisterType<EmployeesRegistry>().As<IEmployeesRegistry>();
             builder.RegisterType<UserEmployeeSearch>().As<IUserEmployeeSearch>();
             builder.RegisterType<HealthService>().As<IHealthService>();
-            builder.RegisterType<UserPreferences.UserPreferencesService>().As<IUserPreferencesService>();
+            builder.RegisterType<UserPreferencesService>().As<IUserPreferencesService>();
 
             builder.RegisterType<UserIsEmployeeHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
             builder.RegisterType<EmployeePermissionsHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
