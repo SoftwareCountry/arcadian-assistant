@@ -6,38 +6,36 @@
 
     using Arcadia.Assistant.Configuration.Configuration;
 
-    using Microsoft.ApplicationInsights;
     using Microsoft.Extensions.Configuration;
-
-    using NLog;
 
     public class MonitoredApplication : Application
     {
-        private static readonly ILogger Log = LogManager.GetCurrentClassLogger();
+        private readonly AppInsightTelemetry telemetry;
 
+        /// <summary>
+        /// ActorMonitor is netFramework only, hence the separate class
+        /// </summary>
         private ActorMonitor monitor;
 
         public MonitoredApplication(IConfigurationRoot config)
             : base(config)
         {
+            var settings = config.Get<AppSettings>();
+            this.telemetry = new AppInsightTelemetryFactory(settings).Create();
         }
 
         protected override void OnStart(ActorSystem actorSystem)
         {
             base.OnStart(actorSystem);
-
-            var instrumentationKey = this.Config.Get<AppSettings>().ApplicationInsights.InstrumentationKey;
-            Log.Info($"AppInsights key is {instrumentationKey}");
-            if (!string.IsNullOrWhiteSpace(instrumentationKey))
-            {
-                this.monitor = ActorMonitoringExtension.Monitors(actorSystem);
-                this.monitor.RegisterMonitor(new ActorAppInsightsMonitor(instrumentationKey));
-            }
+            this.telemetry.Run();
+            this.monitor = ActorMonitoringExtension.Monitors(actorSystem);
+            this.monitor.RegisterMonitor(new ActorAppInsightsMonitor(this.telemetry.CreateTelemetryClient()));
         }
 
         protected override void OnStop(ActorSystem actorSystem)
         {
             base.OnStop(actorSystem);
+            this.telemetry.Dispose();
             this.monitor?.TerminateMonitors();
             this.monitor = null;
         }

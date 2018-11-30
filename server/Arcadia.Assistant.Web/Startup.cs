@@ -17,6 +17,7 @@
 
     using Autofac;
 
+    using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
@@ -87,6 +88,8 @@
 
             services
                 .AddAuthorization(options => options.AddPolicy(Policies.UserIsEmployee, policy => policy.Requirements.Add(new UserIsEmployeeRequirement())));
+
+            services.AddSingleton<ITelemetryInitializer, WebTelemetryInitializer>();
         }
 
         // ReSharper disable once UnusedMember.Global
