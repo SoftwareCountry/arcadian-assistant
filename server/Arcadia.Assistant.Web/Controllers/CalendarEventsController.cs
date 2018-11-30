@@ -17,6 +17,7 @@
     using Arcadia.Assistant.Web.Configuration;
     using Arcadia.Assistant.Web.Employees;
     using Arcadia.Assistant.Web.Models.Calendar;
+    using Arcadia.Assistant.Web.Users;
 
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
@@ -27,17 +28,20 @@
     public class CalendarEventsController : Controller
     {
         private readonly IEmployeesRegistry employeesRegistry;
-
         private readonly IAuthorizationService authorizationService;
-
         private readonly ITimeoutSettings timeoutSettings;
+        private readonly IUserEmployeeSearch userEmployeeSearch;
 
-
-        public CalendarEventsController(ITimeoutSettings timeoutSettings, IEmployeesRegistry employeesRegistry, IAuthorizationService authorizationService)
+        public CalendarEventsController(
+            ITimeoutSettings timeoutSettings,
+            IEmployeesRegistry employeesRegistry,
+            IAuthorizationService authorizationService,
+            IUserEmployeeSearch userEmployeeSearch)
         {
             this.timeoutSettings = timeoutSettings;
             this.employeesRegistry = employeesRegistry;
             this.authorizationService = authorizationService;
+            this.userEmployeeSearch = userEmployeeSearch;
         }
 
         [Route("")]
@@ -137,7 +141,7 @@
 
                 case UpsertCalendarEvent.Error error:
                     return this.BadRequest(error.Message);
-                
+
                 default:
                     return this.StatusCode(StatusCodes.Status500InternalServerError);
             }
@@ -168,8 +172,8 @@
                 return this.NotFound();
             }
 
-            var calendarEventsRequirement = existingEvent.IsPending 
-                ? (IAuthorizationRequirement) new EditPendingCalendarEvents()
+            var calendarEventsRequirement = existingEvent.IsPending
+                ? (IAuthorizationRequirement)new EditPendingCalendarEvents()
                 : new EditCalendarEvents(existingEvent, model);
 
             var hasPermissions = (await this.authorizationService.AuthorizeAsync(this.User, employee, calendarEventsRequirement)).Succeeded;
@@ -182,6 +186,24 @@
             if (existingEvent.Type != model.Type)
             {
                 return this.StatusCode(StatusCodes.Status409Conflict, "Calendar types are not compatible");
+            }
+
+            // Specific logic for approvals. Direct status change to Approved is restricted,
+            // it will be set automatically, when all needed approvals are collected
+            if (model.Status == VacationStatuses.Approved)
+            {
+                var currentUserEmployee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, token);
+                var message = new ApproveVacation(eventId, currentUserEmployee.Metadata.EmployeeId);
+                var approveResponse = await employee.Calendar.VacationsActor.Ask(message, this.timeoutSettings.Timeout, token);
+
+                switch (approveResponse)
+                {
+                    case ApproveVacation.SuccessResponse _:
+                        return this.NoContent();
+
+                    case ApproveVacation.BadRequestResponse err:
+                        return this.BadRequest(err.Message);
+                }
             }
 
             var calendarEvent = new CalendarEvent(eventId, model.Type, model.Dates, model.Status, employee.Metadata.EmployeeId);

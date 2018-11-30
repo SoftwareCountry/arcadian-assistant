@@ -26,7 +26,12 @@
 
         private readonly EmployeeCalendarContainer calendar;
 
-        public EmployeeActor(EmployeeStoredInformation storedInformation, IActorRef imageResizer, IActorRef vacationsRegistry)
+        public EmployeeActor(
+            EmployeeStoredInformation storedInformation,
+            IActorRef imageResizer,
+            IActorRef vacationsRegistry,
+            IActorRef vacationApprovalsChecker,
+            TimeSpan timeoutSetting)
         {
             this.employeeMetadata = storedInformation.Metadata;
             this.PersistenceId = $"employee-info-{Uri.EscapeDataString(this.employeeMetadata.EmployeeId)}";
@@ -36,7 +41,14 @@
 
             this.employeeFeed = Context.ActorOf(FeedActor.GetProps(), "feed");
 
-            var vacationsActor = Context.ActorOf(EmployeeVacationsActor.CreateProps(this.employeeMetadata.EmployeeId, this.employeeFeed, vacationsRegistry), "vacations");
+            var vacationsActor = Context.ActorOf(
+                EmployeeVacationsActor.CreateProps(
+                    this.employeeMetadata.EmployeeId,
+                    this.employeeFeed,
+                    vacationsRegistry,
+                    vacationApprovalsChecker,
+                    timeoutSetting),
+                "vacations");
             var sickLeavesActor = Context.ActorOf(EmployeeSickLeaveActor.CreateProps(this.employeeMetadata), "sick-leaves");
             var workHoursActor = Context.ActorOf(EmployeeWorkHoursActor.CreateProps(this.employeeMetadata.EmployeeId), "work-hours");
             Context.Watch(vacationsActor);
@@ -177,7 +189,16 @@
             }
         }
 
-        public static Props GetProps(EmployeeStoredInformation employeeStoredInformation, IActorRef imageResizer, IActorRef vacationsRegistry) =>
-            Props.Create(() => new EmployeeActor(employeeStoredInformation, imageResizer, vacationsRegistry));
+        public static Props GetProps(EmployeeStoredInformation employeeStoredInformation,
+            IActorRef imageResizer,
+            IActorRef vacationsRegistry,
+            IActorRef vacationApprovalsChecker,
+            TimeSpan timeoutSetting
+        ) => Props.Create(() => new EmployeeActor(
+            employeeStoredInformation,
+            imageResizer,
+            vacationsRegistry,
+            vacationApprovalsChecker,
+            timeoutSetting));
     }
 }
