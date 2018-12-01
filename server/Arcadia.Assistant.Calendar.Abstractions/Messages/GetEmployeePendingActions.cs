@@ -4,12 +4,7 @@
 
     public class GetEmployeePendingActions
     {
-        public GetEmployeePendingActions(string employeeId)
-        {
-            this.EmployeeId = employeeId;
-        }
-
-        public string EmployeeId { get; }
+        public static readonly GetEmployeePendingActions Instance = new GetEmployeePendingActions();
 
         public class Response
         {

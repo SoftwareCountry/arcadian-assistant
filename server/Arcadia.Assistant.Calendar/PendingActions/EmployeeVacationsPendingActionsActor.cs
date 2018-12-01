@@ -30,7 +30,7 @@
         {
             switch (message)
             {
-                case GetEmployeePendingActions msg when msg.EmployeeId == this.employeeId:
+                case GetEmployeePendingActions _:
                     this.Sender.Tell(new GetEmployeePendingActions.Response(this.pendingActionEvents));
                     break;
 

@@ -57,29 +57,25 @@
         }
 
         private UntypedReceive GatherEmployeeInfo(
-            EmployeeMetadata approver,
+            EmployeeContainer approver,
             DependentDepartmentsPendingActions dependentDepartmentsPendingActions)
         {
             this.organization.Tell(
                 DepartmentsQuery.Create()
-                    .WithHead(approver.EmployeeId)
+                    .WithHead(approver.Metadata.EmployeeId)
                     .IncludeDirectDescendants());
 
             void OnMessage(object message)
             {
                 switch (message)
                 {
-                    case DepartmentsQuery.Response response when response.Departments.Count == 0:
-                        this.FinishProcessing();
-                        break;
-
                     case DepartmentsQuery.Response response:
                         var ownDepartmentsEmployees = response.Departments
-                            .Where(d => d.Department.ChiefId == approver.EmployeeId)
+                            .Where(d => d.Department.ChiefId == approver.Metadata.EmployeeId)
                             .SelectMany(d => d.Employees);
 
                         var otherDepartmentsEmployees = response.Departments
-                            .Where(d => d.Department.ChiefId != approver.EmployeeId)
+                            .Where(d => d.Department.ChiefId != approver.Metadata.EmployeeId)
                             .Select(d => new
                             {
                                 d.Department.ChiefId,
@@ -106,12 +102,7 @@
                             .Select(x => x.First())
                             .ToList();
 
-                        if (subordinates.Count == 0)
-                        {
-                            this.FinishProcessing();
-                        }
-
-                        this.Become(this.GatherCalendarEvents(subordinates));
+                        this.Become(this.GatherCalendarEvents(approver, subordinates));
 
                         break;
 
@@ -124,7 +115,9 @@
             return OnMessage;
         }
 
-        private UntypedReceive GatherCalendarEvents(IEnumerable<EmployeeContainer> subordinates)
+        private UntypedReceive GatherCalendarEvents(
+            EmployeeContainer approver,
+            IEnumerable<EmployeeContainer> subordinates)
         {
             var calendarActorsToRespond = new HashSet<IActorRef>();
 
@@ -134,19 +127,23 @@
                 calendarActorsToRespond.Add(subordinate.Calendar.CalendarActor);
             }
 
-            var eventsByEmployeeId = new Dictionary<string, IEnumerable<CalendarEvent>>();
+            approver.Calendar.VacationPendingActionsActor.Tell(GetEmployeePendingActions.Instance);
+            calendarActorsToRespond.Add(approver.Calendar.VacationPendingActionsActor);
 
-            var statuses = new CalendarEventStatuses();
+            var eventsByEmployeeId = new Dictionary<string, List<CalendarEvent>>();
 
             void OnMessage(object message)
             {
                 switch (message)
                 {
                     case GetCalendarEvents.Response response:
-                        var pendingEvents = response.Events.Where(x => x.IsPending).ToList();
-                        if (pendingEvents.Count > 0)
+                        var pendingEvents = response.Events
+                            .Where(x => x.IsPending && x.Type != CalendarEventTypes.Vacation)
+                            .ToList();
+                        if (pendingEvents.Count != 0)
                         {
-                            eventsByEmployeeId[response.EmployeeId] = pendingEvents;
+                            eventsByEmployeeId.TryAdd(response.EmployeeId, new List<CalendarEvent>());
+                            eventsByEmployeeId[response.EmployeeId].AddRange(pendingEvents);
                         }
 
                         calendarActorsToRespond.Remove(this.Sender);
@@ -157,6 +154,25 @@
 
                         break;
 
+                    case GetEmployeePendingActions.Response response:
+                        var pendingActions = response.PendingActions.ToList();
+                        if (pendingActions.Count != 0)
+                        {
+                            var groupedActions = pendingActions.GroupBy(a => a.EmployeeId);
+                            foreach (var grouping in groupedActions)
+                            {
+                                eventsByEmployeeId.TryAdd(grouping.Key, new List<CalendarEvent>());
+                                eventsByEmployeeId[grouping.Key].AddRange(grouping);
+                            }
+                        }
+
+                        calendarActorsToRespond.Remove(this.Sender);
+                        if (calendarActorsToRespond.Count == 0)
+                        {
+                            this.FinishProcessing(eventsByEmployeeId);
+                        }
+                        break;
+
                     default:
                         this.DefaultMessageHandler(message);
                         break;
@@ -166,37 +182,33 @@
             return OnMessage;
         }
 
-        private void FinishProcessing()
+        private void FinishProcessing(Dictionary<string, List<CalendarEvent>> events)
         {
-            this.FinishProcessing(new Dictionary<string, IEnumerable<CalendarEvent>>());
-        }
-
-        private void FinishProcessing(IDictionary<string, IEnumerable<CalendarEvent>> events)
-        {
-            this.requestor.Tell(new GetPendingActions.Response(events));
+            var result = events.ToDictionary(x => x.Key, x => x.Value.AsEnumerable());
+            this.requestor.Tell(new GetPendingActions.Response(result));
             Context.Stop(this.Self);
         }
 
         public class GetPendingActions
         {
-            public EmployeeMetadata Approver { get; }
+            public GetPendingActions(EmployeeContainer approver, DependentDepartmentsPendingActions dependentDepartmentsPendingActions)
+            {
+                this.Approver = approver;
+                this.DependentDepartmentsPendingActions = dependentDepartmentsPendingActions;
+            }
+
+            public EmployeeContainer Approver { get; }
 
             public DependentDepartmentsPendingActions DependentDepartmentsPendingActions { get; }
 
-            public GetPendingActions(EmployeeMetadata approver, DependentDepartmentsPendingActions dependentDepartmentsPendingActions)
-            {
-                this.Approver = approver;
-                DependentDepartmentsPendingActions = dependentDepartmentsPendingActions;
-            }
-
             public class Response
             {
-                public IDictionary<string, IEnumerable<CalendarEvent>> EventsByEmployeeId { get; }
-
                 public Response(IDictionary<string, IEnumerable<CalendarEvent>> eventsByEmployeeId)
                 {
                     this.EventsByEmployeeId = eventsByEmployeeId;
                 }
+
+                public IDictionary<string, IEnumerable<CalendarEvent>> EventsByEmployeeId { get; }
             }
         }
     }

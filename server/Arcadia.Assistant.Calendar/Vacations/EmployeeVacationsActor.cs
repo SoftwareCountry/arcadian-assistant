@@ -261,10 +261,10 @@
 
         private void ProcessVacationApprovals(ProcessVacationApprovalsMessage.SuccessResponse successResponse)
         {
+            var oldEvent = this.EventsById[successResponse.EventId];
+
             if (successResponse.NextApproverId == null)
             {
-                var oldEvent = this.EventsById[successResponse.EventId];
-
                 var newEvent = new CalendarEvent(
                     oldEvent.EventId,
                     oldEvent.Type,
@@ -274,10 +274,14 @@
                 );
 
                 this.UpdateCalendarEvent(oldEvent, newEvent, ev => { });
+
+                Context.System.EventStream.Publish(
+                    new CalendarEventApproverEventBusMessage(oldEvent, null));
             }
             else
             {
-                // It should publish message to Event Bus that new approver is required
+                Context.System.EventStream.Publish(
+                    new CalendarEventApproverEventBusMessage(oldEvent, successResponse.NextApproverId));
             }
         }
 
