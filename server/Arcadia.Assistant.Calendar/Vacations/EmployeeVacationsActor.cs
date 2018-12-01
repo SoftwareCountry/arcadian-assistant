@@ -274,15 +274,10 @@
                 );
 
                 this.UpdateCalendarEvent(oldEvent, newEvent, ev => { });
+            }
 
-                Context.System.EventStream.Publish(
-                    new CalendarEventApproverEventBusMessage(oldEvent, null));
-            }
-            else
-            {
-                Context.System.EventStream.Publish(
-                    new CalendarEventApproverEventBusMessage(oldEvent, successResponse.NextApproverId));
-            }
+            Context.System.EventStream.Publish(
+                new CalendarEventApproverEventBusMessage(oldEvent, successResponse.NextApproverId));
         }
 
         private void OnVacationRequested(VacationIsRequested message)
