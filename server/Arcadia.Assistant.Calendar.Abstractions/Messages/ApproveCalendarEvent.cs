@@ -1,8 +1,8 @@
 ﻿namespace Arcadia.Assistant.Calendar.Abstractions.Messages
 {
-    public class ApproveVacation
+    public class ApproveCalendarEvent
     {
-        public ApproveVacation(string eventId, string approverId)
+        public ApproveCalendarEvent(string eventId, string approverId)
         {
             this.EventId = eventId;
             this.ApproverId = approverId;

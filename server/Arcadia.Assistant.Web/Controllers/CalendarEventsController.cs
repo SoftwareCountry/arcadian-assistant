@@ -193,15 +193,15 @@
             if (model.Status == VacationStatuses.Approved)
             {
                 var currentUserEmployee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, token);
-                var message = new ApproveVacation(eventId, currentUserEmployee.Metadata.EmployeeId);
+                var message = new ApproveCalendarEvent(eventId, currentUserEmployee.Metadata.EmployeeId);
                 var approveResponse = await employee.Calendar.VacationsActor.Ask(message, this.timeoutSettings.Timeout, token);
 
                 switch (approveResponse)
                 {
-                    case ApproveVacation.SuccessResponse _:
+                    case ApproveCalendarEvent.SuccessResponse _:
                         return this.NoContent();
 
-                    case ApproveVacation.BadRequestResponse err:
+                    case ApproveCalendarEvent.BadRequestResponse err:
                         return this.BadRequest(err.Message);
                 }
             }

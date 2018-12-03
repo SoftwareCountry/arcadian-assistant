@@ -76,7 +76,7 @@
             this.Persist(newEvent, e =>
             {
                 this.OnVacationRequested(e);
-                this.Self.Tell(new ProcessVacationApprovalsMessage(eventId));
+                this.Self.Tell(new ProcessCalendarEventApprovalsMessage(eventId));
                 onUpsert(this.EventsById[eventId]);
             });
         }
@@ -94,33 +94,33 @@
                         .PipeTo(this.Sender);
                     break;
 
-                case ApproveVacation msg:
-                    this.ApproveVacation(msg);
+                case ApproveCalendarEvent msg:
+                    this.ApproveCalendarEvent(msg);
                     break;
 
-                case ProcessVacationApprovalsMessage msg:
+                case ProcessCalendarEventApprovalsMessage msg:
                     this.vacationApprovalsChecker
                         .Ask<GetNextVacationRequestApprover.Response>(
                             new GetNextVacationRequestApprover(this.EmployeeId, this.approvalsByEvent[msg.EventId]),
                             this.timeoutSetting)
-                        .ContinueWith<ProcessVacationApprovalsMessage.Response>(task =>
+                        .ContinueWith<ProcessCalendarEventApprovalsMessage.Response>(task =>
                         {
                             if (task.Result is GetNextVacationRequestApprover.ErrorResponse err)
                             {
-                                return new ProcessVacationApprovalsMessage.ErrorResponse(msg.EventId, err.Message);
+                                return new ProcessCalendarEventApprovalsMessage.ErrorResponse(msg.EventId, err.Message);
                             }
 
                             var resp = (GetNextVacationRequestApprover.SuccessResponse)task.Result;
-                            return new ProcessVacationApprovalsMessage.SuccessResponse(msg.EventId, resp.NextApproverEmployeeId);
+                            return new ProcessCalendarEventApprovalsMessage.SuccessResponse(msg.EventId, resp.NextApproverEmployeeId);
                         })
                         .PipeTo(this.Self);
                     break;
 
-                case ProcessVacationApprovalsMessage.SuccessResponse msg:
-                    this.ProcessVacationApprovals(msg);
+                case ProcessCalendarEventApprovalsMessage.SuccessResponse msg:
+                    this.ProcessCalendarEventApprovals(msg);
                     break;
 
-                case ProcessVacationApprovalsMessage.ErrorResponse msg:
+                case ProcessCalendarEventApprovalsMessage.ErrorResponse msg:
                     this.logger.Warning($"Failed to get next approver for the event {msg.EventId}");
                     break;
 
@@ -221,26 +221,26 @@
                 case RecoveryCompleted _:
                     foreach (var eventId in this.eventsToCheckApprovers)
                     {
-                        this.Self.Tell(new ProcessVacationApprovalsMessage(eventId));
+                        this.Self.Tell(new ProcessCalendarEventApprovalsMessage(eventId));
                     }
                     break;
             }
         }
 
-        private void ApproveVacation(ApproveVacation message)
+        private void ApproveCalendarEvent(ApproveCalendarEvent message)
         {
             var calendarEvent = this.EventsById[message.EventId];
             var approvals = this.approvalsByEvent[message.EventId];
             if (!this.IsStatusTransitionAllowed(calendarEvent.Status, VacationStatuses.Approved))
             {
                 var errorMessage = $"Event {message.EventId}. Status transition {calendarEvent.Status} -> {VacationStatuses.Approved} is not allowed for {calendarEvent.Type}";
-                this.Sender.Tell(new ApproveVacation.BadRequestResponse(errorMessage));
+                this.Sender.Tell(new ApproveCalendarEvent.BadRequestResponse(errorMessage));
                 return;
             }
 
             if (approvals.Contains(message.ApproverId) || calendarEvent.Status == VacationStatuses.Approved)
             {
-                this.Sender.Tell(Abstractions.Messages.ApproveVacation.SuccessResponse.Instance);
+                this.Sender.Tell(ApproveCalendarEvent.SuccessResponse.Instance);
                 return;
             }
 
@@ -254,12 +254,12 @@
             this.Persist(@event, ev =>
             {
                 this.OnUserGrantedVacationApproval(ev);
-                this.Self.Tell(new ProcessVacationApprovalsMessage(message.EventId));
-                this.Sender.Tell(Abstractions.Messages.ApproveVacation.SuccessResponse.Instance);
+                this.Self.Tell(new ProcessCalendarEventApprovalsMessage(message.EventId));
+                this.Sender.Tell(ApproveCalendarEvent.SuccessResponse.Instance);
             });
         }
 
-        private void ProcessVacationApprovals(ProcessVacationApprovalsMessage.SuccessResponse successResponse)
+        private void ProcessCalendarEventApprovals(ProcessCalendarEventApprovalsMessage.SuccessResponse successResponse)
         {
             var oldEvent = this.EventsById[successResponse.EventId];
 
@@ -345,9 +345,9 @@
             }
         }
 
-        private class ProcessVacationApprovalsMessage
+        private class ProcessCalendarEventApprovalsMessage
         {
-            public ProcessVacationApprovalsMessage(string eventId)
+            public ProcessCalendarEventApprovalsMessage(string eventId)
             {
                 this.EventId = eventId;
             }
