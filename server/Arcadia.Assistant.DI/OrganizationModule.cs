@@ -1,6 +1,5 @@
 ﻿namespace Arcadia.Assistant.DI
 {
-    using System;
     using Autofac;
 
     using Arcadia.Assistant.Configuration.Configuration;
@@ -13,18 +12,16 @@
     public class OrganizationModule : Module
     {
         private readonly IRefreshInformation refreshInformation;
-        private readonly TimeSpan timeoutSetting;
 
-        public OrganizationModule(IRefreshInformation refreshInformation, TimeSpan timeoutSetting)
+        public OrganizationModule(IRefreshInformation refreshInformation)
         {
             this.refreshInformation = refreshInformation;
-            this.timeoutSetting = timeoutSetting;
         }
 
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<EmployeesActor>().AsSelf();
-            builder.Register(ctx => new OrganizationActor(this.refreshInformation, this.timeoutSetting));
+            builder.Register(ctx => new OrganizationActor(this.refreshInformation));
 
             builder.RegisterType<DepartmentsStorage>().AsSelf();
 

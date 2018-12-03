@@ -2,11 +2,9 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.Linq;
 
     using Akka.Actor;
-    using Akka.DI.Core;
     using Akka.Event;
     using Akka.Routing;
 
@@ -28,11 +26,10 @@
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
         private readonly IActorRef vacationApprovalsChecker;
-        private readonly TimeSpan timeoutSetting;
 
         public IStash Stash { get; set; }
 
-        public EmployeesActor(IActorRef vacationApprovalsChecker, TimeSpan timeoutSetting)
+        public EmployeesActor(IActorRef vacationApprovalsChecker)
         {
             this.employeesInfoStorage = Context.ActorOf(EmployeesInfoStorage.GetProps, "employees-storage");
             this.logger.Info($"Image resizers pool size: {ResizersCount}");
@@ -43,7 +40,6 @@
             this.vacationsRegistry = Context.ActorOf(VacationsRegistry.GetProps, "vacations-registry");
 
             this.vacationApprovalsChecker = vacationApprovalsChecker;
-            this.timeoutSetting = timeoutSetting;
         }
 
         protected override void OnReceive(object message)
@@ -142,8 +138,7 @@
                             employeeNewInfo,
                             this.imageResizer,
                             this.vacationsRegistry,
-                            this.vacationApprovalsChecker,
-                            this.timeoutSetting),
+                            this.vacationApprovalsChecker),
                         $"employee-{Uri.EscapeDataString(employeeNewInfo.Metadata.EmployeeId)}");
 
                     this.EmployeesById[employeeNewInfo.Metadata.EmployeeId] = employee;
@@ -165,7 +160,7 @@
             }
         }
 
-        public static Props GetProps(IActorRef vacationApprovalsChecker, TimeSpan timeoutSetting) =>
-            Props.Create(() => new EmployeesActor(vacationApprovalsChecker, timeoutSetting));
+        public static Props GetProps(IActorRef vacationApprovalsChecker) =>
+            Props.Create(() => new EmployeesActor(vacationApprovalsChecker));
     }
 }
