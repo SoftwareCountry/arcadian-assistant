@@ -1,14 +1,19 @@
 import React, { Component } from 'react';
-import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base';
+import { EventDialogBase } from './event-dialog-base';
 import { AppState } from '../../reducers/app.reducer';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { EventDialogActions, closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
+import {
+    closeEventDialog,
+    EventDialogActions,
+    openEventDialog
+} from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { chosenTypeDayoff } from '../../reducers/calendar/dayoff.action';
-import { DayModel } from '../../reducers/calendar/calendar.model';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
 import { HoursCreditType } from '../../reducers/calendar/days-counters.model';
-import { SelectorDayoffType } from './selector-dayoff-type';
+import { View } from 'react-native';
+import { dayOffDialogStyles } from './styles';
+import { RadioButton, RadioGroup } from '../../common/radio-buttons-group.component';
 
 interface ChooseTypeDayoffEventDialogDispatchProps {
     cancelDialog: () => void;
@@ -22,6 +27,7 @@ interface ChooseTypeDayoffEventDialogProps {
 
 interface ChooseTypeDayoffEventDialogState {
     selectedHoursCreditType: HoursCreditType;
+    radioButtons: RadioButton[];
 }
 
 class ChooseTypeDayoffEventDialogImpl extends Component<ChooseTypeDayoffEventDialogProps & ChooseTypeDayoffEventDialogDispatchProps, ChooseTypeDayoffEventDialogState> {
@@ -33,26 +39,53 @@ class ChooseTypeDayoffEventDialogImpl extends Component<ChooseTypeDayoffEventDia
     constructor(props: ChooseTypeDayoffEventDialogProps & ChooseTypeDayoffEventDialogDispatchProps) {
         super(props);
         this.state = {
-            selectedHoursCreditType: props.chosenType
+            selectedHoursCreditType: props.chosenType,
+            radioButtons: [
+                {
+                    selectionIndex: 0,
+                    label: this.hoursCreditTypeToText[HoursCreditType.DaysOff],
+                    selected: props.chosenType === HoursCreditType.DaysOff,
+                    color: 'white',
+                    labelStyle: dayOffDialogStyles.labelStyle,
+                },
+                {
+                    selectionIndex: 1,
+                    label: this.hoursCreditTypeToText[HoursCreditType.Workout],
+                    selected: props.chosenType === HoursCreditType.Workout,
+                    color: 'white',
+                    labelStyle: dayOffDialogStyles.labelStyle,
+                }
+            ],
         };
     }
 
     public render() {
-        return <EventDialogBase
-                    title={'Select type to process your dayoff'}
-                    text={this.text}
-                    icon={'dayoff'}
-                    cancelLabel={'Back'}
-                    acceptLabel={'Confirm'}
-                    onAcceptPress={this.onAcceptClick}
-                    onCancelPress={this.onCancelClick}
-                    onClosePress={this.onCloseClick} >
-                    <SelectorDayoffType onTypeSelected={this.onDayoffTypeSelected} />
-                </EventDialogBase>;
+        return (
+            <EventDialogBase
+                title={'Select type to process your dayoff'}
+                text={''}
+                icon={'dayoff'}
+                cancelLabel={'Back'}
+                acceptLabel={'Confirm'}
+                onAcceptPress={this.onAcceptClick}
+                onCancelPress={this.onCancelClick}
+                onClosePress={this.onCloseClick}>
+                <View style={dayOffDialogStyles.container}>
+                    <RadioGroup flexDirection={'row'}
+                                radioButtons={this.state.radioButtons}
+                                onPress={this.onDayoffTypeSelected}/>
+                </View>
+            </EventDialogBase>
+        );
     }
 
-    private onDayoffTypeSelected = (selectedType: HoursCreditType) => {
-        this.setState({ selectedHoursCreditType: selectedType });
+    private onDayoffTypeSelected = (buttons: RadioButton[]) => {
+        const selectedIndex = buttons.find((item => item.selected)).selectionIndex;
+        const selectedType = selectedIndex === 0 ? HoursCreditType.DaysOff : HoursCreditType.Workout;
+        this.setState({
+            selectedHoursCreditType: selectedType,
+            radioButtons: buttons,
+        });
     };
 
     private onCancelClick = () => {
@@ -66,12 +99,6 @@ class ChooseTypeDayoffEventDialogImpl extends Component<ChooseTypeDayoffEventDia
     private onCloseClick = () => {
         this.props.closeDialog();
     };
-
-    public get text(): string {
-        const hoursCreditTypeToText = this.hoursCreditTypeToText[this.state.selectedHoursCreditType];
-
-        return `Type is ${hoursCreditTypeToText}`;
-    }
 }
 
 const mapStateToProps = (state: AppState): ChooseTypeDayoffEventDialogProps => ({
