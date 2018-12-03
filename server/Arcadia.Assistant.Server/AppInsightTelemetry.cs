@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.DependencyCollector;
@@ -12,6 +13,8 @@
     public class AppInsightTelemetry : IDisposable
     {
         private readonly TelemetryConfiguration configuration;
+
+        private readonly List<ITelemetryModule> initializedModules = new List<ITelemetryModule>();
 
         public AppInsightTelemetry(TelemetryConfiguration configuration)
         {
@@ -28,9 +31,8 @@
             foreach (var telemetryModule in this.GetModules())
             {
                 telemetryModule.Initialize(this.configuration);
+                this.initializedModules.Add(telemetryModule);
             }
-
-            this.InitializeQuickPulse();
         }
 
         public TelemetryClient CreateTelemetryClient()
@@ -88,11 +90,22 @@
                 .Build();
 
             quickPulseModule.RegisterTelemetryProcessor(processor);
+
+            this.initializedModules.Add(quickPulseModule);
         }
 
         public void Dispose()
         {
             this.configuration.Dispose();
+            foreach (var initializedModule in this.initializedModules)
+            {
+                if (initializedModule is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+            }
+
+            this.initializedModules.Clear();
         }
     }
 }
