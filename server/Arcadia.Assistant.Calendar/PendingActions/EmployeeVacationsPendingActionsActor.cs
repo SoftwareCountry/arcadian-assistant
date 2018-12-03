@@ -34,21 +34,17 @@
                     this.Sender.Tell(new GetEmployeePendingActions.Response(this.pendingActionEvents.Values.ToList()));
                     break;
 
-                case CalendarEventAssignedToApproverEventBusMessage msg:
-                    if (msg.Event.Type != CalendarEventTypes.Vacation)
-                    {
-                        break;
-                    }
+                case CalendarEventAssignedToApproverEventBusMessage msg when msg.Event.Type != CalendarEventTypes.Vacation:
+                    break;
 
-                    if (msg.ApproverId == this.employeeId && !this.pendingActionEvents.ContainsKey(msg.Event.EventId))
-                    {
-                        this.pendingActionEvents[msg.Event.EventId] = msg.Event;
-                    }
-                    else if (msg.ApproverId != this.employeeId && this.pendingActionEvents.ContainsKey(msg.Event.EventId))
-                    {
-                        this.pendingActionEvents.Remove(msg.Event.EventId);
-                    }
+                case CalendarEventAssignedToApproverEventBusMessage msg when msg.ApproverId == this.employeeId:
+                    this.pendingActionEvents[msg.Event.EventId] = msg.Event;
+                    break;
 
+                case CalendarEventAssignedToApproverEventBusMessage msg
+                    when msg.ApproverId != this.employeeId && this.pendingActionEvents.ContainsKey(msg.Event.EventId):
+
+                    this.pendingActionEvents.Remove(msg.Event.EventId);
                     break;
 
                 default:
