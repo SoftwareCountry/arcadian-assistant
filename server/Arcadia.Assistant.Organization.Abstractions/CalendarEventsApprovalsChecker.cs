@@ -20,7 +20,7 @@
             switch (message)
             {
                 case GetNextCalendarEventApprover msg:
-                    this.GetNextApprover(msg.EmployeeId, msg.ExistingApprovals)
+                    this.GetNextApprover(msg.EmployeeId, msg.ExistingApprovals, msg.EventType)
                         .PipeTo(
                             this.Sender,
                             success: r => new GetNextCalendarEventApprover.SuccessResponse(r),
@@ -33,6 +33,6 @@
             }
         }
 
-        protected abstract Task<string> GetNextApprover(string employeeId, IEnumerable<string> existingApprovals);
+        protected abstract Task<string> GetNextApprover(string employeeId, IEnumerable<string> existingApprovals, string eventType);
     }
 }

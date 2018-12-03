@@ -101,7 +101,7 @@
                 case ProcessCalendarEventApprovalsMessage msg:
                     this.calendarEventsApprovalsChecker
                         .Ask<GetNextCalendarEventApprover.Response>(
-                            new GetNextCalendarEventApprover(this.EmployeeId, this.approvalsByEvent[msg.EventId]),
+                            new GetNextCalendarEventApprover(this.EmployeeId, this.approvalsByEvent[msg.EventId], CalendarEventTypes.Vacation),
                             this.timeoutSetting)
                         .ContinueWith<ProcessCalendarEventApprovalsMessage.Response>(task =>
                         {
