@@ -6,19 +6,20 @@
 
     using Akka.Actor;
 
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+
     using Arcadia.Assistant.Server.Interop;
+    using Arcadia.Assistant.Web.Authorization;
     using Arcadia.Assistant.Web.Configuration;
     using Arcadia.Assistant.Web.Employees;
     using Arcadia.Assistant.Web.Models.Calendar;
     using Arcadia.Assistant.Web.Users;
-
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
-    using UserPreferences;
+    using Arcadia.Assistant.Web.UserPreferences;
 
     [Route("api/pending-requests")]
-    [Authorize]
+    [Authorize(Policies.UserIsEmployee)]
     public class PendingRequestsController : Controller
     {
         private readonly IUserEmployeeSearch userEmployeeSearch;
@@ -60,7 +61,7 @@
 
             var actor = this.actorsFactory.ActorOf(PendingActionsRequest.CreateProps(this.pathBuilder));
             var calendarEvents = await actor.Ask<PendingActionsRequest.GetPendingActions.Response>(
-                new PendingActionsRequest.GetPendingActions(user.Metadata, userPreferences.DependentDepartmentsPendingActions),
+                new PendingActionsRequest.GetPendingActions(user, userPreferences.DependentDepartmentsPendingActions),
                 this.timeoutSettings.Timeout,
                 token);
 

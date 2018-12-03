@@ -12,12 +12,20 @@
 
         public IActorRef SickLeavesActor { get; }
 
-        public EmployeeCalendarContainer(IActorRef vacationsActor, IActorRef workHoursActor, IActorRef sickLeavesActor, IActorRef calendarActor)
+        public IActorRef VacationPendingActionsActor { get; }
+
+        public EmployeeCalendarContainer(
+            IActorRef vacationsActor,
+            IActorRef workHoursActor,
+            IActorRef sickLeavesActor,
+            IActorRef calendarActor,
+            IActorRef vacationPendingActionsActor)
         {
             this.VacationsActor = vacationsActor;
             this.WorkHoursActor = workHoursActor;
             this.SickLeavesActor = sickLeavesActor;
             this.CalendarActor = calendarActor;
+            this.VacationPendingActionsActor = vacationPendingActionsActor;
         }
     }
 }
