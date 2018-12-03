@@ -18,7 +18,7 @@ export class Employee {
 
     @dataMember()
     @required({nullable: true})
-    public email = '';
+    public email: Nullable<string> = '';
 
     @dataMember()
     public sex: number = 1;
