@@ -13,6 +13,7 @@ import {
 import { Action, Dispatch } from 'redux';
 import { Nullable, Optional } from 'types';
 
+//============================================================================
 interface CalendarProps {
     pages: Nullable<CalendarPageModel[]>;
     intervals: Nullable<ReadOnlyIntervalsModel>;
@@ -20,13 +21,15 @@ interface CalendarProps {
     disableCalendarDaysBefore: Optional<DayModel>;
 }
 
+//============================================================================
 interface CalendarDispatchProps {
     selectCalendarDay: OnSelectedDayCallback;
     nextCalendarPage: () => void;
     prevCalendarPage: () => void;
 }
 
-export class CalendarImpl extends Component<CalendarProps & CalendarDispatchProps> {
+//============================================================================
+class CalendarImpl extends Component<CalendarProps & CalendarDispatchProps> {
     public render() {
 
         if (!this.props.pages || !this.props.intervals || !this.props.selection || !this.props.disableCalendarDaysBefore) {
@@ -56,14 +59,16 @@ export class CalendarImpl extends Component<CalendarProps & CalendarDispatchProp
     };
 }
 
-const mapStateToProps = (state: AppState): CalendarProps => ({
+//----------------------------------------------------------------------------
+const stateToProps = (state: AppState): CalendarProps => ({
     pages: state.calendar ? state.calendar.calendarEvents.pages : null,
     intervals: state.calendar && state.calendar.calendarEvents.intervals ? state.calendar.calendarEvents.intervals : null,
     selection: state.calendar ? state.calendar.calendarEvents.selection : null,
     disableCalendarDaysBefore: state.calendar ? state.calendar.calendarEvents.disableCalendarDaysBefore : undefined,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<Action>): CalendarDispatchProps => ({
+//----------------------------------------------------------------------------
+const dispatchToProps = (dispatch: Dispatch<Action>): CalendarDispatchProps => ({
     selectCalendarDay: (day: DayModel) => {
         dispatch(selectCalendarDay(day));
     },
@@ -75,4 +80,5 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>): CalendarDispatchProps =
     }
 });
 
-export const Calendar = connect(mapStateToProps, mapDispatchToProps)(CalendarImpl);
+//----------------------------------------------------------------------------
+export const Calendar = connect(stateToProps, dispatchToProps)(CalendarImpl);
