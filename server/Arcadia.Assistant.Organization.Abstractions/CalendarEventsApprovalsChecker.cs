@@ -8,23 +8,23 @@
 
     using OrganizationRequests;
 
-    public abstract class VacationApprovalsChecker : UntypedActor, ILogReceive
+    public abstract class CalendarEventsApprovalsChecker : UntypedActor, ILogReceive
     {
         public static Props GetProps()
         {
-            return Context.DI().Props<VacationApprovalsChecker>();
+            return Context.DI().Props<CalendarEventsApprovalsChecker>();
         }
 
         protected override void OnReceive(object message)
         {
             switch (message)
             {
-                case GetNextVacationRequestApprover msg:
+                case GetNextCalendarEventApprover msg:
                     this.GetNextApprover(msg.EmployeeId, msg.ExistingApprovals)
                         .PipeTo(
                             this.Sender,
-                            success: r => new GetNextVacationRequestApprover.SuccessResponse(r),
-                            failure: err => new GetNextVacationRequestApprover.ErrorResponse(err.Message));
+                            success: r => new GetNextCalendarEventApprover.SuccessResponse(r),
+                            failure: err => new GetNextCalendarEventApprover.ErrorResponse(err.Message));
                     break;
 
                 default:

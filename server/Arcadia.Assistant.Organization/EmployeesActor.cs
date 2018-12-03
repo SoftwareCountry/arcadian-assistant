@@ -27,12 +27,12 @@
         private Dictionary<string, IActorRef> EmployeesById { get; } = new Dictionary<string, IActorRef>();
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
-        private readonly IActorRef vacationApprovalsChecker;
+        private readonly IActorRef calendarEventsApprovalsChecker;
         private readonly TimeSpan timeoutSetting;
 
         public IStash Stash { get; set; }
 
-        public EmployeesActor(IActorRef vacationApprovalsChecker, TimeSpan timeoutSetting)
+        public EmployeesActor(IActorRef calendarEventsApprovalsChecker, TimeSpan timeoutSetting)
         {
             this.employeesInfoStorage = Context.ActorOf(EmployeesInfoStorage.GetProps, "employees-storage");
             this.logger.Info($"Image resizers pool size: {ResizersCount}");
@@ -42,7 +42,7 @@
 
             this.vacationsRegistry = Context.ActorOf(VacationsRegistry.GetProps, "vacations-registry");
 
-            this.vacationApprovalsChecker = vacationApprovalsChecker;
+            this.calendarEventsApprovalsChecker = calendarEventsApprovalsChecker;
             this.timeoutSetting = timeoutSetting;
         }
 
@@ -142,7 +142,7 @@
                             employeeNewInfo,
                             this.imageResizer,
                             this.vacationsRegistry,
-                            this.vacationApprovalsChecker,
+                            this.calendarEventsApprovalsChecker,
                             this.timeoutSetting),
                         $"employee-{Uri.EscapeDataString(employeeNewInfo.Metadata.EmployeeId)}");
 
@@ -165,7 +165,7 @@
             }
         }
 
-        public static Props GetProps(IActorRef vacationApprovalsChecker, TimeSpan timeoutSetting) =>
-            Props.Create(() => new EmployeesActor(vacationApprovalsChecker, timeoutSetting));
+        public static Props GetProps(IActorRef calendarEventsApprovalsChecker, TimeSpan timeoutSetting) =>
+            Props.Create(() => new EmployeesActor(calendarEventsApprovalsChecker, timeoutSetting));
     }
 }

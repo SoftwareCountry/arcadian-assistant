@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.CSP.Vacations
+﻿namespace Arcadia.Assistant.CSP
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -7,9 +7,9 @@
 
     using Akka.Actor;
 
-    using Organization.Abstractions;
+    using Arcadia.Assistant.Organization.Abstractions;
 
-    public class CspVacationApprovalsChecker : VacationApprovalsChecker
+    public class CspCalendarEventsApprovalsChecker : CalendarEventsApprovalsChecker
     {
         private const string DepartmentsStorageActorPath = @"/user/organization/departments/departments-storage";
         private const string EmployeesStorageActorPath = @"/user/organization/employees/employees-storage";

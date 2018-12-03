@@ -20,9 +20,9 @@
 
         public OrganizationActor(IRefreshInformation refreshInformation, TimeSpan timeoutSetting)
         {
-            var vacationApprovalsCheckerActor = Context.ActorOf(VacationApprovalsChecker.GetProps(), "vacation-approvals-checker");
+            var calendarEventsApprovalsCheckerActor = Context.ActorOf(CalendarEventsApprovalsChecker.GetProps(), "calendar-events-approvals-checker");
 
-            this.employeesActor = Context.ActorOf(EmployeesActor.GetProps(vacationApprovalsCheckerActor, timeoutSetting), "employees");
+            this.employeesActor = Context.ActorOf(EmployeesActor.GetProps(calendarEventsApprovalsCheckerActor, timeoutSetting), "employees");
             this.departmentsActor = Context.ActorOf(DepartmentsActor.GetProps(this.employeesActor), "departments");
 
             Context.System.Scheduler.ScheduleTellRepeatedly(

@@ -23,7 +23,7 @@
         private readonly IActorRef employeeFeed;
 
         private readonly IActorRef vacationsRegistry;
-        private readonly IActorRef vacationApprovalsChecker;
+        private readonly IActorRef calendarEventsApprovalsChecker;
         private readonly TimeSpan timeoutSetting;
 
         public override string PersistenceId { get; }
@@ -36,13 +36,13 @@
         public EmployeeVacationsActor(string employeeId,
             IActorRef employeeFeed,
             IActorRef vacationsRegistry,
-            IActorRef vacationApprovalsChecker,
+            IActorRef calendarEventsApprovalsChecker,
             TimeSpan timeoutSetting
         ) : base(employeeId)
         {
             this.employeeFeed = employeeFeed;
             this.vacationsRegistry = vacationsRegistry;
-            this.vacationApprovalsChecker = vacationApprovalsChecker;
+            this.calendarEventsApprovalsChecker = calendarEventsApprovalsChecker;
             this.timeoutSetting = timeoutSetting;
             this.PersistenceId = $"employee-vacations-{this.EmployeeId}";
         }
@@ -51,14 +51,14 @@
             string employeeId,
             IActorRef employeeFeed,
             IActorRef vacationsRegistry,
-            IActorRef vacationApprovalsChecker,
+            IActorRef calendarEventsApprovalsChecker,
             TimeSpan timeoutSetting)
         {
             return Props.Create(() => new EmployeeVacationsActor(
                 employeeId,
                 employeeFeed,
                 vacationsRegistry,
-                vacationApprovalsChecker,
+                calendarEventsApprovalsChecker,
                 timeoutSetting));
         }
 
@@ -99,18 +99,18 @@
                     break;
 
                 case ProcessCalendarEventApprovalsMessage msg:
-                    this.vacationApprovalsChecker
-                        .Ask<GetNextVacationRequestApprover.Response>(
-                            new GetNextVacationRequestApprover(this.EmployeeId, this.approvalsByEvent[msg.EventId]),
+                    this.calendarEventsApprovalsChecker
+                        .Ask<GetNextCalendarEventApprover.Response>(
+                            new GetNextCalendarEventApprover(this.EmployeeId, this.approvalsByEvent[msg.EventId]),
                             this.timeoutSetting)
                         .ContinueWith<ProcessCalendarEventApprovalsMessage.Response>(task =>
                         {
-                            if (task.Result is GetNextVacationRequestApprover.ErrorResponse err)
+                            if (task.Result is GetNextCalendarEventApprover.ErrorResponse err)
                             {
                                 return new ProcessCalendarEventApprovalsMessage.ErrorResponse(msg.EventId, err.Message);
                             }
 
-                            var resp = (GetNextVacationRequestApprover.SuccessResponse)task.Result;
+                            var resp = (GetNextCalendarEventApprover.SuccessResponse)task.Result;
                             return new ProcessCalendarEventApprovalsMessage.SuccessResponse(msg.EventId, resp.NextApproverEmployeeId);
                         })
                         .PipeTo(this.Self);
@@ -210,8 +210,8 @@
                     this.OnVacationApproved(ev);
                     break;
 
-                case UserGrantedVacationApproval ev:
-                    this.OnUserGrantedVacationApproval(ev);
+                case UserGrantedCalendarEventApproval ev:
+                    this.OnUserGrantedCalendarEventApproval(ev);
                     break;
 
                 case VacationIsCancelled ev:
@@ -240,11 +240,11 @@
 
             if (approvals.Contains(message.ApproverId) || calendarEvent.Status == VacationStatuses.Approved)
             {
-                this.Sender.Tell(ApproveCalendarEvent.SuccessResponse.Instance);
+                this.Sender.Tell(Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
                 return;
             }
 
-            var @event = new UserGrantedVacationApproval
+            var @event = new UserGrantedCalendarEventApproval
             {
                 EventId = message.EventId,
                 TimeStamp = DateTimeOffset.Now,
@@ -253,9 +253,9 @@
 
             this.Persist(@event, ev =>
             {
-                this.OnUserGrantedVacationApproval(ev);
+                this.OnUserGrantedCalendarEventApproval(ev);
                 this.Self.Tell(new ProcessCalendarEventApprovalsMessage(message.EventId));
-                this.Sender.Tell(ApproveCalendarEvent.SuccessResponse.Instance);
+                this.Sender.Tell(Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
             });
         }
 
@@ -311,7 +311,7 @@
             }
         }
 
-        private void OnUserGrantedVacationApproval(UserGrantedVacationApproval message)
+        private void OnUserGrantedCalendarEventApproval(UserGrantedCalendarEventApproval message)
         {
             var calendarEvent = this.EventsById[message.EventId];
             var approvals = this.approvalsByEvent[message.EventId];

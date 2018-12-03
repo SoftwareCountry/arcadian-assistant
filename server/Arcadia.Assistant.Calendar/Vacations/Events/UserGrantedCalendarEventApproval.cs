@@ -4,7 +4,7 @@
     using System.Runtime.Serialization;
 
     [DataContract]
-    public class UserGrantedVacationApproval
+    public class UserGrantedCalendarEventApproval
     {
         [DataMember]
         public string EventId { get; set; }
