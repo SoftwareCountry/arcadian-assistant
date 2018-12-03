@@ -33,7 +33,7 @@ export class DayoffActionButton extends Component<DayoffActionButtonProps> {
 
     public get title() : string {
         return !this.props.interval
-            ? 'Process Dayoff'
+            ? 'Dayoff / Workout'
             : 'Edit Dayoff';
     }
 
