@@ -1,10 +1,9 @@
 ﻿namespace Arcadia.Assistant.DI
 {
-    using System;
     using Autofac;
-    using Calendar.SickLeave;
-    using Calendar.SickLeave.Events;
-    using Configuration.Configuration;
+
+    using Arcadia.Assistant.Calendar.SickLeave;
+    using Arcadia.Assistant.Configuration.Configuration;
 
     public class NotificationsModule : Module
     {
@@ -16,6 +15,7 @@
             this.mailConfig = mailConfig;
             this.smtpConfig = smtpConfig;
         }
+
         protected override void Load(ContainerBuilder builder)
         {
             builder.Register(x => new SendEmailSickLeaveActor(this.mailConfig, this.smtpConfig));

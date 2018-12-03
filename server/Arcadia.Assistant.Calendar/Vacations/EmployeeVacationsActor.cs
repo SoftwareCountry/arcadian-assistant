@@ -19,7 +19,6 @@
         private readonly IActorRef employeeFeed;
 
         private readonly IActorRef vacationsRegistry;
-        private readonly TimeSpan timeoutSetting;
 
         public override string PersistenceId { get; }
 
@@ -30,13 +29,11 @@
         public EmployeeVacationsActor(string employeeId,
             IActorRef employeeFeed,
             IActorRef vacationsRegistry,
-            IActorRef calendarEventsApprovalsChecker,
-            TimeSpan timeoutSetting
+            IActorRef calendarEventsApprovalsChecker
         ) : base(employeeId, calendarEventsApprovalsChecker)
         {
             this.employeeFeed = employeeFeed;
             this.vacationsRegistry = vacationsRegistry;
-            this.timeoutSetting = timeoutSetting;
             this.PersistenceId = $"employee-vacations-{this.EmployeeId}";
         }
 
@@ -44,15 +41,14 @@
             string employeeId,
             IActorRef employeeFeed,
             IActorRef vacationsRegistry,
-            IActorRef calendarEventsApprovalsChecker,
-            TimeSpan timeoutSetting)
+            IActorRef calendarEventsApprovalsChecker)
         {
             return Props.Create(() => new EmployeeVacationsActor(
                 employeeId,
                 employeeFeed,
                 vacationsRegistry,
-                calendarEventsApprovalsChecker,
-                timeoutSetting));
+                calendarEventsApprovalsChecker)
+            );
         }
 
         protected override void InsertCalendarEvent(CalendarEvent calendarEvent, OnSuccessfulUpsertCallback onUpsert)
@@ -79,9 +75,7 @@
             {
                 case GetVacationsCredit _:
                     this.vacationsRegistry
-                        .Ask<VacationsRegistry.GetVacationInfo.Response>(
-                            new VacationsRegistry.GetVacationInfo(this.EmployeeId),
-                            this.timeoutSetting)
+                        .Ask<VacationsRegistry.GetVacationInfo.Response>(new VacationsRegistry.GetVacationInfo(this.EmployeeId))
                         .ContinueWith(x => new GetVacationsCredit.Response(x.Result.VacationsCredit))
                         .PipeTo(this.Sender);
                     break;

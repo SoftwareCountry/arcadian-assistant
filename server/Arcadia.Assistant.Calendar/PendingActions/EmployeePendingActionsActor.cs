@@ -44,6 +44,10 @@
                     this.pendingActionEvents.Remove(msg.Event.EventId);
                     break;
 
+                case CalendarEventAssignedToApproverEventBusMessage _:
+                    // Simply ignore messages with other event ids
+                    break;
+
                 default:
                     this.Unhandled(message);
                     break;
