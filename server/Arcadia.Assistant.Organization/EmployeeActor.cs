@@ -50,12 +50,16 @@
                     calendarEventsApprovalsChecker,
                     timeoutSetting),
                 "vacations");
-            var sickLeavesActor = Context.ActorOf(EmployeeSickLeaveActor.CreateProps(this.employeeMetadata), "sick-leaves");
-            var workHoursActor = Context.ActorOf(EmployeeWorkHoursActor.CreateProps(this.employeeMetadata.EmployeeId), "work-hours");
-            var pendingActionsActor = Context.ActorOf(
-                EmployeePendingActionsActor.CreateProps(this.employeeMetadata.EmployeeId),
-                "pending-actions"
-            );
+            var sickLeavesActor = Context.ActorOf(
+                EmployeeSickLeaveActor.CreateProps(
+                    this.employeeMetadata,
+                    calendarEventsApprovalsChecker),
+                "sick-leaves");
+            var workHoursActor = Context.ActorOf(
+                EmployeeWorkHoursActor.CreateProps(
+                    this.employeeMetadata.EmployeeId,
+                    calendarEventsApprovalsChecker),
+            "work-hours");
 
             Context.Watch(vacationsActor);
             Context.Watch(sickLeavesActor);
@@ -68,6 +72,11 @@
                     workHoursActor,
                     sickLeavesActor),
                 "all-calendar-events"
+            );
+
+            var pendingActionsActor = Context.ActorOf(
+                EmployeePendingActionsActor.CreateProps(this.employeeMetadata.EmployeeId),
+                "pending-actions"
             );
 
             this.calendar = new EmployeeCalendarContainer(

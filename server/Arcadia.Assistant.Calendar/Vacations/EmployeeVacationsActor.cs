@@ -23,7 +23,7 @@
 
         public override string PersistenceId { get; }
 
-        private readonly List<string> eventsToCheckApprovers = new List<string>();
+        private readonly List<string> eventsToProcessApproversAfterRecover = new List<string>();
 
         //private int vacationsCredit = 28;
 
@@ -202,7 +202,7 @@
                     break;
 
                 case RecoveryCompleted _:
-                    foreach (var eventId in this.eventsToCheckApprovers)
+                    foreach (var eventId in this.eventsToProcessApproversAfterRecover)
                     {
                         this.Self.Tell(new ProcessCalendarEventApprovalsMessage(eventId));
                     }
@@ -216,7 +216,7 @@
             var calendarEvent = new CalendarEvent(message.EventId, CalendarEventTypes.Vacation, datesPeriod, VacationStatuses.Requested, this.EmployeeId);
             this.EventsById[message.EventId] = calendarEvent;
             this.ApprovalsByEvent[message.EventId] = new List<string>();
-            this.eventsToCheckApprovers.Add(message.EventId);
+            this.eventsToProcessApproversAfterRecover.Add(message.EventId);
         }
 
         private void OnVacationDatesEdit(VacationDatesAreEdited message)
@@ -233,7 +233,7 @@
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
                 this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, VacationStatuses.Approved, this.EmployeeId);
-                this.eventsToCheckApprovers.Remove(message.EventId);
+                this.eventsToProcessApproversAfterRecover.Remove(message.EventId);
 
                 var text = $"Got vacation approved from {calendarEvent.Dates.StartDate.ToLongDateString()} to {calendarEvent.Dates.EndDate.ToLongDateString()}";
                 var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, message.TimeStamp.Date);
@@ -258,7 +258,7 @@
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
                 this.EventsById.Remove(message.EventId);
-                this.eventsToCheckApprovers.Remove(message.EventId);
+                this.eventsToProcessApproversAfterRecover.Remove(message.EventId);
 
                 var text = $"Got vacation canceled ({calendarEvent.Dates.StartDate.ToLongDateString()} - {calendarEvent.Dates.EndDate.ToLongDateString()})";
                 var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, message.TimeStamp.Date);
@@ -271,7 +271,7 @@
             if (this.EventsById.ContainsKey(message.EventId))
             {
                 this.EventsById.Remove(message.EventId);
-                this.eventsToCheckApprovers.Remove(message.EventId);
+                this.eventsToProcessApproversAfterRecover.Remove(message.EventId);
             }
         }
     }
