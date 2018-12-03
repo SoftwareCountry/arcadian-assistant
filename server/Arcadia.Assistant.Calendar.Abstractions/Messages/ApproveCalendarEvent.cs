@@ -30,5 +30,15 @@
 
             public string Message { get; }
         }
+
+        public class ErrorResponse : Response
+        {
+            public ErrorResponse(string message)
+            {
+                this.Message = message;
+            }
+
+            public string Message { get; }
+        }
     }
 }

@@ -203,6 +203,9 @@
 
                     case ApproveCalendarEvent.BadRequestResponse err:
                         return this.BadRequest(err.Message);
+
+                    case ApproveCalendarEvent.ErrorResponse _:
+                        return this.StatusCode(StatusCodes.Status500InternalServerError);
                 }
             }
 
