@@ -2,13 +2,13 @@
 {
     public class ApproveCalendarEvent
     {
-        public ApproveCalendarEvent(string eventId, string approverId)
+        public ApproveCalendarEvent(CalendarEvent @event, string approverId)
         {
-            this.EventId = eventId;
+            this.Event = @event;
             this.ApproverId = approverId;
         }
 
-        public string EventId { get; }
+        public CalendarEvent Event { get; }
 
         public string ApproverId { get; }
 

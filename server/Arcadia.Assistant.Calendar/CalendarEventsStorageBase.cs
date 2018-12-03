@@ -87,7 +87,15 @@
                     break;
 
                 case ApproveCalendarEvent msg:
-                    this.ApproveCalendarEventInternal(msg);
+                    try
+                    {
+                        this.ApproveCalendarEventInternal(msg);
+                    }
+                    catch (Exception ex)
+                    {
+                        this.Sender.Tell(new ApproveCalendarEvent.ErrorResponse(ex.Message));
+                    }
+
                     break;
 
                 case ProcessCalendarEventApprovalsMessage msg:
@@ -138,11 +146,11 @@
 
         private void ApproveCalendarEventInternal(ApproveCalendarEvent message)
         {
-            var calendarEvent = this.EventsById[message.EventId];
-            var approvals = this.ApprovalsByEvent[message.EventId];
+            var calendarEvent = this.EventsById[message.Event.EventId];
+            var approvals = this.ApprovalsByEvent[message.Event.EventId];
             if (!this.IsStatusTransitionAllowed(calendarEvent.Status, this.GetApprovedStatus()))
             {
-                var errorMessage = $"Event {message.EventId}. Status transition {calendarEvent.Status} -> {this.GetApprovedStatus()} is not allowed for {calendarEvent.Type}";
+                var errorMessage = $"Event {message.Event}. Status transition {calendarEvent.Status} -> {this.GetApprovedStatus()} is not allowed for {calendarEvent.Type}";
                 this.Sender.Tell(new ApproveCalendarEvent.BadRequestResponse(errorMessage));
                 return;
             }

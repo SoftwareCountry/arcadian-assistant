@@ -153,7 +153,7 @@
         {
             var @event = new UserGrantedCalendarEventApproval
             {
-                EventId = message.EventId,
+                EventId = message.Event.EventId,
                 TimeStamp = DateTimeOffset.Now,
                 ApproverId = message.ApproverId
             };
@@ -161,7 +161,7 @@
             this.Persist(@event, ev =>
             {
                 this.OnUserGrantedWorkHoursApproval(ev);
-                onSuccessfulApprove(message.EventId);
+                onSuccessfulApprove(message.Event.EventId);
             });
         }
 
