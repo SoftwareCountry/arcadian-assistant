@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { BackHandler } from 'react-native';
 import { RootNavigator } from './tabbar/tab-navigator';
 import { AppState } from './reducers/app.reducer';
 import { connect } from 'react-redux';
@@ -34,25 +33,6 @@ export class App extends Component<AppProps & AppOwnProps> {
             return <WelcomeScreen/>;
         }
     }
-
-    public componentDidMount() {
-        BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
-    }
-
-    public componentWillUnmount() {
-        BackHandler.removeEventListener('hardwareBackPress', this.onBackPress);
-    }
-
-    private onBackPress = () => {
-        // const { dispatch, nav: currentState } = this.props;
-        // const popAction = NavigationActions.pop({ n: 1 });
-        // const nextState = RootNavigator.router.getStateForAction(popAction, currentState);
-        // if (routeComponents(currentState).equals(routeComponents(nextState))) {
-        //     return false;
-        // }
-        // dispatch(popAction);
-        return true;
-    };
 }
 
 const stateToProps = (state: AppState) => ({
