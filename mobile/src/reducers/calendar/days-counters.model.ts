@@ -4,7 +4,7 @@ interface DaysCounter {
     title: [string, string];
     days: Nullable<number>;
 
-    toString(): Optional<string>;
+    toString(): string;
 }
 
 export class VacationDaysCounter implements DaysCounter {

@@ -51,6 +51,6 @@ export class ConvertHoursCreditToDays {
 }
 
 interface ConvertHoursCreditResult {
-    days: Optional<number>;
-    rest: Optional<string>;
+    days: Nullable<number>;
+    rest: Nullable<string>;
 }
