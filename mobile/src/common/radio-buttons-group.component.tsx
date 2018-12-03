@@ -15,7 +15,7 @@ export interface RadioButton {
     labelStyle?: TextStyle;
     color?: string;
     disabled?: boolean;
-    layout?: string;
+    layout?: 'column' | 'row';
     selected?: boolean;
     size?: number;
 }
