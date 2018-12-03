@@ -12,13 +12,14 @@ import {
 } from '../reducers/calendar/calendar.model';
 import { Action, Dispatch } from 'redux';
 import { Nullable, Optional } from 'types';
+import { none } from '../types/types-utils';
 
 //============================================================================
 interface CalendarProps {
     pages: Nullable<CalendarPageModel[]>;
-    intervals: Nullable<ReadOnlyIntervalsModel>;
-    selection: Nullable<CalendarSelection>;
-    disableCalendarDaysBefore: Optional<DayModel>;
+    intervals?: ReadOnlyIntervalsModel;
+    selection?: CalendarSelection;
+    disableCalendarDaysBefore?: DayModel;
 }
 
 //============================================================================
@@ -32,7 +33,7 @@ interface CalendarDispatchProps {
 class CalendarImpl extends Component<CalendarProps & CalendarDispatchProps> {
     public render() {
 
-        if (!this.props.pages || !this.props.intervals || !this.props.selection || !this.props.disableCalendarDaysBefore) {
+        if (none(this.props.pages)) {
             return null;
         }
 
@@ -62,8 +63,8 @@ class CalendarImpl extends Component<CalendarProps & CalendarDispatchProps> {
 //----------------------------------------------------------------------------
 const stateToProps = (state: AppState): CalendarProps => ({
     pages: state.calendar ? state.calendar.calendarEvents.pages : null,
-    intervals: state.calendar && state.calendar.calendarEvents.intervals ? state.calendar.calendarEvents.intervals : null,
-    selection: state.calendar ? state.calendar.calendarEvents.selection : null,
+    intervals: state.calendar && state.calendar.calendarEvents.intervals ? state.calendar.calendarEvents.intervals : undefined,
+    selection: state.calendar ? state.calendar.calendarEvents.selection : undefined,
     disableCalendarDaysBefore: state.calendar ? state.calendar.calendarEvents.disableCalendarDaysBefore : undefined,
 });
 

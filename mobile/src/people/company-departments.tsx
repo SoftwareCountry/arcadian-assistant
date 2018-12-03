@@ -217,7 +217,7 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
 
     //----------------------------------------------------------------------------
     private buildSelectedDepartmentId(departmentIdToNode: Nullable<DepartmentIdToNode>,
-                                      employeesById: Nullable<EmployeeMap>): Optional<string> {
+                                      employeesById: Nullable<EmployeeMap>): Nullable<string> {
         if (!departmentIdToNode || !this.props.selectedCompanyDepartmentId) {
             return null;
         }

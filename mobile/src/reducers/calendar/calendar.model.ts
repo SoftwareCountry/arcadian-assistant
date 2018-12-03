@@ -24,7 +24,7 @@ export enum IntervalType {
 }
 
 export interface IntervalModel {
-    intervalType: Optional<IntervalType>;
+    intervalType: Nullable<IntervalType>;
     calendarEvent: CalendarEvent;
     boundary: boolean;
 }
@@ -89,24 +89,24 @@ export class IntervalsModel implements ReadOnlyIntervalsModel {
 }
 
 export interface SingleSelection {
-    day: Optional<DayModel>;
+    day?: DayModel;
 }
 
 export interface IntervalSelection {
-    startDay: Optional<DayModel>;
-    endDay: Optional<DayModel>;
-    color: Optional<string>;
+    startDay?: DayModel;
+    endDay?: DayModel;
+    color?: string;
 }
 
 export interface CalendarSelection {
     single: SingleSelection;
-    interval: Optional<IntervalSelection>;
+    interval?: IntervalSelection;
 }
 
 export class ExtractedIntervals {
-    public readonly vacation: Optional<IntervalModel> = null;
-    public readonly dayoff: Optional<IntervalModel> = null;
-    public readonly sickleave: Optional<IntervalModel> = null;
+    public readonly vacation: Optional<IntervalModel> = undefined;
+    public readonly dayoff: Optional<IntervalModel> = undefined;
+    public readonly sickleave: Optional<IntervalModel> = undefined;
 
     constructor(intervals: Optional<IntervalModel[]>) {
         if (intervals) {

@@ -6,10 +6,11 @@ import { connect } from 'react-redux';
 import { AppState } from '../../reducers/app.reducer';
 import { Nullable, Optional } from 'types';
 import { getEmployee } from '../../utils/utils';
+import { toNullable } from '../../types/types-utils';
 
 //============================================================================
 interface TabBarTopCustomProps {
-    employee: Optional<Employee>;
+    employee: Nullable<Employee>;
     department: Nullable<Department>;
 }
 
@@ -31,7 +32,7 @@ class TabBarTopCustomImpl extends React.Component<TabBarTopProps & TabBarTopCust
     }
 
     //----------------------------------------------------------------------------
-    private getLabel = (param: TabLabelTextParam, employee: Optional<Employee>, department: Optional<Department>): string => {
+    private getLabel = (param: TabLabelTextParam, employee: Nullable<Employee>, department: Nullable<Department>): string => {
 
         switch (param.route.key) {
             case 'Department':
@@ -47,14 +48,14 @@ class TabBarTopCustomImpl extends React.Component<TabBarTopProps & TabBarTopCust
 }
 
 //----------------------------------------------------------------------------
-function getDepartment(state: AppState, employee: Optional<Employee>): Nullable<Department> {
+function getDepartment(state: AppState, employee: Optional<Employee>): Optional<Department> {
     if (!state.organization || !employee) {
-        return null;
+        return undefined;
     }
 
     const { departments } = state.organization;
     const department = departments.find((d) => d.departmentId === employee.departmentId);
-    return department ? department : null;
+    return department ? department : undefined;
 }
 
 ///----------------------------------------------------------------------------
@@ -63,8 +64,8 @@ const stateToProps = (state: AppState): TabBarTopCustomProps => {
     const department = getDepartment(state, employee);
 
     return {
-        employee,
-        department,
+        employee: toNullable(employee),
+        department: toNullable(department),
     };
 };
 

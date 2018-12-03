@@ -21,7 +21,7 @@ export class FeedMessage extends React.Component<FeedMessageProps> {
     public render() {
         const message = this.props.message;
         const employee = this.props.employee;
-        const photo = employee ? employee.photoUrl : null;
+        const photo = employee ? employee.photoUrl : undefined;
         const formattedDate = message.datePosted.format('MMMM D, YYYY');
 
         const isDisabledClick = !this.props.employee;

@@ -169,7 +169,7 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
         } = this.calculateStyles();
 
         const { chief } = this.props;
-        const photo = chief ? chief.photoUrl : null;
+        const photo = chief ? chief.photoUrl : undefined;
         const chiefName = chief ? chief.name : null;
         const chiefPosition = chief ? chief.position : null;
         const showStaffIcon = !!this.props.node.staffDepartmentId;

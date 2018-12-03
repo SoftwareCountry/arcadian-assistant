@@ -45,12 +45,11 @@ class CalendarScreenImpl extends React.Component<CalendarScreenProps> {
 
 //----------------------------------------------------------------------------
 const stateToProps = (state: AppState): CalendarScreenProps => {
-    const employeeId = state.userInfo ? state.userInfo.employeeId : null;
-    const organizationEmployeeId = state.organization && employeeId ?
-        state.organization.employees.employeesById.get(employeeId) : null;
+    const employeeId = state.userInfo ? state.userInfo.employeeId : undefined;
+    const organizationEmployeeId = state.organization && employeeId ? state.organization.employees.employeesById.get(employeeId) : undefined;
 
     return {
-        employee: employeeId == null ? null : organizationEmployeeId,
+        employee: organizationEmployeeId,
     };
 };
 

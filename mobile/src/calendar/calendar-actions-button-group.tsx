@@ -15,7 +15,7 @@ import { Nullable, Optional } from 'types';
 
 interface ActionButtonGroupProps {
     allIntervals: Optional<ReadOnlyIntervalsModel>;
-    intervalsBySingleDaySelection: Nullable<ExtractedIntervals>;
+    intervalsBySingleDaySelection: Optional<ExtractedIntervals>;
     disableActionButtons: boolean;
 }
 
@@ -73,8 +73,8 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & A
 }
 
 const mapStateToProps = (state: AppState): ActionButtonGroupProps => ({
-    allIntervals: state.calendar ? state.calendar.calendarEvents.intervals : null,
-    intervalsBySingleDaySelection: state.calendar ? state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection : null,
+    allIntervals: state.calendar ? state.calendar.calendarEvents.intervals : undefined,
+    intervalsBySingleDaySelection: state.calendar ? state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection : undefined,
     disableActionButtons: state.calendar ? state.calendar.calendarEvents.disableCalendarActionsButtonGroup : false,
 });
 

@@ -6,7 +6,7 @@ import { NotAuthenticatedState, AuthenticationState } from './authentication-sta
 import moment from 'moment';
 import { distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import { concat, interval, merge, Observable, of, ReplaySubject, Subject, Subscription } from 'rxjs';
-import { Optional } from 'types';
+import { Nullable, Optional } from 'types';
 
 //https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-protocols-oauth-code
 
@@ -22,7 +22,7 @@ export class OAuthProcess {
 
     private readonly authorizationCode: Subject<string> = new Subject<string>();
 
-    private readonly refreshTokenSource: Subject<Optional<RefreshTokenRequest>> = new Subject<Optional<RefreshTokenRequest>>();
+    private readonly refreshTokenSource: Subject<Nullable<RefreshTokenRequest>> = new Subject<Nullable<RefreshTokenRequest>>();
  
     private readonly authenticationStateSource = new ReplaySubject<AuthenticationState>(1);
 
@@ -49,7 +49,7 @@ export class OAuthProcess {
             switchMap(request => this.getPeriodicalRefreshTokens(request)),
             switchMap(token => {
                 if (!token) {
-                    return of<Optional<TokenResponse>>(null);
+                    return of<Nullable<TokenResponse>>(null);
                 }
 
                 return this.accessCodeRequest.refresh(token);
@@ -104,7 +104,7 @@ export class OAuthProcess {
         this.refreshTokenSource.next(null);
     }
 
-    private onNewTokenObtained(tokenResponse: Optional<TokenResponse>) {
+    private onNewTokenObtained(tokenResponse: Nullable<TokenResponse>) {
         this.storeRefreshToken(tokenResponse ? tokenResponse.refreshToken : null);
 
         if (!tokenResponse) {
@@ -145,7 +145,7 @@ export class OAuthProcess {
         }
     }
 
-    private getPeriodicalRefreshTokens(request: Optional<RefreshTokenRequest>): Observable<Optional<string>> {
+    private getPeriodicalRefreshTokens(request: Nullable<RefreshTokenRequest>): Observable<Nullable<string>> {
         if (!request) {
             return of(null);
         }

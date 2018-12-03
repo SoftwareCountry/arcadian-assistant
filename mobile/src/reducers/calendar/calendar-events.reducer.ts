@@ -57,7 +57,7 @@ const createInitState = (): CalendarEventsState => {
         nextPage
      ] = createCalendarPagesInitState(date);
 
-    let todayModel: Optional<DayModel> = null;
+    let todayModel: Optional<DayModel> = undefined;
     for (let week of currentPage.weeks) {
         todayModel = week.days.find(day => day.today);
 
@@ -70,17 +70,17 @@ const createInitState = (): CalendarEventsState => {
         single: {
             day: todayModel
         },
-        interval: null
+        interval: undefined
     };
 
-    const defaultExtractedIntervals = new ExtractedIntervals(null);
+    const defaultExtractedIntervals = new ExtractedIntervals(undefined);
 
     return {
         pages: [prevPage, currentPage, nextPage],
-        intervals: null,
+        intervals: undefined,
         events: Map<string, CalendarEvent[]>(),
-        userEmployeeId: null,
-        disableCalendarDaysBefore: null,
+        userEmployeeId: undefined,
+        disableCalendarDaysBefore: undefined,
         disableCalendarActionsButtonGroup: true,
         selection: defaultSelection,
         selectedIntervalsBySingleDaySelection: defaultExtractedIntervals,
@@ -154,7 +154,7 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
 
             const intervalsBySingleDay = state.intervals && state.selection.single.day
                 ? state.intervals.get(state.selection.single.day.date)
-                : null;
+                : undefined;
 
             const extractedIntervals = new ExtractedIntervals(intervalsBySingleDay);
 

@@ -59,7 +59,7 @@ export interface CalendarSelectionMode extends Action {
     color: Optional<string>;
 }
 
-export const calendarSelectionMode = (selectionMode: CalendarSelectionModeType, color: Optional<string> = null): CalendarSelectionMode => ({ type: 'CALENDAR-SELECTION-MODE', selectionMode, color });
+export const calendarSelectionMode = (selectionMode: CalendarSelectionModeType, color?: string): CalendarSelectionMode => ({ type: 'CALENDAR-SELECTION-MODE', selectionMode, color });
 
 export interface SelectIntervalsBySingleDaySelection extends Action {
     type: 'SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION';

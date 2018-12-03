@@ -15,12 +15,12 @@ export class EmployeesListItem extends React.Component<EmployeesListItemProps> {
     public render() {
         const employeeName = this.props.employee ? this.props.employee.name : null;
         const employeePosition = this.props.employee ? this.props.employee.position : null;
-        const photo = this.props.employee ? this.props.employee.photoUrl : null;
+        const photo = this.props.employee ? this.props.employee.photoUrl : undefined;
 
         return (
             <TouchableOpacity onPress = {this.onItemClicked}>
                 <View style={styles.layout}>
-                    <View style={styles.avatarContainer}>                
+                    <View style={styles.avatarContainer}>
                         <Avatar photoUrl={photo} style={StyleSheet.flatten(styles.avatarOuterFrame)} imageStyle={StyleSheet.flatten(styles.avatarImage)} />
                     </View>
                     <View style={styles.info}>

@@ -4,7 +4,7 @@ import { Animated, PanResponder, PanResponderInstance, PanResponderGestureState,
 import { companyDepartments } from './styles';
 import { CompanyDepartmentsLevelAnimatedNode } from './company-departments-level-animated-node';
 import { Employee } from '../reducers/organization/employee.model';
-import { Optional } from 'types';
+import { Nullable, Optional } from 'types';
 
 interface CompanyDepartmentsLevelNodesProps {
     width: number;
@@ -276,7 +276,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
         return this.motionThreshold - Math.abs(gesture.dx) <= 0;
     }
 
-    private moveToNearestPage(toValue: number, onMoveComplete: Optional<() => void> = null) {
+    private moveToNearestPage(toValue: number, onMoveComplete: Nullable<() => void> = null) {
         Animated.timing(this.state.xCoordinate, {
             toValue: toValue,
             duration: 90,

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { View, Image, StyleSheet, ViewStyle, ImageStyle, LayoutChangeEvent } from 'react-native';
+import { Image, ImageStyle, LayoutChangeEvent, StyleSheet, View, ViewStyle } from 'react-native';
 import { connect } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
-import { Optional } from 'types';
+import { Nullable, Optional } from 'types';
 
 const styles = StyleSheet.create({
     container: {
@@ -23,14 +23,14 @@ const styles = StyleSheet.create({
 });
 
 export interface AvatarOwnProps {
-    photoUrl : Optional<string>;
+    photoUrl?: string;
     style?: ViewStyle;
     imageStyle?: ViewStyle;
     useDefaultForEmployeesList?: boolean;
 }
 
 export interface AvatarReduxProps {
-    jwtToken: Optional<string>;
+    jwtToken: Nullable<string>;
 }
 
 function mapStateToProps(state: AppState): AvatarReduxProps {
