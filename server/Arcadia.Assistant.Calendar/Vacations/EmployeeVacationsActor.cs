@@ -24,7 +24,6 @@
 
         private readonly IActorRef vacationsRegistry;
         private readonly IActorRef vacationApprovalsChecker;
-        private readonly TimeSpan timeoutSetting;
 
         public override string PersistenceId { get; }
 
@@ -36,14 +35,12 @@
         public EmployeeVacationsActor(string employeeId,
             IActorRef employeeFeed,
             IActorRef vacationsRegistry,
-            IActorRef vacationApprovalsChecker,
-            TimeSpan timeoutSetting
+            IActorRef vacationApprovalsChecker
         ) : base(employeeId)
         {
             this.employeeFeed = employeeFeed;
             this.vacationsRegistry = vacationsRegistry;
             this.vacationApprovalsChecker = vacationApprovalsChecker;
-            this.timeoutSetting = timeoutSetting;
             this.PersistenceId = $"employee-vacations-{this.EmployeeId}";
         }
 
@@ -51,15 +48,13 @@
             string employeeId,
             IActorRef employeeFeed,
             IActorRef vacationsRegistry,
-            IActorRef vacationApprovalsChecker,
-            TimeSpan timeoutSetting)
+            IActorRef vacationApprovalsChecker)
         {
             return Props.Create(() => new EmployeeVacationsActor(
                 employeeId,
                 employeeFeed,
                 vacationsRegistry,
-                vacationApprovalsChecker,
-                timeoutSetting));
+                vacationApprovalsChecker));
         }
 
         protected override void InsertCalendarEvent(CalendarEvent calendarEvent, OnSuccessfulUpsertCallback onUpsert)
@@ -87,9 +82,7 @@
             {
                 case GetVacationsCredit _:
                     this.vacationsRegistry
-                        .Ask<VacationsRegistry.GetVacationInfo.Response>(
-                            new VacationsRegistry.GetVacationInfo(this.EmployeeId),
-                            this.timeoutSetting)
+                        .Ask<VacationsRegistry.GetVacationInfo.Response>(new VacationsRegistry.GetVacationInfo(this.EmployeeId))
                         .ContinueWith(x => new GetVacationsCredit.Response(x.Result.VacationsCredit))
                         .PipeTo(this.Sender);
                     break;
@@ -100,9 +93,7 @@
 
                 case ProcessVacationApprovalsMessage msg:
                     this.vacationApprovalsChecker
-                        .Ask<GetNextVacationRequestApprover.Response>(
-                            new GetNextVacationRequestApprover(this.EmployeeId, this.approvalsByEvent[msg.EventId]),
-                            this.timeoutSetting)
+                        .Ask<GetNextVacationRequestApprover.Response>(new GetNextVacationRequestApprover(this.EmployeeId, this.approvalsByEvent[msg.EventId]))
                         .ContinueWith<ProcessVacationApprovalsMessage.Response>(task =>
                         {
                             if (task.Result is GetNextVacationRequestApprover.ErrorResponse err)
