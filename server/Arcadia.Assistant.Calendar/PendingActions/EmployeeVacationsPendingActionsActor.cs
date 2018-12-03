@@ -1,6 +1,7 @@
 ﻿namespace Arcadia.Assistant.Calendar.PendingActions
 {
     using System.Collections.Generic;
+    using System.Linq;
 
     using Akka.Actor;
     using Akka.Event;
@@ -30,7 +31,7 @@
             switch (message)
             {
                 case GetEmployeePendingActions _:
-                    this.Sender.Tell(new GetEmployeePendingActions.Response(this.pendingActionEvents.Values));
+                    this.Sender.Tell(new GetEmployeePendingActions.Response(this.pendingActionEvents.Values.ToList()));
                     break;
 
                 case CalendarEventAssignedToApproverEventBusMessage msg:
