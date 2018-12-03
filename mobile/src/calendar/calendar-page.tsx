@@ -185,10 +185,9 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
     }
 
     private renderSingleSelection(day: DayModel, intervalModels: IntervalModel[] | null): React.ReactNode {
-        if (!this.props.selection
-            || !this.props.selection.single
-            || !this.props.selection.single.day
-            || !intervalModels) {
+        if (!this.props.selection ||
+            !this.props.selection.single ||
+            !this.props.selection.single.day) {
             return null;
         }
 
