@@ -1,14 +1,14 @@
 ﻿namespace Arcadia.Assistant.Web.UserPreferences
 {
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
 
     using Akka.Actor;
-    using Assistant.UserPreferences;
-    using Configuration;
-    using Models;
-    using Server.Interop;
+
+    using Arcadia.Assistant.UserPreferences;
+    using Arcadia.Assistant.Server.Interop;
+    using Arcadia.Assistant.Web.Configuration;
+    using Arcadia.Assistant.Web.Models;
 
     public class UserPreferencesService : IUserPreferencesService
     {
@@ -35,8 +35,7 @@
             return new UserPreferencesModel
             {
                 EmailNotifications = response.UserPreferences.EmailNotifications,
-                PushNotifications = response.UserPreferences.PushNotifications,
-                DependentDepartmentsPendingActions = response.UserPreferences.DependentDepartmentsPendingActions
+                PushNotifications = response.UserPreferences.PushNotifications
             };
         }
 
@@ -48,8 +47,7 @@
             var userPreferences = new UserPreferences
             {
                 EmailNotifications = userPreferencesModel.EmailNotifications,
-                PushNotifications = userPreferencesModel.PushNotifications,
-                DependentDepartmentsPendingActions = userPreferencesModel.DependentDepartmentsPendingActions
+                PushNotifications = userPreferencesModel.PushNotifications
             };
 
             return this.userPreferencesActor.Ask<SaveUserPreferencesMessage.Response>(new SaveUserPreferencesMessage(userId, userPreferences));

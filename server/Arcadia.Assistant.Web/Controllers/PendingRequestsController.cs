@@ -10,13 +10,11 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
-    using Arcadia.Assistant.Server.Interop;
+    using Arcadia.Assistant.Calendar.Abstractions.Messages;
     using Arcadia.Assistant.Web.Authorization;
     using Arcadia.Assistant.Web.Configuration;
-    using Arcadia.Assistant.Web.Employees;
     using Arcadia.Assistant.Web.Models.Calendar;
     using Arcadia.Assistant.Web.Users;
-    using Arcadia.Assistant.Web.UserPreferences;
 
     [Route("api/pending-requests")]
     [Authorize(Policies.UserIsEmployee)]
@@ -24,32 +22,21 @@
     {
         private readonly IUserEmployeeSearch userEmployeeSearch;
 
-        private readonly ActorPathsBuilder pathBuilder;
-
         private readonly ITimeoutSettings timeoutSettings;
-
-        private readonly IActorRefFactory actorsFactory;
-        private readonly IUserPreferencesService userPreferencesService;
 
         public PendingRequestsController(
             IUserEmployeeSearch userEmployeeSearch,
-            ActorPathsBuilder pathBuilder,
-            ITimeoutSettings timeoutSettings,
-            IActorRefFactory actorsFactory,
-            IUserPreferencesService userPreferencesService)
+            ITimeoutSettings timeoutSettings)
         {
             this.userEmployeeSearch = userEmployeeSearch;
-            this.pathBuilder = pathBuilder;
             this.timeoutSettings = timeoutSettings;
-            this.actorsFactory = actorsFactory;
-            this.userPreferencesService = userPreferencesService;
         }
 
         [Route("")]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(CalendarEventsWithIdByEmployeeModel), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetPendingRequestsForUser(CancellationToken token)
+        public async Task<IActionResult> GetPendingRequestsForUser(string fromUser, CancellationToken token)
         {
             var user = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, token);
             if (user == null)
@@ -57,19 +44,15 @@
                 return this.Forbid();
             }
 
-            var userPreferences = await this.userPreferencesService.GetUserPreferences(this.User.Identity.Name, token);
-
-            var actor = this.actorsFactory.ActorOf(PendingActionsRequest.CreateProps(this.pathBuilder));
-            var calendarEvents = await actor.Ask<PendingActionsRequest.GetPendingActions.Response>(
-                new PendingActionsRequest.GetPendingActions(user, userPreferences.DependentDepartmentsPendingActions),
-                this.timeoutSettings.Timeout,
-                token);
+            var calendarEvents = await user.Calendar.PendingActionsActor.Ask<GetEmployeePendingActions.Response>(
+                GetEmployeePendingActions.Instance, this.timeoutSettings.Timeout, token);
 
             var modelValues = calendarEvents
-                .EventsByEmployeeId
+                .PendingActions
+                .GroupBy(x => x.EmployeeId)
                 .ToDictionary(
                     x => x.Key,
-                    x => x.Value.Select(ev => new CalendarEventsWithIdModel(ev.EventId, ev.Type, ev.Dates, ev.Status)));
+                    x => x.Select(ev => new CalendarEventsWithIdModel(ev.EventId, ev.Type, ev.Dates, ev.Status)));
 
             return this.Ok(new CalendarEventsWithIdByEmployeeModel(modelValues));
         }
