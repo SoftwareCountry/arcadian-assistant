@@ -6,6 +6,7 @@
     using Akka.Persistence;
 
     using Arcadia.Assistant.Calendar;
+    using Arcadia.Assistant.Calendar.PendingActions;
     using Arcadia.Assistant.Calendar.SickLeave;
     using Arcadia.Assistant.Calendar.Vacations;
     using Arcadia.Assistant.Calendar.WorkHours;
@@ -49,13 +50,22 @@
                 "vacations");
             var sickLeavesActor = Context.ActorOf(EmployeeSickLeaveActor.CreateProps(this.employeeMetadata), "sick-leaves");
             var workHoursActor = Context.ActorOf(EmployeeWorkHoursActor.CreateProps(this.employeeMetadata.EmployeeId), "work-hours");
+            var vacationPendingActionsActor = Context.ActorOf(
+                EmployeeVacationsPendingActionsActor.CreateProps(this.employeeMetadata.EmployeeId),
+                "vacations-pending-actions"
+            );
             Context.Watch(vacationsActor);
             Context.Watch(sickLeavesActor);
             Context.Watch(workHoursActor);
 
             var calendarActor = Context.ActorOf(EmployeeCalendarActor.CreateProps(this.employeeMetadata.EmployeeId, vacationsActor, workHoursActor, sickLeavesActor), "all-calendar-events");
 
-            this.calendar = new EmployeeCalendarContainer(vacationsActor, workHoursActor, sickLeavesActor, calendarActor);
+            this.calendar = new EmployeeCalendarContainer(
+                vacationsActor, 
+                workHoursActor, 
+                sickLeavesActor,
+                calendarActor,
+                vacationPendingActionsActor);
         }
 
         public override string PersistenceId { get; }
