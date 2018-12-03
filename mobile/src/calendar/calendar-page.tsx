@@ -14,13 +14,16 @@ import {
 import { EndInterval, Interval, StartInterval } from './calendar-page-interval';
 import { WeekDay, WeekDayCircle, WeekDayTouchable } from './calendar-page-weekday';
 import { IntervalBoundary } from './calendar-page-interval-boundary';
+import { Nullable } from 'types';
 
 export type OnSelectedDayCallback = (day: DayModel) => void;
 
+//============================================================================
 interface CalendarPageDefaultProps {
     hidePrevNextMonthDays?: boolean;
 }
 
+//============================================================================
 interface CalendarPageProps {
     pageDate: Moment;
     weeks: WeekModel[];
@@ -32,11 +35,13 @@ interface CalendarPageProps {
     height: number;
 }
 
+//============================================================================
 interface CalendarPageState {
     weekHeight: number;
     weekDayContainerWidth: number;
 }
 
+//============================================================================
 export class CalendarPage extends PureComponent<CalendarPageDefaultProps & CalendarPageProps, CalendarPageState> {
     public static defaultProps: CalendarPageDefaultProps = {
         hidePrevNextMonthDays: true
@@ -48,6 +53,7 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
         .weekdaysShort()
         .map(x => x.substring(0, 2).toUpperCase());
 
+    //----------------------------------------------------------------------------
     constructor(props: CalendarPageDefaultProps & CalendarPageProps) {
         super(props);
         this.state = {
@@ -56,8 +62,8 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
         };
     }
 
+    //----------------------------------------------------------------------------
     public render() {
-
         const weeksContainerStyles = StyleSheet.flatten([
             calendarStyles.weekContainer,
             {
@@ -91,10 +97,11 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
                         }
                     </View>
                 </View>
-            : null
+                : null
         );
     }
 
+    //----------------------------------------------------------------------------
     private onWeeksLayout = (e: LayoutChangeEvent) => {
         // invoke once to reduce perfomance load
         if (!this.state.weekHeight) {
@@ -104,6 +111,7 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
         }
     };
 
+    //----------------------------------------------------------------------------
     private renderWeek(week: WeekModel) {
         return (
             <View style={calendarStyles.week} key={week.weekIndex} onLayout={this.onWeeksLayout}>
@@ -114,9 +122,10 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
         );
     }
 
+    //----------------------------------------------------------------------------
     private onLayoutWeekDayContainer = (e: LayoutChangeEvent) => {
         // TODO: Workaround for https://github.com/facebook/react-native/issues/18137
-        if (!this.state.weekDayContainerWidth) {
+        if (this.state.weekDayContainerWidth === 0) {
             const paddings = weekCalendarStyles.paddingLeft + weekCalendarStyles.paddingRight;
             const daysPerWeek = 7;
             const calendarWidth = Dimensions.get('window').width - paddings;
@@ -125,6 +134,7 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
         }
     };
 
+    //----------------------------------------------------------------------------
     private renderDay(day: DayModel) {
         const intervalModels = this.getIntervalsByDate(day.date);
         const disableDay = this.props.disableBefore
@@ -139,9 +149,12 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
         ]);
 
         return (
-            <View style={weekDayContainerStyles} key={`${day.date.week()}-${day.date.date()}`} onLayout={this.onLayoutWeekDayContainer}>
-                <WeekDay hide={this.state.weekDayContainerWidth === 0 || (!!this.props.hidePrevNextMonthDays && !day.belongsToCurrentMonth)}>
-                    <WeekDayTouchable onSelectedDay={this.props.onSelectedDay} day={day} disabled={disableDay} />
+            <View style={weekDayContainerStyles}
+                  key={`${day.date.week()}-${day.date.date()}`}
+                  onLayout={this.onLayoutWeekDayContainer}>
+                <WeekDay
+                    hide={this.state.weekDayContainerWidth === 0 || (!!this.props.hidePrevNextMonthDays && !day.belongsToCurrentMonth)}>
+                    <WeekDayTouchable onSelectedDay={this.props.onSelectedDay} day={day} disabled={disableDay}/>
                     {
                         this.renderSingleSelection(day, intervalModels)
                     }
@@ -156,17 +169,8 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
         );
     }
 
-    private getDayTextColor(intervals: IntervalModel[]): string | null {
-        if (!intervals || !intervals.length) {
-            return null;
-        }
-
-        return intervals.some(x => !x.boundary)
-            ? '#fff'
-            : null;
-    }
-
-    private getIntervalsByDate(date: moment.Moment): IntervalModel[] | null {
+    //----------------------------------------------------------------------------
+    private getIntervalsByDate(date: moment.Moment): Nullable<IntervalModel[]> {
         if (!this.props.intervals || !this.props.intervals.get(date)) {
             return null;
         }
@@ -176,6 +180,7 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
         return intervals ? intervals : null;
     }
 
+    //----------------------------------------------------------------------------
     private renderIntervals(intervals: IntervalModel[] | null) {
         if (!intervals) {
             return null;
@@ -184,6 +189,18 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
         return intervals.map((interval, index) => this.renderInterval(interval, index));
     }
 
+    //----------------------------------------------------------------------------
+    private getDayTextColor(intervals: Nullable<IntervalModel[]>): Nullable<string> {
+        if (!intervals || !intervals.length) {
+            return null;
+        }
+
+        return intervals.some(x => !x.boundary) ?
+            '#fff' :
+            null;
+    }
+
+    //----------------------------------------------------------------------------
     private renderSingleSelection(day: DayModel, intervalModels: IntervalModel[] | null): React.ReactNode {
         if (!this.props.selection ||
             !this.props.selection.single ||
@@ -193,15 +210,19 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
 
         const dayTextColor = this.getDayTextColor(intervalModels);
 
-        return <WeekDayCircle day={day} selectedDay={this.props.selection.single.day} weekHeight={this.state.weekHeight} customTextColor={dayTextColor ? dayTextColor : undefined} />;
+        return <WeekDayCircle day={day}
+                              selectedDay={this.props.selection.single.day}
+                              weekHeight={this.state.weekHeight}
+                              customTextColor={dayTextColor ? dayTextColor : undefined}/>;
     }
 
+    //----------------------------------------------------------------------------
     private renderIntervalSelection(day: DayModel) {
-        if (!this.props.selection
-            || !this.props.selection.interval
-            || !this.props.selection.interval.startDay
-            || !this.props.selection.interval.endDay
-            || !this.props.selection.interval.color) {
+        if (!this.props.selection ||
+            !this.props.selection.interval ||
+            !this.props.selection.interval.startDay ||
+            !this.props.selection.interval.endDay ||
+            !this.props.selection.interval.color) {
             return null;
         }
 
@@ -212,36 +233,55 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
         }
 
         if (startDay.date.isSame(endDay.date, 'day')) {
-            return <IntervalBoundary size={this.state.weekHeight} color={color} boundary={'full'} style={calendarIntervalStyles.selection as ViewStyle} />;
+            return <IntervalBoundary size={this.state.weekHeight}
+                                     color={color}
+                                     boundary={'full'}
+                                     style={calendarIntervalStyles.selection as ViewStyle}/>;
         }
 
         if (day.date.isSame(startDay.date, 'day')) {
-            return <StartInterval size={this.state.weekHeight} color={color} style={calendarIntervalStyles.selection as ViewStyle} />;
+            return <StartInterval size={this.state.weekHeight}
+                                  color={color}
+                                  style={calendarIntervalStyles.selection as ViewStyle}/>;
         }
 
         if (day.date.isSame(endDay.date, 'day')) {
-            return <EndInterval size={this.state.weekHeight} color={color} style={calendarIntervalStyles.selection as ViewStyle} />;
+            return <EndInterval size={this.state.weekHeight}
+                                color={color}
+                                style={calendarIntervalStyles.selection as ViewStyle}/>;
         }
 
-        return <Interval size={this.state.weekHeight} color={color} style={calendarIntervalStyles.selection as ViewStyle} />;
+        return <Interval size={this.state.weekHeight}
+                         color={color}
+                         style={calendarIntervalStyles.selection as ViewStyle}/>;
     }
 
+    //----------------------------------------------------------------------------
     private renderInterval(interval: IntervalModel, elementKey: number): JSX.Element | null {
         const color = CalendarEventsColor.getColor(interval.calendarEvent.type) || '#fff';
 
         switch (interval.intervalType) {
             case IntervalType.StartInterval:
-                return <StartInterval key={elementKey} size={this.state.weekHeight} color={color} />;
+                return <StartInterval key={elementKey} size={this.state.weekHeight} color={color}/>;
+
             case IntervalType.EndInterval:
-                return <EndInterval key={elementKey} size={this.state.weekHeight} color={color} />;
+                return <EndInterval key={elementKey} size={this.state.weekHeight} color={color}/>;
+
             case IntervalType.Interval:
-                return <Interval key={elementKey} size={this.state.weekHeight} color={color} />;
+                return <Interval key={elementKey} size={this.state.weekHeight} color={color}/>;
+
             case IntervalType.IntervalFullBoundary:
-                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'full'} />;
+                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color}
+                                         boundary={'full'}/>;
+
             case IntervalType.IntervalLeftBoundary:
-                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'left'} />;
+                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color}
+                                         boundary={'left'}/>;
+
             case IntervalType.IntervalRightBoundary:
-                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color} boundary={'right'} />;
+                return <IntervalBoundary key={elementKey} size={this.state.weekHeight} color={color}
+                                         boundary={'right'}/>;
+
             default:
                 return null;
         }
