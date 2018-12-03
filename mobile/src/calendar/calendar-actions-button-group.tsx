@@ -11,14 +11,16 @@ import { SickLeaveActionButton } from './sick-leave-action-button';
 import { Action, Dispatch } from 'redux';
 import { openEventDialog } from '../reducers/calendar/event-dialog/event-dialog.action';
 import { EventDialogType } from '../reducers/calendar/event-dialog/event-dialog-type.model';
-import { Nullable, Optional } from 'types';
+import { Optional } from 'types';
 
+//============================================================================
 interface ActionButtonGroupProps {
     allIntervals: Optional<ReadOnlyIntervalsModel>;
     intervalsBySingleDaySelection: Optional<ExtractedIntervals>;
     disableActionButtons: boolean;
 }
 
+//============================================================================
 interface ActionButtonsGroupDispatchProps {
     sickLeaveActions: {
         claim: () => void;
@@ -35,63 +37,77 @@ interface ActionButtonsGroupDispatchProps {
     };
 }
 
+//============================================================================
 export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & ActionButtonsGroupDispatchProps> {
+    //----------------------------------------------------------------------------
     public render() {
         const { intervalsBySingleDaySelection, allIntervals } = this.props;
 
-        if (!allIntervals || !intervalsBySingleDaySelection) {
+        if (!intervalsBySingleDaySelection) {
             return null;
         }
 
         return (
             <View style={calendarActionsStyles.container}>
-                {intervalsBySingleDaySelection.vacation && < VacationActionButton
-                    allIntervals={allIntervals}
+                <VacationActionButton
                     interval={intervalsBySingleDaySelection.vacation}
                     disabled={this.props.disableActionButtons}
-                {...this.props.vacationActions} />
-                }
-                <CalendarActionButtonSeparator />
+                    {...this.props.vacationActions} />
+                <CalendarActionButtonSeparator/>
 
-                {intervalsBySingleDaySelection.dayoff && <DayoffActionButton
+                <DayoffActionButton
                     interval={intervalsBySingleDaySelection.dayoff}
                     disabled={this.props.disableActionButtons}
                     {...this.props.dayoff} />
-                }
-                <CalendarActionButtonSeparator />
+                <CalendarActionButtonSeparator/>
 
-                {intervalsBySingleDaySelection.sickleave && <SickLeaveActionButton
+                <SickLeaveActionButton
                     allIntervals={allIntervals}
                     interval={intervalsBySingleDaySelection.sickleave}
                     disabled={this.props.disableActionButtons}
                     {...this.props.sickLeaveActions} />
-                }
-                <CalendarActionButtonSeparator />
+                <CalendarActionButtonSeparator/>
             </View>
         );
     }
 }
 
-const mapStateToProps = (state: AppState): ActionButtonGroupProps => ({
+//----------------------------------------------------------------------------
+const stateToProps = (state: AppState): ActionButtonGroupProps => ({
     allIntervals: state.calendar ? state.calendar.calendarEvents.intervals : undefined,
     intervalsBySingleDaySelection: state.calendar ? state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection : undefined,
     disableActionButtons: state.calendar ? state.calendar.calendarEvents.disableCalendarActionsButtonGroup : false,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<Action>): ActionButtonsGroupDispatchProps => ({
+//----------------------------------------------------------------------------
+const dispatchToProps = (dispatch: Dispatch<Action>): ActionButtonsGroupDispatchProps => ({
     sickLeaveActions: {
-        claim: () => { dispatch(openEventDialog(EventDialogType.ClaimSickLeave)); },
-        edit: () => { dispatch(openEventDialog(EventDialogType.EditSickLeave)); },
-        cancel: () => { dispatch(openEventDialog(EventDialogType.CancelSickLeave)); }
+        claim: () => {
+            dispatch(openEventDialog(EventDialogType.ClaimSickLeave));
+        },
+        edit: () => {
+            dispatch(openEventDialog(EventDialogType.EditSickLeave));
+        },
+        cancel: () => {
+            dispatch(openEventDialog(EventDialogType.CancelSickLeave));
+        }
     },
     vacationActions: {
-        request: () => { dispatch(openEventDialog(EventDialogType.RequestVacation)); },
-        edit: () => { dispatch(openEventDialog(EventDialogType.EditVacation)); }
+        request: () => {
+            dispatch(openEventDialog(EventDialogType.RequestVacation));
+        },
+        edit: () => {
+            dispatch(openEventDialog(EventDialogType.EditVacation));
+        }
     },
     dayoff: {
-        process: () => { dispatch(openEventDialog(EventDialogType.ProcessDayoff)); },
-        edit: () => { dispatch(openEventDialog(EventDialogType.EditDayoff)); }
+        process: () => {
+            dispatch(openEventDialog(EventDialogType.ProcessDayoff));
+        },
+        edit: () => {
+            dispatch(openEventDialog(EventDialogType.EditDayoff));
+        }
     }
 });
 
-export const CalendarActionsButtonGroup = connect(mapStateToProps, mapDispatchToProps)(ActionsButtonGroupImpl);
+export const CalendarActionsButtonGroup = connect(stateToProps, dispatchToProps)(ActionsButtonGroupImpl);

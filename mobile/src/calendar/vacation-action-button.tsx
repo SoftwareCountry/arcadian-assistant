@@ -4,8 +4,7 @@ import { IntervalModel, ReadOnlyIntervalsModel } from '../reducers/calendar/cale
 import { CalendarEventsColor } from './styles';
 
 interface VacationActionButtonProps {
-    allIntervals: ReadOnlyIntervalsModel;
-    interval: IntervalModel;
+    interval?: IntervalModel;
     disabled: boolean;
     request: () => void;
     edit: () => void;
@@ -39,9 +38,9 @@ export class VacationActionButton extends Component<VacationActionButtonProps> {
     };
 
     private disableCalendarAction(): boolean {
-        const { interval, allIntervals } = this.props;
+        const { interval } = this.props;
 
-        return interval && (interval.calendarEvent.isCompleted || interval.calendarEvent.isApproved);
+        return !!interval && (interval.calendarEvent.isCompleted || interval.calendarEvent.isApproved);
     }
 }
 

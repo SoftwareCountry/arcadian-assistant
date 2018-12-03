@@ -1,26 +1,22 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, PixelRatio } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { connect } from 'react-redux';
 import { DayModel, ReadOnlyIntervalsModel } from '../reducers/calendar/calendar.model';
 import { AppState } from '../reducers/app.reducer';
 import { CalendarEventsColor, legendStyles as styles } from './styles';
 import { StyledText } from '../override/styled-text';
-import { Nullable, Optional } from 'types';
+import { Optional } from 'types';
 import moment from 'moment';
 
+//============================================================================
 interface CalendarLegendProps {
     intervals: Optional<ReadOnlyIntervalsModel>;
     selectedDay: DayModel;
 }
 
-const mapStateToProps = (state: AppState): CalendarLegendProps => ({
-    intervals: state.calendar ? state.calendar.calendarEvents.intervals : undefined,
-    selectedDay: state.calendar && state.calendar.calendarEvents.selection.single.day ?  state.calendar.calendarEvents.selection.single.day : {
-        date: moment(), today: true, belongsToCurrentMonth: true,
-    }
-});
-
+//============================================================================
 class CalendarLegendImpl extends Component<CalendarLegendProps> {
+    //----------------------------------------------------------------------------
     public render() {
         const selectedEvents = this.getEventsForSelectedDate();
         const legend = selectedEvents.map((type, index) => {
@@ -42,6 +38,7 @@ class CalendarLegendImpl extends Component<CalendarLegendProps> {
         );
     }
 
+    //----------------------------------------------------------------------------
     private getEventsForSelectedDate() {
         const { intervals, selectedDay } = this.props;
 
@@ -53,4 +50,12 @@ class CalendarLegendImpl extends Component<CalendarLegendProps> {
     }
 }
 
-export const CalendarLegend = connect(mapStateToProps)(CalendarLegendImpl);
+//----------------------------------------------------------------------------
+const stateToProps = (state: AppState): CalendarLegendProps => ({
+    intervals: state.calendar ? state.calendar.calendarEvents.intervals : undefined,
+    selectedDay: state.calendar && state.calendar.calendarEvents.selection.single.day ? state.calendar.calendarEvents.selection.single.day : {
+        date: moment(), today: true, belongsToCurrentMonth: true,
+    }
+});
+
+export const CalendarLegend = connect(stateToProps)(CalendarLegendImpl);
