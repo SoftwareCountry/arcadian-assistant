@@ -33,11 +33,11 @@ export class DatesInterval {
 
     @dataMember()
     @required()
-    public startWorkingHour = 0;
+    public startWorkingHour: number = 0;
 
     @dataMember()
     @required()
-    public finishWorkingHour = 0;
+    public finishWorkingHour: number = 0;
 
     public toJSON(): Object {
         const overrided: { [key in keyof DatesInterval]?: any } = {

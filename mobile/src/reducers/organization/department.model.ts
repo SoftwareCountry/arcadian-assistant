@@ -6,15 +6,15 @@ export class Department {
 
     @dataMember()
     @required()
-    public departmentId = '';
+    public departmentId: string = '';
 
     @dataMember()
     @required()
-    public abbreviation = '';
+    public abbreviation: string = '';
 
     @dataMember()
     @required()
-    public name = '';
+    public name: string = '';
 
     @dataMember()
     @required({ nullable: true })

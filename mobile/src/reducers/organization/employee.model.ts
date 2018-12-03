@@ -10,30 +10,30 @@ const dateDecoratorParams: DataMemberDecoratorParams  = {
 export class Employee {
     @dataMember()
     @required()
-    public employeeId = '';
+    public employeeId: string = '';
 
     @dataMember()
     @required()
-    public name = '';
+    public name: string = '';
 
     @dataMember()
     @required({nullable: true})
     public email = '';
 
     @dataMember()
-    public sex = 1;
+    public sex: number = 1;
 
     @dataMember()
-    public photoUrl = '';
+    public photoUrl: string = '';
 
     @dataMember()
-    public position = '';
+    public position: string = '';
 
     @dataMember()
-    public departmentId = '';
+    public departmentId: string = '';
 
     @dataMember()
-    public mobilePhone = '';
+    public mobilePhone: string = '';
 
     @dataMember(dateDecoratorParams)
     public birthDate: Moment = moment();
