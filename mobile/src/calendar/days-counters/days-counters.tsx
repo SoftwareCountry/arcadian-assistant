@@ -7,15 +7,20 @@ import { LoadingView } from '../../navigation/loading';
 import { ConvertHoursCreditToDays } from '../../reducers/calendar/convert-hours-credit-to-days';
 import { Employee } from '../../reducers/organization/employee.model';
 
+//============================================================================
 interface DaysCountersProps {
     employee: Employee;
     additionalStyle?: StyleProp<ViewStyle>;
 }
 
+//============================================================================
 export class DaysCounters extends Component<DaysCountersProps> {
 
+    //----------------------------------------------------------------------------
     public render() {
-        if (this.props.employee == null || this.props.employee.vacationDaysLeft == null || this.props.employee.hoursCredit == null) {
+        if (this.props.employee == null ||
+            this.props.employee.vacationDaysLeft == null ||
+            this.props.employee.hoursCredit == null) {
             return (
                 <View style={daysCountersStyles.container}>
                     <LoadingView/>
@@ -29,7 +34,6 @@ export class DaysCounters extends Component<DaysCountersProps> {
 
         const daysConverter = new ConvertHoursCreditToDays();
         const calculatedDays = daysConverter.convert(hoursCredit);
-
 
         const vacationCounter = allVacationDaysCounter
             ? <DaysCounter textValue={allVacationDaysCounter.toString()}
@@ -63,6 +67,7 @@ export class DaysCounters extends Component<DaysCountersProps> {
         );
     }
 
+    //----------------------------------------------------------------------------
     private containerStyle = (): StyleProp<ViewStyle> => {
         return [daysCountersStyles.container, this.props.additionalStyle];
     };
