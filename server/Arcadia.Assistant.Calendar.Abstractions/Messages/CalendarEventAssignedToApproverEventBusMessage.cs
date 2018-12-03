@@ -1,8 +1,8 @@
 ﻿namespace Arcadia.Assistant.Calendar.Abstractions.Messages
 {
-    public class CalendarEventApproverEventBusMessage
+    public class CalendarEventAssignedToApproverEventBusMessage
     {
-        public CalendarEventApproverEventBusMessage(CalendarEvent @event, string approverId)
+        public CalendarEventAssignedToApproverEventBusMessage(CalendarEvent @event, string approverId)
         {
             this.Event = @event;
             this.ApproverId = approverId;

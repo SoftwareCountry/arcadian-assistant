@@ -277,7 +277,7 @@
             }
 
             Context.System.EventStream.Publish(
-                new CalendarEventApproverEventBusMessage(oldEvent, successResponse.NextApproverId));
+                new CalendarEventAssignedToApproverEventBusMessage(oldEvent, successResponse.NextApproverId));
         }
 
         private void OnVacationRequested(VacationIsRequested message)

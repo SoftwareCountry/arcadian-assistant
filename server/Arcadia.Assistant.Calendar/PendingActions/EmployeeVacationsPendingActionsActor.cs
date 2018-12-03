@@ -1,7 +1,6 @@
 ﻿namespace Arcadia.Assistant.Calendar.PendingActions
 {
     using System.Collections.Generic;
-    using System.Linq;
 
     using Akka.Actor;
     using Akka.Event;
@@ -12,13 +11,13 @@
     public class EmployeeVacationsPendingActionsActor : UntypedActor, ILogReceive
     {
         private readonly string employeeId;
-        private readonly List<CalendarEvent> pendingActionEvents = new List<CalendarEvent>();
+        private readonly Dictionary<string, CalendarEvent> pendingActionEvents = new Dictionary<string, CalendarEvent>();
 
         public EmployeeVacationsPendingActionsActor(string employeeId)
         {
             this.employeeId = employeeId;
 
-            Context.System.EventStream.Subscribe<CalendarEventApproverEventBusMessage>(this.Self);
+            Context.System.EventStream.Subscribe<CalendarEventAssignedToApproverEventBusMessage>(this.Self);
         }
 
         public static Props CreateProps(string employeeId)
@@ -31,24 +30,22 @@
             switch (message)
             {
                 case GetEmployeePendingActions _:
-                    this.Sender.Tell(new GetEmployeePendingActions.Response(this.pendingActionEvents));
+                    this.Sender.Tell(new GetEmployeePendingActions.Response(this.pendingActionEvents.Values));
                     break;
 
-                case CalendarEventApproverEventBusMessage msg:
+                case CalendarEventAssignedToApproverEventBusMessage msg:
                     if (msg.Event.Type != CalendarEventTypes.Vacation)
                     {
                         break;
                     }
 
-                    if (msg.ApproverId == this.employeeId &&
-                        this.pendingActionEvents.All(e => e.EventId != msg.Event.EventId))
+                    if (msg.ApproverId == this.employeeId && !this.pendingActionEvents.ContainsKey(msg.Event.EventId))
                     {
-                        this.pendingActionEvents.Add(msg.Event);
+                        this.pendingActionEvents[msg.Event.EventId] = msg.Event;
                     }
-                    else if (msg.ApproverId != this.employeeId &&
-                        this.pendingActionEvents.Any(e => e.EventId == msg.Event.EventId))
+                    else if (msg.ApproverId != this.employeeId && this.pendingActionEvents.ContainsKey(msg.Event.EventId))
                     {
-                        this.pendingActionEvents.RemoveAll(e => e.EventId == msg.Event.EventId);
+                        this.pendingActionEvents.Remove(msg.Event.EventId);
                     }
 
                     break;
