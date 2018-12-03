@@ -24,7 +24,6 @@
         {
             var modules = base.GetModules();
             modules.Add(new FirstChanceExceptionStatisticsTelemetryModule());
-            modules.Add(new DiagnosticsTelemetryModule());
             modules.Add(new UnhandledExceptionTelemetryModule());
             modules.Add(new UnobservedExceptionTelemetryModule());
             modules.Add(new AzureInstanceMetadataTelemetryModule());
