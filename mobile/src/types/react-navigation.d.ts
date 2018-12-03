@@ -35,14 +35,7 @@ declare module 'react-navigation' {
 
     import * as React from 'react';
 
-    import {
-    Animated,
-    TextStyle,
-    ViewProps,
-    ViewStyle,
-    StyleProp,
-} from 'react-native';
-
+    import { Animated, StyleProp, TextStyle, ViewProps, ViewStyle, } from 'react-native';
 
     export class ScrollView extends React.Component {}
 
@@ -1026,7 +1019,7 @@ declare module 'react-navigation' {
             key: string,
             params: any,
             routeName: string,
-        }
+        };
     }
 
     export interface TabBarTopProps {
