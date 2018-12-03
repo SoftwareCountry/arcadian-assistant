@@ -34,13 +34,22 @@
 declare module 'react-navigation' {
 
     import * as React from 'react';
+
     import {
-        Animated,
-        TextStyle,
-        ViewProps,
-        ViewStyle,
-        StyleProp,
-    } from 'react-native';
+    Animated,
+    TextStyle,
+    ViewProps,
+    ViewStyle,
+    StyleProp,
+} from 'react-native';
+
+
+    export class ScrollView extends React.Component {}
+
+    export class FlatList<ItemT> extends React.Component<ItemT> {}
+
+    export class SectionList<ItemT> extends React.Component<ItemT> {}
+
 
 // @todo when we split types into common, native and web,
 // we can properly change Animated.Value to its real value
