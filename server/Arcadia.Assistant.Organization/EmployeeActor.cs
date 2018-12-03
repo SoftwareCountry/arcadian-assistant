@@ -52,22 +52,30 @@
                 "vacations");
             var sickLeavesActor = Context.ActorOf(EmployeeSickLeaveActor.CreateProps(this.employeeMetadata), "sick-leaves");
             var workHoursActor = Context.ActorOf(EmployeeWorkHoursActor.CreateProps(this.employeeMetadata.EmployeeId), "work-hours");
-            var vacationPendingActionsActor = Context.ActorOf(
-                EmployeeVacationsPendingActionsActor.CreateProps(this.employeeMetadata.EmployeeId),
-                "vacations-pending-actions"
+            var pendingActionsActor = Context.ActorOf(
+                EmployeePendingActionsActor.CreateProps(this.employeeMetadata.EmployeeId),
+                "pending-actions"
             );
+
             Context.Watch(vacationsActor);
             Context.Watch(sickLeavesActor);
             Context.Watch(workHoursActor);
 
-            var calendarActor = Context.ActorOf(EmployeeCalendarActor.CreateProps(this.employeeMetadata.EmployeeId, vacationsActor, workHoursActor, sickLeavesActor), "all-calendar-events");
+            var calendarActor = Context.ActorOf(
+                EmployeeCalendarActor.CreateProps(
+                    this.employeeMetadata.EmployeeId,
+                    vacationsActor,
+                    workHoursActor,
+                    sickLeavesActor),
+                "all-calendar-events"
+            );
 
             this.calendar = new EmployeeCalendarContainer(
-                vacationsActor, 
-                workHoursActor, 
+                vacationsActor,
+                workHoursActor,
                 sickLeavesActor,
                 calendarActor,
-                vacationPendingActionsActor);
+                pendingActionsActor);
         }
 
         public override string PersistenceId { get; }

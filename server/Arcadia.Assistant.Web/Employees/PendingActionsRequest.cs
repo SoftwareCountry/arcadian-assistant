@@ -127,8 +127,8 @@
                 calendarActorsToRespond.Add(subordinate.Calendar.CalendarActor);
             }
 
-            approver.Calendar.VacationPendingActionsActor.Tell(GetEmployeePendingActions.Instance);
-            calendarActorsToRespond.Add(approver.Calendar.VacationPendingActionsActor);
+            approver.Calendar.PendingActionsActor.Tell(GetEmployeePendingActions.Instance);
+            calendarActorsToRespond.Add(approver.Calendar.PendingActionsActor);
 
             var eventsByEmployeeId = new Dictionary<string, List<CalendarEvent>>();
 
