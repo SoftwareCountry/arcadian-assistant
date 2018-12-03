@@ -100,3 +100,14 @@ export const switchDayoffTypeStyles = StyleSheet.create({
         left: 0
     }
 });
+
+export const dayOffDialogStyles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+    labelStyle: {
+        fontFamily: 'CenturyGothic',
+        fontSize: 14,
+        color: 'white',
+    },
+});
