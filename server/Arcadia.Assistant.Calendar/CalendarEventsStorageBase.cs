@@ -91,9 +91,12 @@
                     break;
 
                 case ProcessCalendarEventApprovalsMessage msg:
+                    var calendarEvent = this.EventsById[msg.EventId];
+                    var existingApprovals = this.ApprovalsByEvent[msg.EventId];
+
                     this.calendarEventsApprovalsChecker
                         .Ask<GetNextCalendarEventApprover.Response>(
-                            new GetNextCalendarEventApprover(this.EmployeeId, this.ApprovalsByEvent[msg.EventId], CalendarEventTypes.Vacation))
+                            new GetNextCalendarEventApprover(this.EmployeeId, existingApprovals, calendarEvent.Type))
                         .ContinueWith<ProcessCalendarEventApprovalsMessage.Response>(task =>
                         {
                             if (task.Result is GetNextCalendarEventApprover.ErrorResponse err)
@@ -170,7 +173,7 @@
                     oldEvent.EventId,
                     oldEvent.Type,
                     oldEvent.Dates,
-                    VacationStatuses.Approved,
+                    this.GetApprovedStatus(),
                     oldEvent.EmployeeId
                 );
 
