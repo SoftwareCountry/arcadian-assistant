@@ -7,14 +7,16 @@ import Style from '../layout/style';
 import { connect } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 import { Employee } from '../reducers/organization/employee.model';
+import { Nullable, Optional } from 'types';
+import { NavigationScreenProps } from 'react-navigation';
 
 //============================================================================
 interface CalendarScreenProps {
-    employee: Employee;
+    employee: Optional<Employee>;
 }
 
 //============================================================================
-class CalendarScreenImpl extends React.Component<CalendarScreenProps> {
+class CalendarScreenImpl extends React.Component<CalendarScreenProps & NavigationScreenProps> {
 
     //----------------------------------------------------------------------------
     public static navigationOptions = {
@@ -28,10 +30,14 @@ class CalendarScreenImpl extends React.Component<CalendarScreenProps> {
 
         const { employee } = this.props;
 
+        if (!employee) {
+            return null;
+        }
+
         return <SafeAreaView style={Style.view.safeArea}>
             <View style={Style.view.container}>
                 <DaysCounters employee={employee}/>
-                <Calendar/>
+                <Calendar navigation={this.props.navigation}/>
                 <Agenda/>
             </View>
         </SafeAreaView>;
@@ -40,9 +46,11 @@ class CalendarScreenImpl extends React.Component<CalendarScreenProps> {
 
 //----------------------------------------------------------------------------
 const stateToProps = (state: AppState): CalendarScreenProps => {
-    const employeeId = state.userInfo.employeeId;
+    const employeeId = state.userInfo ? state.userInfo.employeeId : undefined;
+    const organizationEmployeeId = state.organization && employeeId ? state.organization.employees.employeesById.get(employeeId) : undefined;
+
     return {
-        employee: employeeId == null ? null : state.organization.employees.employeesById.get(employeeId)
+        employee: organizationEmployeeId,
     };
 };
 

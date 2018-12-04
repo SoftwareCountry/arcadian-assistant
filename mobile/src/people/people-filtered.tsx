@@ -15,10 +15,11 @@ interface PeopleProps {
 }
 
 const mapStateToProps = (state: AppState): PeopleProps => ({
-    employees: filterEmployees(state.organization.employees, state.people.filter),
-    loaded: state.organization.departments
-        && state.organization.departments.length > 0
-        && !state.organization.employees.employeesById.isEmpty(),
+    employees: state.organization && state.people ? filterEmployees(state.organization.employees, state.people.filter) : {
+        employeesById: Map(),
+        employeeIdsByDepartment: Map()
+    },
+    loaded: !!state.organization && state.organization.departments && state.organization.departments.length > 0 && !state.organization.employees.employeesById.isEmpty(),
 });
 
 class PeopleCompanyFilteredImpl extends React.Component<PeopleProps> {

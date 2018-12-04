@@ -1,6 +1,7 @@
 import { dataMember, required } from 'santee-dcts';
 import { DataMemberDecoratorParams } from 'santee-dcts/src/dataMemberDecorator';
 import moment, { Moment } from 'moment';
+import { Nullable, Optional } from 'types';
 
 const dateDecoratorParams: DataMemberDecoratorParams  = {
     customDeserializer: (value: string) => moment(value)
@@ -9,50 +10,50 @@ const dateDecoratorParams: DataMemberDecoratorParams  = {
 export class Employee {
     @dataMember()
     @required()
-    public employeeId: string;
+    public employeeId: string = '';
 
     @dataMember()
     @required()
-    public name: string;
+    public name: string = '';
 
     @dataMember()
     @required({nullable: true})
-    public email: string;
+    public email: Nullable<string> = '';
 
     @dataMember()
-    public sex: number;
+    public sex: number = 1;
 
     @dataMember()
-    public photoUrl: string;
+    public photoUrl: string = '';
 
     @dataMember()
-    public position: string;
+    public position: string = '';
 
     @dataMember()
-    public departmentId: string;
+    public departmentId: string = '';
 
     @dataMember()
-    public mobilePhone: string;
+    public mobilePhone: string = '';
 
     @dataMember(dateDecoratorParams)
-    public birthDate: Moment;
+    public birthDate: Moment = moment();
 
     @dataMember(dateDecoratorParams)
-    public hireDate: Moment;
+    public hireDate: Moment = moment();
 
     @dataMember()
     @required({nullable: true})
-    public hoursCredit: number;
+    public hoursCredit: Nullable<number> = null;
 
     @dataMember()
     @required({nullable: true})
-    public vacationDaysLeft: number;
-    
+    public vacationDaysLeft: Nullable<number> = null;
+
     @dataMember()
     @required({nullable: true})
-    public roomNumber: string;
+    public roomNumber: Nullable<string> = null;
 
-    public equals(obj: Employee): boolean {
+    public equals(obj: Optional<Employee>): boolean {
         if (!obj) {
             return false;
         }

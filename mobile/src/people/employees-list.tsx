@@ -1,10 +1,11 @@
 import React from 'react';
-import { FlatList, View, ListRenderItemInfo } from 'react-native';
+import { View, ListRenderItemInfo } from 'react-native';
 
 import { Employee } from '../reducers/organization/employee.model';
 import { EmployeesListItem } from './employees-list-item';
 import { employeesListStyles as styles } from './styles';
 import { employeesAZComparer } from './employee-comparer';
+import { FlatList } from 'react-navigation';
 
 export interface EmployeesListProps {
     employees: Employee[];

@@ -1,12 +1,9 @@
 import React from 'react';
 import {
-    Header, HeaderProps, NavigationParams,
-    NavigationRoute,
     NavigationScreenConfig,
-    NavigationScreenProp,
+    NavigationScreenProps,
     NavigationStackScreenOptions
 } from 'react-navigation';
-import { CurrentRoomNavigationParams } from '../employee-details/employee-details-dispatcher';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
@@ -14,19 +11,9 @@ import { Employee } from '../reducers/organization/employee.model';
 import { PeopleRoom } from './people-room';
 import { Action, Dispatch } from 'redux';
 import { loadEmployeesForRoom } from '../reducers/organization/organization.action';
-import { SafeAreaView, View } from 'react-native';
-import { StyledText } from '../override/styled-text';
+import { SafeAreaView } from 'react-native';
 import Style from '../layout/style';
-
-//============================================================================
-interface ExtendedNavigationScreenProp<P> extends NavigationScreenProp<NavigationRoute> {
-    getParam: <T extends keyof P>(param: T, fallback?: P[T]) => P[T];
-}
-
-//============================================================================
-interface NavigationProps {
-    navigation: ExtendedNavigationScreenProp<CurrentRoomNavigationParams>;
-}
+import { Map } from 'immutable';
 
 //============================================================================
 interface CurrentPeopleRoomProps {
@@ -40,7 +27,10 @@ interface CurrentPeopleDispatchProps {
 
 //----------------------------------------------------------------------------
 const stateToProps = (state: AppState): CurrentPeopleRoomProps => ({
-    employees: state.organization.employees
+    employees: state.organization ? state.organization.employees : {
+        employeesById: Map(),
+        employeeIdsByDepartment: Map()
+    }
 });
 
 //----------------------------------------------------------------------------
@@ -53,7 +43,7 @@ const dispatchToProps = (dispatch: Dispatch<Action>) => {
 };
 
 //============================================================================
-class CurrentPeopleRoomImpl extends React.Component<CurrentPeopleRoomProps & CurrentPeopleDispatchProps & NavigationProps> {
+class CurrentPeopleRoomImpl extends React.Component<CurrentPeopleRoomProps & CurrentPeopleDispatchProps & NavigationScreenProps> {
     //----------------------------------------------------------------------------
     public componentDidMount() {
         const roomNumber = this.props.navigation.getParam('roomNumber', undefined);
@@ -74,13 +64,12 @@ class CurrentPeopleRoomImpl extends React.Component<CurrentPeopleRoomProps & Cur
 
     //----------------------------------------------------------------------------
     public static navigationOptions: NavigationScreenConfig<NavigationStackScreenOptions> = (navigationOptionsContainer) => {
-        const navigation = navigationOptionsContainer.navigation as ExtendedNavigationScreenProp<NavigationParams>;
+        const navigation = navigationOptionsContainer.navigation;
         const roomNumber = navigation.getParam('roomNumber', undefined);
 
         return {
+            ...navigationOptionsContainer.navigationOptions,
             headerTitle: roomNumber ? `Room ${roomNumber}` : '',
-            headerTitleStyle: Style.navigation.title,
-            headerStyle: Style.navigation.header,
         };
     };
 }

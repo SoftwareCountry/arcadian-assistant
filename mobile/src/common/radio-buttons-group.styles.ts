@@ -2,10 +2,10 @@
  * Copyright (c) Arcadia, Inc. All rights reserved.
  ******************************************************************************/
 
-import { StyleSheet } from 'react-native';
+import { RegisteredStyle, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 
 //============================================================================
-export const radioButtonsGroupStyles = StyleSheet.create({
+const view = StyleSheet.create({
     container: {
         flex: 1,
     },
@@ -24,36 +24,9 @@ export const radioButtonsGroupStyles = StyleSheet.create({
         marginRight: 20,
         alignSelf: 'center',
     },
-    switchSettingTitle: {
-        fontFamily: 'CenturyGothic',
-        fontSize: 16,
-        textAlign: 'left',
-        color: '#000',
-        marginLeft: 20,
-        alignSelf: 'center',
-    },
     pickerSettingContainer: {
         flex: 1,
         height: 200,
-    },
-    pickerSettingTitle: {
-        fontFamily: 'CenturyGothic',
-        fontSize: 16,
-        textAlign: 'left',
-        color: '#000',
-        marginLeft: 20,
-        marginTop: 10,
-        marginBottom: 20,
-    },
-    pickerLabel: {
-        fontFamily: 'CenturyGothic',
-        fontSize: 14,
-    },
-    headerTitle: {
-        fontFamily: 'CenturyGothic',
-        fontSize: 14,
-        color: 'white',
-        textAlign: 'center',
     },
     radioButtonContainer: {
         justifyContent: 'center',
@@ -84,3 +57,41 @@ export const radioButtonsGroupStyles = StyleSheet.create({
         marginVertical: 5,
     },
 });
+
+//============================================================================
+const text = StyleSheet.create({
+    switchSettingTitle: {
+        fontFamily: 'CenturyGothic',
+        fontSize: 16,
+        textAlign: 'left',
+        color: '#000',
+        marginLeft: 20,
+        alignSelf: 'center',
+    },
+    pickerSettingTitle: {
+        fontFamily: 'CenturyGothic',
+        fontSize: 16,
+        textAlign: 'left',
+        color: '#000',
+        marginLeft: 20,
+        marginTop: 10,
+        marginBottom: 20,
+    },
+    pickerLabel: {
+        fontFamily: 'CenturyGothic',
+        fontSize: 14,
+    },
+    headerTitle: {
+        fontFamily: 'CenturyGothic',
+        fontSize: 14,
+        color: 'white',
+        textAlign: 'center',
+    },
+});
+
+const radioButtonsGroupStyles = {
+    view,
+    text,
+};
+
+export default radioButtonsGroupStyles;

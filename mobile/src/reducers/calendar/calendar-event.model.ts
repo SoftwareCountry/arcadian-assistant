@@ -23,24 +23,24 @@ export class DatesInterval {
         customDeserializer: (value: string) => moment(value)
     })
     @required()
-    public startDate: Moment;
+    public startDate: Moment = moment();
 
     @dataMember({
         customDeserializer: (value: string) => moment(value)
     })
     @required()
-    public endDate: Moment;
+    public endDate: Moment = moment();
 
     @dataMember()
     @required()
-    public startWorkingHour: number;
+    public startWorkingHour: number = 0;
 
     @dataMember()
     @required()
-    public finishWorkingHour: number;
+    public finishWorkingHour: number = 0;
 
     public toJSON(): Object {
-        const overrided: { [key in keyof DatesInterval]?: any } = {  
+        const overrided: { [key in keyof DatesInterval]?: any } = {
             startDate: moment.isMoment(this.startDate) ? this.startDate.format(DatesInterval.dateFormat) : null,
             endDate: moment.isMoment(this.endDate) ? this.endDate.format(DatesInterval.dateFormat) : null,
         };
@@ -54,21 +54,21 @@ export class DatesInterval {
 export class CalendarEvent {
     @dataMember()
     @required()
-    public calendarEventId: string;
+    public calendarEventId = '';
 
     @dataMember()
     @required()
-    public type: CalendarEventType;
+    public type: CalendarEventType = CalendarEventType.Vacation;
 
     @dataMember({
         customDeserializer: (value: Object) => deserialize(value, DatesInterval)
     })
     @required()
-    public dates: DatesInterval;
+    public dates: DatesInterval = new DatesInterval();
 
     @dataMember()
     @required()
-    public status: CalendarEventStatus;
+    public status: CalendarEventStatus = CalendarEventStatus.Requested;
 
     public get isRequested(): boolean {
         return this.status === CalendarEventStatus.Requested;

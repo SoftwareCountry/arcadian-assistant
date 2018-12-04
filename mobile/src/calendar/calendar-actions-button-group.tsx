@@ -1,25 +1,26 @@
 import React, { Component } from 'react';
-import { TouchableHighlight, TouchableOpacity, View } from 'react-native';
+import { View } from 'react-native';
 import { calendarActionsStyles } from './styles';
 import { CalendarActionButtonSeparator } from './calendar-action-button';
 import { AppState } from '../reducers/app.reducer';
-import { connect, MapStateToPropsParam } from 'react-redux';
-import { IntervalsModel, DayModel, IntervalModel, ExtractedIntervals, ReadOnlyIntervalsModel } from '../reducers/calendar/calendar.model';
+import { connect } from 'react-redux';
+import { ExtractedIntervals, ReadOnlyIntervalsModel } from '../reducers/calendar/calendar.model';
 import { VacationActionButton } from './vacation-action-button';
 import { DayoffActionButton } from './dayoff-action-button';
 import { SickLeaveActionButton } from './sick-leave-action-button';
-import { Dispatch } from 'redux';
-import { CalendarActions } from '../reducers/calendar/calendar.action';
+import { Action, Dispatch } from 'redux';
 import { openEventDialog } from '../reducers/calendar/event-dialog/event-dialog.action';
 import { EventDialogType } from '../reducers/calendar/event-dialog/event-dialog-type.model';
-import { HoursCreditCounter } from '../reducers/calendar/days-counters.model';
+import { Optional } from 'types';
 
+//============================================================================
 interface ActionButtonGroupProps {
-    allIntervals: ReadOnlyIntervalsModel;
-    intervalsBySingleDaySelection: ExtractedIntervals;
+    allIntervals: Optional<ReadOnlyIntervalsModel>;
+    intervalsBySingleDaySelection: Optional<ExtractedIntervals>;
     disableActionButtons: boolean;
 }
 
+//============================================================================
 interface ActionButtonsGroupDispatchProps {
     sickLeaveActions: {
         claim: () => void;
@@ -36,59 +37,77 @@ interface ActionButtonsGroupDispatchProps {
     };
 }
 
+//============================================================================
 export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & ActionButtonsGroupDispatchProps> {
+    //----------------------------------------------------------------------------
     public render() {
         const { intervalsBySingleDaySelection, allIntervals } = this.props;
+
+        if (!intervalsBySingleDaySelection) {
+            return null;
+        }
 
         return (
             <View style={calendarActionsStyles.container}>
                 <VacationActionButton
-                    allIntervals={allIntervals}
                     interval={intervalsBySingleDaySelection.vacation}
                     disabled={this.props.disableActionButtons}
                     {...this.props.vacationActions} />
-
-                <CalendarActionButtonSeparator />
+                <CalendarActionButtonSeparator/>
 
                 <DayoffActionButton
                     interval={intervalsBySingleDaySelection.dayoff}
                     disabled={this.props.disableActionButtons}
                     {...this.props.dayoff} />
-
-                <CalendarActionButtonSeparator />
+                <CalendarActionButtonSeparator/>
 
                 <SickLeaveActionButton
                     allIntervals={allIntervals}
                     interval={intervalsBySingleDaySelection.sickleave}
                     disabled={this.props.disableActionButtons}
                     {...this.props.sickLeaveActions} />
-
-                <CalendarActionButtonSeparator />
+                <CalendarActionButtonSeparator/>
             </View>
         );
     }
 }
 
-const mapStateToProps = (state: AppState): ActionButtonGroupProps => ({
-    allIntervals: state.calendar.calendarEvents.intervals,
-    intervalsBySingleDaySelection: state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection,
-    disableActionButtons: state.calendar.calendarEvents.disableCalendarActionsButtonGroup
+//----------------------------------------------------------------------------
+const stateToProps = (state: AppState): ActionButtonGroupProps => ({
+    allIntervals: state.calendar ? state.calendar.calendarEvents.intervals : undefined,
+    intervalsBySingleDaySelection: state.calendar ? state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection : undefined,
+    disableActionButtons: state.calendar ? state.calendar.calendarEvents.disableCalendarActionsButtonGroup : false,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<CalendarActions>): ActionButtonsGroupDispatchProps => ({
+//----------------------------------------------------------------------------
+const dispatchToProps = (dispatch: Dispatch<Action>): ActionButtonsGroupDispatchProps => ({
     sickLeaveActions: {
-        claim: () => { dispatch(openEventDialog(EventDialogType.ClaimSickLeave)); },
-        edit: () => { dispatch(openEventDialog(EventDialogType.EditSickLeave)); },
-        cancel: () => { dispatch(openEventDialog(EventDialogType.CancelSickLeave)); }
+        claim: () => {
+            dispatch(openEventDialog(EventDialogType.ClaimSickLeave));
+        },
+        edit: () => {
+            dispatch(openEventDialog(EventDialogType.EditSickLeave));
+        },
+        cancel: () => {
+            dispatch(openEventDialog(EventDialogType.CancelSickLeave));
+        }
     },
     vacationActions: {
-        request: () => { dispatch(openEventDialog(EventDialogType.RequestVacation)); },
-        edit: () => { dispatch(openEventDialog(EventDialogType.EditVacation)); }
+        request: () => {
+            dispatch(openEventDialog(EventDialogType.RequestVacation));
+        },
+        edit: () => {
+            dispatch(openEventDialog(EventDialogType.EditVacation));
+        }
     },
     dayoff: {
-        process: () => { dispatch(openEventDialog(EventDialogType.ProcessDayoff)); },
-        edit: () => { dispatch(openEventDialog(EventDialogType.EditDayoff)); }
+        process: () => {
+            dispatch(openEventDialog(EventDialogType.ProcessDayoff));
+        },
+        edit: () => {
+            dispatch(openEventDialog(EventDialogType.EditDayoff));
+        }
     }
 });
 
-export const CalendarActionsButtonGroup = connect(mapStateToProps, mapDispatchToProps)(ActionsButtonGroupImpl);
+export const CalendarActionsButtonGroup = connect(stateToProps, dispatchToProps)(ActionsButtonGroupImpl);

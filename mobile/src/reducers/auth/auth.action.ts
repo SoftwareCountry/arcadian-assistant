@@ -2,6 +2,9 @@
  * Copyright (c) Arcadia, Inc. All rights reserved.
  ******************************************************************************/
 
+import { Action } from 'redux';
+import { Nullable } from 'types';
+
 //============================================================================
 export enum AuthActionType {
     startLoginProcess = 'START-LOGIN-PROCESS',
@@ -15,26 +18,26 @@ export enum AuthActionType {
 // - Actions
 //============================================================================
 
-export interface StartLoginProcess {
+export interface StartLoginProcess extends Action {
     type: AuthActionType.startLoginProcess;
 }
 
-export interface StartLogoutProcess {
+export interface StartLogoutProcess extends Action {
     type: AuthActionType.startLogoutProcess;
     force: boolean;
 }
 
-export interface UserLoggedIn {
+export interface UserLoggedIn extends Action {
     type: AuthActionType.userLoggedIn;
 }
 
-export interface UserLoggedOut {
+export interface UserLoggedOut extends Action {
     type: AuthActionType.userLoggedOut;
 }
 
-export interface JwtTokenSet {
+export interface JwtTokenSet extends Action {
     type: AuthActionType.jwtTokenSet;
-    jwtToken: string;
+    jwtToken: Nullable<string>;
 }
 
 export type AuthActions = StartLoginProcess
@@ -73,7 +76,7 @@ export const userLoggedOut = (): UserLoggedOut => {
     };
 };
 
-export const jwtTokenSet = (jwtToken: string | null): JwtTokenSet => {
+export const jwtTokenSet = (jwtToken: Nullable<string>): JwtTokenSet => {
     return {
         type: AuthActionType.jwtTokenSet,
         jwtToken,

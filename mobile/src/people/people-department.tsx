@@ -1,12 +1,15 @@
 import React from 'react';
-import { connect, Dispatch, MapStateToProps } from 'react-redux';
+import { connect } from 'react-redux';
 
 import { EmployeesList } from './employees-list';
 import { AppState } from '../reducers/app.reducer';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Employee } from '../reducers/organization/employee.model';
-import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 import { LoadingView } from '../navigation/loading';
+import { Action, Dispatch } from 'redux';
+import { openEmployeeDetails } from '../navigation/navigation.actions';
+import { Optional } from 'types';
+import { getEmployee } from '../utils/utils';
 
 interface PeopleDepartmentPropsOwnProps {
     employees: EmployeesStore;
@@ -16,19 +19,16 @@ interface PeopleDepartmentPropsOwnProps {
 interface PeopleDepartmentStateProps {
     isLoading: boolean;
     employees: EmployeesStore;
-    userEmployee: Employee;
+    userEmployee: Optional<Employee>;
     employeesPredicate: (employee: Employee) => boolean;
 }
 
-type PeopleDepartmentProps = PeopleDepartmentStateProps & PeopleDepartmentPropsOwnProps;
-
-const mapStateToProps: MapStateToProps<PeopleDepartmentProps, PeopleDepartmentPropsOwnProps, AppState> =
-        (state: AppState, ownProps: PeopleDepartmentPropsOwnProps): PeopleDepartmentStateProps => {
-    const userEmployee = state.organization.employees.employeesById.get(state.userInfo.employeeId);
-    const defaultEmployeesPredicate = (employee: Employee) => userEmployee && employee.departmentId === userEmployee.departmentId;
+const mapStateToProps = (state: AppState, ownProps: PeopleDepartmentPropsOwnProps): PeopleDepartmentStateProps => {
+    const userEmployee = getEmployee(state);
+    const defaultEmployeesPredicate = (employee: Employee) => !!userEmployee && employee.departmentId === userEmployee.departmentId;
 
     return ({
-        isLoading: state.organization.employees.employeesById.isEmpty(),
+        isLoading: !state.organization || state.organization.employees.employeesById.isEmpty(),
         employees: ownProps.employees,
         userEmployee,
         employeesPredicate: ownProps.customEmployeesPredicate ? ownProps.customEmployeesPredicate : defaultEmployeesPredicate
@@ -38,8 +38,8 @@ const mapStateToProps: MapStateToProps<PeopleDepartmentProps, PeopleDepartmentPr
 interface EmployeesListDispatchProps {
     onItemClicked: (employee: Employee) => void;
 }
-const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeesListDispatchProps => ({
-    onItemClicked: (employee: Employee) => dispatch(openEmployeeDetailsAction(employee))
+const mapDispatchToProps = (dispatch: Dispatch<Action>): EmployeesListDispatchProps => ({
+    onItemClicked: (employee: Employee) => dispatch(openEmployeeDetails(employee))
 });
 
 export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentStateProps & EmployeesListDispatchProps & PeopleDepartmentPropsOwnProps> {
@@ -58,7 +58,7 @@ export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentStateP
     }
 
     public render() {
-        const employees = this.props.employees.employeesById.filter(this.props.employeesPredicate).toArray();
+        const employees = this.props.employees.employeesById.toIndexedSeq().toArray().filter(this.props.employeesPredicate);
         if (this.props.isLoading) {
             return <LoadingView/>;
         }
@@ -66,4 +66,4 @@ export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentStateP
     }
 }
 
-export const PeopleDepartment = connect(mapStateToProps, mapDispatchToProps)(PeopleDepartmentImpl);
+export const PeopleDepartment = connect<PeopleDepartmentStateProps, EmployeesListDispatchProps, PeopleDepartmentPropsOwnProps>(mapStateToProps, mapDispatchToProps)(PeopleDepartmentImpl);

@@ -188,25 +188,32 @@
                 return this.StatusCode(StatusCodes.Status409Conflict, "Calendar types are not compatible");
             }
 
+            var calendarEvent = new CalendarEvent(eventId, model.Type, model.Dates, model.Status, employee.Metadata.EmployeeId);
+
             // Specific logic for approvals. Direct status change to Approved is restricted,
             // it will be set automatically, when all needed approvals are collected
             if (model.Status == VacationStatuses.Approved)
             {
                 var currentUserEmployee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, token);
-                var message = new ApproveVacation(eventId, currentUserEmployee.Metadata.EmployeeId);
-                var approveResponse = await employee.Calendar.VacationsActor.Ask(message, this.timeoutSettings.Timeout, token);
+                var approveResponse = await this.ApproveCalendarEventAsync(
+                    employee.Calendar.CalendarActor,
+                    calendarEvent,
+                    currentUserEmployee.Metadata.EmployeeId,
+                    token);
 
                 switch (approveResponse)
                 {
-                    case ApproveVacation.SuccessResponse _:
+                    case ApproveCalendarEvent.SuccessResponse _:
                         return this.NoContent();
 
-                    case ApproveVacation.BadRequestResponse err:
+                    case ApproveCalendarEvent.BadRequestResponse err:
                         return this.BadRequest(err.Message);
+
+                    case ApproveCalendarEvent.ErrorResponse _:
+                        return this.StatusCode(StatusCodes.Status500InternalServerError);
                 }
             }
 
-            var calendarEvent = new CalendarEvent(eventId, model.Type, model.Dates, model.Status, employee.Metadata.EmployeeId);
             var response = await this.UpsertEventAsync(employee.Calendar.CalendarActor, calendarEvent, token);
 
             switch (response)
@@ -227,6 +234,19 @@
             var timeout = this.timeoutSettings.Timeout;
             var eventCreationResponse = await calendarActor.Ask<UpsertCalendarEvent.Response>(new UpsertCalendarEvent(calendarEvent), timeout, token);
             return eventCreationResponse;
+        }
+
+        private Task<ApproveCalendarEvent.Response> ApproveCalendarEventAsync(
+            IActorRef calendarActor,
+            CalendarEvent @event,
+            string approverId,
+            CancellationToken token)
+        {
+            var approveEvent = new ApproveCalendarEvent(@event, approverId);
+            return calendarActor.Ask<ApproveCalendarEvent.Response>(
+                approveEvent,
+                this.timeoutSettings.Timeout,
+                token);
         }
 
         private async Task<CalendarEvent> GetCalendarEventOrDefaultAsync(IActorRef calendarActor, string eventId, CancellationToken token)

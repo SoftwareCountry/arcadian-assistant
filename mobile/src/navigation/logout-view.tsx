@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { Image, TouchableOpacity, View } from 'react-native';
 import { AuthActions, startLogoutProcess } from '../reducers/auth/auth.action';
-import { connect, Dispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import { LogoutStyle } from './logout-view.styles';
+import { Dispatch } from 'redux';
 
 //============================================================================
 interface LogoutDispatchProps {

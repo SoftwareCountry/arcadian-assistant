@@ -25,11 +25,11 @@
         private Dictionary<string, IActorRef> EmployeesById { get; } = new Dictionary<string, IActorRef>();
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
-        private readonly IActorRef vacationApprovalsChecker;
+        private readonly IActorRef calendarEventsApprovalsChecker;
 
         public IStash Stash { get; set; }
 
-        public EmployeesActor(IActorRef vacationApprovalsChecker)
+        public EmployeesActor(IActorRef calendarEventsApprovalsChecker)
         {
             this.employeesInfoStorage = Context.ActorOf(EmployeesInfoStorage.GetProps, "employees-storage");
             this.logger.Info($"Image resizers pool size: {ResizersCount}");
@@ -39,7 +39,7 @@
 
             this.vacationsRegistry = Context.ActorOf(VacationsRegistry.GetProps, "vacations-registry");
 
-            this.vacationApprovalsChecker = vacationApprovalsChecker;
+            this.calendarEventsApprovalsChecker = calendarEventsApprovalsChecker;
         }
 
         protected override void OnReceive(object message)
@@ -138,7 +138,7 @@
                             employeeNewInfo,
                             this.imageResizer,
                             this.vacationsRegistry,
-                            this.vacationApprovalsChecker),
+                            this.calendarEventsApprovalsChecker),
                         $"employee-{Uri.EscapeDataString(employeeNewInfo.Metadata.EmployeeId)}");
 
                     this.EmployeesById[employeeNewInfo.Metadata.EmployeeId] = employee;
@@ -160,7 +160,7 @@
             }
         }
 
-        public static Props GetProps(IActorRef vacationApprovalsChecker) =>
-            Props.Create(() => new EmployeesActor(vacationApprovalsChecker));
+        public static Props GetProps(IActorRef calendarEventsApprovalsChecker) =>
+            Props.Create(() => new EmployeesActor(calendarEventsApprovalsChecker));
     }
 }

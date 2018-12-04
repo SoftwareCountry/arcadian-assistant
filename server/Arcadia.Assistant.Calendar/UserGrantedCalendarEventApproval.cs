@@ -1,10 +1,10 @@
-﻿namespace Arcadia.Assistant.Calendar.Vacations.Events
+﻿namespace Arcadia.Assistant.Calendar
 {
     using System;
     using System.Runtime.Serialization;
 
     [DataContract]
-    public class UserGrantedVacationApproval
+    public class UserGrantedCalendarEventApproval
     {
         [DataMember]
         public string EventId { get; set; }

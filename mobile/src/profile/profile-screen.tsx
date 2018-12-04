@@ -1,4 +1,4 @@
-import { NavigationRouteConfigMap, StackNavigator } from 'react-navigation';
+import { createStackNavigator, NavigationRouteConfigMap } from 'react-navigation';
 import { HomeProfileScreen } from './home-profile-screen';
 import { stackNavigatorConfig } from '../override/stack-navigator-config';
 import { CurrentPeopleDepartment } from '../people/current-people-department';
@@ -24,4 +24,4 @@ const routeConfig: NavigationRouteConfigMap = {
     },
 };
 
-export const ProfileScreen = StackNavigator(routeConfig, stackNavigatorConfig);
+export const ProfileScreen = createStackNavigator(routeConfig, stackNavigatorConfig);

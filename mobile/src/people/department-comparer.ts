@@ -1,11 +1,17 @@
-interface HasAbbreviation {
-    abbreviation: string;
+import { DepartmentNode } from '../reducers/people/people.model';
+
+export function departmentNodeComparer (first: DepartmentNode, second: DepartmentNode) {
+    if (first.abbreviation && second.abbreviation) {
+        return azComparer(first.abbreviation, second.abbreviation);
+    }
+
+    return azComparer(first.departmentId, second.departmentId);
 }
 
-export function departmentAZComparer (first: HasAbbreviation, second: HasAbbreviation) {
-    if (first.abbreviation < second.abbreviation) {
+export function azComparer (first: string, second: string) {
+    if (first < second) {
         return -1;
-    } else if (first.abbreviation > second.abbreviation) {
+    } else if (first > second) {
         return 1;
     }
 

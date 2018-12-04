@@ -4,6 +4,7 @@ import { Animated, PanResponder, PanResponderInstance, PanResponderGestureState,
 import { companyDepartments } from './styles';
 import { CompanyDepartmentsLevelAnimatedNode } from './company-departments-level-animated-node';
 import { Employee } from '../reducers/organization/employee.model';
+import { Nullable, Optional } from 'types';
 
 interface CompanyDepartmentsLevelNodesProps {
     width: number;
@@ -25,7 +26,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
     private readonly motionThreshold = 20;
     private readonly gap = 100;
 
-    private panResponder: PanResponderInstance;
+    private panResponder: Optional<PanResponderInstance>;
 
     // Why isn't in state? Answer: Perfomance reason.
     // Changing the state.canSwipe makes twise render calls (when swipe is started, and swipe is ended), it impacts on the animation smoothness,
@@ -107,7 +108,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
         return (
             <View style={companyDepartments.nodesContainer}>
                 <Animated.View
-                    {...this.panResponder.panHandlers}
+                    {...this.panResponder!.panHandlers}
                     style={nodesContainerStyles}>
                     {
                         this.props.nodes.map((node, index) => {
@@ -275,7 +276,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
         return this.motionThreshold - Math.abs(gesture.dx) <= 0;
     }
 
-    private moveToNearestPage(toValue: number, onMoveComplete: () => void = null) {
+    private moveToNearestPage(toValue: number, onMoveComplete: Nullable<() => void> = null) {
         Animated.timing(this.state.xCoordinate, {
             toValue: toValue,
             duration: 90,

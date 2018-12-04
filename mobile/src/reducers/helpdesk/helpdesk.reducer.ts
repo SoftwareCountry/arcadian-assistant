@@ -1,10 +1,7 @@
-import { Reducer, combineReducers } from 'redux';
-import { List } from 'immutable';
+import { combineReducers } from 'redux';
 import { ticketTemplatesReducer, loadTicketTemplatesEpic$ } from './ticket-templates.reducer';
 import { TicketTemplate } from './ticket-template.model';
-import { Observable } from 'rxjs/Observable';
-import { ActionsObservable, combineEpics } from 'redux-observable';
-import { TicketAction } from './tickets.actions';
+import { combineEpics } from 'redux-observable';
 
 export interface HelpdeskState {
     ticketTemplates: TicketTemplate[];

@@ -3,16 +3,16 @@
  ******************************************************************************/
 
 import React from 'react';
-import { TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { RegisteredStyle, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { StyledText } from '../override/styled-text';
-import { radioButtonsGroupStyles } from './radio-buttons-group.styles';
+import radioButtonsGroupStyles from './radio-buttons-group.styles';
 
 //============================================================================
 export interface RadioButton {
     selectionIndex: number;
     label: string;
 
-    labelStyle?: TextStyle;
+    labelStyle?: TextStyle | RegisteredStyle<TextStyle>;
     color?: string;
     disabled?: boolean;
     layout?: 'column' | 'row';
@@ -32,14 +32,14 @@ class RadioButtonComponent extends React.Component<RadioButtonProps> {
     public render() {
         const opacity = this.props.disabled ? 0.2 : 1;
 
-        let layout: ViewStyle;
-        let textStyle: TextStyle;
+        let layout: RegisteredStyle<ViewStyle>;
+        let textStyle: RegisteredStyle<TextStyle>;
         if (this.props.layout === 'column') {
-            layout = radioButtonsGroupStyles.layoutColumn;
-            textStyle = radioButtonsGroupStyles.textColumn;
+            layout = radioButtonsGroupStyles.view.layoutColumn;
+            textStyle = radioButtonsGroupStyles.view.textColumn;
         } else {
-            layout = radioButtonsGroupStyles.layoutRow;
-            textStyle = radioButtonsGroupStyles.textRow;
+            layout = radioButtonsGroupStyles.view.layoutRow;
+            textStyle = radioButtonsGroupStyles.view.textRow;
         }
 
         return (
@@ -52,21 +52,21 @@ class RadioButtonComponent extends React.Component<RadioButtonProps> {
                 }}>
                 <View
                     style={[
-                        radioButtonsGroupStyles.radioButtonBorder,
+                        radioButtonsGroupStyles.view.radioButtonBorder,
                         {
                             borderColor: this.props.color,
                             width: this.props.size,
                             height: this.props.size,
-                            borderRadius: this.props.size / 2,
+                            borderRadius: this.props.size! / 2,
                         },
                     ]}>
                     {this.props.selected &&
                     <View
                         style={{
                             backgroundColor: this.props.color,
-                            width: this.props.size / 2,
-                            height: this.props.size / 2,
-                            borderRadius: this.props.size / 2,
+                            width: this.props.size! / 2,
+                            height: this.props.size! / 2,
+                            borderRadius: this.props.size! / 2,
                         }}
                     />}
                 </View>
@@ -103,7 +103,7 @@ export class RadioGroup extends React.Component<RadioGroupProps, RadioGroupState
     //----------------------------------------------------------------------------
     public render() {
         return (
-            <View style={radioButtonsGroupStyles.radioButtonContainer}>
+            <View style={radioButtonsGroupStyles.view.radioButtonContainer}>
                 <View style={{ flexDirection: this.props.flexDirection } as ViewStyle}>
                     {this.state.radioButtons.map(button => (
                         <RadioButtonComponent

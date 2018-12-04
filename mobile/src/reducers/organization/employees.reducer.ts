@@ -12,7 +12,7 @@ export interface EmployeesStore {
     employeeIdsByDepartment: EmployeeIdsGroupMap;
 }
 
-const defaultState: EmployeesStore = {
+export const defaultState: EmployeesStore = {
     employeesById: Map(),
     employeeIdsByDepartment: Map()
 };

@@ -30,7 +30,8 @@ describe('employees reducer', () => {
         employee.departmentId = depId;
 
         const state = employeesReducer(undefined, loadEmployeesFinished([ employee ]));
-        expect(state.employeeIdsByDepartment.get(depId).has(id)).toBeTruthy();
+        expect(state.employeeIdsByDepartment.get(depId)).toBeDefined();
+        expect(state.employeeIdsByDepartment.get(depId)!.has(id)).toBeTruthy();
     });
 
     it('should move employee id in department lists if it were moved in another department', () => {
@@ -49,8 +50,10 @@ describe('employees reducer', () => {
         state = employeesReducer(state, loadEmployeesFinished([ updatedEmployee ]));
 
         expect(state.employeesById.get(id)).toEqual(updatedEmployee);
-        expect(state.employeeIdsByDepartment.get(depId1).has(id)).toBeFalsy();
-        expect(state.employeeIdsByDepartment.get(depId2).has(id)).toBeTruthy();
+        expect(state.employeeIdsByDepartment.get(depId1)).toBeDefined();
+        expect(state.employeeIdsByDepartment.get(depId2)).toBeDefined();
+        expect(state.employeeIdsByDepartment.get(depId1)!.has(id)).toBeFalsy();
+        expect(state.employeeIdsByDepartment.get(depId2)!.has(id)).toBeTruthy();
     });
 
 });

@@ -5,10 +5,12 @@
     using System.Linq;
 
     using Akka.Actor;
+    using Akka.Event;
     using Akka.Persistence;
 
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
+    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public abstract class CalendarEventsStorageBase : UntypedPersistentActor, ILogReceive
     {
@@ -17,10 +19,16 @@
         protected string EmployeeId { get; }
 
         protected readonly Dictionary<string, CalendarEvent> EventsById = new Dictionary<string, CalendarEvent>();
+        protected readonly Dictionary<string, List<string>> ApprovalsByEvent = new Dictionary<string, List<string>>();
 
-        protected CalendarEventsStorageBase(string employeeId)
+        private readonly ILoggingAdapter logger = Context.GetLogger();
+
+        private readonly IActorRef calendarEventsApprovalsChecker;
+
+        protected CalendarEventsStorageBase(string employeeId, IActorRef calendarEventsApprovalsChecker)
         {
             this.EmployeeId = employeeId;
+            this.calendarEventsApprovalsChecker = calendarEventsApprovalsChecker;
         }
 
         protected override void OnCommand(object message)
@@ -77,15 +85,50 @@
                     }
                     break;
 
+                case ApproveCalendarEvent msg:
+                    try
+                    {
+                        this.ApproveCalendarEvent(msg);
+                    }
+                    catch (Exception ex)
+                    {
+                        this.Sender.Tell(new ApproveCalendarEvent.ErrorResponse(ex.Message));
+                    }
+
+                    break;
+
+                case ProcessCalendarEventApprovalsMessage msg:
+                    var calendarEvent = this.EventsById[msg.EventId];
+                    var existingApprovals = this.ApprovalsByEvent[msg.EventId];
+
+                    this.calendarEventsApprovalsChecker
+                        .Ask<GetNextCalendarEventApprover.Response>(
+                            new GetNextCalendarEventApprover(this.EmployeeId, existingApprovals, calendarEvent.Type))
+                        .ContinueWith<ProcessCalendarEventApprovalsMessage.Response>(task =>
+                        {
+                            if (task.Result is GetNextCalendarEventApprover.ErrorResponse err)
+                            {
+                                return new ProcessCalendarEventApprovalsMessage.ErrorResponse(msg.EventId, err.Message);
+                            }
+
+                            var resp = (GetNextCalendarEventApprover.SuccessResponse)task.Result;
+                            return new ProcessCalendarEventApprovalsMessage.SuccessResponse(msg.EventId, resp.NextApproverEmployeeId);
+                        })
+                        .PipeTo(this.Self);
+                    break;
+
+                case ProcessCalendarEventApprovalsMessage.SuccessResponse msg:
+                    this.ProcessCalendarEventApprovals(msg);
+                    break;
+
+                case ProcessCalendarEventApprovalsMessage.ErrorResponse msg:
+                    this.logger.Warning($"Failed to get next approver for the event {msg.EventId}");
+                    break;
+
                 default:
                     this.Unhandled(message);
                     break;
             }
-        }
-
-        private void OnSuccessfulUpsert(CalendarEvent calendarEvent)
-        {
-            this.Sender.Tell(new UpsertCalendarEvent.Success(calendarEvent));
         }
 
         protected abstract void InsertCalendarEvent(CalendarEvent calendarEvent, OnSuccessfulUpsertCallback onUpsert);
@@ -94,6 +137,109 @@
 
         protected abstract string GetInitialStatus();
 
+        protected abstract string GetApprovedStatus();
+
         protected abstract bool IsStatusTransitionAllowed(string oldCalendarEventStatus, string newCalendarEventStatus);
+
+        protected abstract void OnSuccessfulApprove(UserGrantedCalendarEventApproval message);
+
+        private void ApproveCalendarEvent(ApproveCalendarEvent message)
+        {
+            var calendarEvent = this.EventsById[message.Event.EventId];
+            var approvals = this.ApprovalsByEvent[message.Event.EventId];
+            if (!this.IsStatusTransitionAllowed(calendarEvent.Status, this.GetApprovedStatus()))
+            {
+                var errorMessage = $"Event {message.Event}. Status transition {calendarEvent.Status} -> {this.GetApprovedStatus()} is not allowed for {calendarEvent.Type}";
+                this.Sender.Tell(new ApproveCalendarEvent.BadRequestResponse(errorMessage));
+                return;
+            }
+
+            if (approvals.Contains(message.ApproverId) || calendarEvent.Status == this.GetApprovedStatus())
+            {
+                this.Sender.Tell(Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
+                return;
+            }
+
+            var @event = new UserGrantedCalendarEventApproval
+            {
+                EventId = message.Event.EventId,
+                TimeStamp = DateTimeOffset.Now,
+                ApproverId = message.ApproverId
+            };
+
+            this.Persist(@event, ev =>
+            {
+                this.Self.Tell(new ProcessCalendarEventApprovalsMessage(message.Event.EventId));
+                this.Sender.Tell(Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
+                this.OnSuccessfulApprove(ev);
+            });
+        }
+
+        private void ProcessCalendarEventApprovals(ProcessCalendarEventApprovalsMessage.SuccessResponse successResponse)
+        {
+            var oldEvent = this.EventsById[successResponse.EventId];
+
+            if (successResponse.NextApproverId == null)
+            {
+                var newEvent = new CalendarEvent(
+                    oldEvent.EventId,
+                    oldEvent.Type,
+                    oldEvent.Dates,
+                    this.GetApprovedStatus(),
+                    oldEvent.EmployeeId
+                );
+
+                this.UpdateCalendarEvent(oldEvent, newEvent, ev => { });
+            }
+
+            Context.System.EventStream.Publish(
+                new CalendarEventAssignedToApproverEventBusMessage(oldEvent, successResponse.NextApproverId));
+        }
+
+        private void OnSuccessfulUpsert(CalendarEvent calendarEvent)
+        {
+            this.Self.Tell(new ProcessCalendarEventApprovalsMessage(calendarEvent.EventId));
+            this.Sender.Tell(new UpsertCalendarEvent.Success(calendarEvent));
+        }
+
+        protected class ProcessCalendarEventApprovalsMessage
+        {
+            public ProcessCalendarEventApprovalsMessage(string eventId)
+            {
+                this.EventId = eventId;
+            }
+
+            public string EventId { get; }
+
+            public abstract class Response
+            {
+            }
+
+            public class SuccessResponse : Response
+            {
+                public SuccessResponse(string eventId, string nextApproverId)
+                {
+                    this.EventId = eventId;
+                    this.NextApproverId = nextApproverId;
+                }
+
+                public string EventId { get; }
+
+                public string NextApproverId { get; }
+            }
+
+            public class ErrorResponse : Response
+            {
+                public ErrorResponse(string eventId, string message)
+                {
+                    this.EventId = eventId;
+                    this.Message = message;
+                }
+
+                public string EventId { get; }
+
+                public string Message { get; }
+            }
+        }
     }
 }

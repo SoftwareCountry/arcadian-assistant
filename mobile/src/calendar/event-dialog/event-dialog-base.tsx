@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { layout, content, buttons } from './styles';
-import { View, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, TouchableOpacity, ActivityIndicator, ViewStyle, TextStyle } from 'react-native';
 import { ApplicationIcon } from '../../override/application-icon';
 import { StyledText } from '../../override/styled-text';
 import { CalendarActionButton } from '../calendar-action-button';
@@ -69,8 +69,8 @@ export class EventDialogBaseImpl extends Component<EventDialogBaseProps> {
 
         return (
             <View style={layout.buttons}>
-                <CalendarActionButton title={cancelLabel} onPress={this.cancel} style={buttons.cancel} textStyle={buttons.cancelLabel} disabled={this.props.inProgress} />
-                <CalendarActionButton title={acceptLabel} onPress={this.accept} style={buttons.accept} textStyle={buttons.acceptLabel} disabled={disableAccept || this.props.inProgress} />
+                <CalendarActionButton title={cancelLabel} onPress={this.cancel} style={buttons.cancel as ViewStyle} textStyle={buttons.cancelLabel as TextStyle} disabled={this.props.inProgress} />
+                <CalendarActionButton title={acceptLabel} onPress={this.accept} style={buttons.accept as ViewStyle} textStyle={buttons.acceptLabel as TextStyle} disabled={disableAccept || this.props.inProgress} />
                 {this.props.inProgress && <ActivityIndicator size={'small'} style={buttons.progressIndicator} />}
             </View>
         );
@@ -90,7 +90,7 @@ export class EventDialogBaseImpl extends Component<EventDialogBaseProps> {
 }
 
 const mapStateToProps: MapStateToProps<EventDialogBaseProps, EventDialogBaseOwnProps, AppState> = (state, ownProps) => ({
-    inProgress: state.calendar.eventDialog.inProgress,
+    inProgress: state.calendar ? state.calendar.eventDialog.inProgress : false,
     icon: ownProps.icon,
     title: ownProps.title,
     text: ownProps.text,

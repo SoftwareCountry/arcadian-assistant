@@ -5,6 +5,8 @@ import { StyleSheet } from 'react-native';
 const color = {
     base: '#2FAFCC',
     white: '#FFFFFF',
+    red: '#FF0000',
+    transparent: 'transparent',
 };
 
 //----------------------------------------------------------------------------
@@ -25,6 +27,9 @@ const view = StyleSheet.create({
 const navigation = StyleSheet.create({
     header: {
         backgroundColor: color.base,
+        shadowOpacity: 0,
+        borderBottomWidth: 0,
+        elevation: 0,
     },
     title: {
         fontFamily: 'CenturyGothic',

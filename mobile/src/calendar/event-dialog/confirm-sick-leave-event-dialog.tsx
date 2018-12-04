@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
 import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base';
 import { AppState } from '../../reducers/app.reducer';
-import { Dispatch } from 'redux';
+import { Action, Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { EventDialogActions, closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
+import { closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { DayModel } from '../../reducers/calendar/calendar.model';
 import { Employee } from '../../reducers/organization/employee.model';
 import { confirmSickLeave } from '../../reducers/calendar/sick-leave.action';
-import { Moment } from 'moment';
+import moment, { Moment } from 'moment';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
+import { Optional } from 'types';
+import { getEmployee } from '../../utils/utils';
 
 interface ClaimSickLeaveEventDialogDispatchProps {
     back: () => void;
@@ -20,7 +21,7 @@ interface ClaimSickLeaveEventDialogDispatchProps {
 interface ClaimSickLeaveEventDialogProps {
     startDay: DayModel;
     endDay: DayModel;
-    userEmployee: Employee;
+    userEmployee: Optional<Employee>;
 }
 
 class ConfirmSickLeaveEventDialogImpl extends Component<ClaimSickLeaveEventDialogProps & ClaimSickLeaveEventDialogDispatchProps> {
@@ -42,6 +43,10 @@ class ConfirmSickLeaveEventDialogImpl extends Component<ClaimSickLeaveEventDialo
     };
 
     private acceptAction = () => {
+        if (!this.props.userEmployee) {
+            return;
+        }
+
         this.props.confirmSickLeave(this.props.userEmployee.employeeId, this.props.startDay.date, this.props.endDay.date);
     };
 
@@ -54,13 +59,20 @@ class ConfirmSickLeaveEventDialogImpl extends Component<ClaimSickLeaveEventDialo
     }
 }
 
-const mapStateToProps = (state: AppState): ClaimSickLeaveEventDialogProps => ({
-    startDay: state.calendar.calendarEvents.selection.interval.startDay,
-    endDay: state.calendar.calendarEvents.selection.interval.endDay,
-    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
-});
+const mapStateToProps = (state: AppState): ClaimSickLeaveEventDialogProps => {
 
-const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ClaimSickLeaveEventDialogDispatchProps => ({
+    return {
+        startDay: state.calendar && state.calendar.calendarEvents.selection.interval && state.calendar.calendarEvents.selection.interval.startDay ? state.calendar.calendarEvents.selection.interval.startDay : {
+            date: moment(), today: true, belongsToCurrentMonth: true,
+        },
+        endDay: state.calendar && state.calendar.calendarEvents.selection.interval && state.calendar.calendarEvents.selection.interval.endDay ? state.calendar.calendarEvents.selection.interval.endDay : {
+            date: moment(), today: true, belongsToCurrentMonth: true,
+        },
+        userEmployee: getEmployee(state),
+    };
+};
+
+const mapDispatchToProps = (dispatch: Dispatch<Action>): ClaimSickLeaveEventDialogDispatchProps => ({
     back: () => { dispatch(openEventDialog(EventDialogType.ClaimSickLeave)); },
     confirmSickLeave: (employeeId: string, startDate: Moment, endDate: Moment) => { dispatch(confirmSickLeave(employeeId, startDate, endDate)); },
     closeDialog: () => { dispatch(closeEventDialog()); }

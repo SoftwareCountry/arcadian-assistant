@@ -34,15 +34,17 @@ describe('calendar events reducer', () => {
         it('should have intervals', () => {
             expect(state.intervals).toBeDefined();
 
-            let intervals = state.intervals.get(calendarEvent.dates.startDate);
+            let intervals = state.intervals!.get(calendarEvent.dates.startDate);
 
-            expect(intervals.length).toBe(1);
-            expect(intervals[0].calendarEvent.type).toBe(calendarEvent.type);
+            expect(intervals).toBeDefined();
+            expect(intervals!.length).toBe(1);
+            expect(intervals![0].calendarEvent.type).toBe(calendarEvent.type);
 
-            intervals = state.intervals.get(calendarEvent.dates.endDate);
+            intervals = state.intervals!.get(calendarEvent.dates.endDate);
 
-            expect(intervals.length).toBe(1);
-            expect(intervals[0].calendarEvent.type).toBe(calendarEvent.type);
+            expect(intervals).toBeDefined();
+            expect(intervals!.length).toBe(1);
+            expect(intervals![0].calendarEvent.type).toBe(calendarEvent.type);
         });
 
         it('should enable calendar actions group', () => {
@@ -106,18 +108,19 @@ describe('calendar events reducer', () => {
             color = '#abc';
             const action = calendarSelectionMode(CalendarSelectionModeType.Interval, color);
             state = calendarEventsReducer(state, action);
+            expect(state.selection.interval).toBeDefined();
         });
 
         it('should have start day which is single selection day', () => {
-            expect(state.selection.interval.startDay).toBe(state.selection.single.day);
+            expect(state.selection.interval!.startDay).toBe(state.selection.single.day);
         });
 
         it('should have end day which is null', () => {
-            expect(state.selection.interval.endDay).toBeNull();
+            expect(state.selection.interval!.endDay).toBeNull();
         });
 
         it('should have color', () => {
-            expect(state.selection.interval.color).toBe(color);
+            expect(state.selection.interval!.color).toBe(color);
         });
 
         it('should disable days before start day', () => {
@@ -139,6 +142,7 @@ describe('calendar events reducer', () => {
                 };
                 const action = selectCalendarDay(endDay);
                 state = calendarEventsReducer(state, action);
+                expect(state.selection.interval).toBeDefined();
             });
 
             it('should not change single day selection', () => {
@@ -146,7 +150,7 @@ describe('calendar events reducer', () => {
             });
 
             it('should set end day of interval selection', () => {
-                expect(state.selection.interval.endDay).toBe(endDay);
+                expect(state.selection.interval!.endDay).toBe(endDay);
             });
         });
     });
@@ -208,10 +212,11 @@ describe('calendar events reducer', () => {
                 beforeEach(() => {
                     const action = selectCalendarDay(day);
                     state = calendarEventsReducer(state, action);
+                    expect(state.selection.interval).toBeDefined();
                 });
 
                 it('should not change end day of interval selection', () => {
-                    expect(state.selection.interval.endDay).not.toBe(day);
+                    expect(state.selection.interval!.endDay).not.toBe(day);
                 });
             });
         });
@@ -224,11 +229,11 @@ describe('calendar events reducer', () => {
         let employeeId = '1';
 
         beforeEach(() => {
-        
+
             const action = loadUserFinished(employeeId);
             state = calendarEventsReducer(undefined, action);
         });
-        
+
 
         beforeEach(() => {
             calendarEvent = new CalendarEvent();
@@ -264,7 +269,7 @@ describe('calendar events reducer', () => {
 
         it('should return intervals by single day selection', () => {
             expect(state.selectedIntervalsBySingleDaySelection.sickleave).toBeDefined();
-            expect(state.selectedIntervalsBySingleDaySelection.sickleave.calendarEvent).toBe(calendarEvent);
+            expect(state.selectedIntervalsBySingleDaySelection.sickleave!.calendarEvent).toBe(calendarEvent);
         });
     });
 

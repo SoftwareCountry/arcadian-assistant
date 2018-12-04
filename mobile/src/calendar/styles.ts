@@ -110,6 +110,7 @@ export const calendarStyles = StyleSheet.create({
 });
 
 export class CalendarEventsColor {
+    public static defaultColor = '#000000';
     public static vacation = '#2F80ED';
     public static sickLeave = '#F2C94C';
     public static dayoff = '#EB5757';
@@ -130,7 +131,7 @@ export class CalendarEventsColor {
                 return CalendarEventsColor.workout;
 
             default:
-                return null;
+                return CalendarEventsColor.defaultColor;
         }
     }
 }

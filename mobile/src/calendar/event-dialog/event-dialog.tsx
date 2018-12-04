@@ -27,10 +27,6 @@ export class EventDialog extends Component<EventDialogProps> {
     }
 
     private getEventDialog() {
-        if (!this.props.dialogType) {
-            return null;
-        }
-
         switch (this.props.dialogType) {
             case EventDialogType.ClaimSickLeave:
                 return <ClaimSickLeaveEventDialog />;

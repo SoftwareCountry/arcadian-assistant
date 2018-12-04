@@ -5,6 +5,7 @@ import { View, TouchableOpacity, Animated, PanResponder, PanResponderInstance, L
 import { StyledText } from '../override/styled-text';
 import { CalendarPage, OnSelectedDayCallback } from './calendar-page';
 import { WeekModel, DayModel, CalendarSelection, ReadOnlyIntervalsModel, CalendarPageModel } from '../reducers/calendar/calendar.model';
+import { Optional } from 'types';
 
 interface CalendarPagerDefaultProps {
     intervals?: ReadOnlyIntervalsModel;
@@ -28,11 +29,11 @@ interface CalendarPagerState {
 
 export class CalendarPager extends Component<CalendarPagerProps, CalendarPagerState> {
     public static defaultProps: CalendarPagerDefaultProps = {
-        intervals: null,
-        disableBefore: null
+        intervals: undefined,
+        disableBefore: undefined
     };
 
-    private panResponder: PanResponderInstance;
+    private panResponder: Optional<PanResponderInstance>;
     private readonly motionThreshold = 20;
 
     constructor(props: CalendarPagerProps) {
@@ -82,7 +83,7 @@ export class CalendarPager extends Component<CalendarPagerProps, CalendarPagerSt
 
         return <View style={calendarStyles.pagerContainer} onLayout={this.onLayoutContainer}>
             <Animated.View
-                {...this.panResponder.panHandlers}
+                {...this.panResponder!.panHandlers}
                 style={swipeableViewStyles}>
                 {
                     this.props.pages.map(page =>

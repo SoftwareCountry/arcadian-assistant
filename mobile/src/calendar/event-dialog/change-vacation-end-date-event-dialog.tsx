@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
 import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base';
 import { AppState } from '../../reducers/app.reducer';
-import { Dispatch } from 'redux';
+import { Action, Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { EventDialogActions, closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
+import { closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { ExtractedIntervals, IntervalSelection } from '../../reducers/calendar/calendar.model';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
 import { CalendarEvent } from '../../reducers/calendar/calendar-event.model';
 import { confirmVacationChange } from '../../reducers/calendar/vacation.action';
 import { Employee } from '../../reducers/organization/employee.model';
 import { Moment } from 'moment';
+import { getEmployee } from '../../utils/utils';
+import { Optional } from 'types';
 
 interface ChangeVacationEndDateEventDialogDispatchProps {
     back: () => void;
@@ -23,9 +25,9 @@ interface ChangeVacationEndDateEventDialogDispatchProps {
 }
 
 interface ChangeVacationEndDateEventDialogProps {
-    userEmployee: Employee;
-    interval: IntervalSelection;
-    intervals: ExtractedIntervals;
+    userEmployee: Optional<Employee>;
+    interval: Optional<IntervalSelection>;
+    intervals: Optional<ExtractedIntervals>;
 }
 
 class ChangeVacationEndDateEventDialogImpl extends Component<ChangeVacationEndDateEventDialogProps & ChangeVacationEndDateEventDialogDispatchProps> {
@@ -49,11 +51,15 @@ class ChangeVacationEndDateEventDialogImpl extends Component<ChangeVacationEndDa
     };
 
     private confirmEndDateChange = () => {
-        const { interval, userEmployee, intervals: { vacation } } = this.props;
+        const { interval, userEmployee, intervals } = this.props;
+
+        if (!userEmployee || !interval || !intervals || !intervals.vacation || !interval.startDay || !interval.endDay) {
+            return;
+        }
 
         this.props.confirmChangeVacation(
             userEmployee.employeeId,
-            vacation.calendarEvent,
+            intervals.vacation.calendarEvent,
             interval.startDay.date,
             interval.endDay.date);
     };
@@ -74,12 +80,12 @@ class ChangeVacationEndDateEventDialogImpl extends Component<ChangeVacationEndDa
 }
 
 const mapStateToProps = (state: AppState): ChangeVacationEndDateEventDialogProps => ({
-    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId),
-    interval: state.calendar.calendarEvents.selection.interval,
-    intervals: state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection
+    userEmployee: getEmployee(state),
+    interval: state.calendar ? state.calendar.calendarEvents.selection.interval : undefined,
+    intervals: state.calendar ? state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection : undefined,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ChangeVacationEndDateEventDialogDispatchProps => ({
+const mapDispatchToProps = (dispatch: Dispatch<Action>): ChangeVacationEndDateEventDialogDispatchProps => ({
     back: () => { dispatch(openEventDialog(EventDialogType.ChangeVacationStartDate)); },
     confirmChangeVacation: (
         employeeId: string,

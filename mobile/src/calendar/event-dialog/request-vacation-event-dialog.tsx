@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { EventDialogActions, closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { DayModel } from '../../reducers/calendar/calendar.model';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
+import moment from 'moment';
 
 interface ClaimVacationEventDialogDispatchProps {
     cancelDialog: () => void;
@@ -48,7 +49,9 @@ class ClaimVacationEventDialogImpl extends Component<ClaimVacationEventDialogPro
 }
 
 const mapStateToProps = (state: AppState): ClaimVacationEventDialogProps => ({
-    startDay: state.calendar.calendarEvents.selection.single.day
+    startDay: state.calendar && state.calendar.calendarEvents.selection.single.day ?  state.calendar.calendarEvents.selection.single.day : {
+        date: moment(), today: true, belongsToCurrentMonth: true,
+    },
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ClaimVacationEventDialogDispatchProps => ({

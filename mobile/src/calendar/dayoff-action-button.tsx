@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 
 interface DayoffActionButtonProps {
-    interval: IntervalModel;
+    interval?: IntervalModel;
     disabled: boolean;
     process: () => void;
     edit: () => void;
@@ -33,7 +33,7 @@ export class DayoffActionButton extends Component<DayoffActionButtonProps> {
 
     public get title() : string {
         return !this.props.interval
-            ? 'Process Dayoff'
+            ? 'Dayoff / Workout'
             : 'Edit Dayoff';
     }
 

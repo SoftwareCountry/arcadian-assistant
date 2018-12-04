@@ -1,3 +1,4 @@
+import { Reducer } from 'redux';
 import { combineEpics } from 'redux-observable';
 import { jwtTokenEpic$, listenerAuthStateEpic$, startLoginProcessEpic$, startLogoutProcessEpic$ } from './auth.epics';
 import { AuthActions, AuthActionType } from './auth.action';
@@ -23,15 +24,19 @@ const initState: AuthState = {
 };
 
 export const authReducer = (state: AuthState = initState, action: AuthActions): AuthState => {
+    const jwtToken = state.authInfo ? state.authInfo.jwtToken : null;
+    const isAuthenticated = state.authInfo ? state.authInfo.isAuthenticated : false;
+
     switch (action.type) {
         case AuthActionType.userLoggedIn:
             return {
                 ...state,
                 authInfo: {
-                    ...state.authInfo,
+                    jwtToken: jwtToken,
                     isAuthenticated: true,
                 }
             };
+
         case AuthActionType.userLoggedOut:
             return {
                 ...state,
@@ -45,7 +50,7 @@ export const authReducer = (state: AuthState = initState, action: AuthActions): 
             return {
                 ...state,
                 authInfo: {
-                    ...state.authInfo,
+                    isAuthenticated: isAuthenticated,
                     jwtToken: action.jwtToken
                 }
             };

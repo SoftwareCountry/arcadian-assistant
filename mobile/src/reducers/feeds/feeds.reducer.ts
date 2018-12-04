@@ -7,13 +7,14 @@ import { SearchType } from '../../navigation/search-view';
 import { loadFeedsFinishedEpic$, pagingPeriodDays, fetchNewFeedsEpic$, fetchOldFeedsEpic$, loadUserEmployeeFinishedEpic$ } from './feeds.epics';
 import { Moment } from 'moment';
 import { Map } from 'immutable';
+import { Nullable } from 'types';
 
 export type FeedsById = Map<string, Feed>;
 
 export interface FeedsState {
     feeds: FeedsById;
-    toDate: Moment;
-    fromDate: Moment;
+    toDate: Nullable<Moment>;
+    fromDate: Nullable<Moment>;
     filter: string;
 }
 
@@ -64,7 +65,7 @@ export const feedsReducer: Reducer<FeedsState> = (state = initState, action: Fee
 export const feedsEpics = combineEpics(
     loadFeedsFinishedEpic$ as any,
     fetchNewFeedsEpic$ as any,
-    fetchOldFeedsEpic$ as any, 
+    fetchOldFeedsEpic$ as any,
     loadUserEmployeeFinishedEpic$ as any
-    
+
 );
