@@ -1,12 +1,13 @@
 import React from 'react';
 import Style from '../layout/style';
-import { StyleSheet } from 'react-native';
+import { StackNavigatorConfig } from 'react-navigation';
 
 //----------------------------------------------------------------------------
-export const stackNavigatorConfig = {
+export const stackNavigatorConfig: StackNavigatorConfig = {
     defaultNavigationOptions: {
         headerTitleStyle: Style.navigation.title,
         headerStyle: Style.navigation.header,
         headerTintColor: Style.color.white,
+        headerBackTitle: null,
     }
 };
