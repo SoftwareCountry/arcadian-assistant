@@ -9,6 +9,12 @@ export interface DayModel {
     belongsToCurrentMonth: boolean;
 }
 
+export const defaultDayModel: DayModel = {
+    date: moment(),
+    today: true,
+    belongsToCurrentMonth: true,
+};
+
 export interface WeekModel {
     days: DayModel[];
     weekIndex: number;

@@ -4,10 +4,10 @@ import { AppState } from '../../reducers/app.reducer';
 import { Action, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
-import { DayModel } from '../../reducers/calendar/calendar.model';
+import { DayModel, defaultDayModel } from '../../reducers/calendar/calendar.model';
 import { Employee } from '../../reducers/organization/employee.model';
 import { confirmVacation } from '../../reducers/calendar/vacation.action';
-import moment, { Moment } from 'moment';
+import { Moment } from 'moment';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
 import { getEmployee } from '../../utils/utils';
 import { Optional } from 'types';
@@ -59,21 +59,29 @@ class ConfirmVacationEventDialogImpl extends Component<ClaimVacationEventDialogP
     }
 }
 
+function getStartDay(state: AppState): DayModel {
+    if (!state.calendar ||
+        !state.calendar.calendarEvents.selection.interval ||
+        !state.calendar.calendarEvents.selection.interval.startDay) {
+        return defaultDayModel;
+    }
+
+    return state.calendar.calendarEvents.selection.interval.startDay;
+}
+
+function getEndDay(state: AppState): DayModel {
+    if (!state.calendar ||
+        !state.calendar.calendarEvents.selection.interval ||
+        !state.calendar.calendarEvents.selection.interval.endDay) {
+        return defaultDayModel;
+    }
+
+    return state.calendar.calendarEvents.selection.interval.endDay;
+}
+
 const mapStateToProps = (state: AppState): ClaimVacationEventDialogProps => ({
-    startDay: state.calendar && state.calendar.calendarEvents && state.calendar.calendarEvents.selection &&
-    state.calendar.calendarEvents.selection.interval && state.calendar.calendarEvents.selection.interval.startDay ?
-        state.calendar.calendarEvents.selection.interval.startDay : {
-        date: moment(),
-        today: true,
-        belongsToCurrentMonth: true
-    },
-    endDay: state.calendar && state.calendar.calendarEvents && state.calendar.calendarEvents.selection &&
-    state.calendar.calendarEvents.selection.interval && state.calendar.calendarEvents.selection.interval.endDay ?
-        state.calendar.calendarEvents.selection.interval.endDay : {
-            date: moment(),
-            today: true,
-            belongsToCurrentMonth: true
-        },
+    startDay: getStartDay(state),
+    endDay: getEndDay(state),
     userEmployee: getEmployee(state),
 });
 
