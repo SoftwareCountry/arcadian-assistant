@@ -35,13 +35,13 @@ declare module 'react-navigation' {
 
     import * as React from 'react';
 
-    import { Animated, StyleProp, TextStyle, ViewProps, ViewStyle, } from 'react-native';
+    import { Animated, StyleProp, TextStyle, ViewProps, ViewStyle, ScrollViewProps, FlatListProps, SectionListProps} from 'react-native';
 
-    export class ScrollView extends React.Component {}
+    export class ScrollView extends React.Component<ScrollViewProps> {}
 
-    export class FlatList<ItemT> extends React.Component<ItemT> {}
+    export class FlatList<ItemT> extends React.Component<FlatListProps<ItemT>> {}
 
-    export class SectionList<ItemT> extends React.Component<ItemT> {}
+    export class SectionList<ItemT> extends React.Component<SectionListProps<ItemT>> {}
 
 
 // @todo when we split types into common, native and web,
@@ -661,7 +661,7 @@ declare module 'react-navigation' {
 
         setParams: (newParams: Partial<P>) => boolean;
         addListener: (
-            eventName: 'willBlur' | 'willFocus' | 'didFocus' | 'didBlur',
+            eventName: 'willBlur' | 'willFocus' | 'didFocus' | 'didBlur' | 'refocus',
             callback: NavigationEventCallback
         ) => NavigationEventSubscription;
         push: (
