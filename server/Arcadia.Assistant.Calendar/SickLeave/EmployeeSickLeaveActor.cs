@@ -78,7 +78,7 @@
                     break;
 
                 case UserGrantedCalendarEventApproval ev:
-                    this.OnUserGrantedSickLeaveApproval(ev);
+                    this.OnSuccessfulApprove(ev);
                     break;
 
                 case RecoveryCompleted _:
@@ -189,20 +189,10 @@
                 && (newCalendarEventStatus != this.GetInitialStatus());
         }
 
-        protected override void ApproveCalendarEvent(ApproveCalendarEvent message, OnSuccessfulApproveCallback onSuccessfulApprove)
+        protected override void OnSuccessfulApprove(UserGrantedCalendarEventApproval message)
         {
-            var @event = new UserGrantedCalendarEventApproval
-            {
-                EventId = message.Event.EventId,
-                TimeStamp = DateTimeOffset.Now,
-                ApproverId = message.ApproverId
-            };
-
-            this.Persist(@event, ev =>
-            {
-                this.OnUserGrantedSickLeaveApproval(ev);
-                onSuccessfulApprove(message.Event.EventId);
-            });
+            var approvals = this.ApprovalsByEvent[message.EventId];
+            approvals.Add(message.ApproverId);
         }
 
         private void OnSickLeaveRequest(SickLeaveIsRequested message)
@@ -248,12 +238,6 @@
                 this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, SickLeaveStatuses.Approved, this.EmployeeId);
                 this.eventsToProcessApproversAfterRecover.Remove(message.EventId);
             }
-        }
-
-        private void OnUserGrantedSickLeaveApproval(UserGrantedCalendarEventApproval message)
-        {
-            var approvals = this.ApprovalsByEvent[message.EventId];
-            approvals.Add(message.ApproverId);
         }
 
         private void SendSickLeaveApprovedMessage(SickLeaveIsApproved message)

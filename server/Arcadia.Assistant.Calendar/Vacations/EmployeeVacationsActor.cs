@@ -133,22 +133,6 @@
             onUpsert(newEvent);
         }
 
-        protected override void ApproveCalendarEvent(ApproveCalendarEvent message, OnSuccessfulApproveCallback onSuccessfulApprove)
-        {
-            var @event = new UserGrantedCalendarEventApproval
-            {
-                EventId = message.Event.EventId,
-                TimeStamp = DateTimeOffset.Now,
-                ApproverId = message.ApproverId
-            };
-
-            this.Persist(@event, ev =>
-            {
-                this.OnUserGrantedVacationApproval(ev);
-                onSuccessfulApprove(message.Event.EventId);
-            });
-        }
-
         protected override string GetInitialStatus()
         {
             return VacationStatuses.Requested;
@@ -188,7 +172,7 @@
                     break;
 
                 case UserGrantedCalendarEventApproval ev:
-                    this.OnUserGrantedVacationApproval(ev);
+                    this.OnSuccessfulApprove(ev);
                     break;
 
                 case VacationIsCancelled ev:
@@ -202,6 +186,18 @@
                     }
                     break;
             }
+        }
+
+        protected override void OnSuccessfulApprove(UserGrantedCalendarEventApproval message)
+        {
+            var calendarEvent = this.EventsById[message.EventId];
+            var approvals = this.ApprovalsByEvent[message.EventId];
+
+            approvals.Add(message.ApproverId);
+
+            var text = $"Vacation from {calendarEvent.Dates.StartDate.ToLongDateString()} to {calendarEvent.Dates.EndDate.ToLongDateString()} got one new approval";
+            var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, message.TimeStamp.Date);
+            this.employeeFeed.Tell(new PostMessage(msg));
         }
 
         private void OnVacationRequested(VacationIsRequested message)
@@ -233,18 +229,6 @@
                 var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, message.TimeStamp.Date);
                 this.employeeFeed.Tell(new PostMessage(msg));
             }
-        }
-
-        private void OnUserGrantedVacationApproval(UserGrantedCalendarEventApproval message)
-        {
-            var calendarEvent = this.EventsById[message.EventId];
-            var approvals = this.ApprovalsByEvent[message.EventId];
-
-            approvals.Add(message.ApproverId);
-
-            var text = $"Vacation from {calendarEvent.Dates.StartDate.ToLongDateString()} to {calendarEvent.Dates.EndDate.ToLongDateString()} got one new approval";
-            var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, message.TimeStamp.Date);
-            this.employeeFeed.Tell(new PostMessage(msg));
         }
 
         private void OnVacationCancel(VacationIsCancelled message)

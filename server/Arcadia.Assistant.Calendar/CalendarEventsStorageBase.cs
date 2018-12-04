@@ -15,7 +15,6 @@
     public abstract class CalendarEventsStorageBase : UntypedPersistentActor, ILogReceive
     {
         protected delegate void OnSuccessfulUpsertCallback(CalendarEvent changedEvent);
-        protected delegate void OnSuccessfulApproveCallback(string eventId);
 
         protected string EmployeeId { get; }
 
@@ -89,7 +88,7 @@
                 case ApproveCalendarEvent msg:
                     try
                     {
-                        this.ApproveCalendarEventInternal(msg);
+                        this.ApproveCalendarEvent(msg);
                     }
                     catch (Exception ex)
                     {
@@ -136,15 +135,15 @@
 
         protected abstract void UpdateCalendarEvent(CalendarEvent oldEvent, CalendarEvent newEvent, OnSuccessfulUpsertCallback onUpsert);
 
-        protected abstract void ApproveCalendarEvent(ApproveCalendarEvent message, OnSuccessfulApproveCallback onSuccessfulApprove);
-
         protected abstract string GetInitialStatus();
 
         protected abstract string GetApprovedStatus();
 
         protected abstract bool IsStatusTransitionAllowed(string oldCalendarEventStatus, string newCalendarEventStatus);
 
-        private void ApproveCalendarEventInternal(ApproveCalendarEvent message)
+        protected abstract void OnSuccessfulApprove(UserGrantedCalendarEventApproval message);
+
+        private void ApproveCalendarEvent(ApproveCalendarEvent message)
         {
             var calendarEvent = this.EventsById[message.Event.EventId];
             var approvals = this.ApprovalsByEvent[message.Event.EventId];
@@ -161,14 +160,19 @@
                 return;
             }
 
-            try
+            var @event = new UserGrantedCalendarEventApproval
             {
-                this.ApproveCalendarEvent(message, this.OnSuccessfulApprove);
-            }
-            catch (Exception ex)
+                EventId = message.Event.EventId,
+                TimeStamp = DateTimeOffset.Now,
+                ApproverId = message.ApproverId
+            };
+
+            this.Persist(@event, ev =>
             {
-                this.Sender.Tell(new ApproveCalendarEvent.ErrorResponse(ex.Message));
-            }
+                this.Self.Tell(new ProcessCalendarEventApprovalsMessage(message.Event.EventId));
+                this.Sender.Tell(Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
+                this.OnSuccessfulApprove(ev);
+            });
         }
 
         private void ProcessCalendarEventApprovals(ProcessCalendarEventApprovalsMessage.SuccessResponse successResponse)
@@ -196,12 +200,6 @@
         {
             this.Self.Tell(new ProcessCalendarEventApprovalsMessage(calendarEvent.EventId));
             this.Sender.Tell(new UpsertCalendarEvent.Success(calendarEvent));
-        }
-
-        private void OnSuccessfulApprove(string eventId)
-        {
-            this.Self.Tell(new ProcessCalendarEventApprovalsMessage(eventId));
-            this.Sender.Tell(Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
         }
 
         protected class ProcessCalendarEventApprovalsMessage

@@ -53,7 +53,7 @@
                     break;
 
                 case UserGrantedCalendarEventApproval ev:
-                    this.OnUserGrantedWorkHoursApproval(ev);
+                    this.OnSuccessfulApprove(ev);
                     break;
 
                 case RecoveryCompleted _:
@@ -149,22 +149,6 @@
             onUpsert(newEvent);
         }
 
-        protected override void ApproveCalendarEvent(ApproveCalendarEvent message, OnSuccessfulApproveCallback onSuccessfulApprove)
-        {
-            var @event = new UserGrantedCalendarEventApproval
-            {
-                EventId = message.Event.EventId,
-                TimeStamp = DateTimeOffset.Now,
-                ApproverId = message.ApproverId
-            };
-
-            this.Persist(@event, ev =>
-            {
-                this.OnUserGrantedWorkHoursApproval(ev);
-                onSuccessfulApprove(message.Event.EventId);
-            });
-        }
-
         protected override string GetInitialStatus()
         {
             return WorkHoursChangeStatuses.Requested;
@@ -181,6 +165,12 @@
                 && (oldCalendarEventStatus != WorkHoursChangeStatuses.Cancelled)
                 && (oldCalendarEventStatus != WorkHoursChangeStatuses.Rejected)
                 && (newCalendarEventStatus != this.GetInitialStatus());
+        }
+
+        protected override void OnSuccessfulApprove(UserGrantedCalendarEventApproval message)
+        {
+            var approvals = this.ApprovalsByEvent[message.EventId];
+            approvals.Add(message.ApproverId);
         }
 
         private void OnChangeRequested(WorkHoursChangeIsRequested message)
@@ -215,12 +205,6 @@
                 this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, WorkHoursChangeStatuses.Approved, this.EmployeeId);
                 this.eventsToProcessApproversAfterRecover.Remove(message.EventId);
             }
-        }
-
-        private void OnUserGrantedWorkHoursApproval(UserGrantedCalendarEventApproval message)
-        {
-            var approvals = this.ApprovalsByEvent[message.EventId];
-            approvals.Add(message.ApproverId);
         }
 
         private void RemoveEvent(string eventId)
