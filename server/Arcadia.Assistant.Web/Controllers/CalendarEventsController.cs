@@ -190,30 +190,6 @@
 
             var calendarEvent = new CalendarEvent(eventId, model.Type, model.Dates, model.Status, employee.Metadata.EmployeeId);
 
-            // Specific logic for approvals. Direct status change to Approved is restricted,
-            // it will be set automatically, when all needed approvals are collected
-            if (model.Status == VacationStatuses.Approved)
-            {
-                var currentUserEmployee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, token);
-                var approveResponse = await this.ApproveCalendarEventAsync(
-                    employee.Calendar.CalendarActor,
-                    calendarEvent,
-                    currentUserEmployee.Metadata.EmployeeId,
-                    token);
-
-                switch (approveResponse)
-                {
-                    case ApproveCalendarEvent.SuccessResponse _:
-                        return this.NoContent();
-
-                    case ApproveCalendarEvent.BadRequestResponse err:
-                        return this.BadRequest(err.Message);
-
-                    case ApproveCalendarEvent.ErrorResponse _:
-                        return this.StatusCode(StatusCodes.Status500InternalServerError);
-                }
-            }
-
             var response = await this.UpsertEventAsync(employee.Calendar.CalendarActor, calendarEvent, token);
 
             switch (response)
@@ -254,11 +230,24 @@
                 return this.NotFound();
             }
 
-            return this.Ok(new CalendarEventsApprovalsModel(Enumerable.Empty<string>()));
+            var response = await employee.Calendar.CalendarActor.Ask<GetCalendarEventApprovals.Response>(
+                new GetCalendarEventApprovals(requestedEvent),
+                this.timeoutSettings.Timeout,
+                token);
+
+            switch (response)
+            {
+                case GetCalendarEventApprovals.SuccessResponse result:
+                    return this.Ok(new CalendarEventsApprovalsModel(result.Approvals));
+
+                default:
+                    return this.StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [Route("{eventId}/approvals")]
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -288,7 +277,22 @@
                 return this.Conflict();
             }
 
-            return this.Accepted();
+            var response = await employee.Calendar.CalendarActor.Ask<ApproveCalendarEvent.Response>(
+                new ApproveCalendarEvent(requestedEvent, employee.Metadata.EmployeeId),
+                this.timeoutSettings.Timeout,
+                token);
+
+            switch (response)
+            {
+                case ApproveCalendarEvent.SuccessResponse _:
+                    return this.Accepted();
+
+                case ApproveCalendarEvent.BadRequestResponse err:
+                    return this.BadRequest(err.Message);
+
+                default:
+                    return this.StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         private async Task<UpsertCalendarEvent.Response> UpsertEventAsync(IActorRef calendarActor, CalendarEvent calendarEvent, CancellationToken token)
@@ -296,19 +300,6 @@
             var timeout = this.timeoutSettings.Timeout;
             var eventCreationResponse = await calendarActor.Ask<UpsertCalendarEvent.Response>(new UpsertCalendarEvent(calendarEvent), timeout, token);
             return eventCreationResponse;
-        }
-
-        private Task<ApproveCalendarEvent.Response> ApproveCalendarEventAsync(
-            IActorRef calendarActor,
-            CalendarEvent @event,
-            string approverId,
-            CancellationToken token)
-        {
-            var approveEvent = new ApproveCalendarEvent(@event, approverId);
-            return calendarActor.Ask<ApproveCalendarEvent.Response>(
-                approveEvent,
-                this.timeoutSettings.Timeout,
-                token);
         }
 
         private async Task<CalendarEvent> GetCalendarEventOrDefaultAsync(IActorRef calendarActor, string eventId, CancellationToken token)

@@ -85,6 +85,15 @@
                     }
                     break;
 
+                case GetCalendarEventApprovals msg:
+                    if (!this.ApprovalsByEvent.TryGetValue(msg.Event.EventId, out var approvals))
+                    {
+                        this.Sender.Tell(new GetCalendarEventApprovals.ErrorResponse($"Event with event id {msg.Event.EventId} is not found"));
+                    }
+
+                    this.Sender.Tell(new GetCalendarEventApprovals.SuccessResponse(approvals));
+                    break;
+
                 case ApproveCalendarEvent msg:
                     try
                     {
