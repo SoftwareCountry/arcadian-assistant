@@ -74,7 +74,7 @@
         {
             var calendarEventStatuses = new CalendarEventStatuses();
             var approvedStatus = calendarEventStatuses.ApprovedForType(existingEvent.Type);
-            var cancelledStatus = calendarEventStatuses.CancelledByType(updatedEvent.Type);
+            var cancelledStatus = calendarEventStatuses.CancelledForType(updatedEvent.Type);
             var statusChanged = StatusChanged(existingEvent, updatedEvent);
 
             if (statusChanged && existingEvent.Status == approvedStatus && updatedEvent.Status == cancelledStatus)

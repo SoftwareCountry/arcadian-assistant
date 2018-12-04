@@ -82,7 +82,7 @@
             return null;
         }
 
-        public string CancelledByType(string type)
+        public string CancelledForType(string type)
         {
             if (CancelledStatusByType.TryGetValue(type, out var status))
             {
