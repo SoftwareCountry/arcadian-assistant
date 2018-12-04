@@ -7,6 +7,10 @@ import { connect } from 'react-redux';
 import { Employee } from '../reducers/organization/employee.model';
 import { SafeAreaView } from 'react-native';
 import Style from '../layout/style';
+import {
+    NavigationOptionsContainer,
+    navigationOptionsWithTitle
+} from '../navigation/navigation-header-with-dynamic-title';
 
 //============================================================================
 interface CurrentPeopleDepartmentProps {
@@ -33,14 +37,15 @@ class CurrentPeopleDepartmentImpl extends React.Component<CurrentPeopleDepartmen
 
     //----------------------------------------------------------------------------
     public static navigationOptions: NavigationScreenConfig<NavigationStackScreenOptions> = (navigationOptionsContainer) => {
+        return navigationOptionsWithTitle(navigationOptionsContainer, CurrentPeopleDepartmentImpl.getTitle(navigationOptionsContainer));
+    };
+
+    //----------------------------------------------------------------------------
+    private static getTitle(navigationOptionsContainer: NavigationOptionsContainer): string {
         const navigation = navigationOptionsContainer.navigation;
         const departmentAbbreviation = navigation.getParam('departmentAbbreviation', undefined);
-
-        return {
-            ...navigationOptionsContainer.navigationOptions,
-            headerTitle: departmentAbbreviation ? `${departmentAbbreviation}` : '',
-        };
-    };
+        return departmentAbbreviation ? `${departmentAbbreviation}` : '';
+    }
 }
 
 //----------------------------------------------------------------------------
