@@ -204,7 +204,8 @@
             EmployeePermissionsEntry.ReadEmployeeInfo |
             EmployeePermissionsEntry.ReadEmployeePhone |
             EmployeePermissionsEntry.ReadEmployeeDayoffsCounter |
-            EmployeePermissionsEntry.ReadEmployeeVacationsCounter;
+            EmployeePermissionsEntry.ReadEmployeeVacationsCounter |
+            EmployeePermissionsEntry.CancelApprovedCalendarEvents;
 
         public class GetPermissions
         {

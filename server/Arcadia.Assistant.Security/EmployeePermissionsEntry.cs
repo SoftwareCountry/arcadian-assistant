@@ -18,5 +18,6 @@
         ProlongSickLeave = 1 << 9,
         CancelCalendarEvents = 1 << 10,
         EditPendingCalendarEvents = 1 << 11,
+        CancelApprovedCalendarEvents = 1 << 12
     }
 }
