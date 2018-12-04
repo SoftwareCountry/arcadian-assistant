@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, FlatList, ListRenderItemInfo, SafeAreaView, View } from 'react-native';
+import { ActivityIndicator, ListRenderItemInfo, SafeAreaView, View } from 'react-native';
 import { Employee } from '../reducers/organization/employee.model';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Feed } from '../reducers/feeds/feed.model';
@@ -13,7 +13,7 @@ import { Moment } from 'moment';
 import { LoadingView } from '../navigation/loading';
 import Style from '../layout/style';
 import { Action, Dispatch } from 'redux';
-import { NavigationScreenConfig, NavigationStackScreenOptions } from 'react-navigation';
+import { NavigationScreenConfig, NavigationStackScreenOptions, FlatList } from 'react-navigation';
 import { openEmployeeDetails } from '../navigation/navigation.actions';
 import { Map } from 'immutable';
 import { Nullable, Optional } from 'types';

@@ -3,7 +3,12 @@ import { connect } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 import { OnSelectedDayCallback } from './calendar-page';
 import { CalendarPager } from './calendar-pager';
-import { nextCalendarPage, prevCalendarPage, selectCalendarDay } from '../reducers/calendar/calendar.action';
+import {
+    nextCalendarPage,
+    prevCalendarPage,
+    resetCalendarPages,
+    selectCalendarDay
+} from '../reducers/calendar/calendar.action';
 import {
     CalendarPageModel,
     CalendarSelection,
@@ -11,8 +16,9 @@ import {
     ReadOnlyIntervalsModel
 } from '../reducers/calendar/calendar.model';
 import { Action, Dispatch } from 'redux';
-import { Nullable, Optional } from 'types';
+import { Nullable } from 'types';
 import { none } from '../types/types-utils';
+import { NavigationEventPayload, NavigationEventSubscription, NavigationScreenProps } from 'react-navigation';
 
 //============================================================================
 interface CalendarProps {
@@ -27,10 +33,26 @@ interface CalendarDispatchProps {
     selectCalendarDay: OnSelectedDayCallback;
     nextCalendarPage: () => void;
     prevCalendarPage: () => void;
+    resetCalendarPages: () => void;
 }
 
 //============================================================================
-class CalendarImpl extends Component<CalendarProps & CalendarDispatchProps> {
+class CalendarImpl extends Component<CalendarProps & CalendarDispatchProps & NavigationScreenProps> {
+
+    private subscription?: NavigationEventSubscription;
+
+    public componentDidMount() {
+        this.subscription = this.props.navigation.addListener('refocus', (payload: NavigationEventPayload) => {
+            this.props.resetCalendarPages();
+        });
+    }
+
+    public componentWillUnmount(): void {
+        if (this.subscription) {
+            this.subscription.remove();
+        }
+    }
+
     public render() {
 
         if (none(this.props.pages)) {
@@ -78,7 +100,10 @@ const dispatchToProps = (dispatch: Dispatch<Action>): CalendarDispatchProps => (
     },
     prevCalendarPage: () => {
         dispatch(prevCalendarPage());
-    }
+    },
+    resetCalendarPages: () => {
+        dispatch(resetCalendarPages());
+    },
 });
 
 //----------------------------------------------------------------------------

@@ -48,6 +48,12 @@ export interface PrevCalendarPage extends Action {
 
 export const prevCalendarPage = (): PrevCalendarPage => ({ type: 'PREV-CALENDAR-PAGE' });
 
+export interface ResetCalendarPages {
+    type: 'RESET-CALENDAR-PAGES';
+}
+
+export const resetCalendarPages = (): ResetCalendarPages => ({ type: 'RESET-CALENDAR-PAGES' });
+
 export enum CalendarSelectionModeType {
     SingleDay = 'SingleDay',
     Interval = 'Interval'
@@ -82,5 +88,5 @@ export interface DisableSelectIntervalsBySingleDaySelection extends Action {
 
 export const disableSelectIntervalsBySingleDaySelection = (disable: boolean): DisableSelectIntervalsBySingleDaySelection => ({ type: 'DISABLE-SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION', disable });
 
-export type CalendarActions = LoadCalendarEventsFinished | SelectCalendarDay | NextCalendarPage | PrevCalendarPage |
+export type CalendarActions = LoadCalendarEventsFinished | SelectCalendarDay | NextCalendarPage | PrevCalendarPage |  ResetCalendarPages |
     CalendarSelectionMode | SelectIntervalsBySingleDaySelection | DisableCalendarSelection | DisableSelectIntervalsBySingleDaySelection | CalendarEventSetNewStatus;
