@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 import { Employee } from '../reducers/organization/employee.model';
 import { Nullable, Optional } from 'types';
+import { NavigationScreenProps } from 'react-navigation';
 
 //============================================================================
 interface CalendarScreenProps {
@@ -15,7 +16,7 @@ interface CalendarScreenProps {
 }
 
 //============================================================================
-class CalendarScreenImpl extends React.Component<CalendarScreenProps> {
+class CalendarScreenImpl extends React.Component<CalendarScreenProps & NavigationScreenProps> {
 
     //----------------------------------------------------------------------------
     public static navigationOptions = {
@@ -36,7 +37,7 @@ class CalendarScreenImpl extends React.Component<CalendarScreenProps> {
         return <SafeAreaView style={Style.view.safeArea}>
             <View style={Style.view.container}>
                 <DaysCounters employee={employee}/>
-                <Calendar/>
+                <Calendar navigation={this.props.navigation}/>
                 <Agenda/>
             </View>
         </SafeAreaView>;
