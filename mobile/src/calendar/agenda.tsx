@@ -18,20 +18,17 @@ interface AgendaProps {
 export class AgendaImpl extends Component<AgendaProps> {
     //----------------------------------------------------------------------------
     public render() {
-        let element: JSX.Element;
-        if (this.props.dialogType) {
-            element = this.renderDialog(this.props.dialogType);
-        } else {
-            element = this.renderAgenda();
-        }
-
         return <View style={agendaStyles.container}>
-            {element}
+            {
+                this.props.dialogType ?
+                    this.dialog(this.props.dialogType) :
+                    this.agenda()
+            }
         </View>;
     }
 
     //----------------------------------------------------------------------------
-    private renderAgenda(): JSX.Element {
+    private agenda(): JSX.Element {
         return <View style={agendaStyles.controls}>
             <View style={agendaSelectedDayStyles.container}>
                 <SelectedDay/>
@@ -42,7 +39,7 @@ export class AgendaImpl extends Component<AgendaProps> {
     }
 
     //----------------------------------------------------------------------------
-    private renderDialog(dialogType: EventDialogType): JSX.Element {
+    private dialog(dialogType: EventDialogType): JSX.Element {
         return <View style={agendaStyles.dialog}>
             <EventDialog dialogType={dialogType}/>
         </View>;
