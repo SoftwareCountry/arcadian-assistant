@@ -5,6 +5,8 @@ import { StyleSheet } from 'react-native';
 const color = {
     base: '#2FAFCC',
     white: '#FFFFFF',
+    red: '#FF0000',
+    transparent: 'transparent',
 };
 
 //----------------------------------------------------------------------------

@@ -24,7 +24,7 @@ export class EmployeeDetailsScreenImpl extends Component<EmployeeDetailsProps & 
     public static navigationOptions: NavigationScreenConfig<NavigationStackScreenOptions> = {
         headerStyle: {
             ...StyleSheet.flatten(Style.navigation.header),
-            borderBottomColor: 'transparent',
+            borderBottomColor: Style.color.transparent,
         },
     };
 
