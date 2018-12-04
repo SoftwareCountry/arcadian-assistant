@@ -31,7 +31,7 @@
             EmployeeStoredInformation storedInformation,
             IActorRef imageResizer,
             IActorRef vacationsRegistry,
-            IActorRef vacationApprovalsChecker)
+            IActorRef calendarEventsApprovalsChecker)
         {
             this.employeeMetadata = storedInformation.Metadata;
             this.PersistenceId = $"employee-info-{Uri.EscapeDataString(this.employeeMetadata.EmployeeId)}";
@@ -46,26 +46,43 @@
                     this.employeeMetadata.EmployeeId,
                     this.employeeFeed,
                     vacationsRegistry,
-                    vacationApprovalsChecker),
+                    calendarEventsApprovalsChecker),
                 "vacations");
-            var sickLeavesActor = Context.ActorOf(EmployeeSickLeaveActor.CreateProps(this.employeeMetadata), "sick-leaves");
-            var workHoursActor = Context.ActorOf(EmployeeWorkHoursActor.CreateProps(this.employeeMetadata.EmployeeId), "work-hours");
-            var vacationPendingActionsActor = Context.ActorOf(
-                EmployeeVacationsPendingActionsActor.CreateProps(this.employeeMetadata.EmployeeId),
-                "vacations-pending-actions"
-            );
+            var sickLeavesActor = Context.ActorOf(
+                EmployeeSickLeaveActor.CreateProps(
+                    this.employeeMetadata,
+                    calendarEventsApprovalsChecker),
+                "sick-leaves");
+            var workHoursActor = Context.ActorOf(
+                EmployeeWorkHoursActor.CreateProps(
+                    this.employeeMetadata.EmployeeId,
+                    calendarEventsApprovalsChecker),
+            "work-hours");
+
             Context.Watch(vacationsActor);
             Context.Watch(sickLeavesActor);
             Context.Watch(workHoursActor);
 
-            var calendarActor = Context.ActorOf(EmployeeCalendarActor.CreateProps(this.employeeMetadata.EmployeeId, vacationsActor, workHoursActor, sickLeavesActor), "all-calendar-events");
+            var calendarActor = Context.ActorOf(
+                EmployeeCalendarActor.CreateProps(
+                    this.employeeMetadata.EmployeeId,
+                    vacationsActor,
+                    workHoursActor,
+                    sickLeavesActor),
+                "all-calendar-events"
+            );
+
+            var pendingActionsActor = Context.ActorOf(
+                EmployeePendingActionsActor.CreateProps(this.employeeMetadata.EmployeeId),
+                "pending-actions"
+            );
 
             this.calendar = new EmployeeCalendarContainer(
-                vacationsActor, 
-                workHoursActor, 
+                vacationsActor,
+                workHoursActor,
                 sickLeavesActor,
                 calendarActor,
-                vacationPendingActionsActor);
+                pendingActionsActor);
         }
 
         public override string PersistenceId { get; }
@@ -200,11 +217,11 @@
         public static Props GetProps(EmployeeStoredInformation employeeStoredInformation,
             IActorRef imageResizer,
             IActorRef vacationsRegistry,
-            IActorRef vacationApprovalsChecker
+            IActorRef calendarEventsApprovalsChecker
         ) => Props.Create(() => new EmployeeActor(
             employeeStoredInformation,
             imageResizer,
             vacationsRegistry,
-            vacationApprovalsChecker));
+            calendarEventsApprovalsChecker));
     }
 }

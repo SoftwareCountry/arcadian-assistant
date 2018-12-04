@@ -9,12 +9,12 @@
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
 
-    public class EmployeeVacationsPendingActionsActor : UntypedActor, ILogReceive
+    public class EmployeePendingActionsActor : UntypedActor, ILogReceive
     {
         private readonly string employeeId;
         private readonly Dictionary<string, CalendarEvent> pendingActionEvents = new Dictionary<string, CalendarEvent>();
 
-        public EmployeeVacationsPendingActionsActor(string employeeId)
+        public EmployeePendingActionsActor(string employeeId)
         {
             this.employeeId = employeeId;
 
@@ -23,7 +23,7 @@
 
         public static Props CreateProps(string employeeId)
         {
-            return Props.Create(() => new EmployeeVacationsPendingActionsActor(employeeId));
+            return Props.Create(() => new EmployeePendingActionsActor(employeeId));
         }
 
         protected override void OnReceive(object message)
@@ -32,9 +32,6 @@
             {
                 case GetEmployeePendingActions _:
                     this.Sender.Tell(new GetEmployeePendingActions.Response(this.pendingActionEvents.Values.ToList()));
-                    break;
-
-                case CalendarEventAssignedToApproverEventBusMessage msg when msg.Event.Type != CalendarEventTypes.Vacation:
                     break;
 
                 case CalendarEventAssignedToApproverEventBusMessage msg when msg.ApproverId == this.employeeId:

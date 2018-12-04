@@ -42,10 +42,6 @@
                 case PushNotificationsPreferenceChangedEvent evt:
                     this.OnPushNotificationsPreferenceChanged(evt);
                     break;
-
-                case DependentDepartmentsPendingActionsPreferenceChangedEvent evt:
-                    this.OnDependentDepartmentsPendingActionsPreferenceChanged(evt);
-                    break;
             }
         }
 
@@ -65,14 +61,6 @@
                 this.Persist(pushNotificationsEvent, this.OnPushNotificationsPreferenceChanged);
             }
 
-            if (existingUserPreferences?.DependentDepartmentsPendingActions != message.UserPreferences.DependentDepartmentsPendingActions)
-            {
-                var dependentDepartmentsEvent = new DependentDepartmentsPendingActionsPreferenceChangedEvent(
-                    message.UserId,
-                    message.UserPreferences.DependentDepartmentsPendingActions);
-                this.Persist(dependentDepartmentsEvent, this.OnDependentDepartmentsPendingActionsPreferenceChanged);
-            }
-
             this.Sender.Tell(new SaveUserPreferencesMessage.Response());
         }
 
@@ -86,12 +74,6 @@
         {
             this.SetDefaultPreferencesIfNotExists(@event.UserId);
             this.userPreferencesById[@event.UserId].PushNotifications = @event.PushNotifications;
-        }
-
-        private void OnDependentDepartmentsPendingActionsPreferenceChanged(DependentDepartmentsPendingActionsPreferenceChangedEvent @event)
-        {
-            this.SetDefaultPreferencesIfNotExists(@event.UserId);
-            this.userPreferencesById[@event.UserId].DependentDepartmentsPendingActions = @event.DependentDepartmentsPendingActions;
         }
 
         private void SetDefaultPreferencesIfNotExists(string userId)

@@ -1,10 +1,12 @@
 ﻿namespace Arcadia.Assistant.Calendar.SickLeave
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
 
     using Akka.Actor;
     using Akka.Event;
+    using Akka.Persistence;
 
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.SickLeave.Events;
@@ -14,9 +16,10 @@
     public class EmployeeSickLeaveActor : CalendarEventsStorageBase
     {
         private EmployeeMetadata employee;
+        private readonly HashSet<string> eventsToProcessApproversAfterRecover = new HashSet<string>();
 
-        public EmployeeSickLeaveActor(EmployeeMetadata employee)
-            : base(employee.EmployeeId)
+        public EmployeeSickLeaveActor(EmployeeMetadata employee, IActorRef calendarEventsApprovalsChecker)
+            : base(employee.EmployeeId, calendarEventsApprovalsChecker)
         {
             this.PersistenceId = $"employee-sickleaves-{this.EmployeeId}";
             this.employee = employee;
@@ -26,9 +29,9 @@
 
         public override string PersistenceId { get; }
 
-        public static Props CreateProps(EmployeeMetadata employee)
+        public static Props CreateProps(EmployeeMetadata employee, IActorRef calendarEventsApprovalsChecker)
         {
-            return Props.Create(() => new EmployeeSickLeaveActor(employee));
+            return Props.Create(() => new EmployeeSickLeaveActor(employee, calendarEventsApprovalsChecker));
         }
 
         protected override void OnCommand(object message)
@@ -71,6 +74,17 @@
 
                 case SickLeaveIsApproved ev:
                     this.OnSickleaveApproved(ev);
+                    break;
+
+                case UserGrantedCalendarEventApproval ev:
+                    this.OnSuccessfulApprove(ev);
+                    break;
+
+                case RecoveryCompleted _:
+                    foreach (var eventId in this.eventsToProcessApproversAfterRecover)
+                    {
+                        this.Self.Tell(new ProcessCalendarEventApprovalsMessage(eventId));
+                    }
                     break;
             }
         }
@@ -161,6 +175,11 @@
             return SickLeaveStatuses.Requested;
         }
 
+        protected override string GetApprovedStatus()
+        {
+            return SickLeaveStatuses.Approved;
+        }
+
         protected override bool IsStatusTransitionAllowed(string oldCalendarEventStatus, string newCalendarEventStatus)
         {
             return SickLeaveStatuses.All.Contains(newCalendarEventStatus)
@@ -169,10 +188,18 @@
                 && (newCalendarEventStatus != this.GetInitialStatus());
         }
 
+        protected override void OnSuccessfulApprove(UserGrantedCalendarEventApproval message)
+        {
+            var approvals = this.ApprovalsByEvent[message.EventId];
+            approvals.Add(message.ApproverId);
+        }
+
         private void OnSickLeaveRequest(SickLeaveIsRequested message)
         {
             var datesPeriod = new DatesPeriod(message.StartDate, message.EndDate);
             this.EventsById[message.EventId] = new CalendarEvent(message.EventId, CalendarEventTypes.Sickleave, datesPeriod, SickLeaveStatuses.Requested, this.EmployeeId);
+            this.ApprovalsByEvent[message.EventId] = new List<string>();
+            this.eventsToProcessApproversAfterRecover.Add(message.EventId);
         }
 
         private void OnSickLeaveCompleted(SickLeaveIsCompleted message)
@@ -180,6 +207,7 @@
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
                 this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, SickLeaveStatuses.Completed, this.EmployeeId);
+                this.eventsToProcessApproversAfterRecover.Remove(message.EventId);
             }
         }
 
@@ -189,6 +217,7 @@
             {
                 var dates = new DatesPeriod(calendarEvent.Dates.StartDate, message.EndDate);
                 this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, dates, calendarEvent.Status, this.EmployeeId);
+                this.eventsToProcessApproversAfterRecover.Remove(message.EventId);
             }
         }
 
@@ -197,6 +226,7 @@
             if (this.EventsById.ContainsKey(message.EventId))
             {
                 this.EventsById.Remove(message.EventId);
+                this.eventsToProcessApproversAfterRecover.Remove(message.EventId);
             }
         }
 
@@ -205,6 +235,7 @@
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
                 this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, SickLeaveStatuses.Approved, this.EmployeeId);
+                this.eventsToProcessApproversAfterRecover.Remove(message.EventId);
             }
         }
 
@@ -224,6 +255,7 @@
             if (this.EventsById.ContainsKey(message.EventId))
             {
                 this.EventsById.Remove(message.EventId);
+                this.eventsToProcessApproversAfterRecover.Remove(message.EventId);
             }
         }
     }

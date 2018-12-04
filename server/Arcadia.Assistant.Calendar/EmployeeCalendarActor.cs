@@ -54,8 +54,13 @@
                     break;
 
                 case UpsertCalendarEvent cmd:
-                    var actor = this.GetActoryByEventType(cmd.Event.Type);
+                    var actor = this.GetActorByEventType(cmd.Event.Type);
                     actor.Forward(cmd);
+                    break;
+
+                case ApproveCalendarEvent cmd:
+                    var approveActor = this.GetActorByEventType(cmd.Event.Type);
+                    approveActor.Forward(cmd);
                     break;
 
                 default:
@@ -97,7 +102,7 @@
         }
 
 
-        private IActorRef GetActoryByEventType(string calendarEventType)
+        private IActorRef GetActorByEventType(string calendarEventType)
         {
             switch (calendarEventType)
             {

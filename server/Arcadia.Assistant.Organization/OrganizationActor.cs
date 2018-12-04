@@ -20,9 +20,9 @@
 
         public OrganizationActor(IRefreshInformation refreshInformation)
         {
-            var vacationApprovalsCheckerActor = Context.ActorOf(VacationApprovalsChecker.GetProps(), "vacation-approvals-checker");
+            var calendarEventsApprovalsCheckerActor = Context.ActorOf(CalendarEventsApprovalsChecker.GetProps(), "calendar-events-approvals-checker");
 
-            this.employeesActor = Context.ActorOf(EmployeesActor.GetProps(vacationApprovalsCheckerActor), "employees");
+            this.employeesActor = Context.ActorOf(EmployeesActor.GetProps(calendarEventsApprovalsCheckerActor), "employees");
             this.departmentsActor = Context.ActorOf(DepartmentsActor.GetProps(this.employeesActor), "departments");
 
             Context.System.Scheduler.ScheduleTellRepeatedly(

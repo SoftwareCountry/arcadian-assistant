@@ -2,17 +2,20 @@
 {
     using System.Collections.Generic;
 
-    public class GetNextVacationRequestApprover
+    public class GetNextCalendarEventApprover
     {
-        public GetNextVacationRequestApprover(string employeeId, IEnumerable<string> existingApprovals)
+        public GetNextCalendarEventApprover(string employeeId, IEnumerable<string> existingApprovals, string eventType)
         {
             this.EmployeeId = employeeId;
             this.ExistingApprovals = existingApprovals;
+            this.EventType = eventType;
         }
 
         public string EmployeeId { get; }
 
         public IEnumerable<string> ExistingApprovals { get; }
+
+        public string EventType { get; }
 
         public abstract class Response
         {
