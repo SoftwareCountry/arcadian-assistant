@@ -229,6 +229,68 @@
             }
         }
 
+        [Route("{eventId}/approvals")]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(CalendarEventsApprovalsModel), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetEventApprovals(string employeeId, string eventId, CancellationToken token)
+        {
+            var employee = await this.GetEmployeeOrDefaultAsync(employeeId, token);
+            if (employee == null)
+            {
+                return this.NotFound();
+            }
+
+            var authorizationResult = await this.authorizationService.AuthorizeAsync(this.User, employee, new ReadCalendarEvents());
+            if (!authorizationResult.Succeeded)
+            {
+                return this.Forbid();
+            }
+
+            var requestedEvent = await this.GetCalendarEventOrDefaultAsync(employee.Calendar.CalendarActor, eventId, token);
+            if (requestedEvent == null)
+            {
+                return this.NotFound();
+            }
+
+            return this.Ok(new CalendarEventsApprovalsModel(Enumerable.Empty<string>()));
+        }
+
+        [Route("{eventId}/approvals")]
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        public async Task<IActionResult> ApproveEvent(string employeeId, string eventId, CancellationToken token)
+        {
+            var employee = await this.GetEmployeeOrDefaultAsync(employeeId, token);
+            if (employee == null)
+            {
+                return this.NotFound();
+            }
+
+            var authorizationResult = await this.authorizationService.AuthorizeAsync(this.User, employee, new EditPendingCalendarEvents());
+            if (!authorizationResult.Succeeded)
+            {
+                return this.Forbid();
+            }
+
+            var requestedEvent = await this.GetCalendarEventOrDefaultAsync(employee.Calendar.CalendarActor, eventId, token);
+            if (requestedEvent == null)
+            {
+                return this.NotFound();
+            }
+
+            if (!requestedEvent.IsPending)
+            {
+                return this.Conflict();
+            }
+
+            return this.Accepted();
+        }
+
         private async Task<UpsertCalendarEvent.Response> UpsertEventAsync(IActorRef calendarActor, CalendarEvent calendarEvent, CancellationToken token)
         {
             var timeout = this.timeoutSettings.Timeout;
