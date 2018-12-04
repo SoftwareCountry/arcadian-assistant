@@ -22,7 +22,7 @@
 
         public override string PersistenceId { get; }
 
-        private readonly List<string> eventsToProcessApproversAfterRecover = new List<string>();
+        private readonly HashSet<string> eventsToProcessApproversAfterRecover = new HashSet<string>();
 
         //private int vacationsCredit = 28;
 

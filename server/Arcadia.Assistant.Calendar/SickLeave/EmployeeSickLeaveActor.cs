@@ -9,7 +9,6 @@
     using Akka.Persistence;
 
     using Arcadia.Assistant.Calendar.Abstractions;
-    using Arcadia.Assistant.Calendar.Abstractions.Messages;
     using Arcadia.Assistant.Calendar.SickLeave.Events;
     using Arcadia.Assistant.Notifications;
     using Arcadia.Assistant.Organization.Abstractions;
@@ -17,7 +16,7 @@
     public class EmployeeSickLeaveActor : CalendarEventsStorageBase
     {
         private EmployeeMetadata employee;
-        private readonly List<string> eventsToProcessApproversAfterRecover = new List<string>();
+        private readonly HashSet<string> eventsToProcessApproversAfterRecover = new HashSet<string>();
 
         public EmployeeSickLeaveActor(EmployeeMetadata employee, IActorRef calendarEventsApprovalsChecker)
             : base(employee.EmployeeId, calendarEventsApprovalsChecker)

@@ -19,7 +19,7 @@
         /// </summary>
         private int hoursCredit = 0;
 
-        private readonly List<string> eventsToProcessApproversAfterRecover = new List<string>();
+        private readonly HashSet<string> eventsToProcessApproversAfterRecover = new HashSet<string>();
 
         public EmployeeWorkHoursActor(string employeeId, IActorRef calendarEventsApprovalsChecker)
             : base(employeeId, calendarEventsApprovalsChecker)
