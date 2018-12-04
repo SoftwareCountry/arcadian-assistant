@@ -23,7 +23,12 @@
             var departmentsActor = Context.ActorSelection(DepartmentsStorageActorPath);
 
             var allDepartments = await this.GetDepartments(departmentsActor);
-            var employeeMetadata = await this.GetEmployeeDepartmentId(employeesActor, employeeId);
+            var employeeMetadata = await this.GetEmployee(employeesActor, employeeId);
+            
+            if (employeeMetadata == null)
+            {
+                return null;
+            }
 
             switch (eventType)
             {
@@ -107,7 +112,7 @@
             return preliminaryApprover ?? finalApprover;
         }
 
-        private async Task<EmployeeMetadata> GetEmployeeDepartmentId(ActorSelection employeesActor, string employeeId)
+        private async Task<EmployeeMetadata> GetEmployee(ActorSelection employeesActor, string employeeId)
         {
             var allEmployees = await employeesActor.Ask<EmployeesInfoStorage.LoadAllEmployees.Response>(
                 EmployeesInfoStorage.LoadAllEmployees.Instance
