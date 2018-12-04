@@ -2,32 +2,22 @@ import React, { Component } from 'react';
 import { Department } from '../reducers/organization/department.model';
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
-import { SafeAreaView, StyleSheet, ViewStyle } from 'react-native';
+import { SafeAreaView, ViewStyle } from 'react-native';
 import { profileScreenStyles } from '../profile/styles';
 import { EmployeeDetails } from './employee-details';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
-import { NavigationScreenConfig, NavigationScreenProps, NavigationStackScreenOptions } from 'react-navigation';
+import { NavigationScreenProps } from 'react-navigation';
 import { LoadingView } from '../navigation/loading';
-import Style from '../layout/style';
 
+//============================================================================
 interface EmployeeDetailsProps {
     departments: Department[];
 }
 
-const mapStateToProps = (state: AppState): EmployeeDetailsProps => ({
-    departments: state.organization ? state.organization.departments : Array(),
-});
-
-export class EmployeeDetailsScreenImpl extends Component<EmployeeDetailsProps & NavigationScreenProps> {
+//============================================================================
+class EmployeeDetailsScreenImpl extends Component<EmployeeDetailsProps & NavigationScreenProps> {
 
     //----------------------------------------------------------------------------
-    public static navigationOptions: NavigationScreenConfig<NavigationStackScreenOptions> = {
-        headerStyle: {
-            ...StyleSheet.flatten(Style.navigation.header),
-            borderBottomColor: Style.color.transparent,
-        },
-    };
-
     public render() {
         const employee = this.props.navigation.getParam('employee', undefined);
 
@@ -38,11 +28,16 @@ export class EmployeeDetailsScreenImpl extends Component<EmployeeDetailsProps & 
                 <EmployeeDetails
                     department={department}
                     employee={employee}
-                    layoutStylesChevronPlaceholder = {layoutStylesForEmployeeDetailsScreen.chevronPlaceholder as ViewStyle}
+                    layoutStylesChevronPlaceholder={layoutStylesForEmployeeDetailsScreen.chevronPlaceholder as ViewStyle}
                 />
-            </SafeAreaView>
-            : <LoadingView></LoadingView>;
+            </SafeAreaView> :
+            <LoadingView/>;
     }
 }
 
-export const EmployeeDetailsScreen = connect(mapStateToProps)(EmployeeDetailsScreenImpl);
+//----------------------------------------------------------------------------
+const stateToProps = (state: AppState): EmployeeDetailsProps => ({
+    departments: state.organization ? state.organization.departments : Array(),
+});
+
+export const EmployeeDetailsScreen = connect(stateToProps)(EmployeeDetailsScreenImpl);
