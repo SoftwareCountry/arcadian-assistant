@@ -27,6 +27,9 @@ const view = StyleSheet.create({
 const navigation = StyleSheet.create({
     header: {
         backgroundColor: color.base,
+        shadowOpacity: 0,
+        borderBottomWidth: 0,
+        elevation: 0,
     },
     title: {
         fontFamily: 'CenturyGothic',

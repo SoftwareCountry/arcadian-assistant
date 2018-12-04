@@ -1,13 +1,11 @@
 import React from 'react';
+import Style from '../layout/style';
+import { StyleSheet } from 'react-native';
 
+//----------------------------------------------------------------------------
 export const stackNavigatorConfig = {
-    navigationOptions: {
-        headerStyle: {
-            backgroundColor: '#2FAFCC',
-            shadowOpacity: 0,
-            borderBottomWidth: 0,
-            elevation: 0,
-        },
-        headerTintColor: 'white',
+    defaultNavigationOptions: {
+        headerStyle: Style.navigation.header,
+        headerTintColor: Style.color.white,
     }
 };
