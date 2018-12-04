@@ -4,7 +4,7 @@ import { AppState, DependenciesContainer } from '../../app.reducer';
 import { PendingRequests } from './pending-requests.model';
 import { deserialize } from 'santee-dcts';
 import { loadFailedError } from '../../errors/errors.action';
-import {Observable, of, pipe} from 'rxjs';
+import { of } from 'rxjs';
 import { catchError, flatMap, map } from 'rxjs/operators';
 
 export const loadPendingRequestsEpic$ = (action$: ActionsObservable<LoadPendingRequests>, _: StateObservable<AppState>, deps: DependenciesContainer) =>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {View, LayoutChangeEvent, TouchableOpacity, ViewStyle} from 'react-native';
+import { View, LayoutChangeEvent, TouchableOpacity, ViewStyle } from 'react-native';
 import { IntervalBoundary } from '../calendar-page-interval-boundary';
 import { switchDayoffTypeStyles } from './styles';
 import { CalendarEventsColor } from '../styles';

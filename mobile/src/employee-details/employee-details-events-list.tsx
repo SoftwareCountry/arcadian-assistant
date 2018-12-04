@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import { Map, Set } from 'immutable';
-import {View, StyleSheet, FlatList, ListRenderItemInfo, Dimensions, ViewStyle} from 'react-native';
+import { View, StyleSheet, FlatList, ListRenderItemInfo, Dimensions, ViewStyle } from 'react-native';
 
 import { StyledText } from '../override/styled-text';
-import { ApplicationIcon } from '../override/application-icon';
 import { Avatar } from '../people/avatar';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
 import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';

@@ -1,9 +1,9 @@
 import { ActionsObservable } from 'redux-observable';
 import { LoadFailedError } from './errors.action';
 import { Alert } from 'react-native';
-import {pipe, UnaryFunction, Observable, EMPTY } from 'rxjs';
+import { pipe, UnaryFunction, Observable, EMPTY } from 'rxjs';
 import { refresh } from '../refresh/refresh.action';
-import {retryWhen, catchError, map, flatMap, exhaustMap} from 'rxjs/operators';
+import { retryWhen, catchError, map, flatMap, exhaustMap } from 'rxjs/operators';
 
 function showAlert(errorMessage: string, okButtonTitle: string, rejectButtonTitle: string, okButton: () => void, rejectButton: () => void) {
     Alert.alert(

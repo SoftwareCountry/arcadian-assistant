@@ -1,4 +1,4 @@
-import {dataMember, required} from 'santee-dcts';
+import { dataMember, required } from 'santee-dcts';
 import { DataMemberDecoratorParams } from 'santee-dcts/src/dataMemberDecorator';
 import moment, { Moment } from 'moment';
 import { Nullable } from 'types';

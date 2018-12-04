@@ -1,9 +1,7 @@
 import React from 'react';
 import {
-    Header, HeaderProps, NavigationParams,
-    NavigationRoute,
     NavigationScreenConfig,
-    NavigationScreenProp, NavigationScreenProps,
+    NavigationScreenProps,
     NavigationStackScreenOptions
 } from 'react-navigation';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
@@ -13,8 +11,7 @@ import { Employee } from '../reducers/organization/employee.model';
 import { PeopleRoom } from './people-room';
 import { Action, Dispatch } from 'redux';
 import { loadEmployeesForRoom } from '../reducers/organization/organization.action';
-import { SafeAreaView, View } from 'react-native';
-import { StyledText } from '../override/styled-text';
+import { SafeAreaView } from 'react-native';
 import Style from '../layout/style';
 import { Map } from 'immutable';
 

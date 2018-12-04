@@ -1,19 +1,20 @@
 import { LoadUserEmployeeFinished } from '../user/user.action';
-import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
+import { ActionsObservable, StateObservable } from 'redux-observable';
 import { deserializeArray } from 'santee-dcts';
 import {
-    loadCalendarEventsFinished, SelectIntervalsBySingleDaySelection, selectIntervalsBySingleDaySelection, SelectCalendarDay, LoadCalendarEventsFinished, LoadCalendarEvents, loadCalendarEvents,
-    CalendarSelectionMode, disableCalendarSelection, DisableCalendarSelection, CalendarSelectionModeType, CalendarEventSetNewStatus
+    loadCalendarEventsFinished, selectIntervalsBySingleDaySelection, SelectCalendarDay,
+    LoadCalendarEventsFinished, LoadCalendarEvents, loadCalendarEvents,
+    CalendarSelectionMode, disableCalendarSelection, CalendarEventSetNewStatus
 } from './calendar.action';
 import { loadFailedError } from '../errors/errors.action';
-import { CalendarEvent, CalendarEventStatus, CalendarEventType } from './calendar-event.model';
-import { closeEventDialog, CloseEventDialog } from './event-dialog/event-dialog.action';
+import { CalendarEvent } from './calendar-event.model';
+import { closeEventDialog } from './event-dialog/event-dialog.action';
 import { AppState } from 'react-native';
 import { DependenciesContainer } from '../app.reducer';
 import { CalendarEvents } from './calendar-events.model';
 import { handleHttpErrors } from '../errors/errors.epics';
-import {catchError, flatMap, groupBy, map, mergeAll, mergeMap, switchMap} from 'rxjs/operators';
-import {from, Observable, of, pipe} from 'rxjs';
+import { catchError, flatMap, groupBy, map, mergeAll, mergeMap, switchMap } from 'rxjs/operators';
+import { from, Observable, of } from 'rxjs';
 import { loadPendingRequests } from './pending-requests/pending-requests.action';
 
 export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
@@ -41,7 +42,7 @@ export const loadCalendarEventsEpic$ = (action$: ActionsObservable<LoadCalendarE
                         )
                 ),
                 map(z => {
-                    return {events: z, employeeId: x.key};
+                    return { events: z, employeeId: x.key };
                 }))
         ),
         mergeAll(),

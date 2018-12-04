@@ -3,13 +3,11 @@ import { ConfirmProcessDayoff, CancelDayoff } from './dayoff.action';
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { CalendarEvent, CalendarEventType, CalendarEventStatus, DatesInterval } from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
-import { loadCalendarEvents } from './calendar.action';
-import {Observable, of} from 'rxjs';
+import { of } from 'rxjs';
 import { loadFailedError } from '../errors/errors.action';
-import { IntervalType } from './calendar.model';
 import { IntervalTypeConverter } from './interval-type-converter';
 import { getEventsAndPendingRequests } from './calendar.epics';
-import { catchError, flatMap, map, tap } from 'rxjs/operators';
+import { catchError, flatMap, map } from 'rxjs/operators';
 
 export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('CONFIRM-PROCESS-DAYOFF').pipe(
