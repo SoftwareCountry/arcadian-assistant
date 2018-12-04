@@ -4,8 +4,8 @@ import { IntervalModel, ReadOnlyIntervalsModel } from '../reducers/calendar/cale
 import { CalendarEventsColor } from './styles';
 
 interface SickLeaveActionButtonProps {
-    allIntervals: ReadOnlyIntervalsModel;
-    interval: IntervalModel;
+    allIntervals?: ReadOnlyIntervalsModel;
+    interval?: IntervalModel;
     disabled: boolean;
     claim: () => void;
     edit: () => void;
@@ -52,7 +52,7 @@ export class SickLeaveActionButton extends Component<SickLeaveActionButtonProps>
             && allIntervals
             && allIntervals.metadata.calendarEvents.some(x => x.isSickLeave && x.isRequested);
 
-        const disableWhenCompleted = interval && interval.calendarEvent.isCompleted;
+        const disableWhenCompleted = !!interval && interval.calendarEvent.isCompleted;
 
         return disableWhenRequested || disableWhenCompleted;
     }

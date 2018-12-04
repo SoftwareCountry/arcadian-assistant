@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
 import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base';
 import { AppState } from '../../reducers/app.reducer';
-import { Dispatch } from 'redux';
+import { Action, Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { EventDialogActions, closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
-import { DayModel, IntervalModel, ExtractedIntervals } from '../../reducers/calendar/calendar.model';
+import { closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
+import { ExtractedIntervals } from '../../reducers/calendar/calendar.model';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
-import { CalendarEventType, CalendarEvent } from '../../reducers/calendar/calendar-event.model';
+import { CalendarEvent } from '../../reducers/calendar/calendar-event.model';
 import { completeSickLeave } from '../../reducers/calendar/sick-leave.action';
 import { Employee } from '../../reducers/organization/employee.model';
-import { Moment } from 'moment';
+import { Nullable, Optional } from 'types';
+import { getEmployee } from '../../utils/utils';
 
 interface EditSickLeaveEventDialogDispatchProps {
     prolong: () => void;
@@ -19,21 +19,21 @@ interface EditSickLeaveEventDialogDispatchProps {
 }
 
 interface EditSickLeaveEventDialogProps {
-    intervals: ExtractedIntervals;
-    userEmployee: Employee;
+    intervals: Optional<ExtractedIntervals>;
+    userEmployee: Optional<Employee>;
 }
 
 class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogProps & EditSickLeaveEventDialogDispatchProps> {
     public render() {
         return <EventDialogBase
-                    title={'Hey! Hope you feel better'}
-                    text={this.text}
-                    icon={'sick_leave'}
-                    cancelLabel={'Prolong'}
-                    acceptLabel={'Complete'}
-                    onAcceptPress={this.acceptAction}
-                    onCancelPress={this.cancelAction}
-                    onClosePress={this.closeDialog} />;
+            title={'Hey! Hope you feel better'}
+            text={this.text}
+            icon={'sick_leave'}
+            cancelLabel={'Prolong'}
+            acceptLabel={'Complete'}
+            onAcceptPress={this.acceptAction}
+            onCancelPress={this.cancelAction}
+            onClosePress={this.closeDialog}/>;
     }
 
     private cancelAction = () => {
@@ -42,6 +42,10 @@ class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogPro
 
     private acceptAction = () => {
         const { userEmployee, intervals } = this.props;
+
+        if (!userEmployee || !intervals || !intervals.sickleave) {
+            return;
+        }
 
         this.props.completeSickLeave(userEmployee.employeeId, intervals.sickleave.calendarEvent);
     };
@@ -56,8 +60,8 @@ class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogPro
         return `Your sick leave has started on ${startDate} and still is not completed.`;
     }
 
-    private getSickLeaveStartDate(): string {
-        if (!this.props.intervals.sickleave) {
+    private getSickLeaveStartDate(): Nullable<string> {
+        if (!this.props.intervals || !this.props.intervals.sickleave) {
             return null;
         }
 
@@ -65,15 +69,23 @@ class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogPro
     }
 }
 
-const mapStateToProps = (state: AppState): EditSickLeaveEventDialogProps => ({
-    intervals: state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection,
-    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
-});
+const mapStateToProps = (state: AppState): EditSickLeaveEventDialogProps => {
+    return {
+        intervals: state.calendar ? state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection : undefined,
+        userEmployee: getEmployee(state),
+    };
+};
 
-const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): EditSickLeaveEventDialogDispatchProps => ({
-    prolong: () => { dispatch(openEventDialog(EventDialogType.ProlongSickLeave)); },
-    closeDialog: () => { dispatch(closeEventDialog()); },
-    completeSickLeave: (employeeId: string, calendarEvent: CalendarEvent) => { dispatch(completeSickLeave(employeeId, calendarEvent)); }
+const mapDispatchToProps = (dispatch: Dispatch<Action>): EditSickLeaveEventDialogDispatchProps => ({
+    prolong: () => {
+        dispatch(openEventDialog(EventDialogType.ProlongSickLeave));
+    },
+    closeDialog: () => {
+        dispatch(closeEventDialog());
+    },
+    completeSickLeave: (employeeId: string, calendarEvent: CalendarEvent) => {
+        dispatch(completeSickLeave(employeeId, calendarEvent));
+    }
 });
 
 export const EditSickLeaveEventDialog = connect(mapStateToProps, mapDispatchToProps)(EditSickLeaveEventDialogImpl);

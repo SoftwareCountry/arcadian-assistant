@@ -1,16 +1,16 @@
 import { EventDialogActions } from './event-dialog.action';
 import { EventDialogType } from './event-dialog-type.model';
 import { HoursCreditType } from '../days-counters.model';
-import { chosenTypeDayoff } from '../dayoff.action';
+import { Nullable, Optional } from 'types';
 
 export interface EventDialogState {
-    dialogType: EventDialogType;
+    dialogType: Optional<EventDialogType>;
     chosenHoursCreditType: HoursCreditType;
     inProgress: boolean;
 }
 
 const initState: EventDialogState = {
-    dialogType: null,
+    dialogType: undefined,
     chosenHoursCreditType: HoursCreditType.DaysOff,
     inProgress: false
 };
@@ -25,7 +25,7 @@ export const eventDialogReducer = (state: EventDialogState = initState, action: 
         case 'CLOSE-EVENT-DIALOG': {
             return {
                 ...state,
-                dialogType: null,
+                dialogType: undefined,
                 chosenHoursCreditType: HoursCreditType.DaysOff
             };
         }

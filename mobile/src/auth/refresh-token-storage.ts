@@ -9,7 +9,7 @@ export interface RefreshTokenStorage {
 
 class RefreshTokenBaseStorage {
     private readonly keyName = 'refresh-token';
-    private refreshToken: string = null;
+    private refreshToken: string | null = null;
 
     public async getRefreshToken() {
         if (this.refreshToken !== null) {

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base';
 import { AppState } from '../../reducers/app.reducer';
-import { Dispatch } from 'redux';
+import { Action, Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { EventDialogActions, closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
+import { closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { DayModel, IntervalType } from '../../reducers/calendar/calendar.model';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
 import { Moment } from 'moment';
@@ -11,6 +11,8 @@ import { SelectorDayoffDuration } from './selector-dayoff-duration';
 import { confirmProcessDayoff } from '../../reducers/calendar/dayoff.action';
 import { Employee } from '../../reducers/organization/employee.model';
 import { HoursCreditType } from '../../reducers/calendar/days-counters.model';
+import { getEmployee } from '../../utils/utils';
+import { Optional } from 'types';
 
 interface ConfirmDayoffEventDialogDispatchProps {
     cancelDialog: () => void;
@@ -19,9 +21,9 @@ interface ConfirmDayoffEventDialogDispatchProps {
 }
 
 interface ConfirmDayoffEventDialogProps {
-    startDay: DayModel;
+    startDay: Optional<DayModel>;
     isWorkout: boolean;
-    userEmployee: Employee;
+    userEmployee: Optional<Employee>;
 }
 
 interface ConfirmDayoffEventDialogState {
@@ -29,7 +31,7 @@ interface ConfirmDayoffEventDialogState {
 }
 
 class ConfirmDayoffEventDialogImpl extends Component<ConfirmDayoffEventDialogProps & ConfirmDayoffEventDialogDispatchProps, ConfirmDayoffEventDialogState> {
-    private readonly intervalTypeToText = {
+    private readonly intervalTypeToText: { [key: string]: string } = {
         [IntervalType.IntervalLeftBoundary]: 'a first half day',
         [IntervalType.IntervalRightBoundary]: 'a second half day',
         [IntervalType.IntervalFullBoundary]: 'a full day'
@@ -63,6 +65,10 @@ class ConfirmDayoffEventDialogImpl extends Component<ConfirmDayoffEventDialogPro
     private onAcceptClick = () => {
         const { startDay, isWorkout, confirmDayoff, userEmployee } = this.props;
 
+        if (!userEmployee || !startDay) {
+            return;
+        }
+
         confirmDayoff(
             userEmployee.employeeId,
             startDay.date,
@@ -79,6 +85,10 @@ class ConfirmDayoffEventDialogImpl extends Component<ConfirmDayoffEventDialogPro
     };
 
     public get text(): string {
+        if (!this.props.startDay) {
+            return '';
+        }
+
         const startDate = this.props.startDay.date.format(eventDialogTextDateFormat);
         const intervalTypeToText = this.intervalTypeToText[this.state.selectedIntervalType];
         const dateType = this.props.isWorkout ? 'workout' : 'dayoff';
@@ -88,12 +98,12 @@ class ConfirmDayoffEventDialogImpl extends Component<ConfirmDayoffEventDialogPro
 }
 
 const mapStateToProps = (state: AppState): ConfirmDayoffEventDialogProps => ({
-    startDay: state.calendar.calendarEvents.selection.single.day,
-    isWorkout: state.calendar.eventDialog.chosenHoursCreditType === HoursCreditType.Workout,
-    userEmployee: state.organization.employees.employeesById.get(state.userInfo.employeeId)
+    startDay: state.calendar ? state.calendar.calendarEvents.selection.single.day : undefined,
+    isWorkout: state.calendar ? state.calendar.eventDialog.chosenHoursCreditType === HoursCreditType.Workout : false,
+    userEmployee: getEmployee(state),
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ConfirmDayoffEventDialogDispatchProps => ({
+const mapDispatchToProps = (dispatch: Dispatch<Action>): ConfirmDayoffEventDialogDispatchProps => ({
     cancelDialog: () => { dispatch(openEventDialog(EventDialogType.ChooseTypeDayoff)); },
     confirmDayoff: (
         employeeId: string,

@@ -30,65 +30,64 @@
     "appcenter-analytics": "^1.10.0",
     "appcenter-crashes": "^1.10.0",
     "appcenter-push": "^1.10.0",
-    "babel-plugin-transform-inline-environment-variables": "^0.3.0",
-    "immutable": "^3.8.2",
-    "moment": "^2.20.1",
-    "react": "^16.5.0",
-    "react-native": "^0.57.2",
+    "babel-plugin-transform-inline-environment-variables": "^0.4.3",
+    "immutable": "^4.0.0-rc.12",
+    "moment": "^2.22.2",
+    "react": "16.6.1",
+    "react-native": "0.57.7",
     "react-native-config": "^0.11.6",
     "react-native-fingerprint-scanner": "^2.5.0",
-    "react-native-modal": "^7.0.0",
-    "react-native-sensitive-info": "5.2.0",
+    "react-native-gesture-handler": "^1.0.10",
+    "react-native-modal": "^7.0.1",
+    "react-native-sensitive-info": "^5.2.6",
     "react-native-sf-authentication-session": "^0.1.1",
-    "react-native-vector-icons": "^4.4.2",
-    "react-navigation": "^1.0.0-beta.19",
-    "react-navigation-redux-helpers": "^1.0.3",
-    "react-redux": "^5.0.6",
-    "redux": "^3.7.2",
+    "react-native-vector-icons": "^6.1.0",
+    "react-navigation": "^3.0.2",
+    "react-redux": "^5.1.1",
+    "redux": "^4.0.1",
     "redux-logger": "^3.0.6",
-    "redux-observable": "^0.17.0",
-    "rxjs": "^5.5.2",
-    "santee-dcts": "^0.9.4",
-    "url-search-params-polyfill": "^3.0.0",
-    "uuid": "^3.2.1"
+    "redux-observable": "^1.0.0",
+    "rxjs": "^6.3.3",
+    "santee-dcts": "^0.9.5",
+    "url-search-params-polyfill": "^5.0.0",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "@types/immutable": "^3.8.7",
-    "@types/jest": "^21.1.5",
-    "@types/moment": "^2.13.0",
-    "@types/react": "^16.0.40",
-    "@types/react-native": "^0.55.0",
-    "@types/react-native-vector-icons": "^4.4.2",
-    "@types/react-navigation": "^1.2.3",
-    "@types/react-redux": "^5.0.12",
-    "@types/react-test-renderer": "^16.0.0",
-    "@types/redux-logger": "^3.0.5",
-    "babel-jest": "21.2.0",
-    "babel-preset-react-native": "^5.0.2",
-    "concurrently": "^3.5.1",
-    "copyfiles": "^1.2.0",
-    "jest": "21.2.1",
-    "npm-watch": "^0.3.0",
-    "react-test-renderer": "^16.5.0",
+    "@types/jest": "^23.3.9",
+    "@types/react": "^16.7.7",
+    "@types/react-native": "^0.57.14",
+    "@types/react-native-vector-icons": "^4.6.4",
+    "@types/react-redux": "^6.0.10",
+    "@types/react-test-renderer": "^16.0.3",
+    "@types/redux-logger": "^3.0.6",
+    "babel-jest": "23.6.0",
+    "concurrently": "^4.1.0",
+    "copyfiles": "^2.1.0",
+    "jest": "23.6.0",
+    "metro-react-native-babel-preset": "0.49.2",
+    "npm-watch": "^0.5.0",
+    "react-native-typescript-transformer": "^1.2.10",
+    "react-test-renderer": "16.6.1",
     "rimraf": "^2.6.2",
-    "tslint": "^5.8.0",
-    "typescript": "2.5.3"
+    "ts-jest": "^23.10.5",
+    "tslint": "^5.11.0",
+    "typescript": "^3.2.1"
   },
   "jest": {
     "preset": "react-native",
-    "transform": {
-      "^.+\\.js$": "<rootDir>/node_modules/react-native/jest/preprocessor.js"
-    },
-    "testRegex": "artifacts/.+\\.(test|spec).js$",
-    "coverageDirectory": ".coverage",
-    "coverageReporters": [
-      "text-summary",
-      "html"
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
     ],
-    "collectCoverageFrom": [
-      "artifacts/**/*.js",
-      "!artifacts/**/*.spec.js",
-      "!artifacts/**/*.index.js"
+    "transform": {
+      "^.+\\.(js)$": "<rootDir>/node_modules/react-native/jest/preprocessor.js",
+      "\\.(ts|tsx)$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "testPathIgnorePatterns": [
+      "\\.snap$",
+      "<rootDir>/node_modules/"
     ],
     "setupFiles": [
       "<rootDir>/node_modules/appcenter/test/AppCenterMock.js",
@@ -100,5 +99,6 @@
     "assets": [
       "./assets/fonts/"
     ]
-  }
+  },
+  "cacheDirectory": ".jest/cache"
 }

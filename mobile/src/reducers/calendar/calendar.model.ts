@@ -1,12 +1,19 @@
 import moment, { Moment } from 'moment';
 import { CalendarEvent, CalendarEventType, CalendarEventStatus } from './calendar-event.model';
 import { IntervalsMetadata, ReadOnlyIntervalsMetadata } from './calendar-intervals-metadata.model';
+import { Nullable, Optional } from 'types';
 
 export interface DayModel {
     date: Moment;
     today: boolean;
     belongsToCurrentMonth: boolean;
 }
+
+export const defaultDayModel: DayModel = {
+    date: moment(),
+    today: true,
+    belongsToCurrentMonth: true,
+};
 
 export interface WeekModel {
     days: DayModel[];
@@ -23,7 +30,7 @@ export enum IntervalType {
 }
 
 export interface IntervalModel {
-    intervalType: IntervalType;
+    intervalType: Nullable<IntervalType>;
     calendarEvent: CalendarEvent;
     boundary: boolean;
 }
@@ -88,26 +95,26 @@ export class IntervalsModel implements ReadOnlyIntervalsModel {
 }
 
 export interface SingleSelection {
-    day: DayModel;
+    day?: DayModel;
 }
 
 export interface IntervalSelection {
-    startDay: DayModel;
-    endDay: DayModel;
-    color: string;
+    startDay?: DayModel;
+    endDay?: DayModel;
+    color?: string;
 }
 
 export interface CalendarSelection {
     single: SingleSelection;
-    interval: IntervalSelection;
+    interval?: IntervalSelection;
 }
 
 export class ExtractedIntervals {
-    public readonly vacation: IntervalModel;
-    public readonly dayoff: IntervalModel;
-    public readonly sickleave: IntervalModel;
+    public readonly vacation: Optional<IntervalModel> = undefined;
+    public readonly dayoff: Optional<IntervalModel> = undefined;
+    public readonly sickleave: Optional<IntervalModel> = undefined;
 
-    constructor(intervals: IntervalModel[]) {
+    constructor(intervals: Optional<IntervalModel[]>) {
         if (intervals) {
             this.vacation = intervals.find(x => x.calendarEvent.type === CalendarEventType.Vacation);
             this.dayoff = intervals.find(x => x.calendarEvent.type === CalendarEventType.Dayoff || x.calendarEvent.type === CalendarEventType.Workout);

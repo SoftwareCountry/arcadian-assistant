@@ -8,9 +8,9 @@ export const calendarSelectionModeReducer = (state: CalendarEventsState, action:
         return {
             selection: {
                 ...state.selection,
-                interval: null
+                interval: undefined
             },
-            disableCalendarDaysBefore: null
+            disableCalendarDaysBefore: undefined
         };
     }
 
@@ -20,7 +20,7 @@ export const calendarSelectionModeReducer = (state: CalendarEventsState, action:
                 ...state.selection,
                 interval: {
                     startDay: state.selection.single.day,
-                    endDay: null,
+                    endDay: undefined,
                     color: action.color
                 }
             },

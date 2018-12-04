@@ -1,4 +1,8 @@
-import { NavigationRouteConfigMap, TabNavigator, TabNavigatorConfig } from 'react-navigation';
+import {
+    createMaterialTopTabNavigator,
+    NavigationRouteConfigMap,
+    TabNavigatorConfig
+} from 'react-navigation';
 import React from 'react';
 import peopleScreenNavigatorStyles from './styles';
 import { PeopleCompanyFiltered, PeopleDepartmentFiltered, PeopleRoomFiltered } from '../people-filtered';
@@ -44,7 +48,7 @@ const peopleScreenNavigatorModel: NavigationRouteConfigMap = {
 };
 
 //----------------------------------------------------------------------------
-export const PeopleScreenNavigator = TabNavigator(
+export const PeopleScreenNavigator = createMaterialTopTabNavigator(
     peopleScreenNavigatorModel,
     peopleScreenNavigatorConfig
 );

@@ -1,8 +1,10 @@
+import { Nullable, Optional } from 'types';
+
 export class ConvertHoursCreditToDays {
     public static readonly halfDay = 4;
     public static readonly fractionSymbol = '½';
 
-    public convert(hours: number): ConvertHoursCreditResult {
+    public convert(hours: Nullable<number>): ConvertHoursCreditResult {
         if (hours == null) {
             return {
                 days: null,
@@ -49,6 +51,6 @@ export class ConvertHoursCreditToDays {
 }
 
 interface ConvertHoursCreditResult {
-    days: number;
-    rest: string;
+    days: Nullable<number>;
+    rest: Nullable<string>;
 }

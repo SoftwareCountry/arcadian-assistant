@@ -1,29 +1,29 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, PixelRatio } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { connect } from 'react-redux';
 import { DayModel, ReadOnlyIntervalsModel } from '../reducers/calendar/calendar.model';
 import { AppState } from '../reducers/app.reducer';
 import { CalendarEventsColor, legendStyles as styles } from './styles';
 import { StyledText } from '../override/styled-text';
+import { Optional } from 'types';
+import moment from 'moment';
 
+//============================================================================
 interface CalendarLegendProps {
-    intervals: ReadOnlyIntervalsModel;
+    intervals: Optional<ReadOnlyIntervalsModel>;
     selectedDay: DayModel;
 }
 
-const mapStateToProps = (state: AppState): CalendarLegendProps => ({
-    intervals: state.calendar.calendarEvents.intervals,
-    selectedDay: state.calendar.calendarEvents.selection.single.day
-});
-
+//============================================================================
 class CalendarLegendImpl extends Component<CalendarLegendProps> {
+    //----------------------------------------------------------------------------
     public render() {
         const selectedEvents = this.getEventsForSelectedDate();
         const legend = selectedEvents.map((type, index) => {
             const style = StyleSheet.flatten([styles.marker, { backgroundColor: CalendarEventsColor.getColor(type) }]);
             return (
                 <View key={type + index} style={styles.itemContainer}>
-                    <View style={style}></View>
+                    <View style={style}/>
                     <StyledText style={styles.label}>{type}</StyledText>
                 </View>
             );
@@ -38,6 +38,7 @@ class CalendarLegendImpl extends Component<CalendarLegendProps> {
         );
     }
 
+    //----------------------------------------------------------------------------
     private getEventsForSelectedDate() {
         const { intervals, selectedDay } = this.props;
 
@@ -49,4 +50,12 @@ class CalendarLegendImpl extends Component<CalendarLegendProps> {
     }
 }
 
-export const CalendarLegend = connect(mapStateToProps)(CalendarLegendImpl);
+//----------------------------------------------------------------------------
+const stateToProps = (state: AppState): CalendarLegendProps => ({
+    intervals: state.calendar ? state.calendar.calendarEvents.intervals : undefined,
+    selectedDay: state.calendar && state.calendar.calendarEvents.selection.single.day ? state.calendar.calendarEvents.selection.single.day : {
+        date: moment(), today: true, belongsToCurrentMonth: true,
+    }
+});
+
+export const CalendarLegend = connect(stateToProps)(CalendarLegendImpl);

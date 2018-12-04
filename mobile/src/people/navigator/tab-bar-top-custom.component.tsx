@@ -1,21 +1,17 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import { Employee } from '../../reducers/organization/employee.model';
 import { Department } from '../../reducers/organization/department.model';
-import { TabBarTop, TabBarTopProps, TabScene } from 'react-navigation';
+import { MaterialTopTabBar, TabBarTopProps, TabLabelTextParam } from 'react-navigation';
 import { connect } from 'react-redux';
 import { AppState } from '../../reducers/app.reducer';
-import { Platform } from 'react-native';
-import { StyledText } from '../../override/styled-text';
-import tabBarStyles from '../../tabbar/tab-bar-styles';
-import { TabBarLabel } from '../../tabbar/tab-bar-label.component';
-
-//============================================================================
-type Optional<P> = P | null | undefined;
+import { Nullable, Optional } from 'types';
+import { getEmployee } from '../../utils/utils';
+import { toNullable } from '../../types/types-utils';
 
 //============================================================================
 interface TabBarTopCustomProps {
-    employee: Employee | null;
-    department: Department | null;
+    employee: Nullable<Employee>;
+    department: Nullable<Department>;
 }
 
 //============================================================================
@@ -26,58 +22,50 @@ class TabBarTopCustomImpl extends React.Component<TabBarTopProps & TabBarTopCust
         const { employee, department } = this.props;
 
         return (
-            <TabBarTop
+            <MaterialTopTabBar
                 {...this.props}
-                getLabel={(scene) => {
-                    return this.getLabel(scene, employee, department);
+                getLabelText={(param) => {
+                    return this.getLabel(param, employee, department);
                 }}
             />
         );
     }
 
     //----------------------------------------------------------------------------
-    private getLabel = (scene: TabScene, employee: Optional<Employee>, department: Optional<Department>): React.ReactNode | string => {
-        switch (scene.index) {
-            case 0:
-                return this.styleTabBarLabel(department ? department.abbreviation : 'Department');
-            case 1:
-                return this.styleTabBarLabel(employee ? `Room ${employee.roomNumber}` : 'Room');
-            case 2:
-                return this.styleTabBarLabel('Company');
+    private getLabel = (param: TabLabelTextParam, employee: Nullable<Employee>, department: Nullable<Department>): string => {
+
+        switch (param.route.key) {
+            case 'Department':
+                return department ? department.abbreviation : 'Department';
+            case 'Room':
+                return employee ? `Room ${employee.roomNumber}` : 'Room';
+            case 'Company':
+                return 'Company';
             default:
                 return '';
         }
-    };
-
-    //----------------------------------------------------------------------------
-    private styleTabBarLabel = (label: string): string | ReactElement<any> => {
-        return <TabBarLabel label={label}/>;
     };
 }
 
 //----------------------------------------------------------------------------
 function getDepartment(state: AppState, employee: Optional<Employee>): Optional<Department> {
     if (!state.organization || !employee) {
-        return null;
+        return undefined;
     }
 
     const { departments } = state.organization;
-    return departments.find((d) => d.departmentId === employee.departmentId);
+    const department = departments.find((d) => d.departmentId === employee.departmentId);
+    return department ? department : undefined;
 }
 
-//----------------------------------------------------------------------------
-function getEmployee(state: AppState): Optional<Employee> {
-    return state.organization.employees.employeesById.get(state.userInfo.employeeId, null);
-}
-
-//----------------------------------------------------------------------------
+///----------------------------------------------------------------------------
 const stateToProps = (state: AppState): TabBarTopCustomProps => {
     const employee = getEmployee(state);
     const department = getDepartment(state, employee);
 
     return {
-        employee,
-        department,
+        employee: toNullable(employee),
+        department: toNullable(department),
     };
 };
 

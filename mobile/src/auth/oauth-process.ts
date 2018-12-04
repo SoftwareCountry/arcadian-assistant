@@ -1,13 +1,12 @@
 import { TokenResponse, AccessCodeRequest } from './access-code-request';
 import { OauthError } from './oauth-error';
-import { Observable } from 'rxjs/Observable';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
-import { Subject } from 'rxjs/Subject';
-import { Subscription } from 'rxjs/Subscription';
 import { LoginRequest } from './login-request';
 import { RefreshTokenStorage } from './refresh-token-storage';
 import { NotAuthenticatedState, AuthenticationState } from './authentication-state';
 import moment from 'moment';
+import { distinctUntilChanged, map, switchMap } from 'rxjs/operators';
+import { concat, interval, merge, Observable, of, ReplaySubject, Subject, Subscription } from 'rxjs';
+import { Nullable, Optional } from 'types';
 
 //https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-protocols-oauth-code
 
@@ -15,7 +14,7 @@ const notAuthenticatedInstance: NotAuthenticatedState = { isAuthenticated: false
 
 export class OAuthProcess {
 
-    public get authenticationState() { return this.authenticationStateSource.asObservable().distinctUntilChanged(); }
+    public get authenticationState() { return this.authenticationStateSource.asObservable().pipe(distinctUntilChanged()); }
 
     private readonly refreshIntervalSeconds = 30;
 
@@ -23,7 +22,7 @@ export class OAuthProcess {
 
     private readonly authorizationCode: Subject<string> = new Subject<string>();
 
-    private readonly refreshTokenSource: Subject<RefreshTokenRequest> = new Subject<RefreshTokenRequest>();
+    private readonly refreshTokenSource: Subject<Nullable<RefreshTokenRequest>> = new Subject<Nullable<RefreshTokenRequest>>();
  
     private readonly authenticationStateSource = new ReplaySubject<AuthenticationState>(1);
 
@@ -43,20 +42,20 @@ export class OAuthProcess {
         this.loginRequest = new LoginRequest(clientId, redirectUri, authorizationUrl);
         this.accessCodeRequest = new AccessCodeRequest(clientId, redirectUri, tokenUrl);
 
-        const accessCodeResponse = this.authorizationCode
-            .switchMap(code => this.accessCodeRequest.fetchNew(code));
+        const accessCodeResponse = this.authorizationCode.pipe(
+            switchMap((code: string) => this.accessCodeRequest.fetchNew(code)));
 
-        const refreshTokenObtainedAccessCodes = this.refreshTokenSource
-            .switchMap(request => this.getPeriodicalRefreshTokens(request))
-            .switchMap(token => {
-                if (token === null) {
-                    return Observable.of<TokenResponse>(null);
+        const refreshTokenObtainedAccessCodes = this.refreshTokenSource.pipe(
+            switchMap(request => this.getPeriodicalRefreshTokens(request)),
+            switchMap(token => {
+                if (!token) {
+                    return of<Nullable<TokenResponse>>(null);
                 }
 
                 return this.accessCodeRequest.refresh(token);
-            });
+            }));
 
-        this.accessCodeSubscription = Observable.merge(accessCodeResponse, refreshTokenObtainedAccessCodes)
+        this.accessCodeSubscription = merge(accessCodeResponse, refreshTokenObtainedAccessCodes)
             .subscribe(x => this.onNewTokenObtained(x), e => this.onTokenError(e));
     }
 
@@ -70,7 +69,7 @@ export class OAuthProcess {
     }
 
     public async login() {
-        let value: string = undefined;
+        let value: Optional<string> = undefined;
         try {
             value = await this.refreshTokenStorage.getRefreshToken();
         } catch (e) {
@@ -105,10 +104,10 @@ export class OAuthProcess {
         this.refreshTokenSource.next(null);
     }
 
-    private onNewTokenObtained(tokenResponse: TokenResponse) {
+    private onNewTokenObtained(tokenResponse: Nullable<TokenResponse>) {
         this.storeRefreshToken(tokenResponse ? tokenResponse.refreshToken : null);
 
-        if (tokenResponse === null) {
+        if (!tokenResponse) {
             this.authenticationStateSource.next(notAuthenticatedInstance);
         } else {
             this.refreshTokenSource.next( { tokenValue: tokenResponse.refreshToken, immediateRefresh: false });
@@ -146,14 +145,14 @@ export class OAuthProcess {
         }
     }
 
-    private getPeriodicalRefreshTokens(request: RefreshTokenRequest): Observable<string> {
-        if (request === null) {
-            return Observable.of(null);
+    private getPeriodicalRefreshTokens(request: Nullable<RefreshTokenRequest>): Observable<Nullable<string>> {
+        if (!request) {
+            return of(null);
         }
 
-        const scheduledEmition = Observable.interval(this.refreshIntervalSeconds * 1000).map(() => request.tokenValue);
+        const scheduledEmition = interval(this.refreshIntervalSeconds * 1000).pipe(map(() => request.tokenValue));
         if (request.immediateRefresh) {
-            return Observable.concat( Observable.of(request.tokenValue), scheduledEmition);
+            return concat( of(request.tokenValue), scheduledEmition);
         } else {
             return scheduledEmition;
         }

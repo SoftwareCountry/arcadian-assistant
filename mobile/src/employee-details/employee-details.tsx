@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { connect, Dispatch, MapStateToProps } from 'react-redux';
+import { connect, MapStateToProps } from 'react-redux';
 import { Map } from 'immutable';
 import { Linking, ScrollView, StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 
@@ -12,7 +12,6 @@ import { Department } from '../reducers/organization/department.model';
 import { StyledText } from '../override/styled-text';
 import { Employee } from '../reducers/organization/employee.model';
 import { ApplicationIcon } from '../override/application-icon';
-import { openCompanyAction, openDepartmentAction, openRoomAction } from './employee-details-dispatcher';
 import { calendarEventSetNewStatus, loadCalendarEvents } from '../reducers/calendar/calendar.action';
 import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
@@ -20,14 +19,18 @@ import { UserEmployeePermissions } from '../reducers/user/user-employee-permissi
 import { loadUserEmployeePermissions } from '../reducers/user/user.action';
 import { HoursCreditCounter, VacationDaysCounter } from '../reducers/calendar/days-counters.model';
 import { ConvertHoursCreditToDays } from '../reducers/calendar/convert-hours-credit-to-days';
+import { Action, Dispatch } from 'redux';
+import { openCompany, openDepartment, openRoom } from '../navigation/navigation.actions';
+import { Nullable } from 'types';
+import { IntervalTypeConverter } from '../reducers/calendar/interval-type-converter';
 
 interface TileData {
     label: string;
     icon: string;
     style: ViewStyle;
     size: number;
-    payload: string;
-    onPress: () => void;
+    payload: Nullable<string>;
+    onPress: Nullable<() => void>;
 }
 
 interface EmployeeDetailsOwnProps {
@@ -39,8 +42,8 @@ interface EmployeeDetailsOwnProps {
 
 interface EmployeeDetailsStateProps {
     events: Map<string, CalendarEvent[]>;
-    hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => string;
-    userEmployeePermissions: Map<string, UserEmployeePermissions>;
+    hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => Nullable<string>;
+    userEmployeePermissions: Nullable<Map<string, UserEmployeePermissions>>;
 }
 
 type EmployeeDetailsProps = EmployeeDetailsOwnProps & EmployeeDetailsStateProps;
@@ -49,13 +52,13 @@ const mapStateToProps: MapStateToProps<EmployeeDetailsProps, EmployeeDetailsOwnP
     employee: ownProps.employee,
     department: ownProps.department,
     layoutStylesChevronPlaceholder: ownProps.layoutStylesChevronPlaceholder,
-    events: state.calendar.calendarEvents.events,
+    events: state.calendar ? state.calendar.calendarEvents.events : Map(),
     requests: ownProps.requests,
-    hoursToIntervalTitle: state.calendar.pendingRequests.hoursToIntervalTitle,
-    userEmployeePermissions: state.userInfo.permissions
+    hoursToIntervalTitle: state.calendar ? state.calendar.pendingRequests.hoursToIntervalTitle : IntervalTypeConverter.hoursToIntervalTitle,
+    userEmployeePermissions: state.userInfo ? state.userInfo.permissions : null,
 });
 
-const TileSeparator = () => <View style = {tileStyles.separator}/>;
+const TileSeparator = () => <View style={tileStyles.separator}/>;
 
 interface EmployeeDetailsDispatchProps {
     onCompanyClicked: (departmentId: string) => void;
@@ -65,13 +68,20 @@ interface EmployeeDetailsDispatchProps {
     openDepartment: (departmentId: string, departmentAbbreviation: string) => void;
     openRoom: (departmentId: string) => void;
 }
-const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeeDetailsDispatchProps => ({
-    onCompanyClicked: (departmentId: string) => dispatch( openCompanyAction(departmentId)),
+
+const mapDispatchToProps = (dispatch: Dispatch<Action>): EmployeeDetailsDispatchProps => ({
+    onCompanyClicked: (departmentId: string) => dispatch(openCompany(departmentId)),
     loadCalendarEvents: (employeeId: string) => dispatch(loadCalendarEvents(employeeId)),
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status)),
-    loadUserEmployeePermissions: (employeeId: string) => { dispatch(loadUserEmployeePermissions(employeeId)); },
-    openDepartment: (departmentId: string, departmentAbbreviation: string) => { dispatch(openDepartmentAction(departmentId, departmentAbbreviation)); },
-    openRoom: (departmentId: string) => { dispatch(openRoomAction(departmentId)); }
+    loadUserEmployeePermissions: (employeeId: string) => {
+        dispatch(loadUserEmployeePermissions(employeeId));
+    },
+    openDepartment: (departmentId: string, departmentAbbreviation: string) => {
+        dispatch(openDepartment(departmentId, departmentAbbreviation));
+    },
+    openRoom: (departmentId: string) => {
+        dispatch(openRoom(departmentId));
+    }
 });
 
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
@@ -85,10 +95,19 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             return true;
         }
 
-        if (!this.props.userEmployeePermissions.equals(nextProps.userEmployeePermissions)) {
+        const userEmployeePermissions = this.props.userEmployeePermissions;
+        const nextUserEmployeePermissions = nextProps.userEmployeePermissions;
 
-            const permissions = this.props.userEmployeePermissions.get(this.props.employee.employeeId);
-            const nextPermissions = nextProps.userEmployeePermissions.get(nextProps.employee.employeeId);
+        if (userEmployeePermissions !== nextUserEmployeePermissions) {
+            return true;
+        }
+
+        if (userEmployeePermissions &&
+            nextUserEmployeePermissions &&
+            !userEmployeePermissions.equals(nextUserEmployeePermissions)) {
+
+            const permissions = userEmployeePermissions.get(this.props.employee.employeeId, null);
+            const nextPermissions = nextUserEmployeePermissions.get(nextProps.employee.employeeId, null);
 
             return !permissions || !permissions.equals(nextPermissions);
         }
@@ -111,27 +130,28 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
     public render() {
         const { employee, department, userEmployeePermissions } = this.props;
 
-        if (!employee || !department) {
+        if (!employee || !department || !userEmployeePermissions) {
             return null;
         }
 
-        const permissions = userEmployeePermissions.get(employee.employeeId);
+        const permissions = userEmployeePermissions.get(employee.employeeId, null);
 
         const tiles = this.getTiles(employee);
         const contacts = this.getContacts(employee);
 
-        let events = this.props.events.get(employee.employeeId);
+        let events = this.props.events.get(employee.employeeId, null);
 
         return (
-                <View style={layoutStyles.container}>
-                    <View style={this.props.layoutStylesChevronPlaceholder}></View>
-                    <View>
-                        <Chevron />
-                        <View style={layoutStyles.avatarContainer}>
-                            <Avatar photoUrl={employee.photoUrl} imageStyle={{ borderWidth: 0 }} style={{ borderWidth: 3 }} />
-                        </View>
+            <View style={layoutStyles.container}>
+                <View style={this.props.layoutStylesChevronPlaceholder}></View>
+                <View>
+                    <Chevron/>
+                    <View style={layoutStyles.avatarContainer}>
+                        <Avatar photoUrl={employee.photoUrl} imageStyle={{ borderWidth: 0 }}
+                                style={{ borderWidth: 3 }}/>
                     </View>
-                    <ScrollView style={layoutStyles.scrollView} alwaysBounceVertical = {false}>
+                </View>
+                <ScrollView style={layoutStyles.scrollView} alwaysBounceVertical={false}>
                     <View style={layoutStyles.content}>
                         <StyledText style={contentStyles.name}>
                             {employee.name}
@@ -166,8 +186,8 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                         }
 
                     </View>
-                    </ScrollView>
-                </View>
+                </ScrollView>
+            </View>
         );
     }
 
@@ -177,7 +197,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
     private tileStyle = (transparent: boolean): StyleProp<ViewStyle> => {
         if (transparent) {
-            return [tileStyles.tile, {backgroundColor: 'transparent'}];
+            return [tileStyles.tile, { backgroundColor: 'transparent' }];
         } else {
             return tileStyles.tile;
         }
@@ -222,27 +242,27 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
         return tilesData.map((tile, index) => (
             <React.Fragment key={tile.label}>
-            <View style={tileStyles.container}>
-            {
-                tile.payload !== null ?
-                    <TouchableOpacity onPress={tile.onPress}>
-                    <View style={this.tileStyle(tile.onPress === null)}>
-                        <View style={tileStyles.iconContainer}>
-                            <ApplicationIcon name={tile.icon} size={tile.size} style={tile.style} />
-                        </View>
-                        <StyledText style={tileStyles.text}>{tile.label}</StyledText>
-                    </View></TouchableOpacity>
-                : <View style={this.tileStyle(tile.onPress === null)}>
-                    <View style={tileStyles.iconContainer}>
-                        <ApplicationIcon name={tile.icon} size={tile.size} style={tile.style} />
-                    </View>
-                    <StyledText style={tileStyles.text}>{tile.label}</StyledText>
+                <View style={tileStyles.container}>
+                    {
+                        tile.payload !== null ?
+                            <TouchableOpacity onPress={tile.onPress ? tile.onPress : undefined}>
+                                <View style={this.tileStyle(tile.onPress === null)}>
+                                    <View style={tileStyles.iconContainer}>
+                                        <ApplicationIcon name={tile.icon} size={tile.size} style={tile.style}/>
+                                    </View>
+                                    <StyledText style={tileStyles.text}>{tile.label}</StyledText>
+                                </View></TouchableOpacity>
+                            : <View style={this.tileStyle(tile.onPress === null)}>
+                                <View style={tileStyles.iconContainer}>
+                                    <ApplicationIcon name={tile.icon} size={tile.size} style={tile.style}/>
+                                </View>
+                                <StyledText style={tileStyles.text}>{tile.label}</StyledText>
+                            </View>
+                    }
                 </View>
-            }
-            </View>
-            {
-                lastIndex !== index ? <TileSeparator key = {`${tile.label}-${index}`} /> : null
-            }
+                {
+                    lastIndex !== index ? <TileSeparator key={`${tile.label}-${index}`}/> : null
+                }
             </React.Fragment>
         ));
     }
@@ -268,8 +288,8 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         return contactsData.filter(c => c.text && c.text.length > 0).map((contact) => (
             <TouchableOpacity key={contact.title} onPress={this.openLink(`${contact.prefix}${contact.text}`)}>
                 <View style={contactStyles.container}>
-                    <View style={contactStyles.iconContainer} >
-                        <ApplicationIcon name={contact.icon} size={contact.size} style={contactStyles.icon} />
+                    <View style={contactStyles.iconContainer}>
+                        <ApplicationIcon name={contact.icon} size={contact.size} style={contactStyles.icon}/>
                     </View>
                     <View style={contactStyles.textContainer}>
                         <StyledText style={contactStyles.title}>{contact.title}</StyledText>
@@ -292,7 +312,10 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         const daysConverter = new ConvertHoursCreditToDays();
         const calculatedDays = daysConverter.convert(hoursCredit);
 
-        const hoursCreditCounter = new HoursCreditCounter(hoursCredit, calculatedDays.days, calculatedDays.rest);
+        const hoursCreditCounter = new HoursCreditCounter(
+            hoursCredit,
+            calculatedDays.days ? calculatedDays.days : null,
+            calculatedDays.rest ? calculatedDays.rest : null);
         const vacationTitle = 'vacation';
         const dayoffTitle = 'dayoff';
 
@@ -319,12 +342,12 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
     }
 
 
-    private renderEmployeeEvents(events: CalendarEvent[], userPermissions: UserEmployeePermissions) {
-        if (!events || !events.length || !this.props.employee) {
+    private renderEmployeeEvents(events: Nullable<CalendarEvent[]>, userPermissions: Nullable<UserEmployeePermissions>) {
+        if (!events || !events.length || !this.props.employee || !userPermissions) {
             return null;
         }
 
-        const employeeToCalendarEvents = Map<Employee, CalendarEvent[]>([ [ this.props.employee, events ] ]);
+        const employeeToCalendarEvents = Map<Employee, CalendarEvent[]>([[this.props.employee, events]]);
         const canApprove = userPermissions ? userPermissions.canApproveCalendarEvents : false;
         const canReject = userPermissions ? userPermissions.canRejectCalendarEvents : false;
 
@@ -353,7 +376,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                 hoursToIntervalTitle={this.props.hoursToIntervalTitle}
                 showUserAvatar={true}
                 canApprove={true}
-                canReject={true} />
+                canReject={true}/>
         </React.Fragment>;
     }
 

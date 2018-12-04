@@ -1,8 +1,9 @@
 import React from 'react';
 import { Button, Text, View } from 'react-native';
-import { connect, Dispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import { AuthActions, startLoginProcess } from '../reducers/auth/auth.action';
 import { welcomeScreenColor, welcomeScreenStyles } from './styles';
+import { Dispatch } from 'redux';
 
 interface AuthDispatchProps {
     onloginClicked: () => void;

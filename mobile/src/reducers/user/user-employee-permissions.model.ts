@@ -5,13 +5,13 @@ export class UserEmployeePermissions {
 
     @dataMember()
     @required()
-    public employeeId: string;
+    public employeeId: string = '';
 
     @dataMember({
         customDeserializer: (names: string[]) => Set(names)
     })
     @required()
-    public permissionsNames: Set<string>;
+    public permissionsNames: Set<string> = Set<string>();
 
     public get canApproveCalendarEvents(): boolean {
         return this.permissionsNames.has('approveCalendarEvents');
@@ -21,7 +21,7 @@ export class UserEmployeePermissions {
         return this.permissionsNames.has('rejectCalendarEvents');
     }
 
-    public equals(obj: UserEmployeePermissions): boolean {
+    public equals(obj: UserEmployeePermissions | null): boolean {
         if (!obj) {
             return false;
         }

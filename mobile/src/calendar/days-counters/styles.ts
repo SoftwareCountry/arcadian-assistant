@@ -5,7 +5,8 @@ const labelColor = counterColor;
 const backgroundColor = 'rgba(47, 175, 204, 0.2)';
 const iconColor = counterColor;
 
-export const daysCountersStyles = StyleSheet.create({
+//----------------------------------------------------------------------------
+const counters = StyleSheet.create({
     container: {
         flex: 2,
         flexDirection: 'row',
@@ -13,7 +14,8 @@ export const daysCountersStyles = StyleSheet.create({
     }
 });
 
-export const daysCounterStyles = StyleSheet.create({
+//----------------------------------------------------------------------------
+const counter = StyleSheet.create({
     container: {
         backgroundColor: backgroundColor,
         flexDirection: 'column',
@@ -47,3 +49,13 @@ export const daysCounterStyles = StyleSheet.create({
         color: labelColor
     }
 });
+
+//----------------------------------------------------------------------------
+export const StyleDays = {
+    counters: {
+        ...counters,
+    },
+    counter: {
+        ...counter,
+    },
+};

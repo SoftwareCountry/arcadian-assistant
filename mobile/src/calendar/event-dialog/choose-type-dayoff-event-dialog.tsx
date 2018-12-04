@@ -14,6 +14,7 @@ import { HoursCreditType } from '../../reducers/calendar/days-counters.model';
 import { View } from 'react-native';
 import { dayOffDialogStyles } from './styles';
 import { RadioButton, RadioGroup } from '../../common/radio-buttons-group.component';
+import { Optional } from 'types';
 
 interface ChooseTypeDayoffEventDialogDispatchProps {
     cancelDialog: () => void;
@@ -22,11 +23,11 @@ interface ChooseTypeDayoffEventDialogDispatchProps {
 }
 
 interface ChooseTypeDayoffEventDialogProps {
-    chosenType : HoursCreditType;
+    chosenType: Optional<HoursCreditType>;
 }
 
 interface ChooseTypeDayoffEventDialogState {
-    selectedHoursCreditType: HoursCreditType;
+    selectedHoursCreditType: Optional<HoursCreditType>;
     radioButtons: RadioButton[];
 }
 
@@ -80,7 +81,7 @@ class ChooseTypeDayoffEventDialogImpl extends Component<ChooseTypeDayoffEventDia
     }
 
     private onDayoffTypeSelected = (buttons: RadioButton[]) => {
-        const selectedIndex = buttons.find((item => item.selected)).selectionIndex;
+        const selectedIndex = buttons.find((item => !!item.selected))!.selectionIndex;
         const selectedType = selectedIndex === 0 ? HoursCreditType.DaysOff : HoursCreditType.Workout;
         this.setState({
             selectedHoursCreditType: selectedType,
@@ -102,16 +103,20 @@ class ChooseTypeDayoffEventDialogImpl extends Component<ChooseTypeDayoffEventDia
 }
 
 const mapStateToProps = (state: AppState): ChooseTypeDayoffEventDialogProps => ({
-    chosenType: state.calendar.eventDialog.chosenHoursCreditType
+    chosenType: state.calendar ? state.calendar.eventDialog.chosenHoursCreditType : undefined
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ChooseTypeDayoffEventDialogDispatchProps => ({
-    cancelDialog: () => { dispatch(openEventDialog(EventDialogType.ProcessDayoff)); },
+    cancelDialog: () => {
+        dispatch(openEventDialog(EventDialogType.ProcessDayoff));
+    },
     confirmChosenType: (isWorkout: boolean) => {
         dispatch(chosenTypeDayoff(isWorkout));
         dispatch(openEventDialog(EventDialogType.ConfirmDayoffStartDate));
     },
-    closeDialog: () => { dispatch(closeEventDialog()); }
+    closeDialog: () => {
+        dispatch(closeEventDialog());
+    }
 });
 
 export const ChooseTypeDayoffEventDialog = connect(mapStateToProps, mapDispatchToProps)(ChooseTypeDayoffEventDialogImpl);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavigationRouteConfigMap, StackNavigator } from 'react-navigation';
+import { createStackNavigator, NavigationRouteConfigMap } from 'react-navigation';
 import { HomeFeedsScreen } from './home-feeds-screen';
 import { stackNavigatorConfig } from '../override/stack-navigator-config';
 import { EmployeeDetailsScreen } from '../employee-details/employee-details-screen';
@@ -27,4 +27,4 @@ const routeConfig: NavigationRouteConfigMap = {
 };
 
 //----------------------------------------------------------------------------
-export const FeedsScreen = StackNavigator(routeConfig, stackNavigatorConfig);
+export const FeedsScreen = createStackNavigator(routeConfig, stackNavigatorConfig);

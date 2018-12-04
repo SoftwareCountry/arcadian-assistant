@@ -1,40 +1,31 @@
-import { createStore, combineReducers, applyMiddleware, Action } from 'redux';
-import { AppState } from './app.reducer';
-import { HelpdeskState, helpdeskReducer, helpdeskEpics } from './helpdesk/helpdesk.reducer';
-import { navigationReducer, navigationMiddlewareKeyReducer } from './navigation.reducer';
-import { NavigationState } from 'react-navigation';
-import { combineEpics, createEpicMiddleware, Epic } from 'redux-observable';
-// import { createLogger } from 'redux-logger';
-// import logger from 'redux-logger';
+import { Action, applyMiddleware, combineReducers, createStore } from 'redux';
+import { helpdeskEpics, helpdeskReducer, HelpdeskState } from './helpdesk/helpdesk.reducer';
+import { combineEpics, createEpicMiddleware } from 'redux-observable';
+//import { createLogger } from 'redux-logger';
 import { errorsEpics } from './errors/errors.reducer';
 
-import 'rxjs/Rx';
-import { OrganizationState, organizationReducer, organizationEpics } from './organization/organization.reducer';
-import { UserInfoState, userInfoReducer } from './user/user-info.reducer';
+import { organizationEpics, organizationReducer, OrganizationState } from './organization/organization.reducer';
+import { userInfoReducer, UserInfoState } from './user/user-info.reducer';
 import { userEpics } from './user/user.reducer';
-import { FeedsState, feedsReducer, feedsEpics } from './feeds/feeds.reducer';
-import { CalendarState, calendarReducer, calendarEpics } from './calendar/calendar.reducer';
+import { feedsEpics, feedsReducer, FeedsState } from './feeds/feeds.reducer';
+import { calendarEpics, calendarReducer, CalendarState } from './calendar/calendar.reducer';
 import { SecuredApiClient } from '../auth/secured-api-client';
 import config from '../config';
 import { OAuthProcess } from '../auth/oauth-process';
-import { createReactNavigationReduxMiddleware } from 'react-navigation-redux-helpers';
-import { PeopleState, peopleReducer } from './people/people.reducer';
+import { peopleReducer, PeopleState } from './people/people.reducer';
 import { authEpics$, authReducer, AuthState } from './auth/auth.reducer';
 import { refreshEpics } from './refresh/refresh.reducer';
-import { AuthActionType } from './auth/auth.action';
+import { NavigationService } from '../navigation/navigation.service';
+import { NavigationDependenciesContainer } from '../navigation/navigation-dependencies-container';
+import { navigationEpics$ } from '../navigation/navigation.epics';
 
 export interface AppState {
     helpdesk?: HelpdeskState;
     organization?: OrganizationState;
-
-    nav?: NavigationState;
-    navigationMiddlewareKey: string;
-
     userInfo?: UserInfoState;
     feeds?: FeedsState;
     calendar?: CalendarState;
     people?: PeopleState;
-
     authentication?: AuthState;
 }
 
@@ -46,13 +37,12 @@ const rootEpic = combineEpics(
     feedsEpics as any,
     calendarEpics as any,
     authEpics$ as any,
-    refreshEpics as any);
+    refreshEpics as any,
+    navigationEpics$ as any);
 
 const reducers = combineReducers<AppState>({
     helpdesk: helpdeskReducer,
     organization: organizationReducer,
-    nav: navigationReducer,
-    navigationMiddlewareKey: navigationMiddlewareKeyReducer,
     userInfo: userInfoReducer,
     feeds: feedsReducer,
     calendar: calendarReducer,
@@ -61,28 +51,29 @@ const reducers = combineReducers<AppState>({
 
 });
 
-const rootReducer = (state: AppState, action: Action) => {
-    if (action.type === AuthActionType.userLoggedOut) {
-        state = undefined;
+const rootReducer = (state: AppState | undefined, action: Action) => {
+    if (action.type === 'USER-LOGGED-OUT') {
+        return reducers(undefined, action);
     }
     return reducers(state, action);
 };
 
-export interface DependenciesContainer {
+export interface DependenciesContainer extends NavigationDependenciesContainer {
     apiClient: SecuredApiClient;
     oauthProcess: OAuthProcess;
 }
 
-export type AppEpic<T extends Action> = Epic<T, AppState, DependenciesContainer>;
+export const storeFactory = (oauthProcess: OAuthProcess, navigationService: NavigationService) => {
+    const dependencies: DependenciesContainer = {
+        apiClient: new SecuredApiClient(config.apiUrl, oauthProcess.authenticationState as any),
+        oauthProcess: oauthProcess,
+        navigationService: navigationService,
+    };
 
-export const storeFactory = (oauthProcess: OAuthProcess, ) => {
-    const dependencies: DependenciesContainer = { apiClient: new SecuredApiClient(config.apiUrl,  oauthProcess.authenticationState as any ), oauthProcess: oauthProcess };
-    const options = { dependencies };
-    const epicMiddleware = createEpicMiddleware(rootEpic, options);
+    const epicMiddleware = createEpicMiddleware({ dependencies });
+    const store = createStore(rootReducer, {}, applyMiddleware(epicMiddleware));
 
-    const navigationMiddlewareKey = 'root';
+    epicMiddleware.run(rootEpic);
 
-    const reactNavigationMiddleware = createReactNavigationReduxMiddleware<AppState>(navigationMiddlewareKey, (state) => state.nav);
-
-    return createStore<AppState>(rootReducer, { navigationMiddlewareKey }, applyMiddleware(epicMiddleware, reactNavigationMiddleware));
+    return store;
 };

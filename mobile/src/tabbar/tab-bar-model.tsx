@@ -33,4 +33,4 @@ const tabbarModel: NavigationRouteConfigMap = {
     }
 };
 
-export default tabbarModel; 
+export default tabbarModel;

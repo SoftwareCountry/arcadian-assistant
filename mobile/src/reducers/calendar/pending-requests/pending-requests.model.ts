@@ -14,5 +14,5 @@ export class PendingRequests {
         }
     })
     @required()
-    public events: Map<string, CalendarEvent[]>;
+    public events: Map<string, CalendarEvent[]> = Map<string, CalendarEvent[]>();
 }

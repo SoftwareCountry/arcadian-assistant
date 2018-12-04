@@ -1,12 +1,15 @@
 import React from 'react';
-import { connect, Dispatch, MapStateToProps } from 'react-redux';
+import { connect } from 'react-redux';
 
 import { EmployeesList } from './employees-list';
 import { AppState } from '../reducers/app.reducer';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Employee } from '../reducers/organization/employee.model';
-import { openEmployeeDetailsAction } from '../employee-details/employee-details-dispatcher';
 import { LoadingView } from '../navigation/loading';
+import { Action, Dispatch } from 'redux';
+import { openEmployeeDetails } from '../navigation/navigation.actions';
+import { Optional } from 'types';
+import { getEmployee } from '../utils/utils';
 
 interface PeopleRoomPropsOwnProps {
     employees: EmployeesStore;
@@ -16,30 +19,27 @@ interface PeopleRoomPropsOwnProps {
 interface PeopleRoomStateProps {
     isLoading: boolean;
     employees: EmployeesStore;
-    userEmployee: Employee;
+    userEmployee: Optional<Employee>;
     employeesPredicate: (employee: Employee) => boolean;
 }
 
-type PeopleDepartmentProps = PeopleRoomStateProps & PeopleRoomPropsOwnProps;
+const mapStateToProps = (state: AppState, ownProps: PeopleRoomPropsOwnProps): PeopleRoomStateProps => {
+    const userEmployee = getEmployee(state);
+    const defaultEmployeesPredicate = (employee: Employee) => !!userEmployee && employee.roomNumber === userEmployee.roomNumber;
 
-const mapStateToProps: MapStateToProps<PeopleRoomStateProps, PeopleRoomPropsOwnProps, AppState> =
-    (state: AppState, ownProps: PeopleRoomPropsOwnProps): PeopleRoomStateProps => {
-        const userEmployee = state.organization.employees.employeesById.get(state.userInfo.employeeId);
-        const defaultEmployeesPredicate = (employee: Employee) => userEmployee && employee.roomNumber === userEmployee.roomNumber;
-
-        return ({
-            isLoading: state.organization.employees.employeesById.isEmpty(),
-            employees: ownProps.employees,
-            userEmployee,
-            employeesPredicate: ownProps.customEmployeesPredicate ? ownProps.customEmployeesPredicate : defaultEmployeesPredicate
-        });
-    };
+    return ({
+        isLoading: !state.organization || state.organization.employees.employeesById.isEmpty(),
+        employees: ownProps.employees,
+        userEmployee,
+        employeesPredicate: ownProps.customEmployeesPredicate ? ownProps.customEmployeesPredicate : defaultEmployeesPredicate
+    });
+};
 
 interface EmployeesListDispatchProps {
     onItemClicked: (employee: Employee) => void;
 }
-const mapDispatchToProps = (dispatch: Dispatch<any>): EmployeesListDispatchProps => ({
-    onItemClicked: (employee: Employee) => dispatch(openEmployeeDetailsAction(employee))
+const mapDispatchToProps = (dispatch: Dispatch<Action>): EmployeesListDispatchProps => ({
+    onItemClicked: (employee: Employee) => dispatch(openEmployeeDetails(employee))
 });
 
 class PeopleRoomImpl extends React.Component<PeopleRoomStateProps & EmployeesListDispatchProps> {
@@ -57,7 +57,7 @@ class PeopleRoomImpl extends React.Component<PeopleRoomStateProps & EmployeesLis
     }
 
     public render() {
-        const employees = this.props.employees.employeesById.toArray().filter(this.props.employeesPredicate);
+        const employees = this.props.employees.employeesById.toIndexedSeq().toArray().filter(this.props.employeesPredicate);
         if (this.props.isLoading) {
             return <LoadingView/>;
         }
@@ -65,4 +65,4 @@ class PeopleRoomImpl extends React.Component<PeopleRoomStateProps & EmployeesLis
     }
 }
 
-export const PeopleRoom = connect(mapStateToProps, mapDispatchToProps)(PeopleRoomImpl);
+export const PeopleRoom = connect<PeopleRoomStateProps, EmployeesListDispatchProps, PeopleRoomPropsOwnProps>(mapStateToProps, mapDispatchToProps)(PeopleRoomImpl);

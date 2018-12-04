@@ -1,13 +1,6 @@
 import React from 'react';
-import {
-    NavigationParams,
-    NavigationRoute,
-    NavigationScreenConfig,
-    NavigationScreenProp,
-    NavigationStackScreenOptions
-} from 'react-navigation';
-import { CurrentDepartmentNavigationParams } from '../employee-details/employee-details-dispatcher';
-import { EmployeesStore } from '../reducers/organization/employees.reducer';
+import { NavigationScreenConfig, NavigationScreenProps, NavigationStackScreenOptions } from 'react-navigation';
+import { defaultState, EmployeesStore } from '../reducers/organization/employees.reducer';
 import { PeopleDepartment } from './people-department';
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
@@ -16,27 +9,17 @@ import { SafeAreaView } from 'react-native';
 import Style from '../layout/style';
 
 //============================================================================
-interface ExtendedNavigationScreenProp<P> extends NavigationScreenProp<NavigationRoute> {
-    getParam: <T extends keyof P>(param: T, fallback?: P[T]) => P[T];
-}
-
-//============================================================================
-interface NavigationProps {
-    navigation: ExtendedNavigationScreenProp<CurrentDepartmentNavigationParams>;
-}
-
-//============================================================================
 interface CurrentPeopleDepartmentProps {
     employees: EmployeesStore;
 }
 
 //----------------------------------------------------------------------------
 const stateToProps = (state: AppState): CurrentPeopleDepartmentProps => ({
-    employees: state.organization.employees
+    employees: state.organization ? state.organization.employees : defaultState,
 });
 
 //============================================================================
-class CurrentPeopleDepartmentImpl extends React.Component<CurrentPeopleDepartmentProps & NavigationProps> {
+class CurrentPeopleDepartmentImpl extends React.Component<CurrentPeopleDepartmentProps & NavigationScreenProps> {
     public render() {
         const departmentId = this.props.navigation.getParam('departmentId', undefined);
         const customEmployeesPredicate = (employee: Employee) => employee.departmentId === departmentId;
@@ -50,13 +33,12 @@ class CurrentPeopleDepartmentImpl extends React.Component<CurrentPeopleDepartmen
 
     //----------------------------------------------------------------------------
     public static navigationOptions: NavigationScreenConfig<NavigationStackScreenOptions> = (navigationOptionsContainer) => {
-        const navigation = navigationOptionsContainer.navigation as ExtendedNavigationScreenProp<NavigationParams>;
+        const navigation = navigationOptionsContainer.navigation;
         const departmentAbbreviation = navigation.getParam('departmentAbbreviation', undefined);
 
         return {
+            ...navigationOptionsContainer.navigationOptions,
             headerTitle: departmentAbbreviation ? `${departmentAbbreviation}` : '',
-            headerTitleStyle: Style.navigation.title,
-            headerStyle: Style.navigation.header,
         };
     };
 }

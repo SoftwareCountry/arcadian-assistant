@@ -1,21 +1,21 @@
 import React, { Component } from 'react';
 import moment from 'moment';
-import { Map, Set, Iterable } from 'immutable';
-import { View, StyleSheet, FlatList, ListRenderItemInfo, Dimensions } from 'react-native';
+import { Map, Set } from 'immutable';
+import { View, StyleSheet, FlatList, ListRenderItemInfo, Dimensions, ViewStyle } from 'react-native';
 
 import { StyledText } from '../override/styled-text';
-import { ApplicationIcon } from '../override/application-icon';
 import { Avatar } from '../people/avatar';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
 import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { EventManagementToolset } from './event-management-toolset';
 import { Employee } from '../reducers/organization/employee.model';
 import { CalendarEventIcon } from '../calendar/calendar-event-icon';
+import { Nullable } from 'types';
 
 interface EmployeeDetailsEventsListProps {
     events: Map<Employee, CalendarEvent[]>;
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
-    hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => string;
+    hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => Nullable<string>;
     showUserAvatar?: boolean;
     canApprove: boolean;
     canReject: boolean;
@@ -40,7 +40,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
         );
     }
 
-    private prepareEvents(): EmployeeDetailItem[] {
+    private prepareEvents(): Nullable<EmployeeDetailItem[]> {
         const { events } = this.props;
 
         if (!events) {
@@ -58,6 +58,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
                     } as EmployeeDetailItem))
             )
             .flatten()
+            .toIndexedSeq()
             .toArray();
     }
 
@@ -88,12 +89,12 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
                 <View style={eventRow}>
                     <View style={leftIconsStyle}>
                         <View style={typeIconContainerStyle}>
-                            <CalendarEventIcon type={item.calendarEvent.type} style={eventIcon} />
+                            <CalendarEventIcon type={item.calendarEvent.type} style={eventIcon as ViewStyle} />
                         </View>
                         {
                             this.props.showUserAvatar ?
                             <View style={avatarContainer}>
-                                <Avatar photoUrl={item.employee.photoUrl} style={avatarOuterFrame} imageStyle={avatarImage} />
+                                <Avatar photoUrl={item.employee.photoUrl} style={avatarOuterFrame as ViewStyle} imageStyle={avatarImage as ViewStyle} />
                             </View> : null
                         }
                     </View>
@@ -127,7 +128,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
     }
 
     private descriptionStatus(event: CalendarEvent): string {
-        let description: string;
+        let description = '';
 
         if (event.isRequested) {
             description = `requests ${event.type.toLowerCase()}`;

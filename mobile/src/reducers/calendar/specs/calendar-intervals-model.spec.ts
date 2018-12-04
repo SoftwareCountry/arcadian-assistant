@@ -35,8 +35,9 @@ describe('IntervalsModel', () => {
             intervalsModel.set(date, intervalModel);
             const array = intervalsModel.get(date);
 
-            expect(array.length).toEqual(1);
-            expect(array[0]).toEqual(intervalModel);
+            expect(array).toBeDefined();
+            expect(array!.length).toEqual(1);
+            expect(array![0]).toEqual(intervalModel);
         });
 
         it('should add element to the existing array, if key exists', () => {
@@ -65,8 +66,8 @@ describe('IntervalsModel', () => {
             const array = intervalsModel.get(key);
 
             expect(array).toBe(existingArray);
-            expect(array[0]).toBe(intervalModel);
-            expect(array[1]).toBe(intervalModel2);
+            expect(array![0]).toBe(intervalModel);
+            expect(array![1]).toBe(intervalModel2);
         });
     });
 
@@ -87,8 +88,9 @@ describe('IntervalsModel', () => {
         intervalsModel.set(date, intervalModel);
         const array = intervalsModel.get(date);
 
-        expect(array.length).toEqual(1);
-        expect(array[0]).toEqual(intervalModel);
+        expect(array).toBeDefined();
+        expect(array!.length).toEqual(1);
+        expect(array![0]).toEqual(intervalModel);
     });
 
     describe('copy', () => {
@@ -147,9 +149,9 @@ describe('IntervalsModel', () => {
         it('should not copy intervals elements', () => {
             const copied = intervalsModel.copy();
 
-            expect(intervalsModel.get(startDate)[0]).toBe(copied.get(startDate)[0]);
-            expect(intervalsModel.get(intervalDate)[0]).toBe(copied.get(intervalDate)[0]);
-            expect(intervalsModel.get(endDate)[0]).toBe(copied.get(endDate)[0]);
+            expect(intervalsModel.get(startDate)![0]).toBe(copied.get(startDate)![0]);
+            expect(intervalsModel.get(intervalDate)![0]).toBe(copied.get(intervalDate)![0]);
+            expect(intervalsModel.get(endDate)![0]).toBe(copied.get(endDate)![0]);
         });
     });
 

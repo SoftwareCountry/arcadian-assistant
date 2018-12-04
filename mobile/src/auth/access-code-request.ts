@@ -1,6 +1,7 @@
 import { dataMember, required } from 'santee-dcts';
-import { ajaxPost } from 'rxjs/observable/dom/AjaxObservable';
 import { deserialize } from 'santee-dcts/src/deserializer';
+import { ajax } from 'rxjs/ajax';
+import { map } from 'rxjs/operators';
 
 interface AccessCodeRequestParamsBase {
     'client_id': string;
@@ -23,29 +24,29 @@ type AccessCodeRequestParams = AccessCodeRequestWithAuthCodeParams | AccessCodeR
 export class TokenResponse {
     @dataMember({ fieldName: 'access_token' })
     @required()
-    public accessToken: string;
+    public accessToken: string = '';
 
     @dataMember({ fieldName: 'token_type' })
-    public tokenType: string;
+    public tokenType: string = '';
 
     @dataMember({ fieldName: 'expires_in' })
-    public expiresIn: string;
+    public expiresIn: string = '';
 
     @dataMember({ fieldName: 'expires_on' })
-    public expiresOn: string;
+    public expiresOn: string = '';
 
     @dataMember()
-    public resource: string;
+    public resource: string = '';
 
     @dataMember({ fieldName: 'refresh_token' })
     @required()
-    public refreshToken: string;
+    public refreshToken: string = '';
 
     @dataMember()
-    public scope: string;
+    public scope: string = '';
 
     @dataMember({ fieldName: 'id_token' })
-    public idToken: string;
+    public idToken: string = '';
 }
 
 export class AccessCodeRequest {
@@ -67,8 +68,9 @@ export class AccessCodeRequest {
     }
 
     private performRequest(params: AccessCodeRequestParams) {
-        return ajaxPost(this.tokenUrl, params)
-            .map(x => deserialize(x.response, TokenResponse));
+        return ajax.post(this.tokenUrl, params).pipe(
+            map(x => deserialize(x.response, TokenResponse))
+        );
     }
 
     private getDefaultParams(): AccessCodeRequestParamsBase {
