@@ -18,6 +18,7 @@ import { NavigationScreenConfig, NavigationStackScreenOptions } from 'react-navi
 import { Action, Dispatch } from 'redux';
 import { Optional } from 'types';
 import { getEmployee } from '../utils/utils';
+import { SettingsView } from '../user-preferences-screen/settings-view';
 
 //============================================================================
 interface ProfileScreenProps {
@@ -43,6 +44,7 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
             borderBottomColor: 'transparent',
             elevation: 0,
         },
+        headerLeft: <SettingsView/>,
         headerRight: <LogoutView/>,
     };
 
