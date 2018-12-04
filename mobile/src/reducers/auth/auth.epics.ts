@@ -25,7 +25,7 @@ export const startLoginProcessEpic$ = (action$: ActionsObservable<StartLoginProc
 
 export const startLogoutProcessEpic$ = (action$: ActionsObservable<StartLogoutProcess>, _: StateObservable<AppState>, dep: DependenciesContainer) =>
     action$.ofType('START-LOGOUT-PROCESS').pipe(
-        map(x => {
+        tap(x => {
             if (x.force) {
                 dep.oauthProcess.logout();
                 return;
