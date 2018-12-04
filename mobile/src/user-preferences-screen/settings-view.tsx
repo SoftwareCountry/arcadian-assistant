@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { View, TouchableOpacity, Platform, Dimensions } from 'react-native';
+import { Dimensions, Platform, TouchableOpacity, View } from 'react-native';
 import { connect } from 'react-redux';
 import tabBarStyles from '../tabbar/tab-bar-styles';
 import { ApplicationIcon } from '../override/application-icon';
 import { preferencesStyles } from './preferences.styles';
-import { openUserPreferencesAction } from './user-preferences-dispatcher';
 import { Action, Dispatch } from 'redux';
+import { openUserPreferences } from '../navigation/navigation.actions';
 
 interface SettingsDispatchProps {
     onSettingsClicked: () => void;
@@ -13,7 +13,7 @@ interface SettingsDispatchProps {
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>): SettingsDispatchProps => ({
     onSettingsClicked: () => {
-        dispatch(openUserPreferencesAction());
+        dispatch(openUserPreferences());
     }
 });
 
