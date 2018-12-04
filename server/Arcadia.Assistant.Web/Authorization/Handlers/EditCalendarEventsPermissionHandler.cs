@@ -29,6 +29,7 @@
 
             hasPermissions &= CheckIfApproval(existingEvent, updatedEvent, employeePermissions);
             hasPermissions &= CheckIfRejected(existingEvent, updatedEvent, employeePermissions);
+            hasPermissions &= CheckIfCancelled(existingEvent, updatedEvent, employeePermissions);
 
             if (updatedEvent.Type == CalendarEventTypes.Sickleave)
             {
@@ -64,6 +65,21 @@
             if (statusChanged && updatedEvent.Status == rejected)
             {
                 return employeePermissions.HasFlag(EmployeePermissionsEntry.RejectCalendarEvents);
+            }
+
+            return true;
+        }
+
+        private static bool CheckIfCancelled(CalendarEvent existingEvent, CalendarEventsModel updatedEvent, EmployeePermissionsEntry employeePermissions)
+        {
+            var calendarEventStatuses = new CalendarEventStatuses();
+            var approvedStatus = calendarEventStatuses.ApprovedForType(existingEvent.Type);
+            var cancelledStatus = calendarEventStatuses.CancelledByType(updatedEvent.Type);
+            var statusChanged = StatusChanged(existingEvent, updatedEvent);
+
+            if (statusChanged && existingEvent.Status == approvedStatus && updatedEvent.Status == cancelledStatus)
+            {
+                return employeePermissions.HasFlag(EmployeePermissionsEntry.CancelApprovedCalendarEvents);
             }
 
             return true;
