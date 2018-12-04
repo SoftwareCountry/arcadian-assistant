@@ -15,7 +15,8 @@ const routeConfig: NavigationRouteConfigMap = {
         navigationOptions:  {
             headerTitle: <SearchViewPeople/>,
             headerStyle: {
-                backgroundColor: Style.color.base
+                backgroundColor: Style.color.base,
+                borderBottomColor: Style.color.transparent,
             },
         }
     },
