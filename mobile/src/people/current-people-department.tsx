@@ -1,19 +1,12 @@
 import React from 'react';
-import {
-    NavigationParams,
-    NavigationRoute,
-    NavigationScreenConfig,
-    NavigationScreenProp, NavigationScreenProps,
-    NavigationStackScreenOptions
-} from 'react-navigation';
-import { EmployeesStore } from '../reducers/organization/employees.reducer';
+import { NavigationScreenConfig, NavigationScreenProps, NavigationStackScreenOptions } from 'react-navigation';
+import { defaultState, EmployeesStore } from '../reducers/organization/employees.reducer';
 import { PeopleDepartment } from './people-department';
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
 import { Employee } from '../reducers/organization/employee.model';
 import { SafeAreaView } from 'react-native';
 import Style from '../layout/style';
-import { Map } from 'immutable';
 
 //============================================================================
 interface CurrentPeopleDepartmentProps {
@@ -22,10 +15,7 @@ interface CurrentPeopleDepartmentProps {
 
 //----------------------------------------------------------------------------
 const stateToProps = (state: AppState): CurrentPeopleDepartmentProps => ({
-    employees: state.organization ? state.organization.employees : {
-        employeesById: Map(),
-        employeeIdsByDepartment: Map()
-    }
+    employees: state.organization ? state.organization.employees : defaultState,
 });
 
 //============================================================================
