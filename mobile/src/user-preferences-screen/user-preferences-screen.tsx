@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Component } from 'react';
-import { SafeAreaView, ScrollView } from 'react-native';
+import { RefreshControl, SafeAreaView, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
 import { loadUserPreferences, updateUserPreferences, UserActions } from '../reducers/user/user.action';
 import { UserPreferences } from '../reducers/user/user-preferences.model';
@@ -44,9 +44,7 @@ class UserPreferencesScreenImpl extends Component<UserPreferencesScreenProps & U
     };
 
     public componentDidMount() {
-        if (this.props.userId) {
-            this.props.loadUserPreferences(this.props.userId);
-        }
+        this.loadPreferences();
     }
 
     public render() {
@@ -57,7 +55,7 @@ class UserPreferencesScreenImpl extends Component<UserPreferencesScreenProps & U
         }
 
         return <SafeAreaView style={preferencesStyles.container}>
-            <ScrollView>
+            <ScrollView refreshControl={<RefreshControl refreshing={false} onRefresh={this.loadPreferences}/>}>
                 <SwitchSettingsView title='Email notifications'
                                     onValueChange={this.onEnableEmailNotificationsChanged}
                                     value={this.props.preferences.areEmailNotificationsEnabled}/>
@@ -66,6 +64,12 @@ class UserPreferencesScreenImpl extends Component<UserPreferencesScreenProps & U
             </ScrollView>
         </SafeAreaView>;
     }
+
+    private loadPreferences = () => {
+        if (this.props.userId) {
+            this.props.loadUserPreferences(this.props.userId);
+        }
+    };
 
     private onEnableEmailNotificationsChanged = (value: boolean) => {
         const { userId, preferences } = this.props;
