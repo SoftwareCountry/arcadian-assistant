@@ -40,7 +40,7 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             return Arrays.asList(
                     new MainReactPackage(),
-            new RNGestureHandlerPackage(),
+                    new RNGestureHandlerPackage(),
                     new AppCenterReactNativePushPackage(MainApplication.this),
                     new ReactNativeConfigPackage(),
                     new ReactNativeFingerprintScannerPackage(),
