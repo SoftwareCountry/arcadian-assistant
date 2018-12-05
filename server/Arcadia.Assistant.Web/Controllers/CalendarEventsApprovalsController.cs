@@ -102,8 +102,8 @@
                 return this.BadRequest(this.ModelState);
             }
 
-            var authorizationResult = await this.authorizationService.AuthorizeAsync(this.User, approver, new EditPendingCalendarEvents());
-            if (!authorizationResult.Succeeded)
+            var editCalendarEventAuthResult = await this.authorizationService.AuthorizeAsync(this.User, approver, new EditPendingCalendarEvents());
+            if (!editCalendarEventAuthResult.Succeeded)
             {
                 return this.Forbid();
             }
@@ -112,6 +112,12 @@
             if (requestedEvent == null)
             {
                 return this.NotFound();
+            }
+
+            var canApproveOnBehalfAuthResult = await this.authorizationService.AuthorizeAsync(this.User, approver, new CanApproveOnBehalfRequirement());
+            if (!canApproveOnBehalfAuthResult.Succeeded)
+            {
+                return this.Forbid();
             }
 
             var response = await employee.Calendar.CalendarActor.Ask<ApproveCalendarEvent.Response>(
