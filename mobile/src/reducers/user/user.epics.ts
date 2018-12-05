@@ -54,7 +54,8 @@ export const updateUserPreferencesEpic$ = (action$: ActionsObservable<UpdateUser
         switchMap(action => {
             const requestBody = { ...action.preferences };
 
-            return deps.apiClient.put(`/user-preferences/`, requestBody, { 'Content-Type': 'application/json' })
-                .pipe(handleHttpErrors(false), map(() => loadUserPreferencesFinished(action.preferences))
-                );
+            return deps.apiClient.put(`/user-preferences/`, requestBody, { 'Content-Type': 'application/json' }).pipe(
+                handleHttpErrors(false),
+                map(_ => loadUserPreferencesFinished(action.preferences))
+            );
         }));

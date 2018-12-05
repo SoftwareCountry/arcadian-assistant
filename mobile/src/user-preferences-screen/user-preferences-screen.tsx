@@ -14,12 +14,12 @@ import { Nullable } from 'types';
 
 interface UserPreferencesScreenProps {
     userId: Nullable<string>;
-    preferences: UserPreferences;
+    preferences: Nullable<UserPreferences>;
 }
 
 const mapStateToProps = (state: AppState): UserPreferencesScreenProps => ({
     userId: state.userInfo ? state.userInfo.employeeId : null,
-    preferences: state.userInfo ? state.userInfo.preferences : UserPreferences.defaultUserPreferences,
+    preferences: state.userInfo ? state.userInfo.preferences : null,
 });
 
 interface UserPreferencesDispatchProps {
@@ -58,9 +58,9 @@ class UserPreferencesScreenImpl extends Component<UserPreferencesScreenProps & U
             <ScrollView refreshControl={<RefreshControl refreshing={false} onRefresh={this.loadPreferences}/>}>
                 <SwitchSettingsView title='Email notifications'
                                     onValueChange={this.onEnableEmailNotificationsChanged}
-                                    value={this.props.preferences.areEmailNotificationsEnabled}/>
+                                    value={preferences.emailNotifications}/>
                 <SwitchSettingsView title='Push notifications' onValueChange={this.onEnablePushNotificationsChanged}
-                                    value={this.props.preferences.arePushNotificationsEnabled}/>
+                                    value={preferences.pushNotifications}/>
             </ScrollView>
         </SafeAreaView>;
     }
@@ -79,7 +79,7 @@ class UserPreferencesScreenImpl extends Component<UserPreferencesScreenProps & U
         }
 
         const newPreferences = preferences.clone();
-        newPreferences.areEmailNotificationsEnabled = value;
+        newPreferences.emailNotifications = value;
 
         this.props.updateUserPreferences(userId, preferences, newPreferences);
     };
@@ -92,7 +92,7 @@ class UserPreferencesScreenImpl extends Component<UserPreferencesScreenProps & U
         }
 
         const newPreferences = preferences.clone();
-        newPreferences.arePushNotificationsEnabled = value;
+        newPreferences.pushNotifications = value;
 
         this.props.updateUserPreferences(userId, preferences, newPreferences);
     };

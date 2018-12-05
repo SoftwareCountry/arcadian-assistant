@@ -2,26 +2,24 @@ import { dataMember, required } from 'santee-dcts';
 
 export class UserPreferences {
 
-    public static defaultUserPreferences = new UserPreferences();
-
-    @dataMember({ fieldName: 'emailNotifications' })
+    @dataMember()
     @required()
-    public areEmailNotificationsEnabled: boolean;
+    public emailNotifications: boolean;
 
-    @dataMember({ fieldName: 'pushNotifications' })
+    @dataMember()
     @required()
-    public arePushNotificationsEnabled: boolean;
+    public pushNotifications: boolean;
 
     public constructor() {
-        this.areEmailNotificationsEnabled = false;
-        this.arePushNotificationsEnabled = false;
+        this.emailNotifications = false;
+        this.pushNotifications = false;
     }
 
     public clone(): UserPreferences {
         const result = new UserPreferences();
 
-        result.areEmailNotificationsEnabled = this.areEmailNotificationsEnabled;
-        result.arePushNotificationsEnabled = this.arePushNotificationsEnabled;
+        result.emailNotifications = this.emailNotifications;
+        result.pushNotifications = this.pushNotifications;
 
         return result;
     }
@@ -35,8 +33,8 @@ export class UserPreferences {
             return true;
         }
 
-        return this.areEmailNotificationsEnabled === obj.areEmailNotificationsEnabled &&
-            this.arePushNotificationsEnabled === obj.arePushNotificationsEnabled;
+        return this.emailNotifications === obj.emailNotifications &&
+            this.pushNotifications === obj.pushNotifications;
     }
 }
 
