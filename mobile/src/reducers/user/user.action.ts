@@ -45,7 +45,7 @@ export interface LoadUserPreferences extends Action {
 
 export const loadUserPreferences = (userId: string): LoadUserPreferences => ({ type: 'LOAD-USER-PREFERENCES', userId });
 
-export interface UpdateUserPreferences {
+export interface UpdateUserPreferences extends Action {
     type: 'UPDATE-USER-PREFERENCES';
     userId: string;
     previousPreferences: UserPreferences;
@@ -59,7 +59,7 @@ export const updateUserPreferences = (userId: string, previousPreferences: UserP
     preferences: newPreferences,
 });
 
-export interface LoadUserPreferencesFinished {
+export interface LoadUserPreferencesFinished extends Action {
     type: 'LOAD-USER-PREFERENCES-FINISHED';
     preferences: UserPreferences;
 }
