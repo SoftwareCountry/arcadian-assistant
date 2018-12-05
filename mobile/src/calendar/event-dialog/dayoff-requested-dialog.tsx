@@ -34,6 +34,4 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>): DayoffRequestedDialogDi
     },
 });
 
-const DayoffRequestedDialog = connect(undefined, mapDispatchToProps)(DayoffRequestedDialogImpl);
-
-export default DayoffRequestedDialog;
+export const DayoffRequestedDialog = connect(undefined, mapDispatchToProps)(DayoffRequestedDialogImpl);

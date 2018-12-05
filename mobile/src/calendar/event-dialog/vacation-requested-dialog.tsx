@@ -34,6 +34,4 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>): VacationRequestedDialog
     },
 });
 
-const VacationRequestedDialog = connect(undefined, mapDispatchToProps)(VacationRequestedDialogImpl);
-
-export default VacationRequestedDialog;
+export const VacationRequestedDialog = connect(undefined, mapDispatchToProps)(VacationRequestedDialogImpl);

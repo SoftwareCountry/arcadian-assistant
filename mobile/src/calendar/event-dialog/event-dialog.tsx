@@ -14,8 +14,8 @@ import { ChooseTypeDayoffEventDialog } from './choose-type-dayoff-event-dialog';
 import { ConfirmDayoffEventDialog } from './confirm-dayoff-event-dialog';
 import { EditDayoffEventDialog } from './edit-dayoff-event-dialog';
 import { CancelSickLeaveEventDialog } from './cancel-sickleave-event-dialog';
-import VacationRequestedDialog from './vacation-requested-dialog';
-import DayoffRequestedDialog from './dayoff-requested-dialog';
+import { VacationRequestedDialog } from './vacation-requested-dialog';
+import { DayoffRequestedDialog } from './dayoff-requested-dialog';
 
 interface EventDialogProps {
     dialogType: EventDialogType;
