@@ -58,6 +58,11 @@
                     actor.Forward(cmd);
                     break;
 
+                case GetCalendarEventApprovals cmd:
+                    var getApprovalsActor = this.GetActorByEventType(cmd.Event.Type);
+                    getApprovalsActor.Forward(cmd);
+                    break;
+
                 case ApproveCalendarEvent cmd:
                     var approveActor = this.GetActorByEventType(cmd.Event.Type);
                     approveActor.Forward(cmd);

@@ -85,6 +85,15 @@
                     }
                     break;
 
+                case GetCalendarEventApprovals msg:
+                    if (!this.ApprovalsByEvent.TryGetValue(msg.Event.EventId, out var approvals))
+                    {
+                        this.Sender.Tell(new GetCalendarEventApprovals.ErrorResponse($"Event with event id {msg.Event.EventId} is not found"));
+                    }
+
+                    this.Sender.Tell(new GetCalendarEventApprovals.SuccessResponse(approvals));
+                    break;
+
                 case ApproveCalendarEvent msg:
                     try
                     {
@@ -137,8 +146,6 @@
 
         protected abstract string GetInitialStatus();
 
-        protected abstract string GetApprovedStatus();
-
         protected abstract bool IsStatusTransitionAllowed(string oldCalendarEventStatus, string newCalendarEventStatus);
 
         protected abstract void OnSuccessfulApprove(UserGrantedCalendarEventApproval message);
@@ -147,14 +154,15 @@
         {
             var calendarEvent = this.EventsById[message.Event.EventId];
             var approvals = this.ApprovalsByEvent[message.Event.EventId];
-            if (!this.IsStatusTransitionAllowed(calendarEvent.Status, this.GetApprovedStatus()))
+
+            if (!calendarEvent.IsPending)
             {
-                var errorMessage = $"Event {message.Event}. Status transition {calendarEvent.Status} -> {this.GetApprovedStatus()} is not allowed for {calendarEvent.Type}";
+                var errorMessage = $"Approval of non-pending event {message.Event} is not allowed";
                 this.Sender.Tell(new ApproveCalendarEvent.BadRequestResponse(errorMessage));
                 return;
             }
 
-            if (approvals.Contains(message.ApproverId) || calendarEvent.Status == this.GetApprovedStatus())
+            if (approvals.Contains(message.ApproverId))
             {
                 this.Sender.Tell(Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
                 return;
@@ -178,6 +186,7 @@
         private void ProcessCalendarEventApprovals(ProcessCalendarEventApprovalsMessage.SuccessResponse successResponse)
         {
             var oldEvent = this.EventsById[successResponse.EventId];
+            var approvedStatus = new CalendarEventStatuses().ApprovedForType(oldEvent.Type);
 
             if (successResponse.NextApproverId == null)
             {
@@ -185,7 +194,7 @@
                     oldEvent.EventId,
                     oldEvent.Type,
                     oldEvent.Dates,
-                    this.GetApprovedStatus(),
+                    approvedStatus,
                     oldEvent.EmployeeId
                 );
 

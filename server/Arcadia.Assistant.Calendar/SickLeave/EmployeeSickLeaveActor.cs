@@ -175,17 +175,13 @@
             return SickLeaveStatuses.Requested;
         }
 
-        protected override string GetApprovedStatus()
-        {
-            return SickLeaveStatuses.Approved;
-        }
-
         protected override bool IsStatusTransitionAllowed(string oldCalendarEventStatus, string newCalendarEventStatus)
         {
             return SickLeaveStatuses.All.Contains(newCalendarEventStatus)
                 && (oldCalendarEventStatus != SickLeaveStatuses.Cancelled)
                 && (oldCalendarEventStatus != SickLeaveStatuses.Completed)
-                && (newCalendarEventStatus != this.GetInitialStatus());
+                && (newCalendarEventStatus != this.GetInitialStatus())
+                && (newCalendarEventStatus != SickLeaveStatuses.Approved);
         }
 
         protected override void OnSuccessfulApprove(UserGrantedCalendarEventApproval message)
