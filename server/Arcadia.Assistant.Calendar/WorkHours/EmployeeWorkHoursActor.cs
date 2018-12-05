@@ -154,17 +154,13 @@
             return WorkHoursChangeStatuses.Requested;
         }
 
-        protected override string GetApprovedStatus()
-        {
-            return WorkHoursChangeStatuses.Approved;
-        }
-
         protected override bool IsStatusTransitionAllowed(string oldCalendarEventStatus, string newCalendarEventStatus)
         {
             return WorkHoursChangeStatuses.All.Contains(newCalendarEventStatus)
                 && (oldCalendarEventStatus != WorkHoursChangeStatuses.Cancelled)
                 && (oldCalendarEventStatus != WorkHoursChangeStatuses.Rejected)
-                && (newCalendarEventStatus != this.GetInitialStatus());
+                && (newCalendarEventStatus != this.GetInitialStatus())
+                && (newCalendarEventStatus != WorkHoursChangeStatuses.Approved);
         }
 
         protected override void OnSuccessfulApprove(UserGrantedCalendarEventApproval message)

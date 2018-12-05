@@ -138,17 +138,13 @@
             return VacationStatuses.Requested;
         }
 
-        protected override string GetApprovedStatus()
-        {
-            return VacationStatuses.Approved;
-        }
-
         protected override bool IsStatusTransitionAllowed(string oldCalendarEventStatus, string newCalendarEventStatus)
         {
             return VacationStatuses.All.Contains(newCalendarEventStatus)
                 && (oldCalendarEventStatus != VacationStatuses.Cancelled)
                 && (oldCalendarEventStatus != VacationStatuses.Rejected)
-                && (newCalendarEventStatus != this.GetInitialStatus());
+                && (newCalendarEventStatus != this.GetInitialStatus())
+                && (newCalendarEventStatus != VacationStatuses.Approved);
         }
 
         protected override void OnRecover(object message)
