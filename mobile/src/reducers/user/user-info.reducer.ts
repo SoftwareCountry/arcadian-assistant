@@ -8,13 +8,13 @@ import { UserPreferences } from './user-preferences.model';
 export interface UserInfoState {
     employeeId: Nullable<string>;
     permissions: Map<string, UserEmployeePermissions>;
-    preferences: UserPreferences;
+    preferences: Nullable<UserPreferences>;
 }
 
 const initState: UserInfoState = {
     employeeId: null,
     permissions: Map<string, UserEmployeePermissions>(),
-    preferences: new UserPreferences(),
+    preferences: null,
 };
 
 export const userInfoReducer: Reducer<UserInfoState> = (state = initState, action: UserActions) => {
