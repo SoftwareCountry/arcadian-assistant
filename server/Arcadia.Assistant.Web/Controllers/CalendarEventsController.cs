@@ -30,18 +30,15 @@
         private readonly IEmployeesRegistry employeesRegistry;
         private readonly IAuthorizationService authorizationService;
         private readonly ITimeoutSettings timeoutSettings;
-        private readonly IUserEmployeeSearch userEmployeeSearch;
 
         public CalendarEventsController(
             ITimeoutSettings timeoutSettings,
             IEmployeesRegistry employeesRegistry,
-            IAuthorizationService authorizationService,
-            IUserEmployeeSearch userEmployeeSearch)
+            IAuthorizationService authorizationService)
         {
             this.timeoutSettings = timeoutSettings;
             this.employeesRegistry = employeesRegistry;
             this.authorizationService = authorizationService;
-            this.userEmployeeSearch = userEmployeeSearch;
         }
 
         [Route("")]
@@ -205,95 +202,6 @@
             }
         }
 
-        [Route("{eventId}/approvals")]
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(CalendarEventsApprovalsModel), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetEventApprovals(string employeeId, string eventId, CancellationToken token)
-        {
-            var employee = await this.GetEmployeeOrDefaultAsync(employeeId, token);
-            if (employee == null)
-            {
-                return this.NotFound();
-            }
-
-            var authorizationResult = await this.authorizationService.AuthorizeAsync(this.User, employee, new ReadCalendarEvents());
-            if (!authorizationResult.Succeeded)
-            {
-                return this.Forbid();
-            }
-
-            var requestedEvent = await this.GetCalendarEventOrDefaultAsync(employee.Calendar.CalendarActor, eventId, token);
-            if (requestedEvent == null)
-            {
-                return this.NotFound();
-            }
-
-            var response = await employee.Calendar.CalendarActor.Ask<GetCalendarEventApprovals.Response>(
-                new GetCalendarEventApprovals(requestedEvent),
-                this.timeoutSettings.Timeout,
-                token);
-
-            switch (response)
-            {
-                case GetCalendarEventApprovals.SuccessResponse result:
-                    return this.Ok(new CalendarEventsApprovalsModel(result.Approvals));
-
-                default:
-                    return this.StatusCode(StatusCodes.Status500InternalServerError);
-            }
-        }
-
-        [Route("{eventId}/approvals")]
-        [HttpPost]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
-        [ProducesResponseType(StatusCodes.Status202Accepted)]
-        public async Task<IActionResult> ApproveEvent(string employeeId, string eventId, CancellationToken token)
-        {
-            var employee = await this.GetEmployeeOrDefaultAsync(employeeId, token);
-            if (employee == null)
-            {
-                return this.NotFound();
-            }
-
-            var authorizationResult = await this.authorizationService.AuthorizeAsync(this.User, employee, new EditPendingCalendarEvents());
-            if (!authorizationResult.Succeeded)
-            {
-                return this.Forbid();
-            }
-
-            var requestedEvent = await this.GetCalendarEventOrDefaultAsync(employee.Calendar.CalendarActor, eventId, token);
-            if (requestedEvent == null)
-            {
-                return this.NotFound();
-            }
-
-            if (!requestedEvent.IsPending)
-            {
-                return this.Conflict();
-            }
-
-            var response = await employee.Calendar.CalendarActor.Ask<ApproveCalendarEvent.Response>(
-                new ApproveCalendarEvent(requestedEvent, employee.Metadata.EmployeeId),
-                this.timeoutSettings.Timeout,
-                token);
-
-            switch (response)
-            {
-                case ApproveCalendarEvent.SuccessResponse _:
-                    return this.Accepted();
-
-                case ApproveCalendarEvent.BadRequestResponse err:
-                    return this.BadRequest(err.Message);
-
-                default:
-                    return this.StatusCode(StatusCodes.Status500InternalServerError);
-            }
-        }
 
         private async Task<UpsertCalendarEvent.Response> UpsertEventAsync(IActorRef calendarActor, CalendarEvent calendarEvent, CancellationToken token)
         {
