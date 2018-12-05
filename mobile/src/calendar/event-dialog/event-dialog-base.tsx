@@ -15,9 +15,9 @@ interface EventDialogBaseOwnProps extends EventDialogBaseDefaultProps {
     icon: string;
     title: string;
     text: string;
-    cancelLabel: string;
+    cancelLabel?: string;
     acceptLabel: string;
-    onCancelPress: () => void;
+    onCancelPress?: () => void;
     onAcceptPress: () => void;
     onClosePress: () => void;
 }
@@ -69,9 +69,18 @@ export class EventDialogBaseImpl extends Component<EventDialogBaseProps> {
 
         return (
             <View style={layout.buttons}>
-                <CalendarActionButton title={cancelLabel} onPress={this.cancel} style={buttons.cancel as ViewStyle} textStyle={buttons.cancelLabel as TextStyle} disabled={this.props.inProgress} />
-                <CalendarActionButton title={acceptLabel} onPress={this.accept} style={buttons.accept as ViewStyle} textStyle={buttons.acceptLabel as TextStyle} disabled={disableAccept || this.props.inProgress} />
-                {this.props.inProgress && <ActivityIndicator size={'small'} style={buttons.progressIndicator} />}
+                {
+                    !!cancelLabel &&
+                    <CalendarActionButton title={cancelLabel} onPress={this.cancel}
+                                          style={buttons.cancel as ViewStyle}
+                                          textStyle={buttons.cancelLabel as TextStyle}
+                                          disabled={this.props.inProgress}/>
+                }
+                <CalendarActionButton title={acceptLabel} onPress={this.accept}
+                                      style={buttons.accept as ViewStyle}
+                                      textStyle={buttons.acceptLabel as TextStyle}
+                                      disabled={disableAccept || this.props.inProgress}/>
+                {this.props.inProgress && <ActivityIndicator size={'small'} style={buttons.progressIndicator}/>}
             </View>
         );
     }
@@ -81,6 +90,9 @@ export class EventDialogBaseImpl extends Component<EventDialogBaseProps> {
     };
 
     private cancel = () => {
+        if (!this.props.onCancelPress) {
+            return;
+        }
         this.props.onCancelPress();
     };
 

@@ -8,17 +8,32 @@ import { Optional } from 'types';
 export interface LoadCalendarEvents extends Action {
     type: 'LOAD-CALENDAR-EVENTS';
     employeeId: string;
+    next?: Action[];
 }
 
-export const loadCalendarEvents = (employeeId: string): LoadCalendarEvents => ({ type: 'LOAD-CALENDAR-EVENTS', employeeId });
+export const loadCalendarEvents = (employeeId: string, next?: Action[]): LoadCalendarEvents => {
+    return {
+        type: 'LOAD-CALENDAR-EVENTS',
+        employeeId,
+        next,
+    };
+};
 
 export interface LoadCalendarEventsFinished extends Action {
     type: 'LOAD-CALENDAR-EVENTS-FINISHED';
     calendarEvents: CalendarEvents;
     employeeId: string;
+    next?: Action[];
 }
 
-export const loadCalendarEventsFinished = (calendarEvents: CalendarEvents, employeeId: string): LoadCalendarEventsFinished => ({ type: 'LOAD-CALENDAR-EVENTS-FINISHED', calendarEvents, employeeId });
+export const loadCalendarEventsFinished = (calendarEvents: CalendarEvents, employeeId: string, next?: Action[]): LoadCalendarEventsFinished => {
+    return {
+        type: 'LOAD-CALENDAR-EVENTS-FINISHED',
+        calendarEvents,
+        employeeId,
+        next: next,
+    };
+};
 
 export interface CalendarEventSetNewStatus extends Action {
     type: 'CALENDAR-EVENT-NEW-STATUS';

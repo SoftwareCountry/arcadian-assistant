@@ -16,6 +16,7 @@ import { handleHttpErrors } from '../errors/errors.epics';
 import { catchError, flatMap, groupBy, map, mergeAll, mergeMap, switchMap } from 'rxjs/operators';
 import { from, Observable, of } from 'rxjs';
 import { loadPendingRequests } from './pending-requests/pending-requests.action';
+import { Action } from 'redux';
 
 export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('LOAD-USER-EMPLOYEE-FINISHED').pipe(
@@ -25,7 +26,12 @@ export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUse
 
 export const loadCalendarEventsFinishedEpic$ = (action$: ActionsObservable<LoadCalendarEventsFinished>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('LOAD-CALENDAR-EVENTS-FINISHED').pipe(
-        map(x => closeEventDialog()),
+        flatMap(action => {
+            if (action.next) {
+                return from(action.next);
+            }
+            return of(closeEventDialog());
+        }),
     );
 
 export const loadCalendarEventsEpic$ = (action$: ActionsObservable<LoadCalendarEvents>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
@@ -38,15 +44,16 @@ export const loadCalendarEventsEpic$ = (action$: ActionsObservable<LoadCalendarE
                         .pipe(
                             handleHttpErrors(),
                             map(obj => deserializeArray(obj as any, CalendarEvent)),
-                            map(calendarEvents => new CalendarEvents(calendarEvents))
+                            map(calendarEvents => new CalendarEvents(calendarEvents)),
+                            map(z => {
+                                return { events: z, employeeId: x.key, next: y.next };
+                            })
                         )
                 ),
-                map(z => {
-                    return { events: z, employeeId: x.key };
-                }))
+            )
         ),
         mergeAll(),
-        map(x => loadCalendarEventsFinished(x.events, x.employeeId)),
+        map(x => loadCalendarEventsFinished(x.events, x.employeeId, x.next)),
     );
 
 export const intervalsBySingleDaySelectionEpic$ = (action$: ActionsObservable<SelectCalendarDay | LoadCalendarEventsFinished>) =>
@@ -78,10 +85,10 @@ export const calendarEventSetNewStatusEpic$ = (action$: ActionsObservable<Calend
         catchError((e: Error) => of(loadFailedError(e.message))),
     );
 
-export function getEventsAndPendingRequests(employeeId: string) {
+export function getEventsAndPendingRequests(employeeId: string, next?: Action[]) {
     return <T>(source: Observable<T>) => source.pipe(
         mergeMap(() => from([
-            loadCalendarEvents(employeeId),
+            loadCalendarEvents(employeeId, next),
             loadPendingRequests()
         ]))
     );
