@@ -6,6 +6,7 @@ const color = {
     base: '#2FAFCC',
     white: '#FFFFFF',
     red: '#FF0000',
+    black: '#000000',
     transparent: 'transparent',
 };
 
