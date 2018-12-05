@@ -43,8 +43,7 @@ class CurrentPeopleDepartmentImpl extends React.Component<CurrentPeopleDepartmen
     //----------------------------------------------------------------------------
     private static getTitle(navigationOptionsContainer: NavigationOptionsContainer): string {
         const navigation = navigationOptionsContainer.navigation;
-        const departmentAbbreviation = navigation.getParam('departmentAbbreviation', undefined);
-        return departmentAbbreviation ? `${departmentAbbreviation}` : '';
+        return navigation.getParam('departmentAbbreviation', '');
     }
 }
 
