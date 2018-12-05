@@ -65,24 +65,35 @@ export class EventDialogBaseImpl extends Component<EventDialogBaseProps> {
     }
 
     private getActionButtons() {
-        const { cancelLabel, acceptLabel, disableAccept } = this.props;
-
+        const { acceptLabel, disableAccept } = this.props;
         return (
             <View style={layout.buttons}>
-                {
-                    !!cancelLabel &&
-                    <CalendarActionButton title={cancelLabel} onPress={this.cancel}
-                                          style={buttons.cancel as ViewStyle}
-                                          textStyle={buttons.cancelLabel as TextStyle}
-                                          disabled={this.props.inProgress}/>
-                }
+                {this.getCancelButton()}
                 <CalendarActionButton title={acceptLabel} onPress={this.accept}
                                       style={buttons.accept as ViewStyle}
                                       textStyle={buttons.acceptLabel as TextStyle}
                                       disabled={disableAccept || this.props.inProgress}/>
-                {this.props.inProgress && <ActivityIndicator size={'small'} style={buttons.progressIndicator}/>}
+                {this.getActivityIndicator()}
             </View>
         );
+    }
+
+    private getCancelButton() {
+        const { cancelLabel } = this.props;
+        if (!cancelLabel) {
+            return null;
+        }
+        return <CalendarActionButton title={cancelLabel} onPress={this.cancel}
+                                     style={buttons.cancel as ViewStyle}
+                                     textStyle={buttons.cancelLabel as TextStyle}
+                                     disabled={this.props.inProgress}/>;
+    }
+
+    private getActivityIndicator() {
+        if (!this.props.inProgress) {
+            return null;
+        }
+        return <ActivityIndicator size={'small'} style={buttons.progressIndicator}/>;
     }
 
     private close = () => {
