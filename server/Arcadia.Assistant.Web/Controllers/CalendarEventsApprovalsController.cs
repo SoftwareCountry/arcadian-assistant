@@ -1,5 +1,6 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -40,7 +41,7 @@
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(CalendarEventsApprovalsModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<CalendarEventApprovalModel>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEventApprovals(string employeeId, string eventId, CancellationToken token)
         {
             var employee = await this.GetEmployeeOrDefaultAsync(employeeId, token);
@@ -69,7 +70,8 @@
             switch (response)
             {
                 case GetCalendarEventApprovals.SuccessResponse result:
-                    return this.Ok(new CalendarEventsApprovalsModel(result.Approvals));
+                    var model = result.Approvals.Select(a => new CalendarEventApprovalModel(a));
+                    return this.Ok(model);
 
                 default:
                     return this.StatusCode(StatusCodes.Status500InternalServerError);
@@ -82,15 +84,26 @@
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
-        public async Task<IActionResult> ApproveEvent(string employeeId, string eventId, CancellationToken token)
+        public async Task<IActionResult> ApproveEvent(string employeeId, string eventId, [FromBody]CalendarEventApprovalModel model, CancellationToken token)
         {
+            if (!this.ModelState.IsValid)
+            {
+                return this.BadRequest(this.ModelState);
+            }
+
             var employee = await this.GetEmployeeOrDefaultAsync(employeeId, token);
             if (employee == null)
             {
                 return this.NotFound();
             }
 
-            var authorizationResult = await this.authorizationService.AuthorizeAsync(this.User, employee, new EditPendingCalendarEvents());
+            var approver = await this.GetEmployeeOrDefaultAsync(model.ApproverId, token);
+            if (approver == null)
+            {
+                return this.BadRequest(this.ModelState);
+            }
+
+            var authorizationResult = await this.authorizationService.AuthorizeAsync(this.User, approver, new EditPendingCalendarEvents());
             if (!authorizationResult.Succeeded)
             {
                 return this.Forbid();
@@ -108,7 +121,7 @@
             }
 
             var response = await employee.Calendar.CalendarActor.Ask<ApproveCalendarEvent.Response>(
-                new ApproveCalendarEvent(requestedEvent, employee.Metadata.EmployeeId),
+                new ApproveCalendarEvent(requestedEvent, approver.Metadata.EmployeeId),
                 this.timeoutSettings.Timeout,
                 token);
 
