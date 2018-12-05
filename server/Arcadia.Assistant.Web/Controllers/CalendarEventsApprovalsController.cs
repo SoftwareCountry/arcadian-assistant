@@ -82,7 +82,6 @@
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         public async Task<IActionResult> ApproveEvent(string employeeId, string eventId, [FromBody]CalendarEventApprovalModel model, CancellationToken token)
         {
@@ -113,11 +112,6 @@
             if (requestedEvent == null)
             {
                 return this.NotFound();
-            }
-
-            if (!requestedEvent.IsPending)
-            {
-                return this.Conflict();
             }
 
             var response = await employee.Calendar.CalendarActor.Ask<ApproveCalendarEvent.Response>(
