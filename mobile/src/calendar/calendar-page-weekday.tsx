@@ -5,8 +5,9 @@ import { DayModel } from '../reducers/calendar/calendar.model';
 import { OnSelectedDayCallback } from './calendar-page';
 import { StyledText } from '../override/styled-text';
 import Style from '../layout/style';
-import { State, TapGestureHandler } from 'react-native-gesture-handler';
+import { State, TapGestureHandler, TapGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
 
+//============================================================================
 export const WeekDay = (props: { hide: boolean, children: any[] }) =>
     props.hide
         ? null
@@ -104,17 +105,18 @@ export class WeekDayTouchable extends Component<WeekDayTouchableProps> {
     //----------------------------------------------------------------------------
     public render() {
         return (
-            <TapGestureHandler
-                maxDist={50}
-                onHandlerStateChange={({ nativeEvent }) => {
-                    if (this.props.disabled || nativeEvent.state !== State.ACTIVE) {
-                        return;
-                    }
-
-                    this.props.onSelectedDay(this.props.day);
-                }}>
+            <TapGestureHandler maxDist={50} onHandlerStateChange={this.onTapHandlerStateChange}>
                 <View style={calendarStyles.weekDayTouchable}/>
             </TapGestureHandler>
         );
     }
+
+    //----------------------------------------------------------------------------
+    private onTapHandlerStateChange = (event: TapGestureHandlerStateChangeEvent) => {
+        if (this.props.disabled || event.nativeEvent.state !== State.ACTIVE) {
+            return;
+        }
+
+        this.props.onSelectedDay(this.props.day);
+    };
 }
