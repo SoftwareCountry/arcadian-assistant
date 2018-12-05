@@ -1,3 +1,7 @@
+/******************************************************************************
+ * Copyright (c) Arcadia, Inc. All rights reserved.
+ ******************************************************************************/
+
 import React, { Component } from 'react';
 import { layout, content, buttons } from './styles';
 import { View, TouchableOpacity, ActivityIndicator, ViewStyle, TextStyle } from 'react-native';
@@ -7,6 +11,9 @@ import { CalendarActionButton } from '../calendar-action-button';
 import { connect, MapStateToProps } from 'react-redux';
 import { AppState } from '../../reducers/app.reducer';
 
+//============================================================================
+// - Props
+//============================================================================
 interface EventDialogBaseDefaultProps {
     disableAccept?: boolean;
 }
@@ -28,17 +35,21 @@ interface EventDialogMappedProps {
 
 type EventDialogBaseProps = EventDialogBaseOwnProps & EventDialogMappedProps;
 
+
+//============================================================================
 export const eventDialogTextDateFormat = 'MMMM D, YYYY';
 
 export class EventDialogBaseImpl extends Component<EventDialogBaseProps> {
+    //----------------------------------------------------------------------------
     public static defaultProps: EventDialogBaseDefaultProps = {
         disableAccept: false
     };
 
+    //----------------------------------------------------------------------------
     public render() {
-        const actionButtons = this.getActionButtons();
+        const actionButtons = this.renderActionButtons();
 
-        const { icon, title, text } = this.props;
+        const { title, text } = this.props;
 
         return (
             <View style={layout.container}>
@@ -64,21 +75,23 @@ export class EventDialogBaseImpl extends Component<EventDialogBaseProps> {
         );
     }
 
-    private getActionButtons() {
+    //----------------------------------------------------------------------------
+    private renderActionButtons() {
         const { acceptLabel, disableAccept } = this.props;
         return (
             <View style={layout.buttons}>
-                {this.getCancelButton()}
+                {this.renderCancelButton()}
                 <CalendarActionButton title={acceptLabel} onPress={this.accept}
                                       style={buttons.accept as ViewStyle}
                                       textStyle={buttons.acceptLabel as TextStyle}
                                       disabled={disableAccept || this.props.inProgress}/>
-                {this.getActivityIndicator()}
+                {this.renderActivityIndicator()}
             </View>
         );
     }
 
-    private getCancelButton() {
+    //----------------------------------------------------------------------------
+    private renderCancelButton() {
         const { cancelLabel } = this.props;
         if (!cancelLabel) {
             return null;
@@ -89,17 +102,20 @@ export class EventDialogBaseImpl extends Component<EventDialogBaseProps> {
                                      disabled={this.props.inProgress}/>;
     }
 
-    private getActivityIndicator() {
+    //----------------------------------------------------------------------------
+    private renderActivityIndicator() {
         if (!this.props.inProgress) {
             return null;
         }
         return <ActivityIndicator size={'small'} style={buttons.progressIndicator}/>;
     }
 
+    //----------------------------------------------------------------------------
     private close = () => {
         this.props.onClosePress();
     };
 
+    //----------------------------------------------------------------------------
     private cancel = () => {
         if (!this.props.onCancelPress) {
             return;
@@ -107,11 +123,14 @@ export class EventDialogBaseImpl extends Component<EventDialogBaseProps> {
         this.props.onCancelPress();
     };
 
+    //----------------------------------------------------------------------------
     private accept = () => {
         this.props.onAcceptPress();
     };
 }
 
+
+//============================================================================
 const mapStateToProps: MapStateToProps<EventDialogBaseProps, EventDialogBaseOwnProps, AppState> = (state, ownProps) => ({
     inProgress: state.calendar ? state.calendar.eventDialog.inProgress : false,
     icon: ownProps.icon,
