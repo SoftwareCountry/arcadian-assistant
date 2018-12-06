@@ -3,7 +3,7 @@ import { connect, MapStateToProps } from 'react-redux';
 import { Map } from 'immutable';
 import { Linking, ScrollView, StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 
-import { contactStyles, contentStyles, layoutStyles, tileStyles } from '../profile/styles';
+import { contactStyles, contentStyles, eventStyles, layoutStyles, tileStyles } from '../profile/styles';
 import { Chevron } from '../profile/chevron';
 import { Avatar } from '../people/avatar';
 import { AppState } from '../reducers/app.reducer';
@@ -351,7 +351,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         const canApprove = userPermissions ? userPermissions.canApproveCalendarEvents : false;
         const canReject = userPermissions ? userPermissions.canRejectCalendarEvents : false;
 
-        return <View>
+        return <View style={eventStyles.container}>
             <StyledText style={layoutStyles.header}>EVENTS</StyledText>
             <EmployeeDetailsEventsList
                 events={employeeToCalendarEvents}
@@ -368,7 +368,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             return null;
         }
 
-        return <React.Fragment>
+        return <View style={eventStyles.container}>
             <StyledText style={layoutStyles.header}>REQUESTS</StyledText>
             <EmployeeDetailsEventsList
                 events={this.props.requests}
@@ -377,7 +377,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                 showUserAvatar={true}
                 canApprove={true}
                 canReject={true}/>
-        </React.Fragment>;
+        </View>;
     }
 
     private openLink(url: string) {

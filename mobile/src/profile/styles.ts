@@ -64,7 +64,8 @@ export const layoutStyles = StyleSheet.create({
         flexDirection: 'column',
     },
     header: {
-        alignSelf: 'center'
+        alignSelf: 'center',
+        marginBottom: 5,
     },
     avatarContainer: {
         borderRadius: circleDiameter / 2,
@@ -110,7 +111,7 @@ export const contentStyles = StyleSheet.create({
     },
     contactsContainer: {
         padding: 5,
-        paddingBottom: 50,
+        paddingBottom: 5,
         alignItems: 'center',
         justifyContent: 'center'
     }
@@ -178,3 +179,11 @@ export const contactStyles = StyleSheet.create({
         color: 'rgba(0, 0, 0, 0.7)'
     }
 });
+
+export const eventStyles = StyleSheet.create({
+    container: {
+        marginTop: 12,
+        padding: 5,
+    },
+});
+

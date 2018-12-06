@@ -34,6 +34,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
         const events = this.prepareEvents();
 
         return (<FlatList
+                    scrollEnabled={false}
                     data={events}
                     keyExtractor={this.keyExtractor}
                     renderItem={this.renderItem} />
