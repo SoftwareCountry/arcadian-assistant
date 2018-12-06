@@ -82,7 +82,7 @@
                     break;
 
                 case CalendarEventCreated msg when msg.Event.Type == CalendarEventTypes.Vacation:
-                    this.UpsertVacation(msg.Event, new string[0])
+                    this.UpsertVacation(msg.Event, null, new string[0])
                         .PipeTo(
                             this.Self,
                             success: () => VacationPersistSuccess.Instance,
@@ -90,7 +90,7 @@
                     break;
 
                 case CalendarEventChanged msg when msg.NewEvent.Type == CalendarEventTypes.Vacation:
-                    this.UpsertVacation(msg.NewEvent, new string[0])
+                    this.UpsertVacation(msg.NewEvent, msg.OldEvent, new string[0])
                         .PipeTo(
                             this.Self,
                             success: () => VacationPersistSuccess.Instance,
@@ -98,7 +98,7 @@
                     break;
 
                 case CalendarEventApprovalsChanged msg when msg.Event.Type == CalendarEventTypes.Vacation:
-                    this.UpsertVacation(msg.Event, msg.Approvals)
+                    this.UpsertVacation(msg.Event, null, msg.Approvals)
                         .PipeTo(
                             this.Self,
                             success: () => VacationPersistSuccess.Instance,
@@ -124,18 +124,15 @@
             }
         }
 
-        private Task<Vacation> UpsertVacation(CalendarEvent vacationCalendarEvent, IEnumerable<string> approvals)
+        private Task<Vacation> UpsertVacation(
+            CalendarEvent @event,
+            CalendarEvent oldEvent,
+            IEnumerable<string> approvals)
         {
-            var vacation = new Vacation
-            {
-                EmployeeId = int.Parse(vacationCalendarEvent.EmployeeId),
-                RaisedAt = DateTimeOffset.Now,
-                Start = vacationCalendarEvent.Dates.StartDate.Date,
-                End = vacationCalendarEvent.Dates.EndDate.Date,
-                Type = this.GetRegularVacationType()
-            };
+            var vacation = this.GetVacationFromCalendarEvent(@event);
+            var oldVacation = this.GetVacationFromCalendarEvent(oldEvent);
 
-            if (vacationCalendarEvent.Status == VacationStatuses.Cancelled)
+            if (@event.Status == VacationStatuses.Cancelled)
             {
                 vacation.CancelledAt = DateTimeOffset.Now;
             }
@@ -153,7 +150,24 @@
                 vacation.VacationApprovals.Add(vacationApproval);
             }
 
-            return this.vacationsPersistenceExecutor.UpsertVacation(vacation);
+            return this.vacationsPersistenceExecutor.UpsertVacation(vacation, oldVacation);
+        }
+
+        private Vacation GetVacationFromCalendarEvent(CalendarEvent @event)
+        {
+            if (@event == null)
+            {
+                return null;
+            }
+
+            return new Vacation
+            {
+                EmployeeId = int.Parse(@event.EmployeeId),
+                RaisedAt = DateTimeOffset.Now,
+                Start = @event.Dates.StartDate.Date,
+                End = @event.Dates.EndDate.Date,
+                Type = this.GetRegularVacationType()
+            };
         }
 
         // ToDo: get it from database

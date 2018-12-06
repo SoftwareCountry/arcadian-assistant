@@ -17,15 +17,17 @@
             this.contextFactory = contextFactory;
         }
 
-        public async Task<Vacation> UpsertVacation(Vacation vacation)
+        public async Task<Vacation> UpsertVacation(Vacation vacation, Vacation oldVacation)
         {
             using (var context = this.contextFactory())
             {
+                var vacationToSearch = oldVacation ?? vacation;
+
                 var existingVacation = await this.GetVacation(
                     context,
-                    vacation.EmployeeId,
-                    vacation.Start,
-                    vacation.End);
+                    vacationToSearch.EmployeeId,
+                    vacationToSearch.Start,
+                    vacationToSearch.End);
 
                 if (existingVacation == null)
                 {
@@ -33,7 +35,8 @@
                 }
                 else
                 {
-                    existingVacation.CancelledById = vacation.CancelledById;
+                    existingVacation.Start = vacation.Start.Date;
+                    existingVacation.End = vacation.End.Date;
                     existingVacation.CancelledAt = vacation.CancelledAt;
 
                     foreach (var approval in vacation.VacationApprovals)
