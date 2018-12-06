@@ -63,7 +63,7 @@
                 case RecoveryCompleted _:
                     foreach (var eventId in this.eventsToProcessApproversAfterRecover)
                     {
-                        this.Self.Tell(new ProcessCalendarEventApprovalsMessage(eventId));
+                        this.Self.Tell(new AssignCalendarEventNextApprover(eventId));
                     }
                     break;
             }

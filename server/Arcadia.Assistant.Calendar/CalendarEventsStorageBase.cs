@@ -115,31 +115,31 @@
 
                     break;
 
-                case ProcessCalendarEventApprovalsMessage msg:
+                case AssignCalendarEventNextApprover msg:
                     var calendarEvent = this.EventsById[msg.EventId];
                     var existingApprovals = this.ApprovalsByEvent[msg.EventId];
 
                     this.calendarEventsApprovalsChecker
                         .Ask<GetNextCalendarEventApprover.Response>(
                             new GetNextCalendarEventApprover(this.EmployeeId, existingApprovals, calendarEvent.Type))
-                        .ContinueWith<ProcessCalendarEventApprovalsMessage.Response>(task =>
+                        .ContinueWith<AssignCalendarEventNextApprover.Response>(task =>
                         {
                             if (task.Result is GetNextCalendarEventApprover.ErrorResponse err)
                             {
-                                return new ProcessCalendarEventApprovalsMessage.ErrorResponse(msg.EventId, err.Message);
+                                return new AssignCalendarEventNextApprover.Error(msg.EventId, err.Message);
                             }
 
                             var resp = (GetNextCalendarEventApprover.SuccessResponse)task.Result;
-                            return new ProcessCalendarEventApprovalsMessage.SuccessResponse(msg.EventId, resp.NextApproverEmployeeId);
+                            return new AssignCalendarEventNextApprover.Success(msg.EventId, resp.NextApproverEmployeeId);
                         })
                         .PipeTo(this.Self);
                     break;
 
-                case ProcessCalendarEventApprovalsMessage.SuccessResponse msg:
-                    this.ProcessCalendarEventApprovals(msg);
+                case AssignCalendarEventNextApprover.Success msg:
+                    this.OnCalendarEventNextApproverReceived(msg.EventId, msg.NextApproverId);
                     break;
 
-                case ProcessCalendarEventApprovalsMessage.ErrorResponse msg:
+                case AssignCalendarEventNextApprover.Error msg:
                     this.logger.Warning($"Failed to get next approver for the event {msg.EventId}");
                     break;
 
@@ -186,20 +186,24 @@
 
             this.Persist(@event, ev =>
             {
-                this.Self.Tell(new ProcessCalendarEventApprovalsMessage(message.Event.EventId));
+                this.Self.Tell(new AssignCalendarEventNextApprover(message.Event.EventId));
                 this.Sender.Tell(Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
                 Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(calendarEvent, approvals.ToList()));
                 this.OnSuccessfulApprove(ev);
             });
         }
 
-        private void ProcessCalendarEventApprovals(ProcessCalendarEventApprovalsMessage.SuccessResponse successResponse)
+        private void OnCalendarEventNextApproverReceived(string eventId, string nextApproverId)
         {
-            var oldEvent = this.EventsById[successResponse.EventId];
-            var approvedStatus = new CalendarEventStatuses().ApprovedForType(oldEvent.Type);
-
-            if (successResponse.NextApproverId == null)
+            var oldEvent = this.EventsById[eventId];
+            if (!oldEvent.IsPending)
             {
+                return;
+            }
+
+            if (nextApproverId == null)
+            {
+                var approvedStatus = new CalendarEventStatuses().ApprovedForType(oldEvent.Type);
                 var newEvent = new CalendarEvent(
                     oldEvent.EventId,
                     oldEvent.Type,
@@ -214,19 +218,18 @@
                 });
             }
 
-            Context.System.EventStream.Publish(
-                new CalendarEventAssignedToApprover(oldEvent, successResponse.NextApproverId));
+            Context.System.EventStream.Publish(new CalendarEventAssignedToApprover(oldEvent, nextApproverId));
         }
 
         private void OnSuccessfulUpsert(CalendarEvent calendarEvent)
         {
-            this.Self.Tell(new ProcessCalendarEventApprovalsMessage(calendarEvent.EventId));
+            this.Self.Tell(new AssignCalendarEventNextApprover(calendarEvent.EventId));
             this.Sender.Tell(new UpsertCalendarEvent.Success(calendarEvent));
         }
 
-        protected class ProcessCalendarEventApprovalsMessage
+        protected class AssignCalendarEventNextApprover
         {
-            public ProcessCalendarEventApprovalsMessage(string eventId)
+            public AssignCalendarEventNextApprover(string eventId)
             {
                 this.EventId = eventId;
             }
@@ -237,9 +240,9 @@
             {
             }
 
-            public class SuccessResponse : Response
+            public class Success : Response
             {
-                public SuccessResponse(string eventId, string nextApproverId)
+                public Success(string eventId, string nextApproverId)
                 {
                     this.EventId = eventId;
                     this.NextApproverId = nextApproverId;
@@ -250,9 +253,9 @@
                 public string NextApproverId { get; }
             }
 
-            public class ErrorResponse : Response
+            public class Error : Response
             {
-                public ErrorResponse(string eventId, string message)
+                public Error(string eventId, string message)
                 {
                     this.EventId = eventId;
                     this.Message = message;
