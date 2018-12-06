@@ -9,6 +9,7 @@
     using Akka.Persistence;
 
     using Arcadia.Assistant.Calendar.Abstractions;
+    using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
@@ -187,7 +188,7 @@
             {
                 this.Self.Tell(new ProcessCalendarEventApprovalsMessage(message.Event.EventId));
                 this.Sender.Tell(Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
-                Context.System.EventStream.Publish(new CalendarEventUserGrantedApproval(calendarEvent, approvals.ToList()));
+                Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(calendarEvent, approvals.ToList()));
                 this.OnSuccessfulApprove(ev);
             });
         }
@@ -214,7 +215,7 @@
             }
 
             Context.System.EventStream.Publish(
-                new CalendarEventAssignedToApproverEventBusMessage(oldEvent, successResponse.NextApproverId));
+                new CalendarEventAssignedToApprover(oldEvent, successResponse.NextApproverId));
         }
 
         private void OnSuccessfulUpsert(CalendarEvent calendarEvent)

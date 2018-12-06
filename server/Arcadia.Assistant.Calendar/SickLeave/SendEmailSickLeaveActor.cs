@@ -7,11 +7,12 @@
     using Akka.Event;
 
     using Arcadia.Assistant.Calendar.Abstractions;
-    using Arcadia.Assistant.Calendar.Abstractions.Messages;
+    using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.Notifications;
     using Arcadia.Assistant.Notifications.Email;
     using Arcadia.Assistant.Organization.Abstractions;
+    using Arcadia.Assistant.Organization.Abstractions.EventBus;
 
     public class SendEmailSickLeaveActor : UntypedActor
     {
@@ -25,8 +26,8 @@
             this.mailConfig = mailConfig;
 
             Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);
-            Context.System.EventStream.Subscribe<EmployeeMetadataUpdatedEventBusMessage>(this.Self);
-            Context.System.EventStream.Subscribe<EmployeesMetadataLoadedEventBusMessage>(this.Self);
+            Context.System.EventStream.Subscribe<EmployeeMetadataUpdated>(this.Self);
+            Context.System.EventStream.Subscribe<EmployeesMetadataLoaded>(this.Self);
         }
 
         protected override void OnReceive(object message)
@@ -56,12 +57,12 @@
                 case CalendarEventChanged _:
                     break;
 
-                case EmployeesMetadataLoadedEventBusMessage msg:
+                case EmployeesMetadataLoaded msg:
                     this.employeesById = msg.Employees
                         .ToDictionary(e => e.Metadata.EmployeeId, e => e.Metadata);
                     break;
 
-                case EmployeeMetadataUpdatedEventBusMessage msg:
+                case EmployeeMetadataUpdated msg:
                     this.employeesById[msg.EmployeeMetadata.EmployeeId] = msg.EmployeeMetadata;
                     break;
 

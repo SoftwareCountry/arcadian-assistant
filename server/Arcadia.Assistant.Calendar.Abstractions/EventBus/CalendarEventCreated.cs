@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.Calendar.Abstractions.Messages
+﻿namespace Arcadia.Assistant.Calendar.Abstractions.EventBus
 {
     public class CalendarEventCreated
     {

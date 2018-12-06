@@ -10,6 +10,7 @@
 
     using Arcadia.Assistant.Images;
     using Arcadia.Assistant.Organization.Abstractions;
+    using Arcadia.Assistant.Organization.Abstractions.EventBus;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public class EmployeesActor : UntypedActor, IWithUnboundedStash, ILogReceive
@@ -95,7 +96,7 @@
 
                 case EmployeesInfoStorage.LoadAllEmployees.Response allEmployees:
                     this.RecreateEmployeeAgents(allEmployees.Employees);
-                    Context.System.EventStream.Publish(new EmployeesMetadataLoadedEventBusMessage(allEmployees.Employees));
+                    Context.System.EventStream.Publish(new EmployeesMetadataLoaded(allEmployees.Employees));
                     OnRefreshFinish(RefreshEmployees.Finished.Instance);
                     break;
 

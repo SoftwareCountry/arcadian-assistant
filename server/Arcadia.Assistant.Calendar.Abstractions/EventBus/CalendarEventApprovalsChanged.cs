@@ -1,10 +1,10 @@
-﻿namespace Arcadia.Assistant.Calendar.Abstractions.Messages
+﻿namespace Arcadia.Assistant.Calendar.Abstractions.EventBus
 {
     using System.Collections.Generic;
 
-    public class CalendarEventUserGrantedApproval
+    public class CalendarEventApprovalsChanged
     {
-        public CalendarEventUserGrantedApproval(CalendarEvent @event, IEnumerable<string> approvals)
+        public CalendarEventApprovalsChanged(CalendarEvent @event, IEnumerable<string> approvals)
         {
             this.Event = @event;
             this.Approvals = approvals;
