@@ -4,6 +4,7 @@
 
     using Arcadia.Assistant.Calendar.SickLeave;
     using Arcadia.Assistant.Configuration.Configuration;
+    using Arcadia.Assistant.Notifications.Email;
 
     public class NotificationsModule : Module
     {
@@ -18,7 +19,8 @@
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.Register(x => new SendEmailSickLeaveActor(this.mailConfig, this.smtpConfig));
+            builder.Register(x => new SendEmailSickLeaveActor(this.mailConfig));
+            builder.Register(x => new EmailNotificationsActor(this.smtpConfig));
         }
     }
 }

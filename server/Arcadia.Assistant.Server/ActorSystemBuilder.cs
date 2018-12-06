@@ -6,10 +6,11 @@
     using Arcadia.Assistant.Calendar.SickLeave;
     using Arcadia.Assistant.Feeds;
     using Arcadia.Assistant.Helpdesk;
+    using Arcadia.Assistant.Health.Abstractions;
     using Arcadia.Assistant.Notifications;
+    using Arcadia.Assistant.Notifications.Email;
     using Arcadia.Assistant.Organization;
     using Arcadia.Assistant.Server.Interop;
-    using Arcadia.Assistant.Health.Abstractions;
     using Arcadia.Assistant.UserPreferences;
 
     public class ActorSystemBuilder
@@ -23,16 +24,18 @@
 
         public ServerActorsCollection AddRootActors()
         {
-            var departments = this.actorSystem.ActorOf(this.actorSystem.DI().Props<OrganizationActor>(), WellKnownActorPaths.Organization);
+            var organization = this.actorSystem.ActorOf(this.actorSystem.DI().Props<OrganizationActor>(), WellKnownActorPaths.Organization);
             var health = this.actorSystem.ActorOf(this.actorSystem.DI().Props<HealthChecker>(), WellKnownActorPaths.Health);
             var helpdesk = this.actorSystem.ActorOf(Props.Create(() => new HelpdeskActor()), WellKnownActorPaths.Helpdesk);
-            var feeds = this.actorSystem.ActorOf(Props.Create(() => new SharedFeedsActor(departments)), WellKnownActorPaths.SharedFeeds);
+            var feeds = this.actorSystem.ActorOf(Props.Create(() => new SharedFeedsActor(organization)), WellKnownActorPaths.SharedFeeds);
             var userPreferences = this.actorSystem.ActorOf(this.actorSystem.DI().Props<UserPreferencesActor>(), WellKnownActorPaths.UserPreferences);
 
-            var sickLeaveEmailActorProps = this.actorSystem.DI().Props<SendEmailSickLeaveActor>();
-            this.actorSystem.ActorOf(Props.Create(() => new NotificationsActor(sickLeaveEmailActorProps)), "notifications");
+            this.actorSystem.ActorOf(this.actorSystem.DI().Props<SendEmailSickLeaveActor>(), "sick-leave-email");
 
-            return new ServerActorsCollection(departments, health, helpdesk, feeds, userPreferences);
+            var emailNotificationsActorProps = this.actorSystem.DI().Props<EmailNotificationsActor>();
+            this.actorSystem.ActorOf(Props.Create(() => new NotificationsActor(emailNotificationsActorProps)), "notifications");
+
+            return new ServerActorsCollection(organization, health, helpdesk, feeds, userPreferences);
         }
     }
 }

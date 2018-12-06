@@ -25,7 +25,7 @@
             switch (message)
             {
                 case EmailNotificationMessage msg:
-                    this.logger.Debug("Email notification message received");
+                    this.SendEmail(msg);
                     break;
 
                 default:
@@ -36,6 +36,8 @@
 
         private void SendEmail(EmailNotificationMessage message)
         {
+            this.logger.Debug("Email notification message received");
+
             using (var client = new SmtpClient())
             {
                 var msg = this.CreateMimeMessage(message);
@@ -47,9 +49,9 @@
                 client.Authenticate(this.smtpSettings.User, this.smtpSettings.Password);
                 client.Send(msg);
                 client.Disconnect(true);
-
-                this.logger.Debug("Email was succesfully sent");
             }
+
+            this.logger.Debug("Email was succesfully sent");
         }
 
         private MimeMessage CreateMimeMessage(EmailNotificationMessage message)
