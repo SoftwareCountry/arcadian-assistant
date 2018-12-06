@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Arcadia.Assistant.CSP.Model
+﻿namespace Arcadia.Assistant.CSP.Model
 {
+    using System;
+    using System.Collections.Generic;
+
     public partial class Vacation
     {
         public Vacation()
