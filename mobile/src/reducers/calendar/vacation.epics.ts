@@ -8,6 +8,8 @@ import { loadFailedError } from '../errors/errors.action';
 import { getEventsAndPendingRequests } from './calendar.epics';
 import { catchError, flatMap, map } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { openEventDialog, stopEventDialogProgress } from './event-dialog/event-dialog.action';
+import { EventDialogType } from './event-dialog/event-dialog-type.model';
 
 export const vacationSavedEpic$ = (action$: ActionsObservable<ConfirmClaimVacation>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('CONFIRM-VACATION').pipe(
@@ -29,8 +31,8 @@ export const vacationSavedEpic$ = (action$: ActionsObservable<ConfirmClaimVacati
                 calendarEvents,
                 { 'Content-Type': 'application/json' }
             ).pipe(
-                map(obj => deserialize(obj.response, CalendarEvent))
-            ).pipe(getEventsAndPendingRequests(x.employeeId));
+                getEventsAndPendingRequests(x.employeeId, [stopEventDialogProgress(), openEventDialog(EventDialogType.VacationRequested)]),
+            );
         }),
         catchError((e: Error) => of(loadFailedError(e.message))),
     );
