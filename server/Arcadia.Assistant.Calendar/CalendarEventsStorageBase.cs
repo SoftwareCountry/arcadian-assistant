@@ -207,8 +207,12 @@
 
         private void OnSuccessfulUpsert(CalendarEvent calendarEvent)
         {
-            this.Self.Tell(new ProcessCalendarEventApprovalsMessage(calendarEvent.EventId));
             this.Sender.Tell(new UpsertCalendarEvent.Success(calendarEvent));
+
+            if (calendarEvent.IsPending)
+            {
+                this.Self.Tell(new ProcessCalendarEventApprovalsMessage(calendarEvent.EventId));
+            }
         }
 
         protected class ProcessCalendarEventApprovalsMessage
