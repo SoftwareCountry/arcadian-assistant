@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, ListRenderItemInfo, SafeAreaView, View } from 'react-native';
+import { ActivityIndicator, ListRenderItemInfo, RefreshControl, SafeAreaView, View } from 'react-native';
 import { Employee } from '../reducers/organization/employee.model';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Feed } from '../reducers/feeds/feed.model';
@@ -9,13 +9,11 @@ import { FeedMessage } from './feed-message';
 import { baseColor, ListStyle, ScreenStyle } from './home-feeds-screen.styles';
 import { fetchNewFeeds, fetchOldFeeds } from '../reducers/feeds/feeds.action';
 import { FeedsById } from '../reducers/feeds/feeds.reducer';
-import { Moment } from 'moment';
 import { LoadingView } from '../navigation/loading';
 import Style from '../layout/style';
 import { Action, Dispatch } from 'redux';
-import { NavigationScreenConfig, NavigationStackScreenOptions, FlatList } from 'react-navigation';
+import { FlatList, NavigationScreenConfig, NavigationStackScreenOptions } from 'react-navigation';
 import { openEmployeeDetails } from '../navigation/navigation.actions';
-import { Map } from 'immutable';
 import { Nullable, Optional } from 'types';
 
 //============================================================================
@@ -62,18 +60,16 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     //----------------------------------------------------------------------------
     private renderFeeds(feeds: Feed[]): React.ReactNode {
         return <SafeAreaView style={Style.view.safeArea}>
-            <FlatList
-                style={ScreenStyle.view}
-                keyExtractor={HomeFeedsScreenImpl.keyExtractor}
-                ItemSeparatorComponent={HomeFeedsScreenImpl.itemSeparator}
-                data={feeds}
-                extraData={this.props.employees}
-                renderItem={this.renderItem}
-                onEndReached={this.endReached}
-                onEndReachedThreshold={0.2}
-                refreshing={false}
-                onRefresh={this.onRefresh}
-                ListFooterComponent={this.footer}
+            <FlatList refreshControl={<RefreshControl refreshing={false} onRefresh={this.onRefresh}/>}
+                      style={ScreenStyle.view}
+                      keyExtractor={HomeFeedsScreenImpl.keyExtractor}
+                      ItemSeparatorComponent={HomeFeedsScreenImpl.itemSeparator}
+                      data={feeds}
+                      extraData={this.props.employees}
+                      renderItem={this.renderItem}
+                      onEndReached={this.endReached}
+                      onEndReachedThreshold={0.2}
+                      ListFooterComponent={this.footer}
             />
         </SafeAreaView>;
     }
