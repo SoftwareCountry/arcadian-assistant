@@ -95,6 +95,7 @@
 
                 case EmployeesInfoStorage.LoadAllEmployees.Response allEmployees:
                     this.RecreateEmployeeAgents(allEmployees.Employees);
+                    Context.System.EventStream.Publish(new EmployeesMetadataLoadedEventBusMessage(allEmployees.Employees));
                     OnRefreshFinish(RefreshEmployees.Finished.Instance);
                     break;
 
