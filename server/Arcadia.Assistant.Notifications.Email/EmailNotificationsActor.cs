@@ -58,10 +58,14 @@
         {
             var mimeMessage = new MimeMessage();
 
-            mimeMessage.From.Add(new MailboxAddress("From", message.Sender));
-            mimeMessage.To.Add(new MailboxAddress("To", message.Recipient));
+            mimeMessage.From.Add(new MailboxAddress(message.Sender));
             mimeMessage.Subject = message.Subject;
             mimeMessage.Body = new TextPart("plain") { Text = message.Body };
+
+            foreach (var recipient in message.Recipients)
+            {
+                mimeMessage.To.Add(new MailboxAddress(recipient));
+            }
 
             return mimeMessage;
         }

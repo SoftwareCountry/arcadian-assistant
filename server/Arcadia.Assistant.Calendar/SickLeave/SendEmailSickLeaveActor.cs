@@ -50,7 +50,7 @@
                     var subject = this.mailConfig.Subject;
                     var body = string.Format(this.mailConfig.Body, msg.Employee.Name, msg.Event.Dates.StartDate.ToString("D"));
 
-                    Context.System.EventStream.Publish(new NotificationEventBusMessage(new EmailNotification(sender, recipient, subject, body)));
+                    Context.System.EventStream.Publish(new NotificationEventBusMessage(new EmailNotification(sender, new[] { recipient }, subject, body)));
 
                     break;
 

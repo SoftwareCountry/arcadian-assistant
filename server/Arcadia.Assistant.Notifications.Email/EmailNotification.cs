@@ -1,18 +1,20 @@
 ﻿namespace Arcadia.Assistant.Notifications.Email
 {
+    using System.Collections.Generic;
+
     public class EmailNotification
     {
-        public EmailNotification(string sender, string recipient, string subject, string body)
+        public EmailNotification(string sender, IEnumerable<string> recipients, string subject, string body)
         {
             this.Sender = sender;
-            this.Recipient = recipient;
+            this.Recipients = recipients;
             this.Subject = subject;
             this.Body = body;
         }
 
         public string Sender { get; }
 
-        public string Recipient { get; }
+        public IEnumerable<string> Recipients { get; }
 
         public string Subject { get; }
 
