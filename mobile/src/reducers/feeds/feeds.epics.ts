@@ -60,4 +60,6 @@ export const fetchOldFeedsEpic$ = (action$: ActionsObservable<fAction.FetchOldFe
 
 export const loadFeedsFinishedEpic$ = (action$: ActionsObservable<fAction.LoadFeedsFinished>) =>
     action$.ofType('LOAD_FEEDS_FINISHED').pipe(
-        flatMap(x => x.feeds.filter(y => y.employeeId !== null).map(feed => oAction.loadEmployee(feed.employeeId!))));
+        map(x => x.feeds.filter(y => y.employeeId !== null).map(feed => feed.employeeId!)),
+        map(employeeIds => oAction.loadEmployees(employeeIds)),
+    );

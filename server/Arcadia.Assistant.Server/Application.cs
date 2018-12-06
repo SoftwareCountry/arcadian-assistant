@@ -58,7 +58,6 @@
             {
                 this.OnStop(this.ActorSystem);
                 await this.ActorSystem.Terminate();
-                this.Dispose();
             }
         }
 

@@ -27,6 +27,22 @@ export class App extends Component<AppProps & AppOwnProps> {
     }
 
     //----------------------------------------------------------------------------
+    public shouldComponentUpdate(nextProps: Readonly<AppProps & AppOwnProps>, nextState: Readonly<{}>, nextContext: any): boolean {
+        if (!this.props.authentication || !nextProps.authentication) {
+            return true;
+        }
+
+        if (!this.props.authentication.authInfo || !nextProps.authentication.authInfo) {
+            return true;
+        }
+
+        const authInfo = this.props.authentication.authInfo;
+        const nextAuthInfo = nextProps.authentication.authInfo;
+
+        return authInfo.isAuthenticated !== nextAuthInfo.isAuthenticated;
+    }
+
+    //----------------------------------------------------------------------------
     public render() {
         if (!this.props.authentication || !this.props.authentication.authInfo) {
             return (
