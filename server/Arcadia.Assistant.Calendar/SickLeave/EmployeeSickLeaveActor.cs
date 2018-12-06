@@ -13,14 +13,12 @@
 
     public class EmployeeSickLeaveActor : CalendarEventsStorageBase
     {
-        private EmployeeMetadata employee;
         private readonly HashSet<string> eventsToProcessApproversAfterRecover = new HashSet<string>();
 
         public EmployeeSickLeaveActor(EmployeeMetadata employee, IActorRef calendarEventsApprovalsChecker)
             : base(employee.EmployeeId, calendarEventsApprovalsChecker)
         {
             this.PersistenceId = $"employee-sickleaves-{this.EmployeeId}";
-            this.employee = employee;
         }
 
         public override string PersistenceId { get; }

@@ -11,6 +11,7 @@
         }
 
         public CalendarEvent Event { get; }
+
         public IEnumerable<string> Approvals { get; }
     }
 }

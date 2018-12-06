@@ -1,8 +1,8 @@
 ﻿namespace Arcadia.Assistant.Notifications.Email
 {
-    public class EmailNotificationMessage
+    public class EmailNotification
     {
-        public EmailNotificationMessage(string sender, string recipient, string subject, string body)
+        public EmailNotification(string sender, string recipient, string subject, string body)
         {
             this.Sender = sender;
             this.Recipient = recipient;

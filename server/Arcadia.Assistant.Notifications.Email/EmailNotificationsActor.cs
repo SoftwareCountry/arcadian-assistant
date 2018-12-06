@@ -11,9 +11,9 @@
 
     public class EmailNotificationsActor : UntypedActor, ILogReceive
     {
-        private readonly ILoggingAdapter logger = Context.GetLogger();
-
         private readonly ISmtpSettings smtpSettings;
+
+        private readonly ILoggingAdapter logger = Context.GetLogger();
 
         public EmailNotificationsActor(ISmtpSettings smtpSettings)
         {
@@ -24,7 +24,7 @@
         {
             switch (message)
             {
-                case EmailNotificationMessage msg:
+                case EmailNotification msg:
                     this.SendEmail(msg);
                     break;
 
@@ -34,7 +34,7 @@
             }
         }
 
-        private void SendEmail(EmailNotificationMessage message)
+        private void SendEmail(EmailNotification message)
         {
             this.logger.Debug("Email notification message received");
 
@@ -54,7 +54,7 @@
             this.logger.Debug("Email was succesfully sent");
         }
 
-        private MimeMessage CreateMimeMessage(EmailNotificationMessage message)
+        private MimeMessage CreateMimeMessage(EmailNotification message)
         {
             var mimeMessage = new MimeMessage();
 
