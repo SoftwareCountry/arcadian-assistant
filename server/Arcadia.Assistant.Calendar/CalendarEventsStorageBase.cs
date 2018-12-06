@@ -60,7 +60,11 @@
                             throw new Exception($"Event {cmd.Event.EventId}. Initial status must be {this.GetInitialStatus()}");
                         }
 
-                        this.InsertCalendarEvent(cmd.Event, this.OnSuccessfulUpsert);
+                        this.InsertCalendarEvent(cmd.Event, ev =>
+                        {
+                            this.OnSuccessfulUpsert(ev);
+                            Context.System.EventStream.Publish(new CalendarEventCreated(ev));
+                        });
                     }
                     catch (Exception ex)
                     {
@@ -77,7 +81,11 @@
                         {
                             throw new Exception($"Event {cmd.Event.EventId}. Status transition {oldEvent.Status} -> {cmd.Event.Status} is not allowed for {oldEvent.Type}");
                         }
-                        this.UpdateCalendarEvent(oldEvent, cmd.Event, this.OnSuccessfulUpsert);
+                        this.UpdateCalendarEvent(oldEvent, cmd.Event, ev =>
+                        {
+                            this.OnSuccessfulUpsert(ev);
+                            Context.System.EventStream.Publish(new CalendarEventChanged(oldEvent, ev));
+                        });
                     }
                     catch (Exception ex)
                     {
@@ -179,6 +187,7 @@
             {
                 this.Self.Tell(new ProcessCalendarEventApprovalsMessage(message.Event.EventId));
                 this.Sender.Tell(Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
+                Context.System.EventStream.Publish(new CalendarEventUserGrantedApproval(calendarEvent, approvals.ToList()));
                 this.OnSuccessfulApprove(ev);
             });
         }
@@ -198,7 +207,10 @@
                     oldEvent.EmployeeId
                 );
 
-                this.UpdateCalendarEvent(oldEvent, newEvent, ev => { });
+                this.UpdateCalendarEvent(oldEvent, newEvent, ev =>
+                {
+                    Context.System.EventStream.Publish(new CalendarEventChanged(oldEvent, ev));
+                });
             }
 
             Context.System.EventStream.Publish(
