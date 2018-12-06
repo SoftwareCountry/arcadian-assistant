@@ -12,8 +12,8 @@ export const layoutStylesForEmployeeDetailsScreen = StyleSheet.create({
         backgroundColor: chevronColor
     },
     eventsContainer: {
-        marginTop: 5,
-        marginBottom: 5
+        marginTop: 10,
+        marginBottom: 10,
     },
     eventRow: {
         flex: 1,

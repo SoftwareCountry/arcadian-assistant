@@ -34,6 +34,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
         const events = this.prepareEvents();
 
         return (<FlatList
+                    scrollEnabled={false}
                     data={events}
                     keyExtractor={this.keyExtractor}
                     renderItem={this.renderItem} />
@@ -72,7 +73,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
         const typeIconContainerStyle = this.props.showUserAvatar ? eventTypeIconContainer : eventTypeIconContainerTiny;
 
         const now = moment();
-        const isOutdated = item.calendarEvent.dates.endDate.isSameOrBefore(now, 'date');
+        const isOutdated = item.calendarEvent.dates.endDate.isBefore(now, 'date');
 
         const eventsContainerFlattened = StyleSheet.flatten([
             eventsContainer,
