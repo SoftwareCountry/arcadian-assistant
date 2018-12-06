@@ -7,16 +7,42 @@ import { WelcomeScreen } from './welcome-screen/welcome-screen';
 import { AuthState } from './reducers/auth/auth.reducer';
 import { SplashScreen } from './splash-screen/splash-screen';
 import { NavigationService } from './navigation/navigation.service';
+import { YellowBox } from 'react-native';
 
+//============================================================================
 interface AppProps {
     authentication: AuthState | undefined;
 }
 
+//============================================================================
 interface AppOwnProps {
     navigationService: NavigationService;
 }
 
+//============================================================================
 export class App extends Component<AppProps & AppOwnProps> {
+    //----------------------------------------------------------------------------
+    public componentDidMount(): void {
+        YellowBox.ignoreWarnings(['Deserialization']);
+    }
+
+    //----------------------------------------------------------------------------
+    public shouldComponentUpdate(nextProps: Readonly<AppProps & AppOwnProps>, nextState: Readonly<{}>, nextContext: any): boolean {
+        if (!this.props.authentication || !nextProps.authentication) {
+            return true;
+        }
+
+        if (!this.props.authentication.authInfo || !nextProps.authentication.authInfo) {
+            return true;
+        }
+
+        const authInfo = this.props.authentication.authInfo;
+        const nextAuthInfo = nextProps.authentication.authInfo;
+
+        return authInfo.isAuthenticated !== nextAuthInfo.isAuthenticated;
+    }
+
+    //----------------------------------------------------------------------------
     public render() {
         if (!this.props.authentication || !this.props.authentication.authInfo) {
             return (
@@ -35,6 +61,7 @@ export class App extends Component<AppProps & AppOwnProps> {
     }
 }
 
+//----------------------------------------------------------------------------
 const stateToProps = (state: AppState) => ({
     authentication: state.authentication,
 });

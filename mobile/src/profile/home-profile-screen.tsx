@@ -70,14 +70,7 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
         const requests = this.props.requests;
         const nextRequests = nextProps.requests;
         if (!requests.equals(nextRequests)) {
-            if (employee && nextEmployee) {
-                const calendarEvents = requests.get(employee.employeeId);
-                const nextCalendarEvents = nextRequests.get(nextEmployee.employeeId);
-
-                if (calendarEvents !== nextCalendarEvents) {
-                    return true;
-                }
-            }
+            return true;
         }
 
         if (!this.props.employees && !nextProps.employees) {

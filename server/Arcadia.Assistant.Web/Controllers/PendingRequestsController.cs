@@ -36,7 +36,7 @@
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(CalendarEventsWithIdByEmployeeModel), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetPendingRequestsForUser(string fromUser, CancellationToken token)
+        public async Task<IActionResult> GetPendingRequestsForUser(CancellationToken token)
         {
             var user = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, token);
             if (user == null)

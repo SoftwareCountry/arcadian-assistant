@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import { AppState } from '../../reducers/app.reducer';
-import { connect } from 'react-redux';
 import { ClaimSickLeaveEventDialog } from './claim-sick-leave-event-dialog';
 import { ConfirmSickLeaveEventDialog } from './confirm-sick-leave-event-dialog';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
@@ -16,6 +14,8 @@ import { ChooseTypeDayoffEventDialog } from './choose-type-dayoff-event-dialog';
 import { ConfirmDayoffEventDialog } from './confirm-dayoff-event-dialog';
 import { EditDayoffEventDialog } from './edit-dayoff-event-dialog';
 import { CancelSickLeaveEventDialog } from './cancel-sickleave-event-dialog';
+import { VacationRequestedDialog } from './vacation-requested-dialog';
+import { DayoffRequestedDialog } from './dayoff-requested-dialog';
 
 interface EventDialogProps {
     dialogType: EventDialogType;
@@ -49,6 +49,8 @@ export class EventDialog extends Component<EventDialogProps> {
                 return <ChangeVacationStartDateEventDialog />;
             case EventDialogType.ChangeVacationEndDate:
                 return <ChangeVacationEndDateEventDialog />;
+            case EventDialogType.VacationRequested:
+                return <VacationRequestedDialog />;
 
             case EventDialogType.ProcessDayoff:
                 return <ProcessDayoffEventDialog />;
@@ -58,6 +60,8 @@ export class EventDialog extends Component<EventDialogProps> {
                 return <ConfirmDayoffEventDialog />;
             case EventDialogType.EditDayoff:
                 return <EditDayoffEventDialog />;
+            case EventDialogType.DayoffRequested:
+                return <DayoffRequestedDialog />;
 
             default:
                 throw new Error(`There isn't event dialog implementation for ${this.props.dialogType}`);

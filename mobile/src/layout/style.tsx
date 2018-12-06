@@ -6,6 +6,8 @@ const color = {
     base: '#2FAFCC',
     white: '#FFFFFF',
     red: '#FF0000',
+    black: '#000000',
+    green: '#00FF00',
     transparent: 'transparent',
 };
 
@@ -30,6 +32,10 @@ const navigation = StyleSheet.create({
         shadowOpacity: 0,
         borderBottomWidth: 0,
         elevation: 0,
+    },
+    titleContainer: {
+        flex: 1,
+        alignContent: 'center',
     },
     title: {
         fontFamily: 'CenturyGothic',

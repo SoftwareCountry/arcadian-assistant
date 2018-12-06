@@ -2,7 +2,7 @@ import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
 import {
     LoadDepartments, loadDepartmentsFinished, LoadDepartmentsFinished, loadDepartments,
     loadEmployeesFinished, LoadEmployeesForDepartment, LoadEmployeesForRoom, loadEmployeesForDepartment,
-    LoadEmployee, loadEmployee, loadEmployeesForRoom
+    LoadEmployees, loadEmployees, loadEmployeesForRoom
 } from './organization.action';
 import { LoadUserEmployeeFinished } from '../user/user.action';
 import { deserializeArray, deserialize } from 'santee-dcts/src/deserializer';
@@ -11,20 +11,23 @@ import { AppState, DependenciesContainer } from '../app.reducer';
 import { Employee } from './employee.model';
 import { loadFailedError } from '../errors/errors.action';
 import { handleHttpErrors } from '../errors/errors.epics';
-import { catchError, filter, flatMap, groupBy, map, mergeAll, switchMap } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { catchError, filter, groupBy, map, mergeAll, mergeMap, switchMap } from 'rxjs/operators';
+import { forkJoin, of } from 'rxjs';
+import { Set } from 'immutable';
 
-export const loadEmployeeEpic$ = (action$: ActionsObservable<LoadEmployee>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
-    ofType('LOAD_EMPLOYEE'),
-    groupBy(action => action.employeeId),
-    map(x => x.pipe(
-        switchMap(action => deps.apiClient.getJSON(`/employees/${action.employeeId}`).pipe(
-            map(obj => deserialize(obj, Employee)),
-            handleHttpErrors<Employee>(),
-        )),
-    )),
-    mergeAll<Employee>(),
-    map(employee => loadEmployeesFinished([ employee ])),
+export const loadEmployeeEpic$ = (action$: ActionsObservable<LoadEmployees>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
+    ofType('LOAD_EMPLOYEES'),
+    mergeMap(action => {
+        const employeeIds = Set(action.employeeIds);
+        const requests = employeeIds.toArray().map(employeeId => {
+            return deps.apiClient.getJSON(`/employees/${employeeId}`).pipe(
+                map(obj => deserialize(obj, Employee)),
+                handleHttpErrors<Employee>(),
+            );
+        });
+        return forkJoin(requests);
+    }),
+    map(employees => loadEmployeesFinished(employees)),
 );
 
 export const loadDepartmentsEpic$ = (action$: ActionsObservable<LoadDepartments>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
@@ -40,7 +43,8 @@ export const loadDepartmentsEpic$ = (action$: ActionsObservable<LoadDepartments>
 export const loadChiefsEpic$ = (action$: ActionsObservable<LoadDepartmentsFinished>) => action$.pipe(
     ofType('LOAD-DEPARTMENTS-FINISHED'),
     map(action => action.departments.filter(department => !!department.chiefId)),
-    flatMap(departments => departments.map(department => loadEmployee(department.chiefId!))),
+    map(departments => departments.map(department => department.chiefId!)),
+    map(chiefIds => loadEmployees(chiefIds))
 );
 
 export const loadEmployeesForDepartmentEpic$ = (action$: ActionsObservable<LoadEmployeesForDepartment>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(

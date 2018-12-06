@@ -1,10 +1,14 @@
-import React, { Component } from 'react';
-import { View, Image, Text, TouchableOpacity } from 'react-native';
+/******************************************************************************
+ * Copyright (c) Arcadia, Inc. All rights reserved.
+ ******************************************************************************/
 
-import { CalendarEvent, CalendarEventType, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
+import React, { Component } from 'react';
+import { View, TouchableOpacity, Alert } from 'react-native';
+import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { ApplicationIcon } from '../override/application-icon';
 import { layoutStylesForEventManagementToolset } from './styles';
 
+//============================================================================
 interface EventManagementToolsetProps {
     event: CalendarEvent;
     employeeId: string;
@@ -13,15 +17,49 @@ interface EventManagementToolsetProps {
     canReject: boolean;
 }
 
+//============================================================================
 export class EventManagementToolset extends Component<EventManagementToolsetProps> {
+    //----------------------------------------------------------------------------
     public onApprove = () => {
-        this.updateCalendarEvent(this.props.event, CalendarEventStatus.Approved);
+        Alert.alert(
+            'Are you sure you want to approve the request?',
+            undefined,
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Approve',
+                    onPress: () => {
+                        this.updateCalendarEvent(this.props.event, CalendarEventStatus.Approved);
+                    },
+                },
+            ],
+        );
     };
 
+    //----------------------------------------------------------------------------
     public onReject = () => {
-        this.updateCalendarEvent(this.props.event, CalendarEventStatus.Rejected);
+        Alert.alert(
+            'Are you sure you want to reject the request?',
+            undefined,
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Reject',
+                    onPress: () => {
+                        this.updateCalendarEvent(this.props.event, CalendarEventStatus.Rejected);
+                    },
+                },
+            ],
+        );
     };
 
+    //----------------------------------------------------------------------------
     public render() {
         const { toolsetContainer, approveIcon, rejectIcon } = layoutStylesForEventManagementToolset;
         const { canApprove, canReject } = this.props;
@@ -44,6 +82,7 @@ export class EventManagementToolset extends Component<EventManagementToolsetProp
         );
     }
 
+    //----------------------------------------------------------------------------
     private updateCalendarEvent(calendarEvent: CalendarEvent, status: CalendarEventStatus) {
         this.props.eventSetNewStatusAction(this.props.employeeId, calendarEvent, status);
     }

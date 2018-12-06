@@ -1,128 +1,122 @@
 import React, { Component } from 'react';
-import { GestureResponderEvent, PixelRatio, StyleSheet, View } from 'react-native';
+import { PixelRatio, StyleSheet, View } from 'react-native';
 import { calendarStyles, intervalMargin } from './styles';
 import { DayModel } from '../reducers/calendar/calendar.model';
 import { OnSelectedDayCallback } from './calendar-page';
 import { StyledText } from '../override/styled-text';
+import Style from '../layout/style';
+import { State, TapGestureHandler, TapGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
 
+//============================================================================
 export const WeekDay = (props: { hide: boolean, children: any[] }) =>
     props.hide
         ? null
         : <View style={calendarStyles.weekDay}>{props.children}</View>;
 
+//============================================================================
 interface WeekDayCircleDefaultProps {
     customTextColor?: string;
 }
 
+//============================================================================
 interface WeekDayCircleProps extends WeekDayCircleDefaultProps {
     weekHeight: number;
     day: DayModel;
     selectedDay: DayModel;
 }
 
+//============================================================================
 export class WeekDayCircle extends Component<WeekDayCircleProps> {
+    //----------------------------------------------------------------------------
     public static defaultProps: WeekDayCircleDefaultProps = {
-        customTextColor: '#000'
+        customTextColor: Style.color.black
     };
 
+    //----------------------------------------------------------------------------
     public render() {
         const { day, weekHeight } = this.props;
 
-        const height = PixelRatio.roundToNearestPixel(weekHeight - (weekHeight * 0));
+        const height = PixelRatio.roundToNearestPixel(weekHeight);
 
-        const circleStyles = StyleSheet.flatten([
+        // noinspection JSSuspiciousNameCombination
+        const circleStyle = StyleSheet.flatten([
             calendarStyles.weekDayCircle,
             {
                 width: height,
                 height: height,
                 borderRadius: PixelRatio.roundToNearestPixel(height / 2),
                 borderWidth: 2,
-                borderColor: this.isSelectedDay(day) ? '#2FAFCC' : 'transparent',
-                backgroundColor: this.isSelectedDay(day)
-                    ? '#fff'
-                    : 'transparent'
+                borderColor: this.isSelectedDay(day) ? Style.color.base : Style.color.transparent,
+                backgroundColor: this.isSelectedDay(day) ? Style.color.white : Style.color.transparent,
             }
         ]);
 
-        const innerCircleSize = (circleStyles.width as number) - (circleStyles.width as number * intervalMargin);
+        const innerCircleSize = (circleStyle.width as number) - (circleStyle.width as number * intervalMargin);
 
-        const innerCircleStyles = StyleSheet.flatten([
+        const innerCircleStyle = StyleSheet.flatten([
             calendarStyles.weekDayCircle,
             {
                 width: innerCircleSize,
                 height: innerCircleSize,
-                borderRadius: circleStyles.borderRadius! - (circleStyles.borderRadius! * intervalMargin),
-                backgroundColor: this.isSelectedDay(day)
-                    ? '#2FAFCC'
-                    : 'transparent'
+                borderRadius: circleStyle.borderRadius! - (circleStyle.borderRadius! * intervalMargin),
+                backgroundColor: this.isSelectedDay(day) ? Style.color.base : Style.color.transparent,
             }
         ]);
 
-        const circleTextStyles = StyleSheet.flatten([
+        const circleTextStyle = StyleSheet.flatten([
             calendarStyles.weekDayNumber,
             {
-                color: day.belongsToCurrentMonth
-                    ? this.isSelectedDay(day)
-                        ? '#fff'
-                        : this.props.customTextColor
-                    : '#dadada'
+                color: day.belongsToCurrentMonth ?
+                    this.isSelectedDay(day) ? Style.color.white : this.props.customTextColor :
+                    '#dadada'
             }
         ]);
 
         return (
             <View style={calendarStyles.weekDayCircleContainer}>
-                <View style={circleStyles}>
-                    <View style={innerCircleStyles}>
-                        <StyledText style={circleTextStyles}>{day.date.date()}</StyledText>
+                <View style={circleStyle}>
+                    <View style={innerCircleStyle}>
+                        <StyledText style={circleTextStyle}>{day.date.date()}</StyledText>
                     </View>
                 </View>
             </View>
         );
     }
 
+    //----------------------------------------------------------------------------
     private isSelectedDay(day: DayModel) {
-        return this.props.selectedDay
-            && this.props.selectedDay.date
-            && this.props.selectedDay.date.isSame(day.date, 'day');
+        return (
+            this.props.selectedDay &&
+            this.props.selectedDay.date &&
+            this.props.selectedDay.date.isSame(day.date, 'day')
+        );
     }
 }
 
+//============================================================================
 interface WeekDayTouchableProps {
     day: DayModel;
     onSelectedDay: OnSelectedDayCallback;
     disabled: boolean;
 }
 
-// Use native events instead of TouchableOpacity, which uses PanResponder under the hood.
-class WeekDayTouchableHandler {
-    private pageX = 0;
-
-    constructor(
-        private readonly onPressUp: () => void
-    ) {
-    }
-
-    public onTouchStart = (event: GestureResponderEvent) => {
-        this.pageX = event.nativeEvent.pageX;
-    };
-
-    public onTouchEnd = (event: GestureResponderEvent) => {
-        // if we detect a horizontal swipe (x coordinate has been changed between start and end events),
-        // stop pressing to aviod unexpected change selected day
-        if (this.pageX === event.nativeEvent.pageX) {
-            this.onPressUp();
-        }
-    };
-}
-
+//============================================================================
 export class WeekDayTouchable extends Component<WeekDayTouchableProps> {
-    private readonly touchableHandler = new WeekDayTouchableHandler(() => {
-        if (!this.props.disabled) {
-            this.props.onSelectedDay(this.props.day);
-        }
-    });
-
+    //----------------------------------------------------------------------------
     public render() {
-        return <View {...this.touchableHandler} style={calendarStyles.weekDayTouchable}></View>;
+        return (
+            <TapGestureHandler maxDist={50} onHandlerStateChange={this.onTapHandlerStateChange}>
+                <View style={calendarStyles.weekDayTouchable}/>
+            </TapGestureHandler>
+        );
     }
+
+    //----------------------------------------------------------------------------
+    private onTapHandlerStateChange = (event: TapGestureHandlerStateChangeEvent) => {
+        if (this.props.disabled || event.nativeEvent.state !== State.ACTIVE) {
+            return;
+        }
+
+        this.props.onSelectedDay(this.props.day);
+    };
 }

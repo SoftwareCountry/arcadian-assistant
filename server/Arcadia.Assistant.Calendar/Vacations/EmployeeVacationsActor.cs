@@ -22,8 +22,6 @@
 
         public override string PersistenceId { get; }
 
-        private readonly HashSet<string> eventsToProcessApproversAfterRecover = new HashSet<string>();
-
         //private int vacationsCredit = 28;
 
         public EmployeeVacationsActor(string employeeId,
@@ -138,17 +136,13 @@
             return VacationStatuses.Requested;
         }
 
-        protected override string GetApprovedStatus()
-        {
-            return VacationStatuses.Approved;
-        }
-
         protected override bool IsStatusTransitionAllowed(string oldCalendarEventStatus, string newCalendarEventStatus)
         {
             return VacationStatuses.All.Contains(newCalendarEventStatus)
                 && (oldCalendarEventStatus != VacationStatuses.Cancelled)
                 && (oldCalendarEventStatus != VacationStatuses.Rejected)
-                && (newCalendarEventStatus != this.GetInitialStatus());
+                && (newCalendarEventStatus != this.GetInitialStatus())
+                && (newCalendarEventStatus != VacationStatuses.Approved);
         }
 
         protected override void OnRecover(object message)
@@ -180,9 +174,12 @@
                     break;
 
                 case RecoveryCompleted _:
-                    foreach (var eventId in this.eventsToProcessApproversAfterRecover)
+                    foreach (var @event in this.EventsById.Values)
                     {
-                        this.Self.Tell(new ProcessCalendarEventApprovalsMessage(eventId));
+                        if (@event.IsPending)
+                        {
+                            this.Self.Tell(new ProcessCalendarEventApprovalsMessage(@event.EventId));
+                        }
                     }
                     break;
             }
@@ -206,7 +203,6 @@
             var calendarEvent = new CalendarEvent(message.EventId, CalendarEventTypes.Vacation, datesPeriod, VacationStatuses.Requested, this.EmployeeId);
             this.EventsById[message.EventId] = calendarEvent;
             this.ApprovalsByEvent[message.EventId] = new List<string>();
-            this.eventsToProcessApproversAfterRecover.Add(message.EventId);
         }
 
         private void OnVacationDatesEdit(VacationDatesAreEdited message)
@@ -223,7 +219,6 @@
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
                 this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, VacationStatuses.Approved, this.EmployeeId);
-                this.eventsToProcessApproversAfterRecover.Remove(message.EventId);
 
                 var text = $"Got vacation approved from {calendarEvent.Dates.StartDate.ToLongDateString()} to {calendarEvent.Dates.EndDate.ToLongDateString()}";
                 var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, message.TimeStamp.Date);
@@ -236,7 +231,6 @@
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
                 this.EventsById.Remove(message.EventId);
-                this.eventsToProcessApproversAfterRecover.Remove(message.EventId);
 
                 var text = $"Got vacation canceled ({calendarEvent.Dates.StartDate.ToLongDateString()} - {calendarEvent.Dates.EndDate.ToLongDateString()})";
                 var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, message.TimeStamp.Date);
@@ -249,7 +243,6 @@
             if (this.EventsById.ContainsKey(message.EventId))
             {
                 this.EventsById.Remove(message.EventId);
-                this.eventsToProcessApproversAfterRecover.Remove(message.EventId);
             }
         }
     }

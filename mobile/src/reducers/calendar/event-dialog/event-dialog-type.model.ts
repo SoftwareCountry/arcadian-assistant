@@ -11,9 +11,11 @@ export enum EventDialogType {
     CancelVacation = 'CancelVacation',
     ChangeVacationStartDate = 'ChangeVacationStartDate',
     ChangeVacationEndDate = 'ChangeVacationEndDate',
+    VacationRequested = 'VacationRequested',
 
     ProcessDayoff = 'ProcessDayoff',
     ChooseTypeDayoff = 'ChooseTypeDayoff',
     ConfirmDayoffStartDate = 'ConfirmDayoffStartDate',
-    EditDayoff = 'EditDayoff'
+    EditDayoff = 'EditDayoff',
+    DayoffRequested = 'DayoffRequested',
 }

@@ -3,11 +3,21 @@ import { EmployeesStore } from '../organization/employees.reducer';
 import { Map, Set } from 'immutable';
 
 export function filterEmployees(employees: EmployeesStore, filter: string) {
+    const lowercasedFilter = filter.toLowerCase();
     const employeesPredicate = (employee: Employee) => {
-        return (employee.name && employee.name.includes(filter) ||
-                employee.email && employee.email.includes(filter) || 
-                employee.position && employee.position.includes(filter)
-        );
+        if (!filter) {
+            return true;
+        }
+
+        if (employee.name && employee.name.toLowerCase().includes(lowercasedFilter)) {
+            return true;
+        }
+
+        if (employee.position && employee.position.toLowerCase().includes(lowercasedFilter)) {
+            return true;
+        }
+
+        return false;
     };
     // filter employees
     const filteredEmployeesById: Map<string, Employee> = employees.employeesById.filter(employeesPredicate) as Map<string, Employee>;
