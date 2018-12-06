@@ -19,8 +19,6 @@
         /// </summary>
         private int hoursCredit = 0;
 
-        private readonly HashSet<string> eventsToProcessApproversAfterRecover = new HashSet<string>();
-
         public EmployeeWorkHoursActor(string employeeId, IActorRef calendarEventsApprovalsChecker)
             : base(employeeId, calendarEventsApprovalsChecker)
         {
@@ -57,9 +55,12 @@
                     break;
 
                 case RecoveryCompleted _:
-                    foreach (var eventId in this.eventsToProcessApproversAfterRecover)
+                    foreach (var @event in this.EventsById.Values)
                     {
-                        this.Self.Tell(new ProcessCalendarEventApprovalsMessage(eventId));
+                        if (@event.IsPending)
+                        {
+                            this.Self.Tell(new ProcessCalendarEventApprovalsMessage(@event.EventId));
+                        }
                     }
                     break;
             }
@@ -177,19 +178,16 @@
             var calendarEvent = new CalendarEvent(message.EventId, eventType, datesPeriod, WorkHoursChangeStatuses.Requested, this.EmployeeId);
             this.EventsById[message.EventId] = calendarEvent;
             this.ApprovalsByEvent[message.EventId] = new List<string>();
-            this.eventsToProcessApproversAfterRecover.Add(message.EventId);
         }
 
         private void OnChangeCancelled(WorkHoursChangeIsCancelled message)
         {
             this.RemoveEvent(message.EventId);
-            this.eventsToProcessApproversAfterRecover.Remove(message.EventId);
         }
 
         private void OnChangeRejected(WorkHoursChangeIsRejected message)
         {
             this.RemoveEvent(message.EventId);
-            this.eventsToProcessApproversAfterRecover.Remove(message.EventId);
         }
 
         private void OnChangeApproved(WorkHoursChangeIsApproved message)
@@ -199,7 +197,6 @@
                 //Make changes to the counter
                 this.ChangeCounter(calendarEvent.Dates.StartWorkingHour, calendarEvent.Dates.FinishWorkingHour, this.IsCreditingType(calendarEvent.Type));
                 this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, WorkHoursChangeStatuses.Approved, this.EmployeeId);
-                this.eventsToProcessApproversAfterRecover.Remove(message.EventId);
             }
         }
 
