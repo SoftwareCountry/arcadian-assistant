@@ -29,6 +29,10 @@ namespace Arcadia.Assistant.CSP.Model
         public virtual DbSet<Team> Team { get; set; }
         public virtual DbSet<TeamHistory> TeamHistory { get; set; }
 
+        public virtual DbSet<Vacation> Vacations { get; set; }
+
+        public virtual DbSet<VacationApproval> VacationApprovals { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Company>(entity =>
@@ -721,6 +725,63 @@ namespace Arcadia.Assistant.CSP.Model
                     .HasForeignKey(d => d.TeamId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_TeamHistory_Team");
+            });
+
+            modelBuilder.Entity<Vacation>(entity =>
+            {
+                entity.Property(e => e.RaisedAt)
+                    .HasColumnType("datetimeoffset(7)")
+                    .IsRequired();
+
+                entity.Property(e => e.Start)
+                    .HasColumnType("datetime")
+                    .IsRequired();
+
+                entity.Property(e => e.End)
+                    .HasColumnType("datetime")
+                    .IsRequired();
+
+                entity.Property(e => e.Type)
+                    .HasColumnType("int")
+                    .IsRequired();
+
+                entity.Property(e => e.CancelledAt)
+                    .HasColumnType("datetimeoffset(7)");
+
+                entity.HasOne(e => e.Employee)
+                    .WithMany(e => e.Vacations)
+                    .HasForeignKey(e => e.EmployeeId)
+                    .HasConstraintName("FK_dbo.Vacations_dbo.Employee_EmployeeId");
+
+                entity.HasOne(e => e.CancelledBy)
+                    .WithMany(r => r.CancelledVacations)
+                    .HasForeignKey(e => e.CancelledById)
+                    .HasConstraintName("FK_dbo.Vacations_dbo.Employee_CancelledById");
+            });
+
+            modelBuilder.Entity<VacationApproval>(entity =>
+            {
+                entity.Property(e => e.Status)
+                    .HasColumnType("int")
+                    .IsRequired();
+
+                entity.Property(e => e.TimeStamp)
+                    .HasColumnType("datetimeoffset(7)");
+
+                entity.HasOne(e => e.Vacation)
+                    .WithMany(v => v.VacationApprovals)
+                    .HasForeignKey(e => e.VacationId)
+                    .HasConstraintName("FK_dbo.VacationApprovals_dbo.Vacations_VacationId");
+
+                entity.HasOne(e => e.Approver)
+                    .WithMany(e => e.VacationApprovals)
+                    .HasForeignKey(e => e.ApproverId)
+                    .HasConstraintName("FK_dbo.VacationApprovals_dbo.Employee_ApproverId");
+
+                entity.HasOne(e => e.NextApproval)
+                    .WithMany(e => e.NextVacationApprovals)
+                    .HasForeignKey(e => e.NextApprovalId)
+                    .HasConstraintName("FK_dbo.VacationApprovals_dbo.VacationApprovals_NextApprovalId");
             });
         }
     }
