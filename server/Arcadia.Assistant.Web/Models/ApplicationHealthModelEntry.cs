@@ -4,9 +4,9 @@
     {
         public ApplicationHealthModelEntry(string stateName, bool stateValue, string stateDetails)
         {
-            StateName = stateName;
-            StateValue = stateValue;
-            StateDetails = stateDetails;
+            this.StateName = stateName;
+            this.StateValue = stateValue;
+            this.StateDetails = stateDetails;
         }
 
         public string StateName { get; }
