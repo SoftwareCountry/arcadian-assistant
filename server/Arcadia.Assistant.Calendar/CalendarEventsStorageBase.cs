@@ -229,6 +229,10 @@
             {
                 this.Self.Tell(new AssignCalendarEventNextApprover(calendarEvent.EventId));
             }
+            else
+            {
+                Context.System.EventStream.Publish(new CalendarEventAssignedToApprover(calendarEvent, null));
+            }
         }
 
         protected class AssignCalendarEventNextApprover
