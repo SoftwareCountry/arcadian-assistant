@@ -33,7 +33,7 @@
             this.actorSystem.ActorOf(this.actorSystem.DI().Props<SendEmailSickLeaveActor>(), "sick-leave-email");
 
             var emailNotificationsActorProps = this.actorSystem.DI().Props<EmailNotificationsActor>();
-            this.actorSystem.ActorOf(Props.Create(() => new NotificationsActor(emailNotificationsActorProps)), "notifications");
+            this.actorSystem.ActorOf(Props.Create(() => new NotificationsDispatcherActor(emailNotificationsActorProps)), "notifications");
 
             return new ServerActorsCollection(organization, health, helpdesk, feeds, userPreferences);
         }
