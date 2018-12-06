@@ -178,7 +178,7 @@
                     {
                         if (@event.IsPending)
                         {
-                            this.Self.Tell(new ProcessCalendarEventApprovalsMessage(@event.EventId));
+                            this.Self.Tell(new AssignCalendarEventNextApprover(@event.EventId));
                         }
                     }
                     break;

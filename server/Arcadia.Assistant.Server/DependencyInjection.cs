@@ -22,7 +22,7 @@
             container.RegisterModule(new OrganizationModule(organizationSettings.RefreshInformation));
 
             var mailSettings = settings.Messaging;
-            container.RegisterModule(new NotificationsModule(mailSettings.Smtp, mailSettings.SickLeave));
+            container.RegisterModule(new NotificationsModule(mailSettings.Smtp));
 
             container.RegisterModule(new Remote1CModule(config));
             container.RegisterModule(new HealthModule());

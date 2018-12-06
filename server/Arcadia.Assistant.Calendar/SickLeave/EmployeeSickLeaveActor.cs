@@ -5,25 +5,18 @@
     using System.Linq;
 
     using Akka.Actor;
-    using Akka.Event;
     using Akka.Persistence;
 
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.SickLeave.Events;
-    using Arcadia.Assistant.Notifications;
     using Arcadia.Assistant.Organization.Abstractions;
 
     public class EmployeeSickLeaveActor : CalendarEventsStorageBase
     {
-        private EmployeeMetadata employee;
-
         public EmployeeSickLeaveActor(EmployeeMetadata employee, IActorRef calendarEventsApprovalsChecker)
             : base(employee.EmployeeId, calendarEventsApprovalsChecker)
         {
             this.PersistenceId = $"employee-sickleaves-{this.EmployeeId}";
-            this.employee = employee;
-
-            Context.System.EventStream.Subscribe<EmployeeMetadataUpdatedEventBusMessage>(this.Self);
         }
 
         public override string PersistenceId { get; }
@@ -31,20 +24,6 @@
         public static Props CreateProps(EmployeeMetadata employee, IActorRef calendarEventsApprovalsChecker)
         {
             return Props.Create(() => new EmployeeSickLeaveActor(employee, calendarEventsApprovalsChecker));
-        }
-
-        protected override void OnCommand(object message)
-        {
-            switch (message)
-            {
-                case EmployeeMetadataUpdatedEventBusMessage msg:
-                    this.employee = msg.EmployeeMetadata;
-                    break;
-
-                default:
-                    base.OnCommand(message);
-                    break;
-            }
         }
 
         protected override void OnRecover(object message)
@@ -84,7 +63,7 @@
                     {
                         if (@event.IsPending)
                         {
-                            this.Self.Tell(new ProcessCalendarEventApprovalsMessage(@event.EventId));
+                            this.Self.Tell(new AssignCalendarEventNextApprover(@event.EventId));
                         }
                     }
                     break;
@@ -152,11 +131,7 @@
                         {
                             EventId = newEvent.EventId,
                             TimeStamp = DateTimeOffset.Now
-                        }, e =>
-                        {
-                            this.OnSickleaveApproved(e);
-                            this.SendSickLeaveApprovedMessage(e);
-                        });
+                        }, this.OnSickleaveApproved);
                         break;
 
                     case SickLeaveStatuses.Rejected:
@@ -229,17 +204,6 @@
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
                 this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, SickLeaveStatuses.Approved, this.EmployeeId);
-            }
-        }
-
-        private void SendSickLeaveApprovedMessage(SickLeaveIsApproved message)
-        {
-            if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
-            {
-                var notificationPayload = new SendEmailSickLeaveActor.SickLeaveNotification(
-                    this.employee.Name,
-                    calendarEvent.Dates.StartDate);
-                Context.System.EventStream.Publish(new NotificationEventBusMessage(notificationPayload));
             }
         }
 
