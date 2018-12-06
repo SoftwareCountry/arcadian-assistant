@@ -14,7 +14,8 @@ import {
 import { EndInterval, Interval, StartInterval } from './calendar-page-interval';
 import { WeekDay, WeekDayCircle, WeekDayTouchable } from './calendar-page-weekday';
 import { IntervalBoundary } from './calendar-page-interval-boundary';
-import { Nullable } from 'types';
+import { Nullable, Optional } from 'types';
+import Style from '../layout/style';
 
 export type OnSelectedDayCallback = (day: DayModel) => void;
 
@@ -190,14 +191,12 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
     }
 
     //----------------------------------------------------------------------------
-    private getDayTextColor(intervals: Nullable<IntervalModel[]>): Nullable<string> {
+    private getDayTextColor(intervals: Nullable<IntervalModel[]>): Optional<string> {
         if (!intervals || !intervals.length) {
-            return null;
+            return undefined;
         }
 
-        return intervals.some(x => !x.boundary) ?
-            '#fff' :
-            null;
+        return intervals.some(x => !x.boundary) ? Style.color.white : undefined;
     }
 
     //----------------------------------------------------------------------------
@@ -208,12 +207,10 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
             return null;
         }
 
-        const dayTextColor = this.getDayTextColor(intervalModels);
-
         return <WeekDayCircle day={day}
                               selectedDay={this.props.selection.single.day}
                               weekHeight={this.state.weekHeight}
-                              customTextColor={dayTextColor ? dayTextColor : undefined}/>;
+                              customTextColor={this.getDayTextColor(intervalModels)}/>;
     }
 
     //----------------------------------------------------------------------------
