@@ -1,35 +1,57 @@
 ﻿namespace Arcadia.Assistant.Calendar.SickLeave
 {
-    using System;
+    using System.Linq;
+
     using Akka.Actor;
     using Akka.Event;
 
-    using Configuration.Configuration;
-    using MailKit.Net.Smtp;
-    using MailKit.Security;
-    using MimeKit;
+    using Arcadia.Assistant.Calendar.Abstractions;
+    using Arcadia.Assistant.Calendar.Abstractions.EventBus;
+    using Arcadia.Assistant.Configuration.Configuration;
+    using Arcadia.Assistant.Notifications;
+    using Arcadia.Assistant.Notifications.Email;
+    using Arcadia.Assistant.Organization.Abstractions;
+    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public class SendEmailSickLeaveActor : UntypedActor
     {
         private readonly IEmailSettings mailConfig;
-        private readonly ISmtpSettings smtpConfig;
+        private readonly IActorRef organizationActor;
+
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
-        public SendEmailSickLeaveActor(IEmailSettings mailConfig, ISmtpSettings smtpConfig)
+        public SendEmailSickLeaveActor(IEmailSettings mailConfig, IActorRef organizationActor)
         {
             this.mailConfig = mailConfig;
-            this.smtpConfig = smtpConfig;
+            this.organizationActor = organizationActor;
+
+            Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);
         }
 
         protected override void OnReceive(object message)
         {
             switch (message)
             {
-                case SickLeaveNotification notification when notification.EmployeeName == null:
+                case CalendarEventChanged msg when msg.NewEvent.Type == CalendarEventTypes.Sickleave:
+                    this.organizationActor
+                        .Ask<EmployeesQuery.Response>(EmployeesQuery.Create().WithId(msg.NewEvent.EmployeeId))
+                        .ContinueWith(task => new CalendarEventChangedWithEmployee(msg.NewEvent, task.Result.Employees.FirstOrDefault()?.Metadata))
+                        .PipeTo(this.Self);
                     break;
 
-                case SickLeaveNotification notification:
-                    this.SendEmail(notification);
+                case CalendarEventChanged _:
+                    break;
+
+                case CalendarEventChangedWithEmployee msg:
+                    this.logger.Debug("Sending a sick leave email notification for user {0}", msg.Event.EmployeeId);
+
+                    var sender = this.mailConfig.NotificationSender;
+                    var recipient = this.mailConfig.NotificationRecipient;
+                    var subject = this.mailConfig.Subject;
+                    var body = string.Format(this.mailConfig.Body, msg.Employee.Name, msg.Event.Dates.StartDate.ToString("D"));
+
+                    Context.System.EventStream.Publish(new NotificationEventBusMessage(new EmailNotification(sender, new[] { recipient }, subject, body)));
+
                     break;
 
                 default:
@@ -38,51 +60,17 @@
             }
         }
 
-        private void SendEmail(SickLeaveNotification notification)
+        private class CalendarEventChangedWithEmployee
         {
-            using (var client = new SmtpClient())
+            public CalendarEventChangedWithEmployee(CalendarEvent @event, EmployeeMetadata employee)
             {
-                this.logger.Debug("Sending a sick leave email notification for user {0}", notification.EmployeeName);
-                var msg = this.CreateMimeMessage(this.GetNotificationText(notification));
-
-                client.Connect(
-                    this.smtpConfig.Host,
-                    this.smtpConfig.Port,
-                    this.smtpConfig.UseTls ? SecureSocketOptions.StartTls : SecureSocketOptions.None);
-                client.Authenticate(this.smtpConfig.User, this.smtpConfig.Password);
-                client.Send(msg);
-                client.Disconnect(true);
-                this.logger.Debug("Sick leave email notification for user {0} was succesfully sent", notification.EmployeeName);
-            }
-        }
-
-        private MimeMessage CreateMimeMessage(string body)
-        {
-            var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("From", this.mailConfig.NotificationSender));
-            message.To.Add(new MailboxAddress("To", this.mailConfig.NotificationRecipient));
-            message.Subject = this.mailConfig.Subject;
-            message.Body = new TextPart("plain") { Text = body };
-
-            return message;
-        }
-
-        private string GetNotificationText(SickLeaveNotification notification)
-        {
-            return string.Format(this.mailConfig.Body, notification.EmployeeName, notification.StartDate.ToString("D"));
-        }
-
-        public sealed class SickLeaveNotification
-        {
-            public SickLeaveNotification(string employeeName, DateTime startDate)
-            {
-                this.EmployeeName = employeeName;
-                this.StartDate = startDate;
+                this.Event = @event;
+                this.Employee = employee;
             }
 
-            public string EmployeeName { get; }
+            public CalendarEvent Event { get; }
 
-            public DateTime StartDate { get; }
+            public EmployeeMetadata Employee { get; }
         }
     }
 }
