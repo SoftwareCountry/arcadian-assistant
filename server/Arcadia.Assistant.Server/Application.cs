@@ -8,7 +8,7 @@
     using Akka.DI.AutoFac;
 
     using Autofac;
-
+    using Configuration.Configuration;
     using Microsoft.Extensions.Configuration;
 
     public class Application : IDisposable
@@ -41,7 +41,7 @@
             new AutoFacDependencyResolver(this.container, this.ActorSystem);
 
             var builder = new ActorSystemBuilder(this.ActorSystem);
-            this.ServerActors = builder.AddRootActors();
+            this.ServerActors = builder.AddRootActors(this.container.Resolve<AppSettings>().Messaging.SickLeave);
         }
 
         protected virtual void OnStart(ActorSystem actorSystem)

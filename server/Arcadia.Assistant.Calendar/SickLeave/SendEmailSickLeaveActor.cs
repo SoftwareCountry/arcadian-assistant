@@ -1,6 +1,5 @@
 ﻿namespace Arcadia.Assistant.Calendar.SickLeave
 {
-    using System.Collections.Generic;
     using System.Linq;
 
     using Akka.Actor;
@@ -12,22 +11,21 @@
     using Arcadia.Assistant.Notifications;
     using Arcadia.Assistant.Notifications.Email;
     using Arcadia.Assistant.Organization.Abstractions;
-    using Arcadia.Assistant.Organization.Abstractions.EventBus;
+    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public class SendEmailSickLeaveActor : UntypedActor
     {
         private readonly IEmailSettings mailConfig;
+        private readonly IActorRef organizationActor;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
-        private Dictionary<string, EmployeeMetadata> employeesById;
 
-        public SendEmailSickLeaveActor(IEmailSettings mailConfig)
+        public SendEmailSickLeaveActor(IEmailSettings mailConfig, IActorRef organizationActor)
         {
             this.mailConfig = mailConfig;
+            this.organizationActor = organizationActor;
 
             Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);
-            Context.System.EventStream.Subscribe<EmployeeMetadataUpdated>(this.Self);
-            Context.System.EventStream.Subscribe<EmployeesMetadataLoaded>(this.Self);
         }
 
         protected override void OnReceive(object message)
@@ -35,41 +33,44 @@
             switch (message)
             {
                 case CalendarEventChanged msg when msg.NewEvent.Type == CalendarEventTypes.Sickleave:
-                    if (this.employeesById == null || !this.employeesById.TryGetValue(msg.NewEvent.EmployeeId, out var employee))
-                    {
-                        this.logger.Warning(
-                            "Sick leave email notification cannot be sent. Employee {0} is not loaded yet.",
-                            msg.NewEvent.EmployeeId);
-                        return;
-                    }
-
-                    this.logger.Debug("Sending a sick leave email notification for user {0}", msg.NewEvent.EmployeeId);
-
-                    var sender = this.mailConfig.NotificationSender;
-                    var recipient = this.mailConfig.NotificationRecipient;
-                    var subject = this.mailConfig.Subject;
-                    var body = string.Format(this.mailConfig.Body, employee.Name, msg.NewEvent.Dates.StartDate.ToString("D"));
-
-                    Context.System.EventStream.Publish(new NotificationEventBusMessage(new EmailNotification(sender, recipient, subject, body)));
-
+                    this.organizationActor
+                        .Ask<EmployeesQuery.Response>(EmployeesQuery.Create().WithId(msg.NewEvent.EmployeeId))
+                        .ContinueWith(task => new CalendarEventChangedWithEmployee(msg.NewEvent, task.Result.Employees.FirstOrDefault()?.Metadata))
+                        .PipeTo(this.Self);
                     break;
 
                 case CalendarEventChanged _:
                     break;
 
-                case EmployeesMetadataLoaded msg:
-                    this.employeesById = msg.Employees
-                        .ToDictionary(e => e.Metadata.EmployeeId, e => e.Metadata);
-                    break;
+                case CalendarEventChangedWithEmployee msg:
+                    this.logger.Debug("Sending a sick leave email notification for user {0}", msg.Event.EmployeeId);
 
-                case EmployeeMetadataUpdated msg:
-                    this.employeesById[msg.EmployeeMetadata.EmployeeId] = msg.EmployeeMetadata;
+                    var sender = this.mailConfig.NotificationSender;
+                    var recipient = this.mailConfig.NotificationRecipient;
+                    var subject = this.mailConfig.Subject;
+                    var body = string.Format(this.mailConfig.Body, msg.Employee.Name, msg.Event.Dates.StartDate.ToString("D"));
+
+                    Context.System.EventStream.Publish(new NotificationEventBusMessage(new EmailNotification(sender, recipient, subject, body)));
+
                     break;
 
                 default:
                     this.Unhandled(message);
                     break;
             }
+        }
+
+        private class CalendarEventChangedWithEmployee
+        {
+            public CalendarEventChangedWithEmployee(CalendarEvent @event, EmployeeMetadata employee)
+            {
+                this.Event = @event;
+                this.Employee = employee;
+            }
+
+            public CalendarEvent Event { get; }
+
+            public EmployeeMetadata Employee { get; }
         }
     }
 }

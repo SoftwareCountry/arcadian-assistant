@@ -4,6 +4,7 @@
     using Akka.DI.Core;
 
     using Arcadia.Assistant.Calendar.SickLeave;
+    using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.Feeds;
     using Arcadia.Assistant.Helpdesk;
     using Arcadia.Assistant.Health.Abstractions;
@@ -22,7 +23,7 @@
             this.actorSystem = actorSystem;
         }
 
-        public ServerActorsCollection AddRootActors()
+        public ServerActorsCollection AddRootActors(IEmailSettings emailSettings)
         {
             var organization = this.actorSystem.ActorOf(this.actorSystem.DI().Props<OrganizationActor>(), WellKnownActorPaths.Organization);
             var health = this.actorSystem.ActorOf(this.actorSystem.DI().Props<HealthChecker>(), WellKnownActorPaths.Health);
@@ -30,7 +31,7 @@
             var feeds = this.actorSystem.ActorOf(Props.Create(() => new SharedFeedsActor(organization)), WellKnownActorPaths.SharedFeeds);
             var userPreferences = this.actorSystem.ActorOf(this.actorSystem.DI().Props<UserPreferencesActor>(), WellKnownActorPaths.UserPreferences);
 
-            this.actorSystem.ActorOf(this.actorSystem.DI().Props<SendEmailSickLeaveActor>(), "sick-leave-email");
+            this.actorSystem.ActorOf(Props.Create(() => new SendEmailSickLeaveActor(emailSettings, organization)), "sick-leave-email");
 
             var emailNotificationsActorProps = this.actorSystem.DI().Props<EmailNotificationsActor>();
             this.actorSystem.ActorOf(Props.Create(() => new NotificationsDispatcherActor(emailNotificationsActorProps)), "notifications");

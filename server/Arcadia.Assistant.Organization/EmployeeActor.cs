@@ -14,7 +14,6 @@
     using Arcadia.Assistant.Feeds.Messages;
     using Arcadia.Assistant.Images;
     using Arcadia.Assistant.Organization.Abstractions;
-    using Arcadia.Assistant.Organization.Abstractions.EventBus;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.Organization.Events;
 
@@ -170,8 +169,6 @@
             }
 
             this.employeeMetadata = informationMetadata;
-
-            Context.System.EventStream.Publish(new EmployeeMetadataUpdated(this.employeeMetadata));
         }
 
         private void OnEmployeePositionChange(EmployeeChangedPosition ev)
