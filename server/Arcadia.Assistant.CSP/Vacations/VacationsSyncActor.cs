@@ -1,15 +1,12 @@
 ﻿namespace Arcadia.Assistant.CSP.Vacations
 {
     using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
 
     using Akka.Actor;
     using Akka.Event;
 
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.EventBus;
-    using Arcadia.Assistant.CSP.Model;
 
     public class VacationsSyncActor : UntypedActor, ILogReceive
     {
@@ -41,7 +38,10 @@
                     break;
 
                 case CalendarEventCreated msg:
-                    this.UpsertVacation(msg.Event, null, new string[0])
+                    this.vacationsSyncExecutor.UpsertVacation(
+                            msg.Event,
+                            new VacationsSyncExecutor.VacationApprovals(),
+                            new VacationsSyncExecutor.VacationsMatchInterval(msg.Event.Dates.StartDate, msg.Event.Dates.EndDate))
                         .PipeTo(
                             this.Self,
                             success: () => VacationPersistSuccess.Instance,
@@ -49,7 +49,10 @@
                     break;
 
                 case CalendarEventChanged msg:
-                    this.UpsertVacation(msg.NewEvent, msg.OldEvent, new string[0])
+                    this.vacationsSyncExecutor.UpsertVacation(
+                            msg.NewEvent,
+                            new VacationsSyncExecutor.VacationApprovals(),
+                            new VacationsSyncExecutor.VacationsMatchInterval(msg.OldEvent.Dates.StartDate, msg.OldEvent.Dates.EndDate))
                         .PipeTo(
                             this.Self,
                             success: () => VacationPersistSuccess.Instance,
@@ -57,11 +60,18 @@
                     break;
 
                 case CalendarEventApprovalsChanged msg:
-                    this.UpsertVacation(msg.Event, null, msg.Approvals)
+                    this.vacationsSyncExecutor.UpsertVacation(
+                            msg.Event,
+                            new VacationsSyncExecutor.VacationApprovals(
+                                msg.LastApproverId,
+                                msg.LastApprovalDate,
+                                msg.Approvals),
+                            new VacationsSyncExecutor.VacationsMatchInterval(msg.Event.Dates.StartDate, msg.Event.Dates.EndDate))
                         .PipeTo(
                             this.Self,
                             success: () => VacationPersistSuccess.Instance,
                             failure: err => new VacationPersistFailed(err));
+
                     break;
 
                 case VacationPersistSuccess _:
@@ -76,17 +86,6 @@
                     this.Unhandled(message);
                     break;
             }
-        }
-
-        private Task<IEnumerable<Vacation>> UpsertVacation(
-            CalendarEvent newEvent,
-            CalendarEvent oldEvent,
-            IEnumerable<string> approvals)
-        {
-            var matchStartDate = oldEvent?.Dates.StartDate ?? newEvent.Dates.StartDate;
-            var matchEndDate = oldEvent?.Dates.EndDate ?? newEvent.Dates.EndDate;
-
-            return this.vacationsSyncExecutor.SyncVacation(newEvent, approvals, new VacationsSyncExecutor.VacationsMatchInterval(matchStartDate, matchEndDate));
         }
 
         private class VacationPersistSuccess

@@ -19,9 +19,9 @@
             this.contextFactory = contextFactory;
         }
 
-        public async Task<IEnumerable<Vacation>> SyncVacation(CalendarEvent @event, IEnumerable<string> eventApprovals, VacationsMatchInterval matchInterval)
+        public async Task<IEnumerable<Vacation>> UpsertVacation(CalendarEvent @event, VacationApprovals approvals, VacationsMatchInterval matchInterval)
         {
-            var vacation = this.CreateVacationFromCalendarEvent(@event, eventApprovals);
+            var vacation = this.CreateVacationFromCalendarEvent(@event, approvals);
 
             using (var context = this.contextFactory())
             {
@@ -43,6 +43,7 @@
                         existingVacation.Start = vacation.Start.Date;
                         existingVacation.End = vacation.End.Date;
                         existingVacation.CancelledAt = vacation.CancelledAt;
+                        existingVacation.CancelledById = vacation.CancelledById;
 
                         foreach (var approval in vacation.VacationApprovals)
                         {
@@ -89,12 +90,12 @@
                 .ToListAsync();
         }
 
-        private Vacation CreateVacationFromCalendarEvent(CalendarEvent @event, IEnumerable<string> approvals)
+        private Vacation CreateVacationFromCalendarEvent(CalendarEvent @event, VacationApprovals approvals)
         {
             var vacation = new Vacation
             {
                 EmployeeId = int.Parse(@event.EmployeeId),
-                RaisedAt = DateTimeOffset.Now,
+                RaisedAt = @event.CreateDate,
                 Start = @event.Dates.StartDate.Date,
                 End = @event.Dates.EndDate.Date,
                 Type = (int)VacationType.Regular
@@ -102,14 +103,15 @@
 
             if (@event.Status == VacationStatuses.Cancelled)
             {
-                vacation.CancelledAt = DateTimeOffset.Now;
+                vacation.CancelledAt = @event.UpdateDate;
+                vacation.CancelledById = int.Parse(@event.UpdateEmployeeId);
             }
 
-            var vacationApprovals = approvals
+            var vacationApprovals = approvals.Approvals
                 .Select(approval => new VacationApproval
                 {
                     ApproverId = int.Parse(approval),
-                    TimeStamp = DateTimeOffset.Now,
+                    TimeStamp = approval == approvals.LastApproverId ? approvals.LastApprovalDate : DateTimeOffset.Now,
                     Status = (int)VacationApprovalStatus.Approved
                 })
                 .ToList();
@@ -119,7 +121,7 @@
                 var rejectedApproval = new VacationApproval
                 {
                     ApproverId = int.Parse(@event.UpdateEmployeeId),
-                    TimeStamp = DateTimeOffset.Now,
+                    TimeStamp = @event.UpdateDate,
                     Status = (int)VacationApprovalStatus.Declined
                 };
                 vacationApprovals.Add(rejectedApproval);
@@ -144,6 +146,27 @@
             public DateTime Start { get; }
 
             public DateTime End { get; }
+        }
+
+        public class VacationApprovals
+        {
+            public VacationApprovals()
+                : this(null, null, new string[0])
+            {
+            }
+
+            public VacationApprovals(string lastApproverId, DateTimeOffset? lastApprovalDate, IEnumerable<string> approvals)
+            {
+                this.LastApproverId = lastApproverId;
+                this.LastApprovalDate = lastApprovalDate;
+                this.Approvals = approvals;
+            }
+
+            public string LastApproverId { get; set; }
+
+            public DateTimeOffset? LastApprovalDate { get; set; }
+
+            public IEnumerable<string> Approvals { get; set; }
         }
 
         // ToDo: get it from database
