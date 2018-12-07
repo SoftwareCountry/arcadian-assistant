@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
 
     using Akka.Actor;
@@ -79,62 +78,15 @@
             }
         }
 
-        private Task<Vacations> UpsertVacation(
-            CalendarEvent @event,
+        private Task<Vacation> UpsertVacation(
+            CalendarEvent newEvent,
             CalendarEvent oldEvent,
             IEnumerable<string> approvals)
         {
-            var vacation = this.GetVacationFromCalendarEvent(@event);
-            var oldVacation = this.GetVacationFromCalendarEvent(oldEvent);
+            var matchStartDate = oldEvent?.Dates.StartDate ?? newEvent.Dates.StartDate;
+            var matchEndDate = oldEvent?.Dates.EndDate ?? newEvent.Dates.EndDate;
 
-            if (@event.Status == VacationStatuses.Cancelled)
-            {
-                vacation.CancelledAt = DateTimeOffset.Now;
-            }
-
-            var vacationApprovals = approvals
-                .Select(a => new VacationApprovals
-                {
-                    ApproverId = int.Parse(a),
-                    TimeStamp = DateTimeOffset.Now,
-                    Status = this.GetApprovalApprovedStatus()
-                });
-
-            foreach (var vacationApproval in vacationApprovals)
-            {
-                vacation.VacationApprovals.Add(vacationApproval);
-            }
-
-            return this.vacationsSyncExecutor.SyncVacation(vacation, oldVacation);
-        }
-
-        private Vacations GetVacationFromCalendarEvent(CalendarEvent @event)
-        {
-            if (@event == null)
-            {
-                return null;
-            }
-
-            return new Vacations
-            {
-                EmployeeId = int.Parse(@event.EmployeeId),
-                RaisedAt = DateTimeOffset.Now,
-                Start = @event.Dates.StartDate.Date,
-                End = @event.Dates.EndDate.Date,
-                Type = this.GetRegularVacationType()
-            };
-        }
-
-        // ToDo: get it from database
-        private int GetRegularVacationType()
-        {
-            return 0;
-        }
-
-        // ToDo: get it from database
-        private int GetApprovalApprovedStatus()
-        {
-            return 2;
+            return this.vacationsSyncExecutor.SyncVacation(newEvent, approvals, new VacationsSyncExecutor.VacationsMatchInterval(matchStartDate, matchEndDate));
         }
 
         private class VacationPersistSuccess

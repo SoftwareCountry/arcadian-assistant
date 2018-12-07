@@ -1,11 +1,13 @@
 ﻿namespace Arcadia.Assistant.CSP.Vacations
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
     using Microsoft.EntityFrameworkCore;
 
+    using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.CSP.Model;
 
     public class VacationsSyncExecutor
@@ -17,17 +19,17 @@
             this.contextFactory = contextFactory;
         }
 
-        public async Task<Vacations> SyncVacation(Vacations vacation, Vacations oldVacation)
+        public async Task<Vacation> SyncVacation(CalendarEvent @event, IEnumerable<string> eventApprovals, VacationsMatchInterval matchInterval)
         {
+            var vacation = this.CreateVacationFromCalendarEvent(@event, eventApprovals);
+
             using (var context = this.contextFactory())
             {
-                var vacationToSearch = oldVacation ?? vacation;
-
                 var existingVacation = await this.GetVacation(
                     context,
-                    vacationToSearch.EmployeeId,
-                    vacationToSearch.Start,
-                    vacationToSearch.End);
+                    int.Parse(@event.EmployeeId),
+                    matchInterval.Start,
+                    matchInterval.End);
 
                 if (existingVacation == null)
                 {
@@ -66,7 +68,7 @@
             }
         }
 
-        private Task<Vacations> GetVacation(
+        private Task<Vacation> GetVacation(
             ArcadiaCspContext context,
             int employeeId,
             DateTime startDate,
@@ -78,6 +80,63 @@
                     v.EmployeeId == employeeId &&
                     v.Start.Date == startDate.Date &&
                     v.End.Date == endDate.Date);
+        }
+
+        private Vacation CreateVacationFromCalendarEvent(CalendarEvent @event, IEnumerable<string> approvals)
+        {
+            var vacation = new Vacation
+            {
+                EmployeeId = int.Parse(@event.EmployeeId),
+                RaisedAt = DateTimeOffset.Now,
+                Start = @event.Dates.StartDate.Date,
+                End = @event.Dates.EndDate.Date,
+                Type = this.GetRegularVacationType()
+            };
+
+            if (@event.Status == VacationStatuses.Cancelled)
+            {
+                vacation.CancelledAt = DateTimeOffset.Now;
+            }
+
+            var vacationApprovals = approvals
+                .Select(approval => new VacationApproval
+                {
+                    ApproverId = int.Parse(approval),
+                    TimeStamp = DateTimeOffset.Now,
+                    Status = this.GetApprovalApprovedStatus()
+                });
+
+            foreach (var vacationApproval in vacationApprovals)
+            {
+                vacation.VacationApprovals.Add(vacationApproval);
+            }
+
+            return vacation;
+        }
+
+        // ToDo: get it from database
+        private int GetRegularVacationType()
+        {
+            return 0;
+        }
+
+        // ToDo: get it from database
+        private int GetApprovalApprovedStatus()
+        {
+            return 2;
+        }
+
+        public class VacationsMatchInterval
+        {
+            public VacationsMatchInterval(DateTime start, DateTime end)
+            {
+                this.Start = start;
+                this.End = end;
+            }
+
+            public DateTime Start { get; }
+
+            public DateTime End { get; }
         }
     }
 }
