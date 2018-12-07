@@ -59,7 +59,8 @@
                     {
                         if (@event.IsPending)
                         {
-                            this.Self.Tell(new AssignCalendarEventNextApprover(@event.EventId));
+                            var approvals = this.ApprovalsByEvent[@event.EventId];
+                            this.Self.Tell(new AssignCalendarEventNextApprover(@event.EventId, approvals.LastOrDefault() ?? @event.UpdateEmployeeId));
                         }
                     }
                     break;
@@ -101,7 +102,8 @@
                 StartHour = calendarEvent.Dates.StartWorkingHour,
                 EndHour = calendarEvent.Dates.FinishWorkingHour,
                 IsDayoff = calendarEvent.Type == CalendarEventTypes.Dayoff,
-                TimeStamp = DateTimeOffset.Now
+                TimeStamp = calendarEvent.CreateDate,
+                UserId = calendarEvent.UpdateEmployeeId
             };
             this.Persist(newEvent, e =>
                 {
@@ -125,7 +127,8 @@
                         this.Persist(new WorkHoursChangeIsApproved()
                         {
                             EventId = newEvent.EventId,
-                            TimeStamp = DateTimeOffset.Now
+                            TimeStamp = newEvent.UpdateDate,
+                            UserId = newEvent.UpdateEmployeeId
                         }, this.OnChangeApproved);
                         break;
 
@@ -133,7 +136,8 @@
                         this.Persist(new WorkHoursChangeIsCancelled()
                         {
                             EventId = newEvent.EventId,
-                            TimeStamp = DateTimeOffset.Now
+                            TimeStamp = newEvent.UpdateDate,
+                            UserId = newEvent.UpdateEmployeeId
                         }, this.OnChangeCancelled);
                         break;
 
@@ -141,7 +145,8 @@
                         this.Persist(new WorkHoursChangeIsRejected()
                         {
                             EventId = newEvent.EventId,
-                            TimeStamp = DateTimeOffset.Now
+                            TimeStamp = newEvent.UpdateDate,
+                            UserId = newEvent.UpdateEmployeeId
                         }, this.OnChangeRejected);
                         break;
                 }
@@ -167,7 +172,7 @@
         protected override void OnSuccessfulApprove(UserGrantedCalendarEventApproval message)
         {
             var approvals = this.ApprovalsByEvent[message.EventId];
-            approvals.Add(message.ApproverId);
+            approvals.Add(message.UserId);
         }
 
         private void OnChangeRequested(WorkHoursChangeIsRequested message)
@@ -175,7 +180,15 @@
             var eventType = message.IsDayoff ? CalendarEventTypes.Dayoff : CalendarEventTypes.Workout;
 
             var datesPeriod = new DatesPeriod(message.Date, message.Date, message.StartHour, message.EndHour);
-            var calendarEvent = new CalendarEvent(message.EventId, eventType, datesPeriod, WorkHoursChangeStatuses.Requested, this.EmployeeId);
+            var calendarEvent = new CalendarEvent(
+                message.EventId,
+                eventType,
+                datesPeriod,
+                WorkHoursChangeStatuses.Requested,
+                this.EmployeeId,
+                message.TimeStamp,
+                message.TimeStamp,
+                message.UserId);
             this.EventsById[message.EventId] = calendarEvent;
             this.ApprovalsByEvent[message.EventId] = new List<string>();
         }
@@ -196,7 +209,15 @@
             {
                 //Make changes to the counter
                 this.ChangeCounter(calendarEvent.Dates.StartWorkingHour, calendarEvent.Dates.FinishWorkingHour, this.IsCreditingType(calendarEvent.Type));
-                this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, WorkHoursChangeStatuses.Approved, this.EmployeeId);
+                this.EventsById[message.EventId] = new CalendarEvent(
+                    message.EventId,
+                    calendarEvent.Type,
+                    calendarEvent.Dates,
+                    WorkHoursChangeStatuses.Approved,
+                    this.EmployeeId,
+                    calendarEvent.CreateDate,
+                    message.TimeStamp,
+                    message.UserId);
             }
         }
 

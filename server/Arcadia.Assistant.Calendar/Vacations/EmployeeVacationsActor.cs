@@ -58,7 +58,8 @@
                 EventId = eventId,
                 StartDate = calendarEvent.Dates.StartDate,
                 EndDate = calendarEvent.Dates.EndDate,
-                TimeStamp = DateTimeOffset.Now
+                TimeStamp = calendarEvent.CreateDate,
+                UserId = calendarEvent.UpdateEmployeeId
             };
             this.Persist(newEvent, e =>
             {
@@ -93,7 +94,8 @@
                     EventId = newEvent.EventId,
                     StartDate = newEvent.Dates.StartDate,
                     EndDate = newEvent.Dates.EndDate,
-                    TimeStamp = DateTimeOffset.Now
+                    TimeStamp = newEvent.UpdateDate,
+                    UserId = newEvent.UpdateEmployeeId
                 };
                 this.Persist(eventToPersist, this.OnVacationDatesEdit);
             }
@@ -106,7 +108,8 @@
                         this.Persist(new VacationIsApproved()
                         {
                             EventId = newEvent.EventId,
-                            TimeStamp = DateTimeOffset.Now
+                            TimeStamp = newEvent.UpdateDate,
+                            UserId = newEvent.UpdateEmployeeId
                         }, this.OnVacationApproved);
                         break;
 
@@ -114,7 +117,8 @@
                         this.Persist(new VacationIsCancelled()
                         {
                             EventId = newEvent.EventId,
-                            TimeStamp = DateTimeOffset.Now
+                            TimeStamp = newEvent.UpdateDate,
+                            UserId = newEvent.UpdateEmployeeId
                         }, this.OnVacationCancel);
                         break;
 
@@ -122,7 +126,8 @@
                         this.Persist(new VacationIsRejected()
                         {
                             EventId = newEvent.EventId,
-                            TimeStamp = DateTimeOffset.Now,
+                            TimeStamp = newEvent.UpdateDate,
+                            UserId = newEvent.UpdateEmployeeId
                         }, this.OnVacationRejected);
                         break;
                 }
@@ -178,7 +183,8 @@
                     {
                         if (@event.IsPending)
                         {
-                            this.Self.Tell(new AssignCalendarEventNextApprover(@event.EventId));
+                            var approvals = this.ApprovalsByEvent[@event.EventId];
+                            this.Self.Tell(new AssignCalendarEventNextApprover(@event.EventId, approvals.LastOrDefault() ?? @event.UpdateEmployeeId));
                         }
                     }
                     break;
@@ -190,7 +196,7 @@
             var calendarEvent = this.EventsById[message.EventId];
             var approvals = this.ApprovalsByEvent[message.EventId];
 
-            approvals.Add(message.ApproverId);
+            approvals.Add(message.UserId);
 
             var text = $"Vacation from {calendarEvent.Dates.StartDate.ToLongDateString()} to {calendarEvent.Dates.EndDate.ToLongDateString()} got one new approval";
             var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, message.TimeStamp.Date);
@@ -200,7 +206,15 @@
         private void OnVacationRequested(VacationIsRequested message)
         {
             var datesPeriod = new DatesPeriod(message.StartDate, message.EndDate);
-            var calendarEvent = new CalendarEvent(message.EventId, CalendarEventTypes.Vacation, datesPeriod, VacationStatuses.Requested, this.EmployeeId);
+            var calendarEvent = new CalendarEvent(
+                message.EventId,
+                CalendarEventTypes.Vacation,
+                datesPeriod,
+                VacationStatuses.Requested,
+                this.EmployeeId,
+                message.TimeStamp,
+                message.TimeStamp,
+                message.UserId);
             this.EventsById[message.EventId] = calendarEvent;
             this.ApprovalsByEvent[message.EventId] = new List<string>();
         }
@@ -210,7 +224,15 @@
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
                 var newDates = new DatesPeriod(message.StartDate, message.EndDate);
-                this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, newDates, calendarEvent.Status, this.EmployeeId);
+                this.EventsById[message.EventId] = new CalendarEvent(
+                    message.EventId,
+                    calendarEvent.Type,
+                    newDates,
+                    calendarEvent.Status,
+                    calendarEvent.EmployeeId,
+                    calendarEvent.CreateDate,
+                    message.TimeStamp,
+                    message.UserId);
             }
         }
 
@@ -218,7 +240,15 @@
         {
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
-                this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, VacationStatuses.Approved, this.EmployeeId);
+                this.EventsById[message.EventId] = new CalendarEvent(
+                    message.EventId,
+                    calendarEvent.Type,
+                    calendarEvent.Dates,
+                    VacationStatuses.Approved,
+                    calendarEvent.EmployeeId,
+                    calendarEvent.CreateDate,
+                    message.TimeStamp,
+                    message.UserId);
 
                 var text = $"Got vacation approved from {calendarEvent.Dates.StartDate.ToLongDateString()} to {calendarEvent.Dates.EndDate.ToLongDateString()}";
                 var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, message.TimeStamp.Date);

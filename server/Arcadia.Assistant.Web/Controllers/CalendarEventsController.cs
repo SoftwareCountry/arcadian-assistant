@@ -27,18 +27,21 @@
     [Authorize(Policies.UserIsEmployee)]
     public class CalendarEventsController : Controller
     {
+        private readonly ITimeoutSettings timeoutSettings;
         private readonly IEmployeesRegistry employeesRegistry;
         private readonly IAuthorizationService authorizationService;
-        private readonly ITimeoutSettings timeoutSettings;
+        private readonly IUserEmployeeSearch userEmployeeSearch;
 
         public CalendarEventsController(
             ITimeoutSettings timeoutSettings,
             IEmployeesRegistry employeesRegistry,
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService,
+            IUserEmployeeSearch userEmployeeSearch)
         {
             this.timeoutSettings = timeoutSettings;
             this.employeesRegistry = employeesRegistry;
             this.authorizationService = authorizationService;
+            this.userEmployeeSearch = userEmployeeSearch;
         }
 
         [Route("")]
@@ -125,7 +128,18 @@
                 return this.Forbid();
             }
 
-            var calendarEvent = new CalendarEvent(newId, model.Type, model.Dates, model.Status, employee.Metadata.EmployeeId);
+            var userEmployee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, token);
+
+            var timestamp = DateTimeOffset.Now;
+            var calendarEvent = new CalendarEvent(
+                newId,
+                model.Type,
+                model.Dates,
+                model.Status,
+                employee.Metadata.EmployeeId,
+                timestamp,
+                timestamp,
+                userEmployee.Metadata.EmployeeId);
             var eventCreationResponse = await this.UpsertEventAsync(employee.Calendar.CalendarActor, calendarEvent, token);
 
             switch (eventCreationResponse)
@@ -185,7 +199,17 @@
                 return this.StatusCode(StatusCodes.Status409Conflict, "Calendar types are not compatible");
             }
 
-            var calendarEvent = new CalendarEvent(eventId, model.Type, model.Dates, model.Status, employee.Metadata.EmployeeId);
+            var userEmployee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, token);
+
+            var calendarEvent = new CalendarEvent(
+                eventId,
+                model.Type,
+                model.Dates,
+                model.Status,
+                existingEvent.EmployeeId,
+                existingEvent.CreateDate,
+                DateTimeOffset.Now,
+                userEmployee.Metadata.EmployeeId);
 
             var response = await this.UpsertEventAsync(employee.Calendar.CalendarActor, calendarEvent, token);
 

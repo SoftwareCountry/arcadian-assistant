@@ -130,13 +130,13 @@
                             }
 
                             var resp = (GetNextCalendarEventApprover.SuccessResponse)task.Result;
-                            return new AssignCalendarEventNextApprover.Success(msg.EventId, resp.NextApproverEmployeeId);
+                            return new AssignCalendarEventNextApprover.Success(msg.EventId, msg.PreviousApproverEmployeeId, resp.NextApproverEmployeeId);
                         })
                         .PipeTo(this.Self);
                     break;
 
                 case AssignCalendarEventNextApprover.Success msg:
-                    this.OnCalendarEventNextApproverReceived(msg.EventId, msg.NextApproverId);
+                    this.OnCalendarEventNextApproverReceived(msg.EventId, msg.PreviousApproverId, msg.NextApproverId);
                     break;
 
                 case AssignCalendarEventNextApprover.Error msg:
@@ -181,19 +181,19 @@
             {
                 EventId = message.Event.EventId,
                 TimeStamp = DateTimeOffset.Now,
-                ApproverId = message.ApproverId
+                UserId = message.ApproverId
             };
 
             this.Persist(@event, ev =>
             {
-                this.Self.Tell(new AssignCalendarEventNextApprover(message.Event.EventId));
-                this.Sender.Tell(Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
-                Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(calendarEvent, approvals.ToList()));
                 this.OnSuccessfulApprove(ev);
+                this.Self.Tell(new AssignCalendarEventNextApprover(message.Event.EventId, message.ApproverId));
+                this.Sender.Tell(Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
+                Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(calendarEvent, message.ApproverId, ev.TimeStamp, approvals.ToList()));
             });
         }
 
-        private void OnCalendarEventNextApproverReceived(string eventId, string nextApproverId)
+        private void OnCalendarEventNextApproverReceived(string eventId, string previousApproverId, string nextApproverId)
         {
             var oldEvent = this.EventsById[eventId];
             if (!oldEvent.IsPending)
@@ -209,7 +209,10 @@
                     oldEvent.Type,
                     oldEvent.Dates,
                     approvedStatus,
-                    oldEvent.EmployeeId
+                    oldEvent.EmployeeId,
+                    oldEvent.CreateDate,
+                    DateTimeOffset.Now,
+                    previousApproverId
                 );
 
                 this.UpdateCalendarEvent(oldEvent, newEvent, ev =>
@@ -227,7 +230,7 @@
 
             if (calendarEvent.IsPending)
             {
-                this.Self.Tell(new AssignCalendarEventNextApprover(calendarEvent.EventId));
+                this.Self.Tell(new AssignCalendarEventNextApprover(calendarEvent.EventId, null));
             }
             else
             {
@@ -237,12 +240,15 @@
 
         protected class AssignCalendarEventNextApprover
         {
-            public AssignCalendarEventNextApprover(string eventId)
+            public AssignCalendarEventNextApprover(string eventId, string previousApproverEmployeeId)
             {
                 this.EventId = eventId;
+                this.PreviousApproverEmployeeId = previousApproverEmployeeId;
             }
 
             public string EventId { get; }
+
+            public string PreviousApproverEmployeeId { get; }
 
             public abstract class Response
             {
@@ -250,13 +256,16 @@
 
             public class Success : Response
             {
-                public Success(string eventId, string nextApproverId)
+                public Success(string eventId, string previousApproverId, string nextApproverId)
                 {
                     this.EventId = eventId;
+                    this.PreviousApproverId = previousApproverId;
                     this.NextApproverId = nextApproverId;
                 }
 
                 public string EventId { get; }
+
+                public string PreviousApproverId { get; }
 
                 public string NextApproverId { get; }
             }

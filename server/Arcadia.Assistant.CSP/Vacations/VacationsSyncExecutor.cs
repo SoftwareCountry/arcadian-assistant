@@ -84,7 +84,8 @@
                     v.EmployeeId == employeeId &&
                     v.Start.Date == startDate.Date &&
                     v.End.Date == endDate.Date &&
-                    v.CancelledAt == null)
+                    v.CancelledAt == null &&
+                    v.VacationApprovals.All(va => va.Status != (int)VacationApprovalStatus.Declined))
                 .ToListAsync();
         }
 
@@ -96,7 +97,7 @@
                 RaisedAt = DateTimeOffset.Now,
                 Start = @event.Dates.StartDate.Date,
                 End = @event.Dates.EndDate.Date,
-                Type = this.GetRegularVacationType()
+                Type = (int)VacationType.Regular
             };
 
             if (@event.Status == VacationStatuses.Cancelled)
@@ -109,8 +110,20 @@
                 {
                     ApproverId = int.Parse(approval),
                     TimeStamp = DateTimeOffset.Now,
-                    Status = this.GetApprovalApprovedStatus()
-                });
+                    Status = (int)VacationApprovalStatus.Approved
+                })
+                .ToList();
+
+            if (@event.Status == VacationStatuses.Rejected)
+            {
+                var rejectedApproval = new VacationApproval
+                {
+                    ApproverId = int.Parse(@event.UpdateEmployeeId),
+                    TimeStamp = DateTimeOffset.Now,
+                    Status = (int)VacationApprovalStatus.Declined
+                };
+                vacationApprovals.Add(rejectedApproval);
+            }
 
             foreach (var vacationApproval in vacationApprovals)
             {
@@ -118,18 +131,6 @@
             }
 
             return vacation;
-        }
-
-        // ToDo: get it from database
-        private int GetRegularVacationType()
-        {
-            return 0;
-        }
-
-        // ToDo: get it from database
-        private int GetApprovalApprovedStatus()
-        {
-            return 2;
         }
 
         public class VacationsMatchInterval
@@ -143,6 +144,19 @@
             public DateTime Start { get; }
 
             public DateTime End { get; }
+        }
+
+        // ToDo: get it from database
+        private enum VacationType
+        {
+            Regular = 0
+        }
+
+        // ToDo: get it from database
+        private enum VacationApprovalStatus
+        {
+            Declined = 1,
+            Approved = 2
         }
     }
 }

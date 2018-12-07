@@ -63,7 +63,8 @@
                     {
                         if (@event.IsPending)
                         {
-                            this.Self.Tell(new AssignCalendarEventNextApprover(@event.EventId));
+                            var approvals = this.ApprovalsByEvent[@event.EventId];
+                            this.Self.Tell(new AssignCalendarEventNextApprover(@event.EventId, approvals.LastOrDefault() ?? @event.UpdateEmployeeId));
                         }
                     }
                     break;
@@ -79,7 +80,8 @@
                 EventId = eventId,
                 StartDate = calendarEvent.Dates.StartDate,
                 EndDate = calendarEvent.Dates.EndDate,
-                TimeStamp = DateTimeOffset.Now
+                TimeStamp = calendarEvent.CreateDate,
+                UserId = calendarEvent.UpdateEmployeeId
             };
             this.Persist(newEvent, e =>
             {
@@ -101,7 +103,8 @@
                 {
                     EndDate = newEvent.Dates.EndDate,
                     EventId = newEvent.EventId,
-                    TimeStamp = DateTimeOffset.Now
+                    TimeStamp = newEvent.UpdateDate,
+                    UserId = newEvent.UpdateEmployeeId
                 }, this.OnSickLeaveProlonged);
             }
 
@@ -114,7 +117,8 @@
                         this.Persist(new SickLeaveIsCancelled()
                         {
                             EventId = newEvent.EventId,
-                            TimeStamp = DateTimeOffset.Now
+                            TimeStamp = newEvent.UpdateDate,
+                            UserId = newEvent.UpdateEmployeeId
                         }, this.OnSickLeaveCancelled);
                         break;
 
@@ -122,7 +126,8 @@
                         this.Persist(new SickLeaveIsCompleted()
                         {
                             EventId = newEvent.EventId,
-                            TimeStamp = DateTimeOffset.Now
+                            TimeStamp = newEvent.UpdateDate,
+                            UserId = newEvent.UpdateEmployeeId
                         }, this.OnSickLeaveCompleted);
                         break;
 
@@ -130,7 +135,8 @@
                         this.Persist(new SickLeaveIsApproved()
                         {
                             EventId = newEvent.EventId,
-                            TimeStamp = DateTimeOffset.Now
+                            TimeStamp = newEvent.UpdateDate,
+                            UserId = newEvent.UpdateEmployeeId
                         }, this.OnSickleaveApproved);
                         break;
 
@@ -138,7 +144,8 @@
                         this.Persist(new SickLeaveIsRejected()
                         {
                             EventId = newEvent.EventId,
-                            TimeStamp = DateTimeOffset.Now
+                            TimeStamp = newEvent.UpdateDate,
+                            UserId = newEvent.UpdateEmployeeId
                         }, this.OnSickLeaveRejected);
                         break;
                 }
@@ -164,13 +171,21 @@
         protected override void OnSuccessfulApprove(UserGrantedCalendarEventApproval message)
         {
             var approvals = this.ApprovalsByEvent[message.EventId];
-            approvals.Add(message.ApproverId);
+            approvals.Add(message.UserId);
         }
 
         private void OnSickLeaveRequest(SickLeaveIsRequested message)
         {
             var datesPeriod = new DatesPeriod(message.StartDate, message.EndDate);
-            this.EventsById[message.EventId] = new CalendarEvent(message.EventId, CalendarEventTypes.Sickleave, datesPeriod, SickLeaveStatuses.Requested, this.EmployeeId);
+            this.EventsById[message.EventId] = new CalendarEvent(
+                message.EventId,
+                CalendarEventTypes.Sickleave,
+                datesPeriod,
+                SickLeaveStatuses.Requested,
+                this.EmployeeId,
+                message.TimeStamp,
+                message.TimeStamp,
+                message.UserId);
             this.ApprovalsByEvent[message.EventId] = new List<string>();
         }
 
@@ -178,7 +193,15 @@
         {
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
-                this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, SickLeaveStatuses.Completed, this.EmployeeId);
+                this.EventsById[message.EventId] = new CalendarEvent(
+                    message.EventId,
+                    calendarEvent.Type,
+                    calendarEvent.Dates,
+                    SickLeaveStatuses.Completed,
+                    this.EmployeeId,
+                    calendarEvent.CreateDate,
+                    message.TimeStamp,
+                    message.UserId);
             }
         }
 
@@ -187,7 +210,15 @@
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
                 var dates = new DatesPeriod(calendarEvent.Dates.StartDate, message.EndDate);
-                this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, dates, calendarEvent.Status, this.EmployeeId);
+                this.EventsById[message.EventId] = new CalendarEvent(
+                    message.EventId,
+                    calendarEvent.Type,
+                    dates,
+                    calendarEvent.Status,
+                    this.EmployeeId,
+                    calendarEvent.CreateDate,
+                    message.TimeStamp,
+                    message.UserId);
             }
         }
 
@@ -203,7 +234,15 @@
         {
             if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
             {
-                this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, SickLeaveStatuses.Approved, this.EmployeeId);
+                this.EventsById[message.EventId] = new CalendarEvent(
+                    message.EventId,
+                    calendarEvent.Type,
+                    calendarEvent.Dates,
+                    SickLeaveStatuses.Approved,
+                    this.EmployeeId,
+                    calendarEvent.CreateDate,
+                    message.TimeStamp,
+                    message.UserId);
             }
         }
 
