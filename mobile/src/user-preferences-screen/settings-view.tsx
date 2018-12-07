@@ -23,7 +23,8 @@ class SettingsViewImpl extends Component<SettingsDispatchProps> {
             <View style={preferencesStyles.settingsView}>
                 <ApplicationIcon
                     name={'settings'}
-                    size={Platform.OS === 'ios' ? Dimensions.get('window').width * 0.06 : Dimensions.get('window').width * 0.03}
+                    size={Platform.OS === 'ios' ? Math.round(Dimensions.get('window').width * 0.06) :
+                        Math.round(Dimensions.get('window').width * 0.03)}
                     style={tabBarStyles.tabImages}/>
             </View>
         </TouchableOpacity>;
