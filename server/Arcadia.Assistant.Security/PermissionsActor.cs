@@ -8,11 +8,13 @@
 
     using Akka.Actor;
 
+    using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public class PermissionsActor : UntypedActor, ILogReceive
     {
         private readonly TimeSpan timeout = TimeSpan.FromSeconds(1);
+        private readonly Dictionary<string, EmployeePermissionsEntry> unconditionalEmployeePermissions = new Dictionary<string, EmployeePermissionsEntry>();
         private readonly Dictionary<string, EmployeePermissionsEntry> permissionsForDepartments = new Dictionary<string, EmployeePermissionsEntry>();
         private readonly Dictionary<string, EmployeePermissionsEntry> permissionsForEmployees = new Dictionary<string, EmployeePermissionsEntry>();
 
@@ -60,11 +62,11 @@
 
                     case EmployeesQuery.Response userEmployee:
                         this.defaultEmployeePermission = ExistingEmployeeDefaultPermission;
-                        BulkBumpPermissions(userEmployee.Employees.Select(x => x.Metadata.EmployeeId), SelfPermissions, this.permissionsForEmployees);
+                        BulkBumpPermissions(userEmployee.Employees.Select(x => x.Metadata.EmployeeId), SelfPermissions, this.unconditionalEmployeePermissions);
 
                         //that can be fixed (as array, not First(), when DepartmentsQuery starts to 
                         //support arrays for Heads and DepartmentIds
-                        this.Become(this.GetOwnDepartments(userEmployee.Employees.First().Metadata.EmployeeId));
+                        this.Become(this.GetOwnDepartments(userEmployee.Employees.First().Metadata));
                         break;
 
                     default:
@@ -77,7 +79,7 @@
             return OnMessage;
         }
 
-        private UntypedReceive GetOwnDepartments(string employeeId)
+        private UntypedReceive GetOwnDepartments(EmployeeMetadata employee)
         {
             void OnMessage(object message)
             {
@@ -89,7 +91,7 @@
                             OwnDepartmentPermissions,
                             this.permissionsForDepartments);
 
-                        this.Become(this.LoadSupervisedDepartmentsPermissions(employeeId));
+                        this.Become(this.LoadSupervisedDepartmentsPermissions(employee.EmployeeId));
 
                         break;
 
@@ -102,7 +104,7 @@
                 }
             }
 
-            this.organizationActor.Tell(DepartmentsQuery.Create().WithHead(employeeId));
+            this.organizationActor.Tell(DepartmentsQuery.Create().WithId(employee.DepartmentId));
             return OnMessage;
         }
 
@@ -143,7 +145,7 @@
 
         private void ReplyAndStop()
         {
-            var permissions = new Permissions(this.defaultEmployeePermission, this.permissionsForDepartments, this.permissionsForEmployees);
+            var permissions = new Permissions(this.defaultEmployeePermission, this.unconditionalEmployeePermissions, this.permissionsForDepartments, this.permissionsForEmployees);
             this.originalSender.Tell(new GetPermissions.Response(permissions));
             Context.Stop(this.Self);
         }
