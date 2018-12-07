@@ -77,11 +77,6 @@
         {
             IEnumerable<DepartmentContainer> result = this.departmentFindings;
 
-            if (this.departmentsQuery.AscendantDepartmentId != null)
-            {
-                result = GetDescendants(this.departmentsQuery.AscendantDepartmentId, result);
-            }
-
             if (this.departmentsQuery.DepartmentId != null)
             {
                 result = result.Where(x => x.Department.DepartmentId == this.departmentsQuery.DepartmentId);
@@ -102,18 +97,24 @@
                 resultList.AddRange(descendantDepartments);
             }
 
-            return resultList;
+            if (this.departmentsQuery.IncludeAllDescendantDepartments)
+            {
+                var descendantDepartments = resultList
+                    .SelectMany(d => GetDescendants(d.Department.DepartmentId, this.departmentFindings))
+                    .ToList();
+                resultList.AddRange(descendantDepartments);
+            }
+
+            return resultList
+                .GroupBy(d => d.Department.DepartmentId)
+                .Select(g => g.First());
         }
 
         private HashSet<IActorRef> PrefilterDepartments()
         {
-            //first, id-based filter
             var prefilteredDepartments = new HashSet<IActorRef>(this.departments.Values);
 
-            //the second condition needed because in case of ascendant being specified,
-            //final result depends on the whole department branch
-            if ((this.departmentsQuery.DepartmentId != null)
-                && (this.departmentsQuery.AscendantDepartmentId == null))
+            if (this.departmentsQuery.DepartmentId != null)
             {
                 if (this.departments.TryGetValue(this.departmentsQuery.DepartmentId, out var department))
                 {
