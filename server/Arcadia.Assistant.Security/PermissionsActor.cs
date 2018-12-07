@@ -14,7 +14,6 @@
     public class PermissionsActor : UntypedActor, ILogReceive
     {
         private readonly TimeSpan timeout = TimeSpan.FromSeconds(1);
-        private readonly Dictionary<string, EmployeePermissionsEntry> unconditionalEmployeePermissions = new Dictionary<string, EmployeePermissionsEntry>();
         private readonly Dictionary<string, EmployeePermissionsEntry> permissionsForDepartments = new Dictionary<string, EmployeePermissionsEntry>();
         private readonly Dictionary<string, EmployeePermissionsEntry> permissionsForEmployees = new Dictionary<string, EmployeePermissionsEntry>();
 
@@ -62,7 +61,7 @@
 
                     case EmployeesQuery.Response userEmployee:
                         this.defaultEmployeePermission = ExistingEmployeeDefaultPermission;
-                        BulkBumpPermissions(userEmployee.Employees.Select(x => x.Metadata.EmployeeId), SelfPermissions, this.unconditionalEmployeePermissions);
+                        BulkBumpPermissions(userEmployee.Employees.Select(x => x.Metadata.EmployeeId), SelfPermissions, this.permissionsForEmployees);
 
                         //that can be fixed (as array, not First(), when DepartmentsQuery starts to 
                         //support arrays for Heads and DepartmentIds
@@ -145,7 +144,7 @@
 
         private void ReplyAndStop()
         {
-            var permissions = new Permissions(this.defaultEmployeePermission, this.unconditionalEmployeePermissions, this.permissionsForDepartments, this.permissionsForEmployees);
+            var permissions = new Permissions(this.defaultEmployeePermission, this.permissionsForDepartments, this.permissionsForEmployees);
             this.originalSender.Tell(new GetPermissions.Response(permissions));
             Context.Stop(this.Self);
         }
@@ -180,7 +179,7 @@
             EmployeePermissionsEntry.CreateCalendarEvents |
             EmployeePermissionsEntry.CompleteSickLeave |
             EmployeePermissionsEntry.ProlongSickLeave |
-            EmployeePermissionsEntry.CancelCalendarEvents |
+            EmployeePermissionsEntry.CancelPendingCalendarEvents |
             EmployeePermissionsEntry.EditPendingCalendarEvents |
             EmployeePermissionsEntry.ReadEmployeeCalendarEvents |
             EmployeePermissionsEntry.ReadEmployeeInfo |
@@ -194,7 +193,7 @@
             EmployeePermissionsEntry.RejectCalendarEvents |
             EmployeePermissionsEntry.CompleteSickLeave |
             EmployeePermissionsEntry.ProlongSickLeave |
-            EmployeePermissionsEntry.CancelCalendarEvents |
+            EmployeePermissionsEntry.CancelPendingCalendarEvents |
             EmployeePermissionsEntry.EditPendingCalendarEvents |
             EmployeePermissionsEntry.ReadEmployeeCalendarEvents |
             EmployeePermissionsEntry.ReadEmployeeInfo |

@@ -10,10 +10,6 @@
     {
 
         [DataMember]
-        // no matter what Department permissions say, those overrule everything
-        private IReadOnlyDictionary<string, EmployeePermissionsEntry> UnconditionalEmployeePermissions { get; set; }
-
-        [DataMember]
         // explicit department permissions by id
         private IReadOnlyDictionary<string, EmployeePermissionsEntry> DepartmentPermissions { get; set; }
 
@@ -26,12 +22,10 @@
 
         public Permissions(
             EmployeePermissionsEntry defaultPermission,
-            IReadOnlyDictionary<string, EmployeePermissionsEntry> unconditionalEmployeePermissions,
             IReadOnlyDictionary<string, EmployeePermissionsEntry> departmentPermissions,
             IReadOnlyDictionary<string, EmployeePermissionsEntry> employeePermissions)
         {
             this.defaultPermission = defaultPermission;
-            this.UnconditionalEmployeePermissions = unconditionalEmployeePermissions;
             this.DepartmentPermissions = departmentPermissions;
             this.EmployeePermissions = employeePermissions;
         }
@@ -44,20 +38,15 @@
                 return EmployeePermissionsEntry.None;
             }
 
-            if (this.UnconditionalEmployeePermissions.TryGetValue(targetEmployee.Metadata.EmployeeId, out var unconditionalPermissions))
-            {
-                return unconditionalPermissions;
-            }
-
             var permissions = this.defaultPermission;
             if (this.EmployeePermissions.TryGetValue(targetEmployee.Metadata.EmployeeId, out var employeePermissions))
             {
-                permissions |= employeePermissions;
+                return permissions | employeePermissions;
             }
 
             if (this.DepartmentPermissions.TryGetValue(targetEmployee.Metadata.DepartmentId, out var departmentPermissions))
             {
-                permissions |= departmentPermissions;
+                return permissions | departmentPermissions;
             }
 
             return permissions;
