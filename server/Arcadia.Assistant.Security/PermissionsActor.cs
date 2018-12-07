@@ -42,7 +42,7 @@
                     }
 
                     this.Become(this.GetUserEmployee());
-                    
+
                     break;
             }
         }
@@ -64,7 +64,7 @@
 
                         //that can be fixed (as array, not First(), when DepartmentsQuery starts to 
                         //support arrays for Heads and DepartmentIds
-                        this.Become(this.GetOwnDepartments(userEmployee.Employees.First().Metadata.EmployeeId)); 
+                        this.Become(this.GetOwnDepartments(userEmployee.Employees.First().Metadata.EmployeeId));
                         break;
 
                     default:
@@ -118,23 +118,13 @@
                         break;
 
                     case DepartmentsQuery.Response response:
+                        BulkBumpPermissions(
+                            response.Departments.Select(x => x.Department.DepartmentId),
+                            SupervisedPermissions,
+                            this.permissionsForDepartments);
 
-                        //setup permissions for directly supervised departments
-                        BulkBumpPermissions(response.Departments.Select(x => x.Department.DepartmentId), SupervisedPermissions, this.permissionsForDepartments);
-
-                        var tasks = response
-                            .Departments
-                            .Select(x => this.organizationActor.Ask<DepartmentsQuery.Response>(DepartmentsQuery.Create().DescendantOf(x.Department.DepartmentId), this.timeout));
-
-                        //setup permissions for branch-like supervised departments
-                        Task.WhenAll(tasks).PipeTo(this.Self);
-                        break;
-
-                    //child departments
-                    case DepartmentsQuery.Response[] responses:
-                        var departmentsIds = responses.SelectMany(r => r.Departments.Select(d => d.Department.DepartmentId));
-                        BulkBumpPermissions(departmentsIds, SupervisedPermissions, this.permissionsForDepartments);
                         this.ReplyAndStop();
+
                         break;
 
                     default:
@@ -143,7 +133,11 @@
                 }
             }
 
-            this.organizationActor.Tell(DepartmentsQuery.Create().WithHead(employeeId));
+            var departmentsQuery = DepartmentsQuery.Create()
+                .WithHead(employeeId)
+                .IncludeAllDescendants();
+            this.organizationActor.Tell(departmentsQuery);
+
             return OnMessage;
         }
 
@@ -188,7 +182,7 @@
             EmployeePermissionsEntry.EditPendingCalendarEvents |
             EmployeePermissionsEntry.ReadEmployeeCalendarEvents |
             EmployeePermissionsEntry.ReadEmployeeInfo |
-            EmployeePermissionsEntry.ReadEmployeePhone |            
+            EmployeePermissionsEntry.ReadEmployeePhone |
             EmployeePermissionsEntry.ReadEmployeeDayoffsCounter |
             EmployeePermissionsEntry.ReadEmployeeVacationsCounter;
 
