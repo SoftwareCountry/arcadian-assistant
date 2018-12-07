@@ -78,7 +78,7 @@
             }
         }
 
-        private Task<Vacation> UpsertVacation(
+        private Task<IEnumerable<Vacation>> UpsertVacation(
             CalendarEvent newEvent,
             CalendarEvent oldEvent,
             IEnumerable<string> approvals)
