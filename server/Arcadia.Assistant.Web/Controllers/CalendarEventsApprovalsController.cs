@@ -102,7 +102,7 @@
                 return this.BadRequest(this.ModelState);
             }
 
-            var editCalendarEventAuthResult = await this.authorizationService.AuthorizeAsync(this.User, approver, new EditPendingCalendarEvents());
+            var editCalendarEventAuthResult = await this.authorizationService.AuthorizeAsync(this.User, employee, new EditPendingCalendarEvents());
             if (!editCalendarEventAuthResult.Succeeded)
             {
                 return this.Forbid();
