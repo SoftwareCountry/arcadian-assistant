@@ -8,16 +8,16 @@
 
     using Arcadia.Assistant.CSP.Model;
 
-    public class VacationsPersistenceExecutor
+    public class VacationsSyncExecutor
     {
         private readonly Func<ArcadiaCspContext> contextFactory;
 
-        public VacationsPersistenceExecutor(Func<ArcadiaCspContext> contextFactory)
+        public VacationsSyncExecutor(Func<ArcadiaCspContext> contextFactory)
         {
             this.contextFactory = contextFactory;
         }
 
-        public async Task<Vacation> UpsertVacation(Vacation vacation, Vacation oldVacation)
+        public async Task<Vacation> SyncVacation(Vacation vacation, Vacation oldVacation)
         {
             using (var context = this.contextFactory())
             {

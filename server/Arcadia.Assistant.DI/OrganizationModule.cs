@@ -30,7 +30,7 @@
 
             builder.RegisterType<ArcadiaVacationRegistry>().As<VacationsRegistry>();
             builder.RegisterType<VacationsQueryExecutor>().AsSelf();
-            builder.RegisterType<VacationsPersistenceExecutor>().AsSelf();
+            builder.RegisterType<VacationsSyncExecutor>().AsSelf();
             builder.RegisterType<CspCalendarEventsApprovalsChecker>().As<CalendarEventsApprovalsChecker>();
 
             builder.RegisterType<UserPreferencesActor>().AsSelf();

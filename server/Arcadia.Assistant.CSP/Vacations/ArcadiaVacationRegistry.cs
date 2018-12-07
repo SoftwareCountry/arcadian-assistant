@@ -19,7 +19,7 @@
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
         private readonly VacationsQueryExecutor vacationsQueryExecutor;
-        private readonly VacationsPersistenceExecutor vacationsPersistenceExecutor;
+        private readonly VacationsSyncExecutor vacationsSyncExecutor;
 
         private Dictionary<string, double> employeeIdsToDaysLeft = new Dictionary<string, double>();
 
@@ -27,11 +27,11 @@
 
         public ArcadiaVacationRegistry(
             VacationsQueryExecutor vacationsQueryExecutor,
-            VacationsPersistenceExecutor vacationsPersistenceExecutor,
+            VacationsSyncExecutor vacationsSyncExecutor,
             IRefreshInformation refreshInformation)
         {
             this.vacationsQueryExecutor = vacationsQueryExecutor;
-            this.vacationsPersistenceExecutor = vacationsPersistenceExecutor;
+            this.vacationsSyncExecutor = vacationsSyncExecutor;
 
             Context.System.Scheduler.ScheduleTellRepeatedly(TimeSpan.Zero, TimeSpan.FromMinutes(refreshInformation.IntervalInMinutes), this.Self, new Refresh(), this.Self);
 
@@ -81,28 +81,33 @@
 
                     break;
 
-                case CalendarEventCreated msg when msg.Event.Type == CalendarEventTypes.Vacation:
+                case CalendarEventCreated createdMsg when createdMsg.Event.Type != CalendarEventTypes.Vacation:
+                case CalendarEventChanged changedMsg when changedMsg.NewEvent.Type != CalendarEventTypes.Vacation:
+                case CalendarEventApprovalsChanged approvedMsg when approvedMsg.Event.Type != CalendarEventTypes.Vacation:
+                    break;
+
+                case CalendarEventCreated msg:
                     this.UpsertVacation(msg.Event, null, new string[0])
                         .PipeTo(
                             this.Self,
                             success: () => VacationPersistSuccess.Instance,
-                            failure: e => new VacationPersistFailed(e.Message));
+                            failure: err => new VacationPersistFailed(err));
                     break;
 
-                case CalendarEventChanged msg when msg.NewEvent.Type == CalendarEventTypes.Vacation:
+                case CalendarEventChanged msg:
                     this.UpsertVacation(msg.NewEvent, msg.OldEvent, new string[0])
                         .PipeTo(
                             this.Self,
                             success: () => VacationPersistSuccess.Instance,
-                            failure: e => new VacationPersistFailed(e.Message));
+                            failure: err => new VacationPersistFailed(err));
                     break;
 
-                case CalendarEventApprovalsChanged msg when msg.Event.Type == CalendarEventTypes.Vacation:
+                case CalendarEventApprovalsChanged msg:
                     this.UpsertVacation(msg.Event, null, msg.Approvals)
                         .PipeTo(
                             this.Self,
                             success: () => VacationPersistSuccess.Instance,
-                            failure: e => new VacationPersistFailed(e.Message));
+                            failure: err => new VacationPersistFailed(err));
                     break;
 
                 case VacationPersistSuccess _:
@@ -110,12 +115,7 @@
                     break;
 
                 case VacationPersistFailed err:
-                    this.logger.Warning($"Failed to update vacation information in the database: {err.Message}");
-                    break;
-
-                case CalendarEventCreated _:
-                case CalendarEventChanged _:
-                case CalendarEventApprovalsChanged _:
+                    this.logger.Error(err.Exception, $"Failed to update vacation information in the database: {err.Exception.Message}");
                     break;
 
                 default:
@@ -150,7 +150,7 @@
                 vacation.VacationApprovals.Add(vacationApproval);
             }
 
-            return this.vacationsPersistenceExecutor.UpsertVacation(vacation, oldVacation);
+            return this.vacationsSyncExecutor.SyncVacation(vacation, oldVacation);
         }
 
         private Vacation GetVacationFromCalendarEvent(CalendarEvent @event)
@@ -208,17 +208,17 @@
 
         private class VacationPersistSuccess
         {
-            public static VacationPersistSuccess Instance = new VacationPersistSuccess();
+            public static readonly VacationPersistSuccess Instance = new VacationPersistSuccess();
         }
 
         private class VacationPersistFailed
         {
-            public VacationPersistFailed(string message)
+            public VacationPersistFailed(Exception exception)
             {
-                this.Message = message;
+                this.Exception = exception;
             }
 
-            public string Message { get; }
+            public Exception Exception { get; }
         }
     }
 }
