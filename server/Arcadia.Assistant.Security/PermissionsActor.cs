@@ -8,6 +8,7 @@
 
     using Akka.Actor;
 
+    using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public class PermissionsActor : UntypedActor, ILogReceive
@@ -64,7 +65,7 @@
 
                         //that can be fixed (as array, not First(), when DepartmentsQuery starts to 
                         //support arrays for Heads and DepartmentIds
-                        this.Become(this.GetOwnDepartments(userEmployee.Employees.First().Metadata.EmployeeId));
+                        this.Become(this.GetOwnDepartments(userEmployee.Employees.First().Metadata));
                         break;
 
                     default:
@@ -77,7 +78,7 @@
             return OnMessage;
         }
 
-        private UntypedReceive GetOwnDepartments(string employeeId)
+        private UntypedReceive GetOwnDepartments(EmployeeMetadata employee)
         {
             void OnMessage(object message)
             {
@@ -89,7 +90,7 @@
                             OwnDepartmentPermissions,
                             this.permissionsForDepartments);
 
-                        this.Become(this.LoadSupervisedDepartmentsPermissions(employeeId));
+                        this.Become(this.LoadSupervisedDepartmentsPermissions(employee.EmployeeId));
 
                         break;
 
@@ -102,7 +103,7 @@
                 }
             }
 
-            this.organizationActor.Tell(DepartmentsQuery.Create().WithHead(employeeId));
+            this.organizationActor.Tell(DepartmentsQuery.Create().WithId(employee.DepartmentId));
             return OnMessage;
         }
 
@@ -178,7 +179,7 @@
             EmployeePermissionsEntry.CreateCalendarEvents |
             EmployeePermissionsEntry.CompleteSickLeave |
             EmployeePermissionsEntry.ProlongSickLeave |
-            EmployeePermissionsEntry.CancelCalendarEvents |
+            EmployeePermissionsEntry.CancelPendingCalendarEvents |
             EmployeePermissionsEntry.EditPendingCalendarEvents |
             EmployeePermissionsEntry.ReadEmployeeCalendarEvents |
             EmployeePermissionsEntry.ReadEmployeeInfo |
@@ -192,7 +193,7 @@
             EmployeePermissionsEntry.RejectCalendarEvents |
             EmployeePermissionsEntry.CompleteSickLeave |
             EmployeePermissionsEntry.ProlongSickLeave |
-            EmployeePermissionsEntry.CancelCalendarEvents |
+            EmployeePermissionsEntry.CancelPendingCalendarEvents |
             EmployeePermissionsEntry.EditPendingCalendarEvents |
             EmployeePermissionsEntry.ReadEmployeeCalendarEvents |
             EmployeePermissionsEntry.ReadEmployeeInfo |

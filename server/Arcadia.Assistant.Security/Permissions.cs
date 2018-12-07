@@ -8,6 +8,7 @@
     [DataContract]
     public class Permissions
     {
+
         [DataMember]
         // explicit department permissions by id
         private IReadOnlyDictionary<string, EmployeePermissionsEntry> DepartmentPermissions { get; set; }
@@ -30,22 +31,22 @@
         }
 
 
-        public EmployeePermissionsEntry GetPermissions(EmployeeContainer employee)
+        public EmployeePermissionsEntry GetPermissions(EmployeeContainer targetEmployee)
         {
-            if (employee == null)
+            if (targetEmployee == null)
             {
                 return EmployeePermissionsEntry.None;
             }
 
             var permissions = this.defaultPermission;
-            if (this.EmployeePermissions.TryGetValue(employee.Metadata.EmployeeId, out var employeePermissions))
+            if (this.EmployeePermissions.TryGetValue(targetEmployee.Metadata.EmployeeId, out var employeePermissions))
             {
-                permissions |= employeePermissions;
+                return permissions | employeePermissions;
             }
 
-            if (this.DepartmentPermissions.TryGetValue(employee.Metadata.DepartmentId, out var departmentPermissions))
+            if (this.DepartmentPermissions.TryGetValue(targetEmployee.Metadata.DepartmentId, out var departmentPermissions))
             {
-                permissions |= departmentPermissions;
+                return permissions | departmentPermissions;
             }
 
             return permissions;
