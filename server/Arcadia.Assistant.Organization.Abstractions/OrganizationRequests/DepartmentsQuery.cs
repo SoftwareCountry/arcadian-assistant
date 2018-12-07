@@ -7,12 +7,11 @@
     {
         public string DepartmentId { get; private set; }
 
-        public string AscendantDepartmentId { get; private set; }
-
         public string DepartmentHeadEmployeeId { get; private set; }
 
-
         public bool IncludeDirectDescendantDepartments { get; private set; }
+
+        public bool IncludeAllDescendantDepartments { get; private set; }
 
         public static DepartmentsQuery Create()
         {
@@ -23,13 +22,6 @@
         {
             var newObject = this.CloneTypewise();
             newObject.DepartmentId = departmentId;
-            return newObject;
-        }
-
-        public DepartmentsQuery DescendantOf(string departmentId)
-        {
-            var newObject = this.CloneTypewise();
-            newObject.AscendantDepartmentId = departmentId;
             return newObject;
         }
 
@@ -47,6 +39,13 @@
             return newObject;
         }
 
+        public DepartmentsQuery IncludeAllDescendants()
+        {
+            var newObject = this.CloneTypewise();
+            newObject.IncludeAllDescendantDepartments = true;
+            return newObject;
+        }
+
         public object Clone()
         {
             return this.CloneTypewise();
@@ -57,9 +56,9 @@
             var copy = new DepartmentsQuery
             {
                 DepartmentId = this.DepartmentId,
-                AscendantDepartmentId = this.AscendantDepartmentId,
                 DepartmentHeadEmployeeId = this.DepartmentHeadEmployeeId,
-                IncludeDirectDescendantDepartments = this.IncludeDirectDescendantDepartments 
+                IncludeDirectDescendantDepartments = this.IncludeDirectDescendantDepartments,
+                IncludeAllDescendantDepartments = this.IncludeAllDescendantDepartments
             };
             return copy;
         }
