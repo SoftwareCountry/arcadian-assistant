@@ -79,7 +79,7 @@
             }
         }
 
-        private Task<Vacation> UpsertVacation(
+        private Task<Vacations> UpsertVacation(
             CalendarEvent @event,
             CalendarEvent oldEvent,
             IEnumerable<string> approvals)
@@ -93,7 +93,7 @@
             }
 
             var vacationApprovals = approvals
-                .Select(a => new VacationApproval
+                .Select(a => new VacationApprovals
                 {
                     ApproverId = int.Parse(a),
                     TimeStamp = DateTimeOffset.Now,
@@ -108,14 +108,14 @@
             return this.vacationsSyncExecutor.SyncVacation(vacation, oldVacation);
         }
 
-        private Vacation GetVacationFromCalendarEvent(CalendarEvent @event)
+        private Vacations GetVacationFromCalendarEvent(CalendarEvent @event)
         {
             if (@event == null)
             {
                 return null;
             }
 
-            return new Vacation
+            return new Vacations
             {
                 EmployeeId = int.Parse(@event.EmployeeId),
                 RaisedAt = DateTimeOffset.Now,

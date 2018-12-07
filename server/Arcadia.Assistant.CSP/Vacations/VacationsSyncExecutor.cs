@@ -17,7 +17,7 @@
             this.contextFactory = contextFactory;
         }
 
-        public async Task<Vacation> SyncVacation(Vacation vacation, Vacation oldVacation)
+        public async Task<Vacations> SyncVacation(Vacations vacation, Vacations oldVacation)
         {
             using (var context = this.contextFactory())
             {
@@ -66,7 +66,7 @@
             }
         }
 
-        private Task<Vacation> GetVacation(
+        private Task<Vacations> GetVacation(
             ArcadiaCspContext context,
             int employeeId,
             DateTime startDate,

@@ -7,21 +7,20 @@ namespace Arcadia.Assistant.CSP.Model
     {
         public Employee()
         {
-            this.CompanyHistory = new HashSet<CompanyHistory>();
-            this.Department = new HashSet<Department>();
-            this.DepartmentHistory = new HashSet<DepartmentHistory>();
-            this.EmployeeCspalert = new HashSet<EmployeeCspalert>();
-            this.EmployeeHistoryEmployee = new HashSet<EmployeeHistory>();
-            this.EmployeeHistoryModifiedByNavigation = new HashSet<EmployeeHistory>();
-            this.EmployeePositionHistory = new HashSet<EmployeePositionHistory>();
-            this.EmployeeRoles = new HashSet<EmployeeRoles>();
-            this.EmployeeTeam = new HashSet<EmployeeTeam>();
-            this.Team = new HashSet<Team>();
-            this.TeamHistory = new HashSet<TeamHistory>();
-            this.Vacations = new HashSet<Vacation>();
-            this.CancelledVacations = new HashSet<Vacation>();
-            this.VacationApprovals = new HashSet<VacationApproval>();
-            this.NextVacationApprovals = new HashSet<VacationApproval>();
+            CompanyHistory = new HashSet<CompanyHistory>();
+            Department = new HashSet<Department>();
+            DepartmentHistory = new HashSet<DepartmentHistory>();
+            EmployeeCspalert = new HashSet<EmployeeCspalert>();
+            EmployeeHistoryEmployee = new HashSet<EmployeeHistory>();
+            EmployeeHistoryModifiedByNavigation = new HashSet<EmployeeHistory>();
+            EmployeePositionHistory = new HashSet<EmployeePositionHistory>();
+            EmployeeRoles = new HashSet<EmployeeRoles>();
+            EmployeeTeam = new HashSet<EmployeeTeam>();
+            Team = new HashSet<Team>();
+            TeamHistory = new HashSet<TeamHistory>();
+            VacationApprovals = new HashSet<VacationApproval>();
+            VacationsCancelledBy = new HashSet<Vacation>();
+            VacationsEmployee = new HashSet<Vacation>();
         }
 
         public int Id { get; set; }
@@ -68,7 +67,7 @@ namespace Arcadia.Assistant.CSP.Model
         public DateTime ProbationEnd { get; set; }
         public int WeekHours { get; set; }
         public int? PartTime { get; set; }
-        public bool? IsDelete { get; set; }
+        public bool IsDelete { get; set; }
 
         public Company Company { get; set; }
         public Department DepartmentNavigation { get; set; }
@@ -84,9 +83,8 @@ namespace Arcadia.Assistant.CSP.Model
         public ICollection<EmployeeTeam> EmployeeTeam { get; set; }
         public ICollection<Team> Team { get; set; }
         public ICollection<TeamHistory> TeamHistory { get; set; }
-        public ICollection<Vacation> Vacations { get; set; }
-        public ICollection<Vacation> CancelledVacations { get; set; }
         public ICollection<VacationApproval> VacationApprovals { get; set; }
-        public ICollection<VacationApproval> NextVacationApprovals { get; set; }
+        public ICollection<Vacation> VacationsCancelledBy { get; set; }
+        public ICollection<Vacation> VacationsEmployee { get; set; }
     }
 }
