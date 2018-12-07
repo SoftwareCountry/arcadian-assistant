@@ -19,7 +19,8 @@
         [DataMember]
         private EmployeePermissionsEntry defaultPermission;
 
-        public Permissions(EmployeePermissionsEntry defaultPermission, 
+        public Permissions(
+            EmployeePermissionsEntry defaultPermission,
             IReadOnlyDictionary<string, EmployeePermissionsEntry> departmentPermissions,
             IReadOnlyDictionary<string, EmployeePermissionsEntry> employeePermissions)
         {
@@ -28,13 +29,6 @@
             this.EmployeePermissions = employeePermissions;
         }
 
-
-        public EmployeePermissionsEntry GetDepartmentPermissions(string departmentId)
-        {
-            return this.DepartmentPermissions.TryGetValue(departmentId, out var permissions)
-                ? permissions
-                : this.defaultPermission;
-        }
 
         public EmployeePermissionsEntry GetPermissions(EmployeeContainer employee)
         {
@@ -49,7 +43,12 @@
                 permissions |= employeePermissions;
             }
 
-            return permissions | this.GetDepartmentPermissions(employee.Metadata.DepartmentId);
+            if (this.DepartmentPermissions.TryGetValue(employee.Metadata.DepartmentId, out var departmentPermissions))
+            {
+                permissions |= departmentPermissions;
+            }
+
+            return permissions;
         }
     }
 }
