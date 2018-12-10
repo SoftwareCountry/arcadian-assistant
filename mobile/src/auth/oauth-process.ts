@@ -1,8 +1,7 @@
-import { TokenResponse, AccessCodeRequest } from './access-code-request';
-import { OauthError } from './oauth-error';
+import { AccessCodeRequest, TokenResponse } from './access-code-request';
 import { LoginRequest } from './login-request';
 import { RefreshTokenStorage } from './refresh-token-storage';
-import { NotAuthenticatedState, AuthenticationState } from './authentication-state';
+import { AuthenticationState, NotAuthenticatedState } from './authentication-state';
 import moment from 'moment';
 import { distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import { concat, interval, merge, Observable, of, ReplaySubject, Subject, Subscription } from 'rxjs';
@@ -63,8 +62,9 @@ export class OAuthProcess {
         try {
             const code = this.loginRequest.getAuthorizationCodeFromResponse(responseUrl);
             this.authorizationCode.next(code);
-        } catch (e) {
-            this.authorizationCode.error(e);
+        } catch (error) {
+            const errorText = this.getErrorMessage(error);
+            this.authenticationStateSource.next({isAuthenticated: false, errorText: errorText});
         }
     }
 
@@ -81,8 +81,10 @@ export class OAuthProcess {
                 try {
                     const authorizationCodeResponseUrl = await this.loginRequest.openLoginPage(true);
                     this.handleAuthorizationCodeResponse(authorizationCodeResponseUrl);
-                } catch (e) {
-                    console.warn('Error occurred on login page', e);
+                } catch (error) {
+                    const errorText = this.getErrorMessage(error);
+
+                    this.authenticationStateSource.next({isAuthenticated: false, errorText: errorText});
                 }
             } else {
                 console.debug('Using refresh token from the application storage');
@@ -127,13 +129,8 @@ export class OAuthProcess {
         } else {
             this.storeRefreshToken(null); // there was an error with /token endpoint so we delete existing token
 
-            const errorText =
-                error
-                    ? error.message
-                        ? error.message.toString()
-                        : error.toString()
-                    : 'unknown error';
-            this.authenticationStateSource.error(new OauthError(errorText));
+            const errorText = this.getErrorMessage(error);
+            this.authenticationStateSource.next({isAuthenticated: false, errorText: errorText});
         }
     }
 
@@ -156,6 +153,17 @@ export class OAuthProcess {
         } else {
             return scheduledEmition;
         }
+    }
+
+    private getErrorMessage(error: any): string {
+        const errorText =
+            error
+                ? error.message
+                ? error.message.toString()
+                : error.toString()
+                : 'unknown error';
+
+        return errorText;
     }
 }
 
