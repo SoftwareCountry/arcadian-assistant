@@ -26,6 +26,17 @@ function showAlert(message: string, okButtonTitle: string, rejectButtonTitle: st
         }]);
 }
 
+function showErrorMessage(message: string) {
+    Alert.alert(
+        'Error occurred',
+        `${message}`,
+        [{
+            text: 'OK', onPress: () => {
+            }
+        },
+        ]);
+}
+
 export const startLoginProcessEpic$ = (action$: ActionsObservable<StartLoginProcess>, _: StateObservable<AppState>, dep: DependenciesContainer) =>
     action$.ofType(AuthActionType.startLoginProcess).pipe(
         tap(x => dep.oauthProcess.login()),
@@ -54,16 +65,20 @@ export const listenerAuthStateEpic$ = (action$: ActionsObservable<any>, _: State
     dep.oauthProcess.authenticationState
         .pipe(
             handleHttpErrors(),
-            distinctUntilChanged<AuthenticationState>((x, y) => x.isAuthenticated === y.isAuthenticated),
+            distinctUntilChanged<AuthenticationState>((x, y) => ((x.isAuthenticated === y.isAuthenticated) && x.isAuthenticated)),
             flatMap<AuthenticationState, Action>(x => {
-                if (x.isAuthenticated) {
-                    return concat(of(userLoggedIn()), of(refresh()));
-                } else {
-                    return of(userLoggedOut());
+                    if (x.isAuthenticated) {
+                        return concat(of(userLoggedIn()), of(refresh()));
+                    } else {
+                        return of(userLoggedOut()).pipe(
+                            tap(() => {
+                                if (x.errorText) {
+                                    showErrorMessage(x.errorText);
+                                }
+                            }));
+                    }
                 }
-            })
-        );
-
+            ));
 
 export const jwtTokenEpic$ = (action$: ActionsObservable<any>, _: StateObservable<AppState>, dep: DependenciesContainer) =>
     dep.oauthProcess.authenticationState

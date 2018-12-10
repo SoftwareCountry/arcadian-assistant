@@ -5,7 +5,6 @@ import { Provider } from 'react-redux';
 import { storeFactory } from './reducers/app.reducer';
 import { AppWithNavigationState } from './app';
 import config from './config';
-import { Modal, Platform, Text } from 'react-native';
 import { NavigationService } from './navigation/navigation.service';
 
 export class Root extends Component<{}> {
@@ -21,11 +20,6 @@ export class Root extends Component<{}> {
         config.oauth.redirectUri);
 
       this.navigationService = new NavigationService();
-
-      const isIOS = Platform.OS === 'ios';
-      if (isIOS) {
-          this.oauthProcess.login().catch(console.error);
-      }
     }
 
     public render() {
