@@ -61,10 +61,10 @@
                             throw new Exception($"Event {cmd.Event.EventId}. Initial status must be {this.GetInitialStatus()}");
                         }
 
-                        this.InsertCalendarEvent(cmd.Event, ev =>
+                        this.InsertCalendarEvent(cmd.Event, cmd.UpdatedBy, cmd.Timestamp, ev =>
                         {
                             this.OnSuccessfulUpsert(ev);
-                            Context.System.EventStream.Publish(new CalendarEventCreated(ev));
+                            Context.System.EventStream.Publish(new CalendarEventCreated(ev, cmd.UpdatedBy, cmd.Timestamp));
                         });
                     }
                     catch (Exception ex)
@@ -82,10 +82,14 @@
                         {
                             throw new Exception($"Event {cmd.Event.EventId}. Status transition {oldEvent.Status} -> {cmd.Event.Status} is not allowed for {oldEvent.Type}");
                         }
-                        this.UpdateCalendarEvent(oldEvent, cmd.Event, ev =>
+                        this.UpdateCalendarEvent(oldEvent, cmd.UpdatedBy, cmd.Timestamp, cmd.Event, ev =>
                         {
                             this.OnSuccessfulUpsert(ev);
-                            Context.System.EventStream.Publish(new CalendarEventChanged(oldEvent, ev));
+                            Context.System.EventStream.Publish(new CalendarEventChanged(
+                                oldEvent,
+                                cmd.UpdatedBy,
+                                cmd.Timestamp,
+                                ev));
                         });
                     }
                     catch (Exception ex)
@@ -149,9 +153,9 @@
             }
         }
 
-        protected abstract void InsertCalendarEvent(CalendarEvent calendarEvent, OnSuccessfulUpsertCallback onUpsert);
+        protected abstract void InsertCalendarEvent(CalendarEvent calendarEvent, string updatedBy, DateTimeOffset timestamp, OnSuccessfulUpsertCallback onUpsert);
 
-        protected abstract void UpdateCalendarEvent(CalendarEvent oldEvent, CalendarEvent newEvent, OnSuccessfulUpsertCallback onUpsert);
+        protected abstract void UpdateCalendarEvent(CalendarEvent oldEvent, string updatedBy, DateTimeOffset timestamp, CalendarEvent newEvent, OnSuccessfulUpsertCallback onUpsert);
 
         protected abstract string GetInitialStatus();
 
@@ -181,15 +185,15 @@
             {
                 EventId = message.Event.EventId,
                 TimeStamp = DateTimeOffset.Now,
-                ApproverId = message.ApproverId
+                UserId = message.ApproverId
             };
 
             this.Persist(@event, ev =>
             {
+                this.OnSuccessfulApprove(ev);
                 this.Self.Tell(new AssignCalendarEventNextApprover(message.Event.EventId));
                 this.Sender.Tell(Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
-                Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(calendarEvent, approvals.ToList()));
-                this.OnSuccessfulApprove(ev);
+                Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(calendarEvent, message.ApproverId, ev.TimeStamp, approvals.ToList()));
             });
         }
 
@@ -212,9 +216,11 @@
                     oldEvent.EmployeeId
                 );
 
-                this.UpdateCalendarEvent(oldEvent, newEvent, ev =>
+                // ToDo: Here we need last approver to set event UserId
+                var timestamp = DateTimeOffset.Now;
+                this.UpdateCalendarEvent(oldEvent, null, timestamp, newEvent, ev =>
                 {
-                    Context.System.EventStream.Publish(new CalendarEventChanged(oldEvent, ev));
+                    Context.System.EventStream.Publish(new CalendarEventChanged(oldEvent, null, timestamp, ev));
                 });
             }
 
