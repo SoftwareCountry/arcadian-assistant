@@ -24,7 +24,7 @@
 
             var allDepartments = await this.GetDepartments(departmentsActor);
             var employeeMetadata = await this.GetEmployee(employeesActor, employeeId);
-            
+
             if (employeeMetadata == null)
             {
                 return null;
@@ -45,19 +45,24 @@
             List<DepartmentInfo> departments,
             IEnumerable<string> existingApprovals)
         {
-            var employeeDepartment = departments.First(d => d.DepartmentId == employee.DepartmentId);
-            var parentDepartment = departments.FirstOrDefault(d => d.DepartmentId == employeeDepartment.ParentDepartmentId);
-            var isEmployeeChief = employeeDepartment.ChiefId == employee.EmployeeId;
+            var ownDepartment = departments.First(d => d.DepartmentId == employee.DepartmentId);
+            var isEmployeeChief = ownDepartment.ChiefId == employee.EmployeeId;
+            var parentDepartment = departments.First(d => d.DepartmentId == ownDepartment.DepartmentId);
+            var parentDepartments = this.GetParentDepartments(ownDepartment, departments);
 
-            if (employeeDepartment.IsHeadDepartment && isEmployeeChief)
+            if (ownDepartment.IsHeadDepartment && isEmployeeChief)
             {
                 // No approvals required for Director General
                 return null;
             }
 
-            var approver = !isEmployeeChief ? employeeDepartment.ChiefId : parentDepartment?.ChiefId;
+            var existingApprovalsList = existingApprovals.ToList();
+            var nextApprover = !isEmployeeChief ? ownDepartment.ChiefId : parentDepartment?.ChiefId;
+            var acceptedApprovers = parentDepartments.Select(d => d.ChiefId);
 
-            return existingApprovals.Contains(approver) ? null : approver;
+            return existingApprovalsList.Contains(nextApprover) || existingApprovalsList.Intersect(acceptedApprovers).Count() != 0
+                ? null
+                : nextApprover;
         }
 
         private string GetNextApproverHierarchyStrategy(
@@ -65,23 +70,24 @@
             List<DepartmentInfo> departments,
             IEnumerable<string> existingApprovals)
         {
-            var employeeDepartment = departments.First(d => d.DepartmentId == employee.DepartmentId);
-            var parentDepartment = departments.FirstOrDefault(d => d.DepartmentId == employeeDepartment.ParentDepartmentId);
-            var isEmployeeChief = employeeDepartment.ChiefId == employee.EmployeeId;
+            var ownDepartment = departments.First(d => d.DepartmentId == employee.DepartmentId);
+            var isEmployeeChief = ownDepartment.ChiefId == employee.EmployeeId;
+            var parentDepartment = departments.FirstOrDefault(d => d.DepartmentId == ownDepartment.ParentDepartmentId);
+            var parentDepartments = this.GetParentDepartments(ownDepartment, departments);
 
             string finalApprover = null;
             string preliminaryApprover = null;
 
-            if (this.sdoDepartmentRegex.Match(employeeDepartment.Name).Success)
+            if (this.sdoDepartmentRegex.Match(ownDepartment.Name).Success)
             {
                 if (!isEmployeeChief)
                 {
-                    preliminaryApprover = employeeDepartment.ChiefId;
+                    preliminaryApprover = ownDepartment.ChiefId;
                 }
 
                 finalApprover = parentDepartment?.ChiefId;
             }
-            else if (employeeDepartment.IsHeadDepartment && isEmployeeChief)
+            else if (ownDepartment.IsHeadDepartment && isEmployeeChief)
             {
                 // No approvals required for Director General
             }
@@ -89,7 +95,7 @@
             {
                 if (!isEmployeeChief)
                 {
-                    finalApprover = employeeDepartment.ChiefId;
+                    finalApprover = ownDepartment.ChiefId;
                 }
                 else
                 {
@@ -98,8 +104,10 @@
             }
 
             var existingApprovalsList = existingApprovals.ToList();
+            var acceptedFinalApprovers = parentDepartments.Select(d => d.ChiefId);
 
-            if (existingApprovalsList.Contains(finalApprover))
+            if (existingApprovalsList.Contains(finalApprover) ||
+                existingApprovalsList.Intersect(acceptedFinalApprovers).Count() != 0)
             {
                 return null;
             }
@@ -129,6 +137,23 @@
                 DepartmentsStorage.LoadAllDepartments.Instance
             );
             return allDepartmentsResponse.Departments.ToList();
+        }
+
+        private List<DepartmentInfo> GetParentDepartments(
+            DepartmentInfo childDepartment,
+            List<DepartmentInfo> allDepartments)
+        {
+            if (childDepartment.IsHeadDepartment)
+            {
+                return new List<DepartmentInfo>();
+            }
+
+            var parentDepartment = allDepartments.First(d => d.DepartmentId == childDepartment.ParentDepartmentId);
+
+            var result = new List<DepartmentInfo> { parentDepartment };
+            result.AddRange(this.GetParentDepartments(parentDepartment, allDepartments));
+
+            return result;
         }
     }
 }
