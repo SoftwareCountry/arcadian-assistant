@@ -54,6 +54,7 @@
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+
             var appSettings = this.AppSettings;
 
             services.AddSwaggerGen(
@@ -76,6 +77,8 @@
                         x.DescribeAllEnumsAsStrings();
                         //x.CustomSchemaIds(t => t.FullName);
                     });
+
+            services.AddTransient<AkkaTimeoutExceptionHandler>();
 
             services.AddScoped<AuthenticationEvents>();
 
@@ -151,6 +154,7 @@
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseAkkaTimeoutExceptionHandler();
             app.UseAuthentication();
 
             app.UseSwagger();

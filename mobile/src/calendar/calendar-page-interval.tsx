@@ -41,7 +41,7 @@ export class HalfInterval extends Component<HalfIntervalProps> {
             {
                 borderRadius: size,
                 height: size,
-                width: Math.round(size / 2),
+                width: Math.round(size),
                 backgroundColor: this.props.color
             },
             this.props.align === 'right'

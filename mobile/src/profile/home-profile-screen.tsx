@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Department } from '../reducers/organization/department.model';
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
-import { RefreshControl, SafeAreaView, StyleSheet, View, ViewStyle } from 'react-native';
+import { LayoutChangeEvent, RefreshControl, SafeAreaView, StyleSheet, View, ViewStyle } from 'react-native';
 import { Employee } from '../reducers/organization/employee.model';
 import { layoutStyles, profileScreenStyles } from './styles';
 import { EmployeeDetails } from '../employee-details/employee-details';
@@ -34,7 +34,13 @@ interface AuthDispatchProps {
 }
 
 //============================================================================
-class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps> {
+interface ProfileScreenState {
+    width: number;
+    height: number;
+}
+
+//============================================================================
+class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps, ProfileScreenState> {
 
     //----------------------------------------------------------------------------
     public static navigationOptions: NavigationScreenConfig<NavigationStackScreenOptions> = {
@@ -47,12 +53,27 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
     };
 
     //----------------------------------------------------------------------------
+    public constructor(props: Readonly<ProfileScreenProps & AuthDispatchProps>) {
+        super(props);
+
+        this.state = {
+            width: 0,
+            height: 0,
+        };
+    }
+
+    //----------------------------------------------------------------------------
     public componentDidMount() {
         this.props.loadPendingRequests();
     }
 
     //----------------------------------------------------------------------------
-    public shouldComponentUpdate(nextProps: ProfileScreenProps & AuthDispatchProps) {
+    public shouldComponentUpdate(nextProps: ProfileScreenProps & AuthDispatchProps, nextState: ProfileScreenState) {
+        if (this.state.width !== nextState.width ||
+            this.state.height !== nextState.height) {
+            return true;
+        }
+
         if (!this.props.requests && !nextProps.requests) {
             return false;
         }
@@ -104,8 +125,21 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
 
     //----------------------------------------------------------------------------
     public render() {
-        return <SafeAreaView style={Style.view.safeArea}>
+        return <SafeAreaView style={Style.view.safeArea} onLayout={this.onLayout}>
             <View style={profileScreenStyles.employeeDetailsContainer}>
+                <View style={[
+                    profileScreenStyles.topHalfView,
+                    {
+                        width: this.state.width,
+                        height: this.state.height / 2,
+                    }]}/>
+                <View style={[
+                    profileScreenStyles.bottomHalfView,
+                    {
+                        top: this.state.height / 2,
+                        width: this.state.width,
+                        height: this.state.height / 2
+                    }]}/>
                 {this.renderEmployeeDetails()}
             </View>
         </SafeAreaView>;
@@ -128,7 +162,7 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
             .mapKeys(employeeId => employees.employeesById.get(employeeId)!) : undefined;
 
         return (
-            <ScrollView refreshControl={<RefreshControl refreshing={false} onRefresh={this.onRefresh}/>}>
+            <ScrollView refreshControl={<RefreshControl tintColor={Style.color.white} refreshing={false} onRefresh={this.onRefresh}/>}>
                 <EmployeeDetails
                     department={department}
                     employee={employee}
@@ -138,6 +172,14 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
             </ScrollView>
         );
     }
+
+    //----------------------------------------------------------------------------
+    private onLayout = (event: LayoutChangeEvent) => {
+        this.setState({
+            width: event.nativeEvent.layout.width,
+            height: event.nativeEvent.layout.height,
+        });
+    };
 
     //----------------------------------------------------------------------------
     private onRefresh = () => {

@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { Image, ImageStyle, LayoutChangeEvent, StyleSheet, View, ViewStyle } from 'react-native';
 import { connect } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
-import { Nullable, Optional } from 'types';
+import { Nullable } from 'types';
+import FastImage from 'react-native-fast-image';
 
 const styles = StyleSheet.create({
     container: {
@@ -71,10 +72,8 @@ class AvatarImpl extends Component<AvatarProps, AvatarState> {
 
     public render() {
         if (!this.state.size) {
-            return <View onLayout={this.onLayout} style={styles.container}></View>;
+            return <View onLayout={this.onLayout} style={styles.container}/>;
         }
-
-        const defaultPhoto = this.props.useDefaultForEmployeesList ? employeesListAvatarRect : arcadiaIcon;
 
         const outerFrameFlattenStyle = StyleSheet.flatten([
             styles.outerFrame,
@@ -87,35 +86,38 @@ class AvatarImpl extends Component<AvatarProps, AvatarState> {
             this.state.visible ? {} : { display: 'none' }
         ]);
 
-        const imgSize = (outerFrameFlattenStyle.width as number) - outerFrameFlattenStyle.borderWidth! * 2;
+        return (
+            <View onLayout={this.onLayout} style={styles.container}>
+                <View style={outerFrameFlattenStyle}>
+                    {this.renderImage(outerFrameFlattenStyle)}
+                </View>
+            </View>
+        );
+    }
+
+    private renderImage(containerStyle: ViewStyle) {
+        const imgSize = (containerStyle.width as number) - containerStyle.borderWidth! * 2;
         const imageFlattenStyle = StyleSheet.flatten([
             styles.image,
             {
                 width: imgSize,
                 height: imgSize,
                 borderRadius: imgSize * 0.5,
-                borderWidth: outerFrameFlattenStyle.borderWidth! * 2 //by design it seems to be twice thicker than container border
+                borderWidth: containerStyle.borderWidth! * 2 //by design it seems to be twice thicker than container border
             },
             this.props.imageStyle
         ]);
 
-        const image = this.props.photoUrl && this.props.jwtToken
-            ?
-            {
-                uri: this.props.photoUrl,
-                headers: {
-                    'Authorization': `Bearer ${this.props.jwtToken}`
-                }
-            }
-            : defaultPhoto;
+        if (!(this.props.photoUrl && this.props.jwtToken)) {
+            const defaultImage = this.props.useDefaultForEmployeesList ? employeesListAvatarRect : arcadiaIcon;
 
-        return (
-            <View onLayout={this.onLayout} style={styles.container}>
-                <View style={outerFrameFlattenStyle}>
-                    <Image source={image} defaultSource={defaultPhoto} style={imageFlattenStyle as ImageStyle} />
-                </View>
-            </View>
-        );
+            return <Image source={defaultImage} style={imageFlattenStyle as ImageStyle}/>;
+        }
+
+        const headers = { 'Authorization': `Bearer ${this.props.jwtToken}` };
+
+        return <FastImage style={imageFlattenStyle as ImageStyle}
+                          source={{ uri: this.props.photoUrl, headers: headers }}/>;
     }
 }
 

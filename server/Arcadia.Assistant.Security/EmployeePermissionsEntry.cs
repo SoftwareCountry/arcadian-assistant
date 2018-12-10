@@ -16,7 +16,7 @@
         RejectCalendarEvents = 1 << 7,
         CompleteSickLeave = 1 << 8,
         ProlongSickLeave = 1 << 9,
-        CancelCalendarEvents = 1 << 10,
+        CancelPendingCalendarEvents = 1 << 10,
         EditPendingCalendarEvents = 1 << 11,
         CancelApprovedCalendarEvents = 1 << 12
     }

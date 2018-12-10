@@ -1,4 +1,5 @@
 import { StyleSheet, Dimensions } from 'react-native';
+import Style from '../layout/style';
 
 export const chevronColor = '#2FAFCC';
 
@@ -45,7 +46,18 @@ export const profileScreenStyles = StyleSheet.create({
     logoutContainer: {
         marginTop: 5,
         marginBottom: 10
-    }
+    },
+    topHalfView: {
+        position: 'absolute',
+        backgroundColor: Style.color.base,
+        top: 0,
+        left: 0,
+    },
+    bottomHalfView: {
+        position: 'absolute',
+        backgroundColor: Style.color.white,
+        left: 0,
+    },
 });
 
 export const layoutStyles = StyleSheet.create({

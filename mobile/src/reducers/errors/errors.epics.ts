@@ -23,6 +23,8 @@ function retryWhenErrorOccurred<T>(isForceLogout: boolean = false): UnaryFunctio
                     errorMessage = 'Authentication failed';
                 } else if (e.status === 403) {
                     errorMessage = 'Authorization error. Please contact administrator';
+                } else if (e.status === 503) {
+                    errorMessage = 'Server is not available. Please try again later';
                 } else if (e.status === 0) {
                     errorMessage = 'Cannot establish a connection to the server';
                 } else {
