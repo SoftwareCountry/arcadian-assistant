@@ -1,4 +1,7 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
+import Style from '../layout/style';
+import FastImage from 'react-native-fast-image';
+import center = FastImage.resizeMode.center;
 
 const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
@@ -130,4 +133,19 @@ export const companyDepartmentLevelPeople = StyleSheet.create({
     listItemPosition: {
         fontSize: 11
     }
+});
+
+export const noResult = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    text: {
+        fontSize: 20,
+        color: Style.color.base,
+        marginTop: 20,
+        fontFamily: 'CenturyGothic',
+        textAlign: 'center',
+    },
 });

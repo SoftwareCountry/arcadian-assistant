@@ -1,11 +1,12 @@
 import React from 'react';
-import { View, ListRenderItemInfo } from 'react-native';
+import { ListRenderItemInfo, View } from 'react-native';
 
 import { Employee } from '../reducers/organization/employee.model';
 import { EmployeesListItem } from './employees-list-item';
-import { employeesListStyles as styles } from './styles';
+import { employeesListStyles as styles, noResult } from './styles';
 import { employeesAZComparer } from './employee-comparer';
 import { FlatList } from 'react-navigation';
+import { StyledText } from '../override/styled-text';
 
 export interface EmployeesListProps {
     employees: Employee[];
@@ -17,11 +18,21 @@ export class EmployeesList extends React.Component<EmployeesListProps> {
         const employees = this.props.employees.sort(employeesAZComparer);
 
         return <View style={styles.view}>
-                    <FlatList
-                        data={employees}
-                        keyExtractor={this.keyExtractor}
-                        renderItem={this.renderItem} />
-                </View>;
+            <FlatList
+                data={employees}
+                keyExtractor={this.keyExtractor}
+                renderItem={this.renderItem}
+                ListEmptyComponent={this.listEmptyComponent()}
+            />
+        </View>;
+    }
+
+    private listEmptyComponent() {
+        return (
+            <View style={noResult.container}>
+                <StyledText style={noResult.text}>{'No result'}</StyledText>
+            </View>
+        );
     }
 
     private keyExtractor = (item: Employee) => item.employeeId;
