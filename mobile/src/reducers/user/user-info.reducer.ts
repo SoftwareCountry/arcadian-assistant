@@ -36,6 +36,7 @@ export const userInfoReducer: Reducer<UserInfoState> = (state = initState, actio
 
             return state;
         }
+        case 'LOAD-USER-EMPLOYEE-FINISHED':
         case 'LOAD-USER-PREFERENCES-FINISHED': {
             const existingPreferences = state.preferences;
 

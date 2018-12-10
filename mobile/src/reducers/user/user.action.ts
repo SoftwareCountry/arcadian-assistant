@@ -14,21 +14,35 @@ export interface LoadUserFinished extends Action {
     userEmployeeId: string;
 }
 
-export const loadUserFinished = (userEmployeeId: string): LoadUserFinished => ({ type: 'LOAD-USER-FINISHED', userEmployeeId });
+export const loadUserFinished = (userEmployeeId: string): LoadUserFinished => ({
+    type: 'LOAD-USER-FINISHED',
+    userEmployeeId
+});
 
-export interface LoadUserEmployeeFinished extends Action {
+export interface UserPreferencesAction extends Action {
+    preferences: UserPreferences;
+}
+
+export interface LoadUserEmployeeFinished extends UserPreferencesAction {
     type: 'LOAD-USER-EMPLOYEE-FINISHED';
     employee: Employee;
 }
 
-export const loadUserEmployeeFinished = (employee: Employee): LoadUserEmployeeFinished => ({ type: 'LOAD-USER-EMPLOYEE-FINISHED', employee });
+export const loadUserEmployeeFinished = (employee: Employee, preferences: UserPreferences): LoadUserEmployeeFinished => ({
+    type: 'LOAD-USER-EMPLOYEE-FINISHED',
+    employee,
+    preferences
+});
 
 export interface LoadUserEmployeePermissions extends Action {
     type: 'LOAD-USER-EMPLOYEE-PERMISSIONS';
     employeeId: string;
 }
 
-export const loadUserEmployeePermissions = (employeeId: string): LoadUserEmployeePermissions => ({ type: 'LOAD-USER-EMPLOYEE-PERMISSIONS', employeeId });
+export const loadUserEmployeePermissions = (employeeId: string): LoadUserEmployeePermissions => ({
+    type: 'LOAD-USER-EMPLOYEE-PERMISSIONS',
+    employeeId
+});
 
 export interface LoadUserEmployeePermissionsFinished extends Action {
     type: 'LOAD-USER-EMPLOYEE-PERMISSIONS-FINISHED';
@@ -45,11 +59,10 @@ export interface LoadUserPreferences extends Action {
 
 export const loadUserPreferences = (userId: string): LoadUserPreferences => ({ type: 'LOAD-USER-PREFERENCES', userId });
 
-export interface UpdateUserPreferences extends Action {
+export interface UpdateUserPreferences extends UserPreferencesAction {
     type: 'UPDATE-USER-PREFERENCES';
     userId: string;
     previousPreferences: UserPreferences;
-    preferences: UserPreferences;
 }
 
 export const updateUserPreferences = (userId: string, previousPreferences: UserPreferences, newPreferences: UserPreferences): UpdateUserPreferences => ({
@@ -59,9 +72,8 @@ export const updateUserPreferences = (userId: string, previousPreferences: UserP
     preferences: newPreferences,
 });
 
-export interface LoadUserPreferencesFinished extends Action {
+export interface LoadUserPreferencesFinished extends UserPreferencesAction {
     type: 'LOAD-USER-PREFERENCES-FINISHED';
-    preferences: UserPreferences;
 }
 
 export const loadUserPreferencesFinished = (preferences: UserPreferences): LoadUserPreferencesFinished =>
