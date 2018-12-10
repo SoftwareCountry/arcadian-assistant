@@ -15,6 +15,7 @@ import { Nullable } from 'types';
 interface EmployeeDetailsEventsListProps {
     events: Map<Employee, CalendarEvent[]>;
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
+    eventApprove: (employeeId: string, calendarEvent: CalendarEvent) => void;
     hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => Nullable<string>;
     showUserAvatar?: boolean;
     canApprove: boolean;
@@ -108,6 +109,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
                         event={item.calendarEvent}
                         employeeId={item.employee.employeeId}
                         eventSetNewStatusAction={this.props.eventSetNewStatusAction}
+                        eventApprove={this.props.eventApprove}
                         canApprove={this.props.canApprove}
                         canReject={this.props.canReject}
                     />

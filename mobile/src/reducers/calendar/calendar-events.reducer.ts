@@ -1,21 +1,25 @@
 import { Reducer } from 'redux';
-import { Map } from 'immutable';
-import { CalendarActions, CalendarSelectionModeType, CalendarSelectionMode, NextCalendarPage } from './calendar.action';
-import { DayModel, WeekModel, IntervalsModel, CalendarSelection, IntervalModel, ExtractedIntervals, ReadOnlyIntervalsModel, CalendarPageModel } from './calendar.model';
-import moment, { Moment } from 'moment';
-import { CalendarWeeksBuilder } from './calendar-weeks-builder';
-import { CalendarEvents } from './calendar-events.model';
-import { singleDaySelectionReducer, intervalSelectionReducer } from './calendar-selection.reducer';
+import { Map, Set } from 'immutable';
+import { CalendarActions } from './calendar.action';
+import {
+    CalendarPageModel,
+    CalendarSelection,
+    DayModel,
+    ExtractedIntervals,
+    ReadOnlyIntervalsModel
+} from './calendar.model';
+import moment from 'moment';
+import { intervalSelectionReducer, singleDaySelectionReducer } from './calendar-selection.reducer';
 import { calendarSelectionModeReducer } from './calendar-selection-mode.reducer';
-import { CalendarEvent } from './calendar-event.model';
+import { CalendarEvent, CalendarEventId } from './calendar-event.model';
 import { UserActions } from '../user/user.action';
-import { UserInfoState } from '../user/user-info.reducer';
 import { nextCalendarPageReducer } from './next-calendar-page.reducer';
 import { prevCalendarPageReducer } from './prev-calendar-page.reducer';
 import { createCalendarPagesInitState } from './calendar-pages-init-state';
 import { Optional } from 'types';
 import { resetCalendarPagesReducer } from './reset-calendar-pages.reducer';
-
+import { Approval } from './approval.model';
+import { ApprovalAction, ApprovalActionType } from './approval.action';
 
 export interface IntervalsSubState {
     intervals: Optional<ReadOnlyIntervalsModel>;
@@ -31,6 +35,7 @@ export interface SelectionSubState {
 
 export interface EventsMapSubState {
     events: Map<string, CalendarEvent[]>;
+    approvals: Map<CalendarEventId, Set<Approval>>;
     userEmployeeId: Optional<string>;
 }
 
@@ -38,16 +43,11 @@ export interface CalendarPagesSubState {
     pages: CalendarPageModel[];
 }
 
-export interface CalendarEventsState extends
-    IntervalsSubState,
-    DisableCalendarDaysBeforeSubState,
-    EventsMapSubState,
-    SelectionSubState,
-    CalendarPagesSubState {
-        disableCalendarActionsButtonGroup: boolean;
-        selectedIntervalsBySingleDaySelection: ExtractedIntervals;
-        disableSelectIntervalsBySingleDaySelection: boolean;
-        disableSelection: boolean;
+export interface CalendarEventsState extends IntervalsSubState, DisableCalendarDaysBeforeSubState, EventsMapSubState, SelectionSubState, CalendarPagesSubState {
+    disableCalendarActionsButtonGroup: boolean;
+    selectedIntervalsBySingleDaySelection: ExtractedIntervals;
+    disableSelectIntervalsBySingleDaySelection: boolean;
+    disableSelection: boolean;
 }
 
 const createInitState = (): CalendarEventsState => {
@@ -79,7 +79,8 @@ const createInitState = (): CalendarEventsState => {
     return {
         pages: [prevPage, currentPage, nextPage],
         intervals: undefined,
-        events: Map<string, CalendarEvent[]>(),
+        events: Map(),
+        approvals: Map(),
         userEmployeeId: undefined,
         disableCalendarDaysBefore: undefined,
         disableCalendarActionsButtonGroup: true,
@@ -92,7 +93,7 @@ const createInitState = (): CalendarEventsState => {
 
 const initState = createInitState();
 
-export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = initState, action: CalendarActions | UserActions) => {
+export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = initState, action: CalendarActions | UserActions | ApprovalAction) => {
     switch (action.type) {
         case 'LOAD-USER-FINISHED':
             return {...state, userEmployeeId: action.userEmployeeId};
@@ -179,6 +180,20 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
                 ...state,
                 disableSelectIntervalsBySingleDaySelection: action.disable
             };
+        case ApprovalActionType.loadApprovalsFinished:
+            return {
+                ...state,
+                approvals: action.approvals.map(approvalsArray => Set(approvalsArray)),
+            };
+        case ApprovalActionType.approveFinished:
+            const eventId = action.approval.eventId;
+            const approvals = state.approvals.get(action.approval.eventId, Set());
+
+            return {
+                ...state,
+                approvals: state.approvals.set(eventId, approvals.add(action.approval)),
+            };
+
         default:
             return state;
     }

@@ -7,6 +7,8 @@ const dateDecoratorParams: DataMemberDecoratorParams  = {
     customDeserializer: (value: string) => moment(value)
 };
 
+export type EmployeeId = string;
+
 export class Employee {
     @dataMember()
     @required()

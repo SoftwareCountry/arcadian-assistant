@@ -13,6 +13,7 @@ interface EventManagementToolsetProps {
     event: CalendarEvent;
     employeeId: string;
     eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
+    eventApprove: (employeeId: string, calendarEvent: CalendarEvent) => void;
     canApprove: boolean;
     canReject: boolean;
 }
@@ -32,7 +33,7 @@ export class EventManagementToolset extends Component<EventManagementToolsetProp
                 {
                     text: 'Approve',
                     onPress: () => {
-                        this.updateCalendarEvent(this.props.event, CalendarEventStatus.Approved);
+                        this.approveCalendarEvent(this.props.event);
                     },
                 },
             ],
@@ -85,5 +86,10 @@ export class EventManagementToolset extends Component<EventManagementToolsetProp
     //----------------------------------------------------------------------------
     private updateCalendarEvent(calendarEvent: CalendarEvent, status: CalendarEventStatus) {
         this.props.eventSetNewStatusAction(this.props.employeeId, calendarEvent, status);
+    }
+
+    //----------------------------------------------------------------------------
+    private approveCalendarEvent(calendarEvent: CalendarEvent) {
+        this.props.eventApprove(this.props.employeeId, calendarEvent);
     }
 }

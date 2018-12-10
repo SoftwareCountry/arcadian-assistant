@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, TextStyle } from 'react-native';
 
 export const chevronColor = '#2FAFCC';
 
@@ -66,6 +66,7 @@ export const layoutStyles = StyleSheet.create({
     header: {
         alignSelf: 'center',
         marginBottom: 5,
+        textTransform: 'capitalize',
     },
     avatarContainer: {
         borderRadius: circleDiameter / 2,

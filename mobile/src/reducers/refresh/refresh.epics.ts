@@ -12,8 +12,7 @@ export const refreshEpic$ = (action$: ActionsObservable<Refresh>) =>
         flatMap(x => of(loadUser())),
     );
 
-export const refreshUserProfileData$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, state$: StateObservable<AppState>) => action$.pipe(
+export const refreshUserProfileData$ = (action$: ActionsObservable<LoadUserEmployeeFinished>) => action$.pipe(
     ofType('LOAD-USER-EMPLOYEE-FINISHED'),
-    filter(() => !!state$.value.userInfo && !!state$.value.userInfo.employeeId),
-    flatMap(() => of(loadPendingRequests(), loadCalendarEvents(state$.value.userInfo!.employeeId!))),
+    flatMap(action => of(loadPendingRequests(), loadCalendarEvents(action.employee.employeeId))),
 );
