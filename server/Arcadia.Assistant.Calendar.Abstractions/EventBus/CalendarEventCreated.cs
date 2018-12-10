@@ -4,17 +4,17 @@
 
     public class CalendarEventCreated
     {
-        public CalendarEventCreated(CalendarEvent @event, string creatorId, DateTimeOffset createdAt)
+        public CalendarEventCreated(CalendarEvent @event, string createdBy, DateTimeOffset timestamp)
         {
             this.Event = @event;
-            this.CreatorId = creatorId;
-            this.CreatedAt = createdAt;
+            this.CreatedBy = createdBy;
+            this.Timestamp = timestamp;
         }
 
         public CalendarEvent Event { get; }
 
-        public string CreatorId { get; }
+        public string CreatedBy { get; }
 
-        public DateTimeOffset CreatedAt { get; }
+        public DateTimeOffset Timestamp { get; }
     }
 }
