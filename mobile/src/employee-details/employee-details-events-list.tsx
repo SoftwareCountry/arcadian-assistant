@@ -1,127 +1,116 @@
 import React, { Component } from 'react';
 import moment from 'moment';
-import { Map, Set } from 'immutable';
-import { View, StyleSheet, FlatList, ListRenderItemInfo, Dimensions, ViewStyle } from 'react-native';
-
+import { Dimensions, FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { Avatar } from '../people/avatar';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
-import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
+import { CalendarEvent } from '../reducers/calendar/calendar-event.model';
 import { EventManagementToolset } from './event-management-toolset';
-import { Employee } from '../reducers/organization/employee.model';
 import { CalendarEventIcon } from '../calendar/calendar-event-icon';
 import { Nullable } from 'types';
+import { EventActionsContainer } from './event-action-provider';
+import { List } from 'immutable';
 
+//============================================================================
 interface EmployeeDetailsEventsListProps {
-    events: Map<Employee, CalendarEvent[]>;
-    eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
-    eventApprove: (employeeId: string, calendarEvent: CalendarEvent) => void;
+    eventLogicContainers: EventActionsContainer[];
     hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => Nullable<string>;
     showUserAvatar?: boolean;
-    canApprove: boolean;
-    canReject: boolean;
 }
 
-interface EmployeeDetailItem {
-    employee: Employee;
-    calendarEvent: CalendarEvent;
-}
-
+//============================================================================
 export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsListProps> {
     private readonly eventDigitsDateFormat = 'DD/MM/YYYY';
 
+    //----------------------------------------------------------------------------
     public render() {
 
         const events = this.prepareEvents();
 
         return (<FlatList
-                    scrollEnabled={false}
-                    data={events}
-                    keyExtractor={this.keyExtractor}
-                    renderItem={this.renderItem} />
+                scrollEnabled={false}
+                data={events}
+                keyExtractor={this.keyExtractor}
+                renderItem={this.renderItem}/>
         );
     }
 
-    private prepareEvents(): Nullable<EmployeeDetailItem[]> {
-        const { events } = this.props;
+    //----------------------------------------------------------------------------
+    private prepareEvents(): Nullable<EventActionsContainer[]> {
+        const { eventLogicContainers } = this.props;
 
-        if (!events) {
+        if (!eventLogicContainers) {
             return null;
         }
 
-        return events
-            .sortBy((_, employee) => employee.name)
-            .map((calendarEvents, employee) =>
-                Set(calendarEvents)
-                    .sort((a, b) => b.dates.startDate.valueOf() - a.dates.startDate.valueOf())
-                    .map(calendarEvent => ({
-                        employee: employee,
-                        calendarEvent: calendarEvent
-                    } as EmployeeDetailItem))
-            )
-            .flatten()
-            .toIndexedSeq()
-            .toArray();
+        return List(eventLogicContainers).sort((left, right) => {
+            const nameCompareResult = left.employee.name.localeCompare(right.employee.name);
+            if (nameCompareResult !== 0) {
+                return nameCompareResult;
+            }
+
+            return right.event.dates.startDate.valueOf() - left.event.dates.startDate.valueOf();
+        }).toArray();
     }
 
-    private keyExtractor = (item: EmployeeDetailItem) => item.calendarEvent.calendarEventId;
+    //----------------------------------------------------------------------------
+    private keyExtractor = (item: EventActionsContainer) => item.event.calendarEventId;
 
-    private renderItem = (itemInfo: ListRenderItemInfo<EmployeeDetailItem>) => {
+    //----------------------------------------------------------------------------
+    private renderItem = (itemInfo: ListRenderItemInfo<EventActionsContainer>) => {
         const { item } = itemInfo;
-        const { eventsContainer, eventRow, eventLeftIcons, eventTypeIconContainer, eventLeftIconsTiny, eventTypeIconContainerTiny, eventIcon, eventTextContainer, eventTitle, eventDetails, avatarContainer, avatarOuterFrame, avatarImage } = layoutStylesForEmployeeDetailsScreen;
+        const { eventsContainer, eventRow, eventLeftIcons, eventTypeIconContainer,
+                eventLeftIconsTiny, eventTypeIconContainerTiny, eventIcon, eventTextContainer,
+                eventTitle, eventDetails, avatarContainer, avatarOuterFrame,
+                avatarImage } = layoutStylesForEmployeeDetailsScreen;
 
         const leftIconsStyle = this.props.showUserAvatar ? eventLeftIcons : eventLeftIconsTiny;
         const typeIconContainerStyle = this.props.showUserAvatar ? eventTypeIconContainer : eventTypeIconContainerTiny;
 
         const now = moment();
-        const isOutdated = item.calendarEvent.dates.endDate.isBefore(now, 'date');
+        const isOutdated = item.event.dates.endDate.isBefore(now, 'date');
 
-        const eventsContainerFlattened = StyleSheet.flatten([
+        const eventsContainerFlattened = [
             eventsContainer,
             {
                 width: Dimensions.get('window').width,
                 opacity: isOutdated ? 0.40 : 1
             }
-        ]);
+        ];
 
-        const descriptionStatus = this.descriptionStatus(item.calendarEvent);
+        const descriptionStatus = this.descriptionStatus(item.event);
 
         return (
-            <View style={eventsContainerFlattened} key={item.calendarEvent.calendarEventId}>
+            <View style={eventsContainerFlattened} key={item.event.calendarEventId}>
                 <View style={eventRow}>
                     <View style={leftIconsStyle}>
                         <View style={typeIconContainerStyle}>
-                            <CalendarEventIcon type={item.calendarEvent.type} style={eventIcon as ViewStyle} />
+                            <CalendarEventIcon type={item.event.type} style={eventIcon as ViewStyle}/>
                         </View>
                         {
                             this.props.showUserAvatar ?
-                            <View style={avatarContainer}>
-                                <Avatar photoUrl={item.employee.photoUrl} style={avatarOuterFrame as ViewStyle} imageStyle={avatarImage as ViewStyle} />
-                            </View> : null
+                                <View style={avatarContainer}>
+                                    <Avatar photoUrl={item.employee.photoUrl} style={avatarOuterFrame as ViewStyle}
+                                            imageStyle={avatarImage as ViewStyle}/>
+                                </View> : null
                         }
                     </View>
                     <View style={eventTextContainer}>
                         <StyledText style={eventTitle}>{item.employee.name}</StyledText>
                         <StyledText style={eventDetails}>{descriptionStatus}</StyledText>
-                        <StyledText style={eventDetails}>{this.descriptionFromTo(item.calendarEvent)}</StyledText>
+                        <StyledText style={eventDetails}>{this.descriptionFromTo(item.event)}</StyledText>
                     </View>
-                    <EventManagementToolset
-                        event={item.calendarEvent}
-                        employeeId={item.employee.employeeId}
-                        eventSetNewStatusAction={this.props.eventSetNewStatusAction}
-                        eventApprove={this.props.eventApprove}
-                        canApprove={this.props.canApprove}
-                        canReject={this.props.canReject}
-                    />
+                    <EventManagementToolset eventLogicContainer={item}/>
                 </View>
             </View>
         );
     };
 
+    //----------------------------------------------------------------------------
     private descriptionFromTo(event: CalendarEvent): string {
         let description: string;
 
-        if (event.isWorkout || event.isDayoff ) {
+        if (event.isWorkout || event.isDayoff) {
             description = `on ${event.dates.startDate.format(this.eventDigitsDateFormat)} (${this.props.hoursToIntervalTitle(event.dates.startWorkingHour, event.dates.finishWorkingHour)})`;
         } else {
             description = `from ${event.dates.startDate.format(this.eventDigitsDateFormat)} to ${event.dates.endDate.format(this.eventDigitsDateFormat)}`;
@@ -130,6 +119,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
         return description;
     }
 
+    //----------------------------------------------------------------------------
     private descriptionStatus(event: CalendarEvent): string {
         let description = '';
 

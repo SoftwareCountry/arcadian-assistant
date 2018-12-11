@@ -62,13 +62,8 @@ export class UserEmployeePermissions {
     public permissionsNames: Set<Permission> = Set<Permission>();
 
     //----------------------------------------------------------------------------
-    public get canApproveCalendarEvents(): boolean {
-        return this.permissionsNames.has(Permission.approveCalendarEvents);
-    }
-
-    //----------------------------------------------------------------------------
-    public get canRejectCalendarEvents(): boolean {
-        return this.permissionsNames.has(Permission.rejectCalendarEvents);
+    public has(permission: Permission): boolean {
+        return this.permissionsNames.has(permission);
     }
 
     //----------------------------------------------------------------------------

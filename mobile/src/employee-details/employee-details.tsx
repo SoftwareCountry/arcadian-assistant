@@ -29,6 +29,7 @@ import { Nullable } from 'types';
 import { IntervalTypeConverter } from '../reducers/calendar/interval-type-converter';
 import { approve, loadApprovals } from '../reducers/calendar/approval.action';
 import { Approval } from '../reducers/calendar/approval.model';
+import { EventActionProvider, EventActionsContainer } from './event-action-provider';
 
 //============================================================================
 interface TileData {
@@ -54,10 +55,9 @@ interface EmployeeDetailsStateProps {
     approvals: Map<CalendarEventId, Set<Approval>>;
     hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => Nullable<string>;
     userEmployeePermissions: Nullable<Map<string, UserEmployeePermissions>>;
-    userEmployeeId: Nullable<string>;
+    userId: Nullable<EmployeeId>;
 }
 
-//============================================================================
 type EmployeeDetailsProps = EmployeeDetailsOwnProps & EmployeeDetailsStateProps;
 
 //----------------------------------------------------------------------------
@@ -70,14 +70,14 @@ const mapStateToProps: MapStateToProps<EmployeeDetailsProps, EmployeeDetailsOwnP
     approvals: state.calendar ? state.calendar.calendarEvents.approvals : Map<CalendarEventId, Set<Approval>>(),
     hoursToIntervalTitle: state.calendar ? state.calendar.pendingRequests.hoursToIntervalTitle : IntervalTypeConverter.hoursToIntervalTitle,
     userEmployeePermissions: state.userInfo ? state.userInfo.permissions : null,
-    userEmployeeId: state.userInfo ? state.userInfo.employeeId : null,
+    userId: state.userInfo ? state.userInfo.employeeId : null,
 });
 
 //============================================================================
 interface EmployeeDetailsDispatchProps {
     loadCalendarEvents: (employeeId: string) => void;
     loadUserEmployeePermissions: (employeeId: string) => void;
-    eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
+    eventSetStatus: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
     eventApprove: (employeeId: string, calendarEvent: CalendarEvent) => void;
     openCompany: (departmentId: string) => void;
     openDepartment: (departmentId: string, departmentAbbreviation: string) => void;
@@ -92,7 +92,7 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>): EmployeeDetailsDispatch
     loadUserEmployeePermissions: (employeeId: string) => {
         dispatch(loadUserEmployeePermissions(employeeId));
     },
-    eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => {
+    eventSetStatus: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => {
         dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status));
     },
     eventApprove: (employeeId: string, calendarEvent: CalendarEvent) => {
@@ -116,8 +116,6 @@ const TileSeparator = () => <View style={tileStyles.separator}/>;
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
     //----------------------------------------------------------------------------
     public shouldComponentUpdate(nextProps: EmployeeDetailsProps & EmployeeDetailsDispatchProps) {
-        const requests = this.props.requests;
-        const nextRequests = nextProps.requests;
         const events = this.props.events;
         const nextEvents = nextProps.events;
 
@@ -149,6 +147,20 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             return calendarEvents !== nextCalendarEvents;
         }
 
+        const requests = this.props.requests;
+        const nextRequests = nextProps.requests;
+
+        if (nextRequests && !nextRequests.equals(requests)) {
+            return true;
+        }
+
+        const approvals = this.props.approvals;
+        const nextApprovals = nextProps.approvals;
+
+        if (!approvals.equals(nextApprovals)) {
+            return true;
+        }
+
         return false;
     }
 
@@ -160,9 +172,9 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
     //----------------------------------------------------------------------------
     public render() {
-        const { employee, department, userEmployeePermissions, userEmployeeId } = this.props;
+        const { employee, department, userEmployeePermissions, userId } = this.props;
 
-        if (!userEmployeePermissions || !userEmployeeId) {
+        if (!userEmployeePermissions || !userId) {
             return null;
         }
 
@@ -211,7 +223,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                         </View>
 
                         {
-                            this.renderPendingRequests()
+                            this.renderPendingRequests(permissions)
                         }
                         {
                             this.renderEmployeeEvents(events, permissions)
@@ -380,43 +392,42 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
     //----------------------------------------------------------------------------
     private renderEmployeeEvents(events: Nullable<CalendarEvent[]>, userPermissions: Nullable<UserEmployeePermissions>) {
-        if (!events || !events.length || !this.props.employee || !userPermissions) {
+        if (!events || !events.length || !this.props.userId || !this.props.employee || !userPermissions) {
             return null;
         }
 
-        const employeeToCalendarEvents = Map<Employee, CalendarEvent[]>([[this.props.employee, events]]);
-        const canApprove = userPermissions ? userPermissions.canApproveCalendarEvents : false;
-        const canReject = userPermissions ? userPermissions.canRejectCalendarEvents : false;
+        const provider = new EventActionProvider(this.props.userId, this.props.eventSetStatus, this.props.eventApprove);
+        const containers = provider.getEventActions(events, this.props.employee, userPermissions, this.props.approvals);
 
         return <View style={eventStyles.container}>
             <StyledText style={layoutStyles.header}>Events</StyledText>
             <EmployeeDetailsEventsList
-                events={employeeToCalendarEvents}
-                eventSetNewStatusAction={this.props.eventSetNewStatusAction}
-                eventApprove={this.props.eventApprove}
+                eventLogicContainers={containers}
                 hoursToIntervalTitle={this.props.hoursToIntervalTitle}
-                canApprove={canApprove}
-                canReject={canReject}
             />
         </View>;
     }
 
     //----------------------------------------------------------------------------
-    private renderPendingRequests() {
-        if (!this.props.requests || !this.props.requests.size) {
+    private renderPendingRequests(userPermissions: Nullable<UserEmployeePermissions>) {
+        if (!this.props.requests || !this.props.requests.size || !this.props.userId || !userPermissions) {
             return null;
         }
+
+        const provider = new EventActionProvider(this.props.userId, this.props.eventSetStatus, this.props.eventApprove);
+
+        const containers: EventActionsContainer[] =
+            this.props.requests.reduce<EventActionsContainer[]>(
+                (acc, events, employee) => acc.concat(provider.getRequestActions(events, employee, this.props.approvals)),
+                []
+            );
 
         return <View style={eventStyles.container}>
             <StyledText style={layoutStyles.header}>Requests</StyledText>
             <EmployeeDetailsEventsList
-                events={this.props.requests}
-                eventSetNewStatusAction={this.props.eventSetNewStatusAction}
-                eventApprove={this.props.eventApprove}
+                eventLogicContainers={containers}
                 hoursToIntervalTitle={this.props.hoursToIntervalTitle}
-                showUserAvatar={true}
-                canApprove={true}
-                canReject={true}/>
+                showUserAvatar={true}/>
         </View>;
     }
 
