@@ -40,7 +40,8 @@
                 case CalendarEventCreated msg:
                     this.vacationsSyncExecutor.UpsertVacation(
                             msg.Event,
-                            new VacationsSyncExecutor.VacationApprovals(),
+                            msg.Timestamp,
+                            msg.CreatedBy,
                             new VacationsSyncExecutor.VacationsMatchInterval(msg.Event.Dates.StartDate, msg.Event.Dates.EndDate))
                         .PipeTo(
                             this.Self,
@@ -49,9 +50,11 @@
                     break;
 
                 case CalendarEventChanged msg:
-                    this.vacationsSyncExecutor.UpsertVacation(
+                    this.vacationsSyncExecutor
+                        .UpsertVacation(
                             msg.NewEvent,
-                            new VacationsSyncExecutor.VacationApprovals(),
+                            msg.Timestamp,
+                            msg.UpdatedBy,
                             new VacationsSyncExecutor.VacationsMatchInterval(msg.OldEvent.Dates.StartDate, msg.OldEvent.Dates.EndDate))
                         .PipeTo(
                             this.Self,
@@ -60,13 +63,11 @@
                     break;
 
                 case CalendarEventApprovalsChanged msg:
-                    this.vacationsSyncExecutor.UpsertVacation(
+                    this.vacationsSyncExecutor.UpsertVacationApproval(
                             msg.Event,
-                            new VacationsSyncExecutor.VacationApprovals(
-                                msg.LastApproverId,
-                                msg.LastApprovalDate,
-                                msg.Approvals),
-                            new VacationsSyncExecutor.VacationsMatchInterval(msg.Event.Dates.StartDate, msg.Event.Dates.EndDate))
+                            msg.LastApproval.Timestamp,
+                            msg.LastApproval.ApprovedBy,
+                           new VacationsSyncExecutor.VacationsMatchInterval(msg.Event.Dates.StartDate, msg.Event.Dates.EndDate))
                         .PipeTo(
                             this.Self,
                             success: () => VacationPersistSuccess.Instance,
