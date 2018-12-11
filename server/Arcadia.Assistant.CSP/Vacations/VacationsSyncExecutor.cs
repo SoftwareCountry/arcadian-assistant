@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
 
     using Microsoft.EntityFrameworkCore;
+    using NLog;
 
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.CSP.Model;
@@ -13,6 +14,8 @@
     public class VacationsSyncExecutor
     {
         private readonly Func<ArcadiaCspContext> contextFactory;
+
+        private readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
         public VacationsSyncExecutor(Func<ArcadiaCspContext> contextFactory)
         {
@@ -25,7 +28,7 @@
             string updatedBy,
             VacationsMatchInterval matchInterval)
         {
-            var vacation = this.CreateVacationFromCalendarEvent(@event, timestamp, updatedBy);
+            this.logger.Debug($"Starting to synchronize vacation {@event.EventId} with CSP database");
 
             using (var context = this.contextFactory())
             {
@@ -35,8 +38,15 @@
                     matchInterval.Start,
                     matchInterval.End);
 
+                this.logger.Debug(
+                    $"{existingVacations.Count} vacations found in CSP database for match parameters: " +
+                    $"employeeId {@event.EmployeeId}, startDate {matchInterval.Start}, endDate {matchInterval.End}");
+
+                var vacation = this.CreateVacationFromCalendarEvent(@event, timestamp, updatedBy);
+
                 if (existingVacations.Count == 0)
                 {
+                    this.logger.Debug("Created new vacation");
                     await context.Vacations.AddAsync(vacation);
                 }
                 else
@@ -66,6 +76,8 @@
                                 }
                             }
                         }
+
+                        this.logger.Debug($"Updated vacation with id {existingVacation.Id}");
                     }
 
                     context.Vacations.UpdateRange(existingVacations);
@@ -81,6 +93,8 @@
             string approvedBy,
             VacationsMatchInterval matchInterval)
         {
+            this.logger.Debug($"Starting to synchronize approvals for vacation {@event.EventId} with CSP database");
+
             using (var context = this.contextFactory())
             {
                 var existingVacations = await this.GetVacations(
@@ -88,6 +102,10 @@
                     int.Parse(@event.EmployeeId),
                     matchInterval.Start,
                     matchInterval.End);
+
+                this.logger.Debug(
+                    $"{existingVacations.Count} vacations found in CSP database for match parameters: " +
+                    $"employeeId {@event.EmployeeId}, startDate {matchInterval.Start}, endDate {matchInterval.End}");
 
                 var approvedById = int.Parse(approvedBy);
 
@@ -97,6 +115,8 @@
                         .FirstOrDefault(va => va.ApproverId == approvedById);
                     if (existingApproval == null)
                     {
+                        this.logger.Debug($"New approval created for employee {approvedById}");
+
                         existingVacation.VacationApprovals.Add(new VacationApproval
                         {
                             TimeStamp = timestamp,
@@ -146,6 +166,7 @@
 
             if (@event.Status == VacationStatuses.Cancelled)
             {
+                this.logger.Debug($"Adding vacation cancellation by employee {updatedById}");
                 vacation.CancelledAt = timestamp;
                 vacation.CancelledById = updatedById;
             }
@@ -157,11 +178,13 @@
 
                 if (existingApproval != null)
                 {
+                    this.logger.Debug($"Changing previously confirmed approval to declined by employee {updatedById}");
                     existingApproval.TimeStamp = timestamp;
                     existingApproval.Status = (int)VacationApprovalStatus.Declined;
                 }
                 else
                 {
+                    this.logger.Debug($"Adding declined approval by employee {updatedById}");
                     var rejectedApproval = new VacationApproval
                     {
                         ApproverId = updatedById,
