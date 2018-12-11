@@ -27,18 +27,21 @@
     [Authorize(Policies.UserIsEmployee)]
     public class CalendarEventsController : Controller
     {
+        private readonly ITimeoutSettings timeoutSettings;
         private readonly IEmployeesRegistry employeesRegistry;
         private readonly IAuthorizationService authorizationService;
-        private readonly ITimeoutSettings timeoutSettings;
+        private readonly IUserEmployeeSearch userEmployeeSearch;
 
         public CalendarEventsController(
             ITimeoutSettings timeoutSettings,
             IEmployeesRegistry employeesRegistry,
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService,
+            IUserEmployeeSearch userEmployeeSearch)
         {
             this.timeoutSettings = timeoutSettings;
             this.employeesRegistry = employeesRegistry;
             this.authorizationService = authorizationService;
+            this.userEmployeeSearch = userEmployeeSearch;
         }
 
         [Route("")]
@@ -205,8 +208,13 @@
 
         private async Task<UpsertCalendarEvent.Response> UpsertEventAsync(IActorRef calendarActor, CalendarEvent calendarEvent, CancellationToken token)
         {
+            var userEmployee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, token);
             var timeout = this.timeoutSettings.Timeout;
-            var eventCreationResponse = await calendarActor.Ask<UpsertCalendarEvent.Response>(new UpsertCalendarEvent(calendarEvent), timeout, token);
+            var timestamp = DateTimeOffset.Now;
+            var eventCreationResponse = await calendarActor.Ask<UpsertCalendarEvent.Response>(
+                new UpsertCalendarEvent(calendarEvent, userEmployee.Metadata.EmployeeId, timestamp),
+                timeout,
+                token);
             return eventCreationResponse;
         }
 

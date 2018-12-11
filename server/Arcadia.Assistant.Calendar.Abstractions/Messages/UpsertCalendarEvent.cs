@@ -6,9 +6,15 @@
     {
         public CalendarEvent Event { get; }
 
-        public UpsertCalendarEvent(CalendarEvent @event)
+        public string UpdatedBy { get; }
+
+        public DateTimeOffset Timestamp { get; }
+
+        public UpsertCalendarEvent(CalendarEvent @event, string updatedBy, DateTimeOffset timestamp)
         {
             this.Event = @event;
+            this.UpdatedBy = updatedBy;
+            this.Timestamp = timestamp;
         }
 
         public abstract class Response

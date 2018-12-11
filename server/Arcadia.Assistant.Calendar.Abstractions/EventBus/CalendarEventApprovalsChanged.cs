@@ -4,7 +4,9 @@
 
     public class CalendarEventApprovalsChanged
     {
-        public CalendarEventApprovalsChanged(CalendarEvent @event, IEnumerable<string> approvals)
+        public CalendarEventApprovalsChanged(
+            CalendarEvent @event,
+            IEnumerable<Approval> approvals)
         {
             this.Event = @event;
             this.Approvals = approvals;
@@ -12,6 +14,6 @@
 
         public CalendarEvent Event { get; }
 
-        public IEnumerable<string> Approvals { get; }
+        public IEnumerable<Approval> Approvals { get; }
     }
 }

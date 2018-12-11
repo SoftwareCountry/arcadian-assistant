@@ -20,7 +20,7 @@
         protected string EmployeeId { get; }
 
         protected readonly Dictionary<string, CalendarEvent> EventsById = new Dictionary<string, CalendarEvent>();
-        protected readonly Dictionary<string, List<string>> ApprovalsByEvent = new Dictionary<string, List<string>>();
+        protected readonly Dictionary<string, List<Approval>> ApprovalsByEvent = new Dictionary<string, List<Approval>>();
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
@@ -61,10 +61,10 @@
                             throw new Exception($"Event {cmd.Event.EventId}. Initial status must be {this.GetInitialStatus()}");
                         }
 
-                        this.InsertCalendarEvent(cmd.Event, ev =>
+                        this.InsertCalendarEvent(cmd.Event, cmd.UpdatedBy, cmd.Timestamp, ev =>
                         {
                             this.OnSuccessfulUpsert(ev);
-                            Context.System.EventStream.Publish(new CalendarEventCreated(ev));
+                            Context.System.EventStream.Publish(new CalendarEventCreated(ev, cmd.UpdatedBy, cmd.Timestamp));
                         });
                     }
                     catch (Exception ex)
@@ -82,10 +82,14 @@
                         {
                             throw new Exception($"Event {cmd.Event.EventId}. Status transition {oldEvent.Status} -> {cmd.Event.Status} is not allowed for {oldEvent.Type}");
                         }
-                        this.UpdateCalendarEvent(oldEvent, cmd.Event, ev =>
+                        this.UpdateCalendarEvent(oldEvent, cmd.UpdatedBy, cmd.Timestamp, cmd.Event, ev =>
                         {
                             this.OnSuccessfulUpsert(ev);
-                            Context.System.EventStream.Publish(new CalendarEventChanged(oldEvent, ev));
+                            Context.System.EventStream.Publish(new CalendarEventChanged(
+                                oldEvent,
+                                cmd.UpdatedBy,
+                                cmd.Timestamp,
+                                ev));
                         });
                     }
                     catch (Exception ex)
@@ -117,7 +121,7 @@
 
                 case AssignCalendarEventNextApprover msg:
                     var calendarEvent = this.EventsById[msg.EventId];
-                    var existingApprovals = this.ApprovalsByEvent[msg.EventId];
+                    var existingApprovals = this.ApprovalsByEvent[msg.EventId].Select(a => a.ApprovedBy);
 
                     this.calendarEventsApprovalsChecker
                         .Ask<GetNextCalendarEventApprover.Response>(
@@ -149,15 +153,19 @@
             }
         }
 
-        protected abstract void InsertCalendarEvent(CalendarEvent calendarEvent, OnSuccessfulUpsertCallback onUpsert);
+        protected abstract void InsertCalendarEvent(CalendarEvent calendarEvent, string updatedBy, DateTimeOffset timestamp, OnSuccessfulUpsertCallback onUpsert);
 
-        protected abstract void UpdateCalendarEvent(CalendarEvent oldEvent, CalendarEvent newEvent, OnSuccessfulUpsertCallback onUpsert);
+        protected abstract void UpdateCalendarEvent(CalendarEvent oldEvent, string updatedBy, DateTimeOffset timestamp, CalendarEvent newEvent, OnSuccessfulUpsertCallback onUpsert);
 
         protected abstract string GetInitialStatus();
 
         protected abstract bool IsStatusTransitionAllowed(string oldCalendarEventStatus, string newCalendarEventStatus);
 
-        protected abstract void OnSuccessfulApprove(UserGrantedCalendarEventApproval message);
+        protected virtual void OnSuccessfulApprove(UserGrantedCalendarEventApproval message)
+        {
+            var approvals = this.ApprovalsByEvent[message.EventId];
+            approvals.Add(new Approval(message.TimeStamp, message.UserId));
+        }
 
         private void ApproveCalendarEvent(ApproveCalendarEvent message)
         {
@@ -171,7 +179,7 @@
                 return;
             }
 
-            if (approvals.Contains(message.ApproverId))
+            if (approvals.Any(a => a.ApprovedBy == message.ApproverId))
             {
                 this.Sender.Tell(Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
                 return;
@@ -180,16 +188,17 @@
             var @event = new UserGrantedCalendarEventApproval
             {
                 EventId = message.Event.EventId,
-                TimeStamp = DateTimeOffset.Now,
-                ApproverId = message.ApproverId
+                TimeStamp = message.Timestamp,
+                UserId = message.ApproverId
             };
 
             this.Persist(@event, ev =>
             {
+                this.OnSuccessfulApprove(ev);
+
                 this.Self.Tell(new AssignCalendarEventNextApprover(message.Event.EventId));
                 this.Sender.Tell(Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
                 Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(calendarEvent, approvals.ToList()));
-                this.OnSuccessfulApprove(ev);
             });
         }
 
@@ -212,9 +221,19 @@
                     oldEvent.EmployeeId
                 );
 
-                this.UpdateCalendarEvent(oldEvent, newEvent, ev =>
+                var approvals = this.ApprovalsByEvent[eventId];
+
+                var lastApproval = approvals
+                    .OrderByDescending(a => a.Timestamp)
+                    .FirstOrDefault();
+
+                // If there is no approvals, then employee is Director General and event is updated by himself
+                var updatedBy = lastApproval?.ApprovedBy ?? newEvent.EmployeeId;
+                var timestamp = lastApproval?.Timestamp ?? DateTimeOffset.Now;
+
+                this.UpdateCalendarEvent(oldEvent, updatedBy, timestamp, newEvent, ev =>
                 {
-                    Context.System.EventStream.Publish(new CalendarEventChanged(oldEvent, ev));
+                    Context.System.EventStream.Publish(new CalendarEventChanged(oldEvent, updatedBy, timestamp, ev));
                 });
             }
 
