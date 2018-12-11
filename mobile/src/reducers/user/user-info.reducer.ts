@@ -24,7 +24,7 @@ export const userInfoReducer: Reducer<UserInfoState> = (state = initState, actio
                 ...state,
                 employeeId: action.userEmployeeId
             };
-        case 'LOAD-USER-EMPLOYEE-PERMISSIONS-FINISHED': {
+        case 'LOAD-USER-EMPLOYEE-PERMISSIONS-FINISHED':
             const existingPermissions = state.permissions.get(action.permissions.employeeId);
 
             if (!existingPermissions || !existingPermissions.equals(action.permissions)) {
@@ -35,8 +35,7 @@ export const userInfoReducer: Reducer<UserInfoState> = (state = initState, actio
             }
 
             return state;
-        }
-        case 'LOAD-USER-PREFERENCES-FINISHED': {
+        case 'LOAD-USER-PREFERENCES-FINISHED':
             const existingPreferences = state.preferences;
 
             if (!existingPreferences || !existingPreferences.equals(action.preferences)) {
@@ -47,7 +46,7 @@ export const userInfoReducer: Reducer<UserInfoState> = (state = initState, actio
             }
 
             return state;
-        }
+            
         default:
             return state;
     }
