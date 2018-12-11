@@ -176,12 +176,6 @@
                 && (newCalendarEventStatus != SickLeaveStatuses.Approved);
         }
 
-        protected override void OnSuccessfulApprove(UserGrantedCalendarEventApproval message)
-        {
-            var approvals = this.ApprovalsByEvent[message.EventId];
-            approvals.Add(message.UserId);
-        }
-
         private void OnSickLeaveRequest(SickLeaveIsRequested message)
         {
             var datesPeriod = new DatesPeriod(message.StartDate, message.EndDate);
@@ -191,7 +185,7 @@
                 datesPeriod,
                 SickLeaveStatuses.Requested,
                 this.EmployeeId);
-            this.ApprovalsByEvent[message.EventId] = new List<string>();
+            this.ApprovalsByEvent[message.EventId] = new List<Approval>();
         }
 
         private void OnSickLeaveCompleted(SickLeaveIsCompleted message)

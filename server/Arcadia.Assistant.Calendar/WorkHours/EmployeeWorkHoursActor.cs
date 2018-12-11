@@ -172,12 +172,6 @@
                 && (newCalendarEventStatus != WorkHoursChangeStatuses.Approved);
         }
 
-        protected override void OnSuccessfulApprove(UserGrantedCalendarEventApproval message)
-        {
-            var approvals = this.ApprovalsByEvent[message.EventId];
-            approvals.Add(message.UserId);
-        }
-
         private void OnChangeRequested(WorkHoursChangeIsRequested message)
         {
             var eventType = message.IsDayoff ? CalendarEventTypes.Dayoff : CalendarEventTypes.Workout;
@@ -190,7 +184,7 @@
                 WorkHoursChangeStatuses.Requested,
                 this.EmployeeId);
             this.EventsById[message.EventId] = calendarEvent;
-            this.ApprovalsByEvent[message.EventId] = new List<string>();
+            this.ApprovalsByEvent[message.EventId] = new List<Approval>();
         }
 
         private void OnChangeCancelled(WorkHoursChangeIsCancelled message)

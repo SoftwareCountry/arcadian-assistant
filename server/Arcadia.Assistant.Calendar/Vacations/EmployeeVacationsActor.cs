@@ -90,10 +90,10 @@
         }
 
         protected override void UpdateCalendarEvent(
-            CalendarEvent oldEvent, 
-            string updatedBy, 
-            DateTimeOffset timestamp, 
-            CalendarEvent newEvent, 
+            CalendarEvent oldEvent,
+            string updatedBy,
+            DateTimeOffset timestamp,
+            CalendarEvent newEvent,
             OnSuccessfulUpsertCallback onUpsert)
         {
             if (oldEvent.Dates != newEvent.Dates)
@@ -202,13 +202,12 @@
         protected override void OnSuccessfulApprove(UserGrantedCalendarEventApproval message)
         {
             var calendarEvent = this.EventsById[message.EventId];
-            var approvals = this.ApprovalsByEvent[message.EventId];
-
-            approvals.Add(message.UserId);
 
             var text = $"Vacation from {calendarEvent.Dates.StartDate.ToLongDateString()} to {calendarEvent.Dates.EndDate.ToLongDateString()} got one new approval";
             var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, message.TimeStamp.Date);
             this.employeeFeed.Tell(new PostMessage(msg));
+
+            base.OnSuccessfulApprove(message);
         }
 
         private void OnVacationRequested(VacationIsRequested message)
@@ -221,7 +220,7 @@
                 VacationStatuses.Requested,
                 this.EmployeeId);
             this.EventsById[message.EventId] = calendarEvent;
-            this.ApprovalsByEvent[message.EventId] = new List<string>();
+            this.ApprovalsByEvent[message.EventId] = new List<Approval>();
         }
 
         private void OnVacationDatesEdit(VacationDatesAreEdited message)

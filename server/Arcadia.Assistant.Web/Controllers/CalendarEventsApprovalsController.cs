@@ -1,5 +1,6 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -41,7 +42,7 @@
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(IEnumerable<CalendarEventApprovalModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<CalendarEventApprovalWithTimestampModel>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEventApprovals(string employeeId, string eventId, CancellationToken token)
         {
             var employee = await this.GetEmployeeOrDefaultAsync(employeeId, token);
@@ -70,7 +71,8 @@
             switch (response)
             {
                 case GetCalendarEventApprovals.SuccessResponse result:
-                    var model = result.Approvals.Select(a => new CalendarEventApprovalModel(a));
+                    var model = result.Approvals
+                        .Select(a => new CalendarEventApprovalWithTimestampModel(a.Timestamp, a.ApprovedBy));
                     return this.Ok(model);
 
                 default:
@@ -120,8 +122,9 @@
                 return this.Forbid();
             }
 
+            var timestamp = DateTimeOffset.Now;
             var response = await employee.Calendar.CalendarActor.Ask<ApproveCalendarEvent.Response>(
-                new ApproveCalendarEvent(requestedEvent, approver.Metadata.EmployeeId),
+                new ApproveCalendarEvent(requestedEvent, timestamp, approver.Metadata.EmployeeId),
                 this.timeoutSettings.Timeout,
                 token);
 

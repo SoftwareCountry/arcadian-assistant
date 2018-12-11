@@ -20,7 +20,7 @@
         protected string EmployeeId { get; }
 
         protected readonly Dictionary<string, CalendarEvent> EventsById = new Dictionary<string, CalendarEvent>();
-        protected readonly Dictionary<string, List<string>> ApprovalsByEvent = new Dictionary<string, List<string>>();
+        protected readonly Dictionary<string, List<Approval>> ApprovalsByEvent = new Dictionary<string, List<Approval>>();
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
@@ -121,7 +121,7 @@
 
                 case AssignCalendarEventNextApprover msg:
                     var calendarEvent = this.EventsById[msg.EventId];
-                    var existingApprovals = this.ApprovalsByEvent[msg.EventId];
+                    var existingApprovals = this.ApprovalsByEvent[msg.EventId].Select(a => a.ApprovedBy);
 
                     this.calendarEventsApprovalsChecker
                         .Ask<GetNextCalendarEventApprover.Response>(
@@ -161,7 +161,11 @@
 
         protected abstract bool IsStatusTransitionAllowed(string oldCalendarEventStatus, string newCalendarEventStatus);
 
-        protected abstract void OnSuccessfulApprove(UserGrantedCalendarEventApproval message);
+        protected virtual void OnSuccessfulApprove(UserGrantedCalendarEventApproval message)
+        {
+            var approvals = this.ApprovalsByEvent[message.EventId];
+            approvals.Add(new Approval(message.TimeStamp, message.UserId));
+        }
 
         private void ApproveCalendarEvent(ApproveCalendarEvent message)
         {
@@ -175,7 +179,7 @@
                 return;
             }
 
-            if (approvals.Contains(message.ApproverId))
+            if (approvals.Any(a => a.ApprovedBy == message.ApproverId))
             {
                 this.Sender.Tell(Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
                 return;
@@ -184,16 +188,17 @@
             var @event = new UserGrantedCalendarEventApproval
             {
                 EventId = message.Event.EventId,
-                TimeStamp = DateTimeOffset.Now,
+                TimeStamp = message.Timestamp,
                 UserId = message.ApproverId
             };
 
             this.Persist(@event, ev =>
             {
                 this.OnSuccessfulApprove(ev);
+
                 this.Self.Tell(new AssignCalendarEventNextApprover(message.Event.EventId));
                 this.Sender.Tell(Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
-                Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(calendarEvent, message.ApproverId, ev.TimeStamp, approvals.ToList()));
+                Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(calendarEvent, approvals.ToList()));
             });
         }
 

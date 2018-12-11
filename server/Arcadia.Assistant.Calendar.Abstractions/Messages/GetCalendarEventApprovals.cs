@@ -17,12 +17,12 @@
 
         public class SuccessResponse : Response
         {
-            public SuccessResponse(IEnumerable<string> approvals)
+            public SuccessResponse(IEnumerable<Approval> approvals)
             {
                 this.Approvals = approvals;
             }
 
-            public IEnumerable<string> Approvals { get; }
+            public IEnumerable<Approval> Approvals { get; }
         }
 
         public class ErrorResponse : Response
