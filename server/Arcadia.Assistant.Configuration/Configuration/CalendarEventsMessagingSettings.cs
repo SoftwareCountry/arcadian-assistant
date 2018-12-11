@@ -5,7 +5,7 @@
     public class CalendarEventsMessagingSettings : ICalendarEventsMessagingSettings
     {
         [Required]
-        public EmailWithFixedAddressesSettings SickLeaveApproved { get; set; }
+        public EmailWithFixedRecipientSettings SickLeaveApproved { get; set; }
 
         [Required]
         public EmailSettings EventAssignedToApprover { get; set; }

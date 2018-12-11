@@ -5,6 +5,9 @@
     public class EmailSettings
     {
         [Required]
+        public string NotificationSender { get; set; }
+
+        [Required]
         public string Subject { get; set; }
 
         [Required]
