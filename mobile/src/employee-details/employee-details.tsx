@@ -230,7 +230,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                 onPress: this.openRoom
             },
             {
-                label: 'Organization',
+                label: 'Company',
                 icon: 'org_structure',
                 style: StyleSheet.flatten([tileStyles.icon]),
                 size: 28,
