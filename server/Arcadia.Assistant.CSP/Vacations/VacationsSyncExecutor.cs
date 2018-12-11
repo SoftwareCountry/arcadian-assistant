@@ -28,7 +28,8 @@
             string updatedBy,
             VacationsMatchInterval matchInterval)
         {
-            this.logger.Debug($"Starting to synchronize vacation {@event.EventId} with CSP database");
+            this.logger.Debug($"Starting to synchronize vacation {@event.EventId} for employee " +
+                $"{@event.EmployeeId} with CSP database");
 
             using (var context = this.contextFactory())
             {
@@ -46,7 +47,8 @@
 
                 if (existingVacations.Count == 0)
                 {
-                    this.logger.Debug("Created new vacation");
+                    this.logger.Debug($"Created new vacation in CSP database for event {@event.EventId} " +
+                        $"and employee {@event.EmployeeId}");
                     await context.Vacations.AddAsync(vacation);
                 }
                 else
@@ -77,7 +79,7 @@
                             }
                         }
 
-                        this.logger.Debug($"Updated vacation with id {existingVacation.Id}");
+                        this.logger.Debug($"Synchronized event {@event.EventId} to vacation with id {existingVacation.Id}");
                     }
 
                     context.Vacations.UpdateRange(existingVacations);
@@ -93,7 +95,8 @@
             string approvedBy,
             VacationsMatchInterval matchInterval)
         {
-            this.logger.Debug($"Starting to synchronize approvals for vacation {@event.EventId} with CSP database");
+            this.logger.Debug($"Starting to synchronize vacation approvals for event {@event.EventId} " +
+                "with CSP database");
 
             using (var context = this.contextFactory())
             {
@@ -115,7 +118,8 @@
                         .FirstOrDefault(va => va.ApproverId == approvedById);
                     if (existingApproval == null)
                     {
-                        this.logger.Debug($"New approval created for employee {approvedById}");
+                        this.logger.Debug($"New approval created for employee {approvedById} for vacation " +
+                            $"with id {existingVacation.Id}");
 
                         existingVacation.VacationApprovals.Add(new VacationApproval
                         {
@@ -166,7 +170,8 @@
 
             if (@event.Status == VacationStatuses.Cancelled)
             {
-                this.logger.Debug($"Adding vacation cancellation by employee {updatedById}");
+                this.logger.Debug($"Adding vacation cancellation for event {@event.EventId} " +
+                    $"by employee {updatedById}");
                 vacation.CancelledAt = timestamp;
                 vacation.CancelledById = updatedById;
             }
@@ -178,13 +183,15 @@
 
                 if (existingApproval != null)
                 {
-                    this.logger.Debug($"Changing previously confirmed approval to declined by employee {updatedById}");
+                    this.logger.Debug("Changing previously confirmed approval to declined " +
+                        $"for event {@event.EventId} by employee {updatedById}");
                     existingApproval.TimeStamp = timestamp;
                     existingApproval.Status = (int)VacationApprovalStatus.Declined;
                 }
                 else
                 {
-                    this.logger.Debug($"Adding declined approval by employee {updatedById}");
+                    this.logger.Debug($"Adding declined approval for event {@event.EventId} " +
+                        $"by employee {updatedById}");
                     var rejectedApproval = new VacationApproval
                     {
                         ApproverId = updatedById,
