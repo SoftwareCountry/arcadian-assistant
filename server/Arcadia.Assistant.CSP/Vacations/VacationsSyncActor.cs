@@ -1,6 +1,7 @@
 ﻿namespace Arcadia.Assistant.CSP.Vacations
 {
     using System;
+    using System.Linq;
 
     using Akka.Actor;
     using Akka.Event;
@@ -63,10 +64,13 @@
                     break;
 
                 case CalendarEventApprovalsChanged msg:
+                    var lastApproval = msg.Approvals
+                        .OrderByDescending(a => a.Timestamp)
+                        .First();
                     this.vacationsSyncExecutor.UpsertVacationApproval(
                             msg.Event,
-                            msg.LastApproval.Timestamp,
-                            msg.LastApproval.ApprovedBy,
+                            lastApproval.Timestamp,
+                            lastApproval.ApprovedBy,
                            new VacationsSyncExecutor.VacationsMatchInterval(msg.Event.Dates.StartDate, msg.Event.Dates.EndDate))
                         .PipeTo(
                             this.Self,
