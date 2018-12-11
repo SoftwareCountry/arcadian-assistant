@@ -8,6 +8,7 @@ import {
     loadUserEmployeePermissionsFinished,
     LoadUserFinished,
     loadUserFinished,
+    loadUserPreferences,
     LoadUserPreferences,
     loadUserPreferencesFinished,
     UpdateUserPreferences
@@ -19,32 +20,21 @@ import { handleHttpErrors } from '../errors/errors.epics';
 import { startLogoutProcess } from '../auth/auth.action';
 import { UserEmployeePermissions } from './user-employee-permissions.model';
 import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
-import { forkJoin, of } from 'rxjs';
+import { of } from 'rxjs';
 import { UserPreferences } from './user-preferences.model';
 
 export const loadUserEpic$ = (action$: ActionsObservable<LoadUser>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('LOAD-USER').pipe(
         switchMap(x => deps.apiClient.getJSON(`/user`).pipe(handleHttpErrors(false))),
         map(x => deserialize(x, User)),
-        map(x => loadUserFinished(x.employeeId)),
+        mergeMap(x => of(loadUserFinished(x.employeeId), loadUserPreferences(x.employeeId))),
         catchError(e => of(startLogoutProcess())));
 
 export const loadUserFinishedEpic$ = (action$: ActionsObservable<LoadUserFinished>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('LOAD-USER-FINISHED').pipe(
-        mergeMap(action => {
-            return forkJoin(
-                deps.apiClient.getJSON(`/employees/${action.userEmployeeId}`).pipe(
-                    handleHttpErrors(false),
-                    map(obj => deserialize(obj, Employee))),
-                deps.apiClient.getJSON(`/user-preferences/`).pipe(
-                    handleHttpErrors(false),
-                    map(obj => deserialize(obj, UserPreferences))));
-        }),
-        map(result => {
-            const employee = result[0];
-            const preferences = result[1];
-            return loadUserEmployeeFinished(employee, preferences);
-        }),
+        switchMap(x => deps.apiClient.getJSON(`/employees/${x.userEmployeeId}`).pipe(handleHttpErrors(false))),
+        map(obj => deserialize(obj, Employee)),
+        map(z => loadUserEmployeeFinished(z)),
         catchError(e => of(startLogoutProcess())));
 
 export const loadUserEmployeePermissionsEpic$ = (action$: ActionsObservable<LoadUserEmployeePermissions>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
