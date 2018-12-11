@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.Calendar.SickLeave
+﻿namespace Arcadia.Assistant.Calendar.Notifications
 {
     using System.Linq;
 
@@ -13,14 +13,14 @@
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
-    public class SendEmailSickLeaveActor : UntypedActor
+    public class SendEmailSickLeaveApprovedActor : UntypedActor
     {
         private readonly EmailWithFixedAddressesSettings mailConfig;
         private readonly IActorRef organizationActor;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
-        public SendEmailSickLeaveActor(ICalendarEventsMessagingSettings mailConfig, IActorRef organizationActor)
+        public SendEmailSickLeaveApprovedActor(ICalendarEventsMessagingSettings mailConfig, IActorRef organizationActor)
         {
             this.mailConfig = mailConfig.SickLeaveApproved;
             this.organizationActor = organizationActor;
