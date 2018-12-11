@@ -128,7 +128,12 @@
                 return this.Forbid();
             }
 
-            var calendarEvent = new CalendarEvent(newId, model.Type, model.Dates, model.Status, employee.Metadata.EmployeeId);
+            var calendarEvent = new CalendarEvent(
+                newId,
+                model.Type,
+                model.Dates,
+                model.Status,
+                employee.Metadata.EmployeeId);
             var eventCreationResponse = await this.UpsertEventAsync(employee.Calendar.CalendarActor, calendarEvent, token);
 
             switch (eventCreationResponse)
@@ -188,7 +193,12 @@
                 return this.StatusCode(StatusCodes.Status409Conflict, "Calendar types are not compatible");
             }
 
-            var calendarEvent = new CalendarEvent(eventId, model.Type, model.Dates, model.Status, employee.Metadata.EmployeeId);
+            var calendarEvent = new CalendarEvent(
+                eventId,
+                model.Type,
+                model.Dates,
+                model.Status,
+                existingEvent.EmployeeId);
 
             var response = await this.UpsertEventAsync(employee.Calendar.CalendarActor, calendarEvent, token);
 
