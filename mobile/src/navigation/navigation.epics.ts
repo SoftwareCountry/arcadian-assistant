@@ -5,7 +5,8 @@ import {
     OpenDepartmentAction,
     OpenEmployeeDetailsAction,
     OpenOrganizationAction,
-    OpenRoomAction
+    OpenRoomAction,
+    OpenUserPreferencesAction
 } from './navigation.actions';
 import { combineEpics } from 'redux-observable';
 
@@ -40,6 +41,12 @@ const openOrganization$ = navigationEpic<OpenOrganizationAction>(
 );
 
 //----------------------------------------------------------------------------
+const openUserPreferences$ = navigationEpic<OpenUserPreferencesAction>(
+    NavigationActionType.openUserPreferences,
+    'UserPreferences'
+);
+
+//----------------------------------------------------------------------------
 export const navigationEpics$ = combineEpics(
-    openEmployeeDetails$, openCompany$, openDepartment$, openRoom$, openOrganization$,
+    openEmployeeDetails$, openCompany$, openDepartment$, openRoom$, openOrganization$, openUserPreferences$
 );

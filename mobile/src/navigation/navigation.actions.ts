@@ -7,6 +7,7 @@ export enum NavigationActionType {
     openDepartment = 'NavigationActionType.openDepartment',
     openRoom = 'NavigationActionType.openRoom',
     openOrganization = 'NavigationActionType.openOrganization',
+    openUserPreferences = 'NavigationActionType.openUserPreferences',
 }
 
 //==============================================================================================
@@ -92,6 +93,17 @@ export const openOrganization = (departmentId: string): OpenOrganizationAction =
         params: {
             departmentId,
         },
+    };
+};
+
+//==============================================================================================
+export interface OpenUserPreferencesAction extends NavigateToAction<NavigationActionType.openUserPreferences> {
+}
+
+//----------------------------------------------------------------------------------------------
+export const openUserPreferences = (): OpenUserPreferencesAction => {
+    return {
+        type: NavigationActionType.openUserPreferences,
     };
 };
 

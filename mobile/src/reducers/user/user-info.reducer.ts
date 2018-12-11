@@ -1,20 +1,20 @@
-import { User } from './user.model';
-import { Employee } from '../organization/employee.model';
 import { Reducer } from 'redux';
-import { OrganizationActions } from '../organization/organization.action';
 import { UserActions } from './user.action';
 import { UserEmployeePermissions } from './user-employee-permissions.model';
 import { Map } from 'immutable';
 import { Nullable } from 'types';
+import { UserPreferences } from './user-preferences.model';
 
 export interface UserInfoState {
     employeeId: Nullable<string>;
     permissions: Map<string, UserEmployeePermissions>;
+    preferences: Nullable<UserPreferences>;
 }
 
 const initState: UserInfoState = {
     employeeId: null,
-    permissions: Map<string, UserEmployeePermissions>()
+    permissions: Map<string, UserEmployeePermissions>(),
+    preferences: null,
 };
 
 export const userInfoReducer: Reducer<UserInfoState> = (state = initState, action: UserActions) => {
@@ -35,6 +35,18 @@ export const userInfoReducer: Reducer<UserInfoState> = (state = initState, actio
             }
 
             return state;
+        case 'LOAD-USER-PREFERENCES-FINISHED':
+            const existingPreferences = state.preferences;
+
+            if (!existingPreferences || !existingPreferences.equals(action.preferences)) {
+                return {
+                    ...state,
+                    preferences: action.preferences
+                };
+            }
+
+            return state;
+            
         default:
             return state;
     }
