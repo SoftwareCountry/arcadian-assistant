@@ -221,11 +221,19 @@
                     oldEvent.EmployeeId
                 );
 
-                // ToDo: Here we need last approver to set event UserId
-                var timestamp = DateTimeOffset.Now;
-                this.UpdateCalendarEvent(oldEvent, null, timestamp, newEvent, ev =>
+                var approvals = this.ApprovalsByEvent[eventId];
+
+                var lastApproval = approvals
+                    .OrderByDescending(a => a.Timestamp)
+                    .FirstOrDefault();
+
+                // If there is no approvals, then employee is Director General and event is updated by himself
+                var updatedBy = lastApproval?.ApprovedBy ?? newEvent.EmployeeId;
+                var timestamp = lastApproval?.Timestamp ?? DateTimeOffset.Now;
+
+                this.UpdateCalendarEvent(oldEvent, updatedBy, timestamp, newEvent, ev =>
                 {
-                    Context.System.EventStream.Publish(new CalendarEventChanged(oldEvent, null, timestamp, ev));
+                    Context.System.EventStream.Publish(new CalendarEventChanged(oldEvent, updatedBy, timestamp, ev));
                 });
             }
 
