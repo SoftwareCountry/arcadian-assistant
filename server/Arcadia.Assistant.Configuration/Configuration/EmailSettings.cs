@@ -2,15 +2,8 @@
 {
     using System.ComponentModel.DataAnnotations;
 
-    public class SickLeaveSettings : IEmailSettings
-
+    public class EmailSettings
     {
-        [Required]
-        public string NotificationRecipient { get; set; }
-
-        [Required]
-        public string NotificationSender { get; set; }
-
         [Required]
         public string Subject { get; set; }
 

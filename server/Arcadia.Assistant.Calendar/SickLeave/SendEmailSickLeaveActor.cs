@@ -15,14 +15,14 @@
 
     public class SendEmailSickLeaveActor : UntypedActor
     {
-        private readonly IEmailSettings mailConfig;
+        private readonly EmailWithFixedAddressesSettings mailConfig;
         private readonly IActorRef organizationActor;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
-        public SendEmailSickLeaveActor(IEmailSettings mailConfig, IActorRef organizationActor)
+        public SendEmailSickLeaveActor(ICalendarEventsMessagingSettings mailConfig, IActorRef organizationActor)
         {
-            this.mailConfig = mailConfig;
+            this.mailConfig = mailConfig.SickLeaveApproved;
             this.organizationActor = organizationActor;
 
             Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);

@@ -41,7 +41,7 @@
             new AutoFacDependencyResolver(this.container, this.ActorSystem);
 
             var builder = new ActorSystemBuilder(this.ActorSystem);
-            this.ServerActors = builder.AddRootActors(this.container.Resolve<AppSettings>().Messaging.SickLeave);
+            this.ServerActors = builder.AddRootActors(this.container.Resolve<AppSettings>().Messaging.CalendarEvents);
         }
 
         protected virtual void OnStart(ActorSystem actorSystem)

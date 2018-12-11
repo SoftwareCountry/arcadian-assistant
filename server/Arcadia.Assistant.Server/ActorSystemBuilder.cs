@@ -23,7 +23,7 @@
             this.actorSystem = actorSystem;
         }
 
-        public ServerActorsCollection AddRootActors(IEmailSettings emailSettings)
+        public ServerActorsCollection AddRootActors(ICalendarEventsMessagingSettings calendarEventsMessagingSettings)
         {
             var organization = this.actorSystem.ActorOf(this.actorSystem.DI().Props<OrganizationActor>(), WellKnownActorPaths.Organization);
             var health = this.actorSystem.ActorOf(this.actorSystem.DI().Props<HealthChecker>(), WellKnownActorPaths.Health);
@@ -31,7 +31,7 @@
             var feeds = this.actorSystem.ActorOf(Props.Create(() => new SharedFeedsActor(organization)), WellKnownActorPaths.SharedFeeds);
             var userPreferences = this.actorSystem.ActorOf(this.actorSystem.DI().Props<UserPreferencesActor>(), WellKnownActorPaths.UserPreferences);
 
-            this.actorSystem.ActorOf(Props.Create(() => new SendEmailSickLeaveActor(emailSettings, organization)), "sick-leave-email");
+            this.actorSystem.ActorOf(Props.Create(() => new SendEmailSickLeaveActor(calendarEventsMessagingSettings, organization)), "sick-leave-email");
 
             var emailNotificationsActorProps = this.actorSystem.DI().Props<EmailNotificationsActor>();
             this.actorSystem.ActorOf(Props.Create(() => new NotificationsDispatcherActor(emailNotificationsActorProps)), "notifications");
