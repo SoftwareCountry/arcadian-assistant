@@ -59,8 +59,7 @@
                     {
                         if (@event.IsPending)
                         {
-                            var approvals = this.ApprovalsByEvent[@event.EventId];
-                            this.Self.Tell(new AssignCalendarEventNextApprover(@event.EventId, approvals.LastOrDefault() ?? @event.UpdateEmployeeId));
+                            this.Self.Tell(new AssignCalendarEventNextApprover(@event.EventId));
                         }
                     }
                     break;
@@ -81,7 +80,11 @@
             }
         }
 
-        protected override void InsertCalendarEvent(CalendarEvent calendarEvent, OnSuccessfulUpsertCallback onUpsert)
+        protected override void InsertCalendarEvent(
+            CalendarEvent calendarEvent,
+            string createdBy,
+            DateTimeOffset timestamp,
+            OnSuccessfulUpsertCallback onUpsert)
         {
             if (calendarEvent.Dates.StartDate != calendarEvent.Dates.EndDate)
             {
@@ -94,7 +97,7 @@
             }
 
             var eventId = calendarEvent.EventId;
-            var newEvent = new WorkHoursChangeIsRequested()
+            var newEvent = new WorkHoursChangeIsRequested
             {
                 EmployeeId = this.EmployeeId,
                 EventId = eventId,
@@ -102,8 +105,8 @@
                 StartHour = calendarEvent.Dates.StartWorkingHour,
                 EndHour = calendarEvent.Dates.FinishWorkingHour,
                 IsDayoff = calendarEvent.Type == CalendarEventTypes.Dayoff,
-                TimeStamp = calendarEvent.CreateDate,
-                UserId = calendarEvent.UpdateEmployeeId
+                TimeStamp = timestamp,
+                UserId = createdBy
             };
             this.Persist(newEvent, e =>
                 {
@@ -112,7 +115,7 @@
                 });
         }
 
-        protected override void UpdateCalendarEvent(CalendarEvent oldEvent, CalendarEvent newEvent, OnSuccessfulUpsertCallback onUpsert)
+        protected override void UpdateCalendarEvent(CalendarEvent oldEvent, string updatedBy, DateTimeOffset timestamp, CalendarEvent newEvent, OnSuccessfulUpsertCallback onUpsert)
         {
             if (oldEvent.Dates != newEvent.Dates)
             {
@@ -124,29 +127,29 @@
                 switch (newEvent.Status)
                 {
                     case WorkHoursChangeStatuses.Approved:
-                        this.Persist(new WorkHoursChangeIsApproved()
+                        this.Persist(new WorkHoursChangeIsApproved
                         {
                             EventId = newEvent.EventId,
-                            TimeStamp = newEvent.UpdateDate,
-                            UserId = newEvent.UpdateEmployeeId
+                            TimeStamp = DateTimeOffset.Now,
+                            UserId = updatedBy
                         }, this.OnChangeApproved);
                         break;
 
                     case WorkHoursChangeStatuses.Cancelled:
-                        this.Persist(new WorkHoursChangeIsCancelled()
+                        this.Persist(new WorkHoursChangeIsCancelled
                         {
                             EventId = newEvent.EventId,
-                            TimeStamp = newEvent.UpdateDate,
-                            UserId = newEvent.UpdateEmployeeId
+                            TimeStamp = timestamp,
+                            UserId = updatedBy
                         }, this.OnChangeCancelled);
                         break;
 
                     case WorkHoursChangeStatuses.Rejected:
-                        this.Persist(new WorkHoursChangeIsRejected()
+                        this.Persist(new WorkHoursChangeIsRejected
                         {
                             EventId = newEvent.EventId,
-                            TimeStamp = newEvent.UpdateDate,
-                            UserId = newEvent.UpdateEmployeeId
+                            TimeStamp = timestamp,
+                            UserId = updatedBy
                         }, this.OnChangeRejected);
                         break;
                 }
@@ -185,10 +188,7 @@
                 eventType,
                 datesPeriod,
                 WorkHoursChangeStatuses.Requested,
-                this.EmployeeId,
-                message.TimeStamp,
-                message.TimeStamp,
-                message.UserId);
+                this.EmployeeId);
             this.EventsById[message.EventId] = calendarEvent;
             this.ApprovalsByEvent[message.EventId] = new List<string>();
         }
@@ -214,10 +214,7 @@
                     calendarEvent.Type,
                     calendarEvent.Dates,
                     WorkHoursChangeStatuses.Approved,
-                    this.EmployeeId,
-                    calendarEvent.CreateDate,
-                    message.TimeStamp,
-                    message.UserId);
+                    this.EmployeeId);
             }
         }
 

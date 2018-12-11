@@ -7,22 +7,32 @@
     {
         public CalendarEventApprovalsChanged(
             CalendarEvent @event,
-            string lastApproverId,
-            DateTimeOffset lastApprovalDate,
+            string lastApprovedBy,
+            DateTimeOffset lastApprovalTimestamp,
             IEnumerable<string> approvals)
         {
             this.Event = @event;
-            this.LastApproverId = lastApproverId;
-            this.LastApprovalDate = lastApprovalDate;
+            this.LastApproval = new Approval(lastApprovedBy, lastApprovalTimestamp);
             this.Approvals = approvals;
         }
 
         public CalendarEvent Event { get; }
 
-        public string LastApproverId { get; }
+        public Approval LastApproval { get; set; }
 
         public IEnumerable<string> Approvals { get; }
 
-        public DateTimeOffset LastApprovalDate { get; }
+        public class Approval
+        {
+            public Approval(string approvedBy, DateTimeOffset timestamp)
+            {
+                this.ApprovedBy = approvedBy;
+                this.Timestamp = timestamp;
+            }
+
+            public string ApprovedBy { get; set; }
+
+            public DateTimeOffset Timestamp { get; set; }
+        }
     }
 }

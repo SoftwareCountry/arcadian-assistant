@@ -128,18 +128,12 @@
                 return this.Forbid();
             }
 
-            var userEmployee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, token);
-
-            var timestamp = DateTimeOffset.Now;
             var calendarEvent = new CalendarEvent(
                 newId,
                 model.Type,
                 model.Dates,
                 model.Status,
-                employee.Metadata.EmployeeId,
-                timestamp,
-                timestamp,
-                userEmployee.Metadata.EmployeeId);
+                employee.Metadata.EmployeeId);
             var eventCreationResponse = await this.UpsertEventAsync(employee.Calendar.CalendarActor, calendarEvent, token);
 
             switch (eventCreationResponse)
@@ -199,17 +193,12 @@
                 return this.StatusCode(StatusCodes.Status409Conflict, "Calendar types are not compatible");
             }
 
-            var userEmployee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, token);
-
             var calendarEvent = new CalendarEvent(
                 eventId,
                 model.Type,
                 model.Dates,
                 model.Status,
-                existingEvent.EmployeeId,
-                existingEvent.CreateDate,
-                DateTimeOffset.Now,
-                userEmployee.Metadata.EmployeeId);
+                existingEvent.EmployeeId);
 
             var response = await this.UpsertEventAsync(employee.Calendar.CalendarActor, calendarEvent, token);
 
@@ -229,8 +218,13 @@
 
         private async Task<UpsertCalendarEvent.Response> UpsertEventAsync(IActorRef calendarActor, CalendarEvent calendarEvent, CancellationToken token)
         {
+            var userEmployee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, token);
             var timeout = this.timeoutSettings.Timeout;
-            var eventCreationResponse = await calendarActor.Ask<UpsertCalendarEvent.Response>(new UpsertCalendarEvent(calendarEvent), timeout, token);
+            var timestamp = DateTimeOffset.Now;
+            var eventCreationResponse = await calendarActor.Ask<UpsertCalendarEvent.Response>(
+                new UpsertCalendarEvent(calendarEvent, userEmployee.Metadata.EmployeeId, timestamp),
+                timeout,
+                token);
             return eventCreationResponse;
         }
 

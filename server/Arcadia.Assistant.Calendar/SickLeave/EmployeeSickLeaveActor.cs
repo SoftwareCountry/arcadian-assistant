@@ -63,15 +63,18 @@
                     {
                         if (@event.IsPending)
                         {
-                            var approvals = this.ApprovalsByEvent[@event.EventId];
-                            this.Self.Tell(new AssignCalendarEventNextApprover(@event.EventId, approvals.LastOrDefault() ?? @event.UpdateEmployeeId));
+                            this.Self.Tell(new AssignCalendarEventNextApprover(@event.EventId));
                         }
                     }
                     break;
             }
         }
 
-        protected override void InsertCalendarEvent(CalendarEvent calendarEvent, OnSuccessfulUpsertCallback onUpsert)
+        protected override void InsertCalendarEvent(
+            CalendarEvent calendarEvent,
+            string createdBy,
+            DateTimeOffset timestamp,
+            OnSuccessfulUpsertCallback onUpsert)
         {
             var eventId = calendarEvent.EventId;
             var newEvent = new SickLeaveIsRequested()
@@ -80,8 +83,8 @@
                 EventId = eventId,
                 StartDate = calendarEvent.Dates.StartDate,
                 EndDate = calendarEvent.Dates.EndDate,
-                TimeStamp = calendarEvent.CreateDate,
-                UserId = calendarEvent.UpdateEmployeeId
+                TimeStamp = timestamp,
+                UserId = createdBy
             };
             this.Persist(newEvent, e =>
             {
@@ -90,7 +93,12 @@
             });
         }
 
-        protected override void UpdateCalendarEvent(CalendarEvent oldEvent, CalendarEvent newEvent, OnSuccessfulUpsertCallback onUpsert)
+        protected override void UpdateCalendarEvent(
+            CalendarEvent oldEvent,
+            string updatedBy,
+            DateTimeOffset timestamp,
+            CalendarEvent newEvent,
+            OnSuccessfulUpsertCallback onUpsert)
         {
             if (oldEvent.Dates.StartDate != newEvent.Dates.StartDate)
             {
@@ -99,12 +107,12 @@
 
             if (oldEvent.Dates.EndDate != newEvent.Dates.EndDate)
             {
-                this.Persist(new SickLeaveIsProlonged()
+                this.Persist(new SickLeaveIsProlonged
                 {
                     EndDate = newEvent.Dates.EndDate,
                     EventId = newEvent.EventId,
-                    TimeStamp = newEvent.UpdateDate,
-                    UserId = newEvent.UpdateEmployeeId
+                    TimeStamp = timestamp,
+                    UserId = updatedBy
                 }, this.OnSickLeaveProlonged);
             }
 
@@ -114,38 +122,38 @@
                 switch (newEvent.Status)
                 {
                     case SickLeaveStatuses.Cancelled:
-                        this.Persist(new SickLeaveIsCancelled()
+                        this.Persist(new SickLeaveIsCancelled
                         {
                             EventId = newEvent.EventId,
-                            TimeStamp = newEvent.UpdateDate,
-                            UserId = newEvent.UpdateEmployeeId
+                            TimeStamp = timestamp,
+                            UserId = updatedBy
                         }, this.OnSickLeaveCancelled);
                         break;
 
                     case SickLeaveStatuses.Completed:
-                        this.Persist(new SickLeaveIsCompleted()
+                        this.Persist(new SickLeaveIsCompleted
                         {
                             EventId = newEvent.EventId,
-                            TimeStamp = newEvent.UpdateDate,
-                            UserId = newEvent.UpdateEmployeeId
+                            TimeStamp = timestamp,
+                            UserId = updatedBy
                         }, this.OnSickLeaveCompleted);
                         break;
 
                     case SickLeaveStatuses.Approved:
-                        this.Persist(new SickLeaveIsApproved()
+                        this.Persist(new SickLeaveIsApproved
                         {
                             EventId = newEvent.EventId,
-                            TimeStamp = newEvent.UpdateDate,
-                            UserId = newEvent.UpdateEmployeeId
+                            TimeStamp = timestamp,
+                            UserId = updatedBy
                         }, this.OnSickleaveApproved);
                         break;
 
                     case SickLeaveStatuses.Rejected:
-                        this.Persist(new SickLeaveIsRejected()
+                        this.Persist(new SickLeaveIsRejected
                         {
                             EventId = newEvent.EventId,
-                            TimeStamp = newEvent.UpdateDate,
-                            UserId = newEvent.UpdateEmployeeId
+                            TimeStamp = timestamp,
+                            UserId = updatedBy
                         }, this.OnSickLeaveRejected);
                         break;
                 }
@@ -182,10 +190,7 @@
                 CalendarEventTypes.Sickleave,
                 datesPeriod,
                 SickLeaveStatuses.Requested,
-                this.EmployeeId,
-                message.TimeStamp,
-                message.TimeStamp,
-                message.UserId);
+                this.EmployeeId);
             this.ApprovalsByEvent[message.EventId] = new List<string>();
         }
 
@@ -198,10 +203,7 @@
                     calendarEvent.Type,
                     calendarEvent.Dates,
                     SickLeaveStatuses.Completed,
-                    this.EmployeeId,
-                    calendarEvent.CreateDate,
-                    message.TimeStamp,
-                    message.UserId);
+                    this.EmployeeId);
             }
         }
 
@@ -215,10 +217,7 @@
                     calendarEvent.Type,
                     dates,
                     calendarEvent.Status,
-                    this.EmployeeId,
-                    calendarEvent.CreateDate,
-                    message.TimeStamp,
-                    message.UserId);
+                    this.EmployeeId);
             }
         }
 
@@ -239,10 +238,7 @@
                     calendarEvent.Type,
                     calendarEvent.Dates,
                     SickLeaveStatuses.Approved,
-                    this.EmployeeId,
-                    calendarEvent.CreateDate,
-                    message.TimeStamp,
-                    message.UserId);
+                    this.EmployeeId);
             }
         }
 
