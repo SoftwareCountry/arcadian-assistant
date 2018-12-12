@@ -137,14 +137,18 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             const permissions = userEmployeePermissions.get(this.props.employee.employeeId, null);
             const nextPermissions = nextUserEmployeePermissions.get(nextProps.employee.employeeId, null);
 
-            return !permissions || !permissions.equals(nextPermissions);
+            if (!permissions || !permissions.equals(nextPermissions)) {
+                return true;
+            }
         }
 
         if (!events.equals(nextEvents)) {
             const calendarEvents = events.get(this.props.employee.employeeId);
             const nextCalendarEvents = nextEvents.get(nextProps.employee.employeeId);
 
-            return calendarEvents !== nextCalendarEvents;
+            if (calendarEvents !== nextCalendarEvents) {
+                return true;
+            }
         }
 
         const requests = this.props.requests;
