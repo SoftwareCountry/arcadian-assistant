@@ -44,7 +44,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
         }
 
         return List(eventActions)
-            .sort((left, right) => { return EventActionProvider.compareContainers(left, right); })
+            .sort(EventActionProvider.compareEventActionContainers)
             .toArray();
     }
 

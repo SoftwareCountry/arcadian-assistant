@@ -119,7 +119,7 @@ export class EventActionProvider {
     }
 
     //----------------------------------------------------------------------------
-    public static compareContainers(left: EventActionContainer, right: EventActionContainer): number {
+    public static compareEventActionContainers(left: EventActionContainer, right: EventActionContainer): number {
         const nameCompareResult = left.employee.name.localeCompare(right.employee.name);
         if (nameCompareResult !== 0) {
             return nameCompareResult;
