@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Keyboard } from 'react-native';
+import { Keyboard, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
-import { startSearch, endSearch, activeFilter } from '../reducers/search/search.action';
+import { activeFilter, endSearch, startSearch } from '../reducers/search/search.action';
 import { ApplicationIcon } from '../override/application-icon';
 import { searchViewStyles as styles } from './search-view-styles';
 import { StyledText } from '../override/styled-text';
@@ -54,23 +54,23 @@ class SearchViewImpl extends Component<SearchViewDispatchProps & SearchViewState
                 />
             </View>
             <View style={styles.inputContainer}>
-                    <TextInput
-                        placeholder={'Search'}
-                        style={textInputStyles}
-                        underlineColorAndroid='transparent'
-                        autoCapitalize='none'
-                        autoCorrect={false}
-                        onChangeText={this.changeText}
-                        value={this.props.filter}
-                    />
+                <TextInput
+                    placeholder={'Search'}
+                    style={textInputStyles}
+                    underlineColorAndroid='transparent'
+                    autoCapitalize='none'
+                    autoCorrect={false}
+                    onChangeText={this.changeText}
+                    value={this.props.filter}
+                />
             </View>
             <View style={styles.buttonContainer}>
-            {
-                this.props.filter.length > 0 &&
-                <TouchableOpacity onPress={this.cancelSearch}>
-                    <StyledText style={styles.cancel}>Cancel</StyledText>
-                </TouchableOpacity>
-            }
+                {
+                    this.props.filter.length > 0 &&
+                    <TouchableOpacity onPress={this.cancelSearch}>
+                        <StyledText style={styles.cancel}>Cancel</StyledText>
+                    </TouchableOpacity>
+                }
             </View>
         </View>;
     }

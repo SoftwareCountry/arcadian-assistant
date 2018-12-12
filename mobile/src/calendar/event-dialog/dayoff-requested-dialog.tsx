@@ -2,9 +2,8 @@
  * Copyright (c) Arcadia, Inc. All rights reserved.
  ******************************************************************************/
 
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { EventDialogBase } from './event-dialog-base';
-import React from 'react';
 import { connect } from 'react-redux';
 import { Action, Dispatch } from 'redux';
 import { closeEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
@@ -23,7 +22,7 @@ class DayoffRequestedDialogImpl extends Component<DayoffRequestedDialogDispatchP
             icon={'dayoff'}
             acceptLabel={'Ok'}
             onAcceptPress={this.props.closeDialog}
-            onClosePress={this.props.closeDialog} />;
+            onClosePress={this.props.closeDialog}/>;
     }
 }
 

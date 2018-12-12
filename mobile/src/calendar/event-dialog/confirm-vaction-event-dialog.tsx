@@ -27,15 +27,15 @@ interface ClaimVacationEventDialogProps {
 class ConfirmVacationEventDialogImpl extends Component<ClaimVacationEventDialogProps & ClaimVacationEventDialogDispatchProps> {
     public render() {
         return <EventDialogBase
-                    title={'Select date to Complete your Vacation'}
-                    text={this.text}
-                    icon={'vacation'}
-                    cancelLabel={'Back'}
-                    acceptLabel={'Confirm'}
-                    onAcceptPress={this.acceptAction}
-                    onCancelPress={this.cancelAction}
-                    onClosePress={this.closeDialog}
-                    disableAccept={!this.props.endDay} />;
+            title={'Select date to Complete your Vacation'}
+            text={this.text}
+            icon={'vacation'}
+            cancelLabel={'Back'}
+            acceptLabel={'Confirm'}
+            onAcceptPress={this.acceptAction}
+            onCancelPress={this.cancelAction}
+            onClosePress={this.closeDialog}
+            disableAccept={!this.props.endDay}/>;
     }
 
     private cancelAction = () => {
@@ -86,9 +86,15 @@ const mapStateToProps = (state: AppState): ClaimVacationEventDialogProps => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>): ClaimVacationEventDialogDispatchProps => ({
-    back: () => { dispatch(openEventDialog(EventDialogType.RequestVacation)); },
-    confirmVacation: (employeeId: string, startDate: Moment, endDate: Moment) => { dispatch(confirmVacation(employeeId, startDate, endDate)); },
-    closeDialog: () => { dispatch(closeEventDialog()); }
+    back: () => {
+        dispatch(openEventDialog(EventDialogType.RequestVacation));
+    },
+    confirmVacation: (employeeId: string, startDate: Moment, endDate: Moment) => {
+        dispatch(confirmVacation(employeeId, startDate, endDate));
+    },
+    closeDialog: () => {
+        dispatch(closeEventDialog());
+    }
 });
 
 export const ConfirmVacationEventDialog = connect(mapStateToProps, mapDispatchToProps)(ConfirmVacationEventDialogImpl);

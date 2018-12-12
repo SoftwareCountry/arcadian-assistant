@@ -1,7 +1,6 @@
-import { TabNavigatorConfig, NavigationRouteConfigMap } from 'react-navigation';
+import { NavigationRouteConfigMap } from 'react-navigation';
 import React from 'react';
 import { FeedsScreen } from '../feeds/feeds-screen';
-import { HelpdeskScreen } from '../helpdesk/helpdesk-screen';
 import { CalendarScreen } from '../calendar/calendar-screen';
 import { ProfileScreen } from '../profile/profile-screen';
 import { TabNavigationOptionsFactory } from '../tabbar/tab-navigation-options-factory';

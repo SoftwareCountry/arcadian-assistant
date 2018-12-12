@@ -1,5 +1,4 @@
 import { EventDialogType } from './event-dialog-type.model';
-import { SickLeaveActions } from '../sick-leave.action';
 import { ChosenTypeDayoff } from '../dayoff.action';
 import { Action } from 'redux';
 
@@ -8,7 +7,10 @@ export interface OpenEventDialog extends Action {
     dialogType: EventDialogType;
 }
 
-export const openEventDialog = (dialogType: EventDialogType): OpenEventDialog => ({ type: 'OPEN-EVENT-DIALOG', dialogType });
+export const openEventDialog = (dialogType: EventDialogType): OpenEventDialog => ({
+    type: 'OPEN-EVENT-DIALOG',
+    dialogType
+});
 
 export interface CloseEventDialog extends Action {
     type: 'CLOSE-EVENT-DIALOG';
@@ -28,4 +30,9 @@ export interface StopEventDialogProgress extends Action {
 
 export const stopEventDialogProgress = (): StopEventDialogProgress => ({ type: 'STOP-EVENT-DIALOG-PROGRESS' });
 
-export type EventDialogActions = OpenEventDialog | CloseEventDialog | ChosenTypeDayoff | StartEventDialogProgress | StopEventDialogProgress;
+export type EventDialogActions =
+    OpenEventDialog
+    | CloseEventDialog
+    | ChosenTypeDayoff
+    | StartEventDialogProgress
+    | StopEventDialogProgress;

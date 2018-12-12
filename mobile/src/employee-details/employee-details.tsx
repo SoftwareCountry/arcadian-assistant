@@ -1,6 +1,10 @@
+/******************************************************************************
+ * Copyright (c) Arcadia, Inc. All rights reserved.
+ ******************************************************************************/
+
 import React, { Component } from 'react';
 import { connect, MapStateToProps } from 'react-redux';
-import { Map } from 'immutable';
+import { Map, Set } from 'immutable';
 import { Linking, ScrollView, StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 import { contactStyles, contentStyles, eventStyles, layoutStyles, tileStyles } from '../profile/styles';
@@ -10,10 +14,10 @@ import { AppState } from '../reducers/app.reducer';
 import { Department } from '../reducers/organization/department.model';
 
 import { StyledText } from '../override/styled-text';
-import { Employee } from '../reducers/organization/employee.model';
+import { Employee, EmployeeId } from '../reducers/organization/employee.model';
 import { ApplicationIcon } from '../override/application-icon';
 import { calendarEventSetNewStatus, loadCalendarEvents } from '../reducers/calendar/calendar.action';
-import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
+import { CalendarEvent, CalendarEventId, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
 import { UserEmployeePermissions } from '../reducers/user/user-employee-permissions.model';
 import { loadUserEmployeePermissions } from '../reducers/user/user.action';
@@ -23,7 +27,11 @@ import { Action, Dispatch } from 'redux';
 import { openCompany, openDepartment, openRoom } from '../navigation/navigation.actions';
 import { Nullable } from 'types';
 import { IntervalTypeConverter } from '../reducers/calendar/interval-type-converter';
+import { approve } from '../reducers/calendar/approval.action';
+import { Approval } from '../reducers/calendar/approval.model';
+import { EventActionContainer, EventActionProvider } from './event-action-provider';
 
+//============================================================================
 interface TileData {
     label: string;
     icon: string;
@@ -33,6 +41,7 @@ interface TileData {
     onPress: Nullable<() => void>;
 }
 
+//============================================================================
 interface EmployeeDetailsOwnProps {
     employee: Employee;
     department: Department;
@@ -40,41 +49,57 @@ interface EmployeeDetailsOwnProps {
     requests?: Map<Employee, CalendarEvent[]>;
 }
 
+//============================================================================
 interface EmployeeDetailsStateProps {
-    events: Map<string, CalendarEvent[]>;
+    events: Map<EmployeeId, CalendarEvent[]>;
+    approvals: Map<CalendarEventId, Set<Approval>>;
     hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => Nullable<string>;
     userEmployeePermissions: Nullable<Map<string, UserEmployeePermissions>>;
+    userId: Nullable<EmployeeId>;
 }
 
 type EmployeeDetailsProps = EmployeeDetailsOwnProps & EmployeeDetailsStateProps;
 
+//----------------------------------------------------------------------------
 const mapStateToProps: MapStateToProps<EmployeeDetailsProps, EmployeeDetailsOwnProps, AppState> = (state: AppState, ownProps: EmployeeDetailsOwnProps): EmployeeDetailsProps => ({
     employee: ownProps.employee,
     department: ownProps.department,
     layoutStylesChevronPlaceholder: ownProps.layoutStylesChevronPlaceholder,
-    events: state.calendar ? state.calendar.calendarEvents.events : Map(),
     requests: ownProps.requests,
+    events: state.calendar ? state.calendar.calendarEvents.events : Map(),
+    approvals: state.calendar ? state.calendar.calendarEvents.approvals : Map<CalendarEventId, Set<Approval>>(),
     hoursToIntervalTitle: state.calendar ? state.calendar.pendingRequests.hoursToIntervalTitle : IntervalTypeConverter.hoursToIntervalTitle,
     userEmployeePermissions: state.userInfo ? state.userInfo.permissions : null,
+    userId: state.userInfo ? state.userInfo.employeeId : null,
 });
 
-const TileSeparator = () => <View style={tileStyles.separator}/>;
-
+//============================================================================
 interface EmployeeDetailsDispatchProps {
-    onCompanyClicked: (departmentId: string) => void;
     loadCalendarEvents: (employeeId: string) => void;
-    eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
     loadUserEmployeePermissions: (employeeId: string) => void;
+    eventSetStatus: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
+    eventApprove: (approverId: EmployeeId, employeeId: EmployeeId, calendarEvent: CalendarEvent) => void;
+    openCompany: (departmentId: string) => void;
     openDepartment: (departmentId: string, departmentAbbreviation: string) => void;
     openRoom: (departmentId: string) => void;
 }
 
+//----------------------------------------------------------------------------
 const mapDispatchToProps = (dispatch: Dispatch<Action>): EmployeeDetailsDispatchProps => ({
-    onCompanyClicked: (departmentId: string) => dispatch(openCompany(departmentId)),
-    loadCalendarEvents: (employeeId: string) => dispatch(loadCalendarEvents(employeeId)),
-    eventSetNewStatusAction: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status)),
+    loadCalendarEvents: (employeeId: string) => {
+        dispatch(loadCalendarEvents(employeeId));
+    },
     loadUserEmployeePermissions: (employeeId: string) => {
         dispatch(loadUserEmployeePermissions(employeeId));
+    },
+    eventSetStatus: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => {
+        dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status));
+    },
+    eventApprove: (approverId: EmployeeId, employeeId: EmployeeId, calendarEvent: CalendarEvent) => {
+        dispatch(approve(approverId, employeeId, calendarEvent.calendarEventId));
+    },
+    openCompany: (departmentId: string) => {
+        dispatch(openCompany(departmentId));
     },
     openDepartment: (departmentId: string, departmentAbbreviation: string) => {
         dispatch(openDepartment(departmentId, departmentAbbreviation));
@@ -84,10 +109,13 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>): EmployeeDetailsDispatch
     }
 });
 
+//----------------------------------------------------------------------------
+const TileSeparator = () => <View style={tileStyles.separator}/>;
+
+//============================================================================
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
+    //----------------------------------------------------------------------------
     public shouldComponentUpdate(nextProps: EmployeeDetailsProps & EmployeeDetailsDispatchProps) {
-        const requests = this.props.requests;
-        const nextRequests = nextProps.requests;
         const events = this.props.events;
         const nextEvents = nextProps.events;
 
@@ -109,28 +137,48 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             const permissions = userEmployeePermissions.get(this.props.employee.employeeId, null);
             const nextPermissions = nextUserEmployeePermissions.get(nextProps.employee.employeeId, null);
 
-            return !permissions || !permissions.equals(nextPermissions);
+            if (!permissions || !permissions.equals(nextPermissions)) {
+                return true;
+            }
         }
 
         if (!events.equals(nextEvents)) {
             const calendarEvents = events.get(this.props.employee.employeeId);
             const nextCalendarEvents = nextEvents.get(nextProps.employee.employeeId);
 
-            return calendarEvents !== nextCalendarEvents;
+            if (calendarEvents !== nextCalendarEvents) {
+                return true;
+            }
+        }
+
+        const requests = this.props.requests;
+        const nextRequests = nextProps.requests;
+
+        if (nextRequests && !nextRequests.equals(requests)) {
+            return true;
+        }
+
+        const approvals = this.props.approvals;
+        const nextApprovals = nextProps.approvals;
+
+        if (!approvals.equals(nextApprovals)) {
+            return true;
         }
 
         return false;
     }
 
+    //----------------------------------------------------------------------------
     public componentDidMount() {
         this.props.loadCalendarEvents(this.props.employee.employeeId);
         this.props.loadUserEmployeePermissions(this.props.employee.employeeId);
     }
 
+    //----------------------------------------------------------------------------
     public render() {
-        const { employee, department, userEmployeePermissions } = this.props;
+        const { employee, department, userEmployeePermissions, userId } = this.props;
 
-        if (!employee || !department || !userEmployeePermissions) {
+        if (!userEmployeePermissions || !userId) {
             return null;
         }
 
@@ -179,7 +227,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                         </View>
 
                         {
-                            this.renderPendingRequests()
+                            this.renderPendingRequests(permissions)
                         }
                         {
                             this.renderEmployeeEvents(events, permissions)
@@ -191,10 +239,12 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         );
     }
 
+    //----------------------------------------------------------------------------
     private uppercase(text: string) {
         return text ? text.toUpperCase() : text;
     }
 
+    //----------------------------------------------------------------------------
     private tileStyle = (transparent: boolean): StyleProp<ViewStyle> => {
         if (transparent) {
             return [tileStyles.tile, { backgroundColor: 'transparent' }];
@@ -203,6 +253,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         }
     };
 
+    //----------------------------------------------------------------------------
     private getTiles(employee: Employee) {
         const tilesData: TileData[] = [
             {
@@ -230,7 +281,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                 onPress: this.openRoom
             },
             {
-                label: 'Organization',
+                label: 'Company',
                 icon: 'org_structure',
                 style: StyleSheet.flatten([tileStyles.icon]),
                 size: 28,
@@ -267,6 +318,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         ));
     }
 
+    //----------------------------------------------------------------------------
     private getContacts(employee: Employee) {
         const contactsData = [
             {
@@ -300,6 +352,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         ));
     }
 
+    //----------------------------------------------------------------------------
     private renderDaysCounters(employee: Employee) {
         if (employee.vacationDaysLeft === null && employee.hoursCredit === null) {
             return null;
@@ -341,57 +394,63 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         ];
     }
 
-
+    //----------------------------------------------------------------------------
     private renderEmployeeEvents(events: Nullable<CalendarEvent[]>, userPermissions: Nullable<UserEmployeePermissions>) {
-        if (!events || !events.length || !this.props.employee || !userPermissions) {
+        if (!events || !events.length || !this.props.userId || !this.props.employee || !userPermissions) {
             return null;
         }
 
-        const employeeToCalendarEvents = Map<Employee, CalendarEvent[]>([[this.props.employee, events]]);
-        const canApprove = userPermissions ? userPermissions.canApproveCalendarEvents : false;
-        const canReject = userPermissions ? userPermissions.canRejectCalendarEvents : false;
+        const provider = new EventActionProvider(this.props.userId, this.props.eventSetStatus, this.props.eventApprove);
+        const actions = provider.getEventActions(events, this.props.employee, userPermissions, this.props.approvals);
 
         return <View style={eventStyles.container}>
-            <StyledText style={layoutStyles.header}>EVENTS</StyledText>
+            <StyledText style={layoutStyles.header}>Events</StyledText>
             <EmployeeDetailsEventsList
-                events={employeeToCalendarEvents}
-                eventSetNewStatusAction={this.props.eventSetNewStatusAction}
+                eventActions={actions}
                 hoursToIntervalTitle={this.props.hoursToIntervalTitle}
-                canApprove={canApprove}
-                canReject={canReject}
             />
         </View>;
     }
 
-    private renderPendingRequests() {
-        if (!this.props.requests || !this.props.requests.size) {
+    //----------------------------------------------------------------------------
+    private renderPendingRequests(userPermissions: Nullable<UserEmployeePermissions>) {
+        if (!this.props.requests || !this.props.requests.size || !this.props.userId || !userPermissions) {
             return null;
         }
 
+        const provider = new EventActionProvider(this.props.userId, this.props.eventSetStatus, this.props.eventApprove);
+
+        const actions: EventActionContainer[] =
+            this.props.requests.reduce<EventActionContainer[]>(
+                (acc, events, employee) => acc.concat(provider.getRequestActions(events, employee, this.props.approvals)),
+                []
+            );
+
         return <View style={eventStyles.container}>
-            <StyledText style={layoutStyles.header}>REQUESTS</StyledText>
+            <StyledText style={layoutStyles.header}>Requests</StyledText>
             <EmployeeDetailsEventsList
-                events={this.props.requests}
-                eventSetNewStatusAction={this.props.eventSetNewStatusAction}
+                eventActions={actions}
                 hoursToIntervalTitle={this.props.hoursToIntervalTitle}
-                showUserAvatar={true}
-                canApprove={true}
-                canReject={true}/>
+                showUserAvatar={true}/>
         </View>;
     }
 
+    //----------------------------------------------------------------------------
     private openLink(url: string) {
         return () => Linking.openURL(url).catch(err => console.error(err));
     }
 
+    //----------------------------------------------------------------------------
     private openCompany = () => {
-        return this.props.onCompanyClicked(this.props.employee.departmentId);
+        return this.props.openCompany(this.props.employee.departmentId);
     };
 
+    //----------------------------------------------------------------------------
     private openDepartment = () => {
         this.props.openDepartment(this.props.employee.departmentId, this.props.department.abbreviation);
     };
 
+    //----------------------------------------------------------------------------
     private openRoom = () => {
         if (this.props.employee.roomNumber) {
             this.props.openRoom(this.props.employee.roomNumber);

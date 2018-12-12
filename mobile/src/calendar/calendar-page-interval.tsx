@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { calendarIntervalStyles, intervalMargin } from './styles';
-import { View, StyleSheet, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 
 export interface IntervalProps {
     size: number;
@@ -71,9 +71,11 @@ export class HalfInterval extends Component<HalfIntervalProps> {
     }
 }
 
-export const StartInterval = (props: IntervalProps) => <HalfInterval size={props.size} align={'left'} color={props.color} style={props.style} />;
+export const StartInterval = (props: IntervalProps) => <HalfInterval size={props.size} align={'left'}
+                                                                     color={props.color} style={props.style}/>;
 
-export const EndInterval = (props: IntervalProps) => <HalfInterval size={props.size} align={'right'} color={props.color} style={props.style} />;
+export const EndInterval = (props: IntervalProps) => <HalfInterval size={props.size} align={'right'} color={props.color}
+                                                                   style={props.style}/>;
 
 export const Interval = (props: IntervalProps) => {
     const margin = (props.size * intervalMargin);

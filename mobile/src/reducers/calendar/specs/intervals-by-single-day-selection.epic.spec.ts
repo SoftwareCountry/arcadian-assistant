@@ -1,15 +1,21 @@
 import { ActionsObservable } from 'redux-observable';
 import moment from 'moment';
 import { DayModel } from '../calendar.model';
-import { CalendarEvent, DatesInterval, CalendarEventStatus, CalendarEventType } from '../calendar-event.model';
+import { CalendarEvent, CalendarEventStatus, CalendarEventType, DatesInterval } from '../calendar-event.model';
 import { CalendarEvents } from '../calendar-events.model';
 import { intervalsBySingleDaySelectionEpic$ } from '../calendar.epics';
-import { SelectCalendarDay, LoadCalendarEventsFinished, selectCalendarDay, loadCalendarEventsFinished, selectIntervalsBySingleDaySelection } from '../calendar.action';
+import {
+    LoadCalendarEventsFinished,
+    loadCalendarEventsFinished,
+    selectCalendarDay,
+    SelectCalendarDay,
+    selectIntervalsBySingleDaySelection
+} from '../calendar.action';
 import { Action } from 'redux';
-import { concat, Observable, of } from 'rxjs';
+import { concat, of } from 'rxjs';
 
 describe('intervalsBySingleDaySelectionEpic', () => {
-    let action$: ActionsObservable<SelectCalendarDay | LoadCalendarEventsFinished >;
+    let action$: ActionsObservable<SelectCalendarDay | LoadCalendarEventsFinished>;
     beforeEach(() => {
         const day: DayModel = {
             date: moment(),

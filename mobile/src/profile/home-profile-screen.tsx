@@ -18,6 +18,7 @@ import { NavigationScreenConfig, NavigationStackScreenOptions, ScrollView } from
 import { Action, Dispatch } from 'redux';
 import { Optional } from 'types';
 import { getEmployee } from '../utils/utils';
+import { SettingsView } from '../user-preferences-screen/settings-view';
 
 //============================================================================
 interface ProfileScreenProps {
@@ -49,6 +50,7 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
             borderBottomColor: 'transparent',
             elevation: 0,
         },
+        headerLeft: <SettingsView/>,
         headerRight: <LogoutView/>,
     };
 
@@ -162,7 +164,8 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
             .mapKeys(employeeId => employees.employeesById.get(employeeId)!) : undefined;
 
         return (
-            <ScrollView refreshControl={<RefreshControl tintColor={Style.color.white} refreshing={false} onRefresh={this.onRefresh}/>}>
+            <ScrollView refreshControl={<RefreshControl tintColor={Style.color.white} refreshing={false}
+                                                        onRefresh={this.onRefresh}/>}>
                 <EmployeeDetails
                     department={department}
                     employee={employee}

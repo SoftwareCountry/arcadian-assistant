@@ -28,6 +28,9 @@ namespace Arcadia.Assistant.CSP.Model
         public virtual DbSet<EmployeeTeamHistory> EmployeeTeamHistory { get; set; }
         public virtual DbSet<Team> Team { get; set; }
         public virtual DbSet<TeamHistory> TeamHistory { get; set; }
+        public virtual DbSet<VacationApproval> VacationApprovals { get; set; }
+        public virtual DbSet<Vacation> Vacations { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -721,6 +724,59 @@ namespace Arcadia.Assistant.CSP.Model
                     .HasForeignKey(d => d.TeamId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_TeamHistory_Team");
+            });
+
+            modelBuilder.Entity<VacationApproval>(entity =>
+            {
+                entity.HasIndex(e => e.ApproverId)
+                    .HasName("IX_ApproverId");
+
+                entity.HasIndex(e => e.NextApprovalId)
+                    .HasName("IX_NextApprovalId");
+
+                entity.HasIndex(e => e.VacationId)
+                    .HasName("IX_VacationId");
+
+                entity.HasOne(d => d.Approver)
+                    .WithMany(p => p.VacationApprovals)
+                    .HasForeignKey(d => d.ApproverId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_dbo.VacationApprovals_dbo.Employee_ApproverId");
+
+                entity.HasOne(d => d.NextApproval)
+                    .WithMany(p => p.InverseNextApproval)
+                    .HasForeignKey(d => d.NextApprovalId)
+                    .HasConstraintName("FK_dbo.VacationApprovals_dbo.VacationApprovals_NextApprovalId");
+
+                entity.HasOne(d => d.Vacation)
+                    .WithMany(p => p.VacationApprovals)
+                    .HasForeignKey(d => d.VacationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_dbo.VacationApprovals_dbo.Vacations_VacationId");
+            });
+
+            modelBuilder.Entity<Vacation>(entity =>
+            {
+                entity.HasIndex(e => e.CancelledById)
+                    .HasName("IX_CancelledById");
+
+                entity.HasIndex(e => e.EmployeeId)
+                    .HasName("IX_EmployeeId");
+
+                entity.Property(e => e.End).HasColumnType("datetime");
+
+                entity.Property(e => e.Start).HasColumnType("datetime");
+
+                entity.HasOne(d => d.CancelledBy)
+                    .WithMany(p => p.VacationsCancelledBy)
+                    .HasForeignKey(d => d.CancelledById)
+                    .HasConstraintName("FK_dbo.Vacations_dbo.Employee_CancelledById");
+
+                entity.HasOne(d => d.Employee)
+                    .WithMany(p => p.VacationsEmployee)
+                    .HasForeignKey(d => d.EmployeeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_dbo.Vacations_dbo.Employee_EmployeeId");
             });
         }
     }

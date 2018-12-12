@@ -27,15 +27,15 @@ interface ClaimSickLeaveEventDialogProps {
 class ConfirmSickLeaveEventDialogImpl extends Component<ClaimSickLeaveEventDialogProps & ClaimSickLeaveEventDialogDispatchProps> {
     public render() {
         return <EventDialogBase
-                    title={'Select date to Complete your Sick Leave'}
-                    text={this.text}
-                    icon={'sick_leave'}
-                    cancelLabel={'Back'}
-                    acceptLabel={'Confirm'}
-                    onAcceptPress={this.acceptAction}
-                    onCancelPress={this.cancelAction}
-                    onClosePress={this.closeDialog}
-                    disableAccept={!this.props.endDay} />;
+            title={'Select date to Complete your Sick Leave'}
+            text={this.text}
+            icon={'sick_leave'}
+            cancelLabel={'Back'}
+            acceptLabel={'Confirm'}
+            onAcceptPress={this.acceptAction}
+            onCancelPress={this.cancelAction}
+            onClosePress={this.closeDialog}
+            disableAccept={!this.props.endDay}/>;
     }
 
     private cancelAction = () => {
@@ -73,9 +73,15 @@ const mapStateToProps = (state: AppState): ClaimSickLeaveEventDialogProps => {
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>): ClaimSickLeaveEventDialogDispatchProps => ({
-    back: () => { dispatch(openEventDialog(EventDialogType.ClaimSickLeave)); },
-    confirmSickLeave: (employeeId: string, startDate: Moment, endDate: Moment) => { dispatch(confirmSickLeave(employeeId, startDate, endDate)); },
-    closeDialog: () => { dispatch(closeEventDialog()); }
+    back: () => {
+        dispatch(openEventDialog(EventDialogType.ClaimSickLeave));
+    },
+    confirmSickLeave: (employeeId: string, startDate: Moment, endDate: Moment) => {
+        dispatch(confirmSickLeave(employeeId, startDate, endDate));
+    },
+    closeDialog: () => {
+        dispatch(closeEventDialog());
+    }
 });
 
 export const ConfirmSickLeaveEventDialog = connect(mapStateToProps, mapDispatchToProps)(ConfirmSickLeaveEventDialogImpl);

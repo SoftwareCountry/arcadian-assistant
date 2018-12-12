@@ -16,7 +16,12 @@
 
         public string EmployeeId { get; }
 
-        public CalendarEvent(string eventId, string type, DatesPeriod dates, string status, string employeeId)
+        public CalendarEvent(
+            string eventId,
+            string type,
+            DatesPeriod dates,
+            string status,
+            string employeeId)
         {
             this.EventId = eventId;
             this.Dates = dates;

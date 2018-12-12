@@ -4,6 +4,7 @@ import { stackNavigatorConfig } from '../override/stack-navigator-config';
 import { CurrentPeopleDepartment } from '../people/current-people-department';
 import { CurrentPeopleRoom } from '../people/current-people-room';
 import { EmployeeDetailsScreen } from '../employee-details/employee-details-screen';
+import { UserPreferencesScreen } from '../user-preferences-screen/user-preferences-screen';
 
 const routeConfig: NavigationRouteConfigMap = {
     PeopleHomeScreen: {
@@ -21,6 +22,10 @@ const routeConfig: NavigationRouteConfigMap = {
     CurrentProfile: {
         screen: EmployeeDetailsScreen,
         path: '/profile',
+    },
+    UserPreferences: {
+        screen: UserPreferencesScreen,
+        path: '/user-preferences',
     },
 };
 

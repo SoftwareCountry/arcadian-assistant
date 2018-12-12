@@ -35,15 +35,15 @@ class ChangeVacationEndDateEventDialogImpl extends Component<ChangeVacationEndDa
         const disableAccept = !this.props.interval || !this.props.interval.endDay;
 
         return <EventDialogBase
-                    title={'Change end date'}
-                    text={this.text}
-                    icon={'vacation'}
-                    cancelLabel={'Back'}
-                    acceptLabel={'Confirm'}
-                    onAcceptPress={this.confirmEndDateChange}
-                    onCancelPress={this.back}
-                    onClosePress={this.closeDialog}
-                    disableAccept={disableAccept} />;
+            title={'Change end date'}
+            text={this.text}
+            icon={'vacation'}
+            cancelLabel={'Back'}
+            acceptLabel={'Confirm'}
+            onAcceptPress={this.confirmEndDateChange}
+            onCancelPress={this.back}
+            onClosePress={this.closeDialog}
+            disableAccept={disableAccept}/>;
     }
 
     private back = () => {
@@ -86,14 +86,20 @@ const mapStateToProps = (state: AppState): ChangeVacationEndDateEventDialogProps
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>): ChangeVacationEndDateEventDialogDispatchProps => ({
-    back: () => { dispatch(openEventDialog(EventDialogType.ChangeVacationStartDate)); },
+    back: () => {
+        dispatch(openEventDialog(EventDialogType.ChangeVacationStartDate));
+    },
     confirmChangeVacation: (
         employeeId: string,
         calendarEvent: CalendarEvent,
         startDate: Moment,
         endDate: Moment
-    ) => { dispatch(confirmVacationChange(employeeId, calendarEvent, startDate, endDate)); },
-    closeDialog: () => { dispatch(closeEventDialog()); }
+    ) => {
+        dispatch(confirmVacationChange(employeeId, calendarEvent, startDate, endDate));
+    },
+    closeDialog: () => {
+        dispatch(closeEventDialog());
+    }
 });
 
 export const ChangeVacationEndDateEventDialog = connect(mapStateToProps, mapDispatchToProps)(ChangeVacationEndDateEventDialogImpl);

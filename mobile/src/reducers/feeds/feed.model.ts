@@ -3,7 +3,7 @@ import { DataMemberDecoratorParams } from 'santee-dcts/src/dataMemberDecorator';
 import moment, { Moment } from 'moment';
 import { Nullable } from 'types';
 
-const datePostedDecoratorParams: DataMemberDecoratorParams  = {
+const datePostedDecoratorParams: DataMemberDecoratorParams = {
     customDeserializer: (value: string) => moment(value)
 };
 

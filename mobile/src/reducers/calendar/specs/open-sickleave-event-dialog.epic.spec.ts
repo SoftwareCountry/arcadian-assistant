@@ -1,8 +1,8 @@
 import 'rxjs';
-import { ActionsObservable, ofType } from 'redux-observable';
+import { ActionsObservable } from 'redux-observable';
 import { openEventDialog, OpenEventDialog } from '../event-dialog/event-dialog.action';
 import { EventDialogType } from '../event-dialog/event-dialog-type.model';
-import { CalendarSelectionModeType, calendarSelectionMode, disableCalendarSelection } from '../calendar.action';
+import { calendarSelectionMode, CalendarSelectionModeType, disableCalendarSelection } from '../calendar.action';
 import { openEventDialogEpic$ } from '../event-dialog/event-dialog.epics';
 import { CalendarEventsColor } from '../../../calendar/styles';
 import { Action } from 'redux';

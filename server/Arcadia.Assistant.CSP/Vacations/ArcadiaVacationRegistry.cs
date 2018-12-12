@@ -19,10 +19,16 @@
 
         private string lastErrorMessage;
 
-        public ArcadiaVacationRegistry(VacationsQueryExecutor vacationsQueryExecutor, IRefreshInformation refreshInformation)
+        public ArcadiaVacationRegistry(
+            VacationsQueryExecutor vacationsQueryExecutor,
+            VacationsSyncExecutor vacationsSyncExecutor,
+            IRefreshInformation refreshInformation)
         {
             this.vacationsQueryExecutor = vacationsQueryExecutor;
+
             Context.System.Scheduler.ScheduleTellRepeatedly(TimeSpan.Zero, TimeSpan.FromMinutes(refreshInformation.IntervalInMinutes), this.Self, new Refresh(), this.Self);
+
+            Context.ActorOf(VacationsSyncActor.CreateProps(vacationsSyncExecutor), "vacations-sync");
         }
 
         protected override void OnReceive(object message)

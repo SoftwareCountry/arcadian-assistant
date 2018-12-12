@@ -1,11 +1,19 @@
 import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
 import {
-    LoadDepartments, loadDepartmentsFinished, LoadDepartmentsFinished, loadDepartments,
-    loadEmployeesFinished, LoadEmployeesForDepartment, LoadEmployeesForRoom, loadEmployeesForDepartment,
-    LoadEmployees, loadEmployees, loadEmployeesForRoom
+    LoadDepartments,
+    loadDepartments,
+    loadDepartmentsFinished,
+    LoadDepartmentsFinished,
+    LoadEmployees,
+    loadEmployees,
+    loadEmployeesFinished,
+    LoadEmployeesForDepartment,
+    loadEmployeesForDepartment,
+    LoadEmployeesForRoom,
+    loadEmployeesForRoom
 } from './organization.action';
 import { LoadUserEmployeeFinished } from '../user/user.action';
-import { deserializeArray, deserialize } from 'santee-dcts/src/deserializer';
+import { deserialize, deserializeArray } from 'santee-dcts/src/deserializer';
 import { Department } from './department.model';
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { Employee } from './employee.model';
@@ -80,12 +88,14 @@ export const loadEmployeesForUserDepartmentEpic$ = (action$: ActionsObservable<L
 
 export const loadEmployeesForUserRoomEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>) => action$.pipe(
     ofType('LOAD-USER-EMPLOYEE-FINISHED'),
-    filter(action => { return action.employee.roomNumber !== null; }),
+    filter(action => {
+        return action.employee.roomNumber !== null;
+    }),
     map(x => loadEmployeesForRoom(x.employee.roomNumber!)),
 );
 
 export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
     ofType('LOAD-USER-EMPLOYEE-FINISHED'),
-    map(x =>  loadDepartments()),
+    map(x => loadDepartments()),
     catchError((e: Error) => of(loadFailedError(e.message))),
 );

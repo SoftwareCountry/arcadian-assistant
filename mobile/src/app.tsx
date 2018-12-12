@@ -8,9 +8,11 @@ import { AuthState } from './reducers/auth/auth.reducer';
 import { SplashScreen } from './splash-screen/splash-screen';
 import { NavigationService } from './navigation/navigation.service';
 import { YellowBox } from 'react-native';
+import { Dispatch } from 'redux';
+import { AuthActions, startLoginProcess } from './reducers/auth/auth.action';
 
 //============================================================================
-interface AppProps {
+interface AppStateProps {
     authentication: AuthState | undefined;
 }
 
@@ -20,14 +22,23 @@ interface AppOwnProps {
 }
 
 //============================================================================
-export class App extends Component<AppProps & AppOwnProps> {
+interface AppDispatchProps {
+    login: () => void;
+}
+
+//============================================================================
+export class App extends Component<AppStateProps & AppDispatchProps & AppOwnProps> {
     //----------------------------------------------------------------------------
     public componentDidMount(): void {
         YellowBox.ignoreWarnings(['Deserialization']);
+
+        if (!this.props.authentication || !this.props.authentication.authInfo) {
+            this.props.login();
+        }
     }
 
     //----------------------------------------------------------------------------
-    public shouldComponentUpdate(nextProps: Readonly<AppProps & AppOwnProps>, nextState: Readonly<{}>, nextContext: any): boolean {
+    public shouldComponentUpdate(nextProps: Readonly<AppStateProps & AppDispatchProps & AppOwnProps>, nextState: Readonly<{}>, nextContext: any): boolean {
         if (!this.props.authentication || !nextProps.authentication) {
             return true;
         }
@@ -44,20 +55,22 @@ export class App extends Component<AppProps & AppOwnProps> {
 
     //----------------------------------------------------------------------------
     public render() {
-        if (!this.props.authentication || !this.props.authentication.authInfo) {
-            return (
-                <SplashScreen/>
-            );
+        const authentication = this.props.authentication;
+
+        if (!authentication || !authentication.authInfo) {
+            return <SplashScreen/>;
         }
 
-        if (this.props.authentication.authInfo.isAuthenticated) {
-            return <RootNavigator ref={(navigationRef: NavigationContainerComponent) => {
-                this.props.navigationService.setNavigatorRef(navigationRef);
-                console.log('navigationRef:' + navigationRef);
-            }}/>;
-        } else {
+        if (!authentication.authInfo.isAuthenticated) {
             return <WelcomeScreen/>;
         }
+
+        return (
+            <RootNavigator ref={(navigationRef: NavigationContainerComponent) => {
+                this.props.navigationService.setNavigatorRef(navigationRef);
+                console.log('navigationRef:' + navigationRef);
+            }}/>
+        );
     }
 }
 
@@ -66,4 +79,12 @@ const stateToProps = (state: AppState) => ({
     authentication: state.authentication,
 });
 
-export const AppWithNavigationState = connect<AppProps, {}, AppOwnProps>(stateToProps)(App);
+//----------------------------------------------------------------------------
+const mapDispatchToProps = (dispatch: Dispatch<AuthActions>): AppDispatchProps => ({
+    login: () => {
+        dispatch(startLoginProcess());
+    }
+});
+
+export const AppWithNavigationState = connect<AppStateProps, AppDispatchProps, AppOwnProps>(stateToProps, mapDispatchToProps)(App);
+

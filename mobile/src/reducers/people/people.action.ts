@@ -1,4 +1,3 @@
-import { Employee } from '../organization/employee.model';
 import { Action } from 'redux';
 
 export interface SelectCompanyDepartment extends Action {

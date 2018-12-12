@@ -162,8 +162,9 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
 
         for (let [, departmentNode] of filteredDepartmentNodes.entries()) {
             const node = departmentIdToNode.get(departmentNode.departmentId);
-            if (node) {-
-                newDepartmentIdsToNodes.set(departmentNode.departmentId, node);
+            if (node) {
+                -
+                    newDepartmentIdsToNodes.set(departmentNode.departmentId, node);
             }
 
             let parentDepartment = departmentNode.parentId ? departmentIdToNode.get(departmentNode.parentId) : null;

@@ -27,14 +27,14 @@ interface ChangeVacationStartDateEventDialogProps {
 class ChangeVacationStartDateEventDialogImpl extends Component<ChangeVacationStartDateEventDialogProps & ChangeVacationStartDateEventDialogDispatchProps> {
     public render() {
         return <EventDialogBase
-                    title={'Change start date'}
-                    text={this.text}
-                    icon={'vacation'}
-                    cancelLabel={'Back'}
-                    acceptLabel={'Confirm'}
-                    onAcceptPress={this.confirmStartDateChange}
-                    onCancelPress={this.back}
-                    onClosePress={this.closeDialog} />;
+            title={'Change start date'}
+            text={this.text}
+            icon={'vacation'}
+            cancelLabel={'Back'}
+            acceptLabel={'Confirm'}
+            onAcceptPress={this.confirmStartDateChange}
+            onCancelPress={this.back}
+            onClosePress={this.closeDialog}/>;
     }
 
     private back = () => {
@@ -65,16 +65,22 @@ class ChangeVacationStartDateEventDialogImpl extends Component<ChangeVacationSta
 }
 
 const mapStateToProps = (state: AppState): ChangeVacationStartDateEventDialogProps => ({
-    selectedSingleDay: state.calendar && state.calendar.calendarEvents.selection.single.day ?  state.calendar.calendarEvents.selection.single.day : {
+    selectedSingleDay: state.calendar && state.calendar.calendarEvents.selection.single.day ? state.calendar.calendarEvents.selection.single.day : {
         date: moment(), today: true, belongsToCurrentMonth: true,
     },
     intervals: state.calendar ? state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection : undefined,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ChangeVacationStartDateEventDialogDispatchProps => ({
-    back: () => { dispatch(openEventDialog(EventDialogType.EditVacation)); },
-    changeVacationEndDate: () => { dispatch(openEventDialog(EventDialogType.ChangeVacationEndDate)); },
-    closeDialog: () => { dispatch(closeEventDialog()); }
+    back: () => {
+        dispatch(openEventDialog(EventDialogType.EditVacation));
+    },
+    changeVacationEndDate: () => {
+        dispatch(openEventDialog(EventDialogType.ChangeVacationEndDate));
+    },
+    closeDialog: () => {
+        dispatch(closeEventDialog());
+    }
 });
 
 export const ChangeVacationStartDateEventDialog = connect(mapStateToProps, mapDispatchToProps)(ChangeVacationStartDateEventDialogImpl);

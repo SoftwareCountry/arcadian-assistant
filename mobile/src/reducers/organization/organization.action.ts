@@ -28,21 +28,30 @@ export interface LoadEmployeesFinished extends Action {
     employees: Employee[];
 }
 
-export const loadEmployeesFinished = (employees: Employee[]): LoadEmployeesFinished => ({ type: 'LOAD_EMPLOYEES_FINISHED', employees });
+export const loadEmployeesFinished = (employees: Employee[]): LoadEmployeesFinished => ({
+    type: 'LOAD_EMPLOYEES_FINISHED',
+    employees
+});
 
 export interface LoadEmployeesForDepartment extends Action {
     type: 'LOAD_EMPLOYEES_FOR_DEPARTMENT';
     departmentId: string;
 }
 
-export const loadEmployeesForDepartment = (departmentId: string): LoadEmployeesForDepartment => ({ type: 'LOAD_EMPLOYEES_FOR_DEPARTMENT', departmentId });
+export const loadEmployeesForDepartment = (departmentId: string): LoadEmployeesForDepartment => ({
+    type: 'LOAD_EMPLOYEES_FOR_DEPARTMENT',
+    departmentId
+});
 
 export interface LoadEmployeesForRoom extends Action {
     type: 'LOAD_EMPLOYEES_FOR_ROOM';
     roomNumber: string;
 }
 
-export const loadEmployeesForRoom = (roomNumber: string): LoadEmployeesForRoom => ({ type: 'LOAD_EMPLOYEES_FOR_ROOM', roomNumber });
+export const loadEmployeesForRoom = (roomNumber: string): LoadEmployeesForRoom => ({
+    type: 'LOAD_EMPLOYEES_FOR_ROOM',
+    roomNumber
+});
 
 export type OrganizationActions =
     LoadDepartments | LoadDepartmentsFinished |

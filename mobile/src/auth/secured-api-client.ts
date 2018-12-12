@@ -1,4 +1,4 @@
-import { AuthenticationState, AuthenticatedState } from './authentication-state';
+import { AuthenticatedState, AuthenticationState } from './authentication-state';
 import moment from 'moment';
 import { Observable } from 'rxjs';
 import { ajax } from 'rxjs/ajax';

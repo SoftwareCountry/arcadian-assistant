@@ -1,4 +1,4 @@
-import { employeesReducer, EmployeesStore } from './employees.reducer';
+import { employeesReducer } from './employees.reducer';
 import { Employee } from './employee.model';
 import { loadEmployeesFinished } from './organization.action';
 
@@ -6,7 +6,7 @@ describe('employees reducer', () => {
 
     it('should return the initial state', () => {
 
-        const defaultState = employeesReducer(undefined, { type: ''});
+        const defaultState = employeesReducer(undefined, { type: '' });
         expect(defaultState).toBeDefined();
         expect(defaultState.employeesById).toBeDefined();
         expect(defaultState.employeeIdsByDepartment).toBeDefined();
@@ -18,7 +18,7 @@ describe('employees reducer', () => {
         const id = 'test_id';
         employee.employeeId = id;
 
-        const state = employeesReducer(undefined, loadEmployeesFinished([ employee ]));
+        const state = employeesReducer(undefined, loadEmployeesFinished([employee]));
         expect(state.employeesById.get(id)).toEqual(employee);
     });
 
@@ -29,7 +29,7 @@ describe('employees reducer', () => {
         employee.employeeId = id;
         employee.departmentId = depId;
 
-        const state = employeesReducer(undefined, loadEmployeesFinished([ employee ]));
+        const state = employeesReducer(undefined, loadEmployeesFinished([employee]));
         expect(state.employeeIdsByDepartment.get(depId)).toBeDefined();
         expect(state.employeeIdsByDepartment.get(depId)!.has(id)).toBeTruthy();
     });
@@ -46,8 +46,8 @@ describe('employees reducer', () => {
         updatedEmployee.employeeId = id;
         updatedEmployee.departmentId = depId2;
 
-        let state = employeesReducer(undefined, loadEmployeesFinished([ oldEmployee ]));
-        state = employeesReducer(state, loadEmployeesFinished([ updatedEmployee ]));
+        let state = employeesReducer(undefined, loadEmployeesFinished([oldEmployee]));
+        state = employeesReducer(state, loadEmployeesFinished([updatedEmployee]));
 
         expect(state.employeesById.get(id)).toEqual(updatedEmployee);
         expect(state.employeeIdsByDepartment.get(depId1)).toBeDefined();

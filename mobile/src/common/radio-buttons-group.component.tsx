@@ -44,7 +44,7 @@ class RadioButtonComponent extends React.Component<RadioButtonProps> {
 
         return (
             <TouchableOpacity
-                style={[ layout, { opacity } ]}
+                style={[layout, { opacity }]}
                 onPress={() => {
                     if (!this.props.disabled) {
                         this.props.onPress(this.props.label);
@@ -70,7 +70,7 @@ class RadioButtonComponent extends React.Component<RadioButtonProps> {
                         }}
                     />}
                 </View>
-                <StyledText style={[ textStyle, this.props.labelStyle ]}>{this.props.label}</StyledText>
+                <StyledText style={[textStyle, this.props.labelStyle]}>{this.props.label}</StyledText>
             </TouchableOpacity>
         );
     }

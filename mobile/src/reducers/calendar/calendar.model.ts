@@ -1,5 +1,5 @@
 import moment, { Moment } from 'moment';
-import { CalendarEvent, CalendarEventType, CalendarEventStatus } from './calendar-event.model';
+import { CalendarEvent, CalendarEventType } from './calendar-event.model';
 import { IntervalsMetadata, ReadOnlyIntervalsMetadata } from './calendar-intervals-metadata.model';
 import { Nullable, Optional } from 'types';
 
@@ -26,7 +26,7 @@ export enum IntervalType {
     EndInterval = 'EndInterval',
     IntervalFullBoundary = 'IntervalFullBoundary',
     IntervalLeftBoundary = 'IntervalLeftBoundary',
-    IntervalRightBoundary =  'IntervalRightBoundary'
+    IntervalRightBoundary = 'IntervalRightBoundary'
 }
 
 export interface IntervalModel {
@@ -39,6 +39,7 @@ export interface ReadOnlyIntervalsModel {
     readonly metadata: ReadOnlyIntervalsMetadata;
 
     get(date: Moment): IntervalModel[] | undefined;
+
     copy(): IntervalsModel;
 }
 
@@ -50,7 +51,8 @@ export class IntervalsModel implements ReadOnlyIntervalsModel {
     constructor(
         private readonly intervalsDictionary: IntervalsModelDictionary = {},
         public readonly intervalsMetadata: IntervalsMetadata = new IntervalsMetadata([])
-    ) { }
+    ) {
+    }
 
     public set(date: Moment, interval: IntervalModel) {
         const dateKey = IntervalsModel.generateKey(date);
