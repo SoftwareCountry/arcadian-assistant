@@ -2,14 +2,14 @@
 {
     public interface ICalendarEventsMessagingSettings
     {
-        EmailWithFixedRecipientSettings SickLeaveApproved { get; set; }
+        EmailWithFixedRecipientSettings SickLeaveApproved { get; }
 
-        EmailSettings EventAssignedToApprover { get; set; }
+        EmailSettings EventAssignedToApprover { get; }
 
-        EmailSettings EventStatusChanged { get; set; }
+        EmailSettings EventStatusChanged { get; }
 
-        EmailSettings EventChangedByOwner { get; set; }
+        EmailSettings EventChangedByOwner { get; }
 
-        EmailSettings EventUserGrantedApproval { get; set; }
+        EmailSettings EventUserGrantedApproval { get; }
     }
 }

@@ -15,12 +15,12 @@
 
     public class SickLeaveApprovedNotificationActor : UntypedActor
     {
-        private readonly EmailWithFixedRecipientSettings mailConfig;
+        private readonly IEmailWithFixedRecipientSettings mailConfig;
         private readonly IActorRef organizationActor;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
-        public SickLeaveApprovedNotificationActor(EmailWithFixedRecipientSettings mailConfig, IActorRef organizationActor)
+        public SickLeaveApprovedNotificationActor(IEmailWithFixedRecipientSettings mailConfig, IActorRef organizationActor)
         {
             this.mailConfig = mailConfig;
             this.organizationActor = organizationActor;

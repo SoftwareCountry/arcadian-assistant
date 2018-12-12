@@ -17,14 +17,14 @@
 
     public class EventUserGrantedApprovalNotificationActor : UntypedActor, ILogReceive
     {
-        private readonly EmailSettings mailConfig;
+        private readonly IEmailSettings mailConfig;
         private readonly IActorRef organizationActor;
         private readonly IActorRef userPreferencesActor;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
         public EventUserGrantedApprovalNotificationActor(
-            EmailSettings mailConfig,
+            IEmailSettings mailConfig,
             IActorRef organizationActor,
             IActorRef userPreferencesActor)
         {

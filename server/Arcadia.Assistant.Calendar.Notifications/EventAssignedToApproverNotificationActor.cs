@@ -17,14 +17,14 @@
 
     public class EventAssignedToApproverNotificationActor : UntypedActor, ILogReceive
     {
-        private readonly EmailSettings mailConfig;
+        private readonly IEmailSettings mailConfig;
         private readonly IActorRef organizationActor;
         private readonly IActorRef userPreferencesActor;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
         public EventAssignedToApproverNotificationActor(
-            EmailSettings mailConfig,
+            IEmailSettings mailConfig,
             IActorRef organizationActor,
             IActorRef userPreferencesActor)
         {
