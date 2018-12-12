@@ -48,6 +48,12 @@
                     organization,
                     userPreferences)),
                 "event-changed-status-owner-email");
+            this.actorSystem.ActorOf(
+                Props.Create(() => new EventUserGrantedApprovalNotificationActor(
+                    calendarEventsMessagingSettings.EventUserGrantedApproval,
+                    organization,
+                    userPreferences)),
+                "event-granted-approval-owner-email");
 
             var emailNotificationsActorProps = this.actorSystem.DI().Props<EmailNotificationsActor>();
             this.actorSystem.ActorOf(Props.Create(() => new NotificationsDispatcherActor(emailNotificationsActorProps)), "notifications");

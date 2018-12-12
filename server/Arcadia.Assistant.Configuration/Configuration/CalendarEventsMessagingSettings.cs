@@ -15,5 +15,8 @@
 
         [Required]
         public EmailSettings EventChangedByOwner { get; set; }
+
+        [Required]
+        public EmailSettings EventUserGrantedApproval { get; set; }
     }
 }

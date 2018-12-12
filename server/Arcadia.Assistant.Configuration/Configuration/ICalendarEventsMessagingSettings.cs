@@ -9,5 +9,7 @@
         EmailSettings EventStatusChanged { get; set; }
 
         EmailSettings EventChangedByOwner { get; set; }
+
+        EmailSettings EventUserGrantedApproval { get; set; }
     }
 }
