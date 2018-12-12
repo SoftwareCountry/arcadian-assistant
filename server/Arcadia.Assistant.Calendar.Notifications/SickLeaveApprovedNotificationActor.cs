@@ -13,14 +13,14 @@
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
-    public class SendEmailSickLeaveApprovedActor : UntypedActor
+    public class SickLeaveApprovedNotificationActor : UntypedActor
     {
         private readonly EmailWithFixedRecipientSettings mailConfig;
         private readonly IActorRef organizationActor;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
-        public SendEmailSickLeaveApprovedActor(ICalendarEventsMessagingSettings mailConfig, IActorRef organizationActor)
+        public SickLeaveApprovedNotificationActor(ICalendarEventsMessagingSettings mailConfig, IActorRef organizationActor)
         {
             this.mailConfig = mailConfig.SickLeaveApproved;
             this.organizationActor = organizationActor;
