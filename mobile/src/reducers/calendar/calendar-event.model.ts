@@ -51,6 +51,8 @@ export class DatesInterval {
     }
 }
 
+export type CalendarEventId = string;
+
 export class CalendarEvent {
     @dataMember()
     @required()

@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import { combineEpics } from 'redux-observable';
-import { loadUserEmployeeFinishedEpic$, intervalsBySingleDaySelectionEpic$, 
-        loadCalendarEventsEpic$, loadCalendarEventsFinishedEpic$, calendarSelectionModeEpic$, 
+import { loadUserEmployeeFinishedEpic$, intervalsBySingleDaySelectionEpic$,
+        loadCalendarEventsEpic$, loadCalendarEventsFinishedEpic$, calendarSelectionModeEpic$,
         calendarEventSetNewStatusEpic$ } from './calendar.epics';
 import { calendarEventsReducer, CalendarEventsState } from './calendar-events.reducer';
 import { EventDialogState, eventDialogReducer } from './event-dialog/event-dialog.reducer';
@@ -11,6 +11,7 @@ import { vacationSavedEpic$, vacationCanceledEpic$, vacationChangedEpic$ } from 
 import { dayoffSavedEpic$, dayoffCanceledEpic$ } from './dayoff.epics';
 import { loadPendingRequestsEpic$ } from './pending-requests/pending-requests.epics';
 import { pendingRequestsReducer, PendingRequestsState } from './pending-requests/pending-requests.reducer';
+import { approve$, loadApprovals$ } from './approval.epics';
 
 export interface CalendarState {
     calendarEvents: CalendarEventsState;
@@ -19,25 +20,27 @@ export interface CalendarState {
 }
 
 export const calendarEpics = combineEpics(
-    loadUserEmployeeFinishedEpic$ as any,
-    loadCalendarEventsEpic$ as any,
-    loadCalendarEventsFinishedEpic$ as any,
-    loadPendingRequestsEpic$ as any,
-    calendarEventSetNewStatusEpic$ as any,
-    sickLeaveSavedEpic$ as any,
-    sickLeaveCompletedEpic$ as any,
-    sickLeaveProlongedEpic$ as any,
-    sickLeaveCanceledEpic$ as any,
-    vacationSavedEpic$ as any,
-    vacationCanceledEpic$ as any,
-    vacationChangedEpic$ as any,
-    dayoffSavedEpic$ as any,
-    dayoffCanceledEpic$ as any,
-    intervalsBySingleDaySelectionEpic$ as any,
-    openEventDialogEpic$ as any,
-    closeEventDialogEpic$ as any,
-    startEventDialogProgressEpic$ as any,
-    calendarSelectionModeEpic$ as any);
+    loadUserEmployeeFinishedEpic$,
+    loadCalendarEventsEpic$,
+    loadCalendarEventsFinishedEpic$,
+    loadPendingRequestsEpic$,
+    calendarEventSetNewStatusEpic$,
+    sickLeaveSavedEpic$,
+    sickLeaveCompletedEpic$,
+    sickLeaveProlongedEpic$,
+    sickLeaveCanceledEpic$,
+    vacationSavedEpic$,
+    vacationCanceledEpic$,
+    vacationChangedEpic$,
+    dayoffSavedEpic$,
+    dayoffCanceledEpic$,
+    intervalsBySingleDaySelectionEpic$,
+    openEventDialogEpic$,
+    closeEventDialogEpic$,
+    startEventDialogProgressEpic$,
+    calendarSelectionModeEpic$,
+    approve$,
+    loadApprovals$);
 
 export const calendarReducer = combineReducers<CalendarState>({
     calendarEvents: calendarEventsReducer,

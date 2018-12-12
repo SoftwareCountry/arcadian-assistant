@@ -21,6 +21,7 @@ import { catchError, flatMap, groupBy, map, mergeAll, mergeMap, switchMap } from
 import { from, Observable, of } from 'rxjs';
 import { loadPendingRequests } from './pending-requests/pending-requests.action';
 import { Action } from 'redux';
+import { loadApprovals } from './approval.action';
 
 //----------------------------------------------------------------------------
 export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
@@ -33,10 +34,12 @@ export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUse
 export const loadCalendarEventsFinishedEpic$ = (action$: ActionsObservable<LoadCalendarEventsFinished>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('LOAD-CALENDAR-EVENTS-FINISHED').pipe(
         flatMap(action => {
+            const calendarEventIds = action.calendarEvents.all.map(calendarEvent => calendarEvent.calendarEventId);
+            const loadApprovalsAction = loadApprovals(action.employeeId, calendarEventIds);
             if (action.next) {
-                return from(action.next);
+                return from([ ...action.next, loadApprovalsAction ]);
             }
-            return of(closeEventDialog());
+            return of(closeEventDialog(), loadApprovalsAction);
         }),
     );
 
