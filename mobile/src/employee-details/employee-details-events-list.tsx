@@ -8,12 +8,12 @@ import { CalendarEvent } from '../reducers/calendar/calendar-event.model';
 import { EventManagementToolset } from './event-management-toolset';
 import { CalendarEventIcon } from '../calendar/calendar-event-icon';
 import { Nullable } from 'types';
-import { EventActionsContainer } from './event-action-provider';
+import { EventActionContainer, EventActionProvider } from './event-action-provider';
 import { List } from 'immutable';
 
 //============================================================================
 interface EmployeeDetailsEventsListProps {
-    eventActions: EventActionsContainer[];
+    eventActions: EventActionContainer[];
     hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => Nullable<string>;
     showUserAvatar?: boolean;
 }
@@ -36,28 +36,23 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
     }
 
     //----------------------------------------------------------------------------
-    private prepareEvents(): Nullable<EventActionsContainer[]> {
+    private prepareEvents(): Nullable<EventActionContainer[]> {
         const { eventActions } = this.props;
 
         if (!eventActions) {
             return null;
         }
 
-        return List(eventActions).sort((left, right) => {
-            const nameCompareResult = left.employee.name.localeCompare(right.employee.name);
-            if (nameCompareResult !== 0) {
-                return nameCompareResult;
-            }
-
-            return right.event.dates.startDate.valueOf() - left.event.dates.startDate.valueOf();
-        }).toArray();
+        return List(eventActions)
+            .sort((left, right) => { return EventActionProvider.compareContainers(left, right); })
+            .toArray();
     }
 
     //----------------------------------------------------------------------------
-    private keyExtractor = (item: EventActionsContainer) => item.event.calendarEventId;
+    private keyExtractor = (item: EventActionContainer) => item.event.calendarEventId;
 
     //----------------------------------------------------------------------------
-    private renderItem = (itemInfo: ListRenderItemInfo<EventActionsContainer>) => {
+    private renderItem = (itemInfo: ListRenderItemInfo<EventActionContainer>) => {
         const action = itemInfo.item;
         const { eventsContainer, eventRow, eventLeftIcons, eventTypeIconContainer,
                 eventLeftIconsTiny, eventTypeIconContainerTiny, eventIcon, eventTextContainer,

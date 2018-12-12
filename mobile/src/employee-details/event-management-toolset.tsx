@@ -6,11 +6,11 @@ import React, { Component } from 'react';
 import { Alert, TouchableOpacity, View } from 'react-native';
 import { ApplicationIcon } from '../override/application-icon';
 import { layoutStylesForEventManagementToolset } from './styles';
-import { EventActionsContainer } from './event-action-provider';
+import { EventActionContainer } from './event-action-provider';
 
 //============================================================================
 interface EventManagementToolsetProps {
-    eventAction: EventActionsContainer;
+    eventAction: EventActionContainer;
 }
 
 //============================================================================

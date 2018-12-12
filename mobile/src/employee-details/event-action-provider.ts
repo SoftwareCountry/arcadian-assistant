@@ -16,7 +16,7 @@ export interface EventAction {
 }
 
 //============================================================================
-export interface EventActionsContainer {
+export interface EventActionContainer {
     readonly event: CalendarEvent;
     readonly employee: Employee;
     readonly positiveAction?: EventAction;
@@ -35,9 +35,9 @@ export class EventActionProvider {
     public getEventActions(events: CalendarEvent[],
                            employee: Employee,
                            permissions: UserEmployeePermissions,
-                           approvals: Map<CalendarEventId, Set<Approval>>): EventActionsContainer[] {
+                           approvals: Map<CalendarEventId, Set<Approval>>): EventActionContainer[] {
 
-        const eventContainers: EventActionsContainer[] = [];
+        const eventContainers: EventActionContainer[] = [];
 
         for (const event of events) {
             eventContainers.push(this.evaluateEvent(event, employee, permissions, approvals));
@@ -49,7 +49,7 @@ export class EventActionProvider {
     //----------------------------------------------------------------------------
     public getRequestActions(events: CalendarEvent[],
                              employee: Employee,
-                             approvals: Map<CalendarEventId, Set<Approval>>): EventActionsContainer[] {
+                             approvals: Map<CalendarEventId, Set<Approval>>): EventActionContainer[] {
 
         const permissions = new UserEmployeePermissions();
         permissions.permissionsNames = Set([Permission.approveCalendarEvents, Permission.rejectCalendarEvents]);
@@ -60,7 +60,7 @@ export class EventActionProvider {
     private evaluateEvent(event: CalendarEvent,
                           employee: Employee,
                           permissions: UserEmployeePermissions,
-                          approvals: Map<CalendarEventId, Set<Approval>>): EventActionsContainer {
+                          approvals: Map<CalendarEventId, Set<Approval>>): EventActionContainer {
         let positiveAction: Optional<EventAction>;
         let negativeAction: Optional<EventAction>;
 
@@ -116,5 +116,15 @@ export class EventActionProvider {
         }
 
         return !!eventApprovals.find(approval => approval.approverId === this.userId);
+    }
+
+    //----------------------------------------------------------------------------
+    public static compareContainers(left: EventActionContainer, right: EventActionContainer): number {
+        const nameCompareResult = left.employee.name.localeCompare(right.employee.name);
+        if (nameCompareResult !== 0) {
+            return nameCompareResult;
+        }
+
+        return right.event.dates.startDate.valueOf() - left.event.dates.startDate.valueOf();
     }
 }

@@ -29,7 +29,7 @@ import { Nullable } from 'types';
 import { IntervalTypeConverter } from '../reducers/calendar/interval-type-converter';
 import { approve, loadApprovals } from '../reducers/calendar/approval.action';
 import { Approval } from '../reducers/calendar/approval.model';
-import { EventActionProvider, EventActionsContainer } from './event-action-provider';
+import { EventActionProvider, EventActionContainer } from './event-action-provider';
 
 //============================================================================
 interface TileData {
@@ -416,8 +416,8 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
         const provider = new EventActionProvider(this.props.userId, this.props.eventSetStatus, this.props.eventApprove);
 
-        const actions: EventActionsContainer[] =
-            this.props.requests.reduce<EventActionsContainer[]>(
+        const actions: EventActionContainer[] =
+            this.props.requests.reduce<EventActionContainer[]>(
                 (acc, events, employee) => acc.concat(provider.getRequestActions(events, employee, this.props.approvals)),
                 []
             );
