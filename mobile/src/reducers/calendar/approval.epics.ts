@@ -3,14 +3,14 @@
  ******************************************************************************/
 
 import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
-import { filter, flatMap, map, mergeMap, tap } from 'rxjs/operators';
+import { flatMap, map, mergeMap, tap } from 'rxjs/operators';
 import { handleHttpErrors } from '../errors/errors.epics';
 import { deserializeArray } from 'santee-dcts';
 import { ApprovalActionType, Approve, approveFinished, LoadApprovals, loadApprovalsFinished } from './approval.action';
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { Approval } from './approval.model';
 import { Map as ImmutableMap, Set } from 'immutable';
-import { forkJoin } from 'rxjs';
+import { EMPTY, forkJoin } from 'rxjs';
 
 //----------------------------------------------------------------------------
 export const loadApprovals$ = (action$: ActionsObservable<LoadApprovals>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
@@ -46,10 +46,18 @@ export const loadApprovals$ = (action$: ActionsObservable<LoadApprovals>, _: Sta
 //----------------------------------------------------------------------------
 export const approve$ = (action$: ActionsObservable<Approve>, state$: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
     ofType(ApprovalActionType.approve),
-    filter(() => !!state$.value.userInfo && !!state$.value.userInfo.employeeId),
     flatMap(action => {
+        if (!state$.value.userInfo) {
+            return EMPTY;
+        }
+
+        const employeeId = state$.value.userInfo.employeeId;
+        if (!employeeId) {
+            return EMPTY;
+        }
+
         const body = {
-            approverId: state$.value.userInfo!.employeeId!,
+            approverId: employeeId,
         };
         const headers = {
             'Content-Type': 'application/json',
@@ -57,7 +65,7 @@ export const approve$ = (action$: ActionsObservable<Approve>, state$: StateObser
         return deps.apiClient.post(`/employees/${action.employeeId}/events/${action.eventId}/approvals`, body, headers).pipe(
             handleHttpErrors(),
             map(x => {
-                const approval = new Approval(state$.value.userInfo!.employeeId!, action.eventId);
+                const approval = new Approval(employeeId, action.eventId);
                 return approveFinished(approval);
             }),
         );
