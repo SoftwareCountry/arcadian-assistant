@@ -4,6 +4,8 @@
 
     public class SmtpSettings : ISmtpSettings
     {
+        public bool Enabled { get; set; } = true;
+
         [Required]
         public string User { get; set; }
 
@@ -15,6 +17,7 @@
 
         [Required]
         public int Port { get; set; }
+
         [Required]
         public bool UseTls { get; set; }
     }
