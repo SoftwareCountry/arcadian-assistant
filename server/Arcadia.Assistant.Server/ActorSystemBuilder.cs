@@ -32,11 +32,22 @@
             var userPreferences = this.actorSystem.ActorOf(this.actorSystem.DI().Props<UserPreferencesActor>(), WellKnownActorPaths.UserPreferences);
 
             this.actorSystem.ActorOf(
-                Props.Create(() => new SickLeaveApprovedNotificationActor(calendarEventsMessagingSettings, organization)),
+                Props.Create(() => new SickLeaveApprovedNotificationActor(
+                    calendarEventsMessagingSettings.SickLeaveApproved, 
+                    organization)),
                 "sick-leave-email");
             this.actorSystem.ActorOf(
-                Props.Create(() => new EventAssignedToApproverNotificationActor(calendarEventsMessagingSettings, organization, userPreferences)),
+                Props.Create(() => new EventAssignedToApproverNotificationActor(
+                    calendarEventsMessagingSettings.EventAssignedToApprover, 
+                    organization,
+                    userPreferences)),
                 "event-assigned-email");
+            this.actorSystem.ActorOf(
+                Props.Create(() => new OwnerEventStatusChangedNotificationActor(
+                    calendarEventsMessagingSettings.EventChangedByOwner,
+                    organization,
+                    userPreferences)),
+                "event-changed-status-owner-email");
 
             var emailNotificationsActorProps = this.actorSystem.DI().Props<EmailNotificationsActor>();
             this.actorSystem.ActorOf(Props.Create(() => new NotificationsDispatcherActor(emailNotificationsActorProps)), "notifications");

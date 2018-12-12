@@ -20,9 +20,9 @@
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
-        public SickLeaveApprovedNotificationActor(ICalendarEventsMessagingSettings mailConfig, IActorRef organizationActor)
+        public SickLeaveApprovedNotificationActor(EmailWithFixedRecipientSettings mailConfig, IActorRef organizationActor)
         {
-            this.mailConfig = mailConfig.SickLeaveApproved;
+            this.mailConfig = mailConfig;
             this.organizationActor = organizationActor;
 
             Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);

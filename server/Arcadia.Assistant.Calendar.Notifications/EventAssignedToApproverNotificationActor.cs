@@ -24,11 +24,11 @@
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
         public EventAssignedToApproverNotificationActor(
-            ICalendarEventsMessagingSettings mailConfig,
+            EmailSettings mailConfig,
             IActorRef organizationActor,
             IActorRef userPreferencesActor)
         {
-            this.mailConfig = mailConfig.EventAssignedToApprover;
+            this.mailConfig = mailConfig;
             this.organizationActor = organizationActor;
             this.userPreferencesActor = userPreferencesActor;
 
@@ -95,7 +95,7 @@
             var approverEmployeeTask = this.organizationActor.Ask<EmployeesQuery.Response>(
                 EmployeesQuery.Create().WithId(message.ApproverId));
 
-            await Task.WhenAll(ownerEmployeeTask, approverPreferencesTask);
+            await Task.WhenAll(ownerEmployeeTask, approverPreferencesTask, approverEmployeeTask);
             return (ownerEmployeeTask.Result, approverPreferencesTask.Result, approverEmployeeTask.Result);
         }
 
