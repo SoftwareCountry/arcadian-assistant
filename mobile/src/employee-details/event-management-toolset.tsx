@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 import { Alert, TouchableOpacity, View } from 'react-native';
 import { ApplicationIcon } from '../override/application-icon';
 import { layoutStylesForEventManagementToolset } from './styles';
-import { EventActionContainer } from './event-action-provider';
+import { EventAction, EventActionContainer, EventActionType } from './event-action-provider';
 
 //============================================================================
 interface EventManagementToolsetProps {
@@ -24,8 +24,10 @@ export class EventManagementToolset extends Component<EventManagementToolsetProp
             return;
         }
 
+        const verb = `${this.actionVerb(positiveAction)}`;
+
         Alert.alert(
-            `Are you sure you want to ${positiveAction.name} the request?`,
+            `Are you sure you want to ${verb} the request?`,
             undefined,
             [
                 {
@@ -33,7 +35,7 @@ export class EventManagementToolset extends Component<EventManagementToolsetProp
                     style: 'cancel',
                 },
                 {
-                    text: this.capitalizeFirstLetter(`${positiveAction.name}`),
+                    text: this.capitalizeFirstLetter(`${verb}`),
                     onPress: positiveAction.handler,
                 },
             ],
@@ -49,8 +51,10 @@ export class EventManagementToolset extends Component<EventManagementToolsetProp
             return;
         }
 
+        const verb = `${this.actionVerb(negativeAction)}`;
+
         Alert.alert(
-            `Are you sure you want to ${negativeAction.name} the request?`,
+            `Are you sure you want to ${verb} the request?`,
             undefined,
             [
                 {
@@ -58,7 +62,7 @@ export class EventManagementToolset extends Component<EventManagementToolsetProp
                     style: 'cancel',
                 },
                 {
-                    text: this.capitalizeFirstLetter(`${negativeAction.name}`),
+                    text: this.capitalizeFirstLetter(`${verb}`),
                     onPress: negativeAction.handler,
                 },
             ],
@@ -96,5 +100,20 @@ export class EventManagementToolset extends Component<EventManagementToolsetProp
     // noinspection JSMethodCanBeStatic
     private capitalizeFirstLetter(str: string) {
         return str.charAt(0).toLocaleUpperCase() + str.slice(1);
+    }
+
+    //----------------------------------------------------------------------------
+    // noinspection JSMethodCanBeStatic
+    private actionVerb(action: EventAction): string {
+        switch (action.type) {
+            case EventActionType.approve:
+                return 'approve';
+
+            case EventActionType.reject:
+                return 'reject';
+
+            case EventActionType.cancel:
+                return 'discard';
+        }
     }
 }

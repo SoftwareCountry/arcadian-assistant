@@ -10,9 +10,16 @@ import { Approval } from '../reducers/calendar/approval.model';
 import { Optional } from 'types';
 
 //============================================================================
+export enum EventActionType {
+    approve = 'EventActionType.approve',
+    reject = 'EventActionType.reject',
+    cancel = 'EventActionType.cancel',
+}
+
+//============================================================================
 export interface EventAction {
+    readonly type: EventActionType;
     readonly handler: () => void;
-    readonly name: string;
 }
 
 //============================================================================
@@ -71,7 +78,7 @@ export class EventActionProvider {
                 if (!this.approvedByMe(event, approvals)) {
                     positiveAction = {
                         handler: () => this.eventApprove(this.userId, employee.employeeId, event),
-                        name: 'approve',
+                        type: EventActionType.approve,
                     };
                 }
             }
@@ -80,14 +87,14 @@ export class EventActionProvider {
                 if (permissions.has(Permission.cancelPendingCalendarEvents)) {
                     negativeAction = {
                         handler: () => this.eventSetStatus(employee.employeeId, event, CalendarEventStatus.Cancelled),
-                        name: 'discard',
+                        type: EventActionType.cancel,
                     };
                 }
             } else {
                 if (permissions.has(Permission.rejectCalendarEvents)) {
                     negativeAction = {
                         handler: () => this.eventSetStatus(employee.employeeId, event, CalendarEventStatus.Rejected),
-                        name: 'reject',
+                        type: EventActionType.reject,
                     };
                 }
             }
@@ -95,7 +102,7 @@ export class EventActionProvider {
             if (permissions.has(Permission.cancelApprovedCalendarEvents)) {
                 negativeAction = {
                     handler: () => this.eventSetStatus(employee.employeeId, event, CalendarEventStatus.Cancelled),
-                    name: 'discard',
+                    type: EventActionType.cancel,
                 };
             }
         }
