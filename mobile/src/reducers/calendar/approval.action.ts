@@ -6,6 +6,7 @@ import { Action } from 'redux';
 import { CalendarEventId } from './calendar-event.model';
 import { Approval } from './approval.model';
 import { Map } from 'immutable';
+import { EmployeeId } from '../organization/employee.model';
 
 //============================================================================
 export enum ApprovalActionType {
@@ -21,17 +22,18 @@ export enum ApprovalActionType {
 //----------------------------------------------------------------------------
 
 export interface LoadApprovals extends Action<ApprovalActionType.loadApprovals> {
-    employeeId: string;
+    employeeId: EmployeeId;
     eventIds: string[];
 }
 
 export interface LoadApprovalsFinished extends Action<ApprovalActionType.loadApprovalsFinished> {
-    employeeId: string;
+    employeeId: EmployeeId;
     approvals: Map<CalendarEventId, Approval[]>;
 }
 
 export interface Approve extends Action<ApprovalActionType.approve> {
-    employeeId: string;
+    approverId: EmployeeId;
+    employeeId: EmployeeId;
     eventId: string;
 }
 
@@ -61,9 +63,10 @@ export const loadApprovalsFinished = (employeeId: string, approvals: Map<Calenda
     };
 };
 
-export const approve = (employeeId: string, eventId: string): Approve => {
+export const approve = (approverId: EmployeeId, employeeId: EmployeeId, eventId: string): Approve => {
     return {
         type: ApprovalActionType.approve,
+        approverId,
         employeeId,
         eventId,
     };

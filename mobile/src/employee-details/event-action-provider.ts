@@ -28,7 +28,7 @@ export class EventActionProvider {
     //----------------------------------------------------------------------------
     constructor(private readonly userId: EmployeeId,
                 private readonly eventSetStatus: (employeeId: EmployeeId, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void,
-                private readonly eventApprove: (employeeId: EmployeeId, calendarEvent: CalendarEvent) => void) {
+                private readonly eventApprove: (approverId: EmployeeId, employeeId: EmployeeId, calendarEvent: CalendarEvent) => void) {
     }
 
     //----------------------------------------------------------------------------
@@ -70,7 +70,7 @@ export class EventActionProvider {
             if (permissions.has(Permission.approveCalendarEvents)) {
                 if (!this.approvedByMe(event, approvals)) {
                     positiveAction = {
-                        handler: () => this.eventApprove(employee.employeeId, event),
+                        handler: () => this.eventApprove(this.userId, employee.employeeId, event),
                         name: 'approve',
                     };
                 }

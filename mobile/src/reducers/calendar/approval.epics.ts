@@ -10,7 +10,7 @@ import { ApprovalActionType, Approve, approveFinished, LoadApprovals, loadApprov
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { Approval } from './approval.model';
 import { Map as ImmutableMap, Set } from 'immutable';
-import { EMPTY, forkJoin } from 'rxjs';
+import { forkJoin } from 'rxjs';
 
 //----------------------------------------------------------------------------
 export const loadApprovals$ = (action$: ActionsObservable<LoadApprovals>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
@@ -47,17 +47,8 @@ export const loadApprovals$ = (action$: ActionsObservable<LoadApprovals>, _: Sta
 export const approve$ = (action$: ActionsObservable<Approve>, state$: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
     ofType(ApprovalActionType.approve),
     flatMap(action => {
-        if (!state$.value.userInfo) {
-            return EMPTY;
-        }
-
-        const employeeId = state$.value.userInfo.employeeId;
-        if (!employeeId) {
-            return EMPTY;
-        }
-
         const body = {
-            approverId: employeeId,
+            approverId: action.approverId,
         };
         const headers = {
             'Content-Type': 'application/json',
@@ -65,7 +56,7 @@ export const approve$ = (action$: ActionsObservable<Approve>, state$: StateObser
         return deps.apiClient.post(`/employees/${action.employeeId}/events/${action.eventId}/approvals`, body, headers).pipe(
             handleHttpErrors(),
             map(x => {
-                const approval = new Approval(employeeId, action.eventId);
+                const approval = new Approval(action.approverId, action.eventId);
                 return approveFinished(approval);
             }),
         );

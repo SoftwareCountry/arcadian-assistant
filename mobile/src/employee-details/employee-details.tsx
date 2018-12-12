@@ -27,7 +27,7 @@ import { Action, Dispatch } from 'redux';
 import { openCompany, openDepartment, openRoom } from '../navigation/navigation.actions';
 import { Nullable } from 'types';
 import { IntervalTypeConverter } from '../reducers/calendar/interval-type-converter';
-import { approve, loadApprovals } from '../reducers/calendar/approval.action';
+import { approve } from '../reducers/calendar/approval.action';
 import { Approval } from '../reducers/calendar/approval.model';
 import { EventActionProvider, EventActionContainer } from './event-action-provider';
 
@@ -78,7 +78,7 @@ interface EmployeeDetailsDispatchProps {
     loadCalendarEvents: (employeeId: string) => void;
     loadUserEmployeePermissions: (employeeId: string) => void;
     eventSetStatus: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => void;
-    eventApprove: (employeeId: string, calendarEvent: CalendarEvent) => void;
+    eventApprove: (approverId: EmployeeId, employeeId: EmployeeId, calendarEvent: CalendarEvent) => void;
     openCompany: (departmentId: string) => void;
     openDepartment: (departmentId: string, departmentAbbreviation: string) => void;
     openRoom: (departmentId: string) => void;
@@ -95,8 +95,8 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>): EmployeeDetailsDispatch
     eventSetStatus: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => {
         dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status));
     },
-    eventApprove: (employeeId: string, calendarEvent: CalendarEvent) => {
-        dispatch(approve(employeeId, calendarEvent.calendarEventId));
+    eventApprove: (approverId: EmployeeId, employeeId: EmployeeId, calendarEvent: CalendarEvent) => {
+        dispatch(approve(approverId, employeeId, calendarEvent.calendarEventId));
     },
     openCompany: (departmentId: string) => {
         dispatch(openCompany(departmentId));
