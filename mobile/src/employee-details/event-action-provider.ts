@@ -68,50 +68,91 @@ export class EventActionProvider {
                           employee: Employee,
                           permissions: UserEmployeePermissions,
                           approvals: Map<CalendarEventId, Set<Approval>>): EventActionContainer {
-        let positiveAction: Optional<EventAction>;
-        let negativeAction: Optional<EventAction>;
 
-        const isOwn = this.userId === employee.employeeId;
-
-        if (event.status === CalendarEventStatus.Requested) {
-            if (permissions.has(Permission.approveCalendarEvents)) {
-                if (!this.approvedByMe(event, approvals)) {
-                    positiveAction = {
-                        handler: () => this.eventApprove(this.userId, employee.employeeId, event),
-                        type: EventActionType.approve,
-                    };
-                }
-            }
-
-            if (isOwn) {
-                if (permissions.has(Permission.cancelPendingCalendarEvents)) {
-                    negativeAction = {
-                        handler: () => this.eventSetStatus(employee.employeeId, event, CalendarEventStatus.Cancelled),
-                        type: EventActionType.cancel,
-                    };
-                }
-            } else {
-                if (permissions.has(Permission.rejectCalendarEvents)) {
-                    negativeAction = {
-                        handler: () => this.eventSetStatus(employee.employeeId, event, CalendarEventStatus.Rejected),
-                        type: EventActionType.reject,
-                    };
-                }
-            }
-        } else if (event.status === CalendarEventStatus.Approved) {
-            if (permissions.has(Permission.cancelApprovedCalendarEvents)) {
-                negativeAction = {
-                    handler: () => this.eventSetStatus(employee.employeeId, event, CalendarEventStatus.Cancelled),
-                    type: EventActionType.cancel,
-                };
-            }
-        }
+        const positiveAction = this.positiveAction(event, employee, permissions, approvals);
+        const negativeAction = this.negativeAction(event, employee, permissions);
 
         return {
             event,
             employee,
             positiveAction,
             negativeAction,
+        };
+    }
+
+    //----------------------------------------------------------------------------
+    private positiveAction(event: CalendarEvent,
+                           employee: Employee,
+                           permissions: UserEmployeePermissions,
+                           approvals: Map<CalendarEventId, Set<Approval>>): Optional<EventAction> {
+
+        const eventStatusRequested = event.status === CalendarEventStatus.Requested;
+        const permissionApprove = permissions.has(Permission.approveCalendarEvents);
+        const approvedByMe = this.approvedByMe(event, approvals);
+
+        if (eventStatusRequested && permissionApprove && !approvedByMe) {
+            return this.approveAction(event, employee);
+        }
+
+        return undefined;
+    }
+
+    //----------------------------------------------------------------------------
+    private negativeAction(event: CalendarEvent,
+                           employee: Employee,
+                           permissions: UserEmployeePermissions): Optional<EventAction> {
+
+        switch (event.status) {
+            case CalendarEventStatus.Requested:
+                const isOwnEvent = this.userId === employee.employeeId;
+                if (isOwnEvent) {
+                    if (permissions.has(Permission.cancelPendingCalendarEvents)) {
+                        return this.cancelAction(event, employee);
+                    }
+                } else {
+                    if (permissions.has(Permission.rejectCalendarEvents)) {
+                        return this.rejectAction(event, employee);
+                    }
+                }
+                break;
+
+            case CalendarEventStatus.Approved:
+                if (permissions.has(Permission.cancelApprovedCalendarEvents)) {
+                    return this.cancelAction(event, employee);
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        return undefined;
+    }
+
+    //----------------------------------------------------------------------------
+    private approveAction(event: CalendarEvent,
+                          employee: Employee): EventAction {
+        return {
+            handler: () => this.eventApprove(this.userId, employee.employeeId, event),
+            type: EventActionType.approve,
+        };
+    }
+
+    //----------------------------------------------------------------------------
+    private rejectAction(event: CalendarEvent,
+                         employee: Employee): EventAction {
+        return {
+            handler: () => this.eventSetStatus(employee.employeeId, event, CalendarEventStatus.Rejected),
+            type: EventActionType.reject,
+        };
+    }
+
+    //----------------------------------------------------------------------------
+    private cancelAction(event: CalendarEvent,
+                         employee: Employee): EventAction {
+        return {
+            handler: () => this.eventSetStatus(employee.employeeId, event, CalendarEventStatus.Cancelled),
+            type: EventActionType.cancel,
         };
     }
 
