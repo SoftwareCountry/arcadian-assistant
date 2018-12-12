@@ -38,11 +38,8 @@ export class Approval implements ValueObject {
 
     //----------------------------------------------------------------------------
     public hashCode(): number {
-        let hashCode = 0;
-
         const hasher = new Hasher(this.approverId);
         hasher.combine(this.eventId);
-
-        return hashCode;
+        return hasher.value;
     }
 }
