@@ -5,7 +5,7 @@ import { PeopleActions } from './people.action';
 import { SearchActions } from '../search/search.action';
 import { SearchType } from '../../navigation/search-view';
 import { LoadUserEmployeeFinished } from '../user/user.action';
-import { DepartmentNode, DepartmentIdToNode } from './people.model';
+import { DepartmentIdToNode, DepartmentNode } from './people.model';
 import { appendRoot } from './append-root';
 import { Nullable } from 'types';
 
@@ -26,7 +26,7 @@ const initState: PeopleState = {
 };
 
 export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions | NavigationAction |
-        LoadUserEmployeeFinished | LoadDepartmentsFinished | SearchActions | LoadEmployeesFinished): PeopleState => {
+    LoadUserEmployeeFinished | LoadDepartmentsFinished | SearchActions | LoadEmployeesFinished): PeopleState => {
     switch (action.type) {
         case 'Navigation/NAVIGATE':
             if (action.routeName === 'Company') {

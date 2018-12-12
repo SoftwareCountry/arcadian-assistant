@@ -1,4 +1,4 @@
-import { Nullable, Optional } from 'types';
+import { Nullable } from 'types';
 
 export class ConvertHoursCreditToDays {
     public static readonly halfDay = 4;

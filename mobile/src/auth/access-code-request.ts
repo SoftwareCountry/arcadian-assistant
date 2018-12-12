@@ -54,16 +54,24 @@ export class AccessCodeRequest {
         private readonly clientId: string,
         private readonly redirectUri: string,
         private readonly tokenUrl: string
-        ) {
+    ) {
     }
 
     public fetchNew(code: string) {
-        const params: AccessCodeRequestParams = { ...this.getDefaultParams(), code, 'grant_type': 'authorization_code' };
+        const params: AccessCodeRequestParams = {
+            ...this.getDefaultParams(),
+            code,
+            'grant_type': 'authorization_code'
+        };
         return this.performRequest(params);
     }
 
     public refresh(refreshToken: string) {
-        const params: AccessCodeRequestParams = { ...this.getDefaultParams(), refresh_token: refreshToken, grant_type: 'refresh_token' };
+        const params: AccessCodeRequestParams = {
+            ...this.getDefaultParams(),
+            refresh_token: refreshToken,
+            grant_type: 'refresh_token'
+        };
         return this.performRequest(params);
     }
 

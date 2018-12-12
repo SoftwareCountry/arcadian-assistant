@@ -38,6 +38,7 @@ const mapStateToProps = (state: AppState, ownProps: PeopleRoomPropsOwnProps): Pe
 interface EmployeesListDispatchProps {
     onItemClicked: (employee: Employee) => void;
 }
+
 const mapDispatchToProps = (dispatch: Dispatch<Action>): EmployeesListDispatchProps => ({
     onItemClicked: (employee: Employee) => dispatch(openEmployeeDetails(employee))
 });

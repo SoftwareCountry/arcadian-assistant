@@ -7,7 +7,7 @@ import Style from '../layout/style';
 import { connect } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 import { Employee } from '../reducers/organization/employee.model';
-import { Nullable, Optional } from 'types';
+import { Optional } from 'types';
 import { NavigationScreenProps } from 'react-navigation';
 
 //============================================================================

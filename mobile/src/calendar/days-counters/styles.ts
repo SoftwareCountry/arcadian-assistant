@@ -1,4 +1,4 @@
-import { StyleSheet, ViewStyle } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 const counterColor = '#18515E';
 const labelColor = counterColor;

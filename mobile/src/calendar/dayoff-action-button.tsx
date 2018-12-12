@@ -2,9 +2,6 @@ import React, { Component } from 'react';
 import { CalendarActionButton } from './calendar-action-button';
 import { IntervalModel } from '../reducers/calendar/calendar.model';
 import { CalendarEventsColor } from './styles';
-import { HoursCreditCounter } from '../reducers/calendar/days-counters.model';
-import { connect } from 'react-redux';
-import { AppState } from '../reducers/app.reducer';
 
 interface DayoffActionButtonProps {
     interval?: IntervalModel;
@@ -27,11 +24,11 @@ export class DayoffActionButton extends Component<DayoffActionButtonProps> {
                 title={this.title}
                 borderColor={CalendarEventsColor.dayoff}
                 onPress={this.onDayoffAction}
-                disabled={this.props.disabled || disableCalendarAction} />
+                disabled={this.props.disabled || disableCalendarAction}/>
         );
     }
 
-    public get title() : string {
+    public get title(): string {
         return !this.props.interval
             ? 'Dayoff / Workout'
             : 'Edit Dayoff';

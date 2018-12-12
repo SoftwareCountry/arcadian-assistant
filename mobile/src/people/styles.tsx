@@ -1,12 +1,10 @@
 import { Dimensions, StyleSheet } from 'react-native';
 import Style from '../layout/style';
-import FastImage from 'react-native-fast-image';
-import center = FastImage.resizeMode.center;
 
 const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
 
-export const employeesListStyles  = StyleSheet.create({
+export const employeesListStyles = StyleSheet.create({
     company: {
         backgroundColor: '#FFF'
     },
@@ -64,7 +62,7 @@ export const companyDepartments = StyleSheet.create({
         borderColor: 'rgba(0, 0, 0, 0.15)'
     },
     nodesContainer: {
-		position: 'relative',
+        position: 'relative',
         height: nodesContainerHeight
     },
     nodesSwipeableContainer: {
@@ -81,13 +79,13 @@ export const companyDepartmentsAnimatedNode = StyleSheet.create({
         flexDirection: 'row',
     },
     stickyContainer: {
-		justifyContent: 'center',
+        justifyContent: 'center',
         alignItems: 'center',
         zIndex: 1
     },
     scaleContainer: {
-		justifyContent: 'center',
-		alignItems: 'center'
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     content: {
         marginLeft: contentMargin,

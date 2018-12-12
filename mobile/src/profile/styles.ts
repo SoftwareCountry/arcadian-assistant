@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions, TextStyle } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import Style from '../layout/style';
 
 export const chevronColor = '#2FAFCC';

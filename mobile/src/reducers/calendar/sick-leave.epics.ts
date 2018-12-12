@@ -1,11 +1,14 @@
 import { ActionsObservable, StateObservable } from 'redux-observable';
-import { CompleteSickLeave, ConfirmClaimSickLeave, ConfirmProlongSickLeave, CancelSickLeave } from './sick-leave.action';
+import {
+    CancelSickLeave,
+    CompleteSickLeave,
+    ConfirmClaimSickLeave,
+    ConfirmProlongSickLeave
+} from './sick-leave.action';
 import { AppState, DependenciesContainer } from '../app.reducer';
-import { CalendarEventStatus, CalendarEvent, CalendarEventType, DatesInterval } from './calendar-event.model';
+import { CalendarEvent, CalendarEventStatus, CalendarEventType, DatesInterval } from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
-import { loadCalendarEvents } from './calendar.action';
 import { loadFailedError } from '../errors/errors.action';
-import { closeEventDialog } from './event-dialog/event-dialog.action';
 import { getEventsAndPendingRequests } from './calendar.epics';
 import { catchError, flatMap, map } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -28,7 +31,7 @@ export const sickLeaveSavedEpic$ = (action$: ActionsObservable<ConfirmClaimSickL
             return deps.apiClient.post(
                 `/employees/${x.employeeId}/events`,
                 calendarEvents,
-                {'Content-Type': 'application/json'}
+                { 'Content-Type': 'application/json' }
             ).pipe(
                 map(obj => deserialize(obj.response, CalendarEvent)),
                 getEventsAndPendingRequests(x.employeeId)
@@ -41,7 +44,7 @@ export const sickLeaveCompletedEpic$ = (action$: ActionsObservable<CompleteSickL
     action$.ofType('COMPLETE-SICK-LEAVE').pipe(
         flatMap(x => {
 
-            const requestBody = {...x.calendarEvent};
+            const requestBody = { ...x.calendarEvent };
 
             requestBody.status = CalendarEventStatus.Completed;
 
@@ -58,7 +61,7 @@ export const sickLeaveProlongedEpic$ = (action$: ActionsObservable<ConfirmProlon
     action$.ofType('CONFIRM-PROLONG-SICK-LEAVE').pipe(
         flatMap(x => {
 
-            const requestBody = {...x.calendarEvent};
+            const requestBody = { ...x.calendarEvent };
 
             requestBody.dates = new DatesInterval();
             requestBody.dates.startDate = x.calendarEvent.dates.startDate;
@@ -77,7 +80,7 @@ export const sickLeaveCanceledEpic$ = (action$: ActionsObservable<CancelSickLeav
     action$.ofType('CANCEL-SICK-LEAVE').pipe(
         flatMap(x => {
 
-            const requestBody = {...x.calendarEvent};
+            const requestBody = { ...x.calendarEvent };
 
             requestBody.status = CalendarEventStatus.Cancelled;
 

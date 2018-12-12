@@ -3,7 +3,7 @@ import { DataMemberDecoratorParams } from 'santee-dcts/src/dataMemberDecorator';
 import moment, { Moment } from 'moment';
 import { Nullable, Optional } from 'types';
 
-const dateDecoratorParams: DataMemberDecoratorParams  = {
+const dateDecoratorParams: DataMemberDecoratorParams = {
     customDeserializer: (value: string) => moment(value)
 };
 
@@ -19,7 +19,7 @@ export class Employee {
     public name: string = '';
 
     @dataMember()
-    @required({nullable: true})
+    @required({ nullable: true })
     public email: Nullable<string> = '';
 
     @dataMember()
@@ -44,15 +44,15 @@ export class Employee {
     public hireDate: Moment = moment();
 
     @dataMember()
-    @required({nullable: true})
+    @required({ nullable: true })
     public hoursCredit: Nullable<number> = null;
 
     @dataMember()
-    @required({nullable: true})
+    @required({ nullable: true })
     public vacationDaysLeft: Nullable<number> = null;
 
     @dataMember()
-    @required({nullable: true})
+    @required({ nullable: true })
     public roomNumber: Nullable<string> = null;
 
     public equals(obj: Optional<Employee>): boolean {

@@ -80,17 +80,17 @@ export class EventManagementToolset extends Component<EventManagementToolsetProp
             <View style={toolsetContainer}>
                 {
                     canApprove ?
-                    <TouchableOpacity onPress={this.onApprove}>
-                        <ApplicationIcon name={'approve-tick'} style={approveIcon}/>
-                    </TouchableOpacity> :
-                    <View/>
+                        <TouchableOpacity onPress={this.onApprove}>
+                            <ApplicationIcon name={'approve-tick'} style={approveIcon}/>
+                        </TouchableOpacity> :
+                        <View/>
                 }
                 {
                     canReject ?
-                    <TouchableOpacity onPress={this.onReject}>
-                        <ApplicationIcon name={'reject-cross'} style={rejectIcon}/>
-                    </TouchableOpacity> :
-                    <View/>
+                        <TouchableOpacity onPress={this.onReject}>
+                            <ApplicationIcon name={'reject-cross'} style={rejectIcon}/>
+                        </TouchableOpacity> :
+                        <View/>
                 }
             </View>
         );

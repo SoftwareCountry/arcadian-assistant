@@ -1,4 +1,4 @@
-import { CalendarEvent, DatesInterval, CalendarEventType, CalendarEventStatus } from '../calendar-event.model';
+import { DatesInterval } from '../calendar-event.model';
 import moment from 'moment';
 
 describe('DatesInterval', () => {

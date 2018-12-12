@@ -1,5 +1,5 @@
-import { CalendarEventsState, IntervalsSubState, SelectionSubState } from './calendar-events.reducer';
-import { SelectCalendarDay, CalendarSelectionModeType } from './calendar.action';
+import { CalendarEventsState, SelectionSubState } from './calendar-events.reducer';
+import { SelectCalendarDay } from './calendar.action';
 
 export const singleDaySelectionReducer = (state: CalendarEventsState, action: SelectCalendarDay): SelectionSubState | null => {
     if (state.disableSelection) {

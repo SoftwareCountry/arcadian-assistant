@@ -1,8 +1,13 @@
 import 'rxjs';
 import { ActionsObservable } from 'redux-observable';
-import { openEventDialog, OpenEventDialog, EventDialogActions } from '../event-dialog/event-dialog.action';
+import { openEventDialog, OpenEventDialog } from '../event-dialog/event-dialog.action';
 import { EventDialogType } from '../event-dialog/event-dialog-type.model';
-import { CalendarSelectionModeType, calendarSelectionMode, disableCalendarSelection, disableSelectIntervalsBySingleDaySelection } from '../calendar.action';
+import {
+    calendarSelectionMode,
+    CalendarSelectionModeType,
+    disableCalendarSelection,
+    disableSelectIntervalsBySingleDaySelection
+} from '../calendar.action';
 import { openEventDialogEpic$ } from '../event-dialog/event-dialog.epics';
 import { CalendarEventsColor } from '../../../calendar/styles';
 import { Action } from 'redux';

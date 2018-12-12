@@ -1,4 +1,3 @@
-import { Reducer } from 'redux';
 import { combineEpics } from 'redux-observable';
 import { jwtTokenEpic$, listenerAuthStateEpic$, startLoginProcessEpic$, startLogoutProcessEpic$ } from './auth.epics';
 import { AuthActions, AuthActionType } from './auth.action';
@@ -56,5 +55,5 @@ export const authReducer = (state: AuthState = initState, action: AuthActions): 
             };
         default:
             return state;
-   }
+    }
 };

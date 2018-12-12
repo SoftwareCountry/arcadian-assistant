@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import moment from 'moment';
-import { Dimensions, FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
+import { Dimensions, FlatList, ListRenderItemInfo, View, ViewStyle } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { Avatar } from '../people/avatar';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
@@ -54,10 +54,12 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
     //----------------------------------------------------------------------------
     private renderItem = (itemInfo: ListRenderItemInfo<EventActionContainer>) => {
         const action = itemInfo.item;
-        const { eventsContainer, eventRow, eventLeftIcons, eventTypeIconContainer,
-                eventLeftIconsTiny, eventTypeIconContainerTiny, eventIcon, eventTextContainer,
-                eventTitle, eventDetails, avatarContainer, avatarOuterFrame,
-                avatarImage } = layoutStylesForEmployeeDetailsScreen;
+        const {
+            eventsContainer, eventRow, eventLeftIcons, eventTypeIconContainer,
+            eventLeftIconsTiny, eventTypeIconContainerTiny, eventIcon, eventTextContainer,
+            eventTitle, eventDetails, avatarContainer, avatarOuterFrame,
+            avatarImage
+        } = layoutStylesForEmployeeDetailsScreen;
 
         const leftIconsStyle = this.props.showUserAvatar ? eventLeftIcons : eventLeftIconsTiny;
         const typeIconContainerStyle = this.props.showUserAvatar ? eventTypeIconContainer : eventTypeIconContainerTiny;

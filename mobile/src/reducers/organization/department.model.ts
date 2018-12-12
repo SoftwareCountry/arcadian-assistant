@@ -1,5 +1,4 @@
-import {dataMember, required} from 'santee-dcts';
-import { Employee } from './employee.model';
+import { dataMember, required } from 'santee-dcts';
 import { Nullable, Optional } from 'types';
 
 export class Department {

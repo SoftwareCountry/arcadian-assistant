@@ -6,9 +6,15 @@ import { LoadUserEmployeeFinished } from '../user/user.action';
 import { ActionsObservable, StateObservable } from 'redux-observable';
 import { deserializeArray } from 'santee-dcts';
 import {
-    loadCalendarEventsFinished, selectIntervalsBySingleDaySelection, SelectCalendarDay,
-    LoadCalendarEventsFinished, LoadCalendarEvents, loadCalendarEvents,
-    CalendarSelectionMode, disableCalendarSelection, CalendarEventSetNewStatus
+    CalendarEventSetNewStatus,
+    CalendarSelectionMode,
+    disableCalendarSelection,
+    loadCalendarEvents,
+    LoadCalendarEvents,
+    LoadCalendarEventsFinished,
+    loadCalendarEventsFinished,
+    SelectCalendarDay,
+    selectIntervalsBySingleDaySelection
 } from './calendar.action';
 import { loadFailedError } from '../errors/errors.action';
 import { CalendarEvent } from './calendar-event.model';
@@ -37,7 +43,7 @@ export const loadCalendarEventsFinishedEpic$ = (action$: ActionsObservable<LoadC
             const calendarEventIds = action.calendarEvents.all.map(calendarEvent => calendarEvent.calendarEventId);
             const loadApprovalsAction = loadApprovals(action.employeeId, calendarEventIds);
             if (action.next) {
-                return from([ ...action.next, loadApprovalsAction ]);
+                return from([...action.next, loadApprovalsAction]);
             }
             return of(closeEventDialog(), loadApprovalsAction);
         }),

@@ -5,7 +5,7 @@
 import { dataMember, required } from 'santee-dcts';
 import { CalendarEventId } from './calendar-event.model';
 import { EmployeeId } from '../organization/employee.model';
-import { hash, ValueObject } from 'immutable';
+import { ValueObject } from 'immutable';
 import { Hasher } from '../../utils/hasher';
 
 //============================================================================

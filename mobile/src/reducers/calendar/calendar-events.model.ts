@@ -1,10 +1,11 @@
 import { CalendarEvent, CalendarEventType } from './calendar-event.model';
-import { IntervalsModel, IntervalType, ReadOnlyIntervalsModel, IntervalModel } from './calendar.model';
+import { IntervalsModel, IntervalType } from './calendar.model';
 import moment from 'moment';
 import { IntervalTypeConverter } from './interval-type-converter';
 
 export class CalendarEvents {
-    constructor(private readonly calendarEvents: CalendarEvent[]) {}
+    constructor(private readonly calendarEvents: CalendarEvent[]) {
+    }
 
     public buildIntervalsModel(): IntervalsModel {
         const intervalsModel = new IntervalsModel();

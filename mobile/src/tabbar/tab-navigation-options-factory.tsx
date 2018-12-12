@@ -2,7 +2,6 @@ import React from 'react';
 import { NavigationTabScreenOptions } from 'react-navigation';
 import { Dimensions, Platform } from 'react-native';
 import tabBarStyles from './tab-bar-styles';
-import { StyledText } from '../override/styled-text';
 import { ApplicationIcon, ApplicationIconBold } from '../override/application-icon';
 import { TabBarLabel } from './tab-bar-label.component';
 

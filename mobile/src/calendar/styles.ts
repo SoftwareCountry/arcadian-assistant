@@ -1,4 +1,4 @@
-import { StyleSheet, ViewStyle, PixelRatio } from 'react-native';
+import { PixelRatio, StyleSheet } from 'react-native';
 import { CalendarEventType } from '../reducers/calendar/calendar-event.model';
 
 const daysCounterTitleColor = '#18515E';

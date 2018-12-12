@@ -1,14 +1,28 @@
 import { combineReducers } from 'redux';
 import { combineEpics } from 'redux-observable';
-import { loadUserEmployeeFinishedEpic$, intervalsBySingleDaySelectionEpic$,
-        loadCalendarEventsEpic$, loadCalendarEventsFinishedEpic$, calendarSelectionModeEpic$,
-        calendarEventSetNewStatusEpic$ } from './calendar.epics';
+import {
+    calendarEventSetNewStatusEpic$,
+    calendarSelectionModeEpic$,
+    intervalsBySingleDaySelectionEpic$,
+    loadCalendarEventsEpic$,
+    loadCalendarEventsFinishedEpic$,
+    loadUserEmployeeFinishedEpic$
+} from './calendar.epics';
 import { calendarEventsReducer, CalendarEventsState } from './calendar-events.reducer';
-import { EventDialogState, eventDialogReducer } from './event-dialog/event-dialog.reducer';
-import { openEventDialogEpic$, closeEventDialogEpic$, startEventDialogProgressEpic$ } from './event-dialog/event-dialog.epics';
-import { sickLeaveSavedEpic$, sickLeaveCompletedEpic$, sickLeaveProlongedEpic$, sickLeaveCanceledEpic$ } from './sick-leave.epics';
-import { vacationSavedEpic$, vacationCanceledEpic$, vacationChangedEpic$ } from './vacation.epics';
-import { dayoffSavedEpic$, dayoffCanceledEpic$ } from './dayoff.epics';
+import { eventDialogReducer, EventDialogState } from './event-dialog/event-dialog.reducer';
+import {
+    closeEventDialogEpic$,
+    openEventDialogEpic$,
+    startEventDialogProgressEpic$
+} from './event-dialog/event-dialog.epics';
+import {
+    sickLeaveCanceledEpic$,
+    sickLeaveCompletedEpic$,
+    sickLeaveProlongedEpic$,
+    sickLeaveSavedEpic$
+} from './sick-leave.epics';
+import { vacationCanceledEpic$, vacationChangedEpic$, vacationSavedEpic$ } from './vacation.epics';
+import { dayoffCanceledEpic$, dayoffSavedEpic$ } from './dayoff.epics';
 import { loadPendingRequestsEpic$ } from './pending-requests/pending-requests.epics';
 import { pendingRequestsReducer, PendingRequestsState } from './pending-requests/pending-requests.reducer';
 import { approve$, loadApprovals$ } from './approval.epics';

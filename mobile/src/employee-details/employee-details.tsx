@@ -29,7 +29,7 @@ import { Nullable } from 'types';
 import { IntervalTypeConverter } from '../reducers/calendar/interval-type-converter';
 import { approve } from '../reducers/calendar/approval.action';
 import { Approval } from '../reducers/calendar/approval.model';
-import { EventActionProvider, EventActionContainer } from './event-action-provider';
+import { EventActionContainer, EventActionProvider } from './event-action-provider';
 
 //============================================================================
 interface TileData {

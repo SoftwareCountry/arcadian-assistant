@@ -1,5 +1,5 @@
 import { Reducer } from 'redux';
-import { Map, merge, Set } from 'immutable';
+import { Map, Set } from 'immutable';
 import { CalendarActions } from './calendar.action';
 import {
     CalendarPageModel,
@@ -56,7 +56,7 @@ const createInitState = (): CalendarEventsState => {
         prevPage,
         currentPage,
         nextPage
-     ] = createCalendarPagesInitState(date);
+    ] = createCalendarPagesInitState(date);
 
     let todayModel: Optional<DayModel> = undefined;
     for (let week of currentPage.weeks) {
@@ -96,10 +96,10 @@ const initState = createInitState();
 export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = initState, action: CalendarActions | UserActions | ApprovalAction) => {
     switch (action.type) {
         case 'LOAD-USER-FINISHED':
-            return {...state, userEmployeeId: action.userEmployeeId};
+            return { ...state, userEmployeeId: action.userEmployeeId };
         case 'LOAD-CALENDAR-EVENTS-FINISHED':
             let newState: CalendarEventsState;
-            let {events} = state;
+            let { events } = state;
 
             events = events.set(action.employeeId, action.calendarEvents.all);
 

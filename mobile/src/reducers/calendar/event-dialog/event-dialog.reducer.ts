@@ -1,7 +1,7 @@
 import { EventDialogActions } from './event-dialog.action';
 import { EventDialogType } from './event-dialog-type.model';
 import { HoursCreditType } from '../days-counters.model';
-import { Nullable, Optional } from 'types';
+import { Optional } from 'types';
 
 export interface EventDialogState {
     dialogType: Optional<EventDialogType>;

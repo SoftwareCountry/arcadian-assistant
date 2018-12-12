@@ -1,11 +1,18 @@
 import { calendarEventsReducer, CalendarEventsState } from '../calendar-events.reducer';
-import { loadCalendarEventsFinished, selectCalendarDay, calendarSelectionMode, CalendarSelectionModeType, disableCalendarSelection, selectIntervalsBySingleDaySelection, disableSelectIntervalsBySingleDaySelection } from '../calendar.action';
-import { CalendarEvent, DatesInterval, CalendarEventStatus, CalendarEventType } from '../calendar-event.model';
+import {
+    calendarSelectionMode,
+    CalendarSelectionModeType,
+    disableCalendarSelection,
+    disableSelectIntervalsBySingleDaySelection,
+    loadCalendarEventsFinished,
+    selectCalendarDay,
+    selectIntervalsBySingleDaySelection
+} from '../calendar.action';
+import { CalendarEvent, CalendarEventStatus, CalendarEventType, DatesInterval } from '../calendar-event.model';
 import moment from 'moment';
-import { DayModel, IntervalType } from '../calendar.model';
+import { DayModel } from '../calendar.model';
 import { CalendarEvents } from '../calendar-events.model';
-import { Employee } from '../../organization/employee.model';
-import { loadUserEmployeeFinished, loadUserFinished } from '../../user/user.action';
+import { loadUserFinished } from '../../user/user.action';
 
 describe('calendar events reducer', () => {
     describe('when load calendar events finished', () => {
@@ -95,7 +102,7 @@ describe('calendar events reducer', () => {
 
         beforeEach(() => {
             startDay = {
-                date:  moment(),
+                date: moment(),
                 today: true,
                 belongsToCurrentMonth: true
             };

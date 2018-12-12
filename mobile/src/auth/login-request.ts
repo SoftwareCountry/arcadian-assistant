@@ -41,7 +41,7 @@ export class LoginRequest {
 
         const url = this.getAuthorizationUrl(this.authorizationUrl, params);
 
-        const code =  await BrowserLogin.getAuthorizationCode(url, this.redirectUri);
+        const code = await BrowserLogin.getAuthorizationCode(url, this.redirectUri);
         return code;
     }
 

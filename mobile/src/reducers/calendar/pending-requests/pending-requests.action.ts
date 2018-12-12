@@ -13,6 +13,9 @@ export interface LoadPendingRequestsFinished extends Action {
     requests: Map<string, CalendarEvent[]>;
 }
 
-export const loadPendingRequestsFinished = (requests: Map<string, CalendarEvent[]>): LoadPendingRequestsFinished => ({ type: 'LOAD-PENDING-REQUESTS-FINISHED', requests });
+export const loadPendingRequestsFinished = (requests: Map<string, CalendarEvent[]>): LoadPendingRequestsFinished => ({
+    type: 'LOAD-PENDING-REQUESTS-FINISHED',
+    requests
+});
 
 export type PendingRequestsActions = LoadPendingRequestsFinished | LoadPendingRequests;

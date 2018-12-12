@@ -6,7 +6,7 @@ import { LoadingView } from '../navigation/loading';
 import { PeopleRoom } from './people-room';
 import { PeopleDepartment } from './people-department';
 import { filterEmployees } from '../reducers/search/search.epics';
-import {Map, is} from 'immutable';
+import { is, Map } from 'immutable';
 import { CompanyDepartments } from './company-departments';
 
 interface PeopleProps {
@@ -24,7 +24,7 @@ const mapStateToProps = (state: AppState): PeopleProps => ({
 
 class PeopleCompanyFilteredImpl extends React.Component<PeopleProps> {
     public render() {
-        return !this.props.loaded ? <LoadingView/> : <CompanyDepartments />;
+        return !this.props.loaded ? <LoadingView/> : <CompanyDepartments/>;
     }
 }
 

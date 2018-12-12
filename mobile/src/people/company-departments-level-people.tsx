@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, FlatList } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { companyDepartmentLevelPeople } from './styles';
 import { CompanyDepartmentsLevelPeopleTouchable } from './company-departments-level-people-touchable';
@@ -61,7 +61,7 @@ export class CompanyDepartmentsLevelPeople extends Component<CompanyDepartmentsL
         return (
             <CompanyDepartmentsLevelPeopleTouchable onPress={this.props.onPressEmployee} employee={item}>
                 <View style={companyDepartmentLevelPeople.listItemAvator}>
-                    <Avatar photoUrl={item.photoUrl} />
+                    <Avatar photoUrl={item.photoUrl}/>
                 </View>
                 <View style={companyDepartmentLevelPeople.listItemContent}>
                     <StyledText style={companyDepartmentLevelPeople.listItemName}>

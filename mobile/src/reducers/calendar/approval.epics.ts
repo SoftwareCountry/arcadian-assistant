@@ -22,7 +22,9 @@ export const loadApprovals$ = (action$: ActionsObservable<LoadApprovals>, _: Sta
             return deps.apiClient.getJSON(`/employees/${employeeId}/events/${eventId}/approvals`).pipe(
                 map(obj => deserializeArray(obj as any, Approval)),
                 tap(approvals => {
-                    approvals.forEach(approval => { approval.eventId = eventId; });
+                    approvals.forEach(approval => {
+                        approval.eventId = eventId;
+                    });
                 }),
                 map(approvals => {
                     return { eventId: eventId, approvals: approvals };

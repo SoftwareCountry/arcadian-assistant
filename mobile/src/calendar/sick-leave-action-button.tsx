@@ -23,11 +23,11 @@ export class SickLeaveActionButton extends Component<SickLeaveActionButtonProps>
                 title={this.title}
                 borderColor={CalendarEventsColor.sickLeave}
                 onPress={this.onSickLeaveAction}
-                disabled={this.props.disabled || disableCalendarAction} />
+                disabled={this.props.disabled || disableCalendarAction}/>
         );
     }
 
-    public get title() : string {
+    public get title(): string {
         return !this.props.interval
             ? 'Claim Sick Leave'
             : 'Edit Sick Leave';
