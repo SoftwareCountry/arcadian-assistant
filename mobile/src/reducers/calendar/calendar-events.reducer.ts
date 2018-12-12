@@ -1,5 +1,5 @@
 import { Reducer } from 'redux';
-import { Map, Set } from 'immutable';
+import { Map, merge, Set } from 'immutable';
 import { CalendarActions } from './calendar.action';
 import {
     CalendarPageModel,
@@ -183,7 +183,7 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
         case ApprovalActionType.loadApprovalsFinished:
             return {
                 ...state,
-                approvals: action.approvals.map(approvalsArray => Set(approvalsArray)),
+                approvals: state.approvals.merge(action.approvals.map(approvalsArray => Set(approvalsArray))),
             };
         case ApprovalActionType.approveFinished:
             const eventId = action.approval.eventId;
