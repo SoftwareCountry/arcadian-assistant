@@ -10,14 +10,14 @@ import { EventActionsContainer } from './event-action-provider';
 
 //============================================================================
 interface EventManagementToolsetProps {
-    eventLogicContainer: EventActionsContainer;
+    eventAction: EventActionsContainer;
 }
 
 //============================================================================
 export class EventManagementToolset extends Component<EventManagementToolsetProps> {
     //----------------------------------------------------------------------------
     public onApprove = () => {
-        const { positiveAction } = this.props.eventLogicContainer;
+        const { positiveAction } = this.props.eventAction;
 
         if (!positiveAction) {
             console.warn('Positive action is not set while onApprove is called');
@@ -42,7 +42,7 @@ export class EventManagementToolset extends Component<EventManagementToolsetProp
 
     //----------------------------------------------------------------------------
     public onReject = () => {
-        const { negativeAction } = this.props.eventLogicContainer;
+        const { negativeAction } = this.props.eventAction;
 
         if (!negativeAction) {
             console.warn('Negative action is not set while onReject is called');
@@ -69,8 +69,8 @@ export class EventManagementToolset extends Component<EventManagementToolsetProp
     public render() {
         const { toolsetContainer, approveIcon, rejectIcon } = layoutStylesForEventManagementToolset;
 
-        const canApprove = !!this.props.eventLogicContainer.positiveAction;
-        const canReject = !!this.props.eventLogicContainer.negativeAction;
+        const canApprove = !!this.props.eventAction.positiveAction;
+        const canReject = !!this.props.eventAction.negativeAction;
 
         return (
             <View style={toolsetContainer}>

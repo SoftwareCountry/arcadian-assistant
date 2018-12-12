@@ -397,12 +397,12 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         }
 
         const provider = new EventActionProvider(this.props.userId, this.props.eventSetStatus, this.props.eventApprove);
-        const containers = provider.getEventActions(events, this.props.employee, userPermissions, this.props.approvals);
+        const actions = provider.getEventActions(events, this.props.employee, userPermissions, this.props.approvals);
 
         return <View style={eventStyles.container}>
             <StyledText style={layoutStyles.header}>Events</StyledText>
             <EmployeeDetailsEventsList
-                eventLogicContainers={containers}
+                eventActions={actions}
                 hoursToIntervalTitle={this.props.hoursToIntervalTitle}
             />
         </View>;
@@ -416,7 +416,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
         const provider = new EventActionProvider(this.props.userId, this.props.eventSetStatus, this.props.eventApprove);
 
-        const containers: EventActionsContainer[] =
+        const actions: EventActionsContainer[] =
             this.props.requests.reduce<EventActionsContainer[]>(
                 (acc, events, employee) => acc.concat(provider.getRequestActions(events, employee, this.props.approvals)),
                 []
@@ -425,7 +425,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         return <View style={eventStyles.container}>
             <StyledText style={layoutStyles.header}>Requests</StyledText>
             <EmployeeDetailsEventsList
-                eventLogicContainers={containers}
+                eventActions={actions}
                 hoursToIntervalTitle={this.props.hoursToIntervalTitle}
                 showUserAvatar={true}/>
         </View>;

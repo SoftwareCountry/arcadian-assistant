@@ -13,7 +13,7 @@ import { List } from 'immutable';
 
 //============================================================================
 interface EmployeeDetailsEventsListProps {
-    eventLogicContainers: EventActionsContainer[];
+    eventActions: EventActionsContainer[];
     hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => Nullable<string>;
     showUserAvatar?: boolean;
 }
@@ -37,13 +37,13 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
 
     //----------------------------------------------------------------------------
     private prepareEvents(): Nullable<EventActionsContainer[]> {
-        const { eventLogicContainers } = this.props;
+        const { eventActions } = this.props;
 
-        if (!eventLogicContainers) {
+        if (!eventActions) {
             return null;
         }
 
-        return List(eventLogicContainers).sort((left, right) => {
+        return List(eventActions).sort((left, right) => {
             const nameCompareResult = left.employee.name.localeCompare(right.employee.name);
             if (nameCompareResult !== 0) {
                 return nameCompareResult;
@@ -58,7 +58,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
 
     //----------------------------------------------------------------------------
     private renderItem = (itemInfo: ListRenderItemInfo<EventActionsContainer>) => {
-        const { item } = itemInfo;
+        const action = itemInfo.item;
         const { eventsContainer, eventRow, eventLeftIcons, eventTypeIconContainer,
                 eventLeftIconsTiny, eventTypeIconContainerTiny, eventIcon, eventTextContainer,
                 eventTitle, eventDetails, avatarContainer, avatarOuterFrame,
@@ -68,7 +68,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
         const typeIconContainerStyle = this.props.showUserAvatar ? eventTypeIconContainer : eventTypeIconContainerTiny;
 
         const now = moment();
-        const isOutdated = item.event.dates.endDate.isBefore(now, 'date');
+        const isOutdated = action.event.dates.endDate.isBefore(now, 'date');
 
         const eventsContainerFlattened = [
             eventsContainer,
@@ -78,29 +78,31 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
             }
         ];
 
-        const descriptionStatus = this.descriptionStatus(item.event);
+        const descriptionStatus = this.descriptionStatus(action.event);
 
         return (
-            <View style={eventsContainerFlattened} key={item.event.calendarEventId}>
+            <View style={eventsContainerFlattened} key={action.event.calendarEventId}>
                 <View style={eventRow}>
                     <View style={leftIconsStyle}>
                         <View style={typeIconContainerStyle}>
-                            <CalendarEventIcon type={item.event.type} style={eventIcon as ViewStyle}/>
+                            <CalendarEventIcon type={action.event.type} style={eventIcon as ViewStyle}/>
                         </View>
                         {
                             this.props.showUserAvatar ?
                                 <View style={avatarContainer}>
-                                    <Avatar photoUrl={item.employee.photoUrl} style={avatarOuterFrame as ViewStyle}
+                                    <Avatar photoUrl={action.employee.photoUrl}
+                                            style={avatarOuterFrame as ViewStyle}
                                             imageStyle={avatarImage as ViewStyle}/>
-                                </View> : null
+                                </View> :
+                                null
                         }
                     </View>
                     <View style={eventTextContainer}>
-                        <StyledText style={eventTitle}>{item.employee.name}</StyledText>
+                        <StyledText style={eventTitle}>{action.employee.name}</StyledText>
                         <StyledText style={eventDetails}>{descriptionStatus}</StyledText>
-                        <StyledText style={eventDetails}>{this.descriptionFromTo(item.event)}</StyledText>
+                        <StyledText style={eventDetails}>{this.descriptionFromTo(action.event)}</StyledText>
                     </View>
-                    <EventManagementToolset eventLogicContainer={item}/>
+                    <EventManagementToolset eventAction={action}/>
                 </View>
             </View>
         );
