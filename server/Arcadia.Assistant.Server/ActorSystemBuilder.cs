@@ -31,7 +31,12 @@
             var feeds = this.actorSystem.ActorOf(Props.Create(() => new SharedFeedsActor(organization)), WellKnownActorPaths.SharedFeeds);
             var userPreferences = this.actorSystem.ActorOf(this.actorSystem.DI().Props<UserPreferencesActor>(), WellKnownActorPaths.UserPreferences);
 
-            this.actorSystem.ActorOf(Props.Create(() => new SendEmailSickLeaveApprovedActor(calendarEventsMessagingSettings, organization)), "sick-leave-email");
+            this.actorSystem.ActorOf(
+                Props.Create(() => new SendEmailSickLeaveApprovedActor(calendarEventsMessagingSettings, organization)),
+                "sick-leave-email");
+            this.actorSystem.ActorOf(
+                Props.Create(() => new SendEmailEventAssignedActor(calendarEventsMessagingSettings, organization, userPreferences)),
+                "event-assigned-email");
 
             var emailNotificationsActorProps = this.actorSystem.DI().Props<EmailNotificationsActor>();
             this.actorSystem.ActorOf(Props.Create(() => new NotificationsDispatcherActor(emailNotificationsActorProps)), "notifications");
