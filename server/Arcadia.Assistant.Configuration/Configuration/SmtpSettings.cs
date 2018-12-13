@@ -4,7 +4,8 @@
 
     public class SmtpSettings : ISmtpSettings
     {
-        public bool Enabled { get; set; } = true;
+        [Required]
+        public bool Enabled { get; set; }
 
         [Required]
         public string User { get; set; }
