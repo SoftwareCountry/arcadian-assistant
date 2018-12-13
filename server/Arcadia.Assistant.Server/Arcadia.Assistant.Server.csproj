@@ -25,6 +25,7 @@
     <ProjectReference Include="..\Arcadia.Assistant.DI\Arcadia.Assistant.DI.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Feeds\Arcadia.Assistant.Feeds.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Helpdesk\Arcadia.Assistant.Helpdesk.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.Notifications.Push\Arcadia.Assistant.Notifications.Push.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Organization\Arcadia.Assistant.Organization.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Server.Interop\Arcadia.Assistant.Server.Interop.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.UserPreferences\Arcadia.Assistant.UserPreferences.csproj" />
