@@ -26,25 +26,27 @@
             this.userEmployeeSearch = userEmployeeSearch;
         }
 
-        [HttpPost]
+        [Route("{devicePushToken}")]
+        [HttpPut]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
-        public async Task<IActionResult> RegisterDevice([FromBody]string deviceId, CancellationToken cancellationToken)
+        public async Task<IActionResult> RegisterDevice(string devicePushToken, CancellationToken cancellationToken)
         {
             var employee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, cancellationToken);
 
-            this.pushNotificationsService.RegisterDevice(employee.Metadata.EmployeeId, deviceId);
+            this.pushNotificationsService.RegisterDevice(employee.Metadata.EmployeeId, devicePushToken);
 
             return this.Accepted();
         }
 
+        [Route("{devicePushToken}")]
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> RemoveDevice([FromBody] string deviceId, CancellationToken cancellationToken)
+        public async Task<IActionResult> RemoveDevice(string devicePushToken, CancellationToken cancellationToken)
         {
             var employee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, cancellationToken);
 
-            this.pushNotificationsService.RemoveDevice(employee.Metadata.EmployeeId, deviceId);
+            this.pushNotificationsService.RemoveDevice(employee.Metadata.EmployeeId, devicePushToken);
 
             return this.Accepted();
         }
