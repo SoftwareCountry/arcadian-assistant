@@ -98,15 +98,25 @@
         {
             if (oldEvent.Dates != newEvent.Dates)
             {
-                var eventToPersist = new VacationDatesAreEdited
+                if (!oldEvent.IsPending)
                 {
-                    EventId = newEvent.EventId,
-                    StartDate = newEvent.Dates.StartDate,
-                    EndDate = newEvent.Dates.EndDate,
-                    TimeStamp = timestamp,
-                    UserId = updatedBy
-                };
-                this.Persist(eventToPersist, this.OnVacationDatesEdit);
+                    throw new Exception($"Date change is not allowed in status {oldEvent.Status} for {oldEvent.Type}");
+                }
+
+                if (this.ApprovalsByEvent[oldEvent.EmployeeId].Count != 0)
+                {
+                    throw new Exception($"Date change is not allowed when there is at least one user approval for {oldEvent.Type}");
+                }
+
+                var eventToPersist = new VacationDatesAreEdited
+                    {
+                        EventId = newEvent.EventId,
+                        StartDate = newEvent.Dates.StartDate,
+                        EndDate = newEvent.Dates.EndDate,
+                        TimeStamp = timestamp,
+                        UserId = updatedBy
+                    };
+                    this.Persist(eventToPersist, this.OnVacationDatesEdit);
             }
 
             if (oldEvent.Status != newEvent.Status)
@@ -157,12 +167,6 @@
                 && (oldCalendarEventStatus != VacationStatuses.Rejected)
                 && (newCalendarEventStatus != this.GetInitialStatus())
                 && (newCalendarEventStatus != VacationStatuses.Approved);
-        }
-
-        protected override bool IsDatesChangedAllowed(CalendarEvent oldEvent, CalendarEvent newEvent)
-        {
-            var approvals = this.ApprovalsByEvent[oldEvent.EventId];
-            return oldEvent.IsPending && approvals.Count == 0;
         }
 
         protected override void OnRecover(object message)
