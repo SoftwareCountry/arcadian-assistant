@@ -54,7 +54,7 @@
         private void GetDeviceIds(GetDeviceIds message)
         {
             this.devicesByEmployeeId.TryGetValue(message.EmployeeId, out var deviceIds);
-            this.Sender.Tell(new GetDeviceIds.Success(deviceIds ?? Enumerable.Empty<string>()));
+            this.Sender.Tell(new GetDeviceIds.Success(deviceIds?.ToList() ?? Enumerable.Empty<string>()));
         }
 
         private void RegisterDevice(RegisterPushNotificationsDevice message)
@@ -64,18 +64,13 @@
                 message.EmployeeId,
                 message.DeviceId);
 
-            this.Persist(@event, ev =>
-            {
-                this.OnEmployeeDeviceRegistered(@event);
-                this.Sender.Tell(RegisterPushNotificationsDevice.Success.Instance);
-            });
+            this.Persist(@event, this.OnEmployeeDeviceRegistered);
         }
 
         private void RemoveDevice(RemovePushNotificationsDevice message)
         {
             if (!this.devicesByEmployeeId.TryGetValue(message.EmployeeId, out var deviceIds) || !deviceIds.Contains(message.DeviceId))
             {
-                this.Sender.Tell(RemovePushNotificationsDevice.NotFoundError.Instance);
                 return;
             }
 
@@ -84,11 +79,7 @@
                 message.EmployeeId,
                 message.DeviceId);
 
-            this.Persist(@event, ev =>
-            {
-                this.OnEmployeeDeviceRemoved(ev);
-                this.Sender.Tell(RemovePushNotificationsDevice.Success.Instance);
-            });
+            this.Persist(@event, this.OnEmployeeDeviceRemoved);
 
         }
 

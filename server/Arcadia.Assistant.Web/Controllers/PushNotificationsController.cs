@@ -7,7 +7,6 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
-    using Arcadia.Assistant.Notifications.Push;
     using Arcadia.Assistant.Web.Authorization;
     using Arcadia.Assistant.Web.PushNotifications;
     using Arcadia.Assistant.Web.Users;
@@ -33,7 +32,7 @@
         {
             var employee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, cancellationToken);
 
-            await this.pushNotificationsService.RegisterDevice(employee.Metadata.EmployeeId, deviceId, cancellationToken);
+            this.pushNotificationsService.RegisterDevice(employee.Metadata.EmployeeId, deviceId);
 
             return this.Accepted();
         }
@@ -45,19 +44,9 @@
         {
             var employee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, cancellationToken);
 
-            var response = await this.pushNotificationsService.RemoveDevice(employee.Metadata.EmployeeId, deviceId, cancellationToken);
+            this.pushNotificationsService.RemoveDevice(employee.Metadata.EmployeeId, deviceId);
 
-            switch (response)
-            {
-                case RemovePushNotificationsDevice.Success _:
-                    return this.Accepted();
-
-                case RemovePushNotificationsDevice.NotFoundError _:
-                    return this.NotFound();
-
-                default:
-                    return this.StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            return this.Accepted();
         }
     }
 }
