@@ -27,10 +27,6 @@
                 case EmailNotification msg:
                     this.SendEmail(msg);
                     break;
-
-                default:
-                    this.Unhandled(message);
-                    break;
             }
         }
 

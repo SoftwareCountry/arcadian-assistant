@@ -23,13 +23,6 @@
                 case PushNotification msg when this.pushSettings.Enabled:
                     this.SendPushNotification(msg);
                     break;
-
-                case PushNotification _:
-                    break;
-
-                default:
-                    this.Unhandled(message);
-                    break;
             }
         }
 
