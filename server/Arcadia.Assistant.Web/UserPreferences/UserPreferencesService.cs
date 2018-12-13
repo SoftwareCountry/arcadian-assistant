@@ -25,10 +25,10 @@
             this.timeoutSettings = timeoutSettings;
         }
 
-        public async Task<UserPreferencesModel> GetUserPreferences(string userId, CancellationToken cancellationToken)
+        public async Task<UserPreferencesModel> GetUserPreferences(string employeeId, CancellationToken cancellationToken)
         {
             var response = await this.userPreferencesActor.Ask<GetUserPreferencesMessage.Response>(
-                new GetUserPreferencesMessage(userId),
+                new GetUserPreferencesMessage(employeeId),
                 this.timeoutSettings.Timeout,
                 cancellationToken);
 
@@ -40,7 +40,7 @@
         }
 
         public Task<SaveUserPreferencesMessage.Response> SaveUserPreferences(
-            string userId,
+            string employeeId,
             UserPreferencesModel userPreferencesModel,
             CancellationToken cancellationToken)
         {
@@ -50,7 +50,7 @@
                 PushNotifications = userPreferencesModel.PushNotifications
             };
 
-            return this.userPreferencesActor.Ask<SaveUserPreferencesMessage.Response>(new SaveUserPreferencesMessage(userId, userPreferences));
+            return this.userPreferencesActor.Ask<SaveUserPreferencesMessage.Response>(new SaveUserPreferencesMessage(employeeId, userPreferences));
         }
     }
 }

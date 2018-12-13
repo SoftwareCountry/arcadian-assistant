@@ -17,7 +17,7 @@
             switch (message)
             {
                 case GetUserPreferencesMessage msg:
-                    this.userPreferencesById.TryGetValue(msg.UserId, out var userPreferences);
+                    this.userPreferencesById.TryGetValue(msg.EmployeeId, out var userPreferences);
                     this.Sender.Tell(new GetUserPreferencesMessage.Response(userPreferences ?? UserPreferences.Default));
                     break;
 
