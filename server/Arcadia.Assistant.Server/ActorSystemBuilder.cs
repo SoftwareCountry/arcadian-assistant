@@ -44,7 +44,7 @@
                 "event-assigned-email");
             this.actorSystem.ActorOf(
                 Props.Create(() => new EventStatusChangedNotificationActor(
-                    calendarEventsMessagingSettings.EventChangedByOwner,
+                    calendarEventsMessagingSettings.EventStatusChanged,
                     organization,
                     userPreferences)),
                 "event-changed-status-owner-email");

@@ -8,8 +8,6 @@
 
         EmailSettings EventStatusChanged { get; }
 
-        EmailSettings EventChangedByOwner { get; }
-
         EmailSettings EventUserGrantedApproval { get; }
     }
 }
