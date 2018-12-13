@@ -21,8 +21,8 @@
             var organizationSettings = settings.Organization;
             container.RegisterModule(new OrganizationModule(organizationSettings.RefreshInformation));
 
-            var mailSettings = settings.Messaging;
-            container.RegisterModule(new NotificationsModule(mailSettings.Smtp));
+            var messagingSettings = settings.Messaging;
+            container.RegisterModule(new NotificationsModule(messagingSettings.Smtp, messagingSettings.Push));
 
             container.RegisterModule(new Remote1CModule(config));
             container.RegisterModule(new HealthModule());
