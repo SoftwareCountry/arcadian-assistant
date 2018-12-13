@@ -32,7 +32,10 @@
         {
             switch (message)
             {
-                case CalendarEventChanged msg when msg.NewEvent.Type == CalendarEventTypes.Sickleave:
+                case CalendarEventChanged msg 
+                    when msg.NewEvent.Type == CalendarEventTypes.Sickleave && 
+                    msg.NewEvent.Status == SickLeaveStatuses.Approved:
+
                     this.organizationActor
                         .Ask<EmployeesQuery.Response>(EmployeesQuery.Create().WithId(msg.NewEvent.EmployeeId))
                         .ContinueWith(task => new CalendarEventChangedWithAdditionalData(msg.NewEvent, task.Result.Employees.FirstOrDefault()?.Metadata))
