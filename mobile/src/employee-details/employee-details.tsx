@@ -30,6 +30,7 @@ import { IntervalTypeConverter } from '../reducers/calendar/interval-type-conver
 import { approve } from '../reducers/calendar/approval.action';
 import { Approval } from '../reducers/calendar/approval.model';
 import { EventActionContainer, EventActionProvider } from './event-action-provider';
+import { capitalizeFirstLetter, uppercase } from '../utils/string';
 
 //============================================================================
 interface TileData {
@@ -205,11 +206,11 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                             {employee.name}
                         </StyledText>
                         <StyledText style={contentStyles.position}>
-                            {this.uppercase(employee.position)}
+                            {uppercase(employee.position)}
                         </StyledText>
                         <TouchableOpacity onPress={this.openDepartment}>
                             <StyledText style={contentStyles.department}>
-                                {this.uppercase(department.abbreviation)}
+                                {uppercase(department.abbreviation)}
                             </StyledText>
                         </TouchableOpacity>
 
@@ -237,11 +238,6 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                 </ScrollView>
             </View>
         );
-    }
-
-    //----------------------------------------------------------------------------
-    private uppercase(text: string) {
-        return text ? text.toUpperCase() : text;
     }
 
     //----------------------------------------------------------------------------
@@ -387,7 +383,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                     <ApplicationIcon name={dayoffTitle} size={35} style={contactStyles.icon}/>
                 </View>
                 <View style={contactStyles.textContainer}>
-                    <StyledText style={contactStyles.title}>{'Daysoff available:'}</StyledText>
+                    <StyledText style={contactStyles.title}>{capitalizeFirstLetter(hoursCreditCounter.title.join(' '))}</StyledText>
                     <StyledText style={contactStyles.text}>{hoursCreditCounter.toString()}</StyledText>
                 </View>
             </View>
