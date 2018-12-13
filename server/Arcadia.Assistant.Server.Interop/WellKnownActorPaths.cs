@@ -11,5 +11,7 @@
         public static readonly string SharedFeeds = "shared-feeds";
 
         public static readonly string UserPreferences = "user-preferences";
+
+        public static readonly string PushNotificationsDevices = "push-notifications-devices";
     }
 }

@@ -13,6 +13,7 @@
     using Arcadia.Assistant.Web.Employees;
     using Arcadia.Assistant.Web.Health;
     using Arcadia.Assistant.Web.Infrastructure;
+    using Arcadia.Assistant.Web.PushNotifications;
     using Arcadia.Assistant.Web.Users;
 
     using Autofac;
@@ -136,6 +137,7 @@
             builder.RegisterType<UserEmployeeSearch>().As<IUserEmployeeSearch>();
             builder.RegisterType<HealthService>().As<IHealthService>();
             builder.RegisterType<UserPreferencesService>().As<IUserPreferencesService>();
+            builder.RegisterType<PushNotificationsService>().As<IPushNotificationsService>();
 
             builder.RegisterType<UserIsEmployeeHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
             builder.RegisterType<EmployeePermissionsHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
