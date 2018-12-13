@@ -5,6 +5,7 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 #import "ArcadiaAuthenticationSession.h"
 
+NSInteger const CANCELLATION_ERROR_CODE = 1;
 NSString* const CANCELLATION_SUBCODE = @"error_subcode=cancel";
 
 //============================================================================
@@ -35,13 +36,15 @@ RCT_REMAP_METHOD(getSafariData,
                 if (error != nil)
                 {
                     NSLog(@"%@", [error localizedDescription]);
-                    reject([@(error.code) stringValue], [error localizedDescription], error);
+
+                    NSInteger errorCode = [self arcadiaErrorCodeByASWebAuthenticationSessionErrorCode:error.code];
+                    reject([@(errorCode) stringValue], [error localizedDescription], error);
                     return;
                 }
 
                 if ([self isCancellationUrl:cbURL])
                 {
-                    reject([@(ASWebAuthenticationSessionErrorCodeCanceledLogin) stringValue], @"Back button pressed", nil);
+                    reject([@(CANCELLATION_ERROR_CODE) stringValue], @"Back button pressed", nil);
                     return;
                 }
 
@@ -62,6 +65,14 @@ RCT_REMAP_METHOD(getSafariData,
         reject(@"OS requirement", @"iOS 12+ required", error);
         return;
     }
+}
+
+//----------------------------------------------------------------------------
+- (NSInteger)arcadiaErrorCodeByASWebAuthenticationSessionErrorCode:(NSInteger)sessionErrorCode {
+    if (sessionErrorCode == ASWebAuthenticationSessionErrorCodeCanceledLogin)
+        return CANCELLATION_ERROR_CODE;
+
+    return sessionErrorCode;
 }
 
 //----------------------------------------------------------------------------
