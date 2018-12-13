@@ -10,6 +10,8 @@
 //============================================================================
 @interface ArcadiaAuthenticationSession: NSObject<RCTBridgeModule>
 
-@property (nonatomic) ASWebAuthenticationSession* authSession;
+@property (nonatomic) ASWebAuthenticationSession* asWebAuthSession;
+
+@property (nonatomic) SFAuthenticationSession* sfAuthSession;
 
 @end
