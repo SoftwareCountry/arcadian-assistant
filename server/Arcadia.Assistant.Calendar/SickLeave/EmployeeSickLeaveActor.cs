@@ -118,7 +118,6 @@
 
             if (oldEvent.Status != newEvent.Status)
             {
-
                 switch (newEvent.Status)
                 {
                     case SickLeaveStatuses.Cancelled:
