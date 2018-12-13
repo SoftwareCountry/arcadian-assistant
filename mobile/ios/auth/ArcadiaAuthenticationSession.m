@@ -21,36 +21,36 @@ RCT_EXPORT_MODULE()
 
 //----------------------------------------------------------------------------
 RCT_REMAP_METHOD(getSafariData,
-                 address:(NSString *)address
-                 callbackURL:(NSString *)callbackURL
-                 resolver:(RCTPromiseResolveBlock)resolve
-                 rejecter:(RCTPromiseRejectBlock)reject)
+                 address: (NSString*)address
+                 callbackURL: (NSString*)callbackURL
+                 resolver: (RCTPromiseResolveBlock)resolve
+                 rejecter: (RCTPromiseRejectBlock)reject)
 {
     NSURL* siteURL = [NSURL URLWithString:address];
 
     if (@available(iOS 12.0, *))
     {
         self.asWebAuthSession = [[ASWebAuthenticationSession alloc] initWithURL:siteURL
-                                                         callbackURLScheme:callbackURL
-                                                         completionHandler:^(NSURL *callbackURL, NSError *error)
-                                                         {
-                                                             [self processResponseWithUrl:callbackURL error:error
-                                                                                 resolver:resolve rejecter:reject];
-                                                         }];
+            callbackURLScheme:callbackURL
+            completionHandler:^(NSURL* callbackURL, NSError* error)
+            {
+                [self processResponseWithUrl:callbackURL error:error
+                    resolver:resolve rejecter:reject];
+            }];
     }
     else if (@available(iOS 11.0, *))
     {
         self.sfAuthSession = [[SFAuthenticationSession alloc] initWithURL:siteURL
-                                                                callbackURLScheme:callbackURL
-                                                                completionHandler:^(NSURL *callbackURL, NSError *error)
-                                                                {
-                                                                    [self processResponseWithUrl:callbackURL error:error
-                                                                                        resolver:resolve rejecter:reject];
-                                                                }];
+            callbackURLScheme:callbackURL
+            completionHandler:^(NSURL* callbackURL, NSError* error)
+            {
+                [self processResponseWithUrl:callbackURL error:error
+                    resolver:resolve rejecter:reject];
+            }];
     }
     else
     {
-        NSError *error = [NSError errorWithDomain:@"OS requirement" code:404 userInfo:nil];
+        NSError* error = [NSError errorWithDomain:@"OS requirement" code:404 userInfo:nil];
         reject(@"OS requirement", @"iOS 11+ required", error);
         return;
     }
@@ -59,7 +59,7 @@ RCT_REMAP_METHOD(getSafariData,
 
     if (success == NO)
     {
-        NSError *error = [NSError errorWithDomain:@"Open safari" code:404 userInfo:nil];
+        NSError* error = [NSError errorWithDomain:@"Open safari" code:404 userInfo:nil];
         reject(@"Open safari", @"could not start opening safari", error);
     }
 }
@@ -81,7 +81,7 @@ RCT_REMAP_METHOD(getSafariData,
 }
 
 //----------------------------------------------------------------------------
-- (void) processResponseWithUrl: (NSURL*) callbackURL error: (NSError*) error
+- (void) processResponseWithUrl:(NSURL*)callbackURL error:(NSError*)error
                        resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject
 {
     if (error != nil)
@@ -103,7 +103,8 @@ RCT_REMAP_METHOD(getSafariData,
 }
 
 //----------------------------------------------------------------------------
-- (NSInteger)arcadiaErrorCodeByASWebAuthenticationSessionErrorCode:(NSInteger)sessionErrorCode {
+- (NSInteger) arcadiaErrorCodeByASWebAuthenticationSessionErrorCode:(NSInteger)sessionErrorCode
+{
     if (@available(iOS 12.0, *))
     {
         if (sessionErrorCode == ASWebAuthenticationSessionErrorCodeCanceledLogin)
