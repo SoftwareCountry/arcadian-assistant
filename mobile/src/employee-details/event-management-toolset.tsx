@@ -7,6 +7,7 @@ import { Alert, TouchableOpacity, View } from 'react-native';
 import { ApplicationIcon } from '../override/application-icon';
 import { layoutStylesForEventManagementToolset } from './styles';
 import { EventAction, EventActionContainer, EventActionType } from './event-action-provider';
+import { capitalizeFirstLetter } from '../utils/string';
 
 //============================================================================
 interface EventManagementToolsetProps {
@@ -35,7 +36,7 @@ export class EventManagementToolset extends Component<EventManagementToolsetProp
                     style: 'cancel',
                 },
                 {
-                    text: this.capitalizeFirstLetter(`${verb}`),
+                    text: capitalizeFirstLetter(`${verb}`),
                     onPress: positiveAction.handler,
                 },
             ],
@@ -62,7 +63,7 @@ export class EventManagementToolset extends Component<EventManagementToolsetProp
                     style: 'cancel',
                 },
                 {
-                    text: this.capitalizeFirstLetter(`${verb}`),
+                    text: capitalizeFirstLetter(`${verb}`),
                     onPress: negativeAction.handler,
                 },
             ],
@@ -94,12 +95,6 @@ export class EventManagementToolset extends Component<EventManagementToolsetProp
                 }
             </View>
         );
-    }
-
-    //----------------------------------------------------------------------------
-    // noinspection JSMethodCanBeStatic
-    private capitalizeFirstLetter(str: string) {
-        return str.charAt(0).toLocaleUpperCase() + str.slice(1);
     }
 
     //----------------------------------------------------------------------------

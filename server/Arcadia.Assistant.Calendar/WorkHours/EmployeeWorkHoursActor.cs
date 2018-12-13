@@ -43,9 +43,11 @@
                 case WorkHoursChangeIsApproved ev:
                     this.OnChangeApproved(ev);
                     break;
+
                 case WorkHoursChangeIsCancelled ev:
                     this.OnChangeCancelled(ev);
                     break;
+
                 case WorkHoursChangeIsRejected ev:
                     this.OnChangeRejected(ev);
                     break;
