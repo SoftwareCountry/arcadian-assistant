@@ -52,11 +52,20 @@ export const startLoginProcessEpic$ = (action$: ActionsObservable<StartLoginProc
     );
 
 //----------------------------------------------------------------------------
-export const startLogoutProcessEpic$ = (action$: ActionsObservable<StartLogoutProcess>, _: StateObservable<AppState>, dep: DependenciesContainer) =>
+function logout(dependencies: DependenciesContainer, installId?: string) {
+    if (installId) {
+        notificationsUnregister(dependencies, installId).catch(console.warn);
+    }
+    console.warn(`installId =  ${installId}`);
+    dependencies.oauthProcess.logout();
+}
+
+//----------------------------------------------------------------------------
+export const startLogoutProcessEpic$ = (action$: ActionsObservable<StartLogoutProcess>, state$: StateObservable<AppState>, dep: DependenciesContainer) =>
     action$.ofType(AuthActionType.startLogoutProcess).pipe(
         tap(x => {
             if (x.force) {
-                dep.oauthProcess.logout();
+                logout(dep, state$.value.notifications.installId);
                 return;
             }
             showAlert(
@@ -64,8 +73,7 @@ export const startLogoutProcessEpic$ = (action$: ActionsObservable<StartLogoutPr
                 'Logout',
                 'Cancel',
                 () => {
-                    notificationsUnregister(dep).catch(console.warn);
-                    dep.oauthProcess.logout();
+                    logout(dep, state$.value.notifications.installId);
                 },
                 () => {
                 });

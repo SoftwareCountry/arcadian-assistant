@@ -19,6 +19,7 @@ import { NavigationService } from '../navigation/navigation.service';
 import { NavigationDependenciesContainer } from '../navigation/navigation-dependencies-container';
 import { navigationEpics$ } from '../navigation/navigation.epics';
 import { notifications$ } from '../notifications/notification-listener';
+import { notificationsReducer, NotificationState } from '../notifications/notifications.reducer';
 
 export interface AppState {
     helpdesk?: HelpdeskState;
@@ -28,6 +29,7 @@ export interface AppState {
     calendar?: CalendarState;
     people?: PeopleState;
     authentication?: AuthState;
+    notifications: NotificationState;
 }
 
 const rootEpic = combineEpics(
@@ -50,7 +52,7 @@ const reducers = combineReducers<AppState>({
     calendar: calendarReducer,
     people: peopleReducer,
     authentication: authReducer,
-
+    notifications: notificationsReducer,
 });
 
 const rootReducer = (state: AppState | undefined, action: Action) => {

@@ -4,13 +4,14 @@
 
 import { ActionsObservable, combineEpics, ofType, StateObservable } from 'redux-observable';
 import { AuthActionType, UserLoggedIn } from '../reducers/auth/auth.action';
-import { catchError, ignoreElements, switchMap } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import Push from 'appcenter-push';
-import { EMPTY, from, Subject } from 'rxjs';
+import { EMPTY, from, of, Subject } from 'rxjs';
 import { Action } from 'redux';
 import { openProfile } from '../navigation/navigation.actions';
 import { AppState, DependenciesContainer } from '../reducers/app.reducer';
 import AppCenter from 'appcenter';
+import { registeredForNotifications } from './notification.actions';
 
 //----------------------------------------------------------------------------
 const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>) =>
@@ -39,19 +40,20 @@ const notificationsRegister$ = (action$: ActionsObservable<UserLoggedIn>, _: Sta
         return from(AppCenter.getInstallId());
     }),
     switchMap(installId => {
-        return deps.apiClient.put(`/push/device/${installId}`);
+        return deps.apiClient.put(`/push/device/${installId}`).pipe(
+            map(() => installId),
+            catchError(error => {
+                console.warn(error);
+                return of(installId);
+            })
+        );
     }),
-    catchError(error => {
-        console.warn(error);
-        return EMPTY;
-    }),
-    ignoreElements(),
+    map(installId => registeredForNotifications(installId)),
 );
 
 //----------------------------------------------------------------------------
-export async function notificationsUnregister(deps: DependenciesContainer) {
-    const installId = await AppCenter.getInstallId();
-    await deps.apiClient.delete(`/push/device/${installId}`).toPromise();
+export async function notificationsUnregister(dependencies: DependenciesContainer, installId: string) {
+    await dependencies.apiClient.delete(`/push/device/${installId}`).toPromise();
 }
 
 //----------------------------------------------------------------------------

@@ -121,4 +121,4 @@ class AvatarImpl extends Component<AvatarProps, AvatarState> {
     }
 }
 
-export const Avatar = connect<AvatarReduxProps, {}, AvatarOwnProps>(mapStateToProps)(AvatarImpl);
+export const Avatar = connect<AvatarReduxProps, {}, AvatarOwnProps, AppState>(mapStateToProps)(AvatarImpl);
