@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -26,6 +25,8 @@
 		140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		162FDC1E2903449788B2AE48 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 422A5F622D6B418D8A69B759 /* Zocial.ttf */; };
+		26E027936D4010AD0AACEAEB /* ArcadiaAuthenticationSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 26E0295FD2F4B1C0F9996134 /* ArcadiaAuthenticationSession.m */; };
+		26E02A46D72F2CD14658FD2A /* auth in Resources */ = {isa = PBXBuildFile; fileRef = 26E0210A1035253D6A4DBDE1 /* auth */; };
 		2978F099943B4B66A8439B5A /* libRNGestureHandler.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3671A87148CD427C9320C926 /* libRNGestureHandler.a */; };
 		2E91E1B1F3C7C699607D9D47 /* libPods-ArcadiaAssistant.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CBEE7CC97CBBC0F1B9DCDC24 /* libPods-ArcadiaAssistant.a */; };
 		35FC4B793DDB420A8219DA36 /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8C7B05C4BD90420B8B507F44 /* Entypo.ttf */; };
@@ -33,7 +34,6 @@
 		4D74914FB8C14CA18D49FE62 /* CenturyGothic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7C9B0F69CAB04598921F9248 /* CenturyGothic.ttf */; };
 		51AB02247D30490584A16AD8 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 29FB9749DEDD47CF96CC34A0 /* Octicons.ttf */; };
 		5D9662D02178FDFE00EB8CA7 /* libAppCenterReactNative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F61F81F213D496C008305E7 /* libAppCenterReactNative.a */; };
-		5D96630E2179019B00EB8CA7 /* libRNSFAuthenticationSession.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DA8874D206AC468004EADEE /* libRNSFAuthenticationSession.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		86DA8A50F2D44941B01326A9 /* libAppCenterReactNativeCrashes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CFE6260F975A4FBE9E934D18 /* libAppCenterReactNativeCrashes.a */; };
 		93983BA421B9644C00D5FFD2 /* libFastImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 93983B7721B9643D00D5FFD2 /* libFastImage.a */; };
@@ -260,13 +260,6 @@
 			remoteGlobalIDString = 3D3CD9181DE5FBD800167DC4;
 			remoteInfo = "jschelpers-tvOS";
 		};
-		5DA8874C206AC468004EADEE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = CE2E218B837D4A99AF9B8046 /* RNSFAuthenticationSession.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 134814201AA4EA6300B7C361;
-			remoteInfo = RNSFAuthenticationSession;
-		};
 		5E9157321DD0AC6500FF2AA8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */;
@@ -427,6 +420,9 @@
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
 		18B1051145BD4F19864A2ED0 /* RNSensitiveInfo.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNSensitiveInfo.xcodeproj; path = "../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo.xcodeproj"; sourceTree = "<group>"; };
 		2285D8CB7B094200A90098E2 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
+		26E0210A1035253D6A4DBDE1 /* auth */ = {isa = PBXFileReference; lastKnownFileType = folder; path = auth; sourceTree = "<group>"; };
+		26E0295FD2F4B1C0F9996134 /* ArcadiaAuthenticationSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ArcadiaAuthenticationSession.m; path = auth/ArcadiaAuthenticationSession.m; sourceTree = "<group>"; };
+		26E02A87F9D940E9C4E32EFD /* ArcadiaAuthenticationSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ArcadiaAuthenticationSession.h; path = auth/ArcadiaAuthenticationSession.h; sourceTree = "<group>"; };
 		29FB9749DEDD47CF96CC34A0 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		3671A87148CD427C9320C926 /* libRNGestureHandler.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNGestureHandler.a; sourceTree = "<group>"; };
 		3BC074B8E52C7D9302A6F111 /* libPods-ArcadiaAssistant-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ArcadiaAssistant-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -456,7 +452,6 @@
 		7D16B1941FAC70DF00B0892E /* Zocial.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Zocial.ttf; sourceTree = "<group>"; };
 		8070C9BF504549C88161DD60 /* RNVectorIcons.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNVectorIcons.xcodeproj; path = "../node_modules/react-native-vector-icons/RNVectorIcons.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
-		880BD520E7A34417A5BDEC02 /* libRNSFAuthenticationSession.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNSFAuthenticationSession.a; sourceTree = "<group>"; };
 		8C7B05C4BD90420B8B507F44 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
 		8DCB02F060E04DC6A0860424 /* libAppCenterReactNativePush.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libAppCenterReactNativePush.a; sourceTree = "<group>"; };
 		93983B6E21B9643D00D5FFD2 /* FastImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FastImage.xcodeproj; path = "../node_modules/react-native-fast-image/ios/FastImage.xcodeproj"; sourceTree = "<group>"; };
@@ -474,7 +469,6 @@
 		C620AFBA06618B28A211EA21 /* Pods-ArcadiaAssistant.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ArcadiaAssistant.release.xcconfig"; path = "Pods/Target Support Files/Pods-ArcadiaAssistant/Pods-ArcadiaAssistant.release.xcconfig"; sourceTree = "<group>"; };
 		C95A42356364E85264677774 /* Pods-ArcadiaAssistantTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ArcadiaAssistantTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ArcadiaAssistantTests/Pods-ArcadiaAssistantTests.release.xcconfig"; sourceTree = "<group>"; };
 		CBEE7CC97CBBC0F1B9DCDC24 /* libPods-ArcadiaAssistant.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ArcadiaAssistant.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		CE2E218B837D4A99AF9B8046 /* RNSFAuthenticationSession.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNSFAuthenticationSession.xcodeproj; path = "../node_modules/react-native-sf-authentication-session/ios/RNSFAuthenticationSession.xcodeproj"; sourceTree = "<group>"; };
 		CFE6260F975A4FBE9E934D18 /* libAppCenterReactNativeCrashes.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libAppCenterReactNativeCrashes.a; sourceTree = "<group>"; };
 		D43E8A878AEFCA7E13C079C0 /* libPods-ArcadiaAssistant-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ArcadiaAssistant-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4FEAF4C9AB442BA9F7F2F7E /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
@@ -498,7 +492,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5D96630E2179019B00EB8CA7 /* libRNSFAuthenticationSession.a in Frameworks */,
 				5D9662D02178FDFE00EB8CA7 /* libAppCenterReactNative.a in Frameworks */,
 				ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */,
 				11D1A2F320CAFA9E000508D9 /* libRCTAnimation.a in Frameworks */,
@@ -616,6 +609,9 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				26E0210A1035253D6A4DBDE1 /* auth */,
+				26E0295FD2F4B1C0F9996134 /* ArcadiaAuthenticationSession.m */,
+				26E02A87F9D940E9C4E32EFD /* ArcadiaAuthenticationSession.h */,
 			);
 			name = ArcadiaAssistant;
 			sourceTree = "<group>";
@@ -652,14 +648,6 @@
 				BB823EB2ABE03BBCC3A0EA60 /* libPods-ArcadiaAssistantTests.a */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		5DA88749206AC468004EADEE /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				5DA8874D206AC468004EADEE /* libRNSFAuthenticationSession.a */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		5E91572E1DD0AC6500FF2AA8 /* Products */ = {
@@ -741,7 +729,6 @@
 				00C302DF1ABCB9EE00DB3ED1 /* RCTVibration.xcodeproj */,
 				139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */,
 				8070C9BF504549C88161DD60 /* RNVectorIcons.xcodeproj */,
-				CE2E218B837D4A99AF9B8046 /* RNSFAuthenticationSession.xcodeproj */,
 				18B1051145BD4F19864A2ED0 /* RNSensitiveInfo.xcodeproj */,
 				C5A6DA0B712A448AB4014354 /* AppCenterReactNative.xcodeproj */,
 				C3EEF7910F1A4A71939B26D2 /* AppCenterReactNativeAnalytics.xcodeproj */,
@@ -1054,10 +1041,6 @@
 					ProjectRef = 18B1051145BD4F19864A2ED0 /* RNSensitiveInfo.xcodeproj */;
 				},
 				{
-					ProductGroup = 5DA88749206AC468004EADEE /* Products */;
-					ProjectRef = CE2E218B837D4A99AF9B8046 /* RNSFAuthenticationSession.xcodeproj */;
-				},
-				{
 					ProductGroup = 7D5924F91FAC6E440030A1A9 /* Products */;
 					ProjectRef = 8070C9BF504549C88161DD60 /* RNVectorIcons.xcodeproj */;
 				},
@@ -1274,13 +1257,6 @@
 			remoteRef = 3DAD3EAE1DF850E9000B6D8A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		5DA8874D206AC468004EADEE /* libRNSFAuthenticationSession.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libRNSFAuthenticationSession.a;
-			remoteRef = 5DA8874C206AC468004EADEE /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1440,6 +1416,7 @@
 				FE8337E8645648FEB15BBD71 /* aa-iconfont-bold.ttf in Resources */,
 				0DE6E1C750A64F42A8AD4404 /* aa-iconfont.ttf in Resources */,
 				4D74914FB8C14CA18D49FE62 /* CenturyGothic.ttf in Resources */,
+				26E02A46D72F2CD14658FD2A /* auth in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1513,6 +1490,7 @@
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				26E027936D4010AD0AACEAEB /* ArcadiaAuthenticationSession.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1566,15 +1544,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1606,15 +1575,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1638,7 +1598,6 @@
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
 					"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS",
-					"$(SRCROOT)/../node_modules/react-native-sf-authentication-session/ios",
 					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo/**",
 					"$(SRCROOT)/../node_modules/appcenter/ios/AppCenterReactNative",
 					"$(SRCROOT)/../node_modules/appcenter-analytics/ios/AppCenterReactNativeAnalytics",
@@ -1680,7 +1639,6 @@
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
 					"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS",
-					"$(SRCROOT)/../node_modules/react-native-sf-authentication-session/ios",
 					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo/**",
 					"$(SRCROOT)/../node_modules/appcenter/ios/AppCenterReactNative",
 					"$(SRCROOT)/../node_modules/appcenter-analytics/ios/AppCenterReactNativeAnalytics",
