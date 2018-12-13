@@ -40,12 +40,18 @@
                     this.OnChangeRequested(ev);
                     break;
 
+                case WorkHoursDatesAreEdited ev:
+                    this.OnDatesEdit(ev);
+                    break;
+
                 case WorkHoursChangeIsApproved ev:
                     this.OnChangeApproved(ev);
                     break;
+
                 case WorkHoursChangeIsCancelled ev:
                     this.OnChangeCancelled(ev);
                     break;
+
                 case WorkHoursChangeIsRejected ev:
                     this.OnChangeRejected(ev);
                     break;
@@ -119,7 +125,14 @@
         {
             if (oldEvent.Dates != newEvent.Dates)
             {
-                throw new Exception("Dates change is not supported for work hours");
+                this.Persist(new WorkHoursDatesAreEdited
+                {
+                    EventId = newEvent.EventId,
+                    StartDate = newEvent.Dates.StartDate,
+                    EndDate = newEvent.Dates.EndDate,
+                    TimeStamp = timestamp,
+                    UserId = updatedBy
+                }, this.OnDatesEdit);
             }
 
             if (oldEvent.Status != newEvent.Status)
@@ -172,6 +185,12 @@
                 && (newCalendarEventStatus != WorkHoursChangeStatuses.Approved);
         }
 
+        protected override bool IsDatesChangedAllowed(CalendarEvent oldEvent, CalendarEvent newEvent)
+        {
+            var approvals = this.ApprovalsByEvent[oldEvent.EventId];
+            return oldEvent.IsPending && approvals.Count == 0;
+        }
+
         private void OnChangeRequested(WorkHoursChangeIsRequested message)
         {
             var eventType = message.IsDayoff ? CalendarEventTypes.Dayoff : CalendarEventTypes.Workout;
@@ -185,6 +204,20 @@
                 this.EmployeeId);
             this.EventsById[message.EventId] = calendarEvent;
             this.ApprovalsByEvent[message.EventId] = new List<Approval>();
+        }
+
+        private void OnDatesEdit(WorkHoursDatesAreEdited message)
+        {
+            if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
+            {
+                var newDates = new DatesPeriod(message.StartDate, message.EndDate);
+                this.EventsById[message.EventId] = new CalendarEvent(
+                    message.EventId,
+                    calendarEvent.Type,
+                    newDates,
+                    calendarEvent.Status,
+                    calendarEvent.EmployeeId);
+            }
         }
 
         private void OnChangeCancelled(WorkHoursChangeIsCancelled message)

@@ -78,10 +78,20 @@
                     try
                     {
                         var oldEvent = this.EventsById[cmd.Event.EventId];
-                        if ((oldEvent.Status != cmd.Event.Status) && !this.IsStatusTransitionAllowed(oldEvent.Status, cmd.Event.Status))
+
+                        if (oldEvent.Status != cmd.Event.Status && !this.IsStatusTransitionAllowed(oldEvent.Status, cmd.Event.Status))
                         {
-                            throw new Exception($"Event {cmd.Event.EventId}. Status transition {oldEvent.Status} -> {cmd.Event.Status} is not allowed for {oldEvent.Type}");
+                            throw new Exception($"Event {cmd.Event.EventId}. Status transition {oldEvent.Status} -> {cmd.Event.Status} " +
+                                $"is not allowed for {oldEvent.Type}");
                         }
+
+                        if (oldEvent.Dates != cmd.Event.Dates && !this.IsDatesChangedAllowed(oldEvent, cmd.Event))
+                        {
+                            var approvalsList = this.ApprovalsByEvent[cmd.Event.EventId];
+                            throw new Exception($"Event {cmd.Event.EventId}. Dates change is not allowed in status {cmd.Event.Status} " +
+                                $"with user approvals count {approvalsList.Count} for {cmd.Event.Type}");
+                        }
+
                         this.UpdateCalendarEvent(oldEvent, cmd.UpdatedBy, cmd.Timestamp, cmd.Event, ev =>
                         {
                             this.OnSuccessfulUpsert(ev);
@@ -160,6 +170,8 @@
         protected abstract string GetInitialStatus();
 
         protected abstract bool IsStatusTransitionAllowed(string oldCalendarEventStatus, string newCalendarEventStatus);
+
+        protected abstract bool IsDatesChangedAllowed(CalendarEvent oldEvent, CalendarEvent newEvent);
 
         protected virtual void OnSuccessfulApprove(UserGrantedCalendarEventApproval message)
         {

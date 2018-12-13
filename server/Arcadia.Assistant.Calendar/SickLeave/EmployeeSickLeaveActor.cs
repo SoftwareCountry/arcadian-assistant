@@ -34,6 +34,10 @@
                     this.OnSickLeaveRequest(ev);
                     break;
 
+                case SickLeaveDatesAreEdited ev:
+                    this.OnSickLeaveDatesEdit(ev);
+                    break;
+
                 case SickLeaveIsCancelled ev:
                     this.OnSickLeaveCancelled(ev);
                     break;
@@ -100,12 +104,13 @@
             CalendarEvent newEvent,
             OnSuccessfulUpsertCallback onUpsert)
         {
-            if (oldEvent.Dates.StartDate != newEvent.Dates.StartDate)
+            if (oldEvent.Dates.StartDate != newEvent.Dates.StartDate && !oldEvent.IsPending)
             {
-                throw new Exception("Start date cannot be changed");
+                throw new Exception("Sick leave start date can only be changed in Requested status without approvals");
             }
 
-            if (oldEvent.Dates.EndDate != newEvent.Dates.EndDate)
+            if (oldEvent.Dates.EndDate != newEvent.Dates.EndDate &&
+                oldEvent.Status == SickLeaveStatuses.Approved)
             {
                 this.Persist(new SickLeaveIsProlonged
                 {
@@ -116,9 +121,20 @@
                 }, this.OnSickLeaveProlonged);
             }
 
+            if (oldEvent.Dates != newEvent.Dates && oldEvent.IsPending)
+            {
+                this.Persist(new SickLeaveDatesAreEdited
+                {
+                    EventId = newEvent.EventId,
+                    StartDate = newEvent.Dates.StartDate,
+                    EndDate = newEvent.Dates.EndDate,
+                    TimeStamp = timestamp,
+                    UserId = updatedBy
+                }, this.OnSickLeaveDatesEdit);
+            }
+
             if (oldEvent.Status != newEvent.Status)
             {
-
                 switch (newEvent.Status)
                 {
                     case SickLeaveStatuses.Cancelled:
@@ -176,6 +192,14 @@
                 && (newCalendarEventStatus != SickLeaveStatuses.Approved);
         }
 
+        protected override bool IsDatesChangedAllowed(CalendarEvent oldEvent, CalendarEvent newEvent)
+        {
+            var approvals = this.ApprovalsByEvent[oldEvent.EventId];
+
+            return oldEvent.IsPending && approvals.Count == 0 ||
+                oldEvent.Status == SickLeaveStatuses.Approved;
+        }
+
         private void OnSickLeaveRequest(SickLeaveIsRequested message)
         {
             var datesPeriod = new DatesPeriod(message.StartDate, message.EndDate);
@@ -186,6 +210,20 @@
                 SickLeaveStatuses.Requested,
                 this.EmployeeId);
             this.ApprovalsByEvent[message.EventId] = new List<Approval>();
+        }
+
+        private void OnSickLeaveDatesEdit(SickLeaveDatesAreEdited message)
+        {
+            if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
+            {
+                var newDates = new DatesPeriod(message.StartDate, message.EndDate);
+                this.EventsById[message.EventId] = new CalendarEvent(
+                    message.EventId,
+                    calendarEvent.Type,
+                    newDates,
+                    calendarEvent.Status,
+                    calendarEvent.EmployeeId);
+            }
         }
 
         private void OnSickLeaveCompleted(SickLeaveIsCompleted message)

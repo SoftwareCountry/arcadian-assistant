@@ -159,6 +159,12 @@
                 && (newCalendarEventStatus != VacationStatuses.Approved);
         }
 
+        protected override bool IsDatesChangedAllowed(CalendarEvent oldEvent, CalendarEvent newEvent)
+        {
+            var approvals = this.ApprovalsByEvent[oldEvent.EventId];
+            return oldEvent.IsPending && approvals.Count == 0;
+        }
+
         protected override void OnRecover(object message)
         {
             switch (message)
