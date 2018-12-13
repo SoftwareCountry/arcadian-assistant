@@ -99,8 +99,10 @@
 
         private void OnEmployeeDeviceRemoved(EmployeeDeviceRemoved @event)
         {
-            var deviceIds = this.devicesByEmployeeId[@event.EmployeeId];
-            deviceIds.Remove(@event.DeviceId);
+            if (this.devicesByEmployeeId.TryGetValue(@event.EmployeeId, out var deviceIds))
+            {
+                deviceIds.Remove(@event.DeviceId);
+            }
         }
     }
 }
