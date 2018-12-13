@@ -4,7 +4,12 @@ import { Feed } from './feed.model';
 import { FeedsActions } from './feeds.action';
 import { SearchActions } from '../search/search.action';
 import { SearchType } from '../../navigation/search-view';
-import { loadFeedsFinishedEpic$, pagingPeriodDays, fetchNewFeedsEpic$, fetchOldFeedsEpic$, loadUserEmployeeFinishedEpic$ } from './feeds.epics';
+import {
+    fetchNewFeedsEpic$,
+    fetchOldFeedsEpic$,
+    loadFeedsFinishedEpic$,
+    loadUserEmployeeFinishedEpic$
+} from './feeds.epics';
 import { Moment } from 'moment';
 import { Map } from 'immutable';
 import { Nullable } from 'types';
@@ -67,5 +72,4 @@ export const feedsEpics = combineEpics(
     fetchNewFeedsEpic$ as any,
     fetchOldFeedsEpic$ as any,
     loadUserEmployeeFinishedEpic$ as any
-
 );

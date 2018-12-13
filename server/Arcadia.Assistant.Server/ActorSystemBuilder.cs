@@ -10,6 +10,7 @@
     using Arcadia.Assistant.Health.Abstractions;
     using Arcadia.Assistant.Notifications;
     using Arcadia.Assistant.Notifications.Email;
+    using Arcadia.Assistant.Notifications.Push;
     using Arcadia.Assistant.Organization;
     using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.UserPreferences;
@@ -30,6 +31,7 @@
             var helpdesk = this.actorSystem.ActorOf(Props.Create(() => new HelpdeskActor()), WellKnownActorPaths.Helpdesk);
             var feeds = this.actorSystem.ActorOf(Props.Create(() => new SharedFeedsActor(organization)), WellKnownActorPaths.SharedFeeds);
             var userPreferences = this.actorSystem.ActorOf(this.actorSystem.DI().Props<UserPreferencesActor>(), WellKnownActorPaths.UserPreferences);
+            var pushNotificationsDevices = this.actorSystem.ActorOf(Props.Create(() => new PushNotificationsDevicesActor()), WellKnownActorPaths.PushNotificationsDevices);
 
             this.actorSystem.ActorOf(
                 Props.Create(() => new SickLeaveApprovedNotificationActor(
@@ -58,7 +60,7 @@
             var emailNotificationsActorProps = this.actorSystem.DI().Props<EmailNotificationsActor>();
             this.actorSystem.ActorOf(Props.Create(() => new NotificationsDispatcherActor(emailNotificationsActorProps)), "notifications");
 
-            return new ServerActorsCollection(organization, health, helpdesk, feeds, userPreferences);
+            return new ServerActorsCollection(organization, health, helpdesk, feeds, userPreferences, pushNotificationsDevices);
         }
     }
 }

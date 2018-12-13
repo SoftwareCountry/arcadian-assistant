@@ -46,7 +46,7 @@ export const userInfoReducer: Reducer<UserInfoState> = (state = initState, actio
             }
 
             return state;
-            
+
         default:
             return state;
     }

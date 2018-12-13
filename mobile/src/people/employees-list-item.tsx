@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Platform, Text, View, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Avatar } from '../people/avatar';
 import { Employee } from '../reducers/organization/employee.model';
 import { employeesListItemStyles as styles } from './styles';
@@ -18,17 +18,18 @@ export class EmployeesListItem extends React.Component<EmployeesListItemProps> {
         const photo = this.props.employee ? this.props.employee.photoUrl : undefined;
 
         return (
-            <TouchableOpacity onPress = {this.onItemClicked}>
+            <TouchableOpacity onPress={this.onItemClicked}>
                 <View style={styles.layout}>
                     <View style={styles.avatarContainer}>
-                        <Avatar photoUrl={photo} style={StyleSheet.flatten(styles.avatarOuterFrame)} imageStyle={StyleSheet.flatten(styles.avatarImage)} />
+                        <Avatar photoUrl={photo} style={StyleSheet.flatten(styles.avatarOuterFrame)}
+                                imageStyle={StyleSheet.flatten(styles.avatarImage)}/>
                     </View>
                     <View style={styles.info}>
                         <StyledText style={styles.name}>{employeeName}</StyledText>
                         <StyledText style={styles.baseText}>{employeePosition}</StyledText>
                     </View>
                 </View>
-             </TouchableOpacity>
+            </TouchableOpacity>
         );
     }
 

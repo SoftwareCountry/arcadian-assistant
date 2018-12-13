@@ -17,6 +17,6 @@ export class CalendarEventIcon extends Component<CalednarEventIconProps> {
     };
 
     public render() {
-        return <ApplicationIcon name={this.eventTypeToGlyphIcon[this.props.type]} style={this.props.style} />;
+        return <ApplicationIcon name={this.eventTypeToGlyphIcon[this.props.type]} style={this.props.style}/>;
     }
 }

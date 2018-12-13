@@ -1,9 +1,10 @@
 import { combineEpics } from 'redux-observable';
 import {
+    loadUserEmployeePermissionsEpic$,
     loadUserEpic$,
     loadUserFinishedEpic$,
-    loadUserEmployeePermissionsEpic$,
-    loadUserPreferencesEpic$, updateUserPreferencesEpic$
+    loadUserPreferencesEpic$,
+    updateUserPreferencesEpic$
 } from './user.epics';
 
 export const userEpics = combineEpics(

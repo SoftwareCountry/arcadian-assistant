@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, ViewStyle, LayoutChangeEvent, StyleSheet, View, TextStyle } from 'react-native';
+import { LayoutChangeEvent, StyleSheet, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { calendarActionsStyles } from './styles';
 
@@ -34,7 +34,7 @@ export class CalendarActionButton extends Component<CalendarActionButtonProps, C
                 borderRadius: this.state.buttonHeight
             },
             this.state.buttonHeight === 0 // Prevent border flicker
-            ? { borderWidth: 0, borderColor: 'transparent' } : {},
+                ? { borderWidth: 0, borderColor: 'transparent' } : {},
             this.props.style
         ]);
 
@@ -52,7 +52,8 @@ export class CalendarActionButton extends Component<CalendarActionButtonProps, C
 
         return (
             <View style={buttonContainerStyles} onLayout={this.onButtonContainerLayout}>
-                <TouchableOpacity style={buttonStyles} onPress={this.onButtonEditorPress} disabled={this.props.disabled}>
+                <TouchableOpacity style={buttonStyles} onPress={this.onButtonEditorPress}
+                                  disabled={this.props.disabled}>
                     <StyledText style={textStyle}>{this.props.title}</StyledText>
                 </TouchableOpacity>
             </View>

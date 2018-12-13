@@ -1,8 +1,4 @@
-import {
-    createMaterialTopTabNavigator,
-    NavigationRouteConfigMap,
-    TabNavigatorConfig
-} from 'react-navigation';
+import { createMaterialTopTabNavigator, NavigationRouteConfigMap, TabNavigatorConfig } from 'react-navigation';
 import React from 'react';
 import peopleScreenNavigatorStyles from './styles';
 import { PeopleCompanyFiltered, PeopleDepartmentFiltered, PeopleRoomFiltered } from '../people-filtered';

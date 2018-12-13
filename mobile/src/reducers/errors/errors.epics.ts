@@ -1,15 +1,18 @@
 import { ActionsObservable } from 'redux-observable';
 import { LoadFailedError } from './errors.action';
 import { Alert } from 'react-native';
-import { pipe, UnaryFunction, Observable, EMPTY } from 'rxjs';
+import { EMPTY, Observable, pipe, UnaryFunction } from 'rxjs';
 import { refresh } from '../refresh/refresh.action';
-import { retryWhen, catchError, map, flatMap, exhaustMap } from 'rxjs/operators';
+import { catchError, exhaustMap, flatMap, map, retryWhen } from 'rxjs/operators';
 
 function showAlert(errorMessage: string, okButtonTitle: string, rejectButtonTitle: string, okButton: () => void, rejectButton: () => void) {
     Alert.alert(
         'Error',
         `${errorMessage}`,
-        [{ text: okButtonTitle, onPress: () => okButton() }, { text: rejectButtonTitle, onPress: () => rejectButton() }]);
+        [{ text: okButtonTitle, onPress: () => okButton() }, {
+            text: rejectButtonTitle,
+            onPress: () => rejectButton()
+        }]);
 }
 
 function retryWhenErrorOccurred<T>(isForceLogout: boolean = false): UnaryFunction<Observable<T>, Observable<T>> {
@@ -40,7 +43,10 @@ export function handleHttpErrors<T>(swallowErrors: boolean = true): UnaryFunctio
     if (swallowErrors) {
         return pipe(
             retryWhenErrorOccurred(),
-            catchError(e => { console.warn(e); return EMPTY; })
+            catchError(e => {
+                console.warn(e);
+                return EMPTY;
+            })
         );
     } else {
         return pipe(

@@ -49,7 +49,7 @@ export class CalendarPager extends Component<CalendarPagerProps, CalendarPagerSt
 
     //----------------------------------------------------------------------------
     private onPanGestureEvent = Animated.event(
-        [{ nativeEvent: { translationX: this.coordinates.x, translationY: this.coordinates.y }}],
+        [{ nativeEvent: { translationX: this.coordinates.x, translationY: this.coordinates.y } }],
         { useNativeDriver: true }
     );
 
@@ -64,7 +64,7 @@ export class CalendarPager extends Component<CalendarPagerProps, CalendarPagerSt
 
     //----------------------------------------------------------------------------
     public render() {
-        const [ translateXProperty ] = this.coordinates.getTranslateTransform() as [{ 'translateX': any }];
+        const [translateXProperty] = this.coordinates.getTranslateTransform() as [{ 'translateX': any }];
 
         const animatedViewStyle = StyleSheet.flatten([
             calendarStyles.swipeableList,
@@ -170,7 +170,8 @@ export class CalendarPager extends Component<CalendarPagerProps, CalendarPagerSt
     }
 
     //----------------------------------------------------------------------------
-    private moveToNearestPage(toValue: number, onMoveComplete: () => void = () => {}) {
+    private moveToNearestPage(toValue: number, onMoveComplete: () => void = () => {
+    }) {
         Animated.timing(this.coordinates.x, {
             toValue: toValue,
             duration: 100,

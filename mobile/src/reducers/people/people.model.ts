@@ -7,7 +7,8 @@ export class DepartmentNode {
         public abbreviation: Nullable<string>,
         public chiefId: Nullable<string>,
         public staffDepartmentId: Nullable<string>
-    ) {}
+    ) {
+    }
 
     public equals(obj: Nullable<DepartmentNode>) {
         if (!obj) {

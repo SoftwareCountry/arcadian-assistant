@@ -3,8 +3,8 @@
  ******************************************************************************/
 
 import React, { Component } from 'react';
-import { layout, content, buttons } from './styles';
-import { View, TouchableOpacity, ActivityIndicator, ViewStyle, TextStyle } from 'react-native';
+import { buttons, content, layout } from './styles';
+import { ActivityIndicator, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { ApplicationIcon } from '../../override/application-icon';
 import { StyledText } from '../../override/styled-text';
 import { CalendarActionButton } from '../calendar-action-button';
@@ -54,7 +54,7 @@ export class EventDialogBaseImpl extends Component<EventDialogBaseProps> {
         return (
             <View style={layout.container}>
                 <View style={layout.icon}>
-                    <ApplicationIcon name={this.props.icon} style={content.icon} />
+                    <ApplicationIcon name={this.props.icon} style={content.icon}/>
                 </View>
                 <View style={layout.content}>
                     <View style={layout.text}>

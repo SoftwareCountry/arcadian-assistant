@@ -3,7 +3,11 @@ import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base'
 import { AppState } from '../../reducers/app.reducer';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { EventDialogActions, closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
+import {
+    closeEventDialog,
+    EventDialogActions,
+    openEventDialog
+} from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { DayModel } from '../../reducers/calendar/calendar.model';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
 import moment from 'moment';
@@ -20,14 +24,14 @@ interface ProcessDayoffEventDialogProps {
 class ProcessDayoffEventDialogImpl extends Component<ProcessDayoffEventDialogProps & ProcessDayoffEventDialogDispatchProps> {
     public render() {
         return <EventDialogBase
-                    title={'Select date to process your dayoff'}
-                    text={this.text}
-                    icon={'dayoff'}
-                    cancelLabel={'Back'}
-                    acceptLabel={'Confirm'}
-                    onAcceptPress={this.onAcceptClick}
-                    onCancelPress={this.onCancelClick}
-                    onClosePress={this.onCloseClick} />;
+            title={'Select date to process your dayoff'}
+            text={this.text}
+            icon={'dayoff'}
+            cancelLabel={'Back'}
+            acceptLabel={'Confirm'}
+            onAcceptPress={this.onAcceptClick}
+            onCancelPress={this.onCancelClick}
+            onClosePress={this.onCloseClick}/>;
     }
 
     private onCancelClick = () => {
@@ -48,14 +52,18 @@ class ProcessDayoffEventDialogImpl extends Component<ProcessDayoffEventDialogPro
 }
 
 const mapStateToProps = (state: AppState): ProcessDayoffEventDialogProps => ({
-    startDay: state.calendar && state.calendar.calendarEvents.selection.single.day ?  state.calendar.calendarEvents.selection.single.day : {
+    startDay: state.calendar && state.calendar.calendarEvents.selection.single.day ? state.calendar.calendarEvents.selection.single.day : {
         date: moment(), today: true, belongsToCurrentMonth: true,
     }
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ProcessDayoffEventDialogDispatchProps => ({
-    cancelDialog: () => { dispatch(closeEventDialog()); },
-    confirmStartDate: () => { dispatch(openEventDialog(EventDialogType.ChooseTypeDayoff)); }
+    cancelDialog: () => {
+        dispatch(closeEventDialog());
+    },
+    confirmStartDate: () => {
+        dispatch(openEventDialog(EventDialogType.ChooseTypeDayoff));
+    }
 });
 
 export const ProcessDayoffEventDialog = connect(mapStateToProps, mapDispatchToProps)(ProcessDayoffEventDialogImpl);

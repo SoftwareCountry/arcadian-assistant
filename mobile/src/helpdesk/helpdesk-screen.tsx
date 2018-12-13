@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text, ScrollView, Button, ActivityIndicator } from 'react-native';
-import { NavigationScreenProps, NavigationActions } from 'react-navigation';
+import { ActivityIndicator, Button, ScrollView } from 'react-native';
 import { AppState } from '../reducers/app.reducer';
-import { connect, MapStateToProps, MapDispatchToPropsFunction } from 'react-redux';
-import { WithBackButtonProps, mapBackButtonDispatchToProps } from '../layout/back-button-dispatcher';
-import { TicketTemplate } from '../reducers/helpdesk/ticket-template.model';
+import { connect } from 'react-redux';
+import { mapBackButtonDispatchToProps, WithBackButtonProps } from '../layout/back-button-dispatcher';
 import { loadTicketTemplates } from '../reducers/helpdesk/tickets.actions';
 import { Action, Dispatch } from 'redux';
 
@@ -35,9 +33,9 @@ class HelpdeskScreenImpl extends Component<HelpdeskScreenProps & HelpdeskScreenD
         const progressBar = this.props.ticketTemplatesAreLoaded ? undefined : <ActivityIndicator/>;
 
         return <ScrollView>
-                {progressBar}
-                <Button title='Back' onPress={ () => this.props.onBackClick() } />
-            </ScrollView>;
+            {progressBar}
+            <Button title='Back' onPress={() => this.props.onBackClick()}/>
+        </ScrollView>;
     }
 }
 

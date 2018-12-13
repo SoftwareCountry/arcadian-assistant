@@ -164,7 +164,8 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
             .mapKeys(employeeId => employees.employeesById.get(employeeId)!) : undefined;
 
         return (
-            <ScrollView refreshControl={<RefreshControl tintColor={Style.color.white} refreshing={false} onRefresh={this.onRefresh}/>}>
+            <ScrollView refreshControl={<RefreshControl tintColor={Style.color.white} refreshing={false}
+                                                        onRefresh={this.onRefresh}/>}>
                 <EmployeeDetails
                     department={department}
                     employee={employee}

@@ -1,6 +1,50 @@
-import { required, dataMember, typedArray } from 'santee-dcts';
-import { Set } from 'immutable';
+/******************************************************************************
+ * Copyright (c) Arcadia, Inc. All rights reserved.
+ ******************************************************************************/
 
+import { dataMember, required } from 'santee-dcts';
+import { Map, Set } from 'immutable';
+import { Optional } from 'types';
+
+//============================================================================
+export const enum Permission {
+    readEmployeeInfo = 'Permission.readEmployeeInfo',
+    readEmployeeVacationsCounter = 'Permission.readEmployeeVacationsCounter',
+    readEmployeeDayoffsCounter = 'Permission.readEmployeeDayoffsCounter',
+    readEmployeePhone = 'Permission.readEmployeePhone',
+    readEmployeeCalendarEvents = 'Permission.readEmployeeCalendarEvents',
+    createCalendarEvents = 'Permission.createCalendarEvents',
+    approveCalendarEvents = 'Permission.approveCalendarEvents',
+    rejectCalendarEvents = 'Permission.rejectCalendarEvents',
+    completeSickLeave = 'Permission.completeSickLeave',
+    prolongSickLeave = 'Permission.prolongSickLeave',
+    cancelPendingCalendarEvents = 'Permission.cancelPendingCalendarEvents',
+    editPendingCalendarEvents = 'Permission.editPendingCalendarEvents',
+    cancelApprovedCalendarEvents = 'Permission.cancelApprovedCalendarEvents',
+}
+
+const mapping = Map<Permission>({
+    'readEmployeeInfo': Permission.readEmployeeInfo,
+    'readEmployeeVacationsCounter': Permission.readEmployeeVacationsCounter,
+    'readEmployeeDayoffsCounter': Permission.readEmployeeDayoffsCounter,
+    'readEmployeePhone': Permission.readEmployeePhone,
+    'readEmployeeCalendarEvents': Permission.readEmployeeCalendarEvents,
+    'createCalendarEvents': Permission.createCalendarEvents,
+    'approveCalendarEvents': Permission.approveCalendarEvents,
+    'rejectCalendarEvents': Permission.rejectCalendarEvents,
+    'completeSickLeave': Permission.completeSickLeave,
+    'prolongSickLeave': Permission.prolongSickLeave,
+    'cancelPendingCalendarEvents': Permission.cancelPendingCalendarEvents,
+    'editPendingCalendarEvents': Permission.editPendingCalendarEvents,
+    'cancelApprovedCalendarEvents': Permission.cancelApprovedCalendarEvents,
+});
+
+//----------------------------------------------------------------------------
+function toPermission(value: string): Optional<Permission> {
+    return mapping.get(value, undefined);
+}
+
+//============================================================================
 export class UserEmployeePermissions {
 
     @dataMember()
@@ -8,19 +52,21 @@ export class UserEmployeePermissions {
     public employeeId: string = '';
 
     @dataMember({
-        customDeserializer: (names: string[]) => Set(names)
+        customDeserializer: (names: string[]) => Set(
+            names
+                .map(name => toPermission(name))
+                .filter(value => !!value)
+        )
     })
     @required()
-    public permissionsNames: Set<string> = Set<string>();
+    public permissionsNames: Set<Permission> = Set<Permission>();
 
-    public get canApproveCalendarEvents(): boolean {
-        return this.permissionsNames.has('approveCalendarEvents');
+    //----------------------------------------------------------------------------
+    public has(permission: Permission): boolean {
+        return this.permissionsNames.has(permission);
     }
 
-    public get canRejectCalendarEvents(): boolean {
-        return this.permissionsNames.has('rejectCalendarEvents');
-    }
-
+    //----------------------------------------------------------------------------
     public equals(obj: UserEmployeePermissions | null): boolean {
         if (!obj) {
             return false;

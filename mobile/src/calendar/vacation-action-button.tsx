@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { CalendarActionButton } from './calendar-action-button';
-import { IntervalModel, ReadOnlyIntervalsModel } from '../reducers/calendar/calendar.model';
+import { IntervalModel } from '../reducers/calendar/calendar.model';
 import { CalendarEventsColor } from './styles';
 
 interface VacationActionButtonProps {
@@ -19,11 +19,11 @@ export class VacationActionButton extends Component<VacationActionButtonProps> {
                 title={this.title}
                 borderColor={CalendarEventsColor.vacation}
                 onPress={this.onVacationAction}
-                disabled={this.props.disabled || disableActionButton} />
+                disabled={this.props.disabled || disableActionButton}/>
         );
     }
 
-    public get title() : string {
+    public get title(): string {
         return !this.props.interval
             ? 'Request Vacation'
             : 'Edit Vacation';

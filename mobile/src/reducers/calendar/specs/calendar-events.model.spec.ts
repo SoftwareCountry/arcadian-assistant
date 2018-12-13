@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { WeekModel, IntervalsModel, IntervalModel, IntervalType } from '../calendar.model';
+import { IntervalType } from '../calendar.model';
 import { CalendarEvent, CalendarEventType, DatesInterval } from '../calendar-event.model';
 import { CalendarEvents } from '../calendar-events.model';
 

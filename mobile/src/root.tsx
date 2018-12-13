@@ -12,29 +12,29 @@ export class Root extends Component<{}> {
     private navigationService: NavigationService;
 
     constructor(props: {}, ctx?: any) {
-      super(props, ctx);
-      const oauthManager = new OAuthManager();
-      this.oauthProcess = oauthManager.start(
-        config.oauth.clientId,
-        config.oauth.tenant,
-        config.oauth.redirectUri);
+        super(props, ctx);
+        const oauthManager = new OAuthManager();
+        this.oauthProcess = oauthManager.start(
+            config.oauth.clientId,
+            config.oauth.tenant,
+            config.oauth.redirectUri);
 
-      this.navigationService = new NavigationService();
+        this.navigationService = new NavigationService();
     }
 
     public render() {
-      return (
-        <Provider store={storeFactory(this.oauthProcess, this.navigationService)}>
-          <AppWithNavigationState navigationService={this.navigationService}/>
-        </Provider>
-      );
+        return (
+            <Provider store={storeFactory(this.oauthProcess, this.navigationService)}>
+                <AppWithNavigationState navigationService={this.navigationService}/>
+            </Provider>
+        );
     }
 
     public componentWillUnmount() {
-      if (this.oauthProcess) {
-        this.oauthProcess.dispose();
-      }
+        if (this.oauthProcess) {
+            this.oauthProcess.dispose();
+        }
 
-      this.navigationService.dispose();
+        this.navigationService.dispose();
     }
-  }
+}

@@ -2,7 +2,7 @@
  * Copyright (c) Arcadia, Inc. All rights reserved.
  ******************************************************************************/
 
-import { RegisteredStyle, StyleSheet, TextStyle, ViewStyle } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 //============================================================================
 const view = StyleSheet.create({

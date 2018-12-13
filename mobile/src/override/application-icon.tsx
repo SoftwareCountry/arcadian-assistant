@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { createIconSet } from 'react-native-vector-icons';
 
 const glyphMap = {

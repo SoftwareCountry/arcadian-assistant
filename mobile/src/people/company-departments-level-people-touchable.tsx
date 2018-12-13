@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, Animated, Easing, StyleSheet } from 'react-native';
+import { Animated, Easing, StyleSheet, TouchableOpacity } from 'react-native';
 import { companyDepartmentLevelPeople } from './styles';
 import { Employee } from '../reducers/organization/employee.model';
 

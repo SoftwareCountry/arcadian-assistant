@@ -1,3 +1,7 @@
+/******************************************************************************
+ * Copyright (c) Arcadia, Inc. All rights reserved.
+ ******************************************************************************/
+
 import { ActionsObservable, StateObservable } from 'redux-observable';
 import { AppState, DependenciesContainer } from '../app.reducer';
 import {
@@ -14,8 +18,9 @@ import { distinctUntilChanged, flatMap, ignoreElements, map, tap } from 'rxjs/op
 import { Alert } from 'react-native';
 import { AuthenticationState } from '../../auth/authentication-state';
 import { Action } from 'redux';
-import { concat, of } from 'rxjs';
+import { of } from 'rxjs';
 
+//----------------------------------------------------------------------------
 function showAlert(message: string, okButtonTitle: string, rejectButtonTitle: string, okButton: () => void, rejectButton: () => void) {
     Alert.alert(
         'Confirmation',
@@ -26,6 +31,7 @@ function showAlert(message: string, okButtonTitle: string, rejectButtonTitle: st
         }]);
 }
 
+//----------------------------------------------------------------------------
 function showErrorMessage(message: string) {
     Alert.alert(
         'Error occurred',
@@ -37,12 +43,14 @@ function showErrorMessage(message: string) {
         ]);
 }
 
+//----------------------------------------------------------------------------
 export const startLoginProcessEpic$ = (action$: ActionsObservable<StartLoginProcess>, _: StateObservable<AppState>, dep: DependenciesContainer) =>
     action$.ofType(AuthActionType.startLoginProcess).pipe(
         tap(x => dep.oauthProcess.login()),
         ignoreElements(),
     );
 
+//----------------------------------------------------------------------------
 export const startLogoutProcessEpic$ = (action$: ActionsObservable<StartLogoutProcess>, _: StateObservable<AppState>, dep: DependenciesContainer) =>
     action$.ofType(AuthActionType.startLogoutProcess).pipe(
         tap(x => {
@@ -61,14 +69,15 @@ export const startLogoutProcessEpic$ = (action$: ActionsObservable<StartLogoutPr
         ignoreElements()
     );
 
+//----------------------------------------------------------------------------
 export const listenerAuthStateEpic$ = (action$: ActionsObservable<any>, _: StateObservable<AppState>, dep: DependenciesContainer) =>
     dep.oauthProcess.authenticationState
         .pipe(
             handleHttpErrors(),
-            distinctUntilChanged<AuthenticationState>((x, y) => ((x.isAuthenticated === y.isAuthenticated) && x.isAuthenticated)),
+            distinctUntilChanged<AuthenticationState>((x, y) => (x.isAuthenticated && y.isAuthenticated)),
             flatMap<AuthenticationState, Action>(x => {
                     if (x.isAuthenticated) {
-                        return concat(of(userLoggedIn()), of(refresh()));
+                        return of(userLoggedIn(), refresh());
                     } else {
                         return of(userLoggedOut()).pipe(
                             tap(() => {
@@ -80,6 +89,7 @@ export const listenerAuthStateEpic$ = (action$: ActionsObservable<any>, _: State
                 }
             ));
 
+//----------------------------------------------------------------------------
 export const jwtTokenEpic$ = (action$: ActionsObservable<any>, _: StateObservable<AppState>, dep: DependenciesContainer) =>
     dep.oauthProcess.authenticationState
         .pipe(

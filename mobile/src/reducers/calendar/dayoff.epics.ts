@@ -50,7 +50,7 @@ export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff
 export const dayoffCanceledEpic$ = (action$: ActionsObservable<CancelDayoff>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('CANCEL-DAYOFF').pipe(
         flatMap(x => {
-            const requestBody = {...x.calendarEvent};
+            const requestBody = { ...x.calendarEvent };
 
             requestBody.status = CalendarEventStatus.Cancelled;
 

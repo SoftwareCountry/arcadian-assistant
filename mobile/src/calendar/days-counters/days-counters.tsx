@@ -68,7 +68,7 @@ export class DaysCounters extends Component<DaysCountersProps> {
         const hoursCreditCounter = new HoursCreditCounter(hoursCredit, daysCredit.days, daysCredit.rest);
 
         return <DaysCounter textValue={hoursCreditCounter.toString()}
-                           title={hoursCreditCounter.title}
-                           icon={{ name: 'dayoff', size: 30 }}/>;
+                            title={hoursCreditCounter.title}
+                            icon={{ name: 'dayoff', size: 30 }}/>;
     }
 }

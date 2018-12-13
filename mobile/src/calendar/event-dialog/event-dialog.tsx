@@ -29,39 +29,39 @@ export class EventDialog extends Component<EventDialogProps> {
     private getEventDialog() {
         switch (this.props.dialogType) {
             case EventDialogType.ClaimSickLeave:
-                return <ClaimSickLeaveEventDialog />;
+                return <ClaimSickLeaveEventDialog/>;
             case EventDialogType.ConfirmStartDateSickLeave:
-                return <ConfirmSickLeaveEventDialog />;
+                return <ConfirmSickLeaveEventDialog/>;
             case EventDialogType.EditSickLeave:
-                return <EditSickLeaveEventDialog />;
+                return <EditSickLeaveEventDialog/>;
             case EventDialogType.ProlongSickLeave:
-                return <ProlongSickLeaveEventDialog />;
+                return <ProlongSickLeaveEventDialog/>;
             case EventDialogType.CancelSickLeave:
-                return <CancelSickLeaveEventDialog />;
+                return <CancelSickLeaveEventDialog/>;
 
             case EventDialogType.RequestVacation:
-                return <RequestVacationEventDialog />;
+                return <RequestVacationEventDialog/>;
             case EventDialogType.ConfirmStartDateVacation:
-                return <ConfirmVacationEventDialog />;
+                return <ConfirmVacationEventDialog/>;
             case EventDialogType.EditVacation:
-                return <EditVacationEventDialog />;
+                return <EditVacationEventDialog/>;
             case EventDialogType.ChangeVacationStartDate:
-                return <ChangeVacationStartDateEventDialog />;
+                return <ChangeVacationStartDateEventDialog/>;
             case EventDialogType.ChangeVacationEndDate:
-                return <ChangeVacationEndDateEventDialog />;
+                return <ChangeVacationEndDateEventDialog/>;
             case EventDialogType.VacationRequested:
-                return <VacationRequestedDialog />;
+                return <VacationRequestedDialog/>;
 
             case EventDialogType.ProcessDayoff:
-                return <ProcessDayoffEventDialog />;
+                return <ProcessDayoffEventDialog/>;
             case EventDialogType.ChooseTypeDayoff:
                 return <ChooseTypeDayoffEventDialog/>;
             case EventDialogType.ConfirmDayoffStartDate:
-                return <ConfirmDayoffEventDialog />;
+                return <ConfirmDayoffEventDialog/>;
             case EventDialogType.EditDayoff:
-                return <EditDayoffEventDialog />;
+                return <EditDayoffEventDialog/>;
             case EventDialogType.DayoffRequested:
-                return <DayoffRequestedDialog />;
+                return <DayoffRequestedDialog/>;
 
             default:
                 throw new Error(`There isn't event dialog implementation for ${this.props.dialogType}`);

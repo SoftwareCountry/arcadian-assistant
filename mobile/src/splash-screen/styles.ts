@@ -4,7 +4,7 @@ export const splashScreenStyles = StyleSheet.create({
     container: {
         backgroundColor: '#2FAFCC',
         flex: 1,
-        justifyContent: 'center', 
+        justifyContent: 'center',
         alignItems: 'center'
     },
     imageContainer: {

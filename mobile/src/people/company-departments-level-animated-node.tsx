@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Animated, ViewStyle, Easing, Platform, TouchableOpacity } from 'react-native';
+import { Animated, Easing, Platform, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { DepartmentNode } from '../reducers/people/people.model';
 import { companyDepartmentsAnimatedNode } from './styles';
 import { Avatar } from './avatar';
-import { EmployeeMap } from '../reducers/organization/employees.reducer';
 import { Employee } from '../reducers/organization/employee.model';
 import { Optional } from 'types';
 
@@ -15,7 +14,7 @@ interface Perspective {
 interface ScaleAnimation {
     transform: (
         { scale: Animated.AnimatedInterpolation; } | Perspective
-    )[];
+        )[];
     opacity: Animated.AnimatedInterpolation;
 }
 
@@ -26,13 +25,13 @@ interface HorizontalStickyAnimation {
 interface StickyContainerAnimation {
     transform: (
         HorizontalStickyAnimation | Perspective
-    )[];
+        )[];
 }
 
 interface ContentAnimation {
     transform: (
         HorizontalStickyAnimation | Perspective
-    )[];
+        )[];
     opacity: Animated.AnimatedInterpolation;
 }
 
@@ -75,7 +74,7 @@ class Animations {
         })
     });
 
-	public static stickyContainerAnimation = (
+    public static stickyContainerAnimation = (
         index: number,
         width: number,
         height: number,
@@ -85,9 +84,9 @@ class Animations {
             ...Animations.perspective,
             Animations.horizontalStickyAnimation(index, width, height, xCoordinate)
         ]
-	});
+    });
 
-	public static contentAnimation = (
+    public static contentAnimation = (
         index: number,
         width: number,
         height: number,
@@ -107,7 +106,7 @@ class Animations {
         })
     });
 
-	private static horizontalStickyAnimation = (
+    private static horizontalStickyAnimation = (
         index: number,
         width: number,
         height: number,
@@ -179,7 +178,7 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
                 <Animated.View style={stickyContainerStyles}>
                     <Animated.View style={scaleContainerStyles}>
                         <TouchableOpacity style={touchableStyles} onPress={this.onPressChief}>
-                            <Avatar photoUrl={photo} useDefaultForEmployeesList={showStaffIcon} />
+                            <Avatar photoUrl={photo} useDefaultForEmployeesList={showStaffIcon}/>
                         </TouchableOpacity>
                     </Animated.View>
                 </Animated.View>

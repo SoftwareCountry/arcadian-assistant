@@ -165,7 +165,6 @@
             }
 
             var employee = await this.GetEmployeeOrDefaultAsync(employeeId, token);
-
             if (employee == null)
             {
                 return this.NotFound();
@@ -182,7 +181,6 @@
                 : new EditCalendarEvents(existingEvent, model);
 
             var hasPermissions = (await this.authorizationService.AuthorizeAsync(this.User, employee, calendarEventsRequirement)).Succeeded;
-
             if (!hasPermissions)
             {
                 return this.Forbid();
@@ -195,7 +193,7 @@
 
             var calendarEvent = new CalendarEvent(
                 eventId,
-                model.Type,
+                existingEvent.Type,
                 model.Dates,
                 model.Status,
                 existingEvent.EmployeeId);

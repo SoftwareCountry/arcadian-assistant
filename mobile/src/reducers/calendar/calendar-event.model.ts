@@ -1,4 +1,4 @@
-import { dataMember, required, deserialize } from 'santee-dcts';
+import { dataMember, deserialize, required } from 'santee-dcts';
 import moment, { Moment } from 'moment';
 
 export enum CalendarEventType {
@@ -50,6 +50,8 @@ export class DatesInterval {
         return serialized;
     }
 }
+
+export type CalendarEventId = string;
 
 export class CalendarEvent {
     @dataMember()

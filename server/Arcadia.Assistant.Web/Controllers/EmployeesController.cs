@@ -1,5 +1,6 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
+    using System;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -21,10 +22,14 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
 
+    using NLog;
+
     [Route("api/employees")]
     [Authorize(Policies.UserIsEmployee)]
     public class EmployeesController : Controller
     {
+        private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
         private readonly IEmployeesRegistry employeesRegistry;
 
         private readonly ITimeoutSettings timeoutSettings;
@@ -110,7 +115,14 @@
                             employee.HoursCredit = workhoursCredit.WorkHoursCredit;
                         }
 
-                        employee.PhotoUrl = this.Url.Action(nameof(EmployeePhotoController.GetImage), "EmployeePhoto", new { employeeId = employee.EmployeeId }, this.Request.GetUri().Scheme);
+                        try
+                        {
+                            employee.PhotoUrl = this.Url.Action(nameof(EmployeePhotoController.GetImage), "EmployeePhoto", new { employeeId = employee.EmployeeId }, this.Request.GetUri().Scheme);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Warn(e, "Cannot generate PhotoUrl for {0}", employee.EmployeeId);
+                        }
 
                         return employee;
                     });
