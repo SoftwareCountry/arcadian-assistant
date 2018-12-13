@@ -18,6 +18,7 @@ import { refreshEpics } from './refresh/refresh.reducer';
 import { NavigationService } from '../navigation/navigation.service';
 import { NavigationDependenciesContainer } from '../navigation/navigation-dependencies-container';
 import { navigationEpics$ } from '../navigation/navigation.epics';
+import { notificationsHandler$ } from '../notifications/notification-listener';
 
 export interface AppState {
     helpdesk?: HelpdeskState;
@@ -38,7 +39,8 @@ const rootEpic = combineEpics(
     calendarEpics as any,
     authEpics$ as any,
     refreshEpics as any,
-    navigationEpics$ as any);
+    navigationEpics$ as any,
+    notificationsHandler$ as any);
 
 const reducers = combineReducers<AppState>({
     helpdesk: helpdeskReducer,

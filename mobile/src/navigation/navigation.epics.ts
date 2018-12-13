@@ -5,6 +5,7 @@ import {
     OpenDepartmentAction,
     OpenEmployeeDetailsAction,
     OpenOrganizationAction,
+    OpenProfileAction,
     OpenRoomAction,
     OpenUserPreferencesAction
 } from './navigation.actions';
@@ -47,6 +48,18 @@ const openUserPreferences$ = navigationEpic<OpenUserPreferencesAction>(
 );
 
 //----------------------------------------------------------------------------
+const openProfile$ = navigationEpic<OpenProfileAction>(
+    NavigationActionType.openProfile,
+    'Profile'
+);
+
+//----------------------------------------------------------------------------
 export const navigationEpics$ = combineEpics(
-    openEmployeeDetails$, openCompany$, openDepartment$, openRoom$, openOrganization$, openUserPreferences$
+    openEmployeeDetails$,
+    openCompany$,
+    openDepartment$,
+    openRoom$,
+    openOrganization$,
+    openUserPreferences$,
+    openProfile$
 );
