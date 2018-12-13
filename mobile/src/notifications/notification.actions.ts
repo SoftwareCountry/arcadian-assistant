@@ -6,7 +6,7 @@ import { Action } from 'redux';
 
 //============================================================================
 export enum NotificationActionType {
-    registered = 'NotificationActionType.registered',
+    installIdReceived = 'NotificationActionType.installIdReceived',
 }
 
 
@@ -14,21 +14,21 @@ export enum NotificationActionType {
 // - Actions
 //============================================================================
 
-export interface RegisteredForNotifications extends Action {
-    type: NotificationActionType.registered;
+export interface InstallIdReceived extends Action {
+    type: NotificationActionType.installIdReceived;
     installId: string;
 }
 
-export type NotificationAction = RegisteredForNotifications;
+export type NotificationAction = InstallIdReceived;
 
 
 //============================================================================
 // - Action Creators
 //============================================================================
 
-export const registeredForNotifications = (installId: string): RegisteredForNotifications => {
+export const installIdReceived = (installId: string): InstallIdReceived => {
     return {
-        type: NotificationActionType.registered,
+        type: NotificationActionType.installIdReceived,
         installId,
     };
 };

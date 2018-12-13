@@ -4,14 +4,14 @@
 
 import { ActionsObservable, combineEpics, ofType, StateObservable } from 'redux-observable';
 import { AuthActionType, UserLoggedIn } from '../reducers/auth/auth.action';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, ignoreElements, map, switchMap } from 'rxjs/operators';
 import Push from 'appcenter-push';
 import { EMPTY, from, of, Subject } from 'rxjs';
 import { Action } from 'redux';
 import { openProfile } from '../navigation/navigation.actions';
 import { AppState, DependenciesContainer } from '../reducers/app.reducer';
 import AppCenter from 'appcenter';
-import { registeredForNotifications } from './notification.actions';
+import { installIdReceived, NotificationAction, NotificationActionType } from './notification.actions';
 
 //----------------------------------------------------------------------------
 const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>) =>
@@ -34,21 +34,25 @@ const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>) =>
     );
 
 //----------------------------------------------------------------------------
-const notificationsRegister$ = (action$: ActionsObservable<UserLoggedIn>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
+const getInstallId$ = (action$: ActionsObservable<UserLoggedIn>) => action$.pipe(
     ofType(AuthActionType.userLoggedIn),
     switchMap(() => {
         return from(AppCenter.getInstallId());
     }),
-    switchMap(installId => {
-        return deps.apiClient.put(`/push/device/${installId}`).pipe(
-            map(() => installId),
-            catchError(error => {
-                console.warn(error);
-                return of(installId);
-            })
-        );
+    map(installId => installIdReceived(installId)),
+);
+
+//----------------------------------------------------------------------------
+const notificationsRegister$ = (action$: ActionsObservable<NotificationAction>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
+    ofType(NotificationActionType.installIdReceived),
+    switchMap(action => {
+        return deps.apiClient.put(`/push/device/${action.installId}`);
     }),
-    map(installId => registeredForNotifications(installId)),
+    catchError(error => {
+        console.warn(error);
+        return EMPTY;
+    }),
+    ignoreElements(),
 );
 
 //----------------------------------------------------------------------------
@@ -59,5 +63,6 @@ export async function notificationsUnregister(dependencies: DependenciesContaine
 //----------------------------------------------------------------------------
 export const notifications$ = combineEpics(
     notificationsHandler$,
+    getInstallId$,
     notificationsRegister$,
 );

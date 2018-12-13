@@ -56,7 +56,6 @@ function logout(dependencies: DependenciesContainer, installId?: string) {
     if (installId) {
         notificationsUnregister(dependencies, installId).catch(console.warn);
     }
-    console.warn(`installId =  ${installId}`);
     dependencies.oauthProcess.logout();
 }
 

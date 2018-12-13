@@ -13,7 +13,7 @@ export interface NotificationState {
 //============================================================================
 export const notificationsReducer: Reducer<NotificationState, NotificationAction> = (state = {}, action) => {
     switch (action.type) {
-        case NotificationActionType.registered:
+        case NotificationActionType.installIdReceived:
             return {
                 ...state,
                 installId: action.installId,
@@ -23,4 +23,3 @@ export const notificationsReducer: Reducer<NotificationState, NotificationAction
             return state;
     }
 };
-
