@@ -1,18 +1,22 @@
 ﻿namespace Arcadia.Assistant.Server
 {
-    using Akka.Actor;
-    using Arcadia.Assistant.DI;
-
     using Autofac;
-    using Configuration.Configuration;
+    using Autofac.Extensions.DependencyInjection;
+
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+
+    using Arcadia.Assistant.DI;
+    using Arcadia.Assistant.Configuration.Configuration;
 
     public class DependencyInjection
     {
-        public IContainer GetContainer(IConfigurationRoot config)
+        public IContainer GetContainer(IConfigurationRoot config, ServiceCollection serviceCollection)
         {
             var settings = config.Get<AppSettings>();
             var container = new ContainerBuilder();
+
+            container.Populate(serviceCollection);
 
             container.RegisterModule(new ConfigurationModule(config));
 
