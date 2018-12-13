@@ -2,16 +2,18 @@
  * Copyright (c) Arcadia, Inc. All rights reserved.
  ******************************************************************************/
 
-import { ActionsObservable } from 'redux-observable';
+import { ActionsObservable, combineEpics, ofType, StateObservable } from 'redux-observable';
 import { AuthActionType, UserLoggedIn } from '../reducers/auth/auth.action';
-import { switchMap } from 'rxjs/operators';
+import { catchError, ignoreElements, switchMap } from 'rxjs/operators';
 import Push from 'appcenter-push';
-import { Subject } from 'rxjs';
+import { EMPTY, from, Subject } from 'rxjs';
 import { Action } from 'redux';
 import { openProfile } from '../navigation/navigation.actions';
+import { AppState, DependenciesContainer } from '../reducers/app.reducer';
+import AppCenter from 'appcenter';
 
 //----------------------------------------------------------------------------
-export const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>) =>
+const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>) =>
     action$.ofType(AuthActionType.userLoggedIn).pipe(
         switchMap(() => {
             const notification$ = new Subject<Action>();
@@ -29,3 +31,31 @@ export const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>) 
             return notification$;
         }),
     );
+
+//----------------------------------------------------------------------------
+const notificationsRegister$ = (action$: ActionsObservable<UserLoggedIn>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
+    ofType(AuthActionType.userLoggedIn),
+    switchMap(() => {
+        return from(AppCenter.getInstallId());
+    }),
+    switchMap(installId => {
+        return deps.apiClient.put(`/push/device/${installId}`);
+    }),
+    catchError(error => {
+        console.warn(error);
+        return EMPTY;
+    }),
+    ignoreElements(),
+);
+
+//----------------------------------------------------------------------------
+export async function notificationsUnregister(deps: DependenciesContainer) {
+    const installId = await AppCenter.getInstallId();
+    await deps.apiClient.delete(`/push/device/${installId}`).toPromise();
+}
+
+//----------------------------------------------------------------------------
+export const notifications$ = combineEpics(
+    notificationsHandler$,
+    notificationsRegister$,
+);

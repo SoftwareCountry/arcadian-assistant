@@ -19,6 +19,7 @@ import { Alert } from 'react-native';
 import { AuthenticationState } from '../../auth/authentication-state';
 import { Action } from 'redux';
 import { of } from 'rxjs';
+import { notificationsUnregister } from '../../notifications/notification-listener';
 
 //----------------------------------------------------------------------------
 function showAlert(message: string, okButtonTitle: string, rejectButtonTitle: string, okButton: () => void, rejectButton: () => void) {
@@ -62,7 +63,10 @@ export const startLogoutProcessEpic$ = (action$: ActionsObservable<StartLogoutPr
                 'Are you sure you want to logout?',
                 'Logout',
                 'Cancel',
-                () => dep.oauthProcess.logout(),
+                () => {
+                    notificationsUnregister(dep).catch(console.warn);
+                    dep.oauthProcess.logout();
+                },
                 () => {
                 });
         }),
