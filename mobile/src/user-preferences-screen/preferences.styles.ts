@@ -32,5 +32,9 @@ export const preferencesStyles = StyleSheet.create({
         color: 'white',
         textAlign: 'center',
     },
+    icon: {
+        color: 'white',
+        fontSize: 26,
+    }
 });
 
