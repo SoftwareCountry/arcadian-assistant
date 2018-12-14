@@ -26,10 +26,9 @@
             this.userEmployeeSearch = userEmployeeSearch;
         }
 
-        [Route("{devicePushToken}")]
-        [HttpPut]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
-        public async Task<IActionResult> RegisterDevice(string devicePushToken, CancellationToken cancellationToken)
+        public async Task<IActionResult> RegisterDevice([FromBody]string devicePushToken, CancellationToken cancellationToken)
         {
             var employee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, cancellationToken);
 
@@ -41,7 +40,6 @@
         [Route("{devicePushToken}")]
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> RemoveDevice(string devicePushToken, CancellationToken cancellationToken)
         {
             var employee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, cancellationToken);
