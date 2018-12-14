@@ -24,10 +24,11 @@
 {
     NSString* appSecret = [ReactNativeConfig envFor:@"appCenterSecretId"];
     [AppCenterReactNativeShared setAppSecret:appSecret];
+    [AppCenterReactNativeShared setStartAutomatically:YES];
+    [AppCenterReactNative register];  // Initialize AppCenter
     [AppCenterReactNativePush register];  // Initialize AppCenter push
     [AppCenterReactNativeCrashes registerWithAutomaticProcessing];  // Initialize AppCenter crashes
     [AppCenterReactNativeAnalytics registerWithInitiallyEnabled:true];  // Initialize AppCenter analytics
-    [AppCenterReactNative register];  // Initialize AppCenter
 
     NSURL* jsCodeLocation;
     #if DEBUG
