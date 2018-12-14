@@ -2,6 +2,7 @@ import { dataMember, required } from 'santee-dcts';
 import { DataMemberDecoratorParams } from 'santee-dcts/src/dataMemberDecorator';
 import moment, { Moment } from 'moment';
 import { Nullable, Optional } from 'types';
+import { Hasher } from '../../utils/hasher';
 
 const dateDecoratorParams: DataMemberDecoratorParams = {
     customDeserializer: (value: string) => moment(value)
@@ -55,6 +56,7 @@ export class Employee {
     @required({ nullable: true })
     public roomNumber: Nullable<string> = null;
 
+    //----------------------------------------------------------------------------
     public equals(obj: Optional<Employee>): boolean {
         if (!obj) {
             return false;
@@ -77,5 +79,23 @@ export class Employee {
             && obj.hoursCredit === this.hoursCredit
             && obj.vacationDaysLeft === this.vacationDaysLeft
             && obj.roomNumber === this.roomNumber;
+    }
+
+    //----------------------------------------------------------------------------
+    public hashCode(): number {
+        const hasher = new Hasher(this.employeeId);
+        hasher.combine(this.name);
+        hasher.combine(this.email);
+        hasher.combine(this.sex);
+        hasher.combine(this.photoUrl);
+        hasher.combine(this.position);
+        hasher.combine(this.departmentId);
+        hasher.combine(this.mobilePhone);
+        hasher.combine(this.birthDate);
+        hasher.combine(this.hireDate);
+        hasher.combine(this.hoursCredit);
+        hasher.combine(this.vacationDaysLeft);
+        hasher.combine(this.roomNumber);
+        return hasher.value;
     }
 }
