@@ -8,19 +8,10 @@
 
     public class NotificationsModule : Module
     {
-        private readonly ISmtpSettings smtpSettings;
-        private readonly IPushSettings pushSettings;
-
-        public NotificationsModule(ISmtpSettings smtpSettings, IPushSettings pushSettings)
-        {
-            this.smtpSettings = smtpSettings;
-            this.pushSettings = pushSettings;
-        }
-
         protected override void Load(ContainerBuilder builder)
         {
-            builder.Register(x => new EmailNotificationsActor(this.smtpSettings));
-            builder.Register(x => new PushNotificationsActor(this.pushSettings));
+            builder.RegisterType<EmailNotificationsActor>().AsSelf();
+            builder.RegisterType<PushNotificationsActor>().AsSelf();
         }
     }
 }
