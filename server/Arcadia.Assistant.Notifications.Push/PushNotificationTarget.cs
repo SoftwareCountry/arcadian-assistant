@@ -9,7 +9,7 @@
         [DataMember]
         public const string Type = "devices_target";
 
-        [DataMember]
-        public IEnumerable<string> Devices { get; set; }
+        [DataMember(Name = "devices")]
+        public IEnumerable<string> DevicePushTokens { get; set; }
     }
 }
