@@ -11,6 +11,8 @@ import { Nullable, Optional } from 'types';
 
 const notAuthenticatedInstance: NotAuthenticatedState = { isAuthenticated: false }; //save a reference, so distinct works
 
+const cancellationErrorCode = '1';
+
 export class OAuthProcess {
 
     public get authenticationState() {
@@ -65,8 +67,7 @@ export class OAuthProcess {
             const code = this.loginRequest.getAuthorizationCodeFromResponse(responseUrl);
             this.authorizationCode.next(code);
         } catch (error) {
-            const errorText = this.getErrorMessage(error);
-            this.authenticationStateSource.next({ isAuthenticated: false, errorText: errorText });
+            this.handleError(error);
         }
     }
 
@@ -84,9 +85,7 @@ export class OAuthProcess {
                     const authorizationCodeResponseUrl = await this.loginRequest.openLoginPage(true);
                     this.handleAuthorizationCodeResponse(authorizationCodeResponseUrl);
                 } catch (error) {
-                    const errorText = this.getErrorMessage(error);
-
-                    this.authenticationStateSource.next({ isAuthenticated: false, errorText: errorText });
+                    this.handleError(error);
                 }
             } else {
                 console.debug('Using refresh token from the application storage');
@@ -132,8 +131,7 @@ export class OAuthProcess {
         } else {
             this.storeRefreshToken(null); // there was an error with /token endpoint so we delete existing token
 
-            const errorText = this.getErrorMessage(error);
-            this.authenticationStateSource.next({ isAuthenticated: false, errorText: errorText });
+            this.handleError(error);
         }
     }
 
@@ -156,6 +154,18 @@ export class OAuthProcess {
         } else {
             return scheduledEmition;
         }
+    }
+
+    private handleError(error: any) {
+        const errorCode = error.code;
+
+        if (errorCode && errorCode === cancellationErrorCode) {
+            this.authenticationStateSource.next(notAuthenticatedInstance);
+            return;
+        }
+
+        const errorText = this.getErrorMessage(error);
+        this.authenticationStateSource.next({ isAuthenticated: false, errorText: errorText });
     }
 
     private getErrorMessage(error: any): string {
