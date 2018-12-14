@@ -107,6 +107,7 @@
         [Route("")]
         [HttpPost]
         [ProducesResponseType(typeof(CalendarEventsWithIdModel), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create(string employeeId, [FromBody] CalendarEventsModel model, CancellationToken token)
         {
             if (!this.ModelState.IsValid)
@@ -155,6 +156,7 @@
         [Route("{eventId}")]
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> Update(string employeeId, string eventId, [FromBody] CalendarEventsModel model, CancellationToken token)
