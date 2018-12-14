@@ -20,10 +20,10 @@
 
         public DatesPeriod(DateTime startDate, DateTime endDate, int startWorkingHour = 0, int finishWorkingHour = 8)
         {
-            this.StartDate = startDate;
-            this.EndDate = endDate;
-            this.StartWorkingHour = startWorkingHour;
-            this.FinishWorkingHour = finishWorkingHour;
+            this.StartDate = MinDate(startDate, endDate);
+            this.EndDate = MaxDate(startDate, endDate);
+            this.StartWorkingHour = Math.Min(startWorkingHour, finishWorkingHour);
+            this.FinishWorkingHour = Math.Max(startWorkingHour, finishWorkingHour);
         }
 
         private bool Equals(DatesPeriod other)
@@ -62,6 +62,16 @@
         public static bool operator !=(DatesPeriod left, DatesPeriod right)
         {
             return !Equals(left, right);
+        }
+
+        private static DateTime MinDate(DateTime first, DateTime second)
+        {
+            return first <= second ? first : second;
+        }
+
+        private static DateTime MaxDate(DateTime first, DateTime second)
+        {
+            return first >= second ? first : second;
         }
     }
 }
