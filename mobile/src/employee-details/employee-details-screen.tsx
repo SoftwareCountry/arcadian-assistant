@@ -49,9 +49,7 @@ class EmployeeDetailsScreenImpl extends Component<EmployeeDetailsProps & Employe
             return true;
         }
 
-        const departments = this.props.departments;
-        const nextDepartments = nextProps.departments;
-        if (nextDepartments && !nextDepartments.equals(departments)) {
+        if (!this.props.departments.equals(nextProps.departments)) {
             return true;
         }
 
