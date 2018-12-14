@@ -64,6 +64,21 @@
             return !Equals(left, right);
         }
 
+        public bool DatesIntersectsWith(DatesPeriod period)
+        {
+            if (period == null)
+            {
+                return false;
+            }
+
+            if (this.EndDate < period.StartDate || period.EndDate < this.StartDate)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         private static DateTime MinDate(DateTime first, DateTime second)
         {
             return first <= second ? first : second;
