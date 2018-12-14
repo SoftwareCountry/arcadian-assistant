@@ -35,19 +35,16 @@ export const chevronStyles = StyleSheet.create({
 });
 
 export const layoutStyles = StyleSheet.create({
-    scrollView: {
-        flex: 1,
-        backgroundColor: '#fff',
-        marginTop: circleDiameter * 0.50
-    },
     container: {
         flex: 1,
         alignSelf: 'stretch',
-        backgroundColor: '#fff'
+        backgroundColor: Style.color.white,
     },
     content: {
         flex: 1,
         flexDirection: 'column',
+        backgroundColor: Style.color.white,
+        marginTop: circleDiameter * 0.50,
     },
     header: {
         alignSelf: 'center',

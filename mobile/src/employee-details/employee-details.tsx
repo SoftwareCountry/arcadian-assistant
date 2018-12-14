@@ -200,41 +200,39 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                                 style={{ borderWidth: 3 }}/>
                     </View>
                 </View>
-                <View style={layoutStyles.scrollView}>
-                    <View style={layoutStyles.content}>
-                        <StyledText style={contentStyles.name}>
-                            {employee.name}
+                <View style={layoutStyles.content}>
+                    <StyledText style={contentStyles.name}>
+                        {employee.name}
+                    </StyledText>
+                    <StyledText style={contentStyles.position}>
+                        {uppercase(employee.position)}
+                    </StyledText>
+                    <TouchableOpacity onPress={this.openDepartment}>
+                        <StyledText style={contentStyles.department}>
+                            {uppercase(department.abbreviation)}
                         </StyledText>
-                        <StyledText style={contentStyles.position}>
-                            {uppercase(employee.position)}
-                        </StyledText>
-                        <TouchableOpacity onPress={this.openDepartment}>
-                            <StyledText style={contentStyles.department}>
-                                {uppercase(department.abbreviation)}
-                            </StyledText>
-                        </TouchableOpacity>
+                    </TouchableOpacity>
 
-                        <View style={contentStyles.infoContainer}>
-                            {tiles}
-                        </View>
-
-                        <View style={contentStyles.contactsContainer}>
-                            <View>
-                                {contacts}
-                                {
-                                    this.renderDaysCounters(employee)
-                                }
-                            </View>
-                        </View>
-
-                        {
-                            this.renderPendingRequests(permissions)
-                        }
-                        {
-                            this.renderEmployeeEvents(events, permissions)
-                        }
-
+                    <View style={contentStyles.infoContainer}>
+                        {tiles}
                     </View>
+
+                    <View style={contentStyles.contactsContainer}>
+                        <View>
+                            {contacts}
+                            {
+                                this.renderDaysCounters(employee)
+                            }
+                        </View>
+                    </View>
+
+                    {
+                        this.renderPendingRequests(permissions)
+                    }
+                    {
+                        this.renderEmployeeEvents(events, permissions)
+                    }
+
                 </View>
             </View>
         );
