@@ -8,6 +8,6 @@
 
         string ApiToken { get; }
 
-        string ApplicationPushUrl { get; }
+        IEnumerable<string> ApplicationPushUrls { get; }
     }
 }
