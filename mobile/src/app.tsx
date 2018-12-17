@@ -86,5 +86,5 @@ const mapDispatchToProps = (dispatch: Dispatch<AuthActions>): AppDispatchProps =
     }
 });
 
-export const AppWithNavigationState = connect<AppStateProps, AppDispatchProps, AppOwnProps>(stateToProps, mapDispatchToProps)(App);
+export const AppWithNavigationState = connect<AppStateProps, AppDispatchProps, AppOwnProps, AppState>(stateToProps, mapDispatchToProps)(App);
 
