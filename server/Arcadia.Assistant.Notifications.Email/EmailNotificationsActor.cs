@@ -27,13 +27,6 @@
                 case EmailNotification msg when this.smtpSettings.Enabled:
                     this.SendEmail(msg);
                     break;
-
-                case EmailNotification _:
-                    break;
-
-                default:
-                    this.Unhandled(message);
-                    break;
             }
         }
 

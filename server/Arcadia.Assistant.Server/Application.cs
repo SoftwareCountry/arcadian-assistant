@@ -8,8 +8,11 @@
     using Akka.DI.AutoFac;
 
     using Autofac;
-    using Configuration.Configuration;
+
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+
+    using Arcadia.Assistant.Configuration.Configuration;
 
     public class Application : IDisposable
     {
@@ -33,9 +36,12 @@
             this.ActorSystem = ActorSystem.Create("arcadia-assistant", akkaConfig);
             this.OnStart(this.ActorSystem);
 
+            var services = new ServiceCollection();
+            services.AddHttpClient();
+
             var di = new DependencyInjection();
 
-            this.container = di.GetContainer(this.Config);
+            this.container = di.GetContainer(this.Config, services);
 
             // ReSharper disable once ObjectCreationAsStatement
             new AutoFacDependencyResolver(this.container, this.ActorSystem);

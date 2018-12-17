@@ -21,6 +21,8 @@
             var settings = this.configurationRoot.Get<AppSettings>();
             builder.RegisterInstance(settings).AsSelf();
             builder.RegisterInstance(settings.Organization.RefreshInformation).As<IRefreshInformation>();
+            builder.RegisterInstance(settings.Messaging.Smtp).As<ISmtpSettings>();
+            builder.RegisterInstance(settings.Messaging.Push).As<IPushSettings>();
 
             var cspSettings = this.configurationRoot.GetSection("Csp").Get<CspConfiguration>();
             builder.RegisterInstance(cspSettings).AsSelf();

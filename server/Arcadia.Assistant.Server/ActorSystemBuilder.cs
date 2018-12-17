@@ -58,7 +58,10 @@
                 "event-granted-approval-owner-email");
 
             var emailNotificationsActorProps = this.actorSystem.DI().Props<EmailNotificationsActor>();
-            this.actorSystem.ActorOf(Props.Create(() => new NotificationsDispatcherActor(emailNotificationsActorProps)), "notifications");
+            var pushNotificationsActorProps = this.actorSystem.DI().Props<PushNotificationsActor>();
+            this.actorSystem.ActorOf(
+                Props.Create(() => new NotificationsDispatcherActor(emailNotificationsActorProps, pushNotificationsActorProps)),
+                "notifications");
 
             return new ServerActorsCollection(organization, health, helpdesk, feeds, userPreferences, pushNotificationsDevices);
         }

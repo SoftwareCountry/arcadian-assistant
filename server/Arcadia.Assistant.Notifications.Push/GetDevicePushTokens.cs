@@ -2,9 +2,9 @@
 {
     using System.Collections.Generic;
 
-    public class GetDeviceIds
+    public class GetDevicePushTokens
     {
-        public GetDeviceIds(string employeeId)
+        public GetDevicePushTokens(string employeeId)
         {
             this.EmployeeId = employeeId;
         }
@@ -17,12 +17,12 @@
 
         public class Success : Response
         {
-            public Success(IEnumerable<string> deviceIds)
+            public Success(IEnumerable<string> devicePushTokens)
             {
-                this.DeviceIds = deviceIds;
+                this.DevicePushTokens = devicePushTokens;
             }
 
-            public IEnumerable<string> DeviceIds { get; }
+            public IEnumerable<string> DevicePushTokens { get; }
         }
     }
 }
