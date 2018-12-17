@@ -1,8 +1,6 @@
 ﻿namespace Arcadia.Assistant.Notifications.Push
 {
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
@@ -36,14 +34,6 @@
                     this.SendPushNotification(msg)
                         .PipeTo(
                             this.Self,
-                            success: x => new SendPushNotificationResult(x),
-                            failure: err => new SendPushNotificationResultFinish(err.Message));
-                    break;
-
-                case SendPushNotificationResult msg:
-                    this.HandleSendPushNotificationResults(msg.Responses)
-                        .PipeTo(
-                            this.Self,
                             success: () => SendPushNotificationResultFinish.Instance,
                             failure: err => new SendPushNotificationResultFinish(err.Message));
                     break;
@@ -58,7 +48,7 @@
             }
         }
 
-        private Task<HttpResponseMessage[]> SendPushNotification(PushNotification message)
+        private Task SendPushNotification(PushNotification message)
         {
             this.logger.Debug("Push notification message received");
 
@@ -71,23 +61,7 @@
             return Task.WhenAll(requests);
         }
 
-        private async Task HandleSendPushNotificationResults(IEnumerable<HttpResponseMessage> responses)
-        {
-            foreach (var response in responses)
-            {
-                if (response.StatusCode == HttpStatusCode.Accepted)
-                {
-                    this.logger.Debug($"Push notification was succesfully sent to {response.RequestMessage.RequestUri}");
-                }
-                else
-                {
-                    var content = await response.Content.ReadAsStringAsync();
-                    this.logger.Warning($"Push notification to {response.RequestMessage.RequestUri} failed: {content}");
-                }
-            }
-        }
-
-        private Task<HttpResponseMessage> SendPushNotificationRequest(
+        private async Task SendPushNotificationRequest(
             string applicationPushUrl,
             string pushNotificationContent)
         {
@@ -103,7 +77,18 @@
 
             using (var httpClient = this.httpClientFactory.CreateClient())
             {
-                return httpClient.SendAsync(request);
+                using (var response = await httpClient.SendAsync(request))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        this.logger.Debug($"Push notification was succesfully sent to {response.RequestMessage.RequestUri}");
+                    }
+                    else
+                    {
+                        var responseContent = await response.Content.ReadAsStringAsync();
+                        this.logger.Warning($"Push notification to {response.RequestMessage.RequestUri} failed: {responseContent}");
+                    }
+                }
             }
         }
 
@@ -114,16 +99,6 @@
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
             return JsonConvert.SerializeObject(message, serializerSettings);
-        }
-
-        private class SendPushNotificationResult
-        {
-            public SendPushNotificationResult(IEnumerable<HttpResponseMessage> responses)
-            {
-                this.Responses = responses;
-            }
-
-            public IEnumerable<HttpResponseMessage> Responses { get; }
         }
 
         private class SendPushNotificationResultFinish
