@@ -2,7 +2,7 @@
 {
     using System.ComponentModel.DataAnnotations;
 
-    public class EmailWithFixedRecipientSettings : EmailSettings, IEmailWithFixedRecipientSettings
+    public class EmailWithFixedRecipientNotification : EmailNotification, IEmailWithFixedRecipientNotification
     {
         [Required]
         public string NotificationRecipient { get; set; }

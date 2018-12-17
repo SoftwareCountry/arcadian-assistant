@@ -9,20 +9,21 @@
     using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.Notifications;
-    using Arcadia.Assistant.Notifications.Email;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
+    using EmailNotification = Arcadia.Assistant.Notifications.Email.EmailNotification;
+
     public class SickLeaveApprovedEmailNotificationActor : UntypedActor
     {
-        private readonly IEmailWithFixedRecipientSettings mailConfig;
+        private readonly IEmailWithFixedRecipientNotification emailNotificationConfig;
         private readonly IActorRef organizationActor;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
-        public SickLeaveApprovedEmailNotificationActor(IEmailWithFixedRecipientSettings mailConfig, IActorRef organizationActor)
+        public SickLeaveApprovedEmailNotificationActor(IEmailWithFixedRecipientNotification emailNotificationConfig, IActorRef organizationActor)
         {
-            this.mailConfig = mailConfig;
+            this.emailNotificationConfig = emailNotificationConfig;
             this.organizationActor = organizationActor;
 
             Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);
@@ -49,11 +50,11 @@
                     this.logger.Debug("Sending a sick leave email notification for user {0}",
                         msg.Event.EmployeeId);
 
-                    var sender = this.mailConfig.NotificationSender;
-                    var recipient = this.mailConfig.NotificationRecipient;
-                    var subject = this.mailConfig.Subject;
+                    var sender = this.emailNotificationConfig.NotificationSender;
+                    var recipient = this.emailNotificationConfig.NotificationRecipient;
+                    var subject = this.emailNotificationConfig.Subject;
                     var body = string.Format(
-                        this.mailConfig.Body,
+                        this.emailNotificationConfig.Body,
                         msg.Employee.Name,
                         msg.Event.Dates.StartDate.ToString("D"));
 

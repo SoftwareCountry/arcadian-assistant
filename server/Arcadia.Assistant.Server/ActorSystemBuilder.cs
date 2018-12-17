@@ -35,12 +35,12 @@
 
             this.actorSystem.ActorOf(
                 Props.Create(() => new SickLeaveApprovedEmailNotificationActor(
-                    calendarEventsMessagingSettings.SickLeaveApproved,
+                    calendarEventsMessagingSettings.SickLeaveApprovedEmail,
                     organization)),
                 "sick-leave-email");
             this.actorSystem.ActorOf(
                 Props.Create(() => new EventAssignedToApproverEmailNotificationActor(
-                    calendarEventsMessagingSettings.EventAssignedToApprover,
+                    calendarEventsMessagingSettings.EventAssignedToApproverEmail,
                     organization,
                     userPreferences)),
                 "event-assigned-email");
@@ -51,13 +51,13 @@
                 "event-assigned-push");
             this.actorSystem.ActorOf(
                 Props.Create(() => new EventStatusChangedEmailNotificationActor(
-                    calendarEventsMessagingSettings.EventStatusChanged,
+                    calendarEventsMessagingSettings.EventStatusChangedEmail,
                     organization,
                     userPreferences)),
                 "event-changed-status-owner-email");
             this.actorSystem.ActorOf(
                 Props.Create(() => new EventUserGrantedApprovalEmailNotificationActor(
-                    calendarEventsMessagingSettings.EventUserGrantedApproval,
+                    calendarEventsMessagingSettings.EventUserGrantedApprovalEmail,
                     organization,
                     userPreferences)),
                 "event-granted-approval-owner-email");
