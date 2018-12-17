@@ -66,4 +66,4 @@ class PeopleRoomImpl extends React.Component<PeopleRoomStateProps & EmployeesLis
     }
 }
 
-export const PeopleRoom = connect<PeopleRoomStateProps, EmployeesListDispatchProps, PeopleRoomPropsOwnProps>(mapStateToProps, mapDispatchToProps)(PeopleRoomImpl);
+export const PeopleRoom = connect<PeopleRoomStateProps, EmployeesListDispatchProps, PeopleRoomPropsOwnProps, AppState>(mapStateToProps, mapDispatchToProps)(PeopleRoomImpl);

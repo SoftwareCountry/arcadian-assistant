@@ -23,6 +23,10 @@ DerivedData
 *.xcuserstate
 project.xcworkspace
 
+# iOS/Appcode
+#
+ios/.idea/
+
 # Android/IntelliJ
 #
 android/.idea/

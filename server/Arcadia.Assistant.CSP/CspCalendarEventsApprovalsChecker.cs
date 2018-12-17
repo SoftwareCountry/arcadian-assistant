@@ -47,7 +47,7 @@
         {
             var ownDepartment = departments.First(d => d.DepartmentId == employee.DepartmentId);
             var isEmployeeChief = ownDepartment.ChiefId == employee.EmployeeId;
-            var parentDepartment = departments.First(d => d.DepartmentId == ownDepartment.DepartmentId);
+            var parentDepartment = departments.First(d => d.DepartmentId == ownDepartment.ParentDepartmentId);
             var parentDepartments = this.GetParentDepartments(ownDepartment, departments);
 
             if (ownDepartment.IsHeadDepartment && isEmployeeChief)

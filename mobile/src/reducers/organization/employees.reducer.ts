@@ -33,12 +33,12 @@ export const employeesReducer: Reducer<EmployeesStore> = (state = defaultState, 
                     //if department changed, remove a link from old collection
                     if (oldEmployee.departmentId !== newEmployee.departmentId) {
                         employeeIdsByDepartment = employeeIdsByDepartment
-                            .update(oldEmployee.departmentId, Set(), oldCollection => oldCollection.remove(oldEmployee.employeeId));
+                            .update(oldEmployee.departmentId, Set(), oldSet => oldSet.remove(oldEmployee.employeeId));
                     }
                 }
 
                 employeeIdsByDepartment = employeeIdsByDepartment
-                    .update(newEmployee.departmentId, Set(), oldCollection => oldCollection.add(newEmployee.employeeId));
+                    .update(newEmployee.departmentId, Set(), oldSet => oldSet.add(newEmployee.employeeId));
 
                 employeesById = employeesById.set(newEmployee.employeeId, newEmployee);
             }

@@ -11,6 +11,6 @@
         public PushSettings Push { get; set; }
 
         [Required]
-        public SickLeaveSettings SickLeave { get; set; }
+        public CalendarEventsMessagingSettings CalendarEvents { get; set; }
     }
 }

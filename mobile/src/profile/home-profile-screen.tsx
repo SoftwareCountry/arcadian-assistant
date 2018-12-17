@@ -4,7 +4,7 @@ import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
 import { LayoutChangeEvent, RefreshControl, SafeAreaView, StyleSheet, View, ViewStyle } from 'react-native';
 import { Employee } from '../reducers/organization/employee.model';
-import { layoutStyles, profileScreenStyles } from './styles';
+import { layoutStyles } from './styles';
 import { EmployeeDetails } from '../employee-details/employee-details';
 import { refresh } from '../reducers/refresh/refresh.action';
 import { loadPendingRequests } from '../reducers/calendar/pending-requests/pending-requests.action';
@@ -19,6 +19,7 @@ import { Action, Dispatch } from 'redux';
 import { Optional } from 'types';
 import { getEmployee } from '../utils/utils';
 import { SettingsView } from '../user-preferences-screen/settings-view';
+import { employeeDetailsStyles } from '../employee-details/styles';
 
 //============================================================================
 interface ProfileScreenProps {
@@ -71,8 +72,8 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
 
     //----------------------------------------------------------------------------
     public shouldComponentUpdate(nextProps: ProfileScreenProps & AuthDispatchProps, nextState: ProfileScreenState) {
-        if (this.state.width !== nextState.width ||
-            this.state.height !== nextState.height) {
+
+        if (this.state.width !== nextState.width || this.state.height !== nextState.height) {
             return true;
         }
 
@@ -128,15 +129,15 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
     //----------------------------------------------------------------------------
     public render() {
         return <SafeAreaView style={Style.view.safeArea} onLayout={this.onLayout}>
-            <View style={profileScreenStyles.employeeDetailsContainer}>
+            <View style={employeeDetailsStyles.container}>
                 <View style={[
-                    profileScreenStyles.topHalfView,
+                    employeeDetailsStyles.topHalfView,
                     {
                         width: this.state.width,
                         height: this.state.height / 2,
                     }]}/>
                 <View style={[
-                    profileScreenStyles.bottomHalfView,
+                    employeeDetailsStyles.bottomHalfView,
                     {
                         top: this.state.height / 2,
                         width: this.state.width,
@@ -148,7 +149,7 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
     }
 
     //----------------------------------------------------------------------------
-    private renderEmployeeDetails() {
+    private renderEmployeeDetails(): JSX.Element {
         const employee = this.props.employee;
         const employees = this.props.employees;
         const department = this.props.department;
@@ -164,14 +165,17 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
             .mapKeys(employeeId => employees.employeesById.get(employeeId)!) : undefined;
 
         return (
-            <ScrollView refreshControl={<RefreshControl tintColor={Style.color.white} refreshing={false}
+            <ScrollView refreshControl={<RefreshControl tintColor={Style.color.white}
+                                                        refreshing={false}
                                                         onRefresh={this.onRefresh}/>}>
+
                 <EmployeeDetails
                     department={department}
                     employee={employee}
                     layoutStylesChevronPlaceholder={layoutStyles.chevronPlaceholder as ViewStyle}
                     requests={employeesToRequests}
                 />
+
             </ScrollView>
         );
     }

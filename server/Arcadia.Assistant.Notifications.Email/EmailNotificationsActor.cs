@@ -24,7 +24,7 @@
         {
             switch (message)
             {
-                case EmailNotification msg:
+                case EmailNotification msg when this.smtpSettings.Enabled:
                     this.SendEmail(msg);
                     break;
             }

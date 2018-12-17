@@ -18,6 +18,9 @@ import com.facebook.react.bridge.ReactMethod;
 
 public class AuthenticationSessionModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
 
+    private static final int CANCELLATION_ERROR_CODE = 1;
+    private static final String CANCELLATION_SUBCODE = "error_subcode=cancel";
+
     private Promise currentSession;
     private Uri requestedRedirectUri;
 
@@ -76,7 +79,7 @@ public class AuthenticationSessionModule extends ReactContextBaseJavaModule impl
     @ReactMethod
     public void reset() {
         if (this.currentSession != null) {
-            this.currentSession.reject(new Exception("The session was reset"));
+            this.currentSession.reject(String.valueOf(CANCELLATION_ERROR_CODE), "The session was reset");
         }
 
         this.cleanUp();
@@ -113,12 +116,23 @@ public class AuthenticationSessionModule extends ReactContextBaseJavaModule impl
                 throw new Exception(String.format("Received unknown redirect url %s", data.toString())); //unknown url
             }
 
-            this.currentSession.resolve(data.toString());
+            String url = data.toString();
+
+            if (isCancellationUrl(url)) {
+                this.currentSession.reject(String.valueOf(CANCELLATION_ERROR_CODE), "Back button on authorization screen presses");
+            } else {
+                this.currentSession.resolve(url);
+            }
+
             cleanUp();
 
         } catch(Exception e) {
             this.currentSession.reject(e);
             cleanUp();
         }
+    }
+
+    private boolean isCancellationUrl(String url) {
+        return url.contains(CANCELLATION_SUBCODE);
     }
 }
