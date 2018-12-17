@@ -11,8 +11,12 @@
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
+    using NLog;
+
     public class PermissionsActor : UntypedActor, ILogReceive
     {
+        private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
         private readonly TimeSpan timeout = TimeSpan.FromSeconds(1);
         private readonly Dictionary<string, EmployeePermissionsEntry> permissionsForDepartments = new Dictionary<string, EmployeePermissionsEntry>();
         private readonly Dictionary<string, EmployeePermissionsEntry> permissionsForEmployees = new Dictionary<string, EmployeePermissionsEntry>();
@@ -39,6 +43,7 @@
                     this.userEmail = p.User.Identity.Name;
                     if (this.userEmail == null)
                     {
+                        Log.Debug("Passed user identity is null.");
                         this.ReplyAndStop();
                     }
 
@@ -56,6 +61,7 @@
                 {
                     case ReceiveTimeout _:
                     case EmployeesQuery.Response userEmployee when userEmployee.Employees.Count == 0:
+                        Log.Debug($"Cannot find an employee for '{this.userEmail}'");
                         this.ReplyAndStop();
                         break;
 

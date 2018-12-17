@@ -123,7 +123,7 @@
 
             if ((employeeModels.Length == 0) && (query.EmployeeId != null))
             {
-                Log.Debug($"Employees search list is empty for {query.EmployeeId}. Registry returned {employees.Count} employees");
+                Log.Debug($"Employees search list is empty for {query.EmployeeId}. Registry returned {employees.Count} employees. User {this.User.Identity.Name}");
             }
 
             this.FillPhotoUrls(employeeModels);
