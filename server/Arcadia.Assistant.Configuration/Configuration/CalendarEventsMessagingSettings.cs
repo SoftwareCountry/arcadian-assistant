@@ -11,9 +11,18 @@
         public EmailNotification EventAssignedToApproverEmail { get; set; }
 
         [Required]
+        public PushNotification EventAssignedToApproverPush { get; set; }
+
+        [Required]
         public EmailNotification EventStatusChangedEmail { get; set; }
 
         [Required]
+        public PushNotification EventStatusChangedPush { get; set; }
+
+        [Required]
         public EmailNotification EventUserGrantedApprovalEmail { get; set; }
+
+        [Required]
+        public PushNotification EventUserGrantedApprovalPush { get; set; }
     }
 }

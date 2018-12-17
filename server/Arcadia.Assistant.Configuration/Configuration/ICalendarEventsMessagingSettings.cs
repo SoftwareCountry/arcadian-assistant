@@ -6,8 +6,14 @@
 
         EmailNotification EventAssignedToApproverEmail { get; }
 
+        PushNotification EventAssignedToApproverPush { get; }
+
         EmailNotification EventStatusChangedEmail { get; }
 
+        PushNotification EventStatusChangedPush { get; }
+
         EmailNotification EventUserGrantedApprovalEmail { get; }
+
+        PushNotification EventUserGrantedApprovalPush { get; }
     }
 }
