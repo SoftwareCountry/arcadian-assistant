@@ -9,21 +9,32 @@
 
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.EventBus;
+    using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.Notifications;
     using Arcadia.Assistant.Notifications.Push;
+    using Arcadia.Assistant.Organization.Abstractions;
+    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.UserPreferences;
+
+    using PushNotification = Arcadia.Assistant.Notifications.Push.PushNotification;
 
     public class EventAssignedToApproverPushNotificationActor : UntypedActor, ILogReceive
     {
+        private readonly IPushNotification pushNotificationConfig;
+        private readonly IActorRef organizationActor;
         private readonly IActorRef userPreferencesActor;
         private readonly IActorRef pushDevicesActor;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
         public EventAssignedToApproverPushNotificationActor(
+            IPushNotification pushNotificationConfig,
+            IActorRef organizationActor,
             IActorRef userPreferencesActor,
             IActorRef pushDevicesActor)
         {
+            this.pushNotificationConfig = pushNotificationConfig;
+            this.organizationActor = organizationActor;
             this.userPreferencesActor = userPreferencesActor;
             this.pushDevicesActor = pushDevicesActor;
 
@@ -38,13 +49,14 @@
                     this.GetAdditionalData(msg)
                         .ContinueWith(task =>
                         {
-                            var (approverPreferencesResult, approverPushTokens) = task.Result;
+                            var (ownerResult, approverPreferencesResult, approverPushTokensResult) = task.Result;
 
                             return new CalendarEventAssignedWithAdditionalData(
                                 msg.Event,
                                 msg.ApproverId,
+                                ownerResult.Employees.First().Metadata,
                                 approverPreferencesResult.UserPreferences,
-                                approverPushTokens.DevicePushTokens);
+                                approverPushTokensResult.DevicePushTokens);
                         })
                         .PipeTo(this.Self);
 
@@ -60,7 +72,6 @@
                         msg.Event.EventId, msg.Event.EmployeeId, msg.ApproverId);
 
                     var pushNotification = this.CreatePushNotification(msg);
-
                     Context.System.EventStream.Publish(new NotificationEventBusMessage(pushNotification));
 
                     break;
@@ -75,16 +86,18 @@
         }
 
         private async
-            Task<(GetUserPreferencesMessage.Response, GetDevicePushTokens.Success)>
+            Task<(EmployeesQuery.Response, GetUserPreferencesMessage.Response, GetDevicePushTokens.Success)>
             GetAdditionalData(CalendarEventAssignedToApprover message)
         {
+            var ownerEmployeeTask = this.organizationActor.Ask<EmployeesQuery.Response>(
+                EmployeesQuery.Create().WithId(message.Event.EmployeeId));
             var approverPreferencesTask = this.userPreferencesActor.Ask<GetUserPreferencesMessage.Response>(
                 new GetUserPreferencesMessage(message.ApproverId));
             var approverPushTokensTask = this.pushDevicesActor.Ask<GetDevicePushTokens.Success>(
                 new GetDevicePushTokens(message.ApproverId));
 
-            await Task.WhenAll(approverPreferencesTask, approverPushTokensTask);
-            return (approverPreferencesTask.Result, approverPushTokensTask.Result);
+            await Task.WhenAll(ownerEmployeeTask, approverPreferencesTask, approverPushTokensTask);
+            return (ownerEmployeeTask.Result, approverPreferencesTask.Result, approverPushTokensTask.Result);
         }
 
         private PushNotification CreatePushNotification(CalendarEventAssignedWithAdditionalData message)
@@ -93,12 +106,12 @@
             {
                 Content = new PushNotificationContent
                 {
-                    Title = "Test title",
-                    Body = "Test body",
+                    Title = this.pushNotificationConfig.Title,
+                    Body = string.Format(this.pushNotificationConfig.Body, message.Event.Type, message.Owner.Name),
                     CustomData = new
                     {
                         message.Event.EventId,
-                        message.Event.EmployeeId,
+                        message.ApproverId,
                         Type = CalendarEventPushNotificationTypes.EventAssignedToApprover
                     }
                 },
@@ -114,11 +127,13 @@
             public CalendarEventAssignedWithAdditionalData(
                 CalendarEvent @event,
                 string approverId,
+                EmployeeMetadata owner,
                 UserPreferences approverUserPreferences,
                 IEnumerable<string> approverPushTokens)
             {
                 this.Event = @event;
                 this.ApproverId = approverId;
+                this.Owner = owner;
                 this.ApproverUserPreferences = approverUserPreferences;
                 this.ApproverPushTokens = approverPushTokens;
             }
@@ -126,6 +141,8 @@
             public CalendarEvent Event { get; }
 
             public string ApproverId { get; }
+
+            public EmployeeMetadata Owner { get; }
 
             public UserPreferences ApproverUserPreferences { get; }
 

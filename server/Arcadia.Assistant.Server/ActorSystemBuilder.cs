@@ -46,6 +46,8 @@
                 "event-assigned-email");
             this.actorSystem.ActorOf(
                 Props.Create(() => new EventAssignedToApproverPushNotificationActor(
+                    calendarEventsMessagingSettings.EventAssignedToApproverPush,
+                    organization,
                     userPreferences,
                     pushNotificationsDevices)),
                 "event-assigned-push");
