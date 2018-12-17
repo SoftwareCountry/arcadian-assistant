@@ -54,7 +54,7 @@
 
                 case EmployeesQuery query:
                     var requesters = new[] { this.Sender };
-                    Context.ActorOf(Props.Create(() => new EmployeeSearch(this.EmployeesById.Values, requesters, query)));
+                    Context.ActorOf(Props.Create(() => new EmployeeSearch(this.EmployeesById.ToDictionary(x => x.Key, x => x.Value), requesters, query)));
                     break;
 
                 case Terminated t:

@@ -23,9 +23,9 @@
 
         private const string SearchFinished = "finished";
 
-        public EmployeeSearch(IEnumerable<IActorRef> allEmployees, IEnumerable<IActorRef> requesters, EmployeesQuery query)
+        public EmployeeSearch(IDictionary<string, IActorRef> allEmployees, IEnumerable<IActorRef> requesters, EmployeesQuery query)
         {
-            this.employeeActorsToReply = new HashSet<IActorRef>(allEmployees);
+            this.employeeActorsToReply = GetInitialSearchSet(allEmployees, query);
             this.requesters = new HashSet<IActorRef>(requesters);
             this.query = query;
 
@@ -128,6 +128,18 @@
             }
 
             return true;
+        }
+
+        private static HashSet<IActorRef> GetInitialSearchSet(IDictionary<string, IActorRef> employeesById, EmployeesQuery query)
+        {
+            if (query.EmployeeId != null)
+            {
+                return employeesById.TryGetValue(query.EmployeeId, out var actor)
+                    ? new HashSet<IActorRef>() { actor }
+                    : new HashSet<IActorRef>();
+            }
+
+            return new HashSet<IActorRef>(employeesById.Values);
         }
     }
 }
