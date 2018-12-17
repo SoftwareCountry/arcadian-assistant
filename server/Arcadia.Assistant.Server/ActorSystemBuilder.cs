@@ -35,15 +35,20 @@
 
             this.actorSystem.ActorOf(
                 Props.Create(() => new SickLeaveApprovedEmailNotificationActor(
-                    calendarEventsMessagingSettings.SickLeaveApproved, 
+                    calendarEventsMessagingSettings.SickLeaveApproved,
                     organization)),
                 "sick-leave-email");
             this.actorSystem.ActorOf(
                 Props.Create(() => new EventAssignedToApproverEmailNotificationActor(
-                    calendarEventsMessagingSettings.EventAssignedToApprover, 
+                    calendarEventsMessagingSettings.EventAssignedToApprover,
                     organization,
                     userPreferences)),
                 "event-assigned-email");
+            this.actorSystem.ActorOf(
+                Props.Create(() => new EventAssignedToApproverPushNotificationActor(
+                    userPreferences,
+                    pushNotificationsDevices)),
+                "event-assigned-push");
             this.actorSystem.ActorOf(
                 Props.Create(() => new EventStatusChangedEmailNotificationActor(
                     calendarEventsMessagingSettings.EventStatusChanged,
