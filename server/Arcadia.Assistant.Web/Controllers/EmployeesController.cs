@@ -1,6 +1,7 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -115,19 +116,34 @@
                             employee.HoursCredit = workhoursCredit.WorkHoursCredit;
                         }
 
-                        try
-                        {
-                            employee.PhotoUrl = this.Url.Action(nameof(EmployeePhotoController.GetImage), "EmployeePhoto", new { employeeId = employee.EmployeeId }, this.Request.GetUri().Scheme);
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Warn(e, "Cannot generate PhotoUrl for {0}", employee.EmployeeId);
-                        }
-
                         return employee;
                     });
 
-            return await Task.WhenAll(tasks);
+            var employeeModels = await Task.WhenAll(tasks);
+
+            if ((employeeModels.Length == 0) && (query.EmployeeId != null))
+            {
+                Log.Debug($"Employees search list is empty for {query.EmployeeId}. Registry returned {employees.Count} employees");
+            }
+
+            this.FillPhotoUrls(employeeModels);
+
+            return employeeModels;
+        }
+
+        private void FillPhotoUrls(IEnumerable<EmployeeModel> employeeModels)
+        {
+            foreach (var employee in employeeModels)
+            {
+                try
+                {
+                    employee.PhotoUrl = this.Url.Action(nameof(EmployeePhotoController.GetImage), "EmployeePhoto", new { employeeId = employee.EmployeeId }, this.Request.GetUri().Scheme);
+                }
+                catch (Exception e)
+                {
+                    Log.Warn(e, "Cannot generate PhotoUrl for {0}", employee.EmployeeId);
+                }
+            }
         }
     }
 }
