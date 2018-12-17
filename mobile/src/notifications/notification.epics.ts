@@ -46,7 +46,9 @@ const getInstallId$ = (action$: ActionsObservable<UserLoggedIn>) => action$.pipe
 const notificationsRegister$ = (action$: ActionsObservable<NotificationAction>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
     ofType(NotificationActionType.installIdReceived),
     switchMap(action => {
-        return deps.apiClient.put(`/push/device/${action.installId}`);
+        return deps.apiClient.post(`/push/device`, {
+            devicePushToken: action.installId,
+        });
     }),
     catchError(error => {
         console.warn(error);
