@@ -6,7 +6,7 @@ import { ActionsObservable, combineEpics, ofType, StateObservable } from 'redux-
 import { AuthActionType, UserLoggedIn } from '../reducers/auth/auth.action';
 import { catchError, ignoreElements, map, switchMap } from 'rxjs/operators';
 import Push from 'appcenter-push';
-import { EMPTY, from, of, Subject } from 'rxjs';
+import { EMPTY, from, Subject } from 'rxjs';
 import { Action } from 'redux';
 import { openProfile } from '../navigation/navigation.actions';
 import { AppState, DependenciesContainer } from '../reducers/app.reducer';

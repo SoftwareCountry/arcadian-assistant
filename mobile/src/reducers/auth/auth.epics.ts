@@ -19,7 +19,7 @@ import { Alert } from 'react-native';
 import { AuthenticationState } from '../../auth/authentication-state';
 import { Action } from 'redux';
 import { of } from 'rxjs';
-import { notificationsUnregister } from '../../notifications/notification-listener';
+import { notificationsUnregister } from '../../notifications/notification.epics';
 
 //----------------------------------------------------------------------------
 function showAlert(message: string, okButtonTitle: string, rejectButtonTitle: string, okButton: () => void, rejectButton: () => void) {

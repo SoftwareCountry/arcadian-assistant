@@ -18,7 +18,7 @@ import { refreshEpics } from './refresh/refresh.reducer';
 import { NavigationService } from '../navigation/navigation.service';
 import { NavigationDependenciesContainer } from '../navigation/navigation-dependencies-container';
 import { navigationEpics$ } from '../navigation/navigation.epics';
-import { notifications$ } from '../notifications/notification-listener';
+import { notifications$ } from '../notifications/notification.epics';
 import { notificationsReducer, NotificationState } from '../notifications/notifications.reducer';
 
 export interface AppState {
