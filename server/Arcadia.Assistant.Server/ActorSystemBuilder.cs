@@ -81,7 +81,14 @@
                     calendarEventsMessagingSettings.EventUserGrantedApprovalEmail,
                     organization,
                     userPreferences)),
-                "event-granted-approval-owner-email");
+                "event-granted-approval-email");
+            this.actorSystem.ActorOf(
+                Props.Create(() => new EventUserGrantedApprovalPushNotificationActor(
+                    calendarEventsMessagingSettings.EventUserGrantedApprovalPush,
+                    organization,
+                    userPreferences,
+                    pushNotificationsDevices)),
+                "event-granted-approval-push");
         }
     }
 }
