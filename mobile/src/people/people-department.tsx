@@ -67,4 +67,4 @@ export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentStateP
     }
 }
 
-export const PeopleDepartment = connect<PeopleDepartmentStateProps, EmployeesListDispatchProps, PeopleDepartmentPropsOwnProps>(mapStateToProps, mapDispatchToProps)(PeopleDepartmentImpl);
+export const PeopleDepartment = connect<PeopleDepartmentStateProps, EmployeesListDispatchProps, PeopleDepartmentPropsOwnProps, AppState>(mapStateToProps, mapDispatchToProps)(PeopleDepartmentImpl);

@@ -28,6 +28,7 @@ public class MainApplication extends Application implements ReactApplication {
     //----------------------------------------------------------------------------
     static {
         AppCenterReactNativeShared.setAppSecret(BuildConfig.appCenterSecretId);
+        AppCenterReactNativeShared.setStartAutomatically(true);
     }
 
     //----------------------------------------------------------------------------

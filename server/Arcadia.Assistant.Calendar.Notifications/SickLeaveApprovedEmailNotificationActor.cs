@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.Calendar.SickLeave
+﻿namespace Arcadia.Assistant.Calendar.Notifications
 {
     using System.Linq;
 
@@ -13,14 +13,14 @@
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
-    public class SendEmailSickLeaveActor : UntypedActor
+    public class SickLeaveApprovedEmailNotificationActor : UntypedActor
     {
-        private readonly IEmailSettings mailConfig;
+        private readonly IEmailWithFixedRecipientSettings mailConfig;
         private readonly IActorRef organizationActor;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
-        public SendEmailSickLeaveActor(IEmailSettings mailConfig, IActorRef organizationActor)
+        public SickLeaveApprovedEmailNotificationActor(IEmailWithFixedRecipientSettings mailConfig, IActorRef organizationActor)
         {
             this.mailConfig = mailConfig;
             this.organizationActor = organizationActor;
@@ -32,25 +32,34 @@
         {
             switch (message)
             {
-                case CalendarEventChanged msg when msg.NewEvent.Type == CalendarEventTypes.Sickleave:
+                case CalendarEventChanged msg 
+                    when msg.NewEvent.Type == CalendarEventTypes.Sickleave && 
+                    msg.NewEvent.Status == SickLeaveStatuses.Approved:
+
                     this.organizationActor
                         .Ask<EmployeesQuery.Response>(EmployeesQuery.Create().WithId(msg.NewEvent.EmployeeId))
-                        .ContinueWith(task => new CalendarEventChangedWithEmployee(msg.NewEvent, task.Result.Employees.FirstOrDefault()?.Metadata))
+                        .ContinueWith(task => new CalendarEventChangedWithAdditionalData(msg.NewEvent, task.Result.Employees.FirstOrDefault()?.Metadata))
                         .PipeTo(this.Self);
                     break;
 
                 case CalendarEventChanged _:
                     break;
 
-                case CalendarEventChangedWithEmployee msg:
-                    this.logger.Debug("Sending a sick leave email notification for user {0}", msg.Event.EmployeeId);
+                case CalendarEventChangedWithAdditionalData msg:
+                    this.logger.Debug("Sending a sick leave email notification for user {0}",
+                        msg.Event.EmployeeId);
 
                     var sender = this.mailConfig.NotificationSender;
                     var recipient = this.mailConfig.NotificationRecipient;
                     var subject = this.mailConfig.Subject;
-                    var body = string.Format(this.mailConfig.Body, msg.Employee.Name, msg.Event.Dates.StartDate.ToString("D"));
+                    var body = string.Format(
+                        this.mailConfig.Body,
+                        msg.Employee.Name,
+                        msg.Event.Dates.StartDate.ToString("D"));
 
-                    Context.System.EventStream.Publish(new NotificationEventBusMessage(new EmailNotification(sender, new[] { recipient }, subject, body)));
+                    Context.System.EventStream.Publish(
+                        new NotificationEventBusMessage(
+                            new EmailNotification(sender, new[] { recipient }, subject, body)));
 
                     break;
 
@@ -60,9 +69,9 @@
             }
         }
 
-        private class CalendarEventChangedWithEmployee
+        private class CalendarEventChangedWithAdditionalData
         {
-            public CalendarEventChangedWithEmployee(CalendarEvent @event, EmployeeMetadata employee)
+            public CalendarEventChangedWithAdditionalData(CalendarEvent @event, EmployeeMetadata employee)
             {
                 this.Event = @event;
                 this.Employee = employee;

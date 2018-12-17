@@ -12,15 +12,18 @@
     <PackageReference Include="Akka.Persistence.SqlServer" Version="1.3.7" />
     <PackageReference Include="Akka.Remote" Version="1.3.10" />
     <PackageReference Include="Autofac" Version="4.8.1" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.3.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.DependencyCollector" Version="2.8.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.NLogTarget" Version="2.8.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.PerfCounterCollector" Version="2.8.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.WindowsServer" Version="2.8.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="2.1.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Arcadia.Assistant.Calendar.Notifications\Arcadia.Assistant.Calendar.Notifications.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Configuration\Arcadia.Assistant.Configuration.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.DI\Arcadia.Assistant.DI.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Feeds\Arcadia.Assistant.Feeds.csproj" />

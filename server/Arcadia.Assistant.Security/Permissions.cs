@@ -5,10 +5,13 @@
 
     using Arcadia.Assistant.Organization.Abstractions;
 
+    using NLog;
+
     [DataContract]
     public class Permissions
     {
-
+        private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+        
         [DataMember]
         // explicit department permissions by id
         private IReadOnlyDictionary<string, EmployeePermissionsEntry> DepartmentPermissions { get; set; }
@@ -35,6 +38,7 @@
         {
             if (targetEmployee == null)
             {
+                Log.Debug("Null target employee passed");
                 return EmployeePermissionsEntry.None;
             }
 

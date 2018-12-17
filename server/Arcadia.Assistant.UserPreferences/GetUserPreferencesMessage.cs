@@ -2,12 +2,12 @@
 {
     public class GetUserPreferencesMessage
     {
-        public GetUserPreferencesMessage(string userId)
+        public GetUserPreferencesMessage(string employeeId)
         {
-            UserId = userId;
+            this.EmployeeId = employeeId;
         }
 
-        public string UserId { get; }
+        public string EmployeeId { get; }
 
         public class Response
         {

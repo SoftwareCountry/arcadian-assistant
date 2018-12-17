@@ -3,7 +3,7 @@
     using Akka.Actor;
     using Akka.DI.Core;
 
-    using Arcadia.Assistant.Calendar.SickLeave;
+    using Arcadia.Assistant.Calendar.Notifications;
     using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.Feeds;
     using Arcadia.Assistant.Helpdesk;
@@ -24,7 +24,7 @@
             this.actorSystem = actorSystem;
         }
 
-        public ServerActorsCollection AddRootActors(IEmailSettings emailSettings)
+        public ServerActorsCollection AddRootActors(ICalendarEventsMessagingSettings calendarEventsMessagingSettings)
         {
             var organization = this.actorSystem.ActorOf(this.actorSystem.DI().Props<OrganizationActor>(), WellKnownActorPaths.Organization);
             var health = this.actorSystem.ActorOf(this.actorSystem.DI().Props<HealthChecker>(), WellKnownActorPaths.Health);
@@ -33,10 +33,35 @@
             var userPreferences = this.actorSystem.ActorOf(this.actorSystem.DI().Props<UserPreferencesActor>(), WellKnownActorPaths.UserPreferences);
             var pushNotificationsDevices = this.actorSystem.ActorOf(Props.Create(() => new PushNotificationsDevicesActor()), WellKnownActorPaths.PushNotificationsDevices);
 
-            this.actorSystem.ActorOf(Props.Create(() => new SendEmailSickLeaveActor(emailSettings, organization)), "sick-leave-email");
+            this.actorSystem.ActorOf(
+                Props.Create(() => new SickLeaveApprovedEmailNotificationActor(
+                    calendarEventsMessagingSettings.SickLeaveApproved, 
+                    organization)),
+                "sick-leave-email");
+            this.actorSystem.ActorOf(
+                Props.Create(() => new EventAssignedToApproverEmailNotificationActor(
+                    calendarEventsMessagingSettings.EventAssignedToApprover, 
+                    organization,
+                    userPreferences)),
+                "event-assigned-email");
+            this.actorSystem.ActorOf(
+                Props.Create(() => new EventStatusChangedEmailNotificationActor(
+                    calendarEventsMessagingSettings.EventStatusChanged,
+                    organization,
+                    userPreferences)),
+                "event-changed-status-owner-email");
+            this.actorSystem.ActorOf(
+                Props.Create(() => new EventUserGrantedApprovalEmailNotificationActor(
+                    calendarEventsMessagingSettings.EventUserGrantedApproval,
+                    organization,
+                    userPreferences)),
+                "event-granted-approval-owner-email");
 
             var emailNotificationsActorProps = this.actorSystem.DI().Props<EmailNotificationsActor>();
-            this.actorSystem.ActorOf(Props.Create(() => new NotificationsDispatcherActor(emailNotificationsActorProps)), "notifications");
+            var pushNotificationsActorProps = this.actorSystem.DI().Props<PushNotificationsActor>();
+            this.actorSystem.ActorOf(
+                Props.Create(() => new NotificationsDispatcherActor(emailNotificationsActorProps, pushNotificationsActorProps)),
+                "notifications");
 
             return new ServerActorsCollection(organization, health, helpdesk, feeds, userPreferences, pushNotificationsDevices);
         }
