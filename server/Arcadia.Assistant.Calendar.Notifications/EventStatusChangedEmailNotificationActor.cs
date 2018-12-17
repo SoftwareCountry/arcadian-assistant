@@ -62,7 +62,7 @@
                 case CalendarEventChangedWithAdditionalData msg
                     when msg.OwnerUserPreferences.EmailNotifications:
 
-                    this.logger.Debug("Sending notification about event {0} status changed to owner", msg.Event.EventId);
+                    this.logger.Debug("Sending email notification about event {0} status changed to owner", msg.Event.EventId);
 
                     var sender = this.mailConfig.NotificationSender;
                     var recipient = msg.Owner.Email;

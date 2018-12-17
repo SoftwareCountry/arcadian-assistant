@@ -61,8 +61,8 @@
                 case CalendarEventApprovalsChangedWithAdditionalData msg
                     when msg.OwnerUserPreferences.EmailNotifications:
 
-                    this.logger.Debug("Sending notification about user {0} granted approval for event {1} of {2}",
-                        msg.Approver.Name, msg.Event.EventId, msg.Owner.Name);
+                    this.logger.Debug("Sending email notification about user {0} granted approval for event {1} of {2}",
+                        msg.Approver.EmployeeId, msg.Event.EventId, msg.Owner.EmployeeId);
 
                     var sender = this.mailConfig.NotificationSender;
                     var recipient = msg.Owner.Email;
