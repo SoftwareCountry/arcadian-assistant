@@ -34,24 +34,24 @@
             var pushNotificationsDevices = this.actorSystem.ActorOf(Props.Create(() => new PushNotificationsDevicesActor()), WellKnownActorPaths.PushNotificationsDevices);
 
             this.actorSystem.ActorOf(
-                Props.Create(() => new SickLeaveApprovedNotificationActor(
+                Props.Create(() => new SickLeaveApprovedEmailNotificationActor(
                     calendarEventsMessagingSettings.SickLeaveApproved, 
                     organization)),
                 "sick-leave-email");
             this.actorSystem.ActorOf(
-                Props.Create(() => new EventAssignedToApproverNotificationActor(
+                Props.Create(() => new EventAssignedToApproverEmailNotificationActor(
                     calendarEventsMessagingSettings.EventAssignedToApprover, 
                     organization,
                     userPreferences)),
                 "event-assigned-email");
             this.actorSystem.ActorOf(
-                Props.Create(() => new EventStatusChangedNotificationActor(
+                Props.Create(() => new EventStatusChangedEmailNotificationActor(
                     calendarEventsMessagingSettings.EventStatusChanged,
                     organization,
                     userPreferences)),
                 "event-changed-status-owner-email");
             this.actorSystem.ActorOf(
-                Props.Create(() => new EventUserGrantedApprovalNotificationActor(
+                Props.Create(() => new EventUserGrantedApprovalEmailNotificationActor(
                     calendarEventsMessagingSettings.EventUserGrantedApproval,
                     organization,
                     userPreferences)),

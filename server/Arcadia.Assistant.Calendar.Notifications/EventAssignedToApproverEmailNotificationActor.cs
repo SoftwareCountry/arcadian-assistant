@@ -15,7 +15,7 @@
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.UserPreferences;
 
-    public class EventUserGrantedApprovalNotificationActor : UntypedActor, ILogReceive
+    public class EventAssignedToApproverEmailNotificationActor : UntypedActor, ILogReceive
     {
         private readonly IEmailSettings mailConfig;
         private readonly IActorRef organizationActor;
@@ -23,7 +23,7 @@
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
-        public EventUserGrantedApprovalNotificationActor(
+        public EventAssignedToApproverEmailNotificationActor(
             IEmailSettings mailConfig,
             IActorRef organizationActor,
             IActorRef userPreferencesActor)
@@ -32,42 +32,42 @@
             this.organizationActor = organizationActor;
             this.userPreferencesActor = userPreferencesActor;
 
-            Context.System.EventStream.Subscribe<CalendarEventApprovalsChanged>(this.Self);
+            Context.System.EventStream.Subscribe<CalendarEventAssignedToApprover>(this.Self);
         }
 
         protected override void OnReceive(object message)
         {
             switch (message)
             {
-                case CalendarEventApprovalsChanged msg when msg.Approvals.Count() != 0:
+                case CalendarEventAssignedToApprover msg when msg.ApproverId != null:
                     this.GetAdditionalData(msg)
                         .ContinueWith(task =>
                         {
-                            var (ownerEmployeeResult, ownerPreferencesResult, approverEmployeeResult) = task.Result;
+                            var (ownerEmployeeResult, approverPreferencesResult, approverEmployeeResult) = task.Result;
 
-                            return new CalendarEventApprovalsChangedWithAdditionalData(
+                            return new CalendarEventAssignedWithAdditionalData(
                                 msg.Event,
                                 ownerEmployeeResult.Employees.First().Metadata,
-                                ownerPreferencesResult.UserPreferences,
+                                approverPreferencesResult.UserPreferences,
                                 approverEmployeeResult.Employees.First().Metadata);
                         })
                         .PipeTo(this.Self);
 
                     break;
 
-                case CalendarEventApprovalsChanged _:
+                case CalendarEventAssignedToApprover _:
                     break;
 
-                case CalendarEventApprovalsChangedWithAdditionalData msg
-                    when msg.OwnerUserPreferences.EmailNotifications:
+                case CalendarEventAssignedWithAdditionalData msg
+                    when msg.ApproverUserPreferences.EmailNotifications:
 
-                    this.logger.Debug("Sending notification about user {0} granted approval for event {1} of {2}",
-                        msg.Approver.Name, msg.Event.EventId, msg.Owner.Name);
+                    this.logger.Debug("Sending notification about event {0} of {1} assigned to {2}",
+                        msg.Event.EventId, msg.Owner.Name, msg.Approver.Name);
 
                     var sender = this.mailConfig.NotificationSender;
-                    var recipient = msg.Owner.Email;
+                    var recipient = msg.Approver.Email;
                     var subject = this.mailConfig.Subject;
-                    var body = string.Format(this.mailConfig.Body, msg.Event.Type, msg.Approver.Name);
+                    var body = string.Format(this.mailConfig.Body, msg.Event.Type, msg.Owner.Name);
 
                     Context.System.EventStream.Publish(
                         new NotificationEventBusMessage(
@@ -75,7 +75,7 @@
 
                     break;
 
-                case CalendarEventApprovalsChangedWithAdditionalData _:
+                case CalendarEventAssignedWithAdditionalData _:
                     break;
 
                 default:
@@ -86,34 +86,30 @@
 
         private async
             Task<(EmployeesQuery.Response, GetUserPreferencesMessage.Response, EmployeesQuery.Response)>
-            GetAdditionalData(CalendarEventApprovalsChanged message)
+            GetAdditionalData(CalendarEventAssignedToApprover message)
         {
-            var lastApproval = message.Approvals
-                .OrderByDescending(a => a.Timestamp)
-                .First();
-
             var ownerEmployeeTask = this.organizationActor.Ask<EmployeesQuery.Response>(
                 EmployeesQuery.Create().WithId(message.Event.EmployeeId));
-            var ownerPreferencesTask = this.userPreferencesActor.Ask<GetUserPreferencesMessage.Response>(
-                new GetUserPreferencesMessage(message.Event.EmployeeId));
+            var approverPreferencesTask = this.userPreferencesActor.Ask<GetUserPreferencesMessage.Response>(
+                new GetUserPreferencesMessage(message.ApproverId));
             var approverEmployeeTask = this.organizationActor.Ask<EmployeesQuery.Response>(
-                EmployeesQuery.Create().WithId(lastApproval.ApprovedBy));
+                EmployeesQuery.Create().WithId(message.ApproverId));
 
-            await Task.WhenAll(ownerEmployeeTask, ownerPreferencesTask, approverEmployeeTask);
-            return (ownerEmployeeTask.Result, ownerPreferencesTask.Result, approverEmployeeTask.Result);
+            await Task.WhenAll(ownerEmployeeTask, approverPreferencesTask, approverEmployeeTask);
+            return (ownerEmployeeTask.Result, approverPreferencesTask.Result, approverEmployeeTask.Result);
         }
 
-        private class CalendarEventApprovalsChangedWithAdditionalData
+        private class CalendarEventAssignedWithAdditionalData
         {
-            public CalendarEventApprovalsChangedWithAdditionalData(
+            public CalendarEventAssignedWithAdditionalData(
                 CalendarEvent @event,
                 EmployeeMetadata owner,
-                UserPreferences ownerUserPreferences,
+                UserPreferences approverUserPreferences,
                 EmployeeMetadata approver)
             {
                 this.Event = @event;
                 this.Owner = owner;
-                this.OwnerUserPreferences = ownerUserPreferences;
+                this.ApproverUserPreferences = approverUserPreferences;
                 this.Approver = approver;
             }
 
@@ -121,7 +117,7 @@
 
             public EmployeeMetadata Owner { get; }
 
-            public UserPreferences OwnerUserPreferences { get; }
+            public UserPreferences ApproverUserPreferences { get; }
 
             public EmployeeMetadata Approver { get; }
         }

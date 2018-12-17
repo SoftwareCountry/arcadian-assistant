@@ -15,7 +15,7 @@
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.UserPreferences;
 
-    public class EventStatusChangedNotificationActor : UntypedActor, ILogReceive
+    public class EventStatusChangedEmailNotificationActor : UntypedActor, ILogReceive
     {
         private readonly IEmailSettings mailConfig;
         private readonly IActorRef organizationActor;
@@ -23,7 +23,7 @@
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
-        public EventStatusChangedNotificationActor(
+        public EventStatusChangedEmailNotificationActor(
             IEmailSettings mailConfig,
             IActorRef organizationActor,
             IActorRef userPreferencesActor)
