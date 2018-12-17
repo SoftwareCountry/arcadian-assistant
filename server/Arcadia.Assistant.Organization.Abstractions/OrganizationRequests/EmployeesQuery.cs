@@ -8,8 +8,6 @@
     {
         public string DepartmentId { get; private set; }
 
-        public string AscendantDepartmentId { get; private set; }
-
         public string EmployeeId { get; private set; }
 
         public string RoomNumber { get; private set; }

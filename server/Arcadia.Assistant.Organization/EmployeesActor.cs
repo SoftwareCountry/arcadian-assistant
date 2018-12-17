@@ -22,7 +22,7 @@
 
         private readonly IActorRef vacationsRegistry;
 
-        private Dictionary<string, IActorRef> EmployeesById { get; } = new Dictionary<string, IActorRef>();
+        private readonly Dictionary<string, EmployeeIndexEntry> employeesById = new Dictionary<string, EmployeeIndexEntry>();
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
         private readonly IActorRef calendarEventsApprovalsChecker;
@@ -54,17 +54,17 @@
 
                 case EmployeesQuery query:
                     var requesters = new[] { this.Sender };
-                    Context.ActorOf(Props.Create(() => new EmployeeSearch(this.EmployeesById.ToDictionary(x => x.Key, x => x.Value), requesters, query)));
+                    Context.ActorOf(Props.Create(() => new EmployeeSearch(this.employeesById.Values.ToList(), requesters, query)));
                     break;
 
                 case Terminated t:
                     this.logger.Debug($"Employee actor got terminated - {t.ActorRef}");
                     // unexpected employee actor termination
-                    var deadEmployees = this.EmployeesById.Where(x => x.Value.Equals(t.ActorRef)).Select(x => x.Key).ToList();
+                    var deadEmployees = this.employeesById.Where(x => x.Value.EmployeeActor.Equals(t.ActorRef)).Select(x => x.Key).ToList();
                     foreach (var deadEmployee in deadEmployees)
                     {
                         this.logger.Warning($"Employee actor {deadEmployee} died unexpectedly");
-                        this.EmployeesById.Remove(deadEmployee);
+                        this.employeesById.Remove(deadEmployee);
                     }
                     break;
 
@@ -113,38 +113,43 @@
 
         private void RecreateEmployeeAgents(IReadOnlyCollection<EmployeeStoredInformation> allEmployees)
         {
-            var removedIds = this.EmployeesById.Keys.Except(allEmployees.Select(x => x.Metadata.EmployeeId)).ToList();
-
+            this.logger.Debug("Recreating employee agents...");
+            var removedIds = this.employeesById.Keys.Except(allEmployees.Select(x => x.Metadata.EmployeeId)).ToList();
 
             foreach (var removedId in removedIds)
             {
-                var actorToRemove = this.EmployeesById[removedId];
-                actorToRemove.Tell(PoisonPill.Instance);
-                Context.Unwatch(actorToRemove);
-                this.EmployeesById.Remove(removedId);
+                var actorToRemove = this.employeesById[removedId];
+                Context.Unwatch(actorToRemove.EmployeeActor);
+                actorToRemove.EmployeeActor.Tell(PoisonPill.Instance);
+                this.employeesById.Remove(removedId);
             }
 
             var newEmployeesCount = 0;
             foreach (var employeeNewInfo in allEmployees)
             {
-                if (this.EmployeesById.TryGetValue(employeeNewInfo.Metadata.EmployeeId, out var employee))
+                IActorRef employeeActor;
+                var employeeId = employeeNewInfo.Metadata.EmployeeId;
+
+                if (this.employeesById.TryGetValue(employeeId, out var employee))
                 {
-                    employee.Tell(new EmployeeActor.UpdateEmployeeInformation(employeeNewInfo));
+                    employeeActor = employee.EmployeeActor;
+                    employeeActor.Tell(new EmployeeActor.UpdateEmployeeInformation(employeeNewInfo));
                 }
                 else
                 {
-                    employee = Context.ActorOf(
+                    employeeActor = Context.ActorOf(
                         EmployeeActor.GetProps(
                             employeeNewInfo,
                             this.imageResizer,
                             this.vacationsRegistry,
                             this.calendarEventsApprovalsChecker),
-                        $"employee-{Uri.EscapeDataString(employeeNewInfo.Metadata.EmployeeId)}");
+                        $"employee-{Uri.EscapeDataString(employeeId)}");
 
-                    this.EmployeesById[employeeNewInfo.Metadata.EmployeeId] = employee;
-                    Context.Watch(employee);
+                    Context.Watch(employeeActor);
                     newEmployeesCount++;
                 }
+
+                this.employeesById[employeeId] = new EmployeeIndexEntry(employeeActor, employeeNewInfo.Metadata);
             }
 
             this.logger.Debug($"Employees list is updated. There are {allEmployees.Count} at all, {removedIds.Count} got removed, {newEmployeesCount} were added");
