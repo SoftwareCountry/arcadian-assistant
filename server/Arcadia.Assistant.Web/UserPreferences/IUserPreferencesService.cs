@@ -7,8 +7,8 @@
 
     public interface IUserPreferencesService
     {
-        Task<UserPreferencesModel> GetUserPreferences(string userId, CancellationToken cancellationToken);
+        Task<UserPreferencesModel> GetUserPreferences(string employeeId, CancellationToken cancellationToken);
 
-        Task<SaveUserPreferencesMessage.Response> SaveUserPreferences(string userId, UserPreferencesModel userPreferencesModel, CancellationToken cancellationToken);
+        Task<SaveUserPreferencesMessage.Response> SaveUserPreferences(string employeeId, UserPreferencesModel userPreferencesModel, CancellationToken cancellationToken);
     }
 }
