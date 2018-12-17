@@ -4,7 +4,7 @@
     {
         public static UserPreferences Default = new UserPreferences
         {
-            EmailNotifications = true,
+            EmailNotifications = false,
             PushNotifications = true,
         };
 
