@@ -17,17 +17,14 @@
 
         private readonly List<EmployeeContainer> results = new List<EmployeeContainer>();
 
-        private readonly EmployeesQuery query;
-
         private const string StartSearch = "start";
 
         private const string SearchFinished = "finished";
 
-        public EmployeeSearch(IDictionary<string, IActorRef> allEmployees, IEnumerable<IActorRef> requesters, EmployeesQuery query)
+        public EmployeeSearch(IEnumerable<EmployeeIndexEntry> allEmployees, IEnumerable<IActorRef> requesters, EmployeesQuery query)
         {
             this.employeeActorsToReply = GetInitialSearchSet(allEmployees, query);
             this.requesters = new HashSet<IActorRef>(requesters);
-            this.query = query;
 
             this.Self.Tell(StartSearch);
         }
@@ -47,23 +44,12 @@
                     {
                         this.Self.Tell(SearchFinished);
                     }
-                    else
-                    {
-                        if (this.query.AscendantDepartmentId != null)
-                        {
-                            var departmentQuery = new DepartmentsQuery();
-                            //TODO: work in progress
-                        }
-                    }
 
                     break;
 
                 case EmployeeActor.GetEmployeeInfo.Response response:
 
-                    if (this.CheckFilter(response.Employee.Metadata))
-                    {
-                        this.results.Add(response.Employee);
-                    }
+                    this.results.Add(response.Employee);
 
                     this.employeeActorsToReply.Remove(response.Employee.Actor);
 
@@ -90,56 +76,52 @@
             }
         }
 
-        private bool CheckFilter(EmployeeMetadata employee)
+        private static HashSet<IActorRef> GetInitialSearchSet(IEnumerable<EmployeeIndexEntry> employees, EmployeesQuery query)
         {
-            if ((this.query.DepartmentId != null) && (employee.DepartmentId != this.query.DepartmentId))
+            return new HashSet<IActorRef>(
+                employees
+                    .Where(x => CheckFilter(x.Metadata, query))
+                    .Select(x => x.EmployeeActor));
+        }
+
+        private static bool CheckFilter(EmployeeMetadata employee, EmployeesQuery query)
+        {
+            if ((query.DepartmentId != null) && (employee.DepartmentId != query.DepartmentId))
             {
                 return false;
             }
 
-            if ((this.query.EmployeeId != null) && (employee.EmployeeId != this.query.EmployeeId))
+            if ((query.EmployeeId != null) && (employee.EmployeeId != query.EmployeeId))
             {
                 return false;
             }
 
-            if ((this.query.RoomNumber != null) && (employee.RoomNumber != this.query.RoomNumber))
+            if ((query.RoomNumber != null) && (employee.RoomNumber != query.RoomNumber))
             {
                 return false;
             }
 
-            if ((this.query.Sid != null) && !string.Equals(employee.Sid, this.query.Sid, StringComparison.InvariantCultureIgnoreCase))
+            if ((query.Sid != null) && !string.Equals(employee.Sid, query.Sid, StringComparison.InvariantCultureIgnoreCase))
             {
                 return false;
             }
 
-            if ((this.query.Email != null) && !string.Equals(employee.Email, this.query.Email, StringComparison.InvariantCultureIgnoreCase))
+            if ((query.Email != null) && !string.Equals(employee.Email, query.Email, StringComparison.InvariantCultureIgnoreCase))
             {
                 return false;
             }
 
-            if ((this.query.HireDate != null) && !this.query.HireDate.Matches(employee.HireDate))
+            if ((query.HireDate != null) && !query.HireDate.Matches(employee.HireDate))
             {
                 return false;
             }
 
-            if ((this.query.BirthDate != null) && (!employee.BirthDate.HasValue || !this.query.BirthDate.Matches(employee.BirthDate.Value)))
+            if ((query.BirthDate != null) && (!employee.BirthDate.HasValue || !query.BirthDate.Matches(employee.BirthDate.Value)))
             {
                 return false;
             }
 
             return true;
-        }
-
-        private static HashSet<IActorRef> GetInitialSearchSet(IDictionary<string, IActorRef> employeesById, EmployeesQuery query)
-        {
-            if (query.EmployeeId != null)
-            {
-                return employeesById.TryGetValue(query.EmployeeId, out var actor)
-                    ? new HashSet<IActorRef>() { actor }
-                    : new HashSet<IActorRef>();
-            }
-
-            return new HashSet<IActorRef>(employeesById.Values);
         }
     }
 }

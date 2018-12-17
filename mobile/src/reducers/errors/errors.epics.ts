@@ -9,10 +9,17 @@ function showAlert(errorMessage: string, okButtonTitle: string, rejectButtonTitl
     Alert.alert(
         'Error',
         `${errorMessage}`,
-        [{ text: okButtonTitle, onPress: () => okButton() }, {
-            text: rejectButtonTitle,
-            onPress: () => rejectButton()
-        }]);
+        [
+            {
+                text: rejectButtonTitle,
+                onPress: () => rejectButton(),
+                style: 'cancel',
+            },
+            {
+                text: okButtonTitle,
+                onPress: () => okButton(),
+            },
+        ]);
 }
 
 function retryWhenErrorOccurred<T>(isForceLogout: boolean = false, customErrorMessage: string | undefined = undefined): UnaryFunction<Observable<T>, Observable<T>> {

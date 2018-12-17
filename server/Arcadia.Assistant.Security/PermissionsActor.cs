@@ -17,7 +17,7 @@
     {
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
-        private readonly TimeSpan timeout = TimeSpan.FromSeconds(1);
+        private readonly TimeSpan timeout;
         private readonly Dictionary<string, EmployeePermissionsEntry> permissionsForDepartments = new Dictionary<string, EmployeePermissionsEntry>();
         private readonly Dictionary<string, EmployeePermissionsEntry> permissionsForEmployees = new Dictionary<string, EmployeePermissionsEntry>();
 
@@ -28,8 +28,9 @@
         private IActorRef originalSender;
         private string userEmail;
 
-        public PermissionsActor(ActorSelection organizationActor)
+        public PermissionsActor(ActorSelection organizationActor, TimeSpan timeout)
         {
+            this.timeout = timeout;
             this.organizationActor = organizationActor;
             Context.SetReceiveTimeout(this.timeout);
         }
@@ -60,6 +61,10 @@
                 switch (message)
                 {
                     case ReceiveTimeout _:
+                        Log.Debug($"Cannot get permissions for '${this.userEmail}' due to timeout");
+                        this.ReplyAndStop();
+                        break;
+
                     case EmployeesQuery.Response userEmployee when userEmployee.Employees.Count == 0:
                         Log.Debug($"Cannot find an employee for '{this.userEmail}'");
                         this.ReplyAndStop();
