@@ -63,6 +63,7 @@ const notificationsRegister$ = (action$: ActionsObservable<NotificationAction>, 
 
 //----------------------------------------------------------------------------
 export async function notificationsUnregister(dependencies: DependenciesContainer, installId: string) {
+    Push.setListener(undefined);
     await dependencies.apiClient.delete(`/push/device/${installId}`).toPromise();
 }
 
