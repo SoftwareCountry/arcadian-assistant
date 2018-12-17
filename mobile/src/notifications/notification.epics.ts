@@ -6,7 +6,7 @@ import { ActionsObservable, combineEpics, ofType, StateObservable } from 'redux-
 import { AuthActionType, UserLoggedIn } from '../reducers/auth/auth.action';
 import { ignoreElements, map, switchMap } from 'rxjs/operators';
 import Push from 'appcenter-push';
-import { from, Subject } from 'rxjs';
+import { from, Observable } from 'rxjs';
 import { Action } from 'redux';
 import { openProfile } from '../navigation/navigation.actions';
 import { AppState, DependenciesContainer } from '../reducers/app.reducer';
@@ -18,24 +18,26 @@ import { handleHttpErrors } from '../reducers/errors/errors.epics';
 const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>, state$: StateObservable<AppState>) =>
     action$.ofType(AuthActionType.userLoggedIn).pipe(
         switchMap(() => {
-            const notification$ = new Subject<Action>();
+            return new Observable<Action>(observer => {
+                Push.setListener({
+                    onPushNotificationReceived: notification => {
+                        if (!notification.customProperties || !notification.customProperties.employeeId) {
+                            return;
+                        }
 
-            Push.setListener({
-                onPushNotificationReceived: notification => {
-                    if (!notification.customProperties || !notification.customProperties.employeeId) {
-                        return;
-                    }
+                        const userInfo = state$.value.userInfo;
+                        if (!userInfo || notification.customProperties.employeeId !== userInfo.employeeId) {
+                            return;
+                        }
 
-                    const userInfo = state$.value.userInfo;
-                    if (!userInfo || notification.customProperties.employeeId !== userInfo.employeeId) {
-                        return;
-                    }
+                        observer.next(openProfile());
+                    },
+                });
 
-                    notification$.next(openProfile());
-                },
+                return () => {
+                    Push.setListener(undefined);
+                };
             });
-
-            return notification$;
         }),
     );
 
