@@ -1,4 +1,5 @@
 import { Dimensions, StyleSheet } from 'react-native';
+import Style from '../layout/style';
 
 export const chevronColor = '#2FAFCC';
 
@@ -87,6 +88,24 @@ export const layoutStylesForEmployeeDetailsScreen = StyleSheet.create({
     avatarImage: {
         borderWidth: 1
     }
+});
+
+export const employeeDetailsStyles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: 'transparent'
+    },
+    topHalfView: {
+        position: 'absolute',
+        backgroundColor: Style.color.base,
+        top: 0,
+        left: 0,
+    },
+    bottomHalfView: {
+        position: 'absolute',
+        backgroundColor: Style.color.white,
+        left: 0,
+    },
 });
 
 export const layoutStylesForEventManagementToolset = StyleSheet.create({

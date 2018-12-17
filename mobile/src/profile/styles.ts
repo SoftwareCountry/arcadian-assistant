@@ -34,46 +34,17 @@ export const chevronStyles = StyleSheet.create({
     }
 });
 
-export const profileScreenStyles = StyleSheet.create({
-    profileContainer: {
-        flex: 1,
-        backgroundColor: chevronColor
-    },
-    employeeDetailsContainer: {
-        flex: 1,
-        backgroundColor: 'white'
-    },
-    logoutContainer: {
-        marginTop: 5,
-        marginBottom: 10
-    },
-    topHalfView: {
-        position: 'absolute',
-        backgroundColor: Style.color.base,
-        top: 0,
-        left: 0,
-    },
-    bottomHalfView: {
-        position: 'absolute',
-        backgroundColor: Style.color.white,
-        left: 0,
-    },
-});
-
 export const layoutStyles = StyleSheet.create({
-    scrollView: {
-        flex: 1,
-        backgroundColor: '#fff',
-        marginTop: circleDiameter * 0.50
-    },
     container: {
         flex: 1,
         alignSelf: 'stretch',
-        backgroundColor: '#fff'
+        backgroundColor: Style.color.white,
     },
     content: {
         flex: 1,
         flexDirection: 'column',
+        backgroundColor: Style.color.white,
+        marginTop: circleDiameter * 0.50,
     },
     header: {
         alignSelf: 'center',
