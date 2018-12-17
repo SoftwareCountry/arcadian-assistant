@@ -4,14 +4,15 @@
 
 import { ActionsObservable, combineEpics, ofType, StateObservable } from 'redux-observable';
 import { AuthActionType, UserLoggedIn } from '../reducers/auth/auth.action';
-import { catchError, ignoreElements, map, switchMap } from 'rxjs/operators';
+import { ignoreElements, map, switchMap } from 'rxjs/operators';
 import Push from 'appcenter-push';
-import { EMPTY, from, Subject } from 'rxjs';
+import { from, Subject } from 'rxjs';
 import { Action } from 'redux';
 import { openProfile } from '../navigation/navigation.actions';
 import { AppState, DependenciesContainer } from '../reducers/app.reducer';
 import AppCenter from 'appcenter';
 import { installIdReceived, NotificationAction, NotificationActionType } from './notification.actions';
+import { handleHttpErrors } from '../reducers/errors/errors.epics';
 
 //----------------------------------------------------------------------------
 const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>, state$: StateObservable<AppState>) =>
@@ -53,11 +54,9 @@ const notificationsRegister$ = (action$: ActionsObservable<NotificationAction>, 
     switchMap(action => {
         return deps.apiClient.post(`/push/device`, {
             devicePushToken: action.installId,
-        });
-    }),
-    catchError(error => {
-        console.warn(error);
-        return EMPTY;
+        }).pipe(
+            handleHttpErrors(true, 'Push Notifications will not be received. Please contact administrator'),
+        );
     }),
     ignoreElements(),
 );
