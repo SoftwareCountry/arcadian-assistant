@@ -30,7 +30,7 @@
         public async Task<Permissions> LoadAsync(ClaimsPrincipal user)
         {
             var organization = this.actorSystem.ActorSelection(this.pathsBuilder.Get(WellKnownActorPaths.Organization));
-            var actor = this.actorSystem.ActorOf(Props.Create(() => new PermissionsActor(organization)));
+            var actor = this.actorSystem.ActorOf(Props.Create(() => new PermissionsActor(organization, this.timeoutSettings.Timeout)));
 
             var permissionsResponse = await actor.Ask<PermissionsActor.GetPermissions.Response>
                 (new PermissionsActor.GetPermissions(user), this.timeoutSettings.Timeout);
