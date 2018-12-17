@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, LayoutChangeEvent } from 'react-native';
+import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { chevronStyles } from './styles';
 
 interface ChevronProps {

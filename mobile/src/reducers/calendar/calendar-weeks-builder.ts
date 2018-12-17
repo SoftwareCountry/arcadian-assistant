@@ -32,7 +32,8 @@ export class CalendarWeeksBuilder {
         const date = moment({
             date: 1, // start filling from the first day of the month
             month: currentMonth,
-            year: currentYear });
+            year: currentYear
+        });
 
         const currentWeek = date.week();
 

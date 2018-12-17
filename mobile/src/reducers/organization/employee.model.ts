@@ -2,10 +2,13 @@ import { dataMember, required } from 'santee-dcts';
 import { DataMemberDecoratorParams } from 'santee-dcts/src/dataMemberDecorator';
 import moment, { Moment } from 'moment';
 import { Nullable, Optional } from 'types';
+import { Hasher } from '../../utils/hasher';
 
-const dateDecoratorParams: DataMemberDecoratorParams  = {
+const dateDecoratorParams: DataMemberDecoratorParams = {
     customDeserializer: (value: string) => moment(value)
 };
+
+export type EmployeeId = string;
 
 export class Employee {
     @dataMember()
@@ -17,7 +20,7 @@ export class Employee {
     public name: string = '';
 
     @dataMember()
-    @required({nullable: true})
+    @required({ nullable: true })
     public email: Nullable<string> = '';
 
     @dataMember()
@@ -42,17 +45,18 @@ export class Employee {
     public hireDate: Moment = moment();
 
     @dataMember()
-    @required({nullable: true})
+    @required({ nullable: true })
     public hoursCredit: Nullable<number> = null;
 
     @dataMember()
-    @required({nullable: true})
+    @required({ nullable: true })
     public vacationDaysLeft: Nullable<number> = null;
 
     @dataMember()
-    @required({nullable: true})
+    @required({ nullable: true })
     public roomNumber: Nullable<string> = null;
 
+    //----------------------------------------------------------------------------
     public equals(obj: Optional<Employee>): boolean {
         if (!obj) {
             return false;
@@ -75,5 +79,23 @@ export class Employee {
             && obj.hoursCredit === this.hoursCredit
             && obj.vacationDaysLeft === this.vacationDaysLeft
             && obj.roomNumber === this.roomNumber;
+    }
+
+    //----------------------------------------------------------------------------
+    public hashCode(): number {
+        const hasher = new Hasher(this.employeeId);
+        hasher.combine(this.name);
+        hasher.combine(this.email);
+        hasher.combine(this.sex);
+        hasher.combine(this.photoUrl);
+        hasher.combine(this.position);
+        hasher.combine(this.departmentId);
+        hasher.combine(this.mobilePhone);
+        hasher.combine(this.birthDate);
+        hasher.combine(this.hireDate);
+        hasher.combine(this.hoursCredit);
+        hasher.combine(this.vacationDaysLeft);
+        hasher.combine(this.roomNumber);
+        return hasher.value;
     }
 }

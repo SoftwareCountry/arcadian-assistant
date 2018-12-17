@@ -1,6 +1,15 @@
 import React, { Component } from 'react';
 import { DepartmentNode } from '../reducers/people/people.model';
-import { Animated, PanResponder, PanResponderInstance, PanResponderGestureState, Easing, StyleSheet, View, Platform } from 'react-native';
+import {
+    Animated,
+    Easing,
+    PanResponder,
+    PanResponderGestureState,
+    PanResponderInstance,
+    Platform,
+    StyleSheet,
+    View
+} from 'react-native';
 import { companyDepartments } from './styles';
 import { CompanyDepartmentsLevelAnimatedNode } from './company-departments-level-animated-node';
 import { Employee } from '../reducers/organization/employee.model';

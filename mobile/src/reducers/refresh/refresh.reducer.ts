@@ -1,5 +1,4 @@
-import { Reducer } from 'redux';
 import { combineEpics } from 'redux-observable';
-import { refreshEpic$ } from './refresh.epics';
+import { refreshEpic$, refreshUserProfileData$ } from './refresh.epics';
 
-export const refreshEpics = combineEpics(refreshEpic$);
+export const refreshEpics = combineEpics(refreshEpic$, refreshUserProfileData$);

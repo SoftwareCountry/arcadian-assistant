@@ -1,4 +1,4 @@
-import { Nullable, Optional } from 'types';
+import { Nullable } from 'types';
 
 interface DaysCounter {
     title: [string, string];

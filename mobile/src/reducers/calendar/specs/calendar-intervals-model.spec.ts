@@ -1,7 +1,6 @@
-import { IntervalsModel, IntervalModel, IntervalType } from '../calendar.model';
-import moment from 'moment';
-import { CalendarEventType, CalendarEvent, DatesInterval } from '../calendar-event.model';
-import { Moment } from 'moment';
+import { IntervalModel, IntervalsModel, IntervalType } from '../calendar.model';
+import moment, { Moment } from 'moment';
+import { CalendarEvent, CalendarEventType, DatesInterval } from '../calendar-event.model';
 
 describe('IntervalsModel', () => {
     let calendarEvent: CalendarEvent;

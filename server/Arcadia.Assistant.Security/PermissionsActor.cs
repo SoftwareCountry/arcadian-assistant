@@ -8,11 +8,16 @@
 
     using Akka.Actor;
 
+    using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
+
+    using NLog;
 
     public class PermissionsActor : UntypedActor, ILogReceive
     {
-        private readonly TimeSpan timeout = TimeSpan.FromSeconds(1);
+        private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
+        private readonly TimeSpan timeout;
         private readonly Dictionary<string, EmployeePermissionsEntry> permissionsForDepartments = new Dictionary<string, EmployeePermissionsEntry>();
         private readonly Dictionary<string, EmployeePermissionsEntry> permissionsForEmployees = new Dictionary<string, EmployeePermissionsEntry>();
 
@@ -23,8 +28,9 @@
         private IActorRef originalSender;
         private string userEmail;
 
-        public PermissionsActor(ActorSelection organizationActor)
+        public PermissionsActor(ActorSelection organizationActor, TimeSpan timeout)
         {
+            this.timeout = timeout;
             this.organizationActor = organizationActor;
             Context.SetReceiveTimeout(this.timeout);
         }
@@ -38,11 +44,12 @@
                     this.userEmail = p.User.Identity.Name;
                     if (this.userEmail == null)
                     {
+                        Log.Debug("Passed user identity is null.");
                         this.ReplyAndStop();
                     }
 
                     this.Become(this.GetUserEmployee());
-                    
+
                     break;
             }
         }
@@ -54,7 +61,12 @@
                 switch (message)
                 {
                     case ReceiveTimeout _:
+                        Log.Debug($"Cannot get permissions for '${this.userEmail}' due to timeout");
+                        this.ReplyAndStop();
+                        break;
+
                     case EmployeesQuery.Response userEmployee when userEmployee.Employees.Count == 0:
+                        Log.Debug($"Cannot find an employee for '{this.userEmail}'");
                         this.ReplyAndStop();
                         break;
 
@@ -64,7 +76,7 @@
 
                         //that can be fixed (as array, not First(), when DepartmentsQuery starts to 
                         //support arrays for Heads and DepartmentIds
-                        this.Become(this.GetOwnDepartments(userEmployee.Employees.First().Metadata.EmployeeId)); 
+                        this.Become(this.GetOwnDepartments(userEmployee.Employees.First().Metadata));
                         break;
 
                     default:
@@ -77,7 +89,7 @@
             return OnMessage;
         }
 
-        private UntypedReceive GetOwnDepartments(string employeeId)
+        private UntypedReceive GetOwnDepartments(EmployeeMetadata employee)
         {
             void OnMessage(object message)
             {
@@ -89,7 +101,7 @@
                             OwnDepartmentPermissions,
                             this.permissionsForDepartments);
 
-                        this.Become(this.LoadSupervisedDepartmentsPermissions(employeeId));
+                        this.Become(this.LoadSupervisedDepartmentsPermissions(employee.EmployeeId));
 
                         break;
 
@@ -102,7 +114,7 @@
                 }
             }
 
-            this.organizationActor.Tell(DepartmentsQuery.Create().WithHead(employeeId));
+            this.organizationActor.Tell(DepartmentsQuery.Create().WithId(employee.DepartmentId));
             return OnMessage;
         }
 
@@ -118,23 +130,13 @@
                         break;
 
                     case DepartmentsQuery.Response response:
+                        BulkBumpPermissions(
+                            response.Departments.Select(x => x.Department.DepartmentId),
+                            SupervisedPermissions,
+                            this.permissionsForDepartments);
 
-                        //setup permissions for directly supervised departments
-                        BulkBumpPermissions(response.Departments.Select(x => x.Department.DepartmentId), SupervisedPermissions, this.permissionsForDepartments);
-
-                        var tasks = response
-                            .Departments
-                            .Select(x => this.organizationActor.Ask<DepartmentsQuery.Response>(DepartmentsQuery.Create().DescendantOf(x.Department.DepartmentId), this.timeout));
-
-                        //setup permissions for branch-like supervised departments
-                        Task.WhenAll(tasks).PipeTo(this.Self);
-                        break;
-
-                    //child departments
-                    case DepartmentsQuery.Response[] responses:
-                        var departmentsIds = responses.SelectMany(r => r.Departments.Select(d => d.Department.DepartmentId));
-                        BulkBumpPermissions(departmentsIds, SupervisedPermissions, this.permissionsForDepartments);
                         this.ReplyAndStop();
+
                         break;
 
                     default:
@@ -143,7 +145,11 @@
                 }
             }
 
-            this.organizationActor.Tell(DepartmentsQuery.Create().WithHead(employeeId));
+            var departmentsQuery = DepartmentsQuery.Create()
+                .WithHead(employeeId)
+                .IncludeAllDescendants();
+            this.organizationActor.Tell(departmentsQuery);
+
             return OnMessage;
         }
 
@@ -184,11 +190,11 @@
             EmployeePermissionsEntry.CreateCalendarEvents |
             EmployeePermissionsEntry.CompleteSickLeave |
             EmployeePermissionsEntry.ProlongSickLeave |
-            EmployeePermissionsEntry.CancelCalendarEvents |
+            EmployeePermissionsEntry.CancelPendingCalendarEvents |
             EmployeePermissionsEntry.EditPendingCalendarEvents |
             EmployeePermissionsEntry.ReadEmployeeCalendarEvents |
             EmployeePermissionsEntry.ReadEmployeeInfo |
-            EmployeePermissionsEntry.ReadEmployeePhone |            
+            EmployeePermissionsEntry.ReadEmployeePhone |
             EmployeePermissionsEntry.ReadEmployeeDayoffsCounter |
             EmployeePermissionsEntry.ReadEmployeeVacationsCounter;
 
@@ -198,7 +204,7 @@
             EmployeePermissionsEntry.RejectCalendarEvents |
             EmployeePermissionsEntry.CompleteSickLeave |
             EmployeePermissionsEntry.ProlongSickLeave |
-            EmployeePermissionsEntry.CancelCalendarEvents |
+            EmployeePermissionsEntry.CancelPendingCalendarEvents |
             EmployeePermissionsEntry.EditPendingCalendarEvents |
             EmployeePermissionsEntry.ReadEmployeeCalendarEvents |
             EmployeePermissionsEntry.ReadEmployeeInfo |

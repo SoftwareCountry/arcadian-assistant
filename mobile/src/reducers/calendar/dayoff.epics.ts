@@ -1,13 +1,15 @@
 import { ActionsObservable, StateObservable } from 'redux-observable';
-import { ConfirmProcessDayoff, CancelDayoff } from './dayoff.action';
+import { CancelDayoff, ConfirmProcessDayoff } from './dayoff.action';
 import { AppState, DependenciesContainer } from '../app.reducer';
-import { CalendarEvent, CalendarEventType, CalendarEventStatus, DatesInterval } from './calendar-event.model';
-import { deserialize } from 'santee-dcts';
+import { CalendarEvent, CalendarEventStatus, CalendarEventType, DatesInterval } from './calendar-event.model';
 import { of } from 'rxjs';
 import { loadFailedError } from '../errors/errors.action';
 import { IntervalTypeConverter } from './interval-type-converter';
 import { getEventsAndPendingRequests } from './calendar.epics';
-import { catchError, flatMap, map } from 'rxjs/operators';
+import { catchError, flatMap } from 'rxjs/operators';
+import { openEventDialog, stopEventDialogProgress } from './event-dialog/event-dialog.action';
+import { EventDialogType } from './event-dialog/event-dialog-type.model';
+import { Action } from 'redux';
 
 export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('CONFIRM-PROCESS-DAYOFF').pipe(
@@ -29,13 +31,18 @@ export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff
 
             calendarEvents.status = CalendarEventStatus.Requested;
 
+            let next: Action[] | undefined;
+            if (!x.isWorkout) {
+                next = [stopEventDialogProgress(), openEventDialog(EventDialogType.DayoffRequested)];
+            }
+
             return deps.apiClient.post(
                 `/employees/${x.employeeId}/events`,
                 calendarEvents,
                 { 'Content-Type': 'application/json' }
             ).pipe(
-                map(obj => deserialize(obj.response, CalendarEvent)),
-            ).pipe(getEventsAndPendingRequests(x.employeeId));
+                getEventsAndPendingRequests(x.employeeId, next),
+            );
         }),
         catchError((e: Error) => of(loadFailedError(e.message)))
     );
@@ -43,7 +50,7 @@ export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff
 export const dayoffCanceledEpic$ = (action$: ActionsObservable<CancelDayoff>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('CANCEL-DAYOFF').pipe(
         flatMap(x => {
-            const requestBody = {...x.calendarEvent};
+            const requestBody = { ...x.calendarEvent };
 
             requestBody.status = CalendarEventStatus.Cancelled;
 

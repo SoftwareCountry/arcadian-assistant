@@ -1,4 +1,3 @@
-import { CalendarEventsState } from '../calendar-events.reducer';
 import { CalendarPageModel } from '../calendar.model';
 import { createCalendarPagesInitState } from '../calendar-pages-init-state';
 import moment, { Moment } from 'moment';

@@ -9,7 +9,12 @@ export interface ConfirmClaimVacation extends Action {
     endDate: Moment;
 }
 
-export const confirmVacation = (employeeId: string, startDate: Moment, endDate: Moment): ConfirmClaimVacation => ({ type: 'CONFIRM-VACATION', employeeId, startDate, endDate });
+export const confirmVacation = (employeeId: string, startDate: Moment, endDate: Moment): ConfirmClaimVacation => ({
+    type: 'CONFIRM-VACATION',
+    employeeId,
+    startDate,
+    endDate
+});
 
 export interface CancelVacation extends Action {
     type: 'CANCEL-VACACTION';
@@ -17,7 +22,11 @@ export interface CancelVacation extends Action {
     calendarEvent: CalendarEvent;
 }
 
-export const cancelVacation = (employeeId: string, calendarEvent: CalendarEvent): CancelVacation => ({ type: 'CANCEL-VACACTION', calendarEvent, employeeId });
+export const cancelVacation = (employeeId: string, calendarEvent: CalendarEvent): CancelVacation => ({
+    type: 'CANCEL-VACACTION',
+    calendarEvent,
+    employeeId
+});
 
 export interface ConfirmVacationChange extends Action {
     type: 'CONFIRM-VACATION-CHANGE';

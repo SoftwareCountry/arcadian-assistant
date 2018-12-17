@@ -1,6 +1,5 @@
 import { CalendarEvent, CalendarEventStatus } from './calendar-event.model';
-import { DayModel, CalendarSelection } from './calendar.model';
-import { SickLeaveActions } from './sick-leave.action';
+import { DayModel } from './calendar.model';
 import { CalendarEvents } from './calendar-events.model';
 import { Action } from 'redux';
 import { Optional } from 'types';
@@ -8,17 +7,32 @@ import { Optional } from 'types';
 export interface LoadCalendarEvents extends Action {
     type: 'LOAD-CALENDAR-EVENTS';
     employeeId: string;
+    next?: Action[];
 }
 
-export const loadCalendarEvents = (employeeId: string): LoadCalendarEvents => ({ type: 'LOAD-CALENDAR-EVENTS', employeeId });
+export const loadCalendarEvents = (employeeId: string, next?: Action[]): LoadCalendarEvents => {
+    return {
+        type: 'LOAD-CALENDAR-EVENTS',
+        employeeId,
+        next,
+    };
+};
 
 export interface LoadCalendarEventsFinished extends Action {
     type: 'LOAD-CALENDAR-EVENTS-FINISHED';
     calendarEvents: CalendarEvents;
     employeeId: string;
+    next?: Action[];
 }
 
-export const loadCalendarEventsFinished = (calendarEvents: CalendarEvents, employeeId: string): LoadCalendarEventsFinished => ({ type: 'LOAD-CALENDAR-EVENTS-FINISHED', calendarEvents, employeeId });
+export const loadCalendarEventsFinished = (calendarEvents: CalendarEvents, employeeId: string, next?: Action[]): LoadCalendarEventsFinished => {
+    return {
+        type: 'LOAD-CALENDAR-EVENTS-FINISHED',
+        calendarEvents,
+        employeeId,
+        next: next,
+    };
+};
 
 export interface CalendarEventSetNewStatus extends Action {
     type: 'CALENDAR-EVENT-NEW-STATUS';
@@ -27,7 +41,12 @@ export interface CalendarEventSetNewStatus extends Action {
     status: CalendarEventStatus;
 }
 
-export const calendarEventSetNewStatus = (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus): CalendarEventSetNewStatus => ({ type: 'CALENDAR-EVENT-NEW-STATUS', calendarEvent, employeeId, status });
+export const calendarEventSetNewStatus = (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus): CalendarEventSetNewStatus => ({
+    type: 'CALENDAR-EVENT-NEW-STATUS',
+    calendarEvent,
+    employeeId,
+    status
+});
 
 export interface SelectCalendarDay extends Action {
     type: 'SELECT-CALENDAR-DAY';
@@ -65,7 +84,11 @@ export interface CalendarSelectionMode extends Action {
     color: Optional<string>;
 }
 
-export const calendarSelectionMode = (selectionMode: CalendarSelectionModeType, color?: string): CalendarSelectionMode => ({ type: 'CALENDAR-SELECTION-MODE', selectionMode, color });
+export const calendarSelectionMode = (selectionMode: CalendarSelectionModeType, color?: string): CalendarSelectionMode => ({
+    type: 'CALENDAR-SELECTION-MODE',
+    selectionMode,
+    color
+});
 
 export interface SelectIntervalsBySingleDaySelection extends Action {
     type: 'SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION';
@@ -86,7 +109,20 @@ export interface DisableSelectIntervalsBySingleDaySelection extends Action {
     disable: boolean;
 }
 
-export const disableSelectIntervalsBySingleDaySelection = (disable: boolean): DisableSelectIntervalsBySingleDaySelection => ({ type: 'DISABLE-SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION', disable });
+export const disableSelectIntervalsBySingleDaySelection = (disable: boolean): DisableSelectIntervalsBySingleDaySelection => ({
+    type: 'DISABLE-SELECT-INTERVALS-BY-SINGLE-DAY-SELECTION',
+    disable
+});
 
-export type CalendarActions = LoadCalendarEventsFinished | SelectCalendarDay | NextCalendarPage | PrevCalendarPage |  ResetCalendarPages |
-    CalendarSelectionMode | SelectIntervalsBySingleDaySelection | DisableCalendarSelection | DisableSelectIntervalsBySingleDaySelection | CalendarEventSetNewStatus;
+export type CalendarActions =
+    LoadCalendarEventsFinished
+    | SelectCalendarDay
+    | NextCalendarPage
+    | PrevCalendarPage
+    | ResetCalendarPages
+    |
+    CalendarSelectionMode
+    | SelectIntervalsBySingleDaySelection
+    | DisableCalendarSelection
+    | DisableSelectIntervalsBySingleDaySelection
+    | CalendarEventSetNewStatus;

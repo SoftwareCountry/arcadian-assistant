@@ -16,19 +16,26 @@
     public class UserPreferencesController : Controller
     {
         private readonly IUserPreferencesService userPreferencesService;
+        private readonly IUserEmployeeSearch userEmployeeSearch;
 
-        public UserPreferencesController(IUserPreferencesService userPreferencesService)
+        public UserPreferencesController(
+            IUserPreferencesService userPreferencesService,
+            IUserEmployeeSearch userEmployeeSearch)
         {
             this.userPreferencesService = userPreferencesService;
+            this.userEmployeeSearch = userEmployeeSearch;
         }
 
         [HttpGet]
         [ProducesResponseType(typeof(UserPreferencesModel), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetUserPreferences(CancellationToken cancellationToken)
         {
+            var employee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, cancellationToken);
+
             var userPreferences = await this.userPreferencesService.GetUserPreferences(
-                this.User.Identity.Name,
+                employee.Metadata.EmployeeId,
                 cancellationToken);
+
             return this.Ok(userPreferences);
         }
 
@@ -44,8 +51,10 @@
                 return this.BadRequest();
             }
 
+            var employee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, cancellationToken);
+
             var response = await this.userPreferencesService.SaveUserPreferences(
-                this.User.Identity.Name,
+                employee.Metadata.EmployeeId,
                 userPreferencesModel,
                 cancellationToken);
 

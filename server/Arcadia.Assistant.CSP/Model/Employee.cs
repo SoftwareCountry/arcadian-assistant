@@ -18,6 +18,9 @@ namespace Arcadia.Assistant.CSP.Model
             EmployeeTeam = new HashSet<EmployeeTeam>();
             Team = new HashSet<Team>();
             TeamHistory = new HashSet<TeamHistory>();
+            VacationApprovals = new HashSet<VacationApproval>();
+            VacationsCancelledBy = new HashSet<Vacation>();
+            VacationsEmployee = new HashSet<Vacation>();
         }
 
         public int Id { get; set; }
@@ -64,7 +67,7 @@ namespace Arcadia.Assistant.CSP.Model
         public DateTime ProbationEnd { get; set; }
         public int WeekHours { get; set; }
         public int? PartTime { get; set; }
-        public bool? IsDelete { get; set; }
+        public bool IsDelete { get; set; }
 
         public Company Company { get; set; }
         public Department DepartmentNavigation { get; set; }
@@ -80,5 +83,8 @@ namespace Arcadia.Assistant.CSP.Model
         public ICollection<EmployeeTeam> EmployeeTeam { get; set; }
         public ICollection<Team> Team { get; set; }
         public ICollection<TeamHistory> TeamHistory { get; set; }
+        public ICollection<VacationApproval> VacationApprovals { get; set; }
+        public ICollection<Vacation> VacationsCancelledBy { get; set; }
+        public ICollection<Vacation> VacationsEmployee { get; set; }
     }
 }

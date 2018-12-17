@@ -5,9 +5,13 @@
 
     using Arcadia.Assistant.Organization.Abstractions;
 
+    using NLog;
+
     [DataContract]
     public class Permissions
     {
+        private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+        
         [DataMember]
         // explicit department permissions by id
         private IReadOnlyDictionary<string, EmployeePermissionsEntry> DepartmentPermissions { get; set; }
@@ -19,7 +23,8 @@
         [DataMember]
         private EmployeePermissionsEntry defaultPermission;
 
-        public Permissions(EmployeePermissionsEntry defaultPermission, 
+        public Permissions(
+            EmployeePermissionsEntry defaultPermission,
             IReadOnlyDictionary<string, EmployeePermissionsEntry> departmentPermissions,
             IReadOnlyDictionary<string, EmployeePermissionsEntry> employeePermissions)
         {
@@ -29,27 +34,26 @@
         }
 
 
-        public EmployeePermissionsEntry GetDepartmentPermissions(string departmentId)
+        public EmployeePermissionsEntry GetPermissions(EmployeeContainer targetEmployee)
         {
-            return this.DepartmentPermissions.TryGetValue(departmentId, out var permissions)
-                ? permissions
-                : this.defaultPermission;
-        }
-
-        public EmployeePermissionsEntry GetPermissions(EmployeeContainer employee)
-        {
-            if (employee == null)
+            if (targetEmployee == null)
             {
+                Log.Debug("Null target employee passed");
                 return EmployeePermissionsEntry.None;
             }
 
             var permissions = this.defaultPermission;
-            if (this.EmployeePermissions.TryGetValue(employee.Metadata.EmployeeId, out var employeePermissions))
+            if (this.EmployeePermissions.TryGetValue(targetEmployee.Metadata.EmployeeId, out var employeePermissions))
             {
-                permissions |= employeePermissions;
+                return permissions | employeePermissions;
             }
 
-            return permissions | this.GetDepartmentPermissions(employee.Metadata.DepartmentId);
+            if (this.DepartmentPermissions.TryGetValue(targetEmployee.Metadata.DepartmentId, out var departmentPermissions))
+            {
+                return permissions | departmentPermissions;
+            }
+
+            return permissions;
         }
     }
 }

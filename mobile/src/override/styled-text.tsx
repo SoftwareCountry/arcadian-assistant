@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TextProperties, StyleSheet, Text, ViewStyle, TextStyle } from 'react-native';
+import { StyleSheet, Text, TextProperties } from 'react-native';
 
 const commonStyles = StyleSheet.create({
     text: {

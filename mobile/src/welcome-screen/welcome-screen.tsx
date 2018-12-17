@@ -21,7 +21,7 @@ class WelcomeScreenImpl extends React.Component<AuthDispatchProps> {
         return (
             <View style={welcomeScreenStyles.container}>
                 <Text style={welcomeScreenStyles.greeting}>Welcome to Arcadia Assistant</Text>
-                <View style={welcomeScreenStyles.loginbuttonContainer}>
+                <View style={welcomeScreenStyles.loginButtonContainer}>
                     <Button title='Login' onPress={this.props.onloginClicked} color={welcomeScreenColor}/>
                 </View>
 

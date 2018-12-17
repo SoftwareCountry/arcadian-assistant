@@ -1,3 +1,3 @@
 declare module 'uuid/v1' {
-    export default function(): string;
+    export default function (): string;
 }

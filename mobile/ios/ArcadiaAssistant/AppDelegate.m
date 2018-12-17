@@ -24,10 +24,11 @@
 {
     NSString* appSecret = [ReactNativeConfig envFor:@"appCenterSecretId"];
     [AppCenterReactNativeShared setAppSecret:appSecret];
+    [AppCenterReactNativeShared setStartAutomatically:YES];
+    [AppCenterReactNative register];  // Initialize AppCenter
     [AppCenterReactNativePush register];  // Initialize AppCenter push
     [AppCenterReactNativeCrashes registerWithAutomaticProcessing];  // Initialize AppCenter crashes
     [AppCenterReactNativeAnalytics registerWithInitiallyEnabled:true];  // Initialize AppCenter analytics
-    [AppCenterReactNative register];  // Initialize AppCenter
 
     NSURL* jsCodeLocation;
     #if DEBUG
@@ -41,6 +42,10 @@
                                                  initialProperties:nil
                                                      launchOptions:launchOptions];
     rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
+
+    UIView *launchScreenView = [[NSBundle mainBundle] loadNibNamed:@"LaunchScreen" owner:self options:nil][0];
+    launchScreenView.frame = self.window.bounds;
+    rootView.loadingView = launchScreenView;
 
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     UIViewController *rootViewController = [UIViewController new];

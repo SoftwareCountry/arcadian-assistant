@@ -1,10 +1,6 @@
 import React from 'react';
-import {
-    NavigationScreenConfig,
-    NavigationScreenProps,
-    NavigationStackScreenOptions
-} from 'react-navigation';
-import { EmployeesStore } from '../reducers/organization/employees.reducer';
+import { NavigationScreenConfig, NavigationScreenProps, NavigationStackScreenOptions } from 'react-navigation';
+import { defaultState, EmployeesStore } from '../reducers/organization/employees.reducer';
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
 import { Employee } from '../reducers/organization/employee.model';
@@ -13,7 +9,10 @@ import { Action, Dispatch } from 'redux';
 import { loadEmployeesForRoom } from '../reducers/organization/organization.action';
 import { SafeAreaView } from 'react-native';
 import Style from '../layout/style';
-import { Map } from 'immutable';
+import {
+    NavigationOptionsContainer,
+    navigationOptionsWithTitle
+} from '../navigation/navigation-header-with-dynamic-title';
 
 //============================================================================
 interface CurrentPeopleRoomProps {
@@ -27,10 +26,7 @@ interface CurrentPeopleDispatchProps {
 
 //----------------------------------------------------------------------------
 const stateToProps = (state: AppState): CurrentPeopleRoomProps => ({
-    employees: state.organization ? state.organization.employees : {
-        employeesById: Map(),
-        employeeIdsByDepartment: Map()
-    }
+    employees: state.organization ? state.organization.employees : defaultState,
 });
 
 //----------------------------------------------------------------------------
@@ -64,14 +60,15 @@ class CurrentPeopleRoomImpl extends React.Component<CurrentPeopleRoomProps & Cur
 
     //----------------------------------------------------------------------------
     public static navigationOptions: NavigationScreenConfig<NavigationStackScreenOptions> = (navigationOptionsContainer) => {
+        return navigationOptionsWithTitle(navigationOptionsContainer, CurrentPeopleRoomImpl.getTitle(navigationOptionsContainer));
+    };
+
+    //----------------------------------------------------------------------------
+    private static getTitle(navigationOptionsContainer: NavigationOptionsContainer): string {
         const navigation = navigationOptionsContainer.navigation;
         const roomNumber = navigation.getParam('roomNumber', undefined);
-
-        return {
-            ...navigationOptionsContainer.navigationOptions,
-            headerTitle: roomNumber ? `Room ${roomNumber}` : '',
-        };
-    };
+        return roomNumber ? `Room ${roomNumber}` : '';
+    }
 }
 
 //----------------------------------------------------------------------------

@@ -38,6 +38,7 @@ const mapStateToProps = (state: AppState, ownProps: PeopleRoomPropsOwnProps): Pe
 interface EmployeesListDispatchProps {
     onItemClicked: (employee: Employee) => void;
 }
+
 const mapDispatchToProps = (dispatch: Dispatch<Action>): EmployeesListDispatchProps => ({
     onItemClicked: (employee: Employee) => dispatch(openEmployeeDetails(employee))
 });
@@ -65,4 +66,4 @@ class PeopleRoomImpl extends React.Component<PeopleRoomStateProps & EmployeesLis
     }
 }
 
-export const PeopleRoom = connect<PeopleRoomStateProps, EmployeesListDispatchProps, PeopleRoomPropsOwnProps>(mapStateToProps, mapDispatchToProps)(PeopleRoomImpl);
+export const PeopleRoom = connect<PeopleRoomStateProps, EmployeesListDispatchProps, PeopleRoomPropsOwnProps, AppState>(mapStateToProps, mapDispatchToProps)(PeopleRoomImpl);

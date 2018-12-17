@@ -2,11 +2,10 @@ import React from 'react';
 import { Image, Platform, View } from 'react-native';
 import { splashScreenStyles } from './styles';
 import { FingerprintPopupAndroid } from '../fingerprint-popup/fingerprint-popup.android';
-import { Action } from 'redux';
+import { Action, Dispatch } from 'redux';
 import { startLoginProcess, startLogoutProcess } from '../reducers/auth/auth.action';
 import { connect } from 'react-redux';
 import FingerprintScanner from 'react-native-fingerprint-scanner';
-import { Dispatch } from 'redux';
 
 //============================================================================
 interface SplashScreenState {

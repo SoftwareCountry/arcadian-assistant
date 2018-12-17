@@ -19,8 +19,6 @@
         /// </summary>
         private int hoursCredit = 0;
 
-        private readonly HashSet<string> eventsToProcessApproversAfterRecover = new HashSet<string>();
-
         public EmployeeWorkHoursActor(string employeeId, IActorRef calendarEventsApprovalsChecker)
             : base(employeeId, calendarEventsApprovalsChecker)
         {
@@ -45,9 +43,11 @@
                 case WorkHoursChangeIsApproved ev:
                     this.OnChangeApproved(ev);
                     break;
+
                 case WorkHoursChangeIsCancelled ev:
                     this.OnChangeCancelled(ev);
                     break;
+
                 case WorkHoursChangeIsRejected ev:
                     this.OnChangeRejected(ev);
                     break;
@@ -57,9 +57,12 @@
                     break;
 
                 case RecoveryCompleted _:
-                    foreach (var eventId in this.eventsToProcessApproversAfterRecover)
+                    foreach (var @event in this.EventsById.Values)
                     {
-                        this.Self.Tell(new ProcessCalendarEventApprovalsMessage(eventId));
+                        if (@event.IsPending)
+                        {
+                            this.Self.Tell(new AssignCalendarEventNextApprover(@event.EventId));
+                        }
                     }
                     break;
             }
@@ -79,7 +82,11 @@
             }
         }
 
-        protected override void InsertCalendarEvent(CalendarEvent calendarEvent, OnSuccessfulUpsertCallback onUpsert)
+        protected override void InsertCalendarEvent(
+            CalendarEvent calendarEvent,
+            string createdBy,
+            DateTimeOffset timestamp,
+            OnSuccessfulUpsertCallback onUpsert)
         {
             if (calendarEvent.Dates.StartDate != calendarEvent.Dates.EndDate)
             {
@@ -92,7 +99,7 @@
             }
 
             var eventId = calendarEvent.EventId;
-            var newEvent = new WorkHoursChangeIsRequested()
+            var newEvent = new WorkHoursChangeIsRequested
             {
                 EmployeeId = this.EmployeeId,
                 EventId = eventId,
@@ -100,7 +107,8 @@
                 StartHour = calendarEvent.Dates.StartWorkingHour,
                 EndHour = calendarEvent.Dates.FinishWorkingHour,
                 IsDayoff = calendarEvent.Type == CalendarEventTypes.Dayoff,
-                TimeStamp = DateTimeOffset.Now
+                TimeStamp = timestamp,
+                UserId = createdBy
             };
             this.Persist(newEvent, e =>
                 {
@@ -109,7 +117,7 @@
                 });
         }
 
-        protected override void UpdateCalendarEvent(CalendarEvent oldEvent, CalendarEvent newEvent, OnSuccessfulUpsertCallback onUpsert)
+        protected override void UpdateCalendarEvent(CalendarEvent oldEvent, string updatedBy, DateTimeOffset timestamp, CalendarEvent newEvent, OnSuccessfulUpsertCallback onUpsert)
         {
             if (oldEvent.Dates != newEvent.Dates)
             {
@@ -121,26 +129,29 @@
                 switch (newEvent.Status)
                 {
                     case WorkHoursChangeStatuses.Approved:
-                        this.Persist(new WorkHoursChangeIsApproved()
+                        this.Persist(new WorkHoursChangeIsApproved
                         {
                             EventId = newEvent.EventId,
-                            TimeStamp = DateTimeOffset.Now
+                            TimeStamp = DateTimeOffset.Now,
+                            UserId = updatedBy
                         }, this.OnChangeApproved);
                         break;
 
                     case WorkHoursChangeStatuses.Cancelled:
-                        this.Persist(new WorkHoursChangeIsCancelled()
+                        this.Persist(new WorkHoursChangeIsCancelled
                         {
                             EventId = newEvent.EventId,
-                            TimeStamp = DateTimeOffset.Now
+                            TimeStamp = timestamp,
+                            UserId = updatedBy
                         }, this.OnChangeCancelled);
                         break;
 
                     case WorkHoursChangeStatuses.Rejected:
-                        this.Persist(new WorkHoursChangeIsRejected()
+                        this.Persist(new WorkHoursChangeIsRejected
                         {
                             EventId = newEvent.EventId,
-                            TimeStamp = DateTimeOffset.Now
+                            TimeStamp = timestamp,
+                            UserId = updatedBy
                         }, this.OnChangeRejected);
                         break;
                 }
@@ -154,23 +165,13 @@
             return WorkHoursChangeStatuses.Requested;
         }
 
-        protected override string GetApprovedStatus()
-        {
-            return WorkHoursChangeStatuses.Approved;
-        }
-
         protected override bool IsStatusTransitionAllowed(string oldCalendarEventStatus, string newCalendarEventStatus)
         {
             return WorkHoursChangeStatuses.All.Contains(newCalendarEventStatus)
                 && (oldCalendarEventStatus != WorkHoursChangeStatuses.Cancelled)
                 && (oldCalendarEventStatus != WorkHoursChangeStatuses.Rejected)
-                && (newCalendarEventStatus != this.GetInitialStatus());
-        }
-
-        protected override void OnSuccessfulApprove(UserGrantedCalendarEventApproval message)
-        {
-            var approvals = this.ApprovalsByEvent[message.EventId];
-            approvals.Add(message.ApproverId);
+                && (newCalendarEventStatus != this.GetInitialStatus())
+                && (newCalendarEventStatus != WorkHoursChangeStatuses.Approved);
         }
 
         private void OnChangeRequested(WorkHoursChangeIsRequested message)
@@ -178,22 +179,24 @@
             var eventType = message.IsDayoff ? CalendarEventTypes.Dayoff : CalendarEventTypes.Workout;
 
             var datesPeriod = new DatesPeriod(message.Date, message.Date, message.StartHour, message.EndHour);
-            var calendarEvent = new CalendarEvent(message.EventId, eventType, datesPeriod, WorkHoursChangeStatuses.Requested, this.EmployeeId);
+            var calendarEvent = new CalendarEvent(
+                message.EventId,
+                eventType,
+                datesPeriod,
+                WorkHoursChangeStatuses.Requested,
+                this.EmployeeId);
             this.EventsById[message.EventId] = calendarEvent;
-            this.ApprovalsByEvent[message.EventId] = new List<string>();
-            this.eventsToProcessApproversAfterRecover.Add(message.EventId);
+            this.ApprovalsByEvent[message.EventId] = new List<Approval>();
         }
 
         private void OnChangeCancelled(WorkHoursChangeIsCancelled message)
         {
             this.RemoveEvent(message.EventId);
-            this.eventsToProcessApproversAfterRecover.Remove(message.EventId);
         }
 
         private void OnChangeRejected(WorkHoursChangeIsRejected message)
         {
             this.RemoveEvent(message.EventId);
-            this.eventsToProcessApproversAfterRecover.Remove(message.EventId);
         }
 
         private void OnChangeApproved(WorkHoursChangeIsApproved message)
@@ -202,8 +205,12 @@
             {
                 //Make changes to the counter
                 this.ChangeCounter(calendarEvent.Dates.StartWorkingHour, calendarEvent.Dates.FinishWorkingHour, this.IsCreditingType(calendarEvent.Type));
-                this.EventsById[message.EventId] = new CalendarEvent(message.EventId, calendarEvent.Type, calendarEvent.Dates, WorkHoursChangeStatuses.Approved, this.EmployeeId);
-                this.eventsToProcessApproversAfterRecover.Remove(message.EventId);
+                this.EventsById[message.EventId] = new CalendarEvent(
+                    message.EventId,
+                    calendarEvent.Type,
+                    calendarEvent.Dates,
+                    WorkHoursChangeStatuses.Approved,
+                    this.EmployeeId);
             }
         }
 

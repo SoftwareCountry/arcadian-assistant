@@ -1,10 +1,4 @@
-import {
-    createAppContainer,
-    createBottomTabNavigator,
-    NavigationContainer,
-    NavigationRouteConfigMap,
-    TabNavigatorConfig
-} from 'react-navigation';
+import { createAppContainer, createBottomTabNavigator, TabNavigatorConfig } from 'react-navigation';
 import React from 'react';
 import tabBarStyles from './tab-bar-styles';
 import tabbarModel from './tab-bar-model';

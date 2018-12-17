@@ -7,13 +7,13 @@
     using Akka.Event;
     using Akka.Routing;
 
-    public class NotificationsActor : UntypedActor
+    public class NotificationsDispatcherActor : UntypedActor
     {
         private const int NotificationsActorsPoolSize = 5; // Later can be defined in config
 
         private readonly IActorRef notificationsRouterActor;
 
-        public NotificationsActor(params Props[] notificationsActorsProps)
+        public NotificationsDispatcherActor(params Props[] notificationsActorsProps)
         {
             var notificationsPools = this.CreateNotificationsPools(notificationsActorsProps);
             this.notificationsRouterActor = this.CreateNotificationsRouter(notificationsPools);

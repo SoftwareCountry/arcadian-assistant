@@ -38,6 +38,7 @@ const mapStateToProps = (state: AppState, ownProps: PeopleDepartmentPropsOwnProp
 interface EmployeesListDispatchProps {
     onItemClicked: (employee: Employee) => void;
 }
+
 const mapDispatchToProps = (dispatch: Dispatch<Action>): EmployeesListDispatchProps => ({
     onItemClicked: (employee: Employee) => dispatch(openEmployeeDetails(employee))
 });
@@ -48,8 +49,8 @@ export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentStateP
             && this.props.userEmployee === nextProps.userEmployee
             && this.props.employeesPredicate === nextProps.employeesPredicate
             && this.props.onItemClicked === nextProps.onItemClicked) {
-                return true;
-            }
+            return true;
+        }
 
         const employees = this.props.employees.employeesById.filter(this.props.employeesPredicate);
         const nextEmployees = nextProps.employees.employeesById.filter(nextProps.employeesPredicate);
@@ -66,4 +67,4 @@ export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentStateP
     }
 }
 
-export const PeopleDepartment = connect<PeopleDepartmentStateProps, EmployeesListDispatchProps, PeopleDepartmentPropsOwnProps>(mapStateToProps, mapDispatchToProps)(PeopleDepartmentImpl);
+export const PeopleDepartment = connect<PeopleDepartmentStateProps, EmployeesListDispatchProps, PeopleDepartmentPropsOwnProps, AppState>(mapStateToProps, mapDispatchToProps)(PeopleDepartmentImpl);

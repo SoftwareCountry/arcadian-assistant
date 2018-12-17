@@ -1,19 +1,15 @@
-import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
+import { ActionsObservable, StateObservable } from 'redux-observable';
 import * as fAction from './feeds.action';
 import * as oAction from '../organization/organization.action';
-import { deserializeArray, deserialize } from 'santee-dcts/src/deserializer';
+import { deserializeArray } from 'santee-dcts/src/deserializer';
 import { loadFailedError } from '../errors/errors.action';
 import { Feed } from './feed.model';
 import { AppState, DependenciesContainer } from '../app.reducer';
 import moment from 'moment';
-import { changeBoundaryDates } from './feeds.action';
-import { MiddlewareAPI } from 'redux';
-import { Alert } from 'react-native';
-import { retryWhen, map, catchError, flatMap, switchMap, withLatestFrom, filter } from 'rxjs/operators';
+import { catchError, filter, flatMap, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { handleHttpErrors } from '../errors/errors.epics';
 import { LoadUserEmployeeFinished } from '../user/user.action';
-import { Stack } from 'immutable';
-import { concat, Observable, of } from 'rxjs';
+import { concat, of } from 'rxjs';
 
 export const pagingPeriodDays = 10;
 
@@ -60,4 +56,6 @@ export const fetchOldFeedsEpic$ = (action$: ActionsObservable<fAction.FetchOldFe
 
 export const loadFeedsFinishedEpic$ = (action$: ActionsObservable<fAction.LoadFeedsFinished>) =>
     action$.ofType('LOAD_FEEDS_FINISHED').pipe(
-        flatMap(x => x.feeds.filter(y => y.employeeId !== null).map(feed => oAction.loadEmployee(feed.employeeId!))));
+        map(x => x.feeds.filter(y => y.employeeId !== null).map(feed => feed.employeeId!)),
+        map(employeeIds => oAction.loadEmployees(employeeIds)),
+    );

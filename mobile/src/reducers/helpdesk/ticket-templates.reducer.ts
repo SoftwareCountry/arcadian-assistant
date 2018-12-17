@@ -1,5 +1,5 @@
 import { Reducer } from 'redux';
-import { TicketAction, loadTicketTemplatesFinished } from './tickets.actions';
+import { loadTicketTemplatesFinished, TicketAction } from './tickets.actions';
 import { TicketTemplate } from './ticket-template.model';
 import { ActionsObservable } from 'redux-observable';
 import { delay, first, map } from 'rxjs/operators';

@@ -13,6 +13,6 @@
         public DateTimeOffset TimeStamp { get; set; }
 
         [DataMember]
-        public string ApproverId { get; set; }
+        public string UserId { get; set; }
     }
 }

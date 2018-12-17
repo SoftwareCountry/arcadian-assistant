@@ -1,12 +1,14 @@
-import { CalendarEvent, CalendarEventType } from './calendar-event.model';
+import { CalendarEvent } from './calendar-event.model';
 
 export interface ReadOnlyIntervalsMetadata {
     readonly calendarEvents: ReadonlyArray<CalendarEvent>;
+
     copy(): IntervalsMetadata;
 }
 
 export class IntervalsMetadata implements ReadOnlyIntervalsMetadata {
-    constructor(private readonly calendarEventsArray: CalendarEvent[]) {}
+    constructor(private readonly calendarEventsArray: CalendarEvent[]) {
+    }
 
     public addCalendarEvent(...calendarEvents: CalendarEvent[]) {
         this.calendarEventsArray.push(...calendarEvents);

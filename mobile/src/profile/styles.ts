@@ -1,4 +1,5 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
+import Style from '../layout/style';
 
 export const chevronColor = '#2FAFCC';
 
@@ -33,38 +34,22 @@ export const chevronStyles = StyleSheet.create({
     }
 });
 
-export const profileScreenStyles = StyleSheet.create({
-    profileContainer: {
-        flex: 1,
-        backgroundColor: chevronColor
-    },
-    employeeDetailsContainer: {
-        flex: 1,
-        backgroundColor: 'white'
-    },
-    logoutContainer: {
-        marginTop: 5,
-        marginBottom: 10
-    }
-});
-
 export const layoutStyles = StyleSheet.create({
-    scrollView: {
-        flex: 1,
-        backgroundColor: '#fff',
-        marginTop: circleDiameter * 0.50
-    },
     container: {
         flex: 1,
         alignSelf: 'stretch',
-        backgroundColor: '#fff'
+        backgroundColor: Style.color.white,
     },
     content: {
         flex: 1,
         flexDirection: 'column',
+        backgroundColor: Style.color.white,
+        marginTop: circleDiameter * 0.50,
     },
     header: {
-        alignSelf: 'center'
+        alignSelf: 'center',
+        marginBottom: 5,
+        textTransform: 'capitalize',
     },
     avatarContainer: {
         borderRadius: circleDiameter / 2,
@@ -110,7 +95,7 @@ export const contentStyles = StyleSheet.create({
     },
     contactsContainer: {
         padding: 5,
-        paddingBottom: 50,
+        paddingBottom: 5,
         alignItems: 'center',
         justifyContent: 'center'
     }
@@ -178,3 +163,11 @@ export const contactStyles = StyleSheet.create({
         color: 'rgba(0, 0, 0, 0.7)'
     }
 });
+
+export const eventStyles = StyleSheet.create({
+    container: {
+        marginTop: 12,
+        padding: 5,
+    },
+});
+

@@ -1,8 +1,7 @@
-import { TokenResponse, AccessCodeRequest } from './access-code-request';
-import { OauthError } from './oauth-error';
+import { AccessCodeRequest, TokenResponse } from './access-code-request';
 import { LoginRequest } from './login-request';
 import { RefreshTokenStorage } from './refresh-token-storage';
-import { NotAuthenticatedState, AuthenticationState } from './authentication-state';
+import { AuthenticationState, NotAuthenticatedState } from './authentication-state';
 import moment from 'moment';
 import { distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import { concat, interval, merge, Observable, of, ReplaySubject, Subject, Subscription } from 'rxjs';
@@ -12,9 +11,13 @@ import { Nullable, Optional } from 'types';
 
 const notAuthenticatedInstance: NotAuthenticatedState = { isAuthenticated: false }; //save a reference, so distinct works
 
+const cancellationErrorCode = '1';
+
 export class OAuthProcess {
 
-    public get authenticationState() { return this.authenticationStateSource.asObservable().pipe(distinctUntilChanged()); }
+    public get authenticationState() {
+        return this.authenticationStateSource.asObservable().pipe(distinctUntilChanged());
+    }
 
     private readonly refreshIntervalSeconds = 30;
 
@@ -23,7 +26,7 @@ export class OAuthProcess {
     private readonly authorizationCode: Subject<string> = new Subject<string>();
 
     private readonly refreshTokenSource: Subject<Nullable<RefreshTokenRequest>> = new Subject<Nullable<RefreshTokenRequest>>();
- 
+
     private readonly authenticationStateSource = new ReplaySubject<AuthenticationState>(1);
 
     private readonly accessCodeSubscription: Subscription;
@@ -63,8 +66,8 @@ export class OAuthProcess {
         try {
             const code = this.loginRequest.getAuthorizationCodeFromResponse(responseUrl);
             this.authorizationCode.next(code);
-        } catch (e) {
-            this.authorizationCode.error(e);
+        } catch (error) {
+            this.handleError(error);
         }
     }
 
@@ -81,8 +84,8 @@ export class OAuthProcess {
                 try {
                     const authorizationCodeResponseUrl = await this.loginRequest.openLoginPage(true);
                     this.handleAuthorizationCodeResponse(authorizationCodeResponseUrl);
-                } catch (e) {
-                    console.warn('Error occurred on login page', e);
+                } catch (error) {
+                    this.handleError(error);
                 }
             } else {
                 console.debug('Using refresh token from the application storage');
@@ -91,6 +94,7 @@ export class OAuthProcess {
             }
         }
     }
+
     public async logout() {
         this.forgetUser();
     }
@@ -110,7 +114,7 @@ export class OAuthProcess {
         if (!tokenResponse) {
             this.authenticationStateSource.next(notAuthenticatedInstance);
         } else {
-            this.refreshTokenSource.next( { tokenValue: tokenResponse.refreshToken, immediateRefresh: false });
+            this.refreshTokenSource.next({ tokenValue: tokenResponse.refreshToken, immediateRefresh: false });
             this.authenticationStateSource.next({
                 isAuthenticated: true,
                 jwtToken: tokenResponse.accessToken,
@@ -127,13 +131,7 @@ export class OAuthProcess {
         } else {
             this.storeRefreshToken(null); // there was an error with /token endpoint so we delete existing token
 
-            const errorText =
-                error
-                    ? error.message
-                        ? error.message.toString()
-                        : error.toString()
-                    : 'unknown error';
-            this.authenticationStateSource.error(new OauthError(errorText));
+            this.handleError(error);
         }
     }
 
@@ -141,7 +139,7 @@ export class OAuthProcess {
         try {
             await this.refreshTokenStorage.storeToken(token);
         } catch (e) {
-            console.warn("Couldn't change refresh token in the storage", e);
+            console.warn('Couldn\'t change refresh token in the storage', e);
         }
     }
 
@@ -152,10 +150,33 @@ export class OAuthProcess {
 
         const scheduledEmition = interval(this.refreshIntervalSeconds * 1000).pipe(map(() => request.tokenValue));
         if (request.immediateRefresh) {
-            return concat( of(request.tokenValue), scheduledEmition);
+            return concat(of(request.tokenValue), scheduledEmition);
         } else {
             return scheduledEmition;
         }
+    }
+
+    private handleError(error: any) {
+        const errorCode = error.code;
+
+        if (errorCode && errorCode === cancellationErrorCode) {
+            this.authenticationStateSource.next(notAuthenticatedInstance);
+            return;
+        }
+
+        const errorText = this.getErrorMessage(error);
+        this.authenticationStateSource.next({ isAuthenticated: false, errorText: errorText });
+    }
+
+    private getErrorMessage(error: any): string {
+        const errorText =
+            error
+                ? error.message
+                ? error.message.toString()
+                : error.toString()
+                : 'unknown error';
+
+        return errorText;
     }
 }
 

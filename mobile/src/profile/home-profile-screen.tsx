@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { Department } from '../reducers/organization/department.model';
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
-import { RefreshControl, SafeAreaView, StyleSheet, View, ViewStyle } from 'react-native';
+import { LayoutChangeEvent, RefreshControl, SafeAreaView, StyleSheet, View, ViewStyle } from 'react-native';
 import { Employee } from '../reducers/organization/employee.model';
-import { layoutStyles, profileScreenStyles } from './styles';
+import { layoutStyles } from './styles';
 import { EmployeeDetails } from '../employee-details/employee-details';
 import { refresh } from '../reducers/refresh/refresh.action';
 import { loadPendingRequests } from '../reducers/calendar/pending-requests/pending-requests.action';
@@ -18,6 +18,8 @@ import { NavigationScreenConfig, NavigationStackScreenOptions, ScrollView } from
 import { Action, Dispatch } from 'redux';
 import { Optional } from 'types';
 import { getEmployee } from '../utils/utils';
+import { SettingsView } from '../user-preferences-screen/settings-view';
+import { employeeDetailsStyles } from '../employee-details/styles';
 
 //============================================================================
 interface ProfileScreenProps {
@@ -34,7 +36,13 @@ interface AuthDispatchProps {
 }
 
 //============================================================================
-class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps> {
+interface ProfileScreenState {
+    width: number;
+    height: number;
+}
+
+//============================================================================
+class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps, ProfileScreenState> {
 
     //----------------------------------------------------------------------------
     public static navigationOptions: NavigationScreenConfig<NavigationStackScreenOptions> = {
@@ -43,8 +51,19 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
             borderBottomColor: 'transparent',
             elevation: 0,
         },
+        headerLeft: <SettingsView/>,
         headerRight: <LogoutView/>,
     };
+
+    //----------------------------------------------------------------------------
+    public constructor(props: Readonly<ProfileScreenProps & AuthDispatchProps>) {
+        super(props);
+
+        this.state = {
+            width: 0,
+            height: 0,
+        };
+    }
 
     //----------------------------------------------------------------------------
     public componentDidMount() {
@@ -52,7 +71,12 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
     }
 
     //----------------------------------------------------------------------------
-    public shouldComponentUpdate(nextProps: ProfileScreenProps & AuthDispatchProps) {
+    public shouldComponentUpdate(nextProps: ProfileScreenProps & AuthDispatchProps, nextState: ProfileScreenState) {
+
+        if (this.state.width !== nextState.width || this.state.height !== nextState.height) {
+            return true;
+        }
+
         if (!this.props.requests && !nextProps.requests) {
             return false;
         }
@@ -70,14 +94,7 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
         const requests = this.props.requests;
         const nextRequests = nextProps.requests;
         if (!requests.equals(nextRequests)) {
-            if (employee && nextEmployee) {
-                const calendarEvents = requests.get(employee.employeeId);
-                const nextCalendarEvents = nextRequests.get(nextEmployee.employeeId);
-
-                if (calendarEvents !== nextCalendarEvents) {
-                    return true;
-                }
-            }
+            return true;
         }
 
         if (!this.props.employees && !nextProps.employees) {
@@ -111,15 +128,28 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
 
     //----------------------------------------------------------------------------
     public render() {
-        return <SafeAreaView style={Style.view.safeArea}>
-            <View style={profileScreenStyles.employeeDetailsContainer}>
+        return <SafeAreaView style={Style.view.safeArea} onLayout={this.onLayout}>
+            <View style={employeeDetailsStyles.container}>
+                <View style={[
+                    employeeDetailsStyles.topHalfView,
+                    {
+                        width: this.state.width,
+                        height: this.state.height / 2,
+                    }]}/>
+                <View style={[
+                    employeeDetailsStyles.bottomHalfView,
+                    {
+                        top: this.state.height / 2,
+                        width: this.state.width,
+                        height: this.state.height / 2
+                    }]}/>
                 {this.renderEmployeeDetails()}
             </View>
         </SafeAreaView>;
     }
 
     //----------------------------------------------------------------------------
-    private renderEmployeeDetails() {
+    private renderEmployeeDetails(): JSX.Element {
         const employee = this.props.employee;
         const employees = this.props.employees;
         const department = this.props.department;
@@ -135,16 +165,28 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
             .mapKeys(employeeId => employees.employeesById.get(employeeId)!) : undefined;
 
         return (
-            <ScrollView refreshControl={<RefreshControl refreshing={false} onRefresh={this.onRefresh}/>}>
+            <ScrollView refreshControl={<RefreshControl tintColor={Style.color.white}
+                                                        refreshing={false}
+                                                        onRefresh={this.onRefresh}/>}>
+
                 <EmployeeDetails
                     department={department}
                     employee={employee}
                     layoutStylesChevronPlaceholder={layoutStyles.chevronPlaceholder as ViewStyle}
                     requests={employeesToRequests}
                 />
+
             </ScrollView>
         );
     }
+
+    //----------------------------------------------------------------------------
+    private onLayout = (event: LayoutChangeEvent) => {
+        this.setState({
+            width: event.nativeEvent.layout.width,
+            height: event.nativeEvent.layout.height,
+        });
+    };
 
     //----------------------------------------------------------------------------
     private onRefresh = () => {

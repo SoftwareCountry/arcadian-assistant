@@ -169,8 +169,6 @@
             }
 
             this.employeeMetadata = informationMetadata;
-
-            Context.System.EventStream.Publish(new EmployeeMetadataUpdatedEventBusMessage(this.employeeMetadata));
         }
 
         private void OnEmployeePositionChange(EmployeeChangedPosition ev)

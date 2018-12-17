@@ -1,22 +1,67 @@
+/******************************************************************************
+ * Copyright (c) Arcadia, Inc. All rights reserved.
+ ******************************************************************************/
+
 import { Employee } from '../reducers/organization/employee.model';
 import { NavigateToAction } from './navigation.epic';
 
+//============================================================================
 export enum NavigationActionType {
     openEmployeeDetails = 'NavigationActionType.openEmployeeDetails',
     openCompany = 'NavigationActionType.openCompany',
     openDepartment = 'NavigationActionType.openDepartment',
     openRoom = 'NavigationActionType.openRoom',
     openOrganization = 'NavigationActionType.openOrganization',
+    openUserPreferences = 'NavigationActionType.openUserPreferences',
+    openProfile = 'NavigationActionType.openProfile',
 }
 
-//==============================================================================================
+//============================================================================
+// - Actions
+//============================================================================
+
 export interface OpenEmployeeDetailsAction extends NavigateToAction<NavigationActionType.openEmployeeDetails> {
     params: {
         employee: Employee;
     };
 }
 
-//----------------------------------------------------------------------------------------------
+export interface OpenCompanyAction extends NavigateToAction<NavigationActionType.openCompany> {
+    params: {
+        departmentId: string
+    };
+}
+
+export interface OpenDepartmentAction extends NavigateToAction<NavigationActionType.openDepartment> {
+    params: {
+        departmentId: string;
+        departmentAbbreviation: string;
+    };
+}
+
+export interface OpenRoomAction extends NavigateToAction<NavigationActionType.openRoom> {
+    params: {
+        roomNumber: string;
+    };
+}
+
+export interface OpenOrganizationAction extends NavigateToAction<NavigationActionType.openOrganization> {
+    params: {
+        departmentId: string
+    };
+}
+
+export interface OpenUserPreferencesAction extends NavigateToAction<NavigationActionType.openUserPreferences> {
+}
+
+export interface OpenProfileAction extends NavigateToAction<NavigationActionType.openProfile> {
+}
+
+
+//==============================================================================================
+// - Action Creators
+//============================================================================
+
 export const openEmployeeDetails = (employee: Employee): OpenEmployeeDetailsAction => {
     return {
         type: NavigationActionType.openEmployeeDetails,
@@ -26,14 +71,6 @@ export const openEmployeeDetails = (employee: Employee): OpenEmployeeDetailsActi
     };
 };
 
-//==============================================================================================
-export interface OpenCompanyAction extends NavigateToAction<NavigationActionType.openCompany> {
-    params: {
-        departmentId: string
-    };
-}
-
-//----------------------------------------------------------------------------------------------
 export const openCompany = (departmentId: string): OpenCompanyAction => {
     return {
         type: NavigationActionType.openCompany,
@@ -43,15 +80,6 @@ export const openCompany = (departmentId: string): OpenCompanyAction => {
     };
 };
 
-//==============================================================================================
-export interface OpenDepartmentAction extends NavigateToAction<NavigationActionType.openDepartment> {
-    params: {
-        departmentId: string;
-        departmentAbbreviation: string;
-    };
-}
-
-//----------------------------------------------------------------------------------------------
 export const openDepartment = (departmentId: string, departmentAbbreviation: string): OpenDepartmentAction => {
     return {
         type: NavigationActionType.openDepartment,
@@ -61,14 +89,6 @@ export const openDepartment = (departmentId: string, departmentAbbreviation: str
     };
 };
 
-//==============================================================================================
-export interface OpenRoomAction extends NavigateToAction<NavigationActionType.openRoom> {
-    params: {
-        roomNumber: string;
-    };
-}
-
-//----------------------------------------------------------------------------------------------
 export const openRoom = (roomNumber: string): OpenRoomAction => {
     return {
         type: NavigationActionType.openRoom,
@@ -78,14 +98,6 @@ export const openRoom = (roomNumber: string): OpenRoomAction => {
     };
 };
 
-//==============================================================================================
-export interface OpenOrganizationAction extends NavigateToAction<NavigationActionType.openOrganization> {
-    params: {
-        departmentId: string
-    };
-}
-
-//----------------------------------------------------------------------------------------------
 export const openOrganization = (departmentId: string): OpenOrganizationAction => {
     return {
         type: NavigationActionType.openOrganization,
@@ -95,3 +107,14 @@ export const openOrganization = (departmentId: string): OpenOrganizationAction =
     };
 };
 
+export const openUserPreferences = (): OpenUserPreferencesAction => {
+    return {
+        type: NavigationActionType.openUserPreferences,
+    };
+};
+
+export const openProfile = (): OpenProfileAction => {
+    return {
+        type: NavigationActionType.openProfile,
+    };
+};

@@ -1,14 +1,19 @@
 ﻿namespace Arcadia.Assistant.Calendar.Abstractions.Messages
 {
+    using System;
+
     public class ApproveCalendarEvent
     {
-        public ApproveCalendarEvent(CalendarEvent @event, string approverId)
+        public ApproveCalendarEvent(CalendarEvent @event, DateTimeOffset timestamp, string approverId)
         {
             this.Event = @event;
+            this.Timestamp = timestamp;
             this.ApproverId = approverId;
         }
 
         public CalendarEvent Event { get; }
+
+        public DateTimeOffset Timestamp { get; }
 
         public string ApproverId { get; }
 

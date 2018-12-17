@@ -8,6 +8,9 @@
         public SmtpSettings Smtp { get; set; }
 
         [Required]
-        public SickLeaveSettings SickLeave { get; set; }
+        public PushSettings Push { get; set; }
+
+        [Required]
+        public CalendarEventsMessagingSettings CalendarEvents { get; set; }
     }
 }

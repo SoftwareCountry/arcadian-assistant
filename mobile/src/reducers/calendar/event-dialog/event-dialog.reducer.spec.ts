@@ -1,4 +1,9 @@
-import { openEventDialog, closeEventDialog, startEventDialogProgress, stopEventDialogProgress } from './event-dialog.action';
+import {
+    closeEventDialog,
+    openEventDialog,
+    startEventDialogProgress,
+    stopEventDialogProgress
+} from './event-dialog.action';
 import { chosenTypeDayoff } from '../dayoff.action';
 import { HoursCreditType } from '../days-counters.model';
 import { EventDialogType } from './event-dialog-type.model';

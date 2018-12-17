@@ -13,11 +13,11 @@ import { selectCompanyDepartment } from '../reducers/people/people.action';
 import { EmployeeIdsGroupMap, EmployeeMap } from '../reducers/organization/employees.reducer';
 import { loadEmployeesForDepartment } from '../reducers/organization/organization.action';
 import { Employee } from '../reducers/organization/employee.model';
-import { ScrollView } from 'react-native';
+import { ScrollView } from 'react-navigation';
 import { LoadingView } from '../navigation/loading';
 import { Action, Dispatch } from 'redux';
 import { openEmployeeDetails } from '../navigation/navigation.actions';
-import { Nullable, Optional } from 'types';
+import { Nullable } from 'types';
 
 //============================================================================
 interface CompanyDepartmentsStateProps {
@@ -162,8 +162,9 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
 
         for (let [, departmentNode] of filteredDepartmentNodes.entries()) {
             const node = departmentIdToNode.get(departmentNode.departmentId);
-            if (node) {-
-                newDepartmentIdsToNodes.set(departmentNode.departmentId, node);
+            if (node) {
+                -
+                    newDepartmentIdsToNodes.set(departmentNode.departmentId, node);
             }
 
             let parentDepartment = departmentNode.parentId ? departmentIdToNode.get(departmentNode.parentId) : null;

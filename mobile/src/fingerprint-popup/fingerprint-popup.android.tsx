@@ -61,12 +61,14 @@ export class FingerprintPopupAndroid extends Component<FingerprintPopupProps, Fi
 
                     <Text style={FingerprintPopupStyle.text.title}>{'Sign in'}</Text>
 
-                    <View style={[FingerprintPopupStyle.view.fingerprintImageContainer, this.fingerprintContainerColor()]}>
+                    <View
+                        style={[FingerprintPopupStyle.view.fingerprintImageContainer, this.fingerprintContainerColor()]}>
                         <Image style={FingerprintPopupStyle.view.fingerprintImage}
                                source={this.fingerprintImage}/>
                     </View>
 
-                    <Text style={[FingerprintPopupStyle.text.description, this.descriptionColor()]}>{this.descriptionText()}</Text>
+                    <Text
+                        style={[FingerprintPopupStyle.text.description, this.descriptionColor()]}>{this.descriptionText()}</Text>
 
                     <TouchableOpacity style={FingerprintPopupStyle.view.button} onPress={this.onCancel}>
                         <Text style={FingerprintPopupStyle.text.buttonText}>

@@ -1,11 +1,10 @@
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { Avatar } from '../people/avatar';
 import { Feed } from '../reducers/feeds/feed.model';
 import { Employee } from '../reducers/organization/employee.model';
 import { StyledText } from '../override/styled-text';
 import { FeedStyle } from './home-feeds-screen.styles';
-import { Nullable } from 'types';
 
 //============================================================================
 interface FeedMessageProps {

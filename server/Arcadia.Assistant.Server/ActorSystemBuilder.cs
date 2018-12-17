@@ -3,13 +3,16 @@
     using Akka.Actor;
     using Akka.DI.Core;
 
-    using Arcadia.Assistant.Calendar.SickLeave;
+    using Arcadia.Assistant.Calendar.Notifications;
+    using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.Feeds;
     using Arcadia.Assistant.Helpdesk;
+    using Arcadia.Assistant.Health.Abstractions;
     using Arcadia.Assistant.Notifications;
+    using Arcadia.Assistant.Notifications.Email;
+    using Arcadia.Assistant.Notifications.Push;
     using Arcadia.Assistant.Organization;
     using Arcadia.Assistant.Server.Interop;
-    using Arcadia.Assistant.Health.Abstractions;
     using Arcadia.Assistant.UserPreferences;
 
     public class ActorSystemBuilder
@@ -21,18 +24,46 @@
             this.actorSystem = actorSystem;
         }
 
-        public ServerActorsCollection AddRootActors()
+        public ServerActorsCollection AddRootActors(ICalendarEventsMessagingSettings calendarEventsMessagingSettings)
         {
-            var departments = this.actorSystem.ActorOf(this.actorSystem.DI().Props<OrganizationActor>(), WellKnownActorPaths.Organization);
+            var organization = this.actorSystem.ActorOf(this.actorSystem.DI().Props<OrganizationActor>(), WellKnownActorPaths.Organization);
             var health = this.actorSystem.ActorOf(this.actorSystem.DI().Props<HealthChecker>(), WellKnownActorPaths.Health);
             var helpdesk = this.actorSystem.ActorOf(Props.Create(() => new HelpdeskActor()), WellKnownActorPaths.Helpdesk);
-            var feeds = this.actorSystem.ActorOf(Props.Create(() => new SharedFeedsActor(departments)), WellKnownActorPaths.SharedFeeds);
+            var feeds = this.actorSystem.ActorOf(Props.Create(() => new SharedFeedsActor(organization)), WellKnownActorPaths.SharedFeeds);
             var userPreferences = this.actorSystem.ActorOf(this.actorSystem.DI().Props<UserPreferencesActor>(), WellKnownActorPaths.UserPreferences);
+            var pushNotificationsDevices = this.actorSystem.ActorOf(Props.Create(() => new PushNotificationsDevicesActor()), WellKnownActorPaths.PushNotificationsDevices);
 
-            var sickLeaveEmailActorProps = this.actorSystem.DI().Props<SendEmailSickLeaveActor>();
-            this.actorSystem.ActorOf(Props.Create(() => new NotificationsActor(sickLeaveEmailActorProps)), "notifications");
+            this.actorSystem.ActorOf(
+                Props.Create(() => new SickLeaveApprovedEmailNotificationActor(
+                    calendarEventsMessagingSettings.SickLeaveApproved, 
+                    organization)),
+                "sick-leave-email");
+            this.actorSystem.ActorOf(
+                Props.Create(() => new EventAssignedToApproverEmailNotificationActor(
+                    calendarEventsMessagingSettings.EventAssignedToApprover, 
+                    organization,
+                    userPreferences)),
+                "event-assigned-email");
+            this.actorSystem.ActorOf(
+                Props.Create(() => new EventStatusChangedEmailNotificationActor(
+                    calendarEventsMessagingSettings.EventStatusChanged,
+                    organization,
+                    userPreferences)),
+                "event-changed-status-owner-email");
+            this.actorSystem.ActorOf(
+                Props.Create(() => new EventUserGrantedApprovalEmailNotificationActor(
+                    calendarEventsMessagingSettings.EventUserGrantedApproval,
+                    organization,
+                    userPreferences)),
+                "event-granted-approval-owner-email");
 
-            return new ServerActorsCollection(departments, health, helpdesk, feeds, userPreferences);
+            var emailNotificationsActorProps = this.actorSystem.DI().Props<EmailNotificationsActor>();
+            var pushNotificationsActorProps = this.actorSystem.DI().Props<PushNotificationsActor>();
+            this.actorSystem.ActorOf(
+                Props.Create(() => new NotificationsDispatcherActor(emailNotificationsActorProps, pushNotificationsActorProps)),
+                "notifications");
+
+            return new ServerActorsCollection(organization, health, helpdesk, feeds, userPreferences, pushNotificationsDevices);
         }
     }
 }

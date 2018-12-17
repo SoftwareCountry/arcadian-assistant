@@ -3,6 +3,7 @@ package ru.spb.arcadia.product.assistant.android;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.dylanvann.fastimage.FastImageViewPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -27,6 +28,7 @@ public class MainApplication extends Application implements ReactApplication {
     //----------------------------------------------------------------------------
     static {
         AppCenterReactNativeShared.setAppSecret(BuildConfig.appCenterSecretId);
+        AppCenterReactNativeShared.setStartAutomatically(true);
     }
 
     //----------------------------------------------------------------------------
@@ -40,6 +42,7 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             return Arrays.asList(
                     new MainReactPackage(),
+                    new FastImageViewPackage(),
                     new RNGestureHandlerPackage(),
                     new AppCenterReactNativePushPackage(MainApplication.this),
                     new ReactNativeConfigPackage(),

@@ -13,6 +13,7 @@
     using Arcadia.Assistant.Web.Employees;
     using Arcadia.Assistant.Web.Health;
     using Arcadia.Assistant.Web.Infrastructure;
+    using Arcadia.Assistant.Web.PushNotifications;
     using Arcadia.Assistant.Web.Users;
 
     using Autofac;
@@ -54,6 +55,7 @@
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+
             var appSettings = this.AppSettings;
 
             services.AddSwaggerGen(
@@ -76,6 +78,8 @@
                         x.DescribeAllEnumsAsStrings();
                         //x.CustomSchemaIds(t => t.FullName);
                     });
+
+            services.AddTransient<AkkaTimeoutExceptionHandler>();
 
             services.AddScoped<AuthenticationEvents>();
 
@@ -133,10 +137,12 @@
             builder.RegisterType<UserEmployeeSearch>().As<IUserEmployeeSearch>();
             builder.RegisterType<HealthService>().As<IHealthService>();
             builder.RegisterType<UserPreferencesService>().As<IUserPreferencesService>();
+            builder.RegisterType<PushNotificationsService>().As<IPushNotificationsService>();
 
             builder.RegisterType<UserIsEmployeeHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
             builder.RegisterType<EmployeePermissionsHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
             builder.RegisterType<EditCalendarEventsPermissionHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
+            builder.RegisterType<CanApproveOnBehalfPermissionHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
 
             builder.RegisterType<PermissionsLoader>().As<IPermissionsLoader>().InstancePerLifetimeScope();
         }
@@ -150,6 +156,7 @@
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseAkkaTimeoutExceptionHandler();
             app.UseAuthentication();
 
             app.UseSwagger();

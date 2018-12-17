@@ -7,6 +7,7 @@
     using Akka.Event;
 
     using Arcadia.Assistant.Calendar.Abstractions;
+    using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
 
     public class EmployeePendingActionsActor : UntypedActor, ILogReceive
@@ -18,7 +19,7 @@
         {
             this.employeeId = employeeId;
 
-            Context.System.EventStream.Subscribe<CalendarEventAssignedToApproverEventBusMessage>(this.Self);
+            Context.System.EventStream.Subscribe<CalendarEventAssignedToApprover>(this.Self);
         }
 
         public static Props CreateProps(string employeeId)
@@ -34,17 +35,17 @@
                     this.Sender.Tell(new GetEmployeePendingActions.Response(this.pendingActionEvents.Values.ToList()));
                     break;
 
-                case CalendarEventAssignedToApproverEventBusMessage msg when msg.ApproverId == this.employeeId:
+                case CalendarEventAssignedToApprover msg when msg.ApproverId == this.employeeId:
                     this.pendingActionEvents[msg.Event.EventId] = msg.Event;
                     break;
 
-                case CalendarEventAssignedToApproverEventBusMessage msg
+                case CalendarEventAssignedToApprover msg
                     when msg.ApproverId != this.employeeId && this.pendingActionEvents.ContainsKey(msg.Event.EventId):
 
                     this.pendingActionEvents.Remove(msg.Event.EventId);
                     break;
 
-                case CalendarEventAssignedToApproverEventBusMessage _:
+                case CalendarEventAssignedToApprover _:
                     // Simply ignore messages with other event ids
                     break;
 
