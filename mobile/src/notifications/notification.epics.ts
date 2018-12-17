@@ -14,14 +14,19 @@ import AppCenter from 'appcenter';
 import { installIdReceived, NotificationAction, NotificationActionType } from './notification.actions';
 
 //----------------------------------------------------------------------------
-const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>) =>
+const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>, state$: StateObservable<AppState>) =>
     action$.ofType(AuthActionType.userLoggedIn).pipe(
         switchMap(() => {
             const notification$ = new Subject<Action>();
 
             Push.setListener({
                 onPushNotificationReceived: notification => {
-                    if (!notification.customProperties) {
+                    if (!notification.customProperties || !notification.customProperties.employeeId) {
+                        return;
+                    }
+
+                    const userInfo = state$.value.userInfo;
+                    if (!userInfo || notification.customProperties.employeeId !== userInfo.employeeId) {
                         return;
                     }
 
