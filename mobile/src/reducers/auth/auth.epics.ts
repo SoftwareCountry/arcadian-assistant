@@ -26,10 +26,17 @@ function showAlert(message: string, okButtonTitle: string, rejectButtonTitle: st
     Alert.alert(
         'Confirmation',
         `${message}`,
-        [{ text: okButtonTitle, onPress: () => okButton() }, {
-            text: rejectButtonTitle,
-            onPress: () => rejectButton()
-        }]);
+        [
+            {
+                text: rejectButtonTitle,
+                onPress: () => rejectButton(),
+                style: 'cancel',
+            },
+            {
+                text: okButtonTitle,
+                onPress: () => okButton(),
+            }
+        ]);
 }
 
 //----------------------------------------------------------------------------
@@ -37,10 +44,10 @@ function showErrorMessage(message: string) {
     Alert.alert(
         'Error occurred',
         `${message}`,
-        [{
-            text: 'OK', onPress: () => {
-            }
-        },
+        [
+            {
+                text: 'OK', onPress: () => {},
+            },
         ]);
 }
 
