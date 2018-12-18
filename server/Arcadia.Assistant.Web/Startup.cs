@@ -1,6 +1,19 @@
 ﻿namespace Arcadia.Assistant.Web
 {
     using System.Collections.Generic;
+    using System.Net.Http;
+
+    using Autofac;
+    using Microsoft.ApplicationInsights.Extensibility;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Swashbuckle.AspNetCore.Swagger;
+    using ZNetCS.AspNetCore.Authentication.Basic;
+
     using Akka.Actor;
     using Akka.Configuration;
 
@@ -10,24 +23,13 @@
     using Arcadia.Assistant.Web.Authorization.Handlers;
     using Arcadia.Assistant.Web.Authorization.Requirements;
     using Arcadia.Assistant.Web.Configuration;
+    using Arcadia.Assistant.Web.Download;
     using Arcadia.Assistant.Web.Employees;
     using Arcadia.Assistant.Web.Health;
     using Arcadia.Assistant.Web.Infrastructure;
     using Arcadia.Assistant.Web.PushNotifications;
+    using Arcadia.Assistant.Web.UserPreferences;
     using Arcadia.Assistant.Web.Users;
-
-    using Autofac;
-
-    using Microsoft.ApplicationInsights.Extensibility;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Swashbuckle.AspNetCore.Swagger;
-    using UserPreferences;
-    using ZNetCS.AspNetCore.Authentication.Basic;
 
     public class Startup
     {
@@ -46,15 +48,22 @@
             }
 
             this.AppSettings = configBuilder.Build().Get<AppSettings>();
+
+            var systemName = this.AppSettings.Server.ActorSystemName;
+            var config = ConfigurationFactory.ParseString(this.AppSettings.Akka);
+            this.ActorSystem = ActorSystem.Create(systemName, config);
         }
 
         public AppSettings AppSettings { get; }
+
+        public ActorSystem ActorSystem { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // ReSharper disable once UnusedMember.Global
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddHttpClient();
 
             var appSettings = this.AppSettings;
 
@@ -121,17 +130,14 @@
             var host = appSettings.Server.Host;
             var port = appSettings.Server.Port;
 
-            var config = ConfigurationFactory.ParseString(appSettings.Akka);
-
-            var actorSystem = ActorSystem.Create(systemName, config);
-
             var pathsBuilder = new ActorPathsBuilder(systemName, host, port);
 
             builder.RegisterInstance(appSettings).As<ITimeoutSettings>();
             builder.RegisterInstance(appSettings.Security).As<ISecuritySettings>();
             builder.RegisterInstance(appSettings.ServiceEndpointsAuthentication).As<IServiceEndpointsAuthenticationSettings>();
             builder.RegisterInstance(appSettings.DownloadApplication).As<IDownloadApplicationSettings>();
-            builder.RegisterInstance(actorSystem).As<IActorRefFactory>();
+            builder.RegisterInstance(this.ActorSystem).As<IActorRefFactory>();
+            builder.RegisterType<DownloadActor>().AsSelf();
             builder.RegisterInstance(pathsBuilder).AsSelf();
 
             builder.RegisterType<EmployeesRegistry>().As<IEmployeesRegistry>();
@@ -150,12 +156,19 @@
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         // ReSharper disable once UnusedMember.Global
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ISecuritySettings securitySettings)
+        public void Configure(
+            IApplicationBuilder app,
+            IHostingEnvironment env,
+            ISecuritySettings securitySettings,
+            IHttpClientFactory httpClientFactory,
+            IDownloadApplicationSettings downloadApplicationSettings)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            this.ActorSystem.ActorOf(Props.Create(() => new DownloadActor(downloadApplicationSettings, httpClientFactory)), "download-application-builds");
 
             app.UseAkkaTimeoutExceptionHandler();
             app.UseAuthentication();
