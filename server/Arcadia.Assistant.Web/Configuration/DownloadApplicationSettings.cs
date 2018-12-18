@@ -2,8 +2,10 @@
 {
     public class DownloadApplicationSettings : IDownloadApplicationSettings
     {
-        public string ApkDownloadPath { get; set; }
+        public string BuildsFolder { get; set; }
 
-        public string IpaDownloadPath { get; set; }
+        public string AndroidFilePattern { get; set; }
+
+        public string IosFilePattern { get; set; }
     }
 }

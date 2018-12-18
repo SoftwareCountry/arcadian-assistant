@@ -1,5 +1,9 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
+    using System;
+    using System.IO;
+    using System.Linq;
+
     using Microsoft.AspNetCore.Mvc;
 
     using Arcadia.Assistant.Web.Configuration;
@@ -20,10 +24,31 @@
         {
             var model = new DownloadWebModel
             {
-                ApkDownloadPath = this.downloadApplicationSettings.ApkDownloadPath,
-                iPaDownloadPath = this.downloadApplicationSettings.IpaDownloadPath
+                AndroidDownloadPath = this.GetLatestFile(
+                    this.downloadApplicationSettings.BuildsFolder,
+                    this.downloadApplicationSettings.AndroidFilePattern),
+                IosDownloadPath = this.GetLatestFile(
+                    this.downloadApplicationSettings.BuildsFolder,
+                    this.downloadApplicationSettings.IosFilePattern)
             };
+
             return this.View(model);
+        }
+
+        private string GetLatestFile(string baseFolder, string filePattern)
+        {
+            var folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, baseFolder);
+
+            if (!Directory.Exists(folder))
+            {
+                return null;
+            }
+
+            var files = Directory
+                .GetFiles(folder, filePattern)
+                .OrderByDescending(f => f);
+
+            return files.FirstOrDefault();
         }
     }
 }

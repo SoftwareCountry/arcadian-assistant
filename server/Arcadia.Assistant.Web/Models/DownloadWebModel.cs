@@ -2,8 +2,8 @@
 {
     public class DownloadWebModel
     {
-        public string ApkDownloadPath { get; set; }
+        public string AndroidDownloadPath { get; set; }
 
-        public string iPaDownloadPath { get; set; }
+        public string IosDownloadPath { get; set; }
     }
 }

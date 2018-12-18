@@ -2,8 +2,10 @@
 {
     public interface IDownloadApplicationSettings
     {
-        string ApkDownloadPath { get; }
+        string BuildsFolder { get; }
 
-        string IpaDownloadPath { get; }
+        string AndroidFilePattern { get; }
+
+        string IosFilePattern { get; }
     }
 }
