@@ -16,6 +16,8 @@
 
         public string Email { get; private set; }
 
+        public string NameFilter { get; private set; }
+
         public string DirectSupervisorId { get; private set; }
 
         public DateQuery BirthDate { get; private set; }
@@ -59,6 +61,13 @@
         {
             var obj = this.Clone();
             obj.Email = email;
+            return obj;
+        }
+
+        public EmployeesQuery WithNameFilter(string nameFilter)
+        {
+            var obj = this.Clone();
+            obj.NameFilter = nameFilter;
             return obj;
         }
 

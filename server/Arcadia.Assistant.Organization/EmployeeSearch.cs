@@ -111,6 +111,11 @@
                 return false;
             }
 
+            if ((query.NameFilter != null) && !(employee.Name?.IndexOf(query.NameFilter, 0, StringComparison.InvariantCultureIgnoreCase) >= 0))
+            {
+                return false;
+            }
+
             if ((query.HireDate != null) && !query.HireDate.Matches(employee.HireDate))
             {
                 return false;
