@@ -14,17 +14,6 @@ import { Action } from 'redux';
 import { filter } from 'rxjs/operators';
 
 describe('openEventDialogEpic', () => {
-    describe('when request vacation', () => {
-        it('should select single selection mode', (done) => {
-            const action$ = ActionsObservable.of(openEventDialog(EventDialogType.RequestVacation));
-
-            openEventDialogEpic$(action$).subscribe((x: Action) => {
-                expect(x).toEqual(calendarSelectionMode(CalendarSelectionModeType.SingleDay));
-                done();
-            });
-        });
-    });
-
     describe('when confirm start date vacation', () => {
         it('should select interval selection mode', (done) => {
             const action$ = ActionsObservable.of(openEventDialog(EventDialogType.ConfirmStartDateVacation));
