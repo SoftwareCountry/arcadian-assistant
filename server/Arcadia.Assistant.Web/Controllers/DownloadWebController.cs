@@ -1,9 +1,9 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
-    using System;
     using System.IO;
     using System.Linq;
 
+    using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
 
     using Arcadia.Assistant.Web.Configuration;
@@ -13,10 +13,14 @@
     public class DownloadWebController : Controller
     {
         private readonly IDownloadApplicationSettings downloadApplicationSettings;
+        private readonly IHostingEnvironment hostingEnvironment;
 
-        public DownloadWebController(IDownloadApplicationSettings downloadApplicationSettings)
+        public DownloadWebController(
+            IDownloadApplicationSettings downloadApplicationSettings,
+            IHostingEnvironment hostingEnvironment)
         {
             this.downloadApplicationSettings = downloadApplicationSettings;
+            this.hostingEnvironment = hostingEnvironment;
         }
 
         [HttpGet]
@@ -37,8 +41,7 @@
 
         private string GetLatestFile(string baseFolder, string filePattern)
         {
-            var folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, baseFolder);
-
+            var folder = Path.Combine(this.hostingEnvironment.ContentRootPath, baseFolder);
             if (!Directory.Exists(folder))
             {
                 return null;
