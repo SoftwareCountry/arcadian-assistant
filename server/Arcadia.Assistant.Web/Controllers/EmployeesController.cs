@@ -63,9 +63,13 @@
         [HttpGet]
         [ProducesResponseType(typeof(EmployeeModel[]), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> ForDepartment([FromQuery] string departmentId, [FromQuery] string roomNumber, CancellationToken token)
+        public async Task<IActionResult> FilterEmployees(
+            [FromQuery] string departmentId,
+            [FromQuery] string roomNumber,
+            [FromQuery] string name,
+            CancellationToken token)
         {
-            var query = new EmployeesQuery();
+            var query = EmployeesQuery.Create();
 
             if (!string.IsNullOrWhiteSpace(departmentId))
             {
@@ -75,6 +79,11 @@
             if (!string.IsNullOrWhiteSpace(roomNumber))
             {
                 query = query.ForRoom(roomNumber);
+            }
+
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                query = query.WithNameFilter(name);
             }
 
             var employees = await this.LoadEmployeesAsync(query, token);
