@@ -130,6 +130,7 @@
             builder.RegisterInstance(appSettings).As<ITimeoutSettings>();
             builder.RegisterInstance(appSettings.Security).As<ISecuritySettings>();
             builder.RegisterInstance(appSettings.ServiceEndpointsAuthentication).As<IServiceEndpointsAuthenticationSettings>();
+            builder.RegisterInstance(appSettings.DownloadApplication).As<IDownloadApplicationSettings>();
             builder.RegisterInstance(actorSystem).As<IActorRefFactory>();
             builder.RegisterInstance(pathsBuilder).AsSelf();
 
