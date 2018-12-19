@@ -1,5 +1,6 @@
 import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
 import {
+    LoadAllEmployees,
     LoadDepartments,
     loadDepartments,
     loadDepartmentsFinished,
@@ -36,6 +37,17 @@ export const loadEmployeeEpic$ = (action$: ActionsObservable<LoadEmployees>, _: 
         return forkJoin(requests);
     }),
     map(employees => loadEmployeesFinished(employees)),
+);
+
+export const loadAllEmployeeEpic$ = (action$: ActionsObservable<LoadAllEmployees>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
+    ofType('LOAD_ALL_EMPLOYEES'),
+    switchMap(action => {
+        return deps.apiClient.getJSON(`/employees/`).pipe(
+            map(obj => deserializeArray(obj as any, Employee) as Employee[]),
+            map(employees => loadEmployeesFinished(employees)),
+            handleHttpErrors(),
+        );
+    }),
 );
 
 export const loadDepartmentsEpic$ = (action$: ActionsObservable<LoadDepartments>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(

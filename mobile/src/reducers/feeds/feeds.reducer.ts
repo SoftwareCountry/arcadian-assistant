@@ -3,7 +3,7 @@ import { combineEpics } from 'redux-observable';
 import { Feed } from './feed.model';
 import { FeedsActions } from './feeds.action';
 import { SearchActions } from '../search/search.action';
-import { SearchType } from '../../navigation/search-view';
+import { SearchType } from '../../navigation/search/search-view';
 import {
     fetchNewFeedsEpic$,
     fetchOldFeedsEpic$,
