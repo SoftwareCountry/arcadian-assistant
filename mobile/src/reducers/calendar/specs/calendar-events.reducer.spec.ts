@@ -87,11 +87,11 @@ describe('calendar events reducer', () => {
         });
 
         it('should remove interval selection', () => {
-            expect(state.selection.interval).toBeNull();
+            expect(state.selection.interval).toBeUndefined();
         });
 
         it('should enable calendar days before single selection day', () => {
-            expect(state.disableCalendarDaysBefore).toBeNull();
+            expect(state.disableCalendarDaysBefore).toBeUndefined();
         });
     });
 
@@ -123,7 +123,7 @@ describe('calendar events reducer', () => {
         });
 
         it('should have end day which is null', () => {
-            expect(state.selection.interval!.endDay).toBeNull();
+            expect(state.selection.interval!.endDay).toBeUndefined();
         });
 
         it('should have color', () => {
