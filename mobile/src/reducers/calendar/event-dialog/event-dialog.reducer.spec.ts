@@ -22,7 +22,7 @@ describe('event dialog reducer', () => {
         const action = closeEventDialog();
         const state = eventDialogReducer(undefined, action);
 
-        expect(state.dialogType).toBeNull();
+        expect(state.dialogType).toBeUndefined();
     });
 
     it('should return dayoff type as default when close', () => {
