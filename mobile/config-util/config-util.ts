@@ -9,7 +9,7 @@ interface Configuration {
 function createConfiguration(): Configuration {
     return {
         env: {
-            appCenterSecretId: process.env['AA_API_APPCENTER'] || '<writeme>',
+            appCenterSecretId: process.env['AA_API_APPCENTER'] || 'WRITE_ME',
             apiUrl: process.env['AA_API_URL'] || 'https://arcadia-assistant-dev.arcadialab.ru/api',
             oauthRedirectUri: process.env['AA_OAUTH_REDIRECT_URI'] || 'arcadia-assistant://on-login',
             oauthClientId: process.env['AA_OAUTH_CLIENT_ID'] || 'a2ccb221-60e2-47b8-b28c-bf88a59f7f4a',
@@ -21,6 +21,8 @@ function createConfiguration(): Configuration {
 
 export function run() {    
     const config = createConfiguration();
+    console.log('writing app config', config);
+
     writeEnvConfig(config.env, '../.env');
     if (config.google) {
         writeGoogleConfig(config.google, '../android/app/google-services.json');
