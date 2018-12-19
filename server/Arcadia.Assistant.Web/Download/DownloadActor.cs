@@ -17,7 +17,7 @@
 
     using Arcadia.Assistant.Web.Configuration;
 
-    public class DownloadActor : UntypedActor, ILogReceive
+    public class DownloadActor : UntypedActor, ILogReceive, IWithUnboundedStash
     {
         private readonly IDownloadApplicationSettings downloadApplicationSettings;
         private readonly IHttpClientFactory httpClientFactory;
@@ -44,17 +44,31 @@
                 this.Self);
         }
 
+        public IStash Stash { get; set; }
+
         protected override void OnReceive(object message)
         {
             switch (message)
             {
                 case GetLatestApplicationBuildPath msg:
-                    var buildPath = msg.ApplicationType == GetLatestApplicationBuildPath.ApplicationTypeEnum.Android
-                        ? this.androidApplicationBuildPath
-                        : this.iosApplicationBuildPath;
-                    this.Sender.Tell(new GetLatestApplicationBuildPath.Response(buildPath));
+                    this.RespondLatestApplicationBuildPath(msg.ApplicationType);
                     break;
 
+                case RefreshApplicationBuilds msg:
+                    this.Self.Tell(msg);
+                    this.Become(this.DownloadingApplicationBuilds);
+                    break;
+
+                default:
+                    this.Unhandled(message);
+                    break;
+            }
+        }
+
+        private void DownloadingApplicationBuilds(object message)
+        {
+            switch (message)
+            {
                 case RefreshApplicationBuilds _:
                     this.DownloadApplicationBuilds()
                         .PipeTo(
@@ -69,12 +83,29 @@
                         this.logger.Warning(msg.Message);
                     }
 
+                    this.Become(this.DefaultState());
+
                     break;
 
                 default:
-                    this.Unhandled(message);
+                    this.Stash.Stash();
                     break;
             }
+        }
+
+        private UntypedReceive DefaultState()
+        {
+            this.Stash.UnstashAll();
+            return this.OnReceive;
+        }
+
+        private void RespondLatestApplicationBuildPath(
+            GetLatestApplicationBuildPath.ApplicationTypeEnum applicationType)
+        {
+            var buildPath = applicationType == GetLatestApplicationBuildPath.ApplicationTypeEnum.Android
+                ? this.androidApplicationBuildPath
+                : this.iosApplicationBuildPath;
+            this.Sender.Tell(new GetLatestApplicationBuildPath.Response(buildPath));
         }
 
         private async Task DownloadApplicationBuilds()
