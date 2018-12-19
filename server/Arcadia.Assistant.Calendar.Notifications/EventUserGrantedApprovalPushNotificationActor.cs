@@ -1,5 +1,6 @@
 ﻿namespace Arcadia.Assistant.Calendar.Notifications
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -10,28 +11,31 @@
     using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.Notifications;
+    using Arcadia.Assistant.Notifications.Push;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.UserPreferences;
 
-    using EmailNotification = Arcadia.Assistant.Notifications.Email.EmailNotification;
+    using PushNotification = Arcadia.Assistant.Notifications.Push.PushNotification;
 
-    public class EventUserGrantedApprovalEmailNotificationActor : UntypedActor, ILogReceive
+    public class EventUserGrantedApprovalPushNotificationActor : UntypedActor, ILogReceive
     {
-        private readonly IEmailNotification emailNotificationConfig;
+        private readonly IPushNotification pushNotificationConfig;
         private readonly IActorRef organizationActor;
         private readonly IActorRef userPreferencesActor;
-
+        private readonly IActorRef pushDevicesActor;
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
-        public EventUserGrantedApprovalEmailNotificationActor(
-            IEmailNotification emailNotificationConfig,
+        public EventUserGrantedApprovalPushNotificationActor(
+            IPushNotification pushNotificationConfig,
             IActorRef organizationActor,
-            IActorRef userPreferencesActor)
+            IActorRef userPreferencesActor,
+            IActorRef pushDevicesActor)
         {
-            this.emailNotificationConfig = emailNotificationConfig;
+            this.pushNotificationConfig = pushNotificationConfig;
             this.organizationActor = organizationActor;
             this.userPreferencesActor = userPreferencesActor;
+            this.pushDevicesActor = pushDevicesActor;
 
             Context.System.EventStream.Subscribe<CalendarEventApprovalsChanged>(this.Self);
         }
@@ -44,12 +48,12 @@
                     this.GetAdditionalData(msg)
                         .ContinueWith(task =>
                         {
-                            var (ownerEmployeeResult, ownerPreferencesResult, approverEmployeeResult) = task.Result;
+                            var (ownerPreferencesResult, ownerPushTokensResult, approverEmployeeResult) = task.Result;
 
                             return new CalendarEventApprovalsChangedWithAdditionalData(
                                 msg.Event,
-                                ownerEmployeeResult.Employees.First().Metadata,
                                 ownerPreferencesResult.UserPreferences,
+                                ownerPushTokensResult.DevicePushTokens,
                                 approverEmployeeResult.Employees.First().Metadata);
                         })
                         .PipeTo(this.Self);
@@ -63,16 +67,10 @@
                     when msg.OwnerUserPreferences.EmailNotifications:
 
                     this.logger.Debug("Sending email notification about user {0} granted approval for event {1} of {2}",
-                        msg.Approver.EmployeeId, msg.Event.EventId, msg.Owner.EmployeeId);
+                        msg.Approver.EmployeeId, msg.Event.EventId, msg.Event.EmployeeId);
 
-                    var sender = this.emailNotificationConfig.NotificationSender;
-                    var recipient = msg.Owner.Email;
-                    var subject = this.emailNotificationConfig.Subject;
-                    var body = string.Format(this.emailNotificationConfig.Body, msg.Event.Type, msg.Approver.Name);
-
-                    Context.System.EventStream.Publish(
-                        new NotificationEventBusMessage(
-                            new EmailNotification(sender, new[] { recipient }, subject, body)));
+                    var pushNotification = this.CreatePushNotification(msg);
+                    Context.System.EventStream.Publish(new NotificationEventBusMessage(pushNotification));
 
                     break;
 
@@ -86,43 +84,65 @@
         }
 
         private async
-            Task<(EmployeesQuery.Response, GetUserPreferencesMessage.Response, EmployeesQuery.Response)>
+            Task<(GetUserPreferencesMessage.Response, GetDevicePushTokens.Success, EmployeesQuery.Response)>
             GetAdditionalData(CalendarEventApprovalsChanged message)
         {
             var lastApproval = message.Approvals
                 .OrderByDescending(a => a.Timestamp)
                 .First();
 
-            var ownerEmployeeTask = this.organizationActor.Ask<EmployeesQuery.Response>(
-                EmployeesQuery.Create().WithId(message.Event.EmployeeId));
             var ownerPreferencesTask = this.userPreferencesActor.Ask<GetUserPreferencesMessage.Response>(
                 new GetUserPreferencesMessage(message.Event.EmployeeId));
+            var ownerPushTokensTask = this.pushDevicesActor.Ask<GetDevicePushTokens.Success>(
+                new GetDevicePushTokens(message.Event.EmployeeId));
             var approverEmployeeTask = this.organizationActor.Ask<EmployeesQuery.Response>(
                 EmployeesQuery.Create().WithId(lastApproval.ApprovedBy));
 
-            await Task.WhenAll(ownerEmployeeTask, ownerPreferencesTask, approverEmployeeTask);
-            return (ownerEmployeeTask.Result, ownerPreferencesTask.Result, approverEmployeeTask.Result);
+            await Task.WhenAll(ownerPreferencesTask, ownerPushTokensTask, approverEmployeeTask);
+            return (ownerPreferencesTask.Result, ownerPushTokensTask.Result, approverEmployeeTask.Result);
+        }
+
+        private PushNotification CreatePushNotification(CalendarEventApprovalsChangedWithAdditionalData message)
+        {
+            return new PushNotification
+            {
+                Content = new PushNotificationContent
+                {
+                    Title = this.pushNotificationConfig.Title,
+                    Body = string.Format(this.pushNotificationConfig.Body, message.Event.Type, message.Approver.Name),
+                    CustomData = new
+                    {
+                        message.Event.EventId,
+                        message.Event.EmployeeId,
+                        Type = CalendarEventPushNotificationTypes.EventUserGrantedApproval
+                    }
+                },
+                Target = new PushNotificationTarget
+                {
+                    DevicePushTokens = message.OwnerPushTokens.ToList()
+                }
+            };
         }
 
         private class CalendarEventApprovalsChangedWithAdditionalData
         {
             public CalendarEventApprovalsChangedWithAdditionalData(
                 CalendarEvent @event,
-                EmployeeMetadata owner,
                 UserPreferences ownerUserPreferences,
+                IEnumerable<string> ownerPushTokens,
                 EmployeeMetadata approver)
             {
                 this.Event = @event;
-                this.Owner = owner;
                 this.OwnerUserPreferences = ownerUserPreferences;
+                this.OwnerPushTokens = ownerPushTokens;
                 this.Approver = approver;
             }
 
             public CalendarEvent Event { get; }
 
-            public EmployeeMetadata Owner { get; }
-
             public UserPreferences OwnerUserPreferences { get; }
+
+            public IEnumerable<string> OwnerPushTokens { get; }
 
             public EmployeeMetadata Approver { get; }
         }

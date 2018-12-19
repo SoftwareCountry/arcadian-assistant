@@ -24,7 +24,9 @@
             this.actorSystem = actorSystem;
         }
 
-        public ServerActorsCollection AddRootActors(ICalendarEventsMessagingSettings calendarEventsMessagingSettings)
+        public ServerActorsCollection AddRootActors(
+            ICalendarEventsMailSettings calendarEventsMailSettings,
+            ICalendarEventsPushSettings calendarEventsPushSettings)
         {
             var organization = this.actorSystem.ActorOf(this.actorSystem.DI().Props<OrganizationActor>(), WellKnownActorPaths.Organization);
             var health = this.actorSystem.ActorOf(this.actorSystem.DI().Props<HealthChecker>(), WellKnownActorPaths.Health);
@@ -33,29 +35,12 @@
             var userPreferences = this.actorSystem.ActorOf(this.actorSystem.DI().Props<UserPreferencesActor>(), WellKnownActorPaths.UserPreferences);
             var pushNotificationsDevices = this.actorSystem.ActorOf(Props.Create(() => new PushNotificationsDevicesActor()), WellKnownActorPaths.PushNotificationsDevices);
 
-            this.actorSystem.ActorOf(
-                Props.Create(() => new SickLeaveApprovedEmailNotificationActor(
-                    calendarEventsMessagingSettings.SickLeaveApproved, 
-                    organization)),
-                "sick-leave-email");
-            this.actorSystem.ActorOf(
-                Props.Create(() => new EventAssignedToApproverEmailNotificationActor(
-                    calendarEventsMessagingSettings.EventAssignedToApprover, 
-                    organization,
-                    userPreferences)),
-                "event-assigned-email");
-            this.actorSystem.ActorOf(
-                Props.Create(() => new EventStatusChangedEmailNotificationActor(
-                    calendarEventsMessagingSettings.EventStatusChanged,
-                    organization,
-                    userPreferences)),
-                "event-changed-status-owner-email");
-            this.actorSystem.ActorOf(
-                Props.Create(() => new EventUserGrantedApprovalEmailNotificationActor(
-                    calendarEventsMessagingSettings.EventUserGrantedApproval,
-                    organization,
-                    userPreferences)),
-                "event-granted-approval-owner-email");
+            this.CreateCalendarEventNotificationActors(
+                calendarEventsMailSettings,
+                calendarEventsPushSettings,
+                organization,
+                userPreferences,
+                pushNotificationsDevices);
 
             var emailNotificationsActorProps = this.actorSystem.DI().Props<EmailNotificationsActor>();
             var pushNotificationsActorProps = this.actorSystem.DI().Props<PushNotificationsActor>();
@@ -64,6 +49,58 @@
                 "notifications");
 
             return new ServerActorsCollection(organization, health, helpdesk, feeds, userPreferences, pushNotificationsDevices);
+        }
+
+        private void CreateCalendarEventNotificationActors(
+            ICalendarEventsMailSettings calendarEventsMailSettings,
+            ICalendarEventsPushSettings calendarEventsPushSettings,
+            IActorRef organization,
+            IActorRef userPreferences,
+            IActorRef pushNotificationsDevices)
+        {
+            this.actorSystem.ActorOf(
+                Props.Create(() => new SickLeaveApprovedEmailNotificationActor(
+                    calendarEventsMailSettings.SickLeaveApproved,
+                    organization)),
+                "sick-leave-email");
+            this.actorSystem.ActorOf(
+                Props.Create(() => new EventAssignedToApproverEmailNotificationActor(
+                    calendarEventsMailSettings.EventAssignedToApprover,
+                    organization,
+                    userPreferences)),
+                "event-assigned-email");
+            this.actorSystem.ActorOf(
+                Props.Create(() => new EventAssignedToApproverPushNotificationActor(
+                    calendarEventsPushSettings.EventAssignedToApprover,
+                    organization,
+                    userPreferences,
+                    pushNotificationsDevices)),
+                "event-assigned-push");
+            this.actorSystem.ActorOf(
+                Props.Create(() => new EventStatusChangedEmailNotificationActor(
+                    calendarEventsMailSettings.EventStatusChanged,
+                    organization,
+                    userPreferences)),
+                "event-changed-status-email");
+            this.actorSystem.ActorOf(
+                Props.Create(() => new EventStatusChangedPushNotificationActor(
+                    calendarEventsPushSettings.EventStatusChanged,
+                    userPreferences,
+                    pushNotificationsDevices)),
+                "event-changed-status-push");
+            this.actorSystem.ActorOf(
+                Props.Create(() => new EventUserGrantedApprovalEmailNotificationActor(
+                    calendarEventsMailSettings.EventUserGrantedApproval,
+                    organization,
+                    userPreferences)),
+                "event-granted-approval-email");
+            this.actorSystem.ActorOf(
+                Props.Create(() => new EventUserGrantedApprovalPushNotificationActor(
+                    calendarEventsPushSettings.EventUserGrantedApproval,
+                    organization,
+                    userPreferences,
+                    pushNotificationsDevices)),
+                "event-granted-approval-push");
         }
     }
 }

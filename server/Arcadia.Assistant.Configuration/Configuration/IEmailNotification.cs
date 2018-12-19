@@ -1,6 +1,6 @@
 ﻿namespace Arcadia.Assistant.Configuration.Configuration
 {
-    public interface IEmailSettings
+    public interface IEmailNotification
     {
         string NotificationSender { get; }
 
