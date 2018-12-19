@@ -4,10 +4,6 @@
     {
         string BuildsFolder { get; }
 
-        string AndroidFilePattern { get; }
-
-        string IosFilePattern { get; }
-
         int DownloadBuildIntervalMinutes { get; }
 
         string RenameBuildFilePattern { get; }
