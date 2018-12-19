@@ -47,7 +47,11 @@
             new AutoFacDependencyResolver(this.container, this.ActorSystem);
 
             var builder = new ActorSystemBuilder(this.ActorSystem);
-            this.ServerActors = builder.AddRootActors(this.container.Resolve<AppSettings>().Messaging.CalendarEvents);
+
+            var appSettings = this.container.Resolve<AppSettings>();
+            this.ServerActors = builder.AddRootActors(
+                appSettings.Messaging.CalendarEventsMail,
+                appSettings.Messaging.CalendarEventsPush);
         }
 
         protected virtual void OnStart(ActorSystem actorSystem)
