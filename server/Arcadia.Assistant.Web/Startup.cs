@@ -137,7 +137,6 @@
             builder.RegisterInstance(appSettings.ServiceEndpointsAuthentication).As<IServiceEndpointsAuthenticationSettings>();
             builder.RegisterInstance(appSettings.DownloadApplication).As<IDownloadApplicationSettings>();
             builder.RegisterInstance(this.ActorSystem).As<IActorRefFactory>();
-            builder.RegisterType<DownloadActor>().AsSelf();
             builder.RegisterInstance(pathsBuilder).AsSelf();
 
             builder.RegisterType<EmployeesRegistry>().As<IEmployeesRegistry>();
@@ -168,7 +167,12 @@
                 app.UseDeveloperExceptionPage();
             }
 
-            this.ActorSystem.ActorOf(Props.Create(() => new DownloadActor(downloadApplicationSettings, httpClientFactory)), "download-application-builds");
+            this.ActorSystem.ActorOf(
+                Props.Create(() => new DownloadActor(
+                    downloadApplicationSettings,
+                    httpClientFactory,
+                    env.ContentRootPath)),
+                WellKnownActorPaths.DownloadApplicationBuilds);
 
             app.UseAkkaTimeoutExceptionHandler();
             app.UseAuthentication();

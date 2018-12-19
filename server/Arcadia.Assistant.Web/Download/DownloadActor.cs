@@ -21,14 +21,21 @@
     {
         private readonly IDownloadApplicationSettings downloadApplicationSettings;
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly string basePath;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
-        public DownloadActor(IDownloadApplicationSettings downloadApplicationSettings, IHttpClientFactory httpClientFactory)
+        private string androidApplicationBuildPath;
+        private string iosApplicationBuildPath;
+
+        public DownloadActor(
+            IDownloadApplicationSettings downloadApplicationSettings,
+            IHttpClientFactory httpClientFactory,
+            string basePath)
         {
             this.downloadApplicationSettings = downloadApplicationSettings;
             this.httpClientFactory = httpClientFactory;
-
+            this.basePath = basePath;
             Context.System.Scheduler.ScheduleTellRepeatedly(
                 TimeSpan.Zero,
                 TimeSpan.FromMinutes(downloadApplicationSettings.DownloadBuildIntervalMinutes),
@@ -41,6 +48,13 @@
         {
             switch (message)
             {
+                case GetLatestApplicationBuildPath msg:
+                    var buildPath = msg.ApplicationType == GetLatestApplicationBuildPath.ApplicationTypeEnum.Android
+                        ? this.androidApplicationBuildPath
+                        : this.iosApplicationBuildPath;
+                    this.Sender.Tell(new GetLatestApplicationBuildPath.Response(buildPath));
+                    break;
+
                 case RefreshApplicationBuilds _:
                     this.DownloadApplicationBuilds()
                         .PipeTo(
@@ -73,16 +87,19 @@
                 this.downloadApplicationSettings.IosGetBuildsUrl,
                 this.downloadApplicationSettings.IosGetBuildDownloadLinkTemplateUrl);
 
-            await Task.WhenAll(androidDownloadBuildTask, iosDownloadBuildTask);
+            var result = await Task.WhenAll(androidDownloadBuildTask, iosDownloadBuildTask);
+
+            this.androidApplicationBuildPath = result[0];
+            this.iosApplicationBuildPath = result[1];
         }
 
-        private async Task DownloadBuild(string getBuildsUrl, string getBuildDownloadLinkTemplateUrl)
+        private async Task<string> DownloadBuild(string getBuildsUrl, string getBuildDownloadLinkTemplateUrl)
         {
             var latestBuild = await this.GetLatestBuild(getBuildsUrl);
             if (latestBuild == null)
             {
                 this.logger.Warning($"No builds found for url {getBuildsUrl}");
-                return;
+                return null;
             }
 
             var buildDownloadModel = await this.GetBuildDownloadModel(getBuildDownloadLinkTemplateUrl, latestBuild);
@@ -90,7 +107,7 @@
             using (var client = this.httpClientFactory.CreateClient())
             {
                 var buildFileStream = await client.GetStreamAsync(buildDownloadModel.Uri);
-                await this.SaveBuildFile(buildFileStream, buildDownloadModel);
+                return await this.SaveBuildFile(buildFileStream, buildDownloadModel);
             }
         }
 
@@ -121,7 +138,7 @@
             }
         }
 
-        private async Task SaveBuildFile(Stream fileStream, AppCenterBuildDownloadModel buildDownloadModel)
+        private async Task<string> SaveBuildFile(Stream fileStream, AppCenterBuildDownloadModel buildDownloadModel)
         {
             var zipArchive = new ZipArchive(fileStream, ZipArchiveMode.Read);
             var fileEntry = zipArchive.Entries.Single(e => !string.IsNullOrEmpty(e.Name));
@@ -132,16 +149,21 @@
                     .Replace("{date}", buildDownloadModel.BuildDate.ToString("yyyy-MM-dd-hh-mm-ss"))
                     .Replace("{ext}", Path.GetExtension(fileEntry.Name));
 
-                var filePath = Path.Combine(this.downloadApplicationSettings.BuildsFolder, fileName);
+                var filePath = Path.Combine(
+                    this.basePath,
+                    this.downloadApplicationSettings.BuildsFolder,
+                    fileName);
                 if (File.Exists(filePath))
                 {
-                    return;
+                    return filePath;
                 }
 
                 using (var file = File.Create(filePath))
                 {
                     await stream.CopyToAsync(file);
                 }
+
+                return filePath;
             }
         }
 

@@ -13,5 +13,7 @@
         public static readonly string UserPreferences = "user-preferences";
 
         public static readonly string PushNotificationsDevices = "push-notifications-devices";
+
+        public static readonly string DownloadApplicationBuilds = "download-application-builds";
     }
 }
