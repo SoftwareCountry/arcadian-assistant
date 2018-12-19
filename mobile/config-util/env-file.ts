@@ -1,4 +1,3 @@
-import {Configuration as ApplicationConfiguration} from '../src/config/configuration';
 import { writeFileSync } from 'fs';
 import { EOL } from 'os';
 
