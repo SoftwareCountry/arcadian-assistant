@@ -90,7 +90,7 @@
             using (var client = this.httpClientFactory.CreateClient())
             {
                 var buildFileStream = await client.GetStreamAsync(buildDownloadModel.Uri);
-                this.SaveBuildFile(buildFileStream, buildDownloadModel);
+                await this.SaveBuildFile(buildFileStream, buildDownloadModel);
             }
         }
 
@@ -121,7 +121,7 @@
             }
         }
 
-        private void SaveBuildFile(Stream fileStream, AppCenterBuildDownloadModel buildDownloadModel)
+        private async Task SaveBuildFile(Stream fileStream, AppCenterBuildDownloadModel buildDownloadModel)
         {
             var zipArchive = new ZipArchive(fileStream, ZipArchiveMode.Read);
             var fileEntry = zipArchive.Entries.Single(e => !string.IsNullOrEmpty(e.Name));
@@ -140,7 +140,7 @@
 
                 using (var file = File.Create(filePath))
                 {
-                    stream.CopyTo(file);
+                    await stream.CopyToAsync(file);
                 }
             }
         }
