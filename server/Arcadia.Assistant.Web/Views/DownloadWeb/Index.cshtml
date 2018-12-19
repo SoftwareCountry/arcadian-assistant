@@ -1,4 +1,4 @@
-﻿@model Arcadia.Assistant.Web.Models.DownloadWebModel
+﻿@using ApplicationType = Arcadia.Assistant.Web.Controllers.DownloadWebController.ApplicationType
 
 <!DOCTYPE html>
 <html>
@@ -7,10 +7,16 @@
 </head>
 <body>
     <div>
-        <a href="@Url.Content(Model.AndroidDownloadPath)" target="_blank">Download for Android</a>
+        @Html.ActionLink(
+            "Download for Android",
+            "GetFile",
+            new { applicationType = ApplicationType.Android })
     </div>
     <div>
-        <a href="@Url.Content(Model.IosDownloadPath)" target="_blank">Download for iOS</a>
+        @Html.ActionLink(
+            "Download for iOS",
+            "GetFile",
+            new { applicationType = ApplicationType.Ios })
     </div>
 </body>
 </html>
