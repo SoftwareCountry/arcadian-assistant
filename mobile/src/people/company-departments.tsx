@@ -18,6 +18,7 @@ import { Action, Dispatch } from 'redux';
 import { openEmployeeDetails } from '../navigation/navigation.actions';
 import { Nullable } from 'types';
 import { NoResultView } from '../navigation/search/no-result-view';
+import { EmployeesList } from './employees-list';
 
 //============================================================================
 interface CompanyDepartmentsStateProps {
@@ -63,6 +64,10 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
 
     private renderDepartments() {
 
+        if (this.props.filter) {
+            return this.renderEmployees();
+        }
+
         const {
             employeesById,
             employeeIdsByDepartment,
@@ -70,7 +75,7 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
             selection
         } = this.buildData();
 
-        return employeesById && !employeesById.isEmpty() ? (
+        return employeesById ? (
             <ScrollView overScrollMode={'auto'}>
                 <CompanyDepartmentsLevel
                     departmentId={rootId}
@@ -81,30 +86,33 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
                     onSelectedNode={this.props.selectCompanyDepartment}
                     onPressEmployee={this.props.onPressEmployee}/>
             </ScrollView>
+        ) : <LoadingView/>;
+    }
+
+    private renderEmployees() {
+        const employeesById = this.filterEmployees();
+
+        return employeesById && !employeesById.isEmpty() ? (
+            <EmployeesList employees={employeesById.toIndexedSeq().toArray()}
+                           onItemClicked={this.props.onPressEmployee}/>
         ) : <NoResultView/>;
     }
 
     //----------------------------------------------------------------------------
     private buildData() {
-        const employeesById = this.filterEmployees();
 
-        let departmentIdToNode = this.props.departmentIdToNode;
-
-        if (this.props.filter) {
-            const filteredDepartmentsNodes = this.filterDepartments(departmentIdToNode, employeesById);
-            departmentIdToNode = this.buildBranchFromChildToParent(departmentIdToNode, filteredDepartmentsNodes);
-        }
+        const { employeesById, departmentIdToNode, employeeIdsByDepartment } = this.props;
 
         const departmentIdToChildren = this.buildDepartmentIdToChildren(departmentIdToNode);
         const selectedCompanyDepartmentId = this.buildSelectedDepartmentId(departmentIdToNode, employeesById);
 
         const selection = selectedCompanyDepartmentId
-            ? this.buildDepartmentsSelection(this.props.departmentIdToNode, selectedCompanyDepartmentId)
+            ? this.buildDepartmentsSelection(departmentIdToNode, selectedCompanyDepartmentId)
             : {};
 
         return {
             employeesById: employeesById,
-            employeeIdsByDepartment: this.props.employeeIdsByDepartment,
+            employeeIdsByDepartment: employeeIdsByDepartment,
             departmentIdToChildren: departmentIdToChildren,
             selection: selection
         };
@@ -123,34 +131,6 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
         return this.props.employeesById
             .filter(employee => employee.name.toLowerCase().includes(this.props.filter.toLowerCase()))
             .toMap();
-    }
-
-    //----------------------------------------------------------------------------
-    private filterDepartments(departmentIdToNode: Nullable<DepartmentIdToNode>,
-                              employeesById: Nullable<EmployeeMap>): DepartmentIdToNode {
-        if (!departmentIdToNode || !employeesById) {
-            return new Map();
-        }
-
-        const employees = employeesById.toIndexedSeq().toArray();
-        const array = Array.from(departmentIdToNode.entries());
-
-        const filteredDepartmentNodes = array.filter(([, departmentNode]) => {
-
-            for (let employee of employees) {
-                if (departmentNode.staffDepartmentId && departmentNode.staffDepartmentId === employee.departmentId) {
-                    return true;
-                }
-
-                if (employee.departmentId === departmentNode.departmentId) {
-                    return true;
-                }
-            }
-
-            return false;
-        });
-
-        return new Map(filteredDepartmentNodes);
     }
 
     //----------------------------------------------------------------------------
