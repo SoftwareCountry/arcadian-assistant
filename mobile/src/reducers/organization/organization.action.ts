@@ -23,6 +23,12 @@ export interface LoadEmployees extends Action {
 
 export const loadEmployees = (employeeIds: string[]): LoadEmployees => ({ type: 'LOAD_EMPLOYEES', employeeIds });
 
+export interface LoadAllEmployees extends Action {
+    type: 'LOAD_ALL_EMPLOYEES';
+}
+
+export const loadAllEmployees = (): LoadAllEmployees => ({ type: 'LOAD_ALL_EMPLOYEES' });
+
 export interface LoadEmployeesFinished extends Action {
     type: 'LOAD_EMPLOYEES_FINISHED';
     employees: Employee[];
@@ -55,4 +61,5 @@ export const loadEmployeesForRoom = (roomNumber: string): LoadEmployeesForRoom =
 
 export type OrganizationActions =
     LoadDepartments | LoadDepartmentsFinished |
-    LoadEmployees | LoadEmployeesForDepartment | LoadEmployeesForRoom | LoadEmployeesFinished;
+    LoadEmployees | LoadAllEmployees |
+    LoadEmployeesForDepartment | LoadEmployeesForRoom | LoadEmployeesFinished;
