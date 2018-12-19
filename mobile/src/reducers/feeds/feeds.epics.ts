@@ -2,11 +2,10 @@ import { ActionsObservable, StateObservable } from 'redux-observable';
 import * as fAction from './feeds.action';
 import * as oAction from '../organization/organization.action';
 import { deserializeArray } from 'santee-dcts/src/deserializer';
-import { loadFailedError } from '../errors/errors.action';
 import { Feed } from './feed.model';
 import { AppState, DependenciesContainer } from '../app.reducer';
 import moment from 'moment';
-import { catchError, filter, flatMap, map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { filter, flatMap, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { handleHttpErrors } from '../errors/errors.epics';
 import { LoadUserEmployeeFinished } from '../user/user.action';
 import { concat, of } from 'rxjs';
@@ -16,7 +15,7 @@ export const pagingPeriodDays = 10;
 export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('LOAD-USER-EMPLOYEE-FINISHED').pipe(
         map(x => fAction.fetchNewFeeds()),
-        catchError((e: Error) => of(loadFailedError(e.message))));
+    );
 
 export const fetchNewFeedsEpic$ = (action$: ActionsObservable<fAction.FetchNewFeeds>, state$: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('FETCH_NEW_FEEDS').pipe(

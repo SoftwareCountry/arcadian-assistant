@@ -18,7 +18,6 @@ import { deserialize, deserializeArray } from 'santee-dcts/src/deserializer';
 import { Department } from './department.model';
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { Employee } from './employee.model';
-import { loadFailedError } from '../errors/errors.action';
 import { handleHttpErrors } from '../errors/errors.epics';
 import { catchError, filter, groupBy, map, mergeAll, mergeMap, switchMap } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
@@ -109,5 +108,4 @@ export const loadEmployeesForUserRoomEpic$ = (action$: ActionsObservable<LoadUse
 export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
     ofType('LOAD-USER-EMPLOYEE-FINISHED'),
     map(x => loadDepartments()),
-    catchError((e: Error) => of(loadFailedError(e.message))),
 );
