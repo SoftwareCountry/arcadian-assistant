@@ -1,2 +1,2 @@
 require('ts-node').register();
-require('./generate').run();
+require('./config-util').run();
