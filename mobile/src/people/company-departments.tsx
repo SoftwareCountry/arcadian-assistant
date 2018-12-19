@@ -11,7 +11,6 @@ import {
 } from '../reducers/people/people.model';
 import { selectCompanyDepartment } from '../reducers/people/people.action';
 import { EmployeeIdsGroupMap, EmployeeMap } from '../reducers/organization/employees.reducer';
-import { loadEmployeesForDepartment } from '../reducers/organization/organization.action';
 import { Employee } from '../reducers/organization/employee.model';
 import { ScrollView } from 'react-navigation';
 import { LoadingView } from '../navigation/loading';
@@ -33,7 +32,6 @@ interface CompanyDepartmentsStateProps {
 //============================================================================
 interface CompanyDepartmentsDispatchProps {
     selectCompanyDepartment: (departmentId: string) => void;
-    loadEmployeesForDepartment: (departmentId: string) => void;
     onPressEmployee: (Employee: Employee) => void;
 }
 
@@ -81,8 +79,7 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
                     employeeIdsByDepartment={employeeIdsByDepartment}
                     selection={selection}
                     onSelectedNode={this.props.selectCompanyDepartment}
-                    onPressEmployee={this.props.onPressEmployee}
-                    loadEmployeesForDepartment={this.props.loadEmployeesForDepartment}/>
+                    onPressEmployee={this.props.onPressEmployee}/>
             </ScrollView>
         ) : <NoResultView/>;
     }
@@ -367,9 +364,6 @@ const stateToProps = (state: AppState) => ({
 const dispatchToProps = (dispatch: Dispatch<Action>) => ({
     selectCompanyDepartment: (departmentId: string) => {
         dispatch(selectCompanyDepartment(departmentId));
-    },
-    loadEmployeesForDepartment: (departmentId: string) => {
-        dispatch(loadEmployeesForDepartment(departmentId));
     },
     onPressEmployee: (employee: Employee) => {
         dispatch(openEmployeeDetails(employee));
