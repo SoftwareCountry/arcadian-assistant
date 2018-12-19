@@ -58,22 +58,38 @@
                 return Task.CompletedTask;
             }
 
+            var androidPushTask = this.SendApplicationPushNotification(message, PushDeviceTypes.Android);
+            var iosPushTask = this.SendApplicationPushNotification(message, PushDeviceTypes.Ios);
+
+            return Task.WhenAll(androidPushTask, iosPushTask);
+        }
+
+        private Task SendApplicationPushNotification(PushNotification message, string deviceType)
+        {
             var pushNotificationPayload = new PushNotificationPayload
             {
                 Content = message.Content,
                 Target = new PushNotificationTarget
                 {
-                    DevicePushTokens = message.DevicePushTokens.ToList()
+                    DevicePushTokens = message.DevicePushTokens
+                        .Where(x => x.DeviceType == deviceType)
+                        .Select(x => x.Token)
+                        .ToList()
                 }
             };
 
+            if (!pushNotificationPayload.Target.DevicePushTokens.Any())
+            {
+                return Task.CompletedTask;
+            }
+
             var jsonMessage = this.SerializeNotification(pushNotificationPayload);
-            this.logger.Debug($"Serialized notification message: {jsonMessage}");
+            this.logger.Debug($"Serialized {deviceType} notification message: {jsonMessage}");
 
-            var androidPushTask = this.SendPushNotificationRequest(this.pushSettings.AndroidPushUrl, jsonMessage);
-            var iosPushTask = this.SendPushNotificationRequest(this.pushSettings.IosPushUrl, jsonMessage);
-
-            return Task.WhenAll(androidPushTask, iosPushTask);
+            var pushUrl = deviceType == PushDeviceTypes.Android
+                ? this.pushSettings.AndroidPushUrl
+                : this.pushSettings.IosPushUrl;
+            return this.SendPushNotificationRequest(pushUrl, jsonMessage);
         }
 
         private async Task SendPushNotificationRequest(

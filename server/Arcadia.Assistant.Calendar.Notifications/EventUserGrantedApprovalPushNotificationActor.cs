@@ -124,7 +124,7 @@
             public CalendarEventApprovalsChangedWithAdditionalData(
                 CalendarEvent @event,
                 UserPreferences ownerUserPreferences,
-                IEnumerable<string> ownerPushTokens,
+                IEnumerable<DevicePushToken> ownerPushTokens,
                 EmployeeMetadata approver)
             {
                 this.Event = @event;
@@ -137,7 +137,7 @@
 
             public UserPreferences OwnerUserPreferences { get; }
 
-            public IEnumerable<string> OwnerPushTokens { get; }
+            public IEnumerable<DevicePushToken> OwnerPushTokens { get; }
 
             public EmployeeMetadata Approver { get; }
         }

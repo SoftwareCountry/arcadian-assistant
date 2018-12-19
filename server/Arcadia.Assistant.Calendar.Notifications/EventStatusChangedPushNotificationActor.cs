@@ -113,7 +113,7 @@
         {
             public CalendarEventChangedWithAdditionalData(CalendarEvent @event,
                 UserPreferences ownerUserPreferences,
-                IEnumerable<string> ownerPushTokens)
+                IEnumerable<DevicePushToken> ownerPushTokens)
             {
                 this.Event = @event;
                 this.OwnerUserPreferences = ownerUserPreferences;
@@ -124,7 +124,7 @@
 
             public UserPreferences OwnerUserPreferences { get; }
 
-            public IEnumerable<string> OwnerPushTokens { get; }
+            public IEnumerable<DevicePushToken> OwnerPushTokens { get; }
         }
     }
 }

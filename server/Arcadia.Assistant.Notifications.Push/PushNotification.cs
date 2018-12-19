@@ -6,7 +6,7 @@
     {
         public PushNotification(
             PushNotificationContent content,
-            IEnumerable<string> devicePushTokens)
+            IEnumerable<DevicePushToken> devicePushTokens)
         {
             this.Content = content;
             this.DevicePushTokens = devicePushTokens;
@@ -14,6 +14,6 @@
 
         public PushNotificationContent Content { get; }
 
-        public IEnumerable<string> DevicePushTokens { get; }
+        public IEnumerable<DevicePushToken> DevicePushTokens { get; }
     }
 }

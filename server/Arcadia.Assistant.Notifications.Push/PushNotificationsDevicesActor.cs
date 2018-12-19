@@ -11,8 +11,8 @@
 
     public class PushNotificationsDevicesActor : UntypedPersistentActor, ILogReceive
     {
-        private readonly Dictionary<string, HashSet<string>> deviceTokensByEmployeeId =
-            new Dictionary<string, HashSet<string>>();
+        private readonly Dictionary<string, Dictionary<string, DevicePushToken>> deviceTokensByEmployeeId =
+            new Dictionary<string, Dictionary<string, DevicePushToken>>();
 
         public override string PersistenceId => "push-notifications-devices";
 
@@ -55,23 +55,30 @@
         private void GetDeviceTokens(GetDevicePushTokens message)
         {
             this.deviceTokensByEmployeeId.TryGetValue(message.EmployeeId, out var deviceIds);
-            this.Sender.Tell(new GetDevicePushTokens.Success(deviceIds?.ToList() ?? Enumerable.Empty<string>()));
+            var devicePushTokens = deviceIds?.Values.ToList() ?? Enumerable.Empty<DevicePushToken>();
+            this.Sender.Tell(new GetDevicePushTokens.Success(devicePushTokens));
         }
 
         private void RegisterDevice(RegisterPushNotificationsDevice message)
         {
+            if (!PushDeviceTypes.IsKnownType(message.DeviceType))
+            {
+                return;
+            }
+
             var @event = new EmployeeDeviceRegistered(
                 DateTimeOffset.Now,
                 message.EmployeeId,
-                message.DeviceId);
+                message.DeviceId,
+                message.DeviceType);
 
             this.Persist(@event, this.OnEmployeeDeviceRegistered);
         }
 
         private void RemoveDevice(RemovePushNotificationsDevice message)
         {
-            if (!this.deviceTokensByEmployeeId.TryGetValue(message.EmployeeId, out var deviceTokens) || 
-                !deviceTokens.Contains(message.DeviceId))
+            if (!this.deviceTokensByEmployeeId.TryGetValue(message.EmployeeId, out var deviceTokens) ||
+                !deviceTokens.ContainsKey(message.DeviceId))
             {
                 return;
             }
@@ -89,13 +96,13 @@
         {
             if (!this.deviceTokensByEmployeeId.TryGetValue(@event.EmployeeId, out var deviceIds))
             {
-                deviceIds = new HashSet<string>();
+                deviceIds = new Dictionary<string, DevicePushToken>();
                 this.deviceTokensByEmployeeId.Add(@event.EmployeeId, deviceIds);
             }
 
-            if (!deviceIds.Contains(@event.DeviceId))
+            if (!deviceIds.ContainsKey(@event.DeviceId))
             {
-                deviceIds.Add(@event.DeviceId);
+                deviceIds[@event.DeviceId] = new DevicePushToken(@event.DeviceId, @event.DeviceType);
             }
         }
 
@@ -103,7 +110,10 @@
         {
             if (this.deviceTokensByEmployeeId.TryGetValue(@event.EmployeeId, out var deviceIds))
             {
-                deviceIds.Remove(@event.DeviceId);
+                if (deviceIds.ContainsKey(@event.DeviceId))
+                {
+                    deviceIds.Remove(@event.DeviceId);
+                }
             }
         }
     }

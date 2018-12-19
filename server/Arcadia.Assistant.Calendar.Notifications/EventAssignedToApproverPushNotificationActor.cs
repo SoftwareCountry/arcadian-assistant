@@ -124,7 +124,7 @@
                 string approverId,
                 EmployeeMetadata owner,
                 UserPreferences approverUserPreferences,
-                IEnumerable<string> approverPushTokens)
+                IEnumerable<DevicePushToken> approverPushTokens)
             {
                 this.Event = @event;
                 this.ApproverId = approverId;
@@ -141,7 +141,7 @@
 
             public UserPreferences ApproverUserPreferences { get; }
 
-            public IEnumerable<string> ApproverPushTokens { get; }
+            public IEnumerable<DevicePushToken> ApproverPushTokens { get; }
         }
     }
 }
