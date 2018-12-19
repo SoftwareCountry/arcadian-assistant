@@ -3,7 +3,7 @@ import { NavigationAction } from 'react-navigation';
 import { LoadDepartmentsFinished, LoadEmployeesFinished } from '../organization/organization.action';
 import { PeopleActions } from './people.action';
 import { SearchActions } from '../search/search.action';
-import { SearchType } from '../../navigation/search-view';
+import { SearchType } from '../../navigation/search/search-view';
 import { LoadUserEmployeeFinished } from '../user/user.action';
 import { DepartmentIdToNode, DepartmentNode } from './people.model';
 import { appendRoot } from './append-root';

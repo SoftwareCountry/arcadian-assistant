@@ -18,6 +18,7 @@ import { LoadingView } from '../navigation/loading';
 import { Action, Dispatch } from 'redux';
 import { openEmployeeDetails } from '../navigation/navigation.actions';
 import { Nullable } from 'types';
+import { NoResultView } from '../navigation/search/no-result-view';
 
 //============================================================================
 interface CompanyDepartmentsStateProps {
@@ -57,6 +58,13 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
     //----------------------------------------------------------------------------
     public render() {
 
+        return this.props.headDepartment
+            ? this.renderDepartments()
+            : <LoadingView/>;
+    }
+
+    private renderDepartments() {
+
         const {
             employeesById,
             employeeIdsByDepartment,
@@ -64,20 +72,19 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
             selection
         } = this.buildData();
 
-        return this.props.headDepartment
-            ? (
-                <ScrollView overScrollMode={'auto'}>
-                    <CompanyDepartmentsLevel
-                        departmentId={rootId}
-                        departmentIdToChildren={departmentIdToChildren}
-                        employeesById={employeesById}
-                        employeeIdsByDepartment={employeeIdsByDepartment}
-                        selection={selection}
-                        onSelectedNode={this.props.selectCompanyDepartment}
-                        onPressEmployee={this.props.onPressEmployee}
-                        loadEmployeesForDepartment={this.props.loadEmployeesForDepartment}/>
-                </ScrollView>
-            ) : <LoadingView/>;
+        return employeesById && !employeesById.isEmpty() ? (
+            <ScrollView overScrollMode={'auto'}>
+                <CompanyDepartmentsLevel
+                    departmentId={rootId}
+                    departmentIdToChildren={departmentIdToChildren}
+                    employeesById={employeesById}
+                    employeeIdsByDepartment={employeeIdsByDepartment}
+                    selection={selection}
+                    onSelectedNode={this.props.selectCompanyDepartment}
+                    onPressEmployee={this.props.onPressEmployee}
+                    loadEmployeesForDepartment={this.props.loadEmployeesForDepartment}/>
+            </ScrollView>
+        ) : <NoResultView/>;
     }
 
     //----------------------------------------------------------------------------
@@ -369,4 +376,5 @@ const dispatchToProps = (dispatch: Dispatch<Action>) => ({
     }
 });
 
+//----------------------------------------------------------------------------
 export const CompanyDepartments = connect(stateToProps, dispatchToProps)(CompanyDepartmentsImpl);

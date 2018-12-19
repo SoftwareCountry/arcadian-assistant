@@ -1,11 +1,15 @@
+/******************************************************************************
+ * Copyright (c) Arcadia, Inc. All rights reserved.
+ ******************************************************************************/
+
 import React, { Component } from 'react';
 import { Keyboard, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import { AppState } from '../reducers/app.reducer';
+import { AppState } from '../../reducers/app.reducer';
 import { connect } from 'react-redux';
-import { activeFilter, endSearch, startSearch } from '../reducers/search/search.action';
-import { ApplicationIcon } from '../override/application-icon';
+import { activeFilter, endSearch, startSearch } from '../../reducers/search/search.action';
+import { ApplicationIcon } from '../../override/application-icon';
 import { searchViewStyles as styles } from './search-view-styles';
-import { StyledText } from '../override/styled-text';
+import { StyledText } from '../../override/styled-text';
 import { Action, Dispatch } from 'redux';
 
 //============================================================================
@@ -20,6 +24,7 @@ interface SearchViewStateProps {
     type: SearchType;
 }
 
+//----------------------------------------------------------------------------
 const mapStateToPropsPeople = (state: AppState): SearchViewStateProps => ({
     filter: state.people ? state.people.filter : '',
     type: SearchType.People,
@@ -32,6 +37,7 @@ interface SearchViewDispatchProps {
     activeFilter: (type: SearchType, isActive: boolean) => void;
 }
 
+//----------------------------------------------------------------------------
 const mapDispatchToProps = (dispatch: Dispatch<Action>): SearchViewDispatchProps => ({
     setFilter: (filter, type) => dispatch(startSearch(filter, type)),
     clearFilter: (type) => dispatch(endSearch(type)),
@@ -40,6 +46,7 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>): SearchViewDispatchProps
 
 //============================================================================
 class SearchViewImpl extends Component<SearchViewDispatchProps & SearchViewStateProps> {
+
     //----------------------------------------------------------------------------
     public render() {
         const textInputStyles = StyleSheet.flatten([
@@ -87,4 +94,5 @@ class SearchViewImpl extends Component<SearchViewDispatchProps & SearchViewState
     };
 }
 
+//----------------------------------------------------------------------------
 export const SearchViewPeople = connect(mapStateToPropsPeople, mapDispatchToProps)(SearchViewImpl);
