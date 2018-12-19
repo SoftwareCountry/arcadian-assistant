@@ -120,17 +120,18 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
 
     //----------------------------------------------------------------------------
     private filterEmployees(): Nullable<EmployeeMap> {
-        if (!this.props.employeesById) {
+        const { employeesById, filter } = this.props;
+
+        if (!employeesById) {
             return null;
         }
 
-        if (!this.props.filter) {
-            return this.props.employeesById;
+        if (!filter) {
+            return employeesById;
         }
 
-        return this.props.employeesById
-            .filter(employee => employee.name.toLowerCase().includes(this.props.filter.toLowerCase()))
-            .toMap();
+        return employeesById.filter(employee => employee.getSurname().toLowerCase().startsWith(this.props.filter.toLowerCase()) ||
+            employee.getName().toLowerCase().startsWith(this.props.filter.toLowerCase())).toMap();
     }
 
     //----------------------------------------------------------------------------
