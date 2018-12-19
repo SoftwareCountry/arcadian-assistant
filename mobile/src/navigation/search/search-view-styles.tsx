@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import Style from '../../layout/style';
 
 export const searchViewStyles = StyleSheet.create({
     container: {
@@ -37,4 +38,19 @@ export const searchViewStyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     }
+});
+
+export const noResult = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    text: {
+        fontSize: 20,
+        color: Style.color.base,
+        marginTop: 20,
+        fontFamily: 'CenturyGothic',
+        textAlign: 'center',
+    },
 });

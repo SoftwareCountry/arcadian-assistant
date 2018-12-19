@@ -7,6 +7,12 @@ interface Configuration {
 }
 
 function createConfiguration(): Configuration {
+
+    let google = process.env['AA_GOOGLE_SERVICES'] || null;
+    if (google) {
+        google = google.replace('\\', '');
+    }
+
     return {
         env: {
             appCenterSecretId: process.env['AA_API_APPCENTER'] || 'WRITE_ME',
@@ -15,7 +21,7 @@ function createConfiguration(): Configuration {
             oauthClientId: process.env['AA_OAUTH_CLIENT_ID'] || 'a2ccb221-60e2-47b8-b28c-bf88a59f7f4a',
             oauthTenant: process.env['AA_OAUTH_TENANT'] || 'fa4e9c1f-6222-443d-a083-28f80c1ffefc',
         },
-        google: process.env['AA_GOOGLE_SERVICES'] || null,
+        google,
     };
 }
 

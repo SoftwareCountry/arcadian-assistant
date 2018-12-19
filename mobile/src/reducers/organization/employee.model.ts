@@ -98,4 +98,17 @@ export class Employee {
         hasher.combine(this.roomNumber);
         return hasher.value;
     }
+
+    public getSurname(): string {
+        const names = this.name.split(' ');
+
+        return names.length > 0 ? names[0] : this.name;
+    }
+
+    public getName(): string {
+        const names = this.name.split(' ');
+
+        return names.length > 1 ? names[1] : this.name;
+    }
+
 }
