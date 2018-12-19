@@ -2,7 +2,6 @@ import { Action, applyMiddleware, combineReducers, createStore } from 'redux';
 import { helpdeskEpics, helpdeskReducer, HelpdeskState } from './helpdesk/helpdesk.reducer';
 import { combineEpics, createEpicMiddleware } from 'redux-observable';
 //import { createLogger } from 'redux-logger';
-import { errorsEpics } from './errors/errors.reducer';
 
 import { organizationEpics, organizationReducer, OrganizationState } from './organization/organization.reducer';
 import { userInfoReducer, UserInfoState } from './user/user-info.reducer';
@@ -35,7 +34,6 @@ export interface AppState {
 const rootEpic = combineEpics(
     helpdeskEpics as any,
     organizationEpics as any,
-    errorsEpics as any,
     userEpics as any,
     feedsEpics as any,
     calendarEpics as any,
