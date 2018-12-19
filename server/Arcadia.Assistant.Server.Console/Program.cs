@@ -2,7 +2,6 @@
 {
     using System;
     using System.IO;
-    using System.Linq;
     using System.Threading;
 
     using Arcadia.Assistant.Configuration;
@@ -27,14 +26,7 @@
                 .AddUserSecrets<Program>()
                 .Build();
 
-            var applicationPushUrls = config
-                .GetSection("Messaging:Push:ApplicationPushUrls")
-                .GetChildren()
-                .Select(v => v.Value)
-                .ToList();
-
             var settings = config.Get<AppSettings>();
-            settings.Messaging.Push.ApplicationPushUrls = applicationPushUrls;
 
             var factory = new AppInsightTelemetryFactory(settings);
             using (var telemetry = factory.Create())

@@ -94,24 +94,19 @@
 
         private PushNotification CreatePushNotification(CalendarEventChangedWithAdditionalData message)
         {
-            return new PushNotification
+            var content = new PushNotificationContent
             {
-                Content = new PushNotificationContent
+                Title = this.pushNotificationConfig.Title,
+                Body = string.Format(this.pushNotificationConfig.Body, message.Event.Type, message.Event.Status),
+                CustomData = new
                 {
-                    Title = this.pushNotificationConfig.Title,
-                    Body = string.Format(this.pushNotificationConfig.Body, message.Event.Type, message.Event.Status),
-                    CustomData = new
-                    {
-                        message.Event.EventId,
-                        message.Event.EmployeeId,
-                        Type = CalendarEventPushNotificationTypes.EventStatusChanged
-                    }
-                },
-                Target = new PushNotificationTarget
-                {
-                    DevicePushTokens = message.OwnerPushTokens.ToList()
+                    message.Event.EventId,
+                    message.Event.EmployeeId,
+                    Type = CalendarEventPushNotificationTypes.EventStatusChanged
                 }
             };
+
+            return new PushNotification(content, message.OwnerPushTokens.ToList());
         }
 
         private class CalendarEventChangedWithAdditionalData
