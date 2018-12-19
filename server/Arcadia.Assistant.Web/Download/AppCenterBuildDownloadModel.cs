@@ -6,6 +6,6 @@
     {
         public string Uri { get; set; }
 
-        public DateTime BuildDate { get; set; }
+        public DateTimeOffset BuildDate { get; set; }
     }
 }

@@ -6,7 +6,7 @@
     {
         public int Id { get; set; }
 
-        public DateTime FinishTime { get; set; }
+        public DateTimeOffset FinishTime { get; set; }
 
         public string Status { get; set; }
 
