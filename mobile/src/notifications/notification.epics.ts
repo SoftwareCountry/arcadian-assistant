@@ -13,6 +13,7 @@ import { AppState, DependenciesContainer } from '../reducers/app.reducer';
 import AppCenter from 'appcenter';
 import { installIdReceived, NotificationAction, NotificationActionType } from './notification.actions';
 import { handleHttpErrors } from '../reducers/errors/errors.epics';
+import { Platform } from 'react-native';
 
 //----------------------------------------------------------------------------
 const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>, state$: StateObservable<AppState>) =>
@@ -54,8 +55,15 @@ const getInstallId$ = (action$: ActionsObservable<UserLoggedIn>) => action$.pipe
 const notificationsRegister$ = (action$: ActionsObservable<NotificationAction>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
     ofType(NotificationActionType.installIdReceived),
     switchMap(action => {
+        const deviceType = Platform.select({
+            ios: 'Ios',
+            android: 'Android',
+        });
         return deps.apiClient.post(`/push/device`,
-                                   { devicePushToken: action.installId, },
+                                   {
+                                       devicePushToken: action.installId,
+                                       deviceType,
+                                   },
                                    { 'Content-Type': 'application/json' }).pipe(
             handleHttpErrors(true, 'Push Notifications will not be received. Please contact administrator'),
         );

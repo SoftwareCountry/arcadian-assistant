@@ -24,7 +24,6 @@ interface CompanyDepartmentsLevelNodesProps {
     onPrevDepartment: (departmentId: string) => void;
     onNextDepartment: (departmentId: string) => void;
     onPressChief: (employee: Employee) => void;
-    loadEmployeesForDepartment: (departmentId: string) => void;
 }
 
 interface CompanyDepartmentsLevelNodesState {
@@ -88,20 +87,17 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
             || this.props.selectedDepartmentId !== nextProps.selectedDepartmentId
             || this.props.height !== nextProps.height
             || this.props.width !== nextProps.width
-            || this.props.onPressChief !== nextProps.onPressChief
-            || this.props.loadEmployeesForDepartment !== nextProps.loadEmployeesForDepartment;
+            || this.props.onPressChief !== nextProps.onPressChief;
     }
 
     public componentDidMount() {
         this.scrollToSelectedDepartment();
-        this.loadEmployeesForDepartment();
     }
 
     public componentDidUpdate(prevProps: CompanyDepartmentsLevelNodesProps) {
         if (this.props.selectedDepartmentId !== prevProps.selectedDepartmentId || !this.areNodesEqual(this.props.nodes, prevProps.nodes)) {
             this.state.xCoordinate.flattenOffset();
             this.scrollToSelectedDepartment();
-            this.loadEmployeesForDepartment();
         }
     }
 
@@ -183,19 +179,6 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
         }
 
         return true;
-    }
-
-    private loadEmployeesForDepartment() {
-        let selectedNode = this.props.nodes.find(node => node.departmentId === this.props.selectedDepartmentId);
-
-        if (!selectedNode) {
-            selectedNode = this.props.nodes[0];
-        }
-
-        this.props.loadEmployeesForDepartment(
-            selectedNode.staffDepartmentId
-                ? selectedNode.staffDepartmentId
-                : selectedNode.departmentId);
     }
 
     private scrollToSelectedDepartment() {

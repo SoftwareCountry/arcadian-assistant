@@ -68,7 +68,8 @@
     "ios",
     "build",
     "node_modules",
-    "typings"
+    "typings",
+    "config-util"
   ],
   "compileOnSave": false
 }

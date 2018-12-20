@@ -4,6 +4,7 @@
 
     using Arcadia.Assistant.Notifications.Push;
     using Arcadia.Assistant.Server.Interop;
+    using Arcadia.Assistant.Web.Models;
 
     public class PushNotificationsService : IPushNotificationsService
     {
@@ -17,9 +18,17 @@
                 actorPathsBuilder.Get(WellKnownActorPaths.PushNotificationsDevices));
         }
 
-        public void RegisterDevice(string employeeId, string deviceId)
+        public void RegisterDevice(
+            string employeeId,
+            string deviceId,
+            PushNotificationDeviceModel.DeviceTypeEnum deviceType)
         {
-            var message = new RegisterPushNotificationsDevice(employeeId, deviceId);
+            var message = new RegisterPushNotificationsDevice(
+                employeeId,
+                deviceId,
+                deviceType == PushNotificationDeviceModel.DeviceTypeEnum.Android
+                    ? PushDeviceTypes.Android
+                    : PushDeviceTypes.Ios);
             this.pushNotificationsDevicesActor.Tell(message);
         }
 

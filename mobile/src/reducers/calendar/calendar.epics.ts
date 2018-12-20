@@ -16,14 +16,13 @@ import {
     SelectCalendarDay,
     selectIntervalsBySingleDaySelection
 } from './calendar.action';
-import { loadFailedError } from '../errors/errors.action';
 import { CalendarEvent } from './calendar-event.model';
 import { closeEventDialog } from './event-dialog/event-dialog.action';
 import { AppState } from 'react-native';
 import { DependenciesContainer } from '../app.reducer';
 import { CalendarEvents } from './calendar-events.model';
 import { handleHttpErrors } from '../errors/errors.epics';
-import { catchError, flatMap, groupBy, map, mergeAll, mergeMap, switchMap } from 'rxjs/operators';
+import { flatMap, groupBy, map, mergeAll, mergeMap, switchMap } from 'rxjs/operators';
 import { from, Observable, of } from 'rxjs';
 import { loadPendingRequests } from './pending-requests/pending-requests.action';
 import { Action } from 'redux';
@@ -33,7 +32,6 @@ import { loadApprovals } from './approval.action';
 export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('LOAD-USER-EMPLOYEE-FINISHED').pipe(
         map(action => loadCalendarEvents(action.employee.employeeId)),
-        catchError((e: Error) => of(loadFailedError(e.message))),
     );
 
 //----------------------------------------------------------------------------
@@ -99,9 +97,11 @@ export const calendarEventSetNewStatusEpic$ = (action$: ActionsObservable<Calend
                 `/employees/${action.employeeId}/events/${action.calendarEvent.calendarEventId}`,
                 requestBody,
                 { 'Content-Type': 'application/json' }
-            ).pipe(getEventsAndPendingRequests(action.employeeId));
+            ).pipe(
+                getEventsAndPendingRequests(action.employeeId),
+                handleHttpErrors(),
+            );
         }),
-        catchError((e: Error) => of(loadFailedError(e.message))),
     );
 
 //----------------------------------------------------------------------------

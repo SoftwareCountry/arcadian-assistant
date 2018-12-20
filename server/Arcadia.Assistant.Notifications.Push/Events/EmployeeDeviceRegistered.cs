@@ -4,17 +4,24 @@
 
     public class EmployeeDeviceRegistered
     {
-        public EmployeeDeviceRegistered(DateTimeOffset timestamp, string employeeId, string deviceId)
+        public EmployeeDeviceRegistered(
+            DateTimeOffset timestamp,
+            string employeeId,
+            string deviceToken,
+            string deviceType)
         {
             this.Timestamp = timestamp;
             this.EmployeeId = employeeId;
-            this.DeviceId = deviceId;
+            this.DeviceToken = deviceToken;
+            this.DeviceType = deviceType;
         }
 
         public DateTimeOffset Timestamp { get; }
 
         public string EmployeeId { get; }
 
-        public string DeviceId { get; }
+        public string DeviceToken { get; }
+
+        public string DeviceType { get; }
     }
 }

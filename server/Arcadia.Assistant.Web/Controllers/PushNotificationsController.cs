@@ -8,6 +8,7 @@
     using Microsoft.AspNetCore.Mvc;
 
     using Arcadia.Assistant.Web.Authorization;
+    using Arcadia.Assistant.Web.Models;
     using Arcadia.Assistant.Web.PushNotifications;
     using Arcadia.Assistant.Web.Users;
 
@@ -28,11 +29,20 @@
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
-        public async Task<IActionResult> RegisterDevice([FromBody]string devicePushToken, CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> RegisterDevice(PushNotificationDeviceModel deviceModel, CancellationToken cancellationToken)
         {
+            if (!this.ModelState.IsValid)
+            {
+                return this.BadRequest(this.ModelState);
+            }
+
             var employee = await this.userEmployeeSearch.FindOrDefaultAsync(this.User, cancellationToken);
 
-            this.pushNotificationsService.RegisterDevice(employee.Metadata.EmployeeId, devicePushToken);
+            this.pushNotificationsService.RegisterDevice(
+                employee.Metadata.EmployeeId,
+                deviceModel.DevicePushToken,
+                deviceModel.DeviceType);
 
             return this.Accepted();
         }

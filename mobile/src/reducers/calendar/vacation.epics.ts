@@ -2,12 +2,13 @@ import { AppState, DependenciesContainer } from '../app.reducer';
 import { CancelVacation, ConfirmClaimVacation, ConfirmVacationChange } from './vacation.action';
 import { ActionsObservable, StateObservable } from 'redux-observable';
 import { CalendarEvent, CalendarEventStatus, CalendarEventType, DatesInterval } from './calendar-event.model';
-import { loadFailedError } from '../errors/errors.action';
 import { getEventsAndPendingRequests } from './calendar.epics';
-import { catchError, flatMap } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { flatMap } from 'rxjs/operators';
 import { openEventDialog, stopEventDialogProgress } from './event-dialog/event-dialog.action';
 import { EventDialogType } from './event-dialog/event-dialog-type.model';
+import { handleHttpErrorsWithDefaultValue } from '../errors/errors.epics';
+import { of } from 'rxjs';
+import { Action } from 'redux';
 
 export const vacationSavedEpic$ = (action$: ActionsObservable<ConfirmClaimVacation>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('CONFIRM-VACATION').pipe(
@@ -30,9 +31,9 @@ export const vacationSavedEpic$ = (action$: ActionsObservable<ConfirmClaimVacati
                 { 'Content-Type': 'application/json' }
             ).pipe(
                 getEventsAndPendingRequests(x.employeeId, [stopEventDialogProgress(), openEventDialog(EventDialogType.VacationRequested)]),
+                handleHttpErrorsWithDefaultValue<Action>(of(stopEventDialogProgress())),
             );
         }),
-        catchError((e: Error) => of(loadFailedError(e.message))),
     );
 
 export const vacationCanceledEpic$ = (action$: ActionsObservable<CancelVacation>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
@@ -46,9 +47,11 @@ export const vacationCanceledEpic$ = (action$: ActionsObservable<CancelVacation>
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
                 requestBody,
                 { 'Content-Type': 'application/json' }
-            ).pipe(getEventsAndPendingRequests(x.employeeId));
+            ).pipe(
+                getEventsAndPendingRequests(x.employeeId),
+                handleHttpErrorsWithDefaultValue<Action>(of(stopEventDialogProgress())),
+            );
         }),
-        catchError((e: Error) => of(loadFailedError(e.message))),
     );
 
 export const vacationChangedEpic$ = (action$: ActionsObservable<ConfirmVacationChange>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
@@ -64,7 +67,9 @@ export const vacationChangedEpic$ = (action$: ActionsObservable<ConfirmVacationC
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
                 requestBody,
                 { 'Content-Type': 'application/json' }
-            ).pipe(getEventsAndPendingRequests(x.employeeId));
+            ).pipe(
+                getEventsAndPendingRequests(x.employeeId),
+                handleHttpErrorsWithDefaultValue<Action>(of(stopEventDialogProgress())),
+            );
         }),
-        catchError((e: Error) => of(loadFailedError(e.message))),
     );

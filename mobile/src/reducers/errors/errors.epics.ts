@@ -1,10 +1,12 @@
-import { ActionsObservable } from 'redux-observable';
-import { LoadFailedError } from './errors.action';
+/******************************************************************************
+ * Copyright (c) Arcadia, Inc. All rights reserved.
+ ******************************************************************************/
+
 import { Alert } from 'react-native';
 import { EMPTY, Observable, pipe, UnaryFunction } from 'rxjs';
-import { refresh } from '../refresh/refresh.action';
-import { catchError, exhaustMap, flatMap, map, retryWhen } from 'rxjs/operators';
+import { catchError, exhaustMap, retryWhen } from 'rxjs/operators';
 
+//============================================================================
 function showAlert(errorMessage: string, okButtonTitle: string, rejectButtonTitle: string, okButton: () => void, rejectButton: () => void) {
     Alert.alert(
         'Error',
@@ -22,6 +24,7 @@ function showAlert(errorMessage: string, okButtonTitle: string, rejectButtonTitl
         ]);
 }
 
+//============================================================================
 function retryWhenErrorOccurred<T>(isForceLogout: boolean = false, customErrorMessage: string | undefined = undefined): UnaryFunction<Observable<T>, Observable<T>> {
     let okButtonTitle = 'Try again';
     let rejectButtonTitle = isForceLogout ? 'Logout' : 'Cancel';
@@ -48,13 +51,16 @@ function retryWhenErrorOccurred<T>(isForceLogout: boolean = false, customErrorMe
     });
 }
 
-export function handleHttpErrors<T>(swallowErrors: boolean = true, customErrorMessage: string | undefined = undefined): UnaryFunction<Observable<T>, Observable<T>> {
+//============================================================================
+export function handleHttpErrors<T>(swallowErrors: boolean = true,
+                                    customErrorMessage: string | undefined = undefined,
+                                    defaultValue: Observable<T> = EMPTY): UnaryFunction<Observable<T>, Observable<T>> {
     if (swallowErrors) {
         return pipe(
             retryWhenErrorOccurred(false, customErrorMessage),
             catchError(e => {
                 console.warn(e);
-                return EMPTY;
+                return defaultValue;
             })
         );
     } else {
@@ -64,14 +70,7 @@ export function handleHttpErrors<T>(swallowErrors: boolean = true, customErrorMe
     }
 }
 
-export const loadFailedErrorEpic$ = (action$: ActionsObservable<LoadFailedError>) =>
-    action$.ofType('LOAD-FAILED-ERROR').pipe(
-        map(({ errorMessage }) => {
-            return new Promise(resolve => {
-                Alert.alert(
-                    'Error',
-                    `error occurred: ${errorMessage}`,
-                    [{ text: 'Try again', onPress: () => resolve(refresh()) }]);
-            });
-        }),
-        flatMap(x => x));
+//============================================================================
+export function handleHttpErrorsWithDefaultValue<T>(defaultValue: Observable<T>): UnaryFunction<Observable<T>, Observable<T>> {
+    return handleHttpErrors(true, undefined, defaultValue);
+}
