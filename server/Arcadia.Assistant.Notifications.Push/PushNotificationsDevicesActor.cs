@@ -11,8 +11,10 @@
 
     public class PushNotificationsDevicesActor : UntypedPersistentActor, ILogReceive
     {
-        private readonly Dictionary<string, Dictionary<string, DevicePushToken>> deviceTokensByEmployeeId =
-            new Dictionary<string, Dictionary<string, DevicePushToken>>();
+        private readonly Dictionary<string, HashSet<string>> deviceTokensByEmployeeId = new Dictionary<string, HashSet<string>>();
+
+        // Multiple device types for one token to avoid very small chance of collisions between push tokens from different devices
+        private readonly Dictionary<string, HashSet<string>> deviceTypesByToken = new Dictionary<string, HashSet<string>>();
 
         public override string PersistenceId => "push-notifications-devices";
 
@@ -54,9 +56,15 @@
 
         private void GetDeviceTokens(GetDevicePushTokens message)
         {
-            this.deviceTokensByEmployeeId.TryGetValue(message.EmployeeId, out var deviceIds);
-            var devicePushTokens = deviceIds?.Values.ToList() ?? Enumerable.Empty<DevicePushToken>();
-            this.Sender.Tell(new GetDevicePushTokens.Success(devicePushTokens));
+            this.deviceTokensByEmployeeId.TryGetValue(message.EmployeeId, out var deviceTokens);
+
+            var devicePushTokens = deviceTokens?.SelectMany(token =>
+            {
+                var deviceTypes = this.deviceTypesByToken[token];
+                return deviceTypes.Select(deviceType => new DevicePushToken(token, deviceType));
+            });
+
+            this.Sender.Tell(new GetDevicePushTokens.Success(devicePushTokens ?? Enumerable.Empty<DevicePushToken>()));
         }
 
         private void RegisterDevice(RegisterPushNotificationsDevice message)
@@ -77,8 +85,7 @@
 
         private void RemoveDevice(RemovePushNotificationsDevice message)
         {
-            if (!this.deviceTokensByEmployeeId.TryGetValue(message.EmployeeId, out var deviceTokens) ||
-                !deviceTokens.ContainsKey(message.DeviceId))
+            if (!this.deviceTokensByEmployeeId.ContainsKey(message.EmployeeId))
             {
                 return;
             }
@@ -94,27 +101,27 @@
 
         private void OnEmployeeDeviceRegistered(EmployeeDeviceRegistered @event)
         {
-            if (!this.deviceTokensByEmployeeId.TryGetValue(@event.EmployeeId, out var deviceIds))
+            if (!this.deviceTokensByEmployeeId.ContainsKey(@event.EmployeeId))
             {
-                deviceIds = new Dictionary<string, DevicePushToken>();
-                this.deviceTokensByEmployeeId.Add(@event.EmployeeId, deviceIds);
+                this.deviceTokensByEmployeeId.Add(@event.EmployeeId, new HashSet<string>());
+                this.deviceTypesByToken.Add(@event.DeviceToken, new HashSet<string>());
             }
 
-            if (!deviceIds.ContainsKey(@event.DeviceId))
-            {
-                deviceIds[@event.DeviceId] = new DevicePushToken(@event.DeviceId, @event.DeviceType);
-            }
+            this.deviceTokensByEmployeeId[@event.DeviceToken].Add(@event.DeviceToken);
+            this.deviceTypesByToken[@event.DeviceToken].Add(@event.DeviceType);
         }
 
         private void OnEmployeeDeviceRemoved(EmployeeDeviceRemoved @event)
         {
-            if (this.deviceTokensByEmployeeId.TryGetValue(@event.EmployeeId, out var deviceIds))
+            if (!this.deviceTokensByEmployeeId.ContainsKey(@event.EmployeeId))
             {
-                if (deviceIds.ContainsKey(@event.DeviceId))
-                {
-                    deviceIds.Remove(@event.DeviceId);
-                }
+                return;
             }
+
+            this.deviceTokensByEmployeeId[@event.EmployeeId].Remove(@event.DeviceToken);
+
+            // We don't know device type of specified token here, so we have to remove all device types for this token
+            this.deviceTypesByToken[@event.DeviceToken].Clear();
         }
     }
 }
