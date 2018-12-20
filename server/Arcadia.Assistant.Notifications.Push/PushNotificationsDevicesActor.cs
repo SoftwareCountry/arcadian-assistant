@@ -12,9 +12,7 @@
     public class PushNotificationsDevicesActor : UntypedPersistentActor, ILogReceive
     {
         private readonly Dictionary<string, HashSet<string>> deviceTokensByEmployeeId = new Dictionary<string, HashSet<string>>();
-
-        // Multiple device types for one token to avoid very small chance of collisions between push tokens from different devices
-        private readonly Dictionary<string, HashSet<string>> deviceTypesByToken = new Dictionary<string, HashSet<string>>();
+        private readonly Dictionary<string, string> deviceTypeByToken = new Dictionary<string, string>();
 
         public override string PersistenceId => "push-notifications-devices";
 
@@ -58,11 +56,7 @@
         {
             this.deviceTokensByEmployeeId.TryGetValue(message.EmployeeId, out var deviceTokens);
 
-            var devicePushTokens = deviceTokens?.SelectMany(token =>
-            {
-                var deviceTypes = this.deviceTypesByToken[token];
-                return deviceTypes.Select(deviceType => new DevicePushToken(token, deviceType));
-            });
+            var devicePushTokens = deviceTokens?.Select(token => new DevicePushToken(token, this.deviceTypeByToken[token]));
 
             this.Sender.Tell(new GetDevicePushTokens.Success(devicePushTokens ?? Enumerable.Empty<DevicePushToken>()));
         }
@@ -101,27 +95,25 @@
 
         private void OnEmployeeDeviceRegistered(EmployeeDeviceRegistered @event)
         {
-            if (!this.deviceTokensByEmployeeId.ContainsKey(@event.EmployeeId))
+            if (!this.deviceTokensByEmployeeId.TryGetValue(@event.EmployeeId, out var deviceTokens))
             {
-                this.deviceTokensByEmployeeId.Add(@event.EmployeeId, new HashSet<string>());
-                this.deviceTypesByToken.Add(@event.DeviceToken, new HashSet<string>());
+                deviceTokens = new HashSet<string>();
+                this.deviceTokensByEmployeeId.Add(@event.EmployeeId, deviceTokens);
             }
 
-            this.deviceTokensByEmployeeId[@event.DeviceToken].Add(@event.DeviceToken);
-            this.deviceTypesByToken[@event.DeviceToken].Add(@event.DeviceType);
+            deviceTokens.Add(@event.DeviceToken);
+            this.deviceTypeByToken[@event.DeviceToken] = @event.DeviceType;
         }
 
         private void OnEmployeeDeviceRemoved(EmployeeDeviceRemoved @event)
         {
-            if (!this.deviceTokensByEmployeeId.ContainsKey(@event.EmployeeId))
+            if (!this.deviceTokensByEmployeeId.TryGetValue(@event.EmployeeId, out var deviceTokens))
             {
                 return;
             }
 
-            this.deviceTokensByEmployeeId[@event.EmployeeId].Remove(@event.DeviceToken);
-
-            // We don't know device type of specified token here, so we have to remove all device types for this token
-            this.deviceTypesByToken[@event.DeviceToken].Clear();
+            deviceTokens.Remove(@event.DeviceToken);
+            this.deviceTypeByToken.Remove(@event.DeviceToken);
         }
     }
 }
