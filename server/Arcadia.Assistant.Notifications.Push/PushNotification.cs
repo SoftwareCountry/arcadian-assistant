@@ -1,14 +1,19 @@
 ﻿namespace Arcadia.Assistant.Notifications.Push
 {
-    using System.Runtime.Serialization;
+    using System.Collections.Generic;
 
-    [DataContract]
     public class PushNotification
     {
-        [DataMember(Name = "notification_content")]
-        public PushNotificationContent Content { get; set; }
+        public PushNotification(
+            PushNotificationContent content,
+            IEnumerable<DevicePushToken> devicePushTokens)
+        {
+            this.Content = content;
+            this.DevicePushTokens = devicePushTokens;
+        }
 
-        [DataMember(Name = "notification_target")]
-        public PushNotificationTarget Target { get; set; }
+        public PushNotificationContent Content { get; }
+
+        public IEnumerable<DevicePushToken> DevicePushTokens { get; }
     }
 }

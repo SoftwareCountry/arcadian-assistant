@@ -104,24 +104,19 @@
 
         private PushNotification CreatePushNotification(CalendarEventApprovalsChangedWithAdditionalData message)
         {
-            return new PushNotification
+            var content = new PushNotificationContent
             {
-                Content = new PushNotificationContent
+                Title = this.pushNotificationConfig.Title,
+                Body = string.Format(this.pushNotificationConfig.Body, message.Event.Type, message.Approver.Name),
+                CustomData = new
                 {
-                    Title = this.pushNotificationConfig.Title,
-                    Body = string.Format(this.pushNotificationConfig.Body, message.Event.Type, message.Approver.Name),
-                    CustomData = new
-                    {
-                        message.Event.EventId,
-                        message.Event.EmployeeId,
-                        Type = CalendarEventPushNotificationTypes.EventUserGrantedApproval
-                    }
-                },
-                Target = new PushNotificationTarget
-                {
-                    DevicePushTokens = message.OwnerPushTokens.ToList()
+                    message.Event.EventId,
+                    message.Event.EmployeeId,
+                    Type = CalendarEventPushNotificationTypes.EventUserGrantedApproval
                 }
             };
+
+            return new PushNotification(content, message.OwnerPushTokens.ToList());
         }
 
         private class CalendarEventApprovalsChangedWithAdditionalData
@@ -129,7 +124,7 @@
             public CalendarEventApprovalsChangedWithAdditionalData(
                 CalendarEvent @event,
                 UserPreferences ownerUserPreferences,
-                IEnumerable<string> ownerPushTokens,
+                IEnumerable<DevicePushToken> ownerPushTokens,
                 EmployeeMetadata approver)
             {
                 this.Event = @event;
@@ -142,7 +137,7 @@
 
             public UserPreferences OwnerUserPreferences { get; }
 
-            public IEnumerable<string> OwnerPushTokens { get; }
+            public IEnumerable<DevicePushToken> OwnerPushTokens { get; }
 
             public EmployeeMetadata Approver { get; }
         }

@@ -4,17 +4,17 @@
 
     public class EmployeeDeviceRemoved
     {
-        public EmployeeDeviceRemoved(DateTimeOffset timestamp, string employeeId, string deviceId)
+        public EmployeeDeviceRemoved(DateTimeOffset timestamp, string employeeId, string deviceToken)
         {
             this.Timestamp = timestamp;
             this.EmployeeId = employeeId;
-            this.DeviceId = deviceId;
+            this.DeviceToken = deviceToken;
         }
 
         public DateTimeOffset Timestamp { get;  }
 
         public string EmployeeId { get; }
 
-        public string DeviceId { get;  }
+        public string DeviceToken { get;  }
     }
 }
