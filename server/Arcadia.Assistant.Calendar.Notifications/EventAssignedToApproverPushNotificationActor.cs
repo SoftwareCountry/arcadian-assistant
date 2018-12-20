@@ -102,24 +102,19 @@
 
         private PushNotification CreatePushNotification(CalendarEventAssignedWithAdditionalData message)
         {
-            return new PushNotification
+            var content = new PushNotificationContent
             {
-                Content = new PushNotificationContent
+                Title = this.pushNotificationConfig.Title,
+                Body = string.Format(this.pushNotificationConfig.Body, message.Event.Type, message.Owner.Name),
+                CustomData = new
                 {
-                    Title = this.pushNotificationConfig.Title,
-                    Body = string.Format(this.pushNotificationConfig.Body, message.Event.Type, message.Owner.Name),
-                    CustomData = new
-                    {
-                        message.Event.EventId,
-                        message.ApproverId,
-                        Type = CalendarEventPushNotificationTypes.EventAssignedToApprover
-                    }
-                },
-                Target = new PushNotificationTarget
-                {
-                    DevicePushTokens = message.ApproverPushTokens.ToList()
+                    message.Event.EventId,
+                    message.ApproverId,
+                    Type = CalendarEventPushNotificationTypes.EventAssignedToApprover
                 }
             };
+
+            return new PushNotification(content, message.ApproverPushTokens.ToList());
         }
 
         private class CalendarEventAssignedWithAdditionalData
@@ -129,7 +124,7 @@
                 string approverId,
                 EmployeeMetadata owner,
                 UserPreferences approverUserPreferences,
-                IEnumerable<string> approverPushTokens)
+                IEnumerable<DevicePushToken> approverPushTokens)
             {
                 this.Event = @event;
                 this.ApproverId = approverId;
@@ -146,7 +141,7 @@
 
             public UserPreferences ApproverUserPreferences { get; }
 
-            public IEnumerable<string> ApproverPushTokens { get; }
+            public IEnumerable<DevicePushToken> ApproverPushTokens { get; }
         }
     }
 }

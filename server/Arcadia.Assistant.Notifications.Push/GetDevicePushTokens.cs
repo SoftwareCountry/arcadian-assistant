@@ -17,12 +17,12 @@
 
         public class Success : Response
         {
-            public Success(IEnumerable<string> devicePushTokens)
+            public Success(IEnumerable<DevicePushToken> devicePushTokens)
             {
                 this.DevicePushTokens = devicePushTokens;
             }
 
-            public IEnumerable<string> DevicePushTokens { get; }
+            public IEnumerable<DevicePushToken> DevicePushTokens { get; }
         }
     }
 }

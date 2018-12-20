@@ -94,31 +94,26 @@
 
         private PushNotification CreatePushNotification(CalendarEventChangedWithAdditionalData message)
         {
-            return new PushNotification
+            var content = new PushNotificationContent
             {
-                Content = new PushNotificationContent
+                Title = this.pushNotificationConfig.Title,
+                Body = string.Format(this.pushNotificationConfig.Body, message.Event.Type, message.Event.Status),
+                CustomData = new
                 {
-                    Title = this.pushNotificationConfig.Title,
-                    Body = string.Format(this.pushNotificationConfig.Body, message.Event.Type, message.Event.Status),
-                    CustomData = new
-                    {
-                        message.Event.EventId,
-                        message.Event.EmployeeId,
-                        Type = CalendarEventPushNotificationTypes.EventStatusChanged
-                    }
-                },
-                Target = new PushNotificationTarget
-                {
-                    DevicePushTokens = message.OwnerPushTokens.ToList()
+                    message.Event.EventId,
+                    message.Event.EmployeeId,
+                    Type = CalendarEventPushNotificationTypes.EventStatusChanged
                 }
             };
+
+            return new PushNotification(content, message.OwnerPushTokens.ToList());
         }
 
         private class CalendarEventChangedWithAdditionalData
         {
             public CalendarEventChangedWithAdditionalData(CalendarEvent @event,
                 UserPreferences ownerUserPreferences,
-                IEnumerable<string> ownerPushTokens)
+                IEnumerable<DevicePushToken> ownerPushTokens)
             {
                 this.Event = @event;
                 this.OwnerUserPreferences = ownerUserPreferences;
@@ -129,7 +124,7 @@
 
             public UserPreferences OwnerUserPreferences { get; }
 
-            public IEnumerable<string> OwnerPushTokens { get; }
+            public IEnumerable<DevicePushToken> OwnerPushTokens { get; }
         }
     }
 }

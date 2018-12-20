@@ -52,13 +52,41 @@
         {
             this.logger.Debug("Push notification message received");
 
-            var jsonMessage = this.SerializeNotification(message);
-            this.logger.Debug($"Serialized notification message: {jsonMessage}");
+            if (!message.DevicePushTokens.Any())
+            {
+                this.logger.Debug("Push notification message doesn't contain target devices and won't be sent");
+                return Task.CompletedTask;
+            }
 
-            var requests = this.pushSettings.ApplicationPushUrls
-                .Select(url => this.SendPushNotificationRequest(url, jsonMessage));
+            var androidPushTask = this.SendApplicationPushNotification(message, PushDeviceTypes.Android, this.pushSettings.AndroidPushUrl);
+            var iosPushTask = this.SendApplicationPushNotification(message, PushDeviceTypes.Ios, this.pushSettings.IosPushUrl);
 
-            return Task.WhenAll(requests);
+            return Task.WhenAll(androidPushTask, iosPushTask);
+        }
+
+        private Task SendApplicationPushNotification(PushNotification message, string deviceType, string pushUrl)
+        {
+            var pushNotificationPayload = new PushNotificationPayload
+            {
+                Content = message.Content,
+                Target = new PushNotificationTarget
+                {
+                    DevicePushTokens = message.DevicePushTokens
+                        .Where(x => x.DeviceType == deviceType)
+                        .Select(x => x.Token)
+                        .ToList()
+                }
+            };
+
+            if (!pushNotificationPayload.Target.DevicePushTokens.Any())
+            {
+                return Task.CompletedTask;
+            }
+
+            var jsonMessage = this.SerializeNotification(pushNotificationPayload);
+            this.logger.Debug($"Serialized {deviceType} notification message: {jsonMessage}");
+
+            return this.SendPushNotificationRequest(pushUrl, jsonMessage);
         }
 
         private async Task SendPushNotificationRequest(
@@ -92,7 +120,7 @@
             }
         }
 
-        private string SerializeNotification(PushNotification message)
+        private string SerializeNotification(PushNotificationPayload message)
         {
             var serializerSettings = new JsonSerializerSettings
             {
