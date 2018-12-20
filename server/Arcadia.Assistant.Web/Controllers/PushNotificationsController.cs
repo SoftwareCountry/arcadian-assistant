@@ -30,7 +30,7 @@
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> RegisterDevice(PushNotificationDeviceModel deviceModel, CancellationToken cancellationToken)
+        public async Task<IActionResult> RegisterDevice([FromBody] PushNotificationDeviceModel deviceModel, CancellationToken cancellationToken)
         {
             if (!this.ModelState.IsValid)
             {
