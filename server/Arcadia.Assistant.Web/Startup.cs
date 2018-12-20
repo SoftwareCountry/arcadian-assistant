@@ -1,7 +1,6 @@
 ﻿namespace Arcadia.Assistant.Web
 {
     using System.Collections.Generic;
-    using System.Net.Http;
 
     using Autofac;
     using Microsoft.ApplicationInsights.Extensibility;
@@ -16,6 +15,8 @@
 
     using Akka.Actor;
     using Akka.Configuration;
+    using Akka.DI.AutoFac;
+    using Akka.DI.Core;
 
     using Arcadia.Assistant.Configuration;
     using Arcadia.Assistant.Server.Interop;
@@ -139,6 +140,8 @@
             builder.RegisterInstance(this.ActorSystem).As<IActorRefFactory>();
             builder.RegisterInstance(pathsBuilder).AsSelf();
 
+            builder.RegisterType<DownloadActor>().AsSelf();
+
             builder.RegisterType<EmployeesRegistry>().As<IEmployeesRegistry>();
             builder.RegisterType<UserEmployeeSearch>().As<IUserEmployeeSearch>();
             builder.RegisterType<HealthService>().As<IHealthService>();
@@ -159,19 +162,18 @@
             IApplicationBuilder app,
             IHostingEnvironment env,
             ISecuritySettings securitySettings,
-            IHttpClientFactory httpClientFactory,
-            IDownloadApplicationSettings downloadApplicationSettings)
+            ILifetimeScope container)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
+            // ReSharper disable once ObjectCreationAsStatement
+            new AutoFacDependencyResolver(container, this.ActorSystem);
+
             this.ActorSystem.ActorOf(
-                Props.Create(() => new DownloadActor(
-                    downloadApplicationSettings,
-                    httpClientFactory,
-                    env)),
+                this.ActorSystem.DI().Props<DownloadActor>(),
                 WellKnownActorPaths.DownloadApplicationBuilds);
 
             app.UseAkkaTimeoutExceptionHandler();
