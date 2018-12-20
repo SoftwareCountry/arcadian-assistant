@@ -8,7 +8,7 @@
     using Akka.Persistence;
 
     using Arcadia.Assistant.Calendar.Abstractions;
-    using Arcadia.Assistant.Calendar.SickLeave.Events;
+    using Arcadia.Assistant.Calendar.Events;
     using Arcadia.Assistant.Organization.Abstractions;
 
     public class EmployeeSickLeaveActor : CalendarEventsStorageBase
