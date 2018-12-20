@@ -16,6 +16,7 @@
     using Akka.Event;
 
     using Arcadia.Assistant.Web.Configuration;
+    using Arcadia.Assistant.Web.Download.AppCenter;
 
     public class DownloadActor : UntypedActor, ILogReceive, IWithUnboundedStash
     {

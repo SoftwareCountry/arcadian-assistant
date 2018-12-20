@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.Web.Download
+﻿namespace Arcadia.Assistant.Web.Download.AppCenter
 {
     using System;
 
