@@ -58,13 +58,13 @@
                 return Task.CompletedTask;
             }
 
-            var androidPushTask = this.SendApplicationPushNotification(message, PushDeviceTypes.Android);
-            var iosPushTask = this.SendApplicationPushNotification(message, PushDeviceTypes.Ios);
+            var androidPushTask = this.SendApplicationPushNotification(message, PushDeviceTypes.Android, this.pushSettings.AndroidPushUrl);
+            var iosPushTask = this.SendApplicationPushNotification(message, PushDeviceTypes.Ios, this.pushSettings.IosPushUrl);
 
             return Task.WhenAll(androidPushTask, iosPushTask);
         }
 
-        private Task SendApplicationPushNotification(PushNotification message, string deviceType)
+        private Task SendApplicationPushNotification(PushNotification message, string deviceType, string pushUrl)
         {
             var pushNotificationPayload = new PushNotificationPayload
             {
@@ -86,9 +86,6 @@
             var jsonMessage = this.SerializeNotification(pushNotificationPayload);
             this.logger.Debug($"Serialized {deviceType} notification message: {jsonMessage}");
 
-            var pushUrl = deviceType == PushDeviceTypes.Android
-                ? this.pushSettings.AndroidPushUrl
-                : this.pushSettings.IosPushUrl;
             return this.SendPushNotificationRequest(pushUrl, jsonMessage);
         }
 
