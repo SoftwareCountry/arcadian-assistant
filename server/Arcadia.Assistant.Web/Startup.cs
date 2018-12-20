@@ -171,7 +171,7 @@
                 Props.Create(() => new DownloadActor(
                     downloadApplicationSettings,
                     httpClientFactory,
-                    env.ContentRootPath)),
+                    env)),
                 WellKnownActorPaths.DownloadApplicationBuilds);
 
             app.UseAkkaTimeoutExceptionHandler();
