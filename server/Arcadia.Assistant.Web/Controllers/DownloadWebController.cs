@@ -1,5 +1,6 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
+    using System;
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
@@ -34,12 +35,17 @@
 
         [Route("get/{applicationType}")]
         [HttpGet]
-        public async Task<IActionResult> GetFile(ApplicationType applicationType, CancellationToken token)
+        public async Task<IActionResult> GetFile(string applicationType, CancellationToken token)
         {
+            if (!Enum.TryParse(applicationType, out ApplicationType appType))
+            {
+                return this.BadRequest();
+            }
+
             var downloadActor = this.actorSystem.ActorSelection(
                 $"/user/{WellKnownActorPaths.DownloadApplicationBuilds}");
 
-            var getBuildApplicationType = applicationType == ApplicationType.Android
+            var getBuildApplicationType = appType == ApplicationType.Android
                 ? GetLatestApplicationBuildPath.ApplicationTypeEnum.Android
                 : GetLatestApplicationBuildPath.ApplicationTypeEnum.Ios;
             var message = new GetLatestApplicationBuildPath(getBuildApplicationType);
@@ -52,7 +58,7 @@
                 return this.NotFound();
             }
 
-            var fileContentType = applicationType == ApplicationType.Android
+            var fileContentType = appType == ApplicationType.Android
                 ? "application/vnd.android.package-archive"
                 : "application/octet-stream";
 
