@@ -1,10 +1,10 @@
-﻿namespace Arcadia.Assistant.Calendar.Vacations.Events
+﻿namespace Arcadia.Assistant.Calendar.Events
 {
     using System;
     using System.Runtime.Serialization;
 
     [DataContract]
-    public sealed class VacationIsRequested
+    public class SickLeaveIsCompleted
     {
         [DataMember]
         public string EventId { get; set; }
@@ -13,13 +13,7 @@
         public DateTimeOffset TimeStamp { get; set; }
 
         [DataMember]
-        public string EmployeeId { get; set; }
-
-        [DataMember]
-        public DateTime StartDate { get; set; }
-
-        [DataMember]
-        public DateTime EndDate { get; set; }
+        public DateTime CompletionDate { get; set; }
 
         [DataMember]
         public string UserId { get; set; }

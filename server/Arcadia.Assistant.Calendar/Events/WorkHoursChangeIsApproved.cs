@@ -1,10 +1,10 @@
-﻿namespace Arcadia.Assistant.Calendar.WorkHours.Events
+﻿namespace Arcadia.Assistant.Calendar.Events
 {
     using System;
     using System.Runtime.Serialization;
 
     [DataContract]
-    public class WorkHoursChangeIsCancelled
+    public class WorkHoursChangeIsApproved
     {
         [DataMember]
         public string EventId { get; set; }

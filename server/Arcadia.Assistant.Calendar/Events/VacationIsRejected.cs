@@ -1,18 +1,18 @@
-﻿namespace Arcadia.Assistant.Calendar.SickLeave.Events
+﻿namespace Arcadia.Assistant.Calendar.Events
 {
     using System;
     using System.Runtime.Serialization;
 
     [DataContract]
-    public class SickLeaveIsCancelled
+    public sealed class VacationIsRejected
     {
         [DataMember]
         public string EventId { get; set; }
 
         [DataMember]
-        public string UserId { get; set; }
+        public DateTimeOffset TimeStamp { get; set; }
 
         [DataMember]
-        public DateTimeOffset TimeStamp { get; set; }
+        public string UserId { get; set; }
     }
 }
