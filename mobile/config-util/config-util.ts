@@ -10,7 +10,7 @@ function createConfiguration(): Configuration {
 
     let google = process.env['AA_GOOGLE_SERVICES'] || null;
     if (google) {
-        google = google.replace('\\', '');
+        google = google.replace(/\\/g, '');
     }
 
     return {
