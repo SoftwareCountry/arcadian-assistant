@@ -47,6 +47,7 @@ npm-debug.log
 yarn-error.log
 
 artifacts/
+config-util/*.js
 .coverage/
 .vscode/.react/
 .vscode/symbols.json
