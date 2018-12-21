@@ -14,6 +14,8 @@ import AppCenter from 'appcenter';
 import { installIdReceived, NotificationAction, NotificationActionType } from './notification.actions';
 import { handleHttpErrors } from '../reducers/errors/errors.epics';
 import { Platform } from 'react-native';
+import { loadPendingRequests } from '../reducers/calendar/pending-requests/pending-requests.action';
+import { loadCalendarEvents } from '../reducers/calendar/calendar.action';
 
 //----------------------------------------------------------------------------
 const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>, state$: StateObservable<AppState>) =>
@@ -32,6 +34,8 @@ const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>, state$:
                             return;
                         }
 
+                        observer.next(loadPendingRequests());
+                        observer.next(loadCalendarEvents(notification.customProperties.employeeId));
                         observer.next(openProfile());
                     },
                 });
