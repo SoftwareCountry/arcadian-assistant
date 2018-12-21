@@ -23,11 +23,12 @@ const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>, state$:
                 Push.setListener({
                     onPushNotificationReceived: notification => {
                         if (!notification.customProperties || !notification.customProperties.employeeId) {
+                            console.warn(`Invalid notification payload: ${JSON.stringify(notification.customProperties)}`);
                             return;
                         }
 
                         const userInfo = state$.value.userInfo;
-                        if (!userInfo || notification.customProperties.employeeId !== userInfo.employeeId) {
+                        if (!userInfo || !userInfo.employeeId) {
                             return;
                         }
 
