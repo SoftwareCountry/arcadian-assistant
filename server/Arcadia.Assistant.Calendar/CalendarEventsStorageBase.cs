@@ -264,7 +264,8 @@
         private void EnsureDatesAreNotIntersected(CalendarEvent @event)
         {
             var intersectedEvent = this.EventsById.Values
-                .FirstOrDefault(v => v.Type == @event.Type && v.Dates.DatesIntersectsWith(@event.Dates));
+                .Where(ev => ev.EventId != @event.EventId && ev.Type == @event.Type)
+                .FirstOrDefault(ev => ev.Dates.DatesIntersectsWith(@event.Dates));
             if (intersectedEvent != null)
             {
                 throw new Exception($"Event {@event.EventId}. Dates intersect with another {@event.Type} with id {intersectedEvent.EventId}");
