@@ -2,7 +2,7 @@
  * Copyright (c) Arcadia, Inc. All rights reserved.
  ******************************************************************************/
 
-import { Employee } from '../reducers/organization/employee.model';
+import { EmployeeId } from '../reducers/organization/employee.model';
 import { NavigateToAction } from './navigation.epic';
 
 //============================================================================
@@ -22,7 +22,7 @@ export enum NavigationActionType {
 
 export interface OpenEmployeeDetailsAction extends NavigateToAction<NavigationActionType.openEmployeeDetails> {
     params: {
-        employee: Employee;
+        employeeId  : EmployeeId;
     };
 }
 
@@ -62,11 +62,11 @@ export interface OpenProfileAction extends NavigateToAction<NavigationActionType
 // - Action Creators
 //============================================================================
 
-export const openEmployeeDetails = (employee: Employee): OpenEmployeeDetailsAction => {
+export const openEmployeeDetails = (employeeId: EmployeeId): OpenEmployeeDetailsAction => {
     return {
         type: NavigationActionType.openEmployeeDetails,
         params: {
-            employee,
+            employeeId,
         },
     };
 };

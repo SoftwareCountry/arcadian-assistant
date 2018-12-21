@@ -8,7 +8,7 @@ import { ignoreElements, map, switchMap } from 'rxjs/operators';
 import Push from 'appcenter-push';
 import { from, Observable } from 'rxjs';
 import { Action } from 'redux';
-import { openProfile } from '../navigation/navigation.actions';
+import { openEmployeeDetails, openProfile } from '../navigation/navigation.actions';
 import { AppState, DependenciesContainer } from '../reducers/app.reducer';
 import AppCenter from 'appcenter';
 import { installIdReceived, NotificationAction, NotificationActionType } from './notification.actions';
@@ -34,9 +34,15 @@ const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>, state$:
                             return;
                         }
 
+                        const employeeId = notification.customProperties.employeeId;
+
                         observer.next(loadPendingRequests());
-                        observer.next(loadCalendarEvents(notification.customProperties.employeeId));
-                        observer.next(openProfile());
+                        observer.next(loadCalendarEvents(employeeId));
+                        if (userInfo.employeeId === employeeId) {
+                            observer.next(openProfile());
+                        } else {
+                            observer.next(openEmployeeDetails(employeeId));
+                        }
                     },
                 });
 

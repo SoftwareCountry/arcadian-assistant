@@ -67,7 +67,7 @@ export interface DependenciesContainer extends NavigationDependenciesContainer {
 
 export const storeFactory = (oauthProcess: OAuthProcess, navigationService: NavigationService) => {
     const dependencies: DependenciesContainer = {
-        apiClient: new SecuredApiClient(config.apiUrl, oauthProcess.authenticationState as any),
+        apiClient: new SecuredApiClient(config.apiUrl, oauthProcess.authenticationState),
         oauthProcess: oauthProcess,
         navigationService: navigationService,
     };

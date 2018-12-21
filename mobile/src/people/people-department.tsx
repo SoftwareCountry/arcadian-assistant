@@ -40,7 +40,7 @@ interface EmployeesListDispatchProps {
 }
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>): EmployeesListDispatchProps => ({
-    onItemClicked: (employee: Employee) => dispatch(openEmployeeDetails(employee))
+    onItemClicked: (employee: Employee) => dispatch(openEmployeeDetails(employee.employeeId))
 });
 
 export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentStateProps & EmployeesListDispatchProps & PeopleDepartmentPropsOwnProps> {

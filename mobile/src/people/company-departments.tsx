@@ -347,7 +347,7 @@ const dispatchToProps = (dispatch: Dispatch<Action>) => ({
         dispatch(selectCompanyDepartment(departmentId));
     },
     onPressEmployee: (employee: Employee) => {
-        dispatch(openEmployeeDetails(employee));
+        dispatch(openEmployeeDetails(employee.employeeId));
     }
 });
 

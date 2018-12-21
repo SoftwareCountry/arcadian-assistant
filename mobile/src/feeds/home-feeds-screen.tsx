@@ -35,7 +35,7 @@ const mapStateToProps = (state: AppState): FeedsScreenProps => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>): FeedScreenDispatchProps => ({
-    onAvatarClicked: (employee: Employee) => dispatch(openEmployeeDetails(employee)),
+    onAvatarClicked: (employee: Employee) => dispatch(openEmployeeDetails(employee.employeeId)),
     fetchNewFeeds: () => dispatch(fetchNewFeeds()),
     fetchOldFeeds: () => dispatch(fetchOldFeeds()),
 });
