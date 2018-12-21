@@ -14,7 +14,7 @@ import { CalendarEvent } from '../reducers/calendar/calendar-event.model';
 import { LogoutView } from '../navigation/logout-view';
 import { LoadingView } from '../navigation/loading';
 import Style from '../layout/style';
-import { NavigationScreenConfig, NavigationStackScreenOptions, ScrollView } from 'react-navigation';
+import { NavigationEvents, NavigationScreenConfig, NavigationStackScreenOptions, ScrollView } from 'react-navigation';
 import { Action, Dispatch } from 'redux';
 import { Optional } from 'types';
 import { getEmployee } from '../utils/utils';
@@ -129,6 +129,10 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
     //----------------------------------------------------------------------------
     public render() {
         return <SafeAreaView style={Style.view.safeArea} onLayout={this.onLayout}>
+            <NavigationEvents
+                onWillFocus={this.props.loadPendingRequests}
+            />
+
             <View style={employeeDetailsStyles.container}>
                 <View style={[
                     employeeDetailsStyles.topHalfView,
