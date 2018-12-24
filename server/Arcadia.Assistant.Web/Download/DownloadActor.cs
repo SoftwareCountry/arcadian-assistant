@@ -92,7 +92,6 @@
                     foreach (var err in msg.Messages.Where(m => m != null))
                     {
                         this.logger.Warning(err);
-
                     }
 
                     this.Stash.UnstashAll();

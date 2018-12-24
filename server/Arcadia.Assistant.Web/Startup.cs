@@ -125,7 +125,7 @@
             var host = appSettings.Server.Host;
             var port = appSettings.Server.Port;
 
-            var config = ConfigurationFactory.ParseString(this.AppSettings.Akka);
+            var config = ConfigurationFactory.ParseString(appSettings.Akka);
 
             var actorSystem = ActorSystem.Create(systemName, config);
 
