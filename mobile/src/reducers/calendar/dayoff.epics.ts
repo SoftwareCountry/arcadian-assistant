@@ -8,7 +8,7 @@ import { flatMap } from 'rxjs/operators';
 import { openEventDialog, stopEventDialogProgress } from './event-dialog/event-dialog.action';
 import { EventDialogType } from './event-dialog/event-dialog-type.model';
 import { Action } from 'redux';
-import { handleHttpErrorsWithDefaultValue } from '../errors/errors.epics';
+import { handleHttpErrorsWithDefaultValue } from '../../errors/error.operators';
 import { of } from 'rxjs';
 
 export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff>, _: StateObservable<AppState>, deps: DependenciesContainer) =>

@@ -18,7 +18,7 @@ import { deserialize, deserializeArray } from 'santee-dcts/src/deserializer';
 import { Department } from './department.model';
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { Employee } from './employee.model';
-import { handleHttpErrors } from '../errors/errors.epics';
+import { handleHttpErrors } from '../../errors/error.operators';
 import { catchError, filter, groupBy, map, mergeAll, mergeMap, switchMap } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
 import { Set } from 'immutable';

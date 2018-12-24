@@ -8,12 +8,17 @@ import { AppState } from '../../reducers/app.reducer';
 import { Action, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
-import { DayModel, defaultDayModel, ReadOnlyIntervalsModel } from '../../reducers/calendar/calendar.model';
+import {
+    DayModel,
+    defaultDayModel,
+    isIntersectingAnotherVacation,
+    ReadOnlyIntervalsModel
+} from '../../reducers/calendar/calendar.model';
 import { Employee } from '../../reducers/organization/employee.model';
 import { confirmVacation } from '../../reducers/calendar/vacation.action';
 import { Moment } from 'moment';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
-import { getEmployee, isIntersectingAnotherVacation } from '../../utils/utils';
+import { getEmployee} from '../../reducers/app.reducer';
 import { Optional } from 'types';
 
 //============================================================================

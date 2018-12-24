@@ -1,8 +1,10 @@
+/******************************************************************************
+ * Copyright (c) Arcadia, Inc. All rights reserved.
+ ******************************************************************************/
+
 import { Action, applyMiddleware, combineReducers, createStore } from 'redux';
 import { helpdeskEpics, helpdeskReducer, HelpdeskState } from './helpdesk/helpdesk.reducer';
 import { combineEpics, createEpicMiddleware } from 'redux-observable';
-//import { createLogger } from 'redux-logger';
-
 import { organizationEpics, organizationReducer, OrganizationState } from './organization/organization.reducer';
 import { userInfoReducer, UserInfoState } from './user/user-info.reducer';
 import { userEpics } from './user/user.reducer';
@@ -19,7 +21,12 @@ import { NavigationDependenciesContainer } from '../navigation/navigation-depend
 import { navigationEpics$ } from '../navigation/navigation.epics';
 import { notifications$ } from '../notifications/notification.epics';
 import { notificationsReducer, NotificationState } from '../notifications/notifications.reducer';
+import { Optional } from 'types';
+import { Employee } from './organization/employee.model';
 
+//import { createLogger } from 'redux-logger';
+
+//============================================================================
 export interface AppState {
     helpdesk?: HelpdeskState;
     organization?: OrganizationState;
@@ -31,6 +38,14 @@ export interface AppState {
     notifications: NotificationState;
 }
 
+//----------------------------------------------------------------------------
+export function getEmployee(state: AppState): Optional<Employee> {
+    return (state.organization && state.userInfo && state.userInfo.employeeId) ?
+        state.organization.employees.employeesById.get(state.userInfo.employeeId) :
+        undefined;
+}
+
+//----------------------------------------------------------------------------
 const rootEpic = combineEpics(
     helpdeskEpics as any,
     organizationEpics as any,
@@ -42,6 +57,7 @@ const rootEpic = combineEpics(
     navigationEpics$ as any,
     notifications$ as any);
 
+//----------------------------------------------------------------------------
 const reducers = combineReducers<AppState>({
     helpdesk: helpdeskReducer,
     organization: organizationReducer,
@@ -53,6 +69,7 @@ const reducers = combineReducers<AppState>({
     notifications: notificationsReducer,
 });
 
+//----------------------------------------------------------------------------
 const rootReducer = (state: AppState | undefined, action: Action) => {
     if (action.type === 'USER-LOGGED-OUT') {
         return reducers(undefined, action);
@@ -60,11 +77,13 @@ const rootReducer = (state: AppState | undefined, action: Action) => {
     return reducers(state, action);
 };
 
+//============================================================================
 export interface DependenciesContainer extends NavigationDependenciesContainer {
     apiClient: SecuredApiClient;
     oauthProcess: OAuthProcess;
 }
 
+//----------------------------------------------------------------------------
 export const storeFactory = (oauthProcess: OAuthProcess, navigationService: NavigationService) => {
     const dependencies: DependenciesContainer = {
         apiClient: new SecuredApiClient(config.apiUrl, oauthProcess.authenticationState),

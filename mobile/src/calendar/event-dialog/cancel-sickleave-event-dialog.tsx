@@ -8,7 +8,7 @@ import { ExtractedIntervals } from '../../reducers/calendar/calendar.model';
 import { CalendarEvent } from '../../reducers/calendar/calendar-event.model';
 import { cancelSickLeave } from '../../reducers/calendar/sick-leave.action';
 import { Employee } from '../../reducers/organization/employee.model';
-import { getEmployee } from '../../utils/utils';
+import { getEmployee } from '../../reducers/app.reducer';
 import { Optional } from 'types';
 
 interface CancelSickLeaveEventDialogDispatchProps {

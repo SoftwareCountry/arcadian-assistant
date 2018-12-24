@@ -12,7 +12,7 @@ import { openEmployeeDetails, openProfile } from '../navigation/navigation.actio
 import { AppState, DependenciesContainer } from '../reducers/app.reducer';
 import AppCenter from 'appcenter';
 import { installIdReceived, NotificationAction, NotificationActionType } from './notification.actions';
-import { handleHttpErrors } from '../reducers/errors/errors.epics';
+import { handleHttpErrors } from '../errors/error.operators';
 import { Platform } from 'react-native';
 import { loadPendingRequests } from '../reducers/calendar/pending-requests/pending-requests.action';
 import { loadCalendarEvents } from '../reducers/calendar/calendar.action';

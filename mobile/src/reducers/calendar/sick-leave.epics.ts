@@ -10,7 +10,7 @@ import { CalendarEvent, CalendarEventStatus, CalendarEventType, DatesInterval } 
 import { deserialize } from 'santee-dcts';
 import { getEventsAndPendingRequests } from './calendar.epics';
 import { flatMap, map } from 'rxjs/operators';
-import { handleHttpErrorsWithDefaultValue } from '../errors/errors.epics';
+import { handleHttpErrorsWithDefaultValue } from '../../errors/error.operators';
 import { Action } from 'redux';
 import { of } from 'rxjs';
 import { stopEventDialogProgress } from './event-dialog/event-dialog.action';

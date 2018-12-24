@@ -6,7 +6,7 @@ import { Feed } from './feed.model';
 import { AppState, DependenciesContainer } from '../app.reducer';
 import moment from 'moment';
 import { filter, flatMap, map, switchMap, withLatestFrom } from 'rxjs/operators';
-import { handleHttpErrors } from '../errors/errors.epics';
+import { handleHttpErrors } from '../../errors/error.operators';
 import { LoadUserEmployeeFinished } from '../user/user.action';
 import { concat, of } from 'rxjs';
 
