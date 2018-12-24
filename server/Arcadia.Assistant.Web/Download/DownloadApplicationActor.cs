@@ -57,8 +57,8 @@
                     this.DownloadBuild()
                         .PipeTo(
                             this.Sender,
-                            success: () => DownloadApplicationBuild.Response.Instance,
-                            failure: err => new DownloadApplicationBuild.Response(err.Message));
+                            success: () => DownloadApplicationBuild.Success.Instance,
+                            failure: err => new DownloadApplicationBuild.Error(err));
                     break;
 
                 default:

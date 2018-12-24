@@ -1,19 +1,28 @@
 ﻿namespace Arcadia.Assistant.Web.Download
 {
+    using System;
+
     public class DownloadApplicationBuild
     {
         public static readonly DownloadApplicationBuild Instance = new DownloadApplicationBuild();
 
         public class Response
         {
-            public static readonly Response Instance = new Response();
+        }
 
-            public Response(string message = null)
+        public class Success : Response
+        {
+            public static readonly Success Instance = new Success();
+        }
+
+        public class Error : Response
+        {
+            public Error(Exception exception)
             {
-                this.Message = message;
+                this.Exception = exception;
             }
 
-            public string Message { get; }
+            public Exception Exception { get; }
         }
     }
 }

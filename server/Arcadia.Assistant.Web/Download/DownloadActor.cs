@@ -1,7 +1,7 @@
 ﻿namespace Arcadia.Assistant.Web.Download
 {
     using System;
-    using System.Linq;
+    using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
 
@@ -83,16 +83,41 @@
 
                     Task.WhenAll(androidDownloadTask, iosDownloadTask).PipeTo(
                         this.Self,
-                        success: result => new RefreshApplicationBuildsFinish(result[0].Message, result[1].Message),
-                        failure: err => new RefreshApplicationBuildsFinish(err.Message));
+                        success: result =>
+                        {
+                            var resultExceptions = new List<Exception>();
+
+                            if (result[0] is DownloadApplicationBuild.Error errAndroid)
+                            {
+                                resultExceptions.Add(errAndroid.Exception);
+                            }
+
+                            if (result[1] is DownloadApplicationBuild.Error errIos)
+                            {
+                                resultExceptions.Add(errIos.Exception);
+                            }
+
+                            if (resultExceptions.Count != 0)
+                            {
+                                var aggregateException = new AggregateException(resultExceptions);
+                                return new RefreshApplicationBuildsFinishError(aggregateException);
+                            }
+
+                            return RefreshApplicationBuildsFinishSuccess.Instance;
+                        },
+                        failure: err => new RefreshApplicationBuildsFinishError(err));
 
                     break;
 
-                case RefreshApplicationBuildsFinish msg:
-                    foreach (var err in msg.Messages.Where(m => m != null))
-                    {
-                        this.logger.Warning(err);
-                    }
+                case RefreshApplicationBuildsFinishSuccess _:
+                    this.Stash.UnstashAll();
+                    this.UnbecomeStacked();
+
+                    break;
+
+
+                case RefreshApplicationBuildsFinishError msg:
+                    this.logger.Warning(msg.Exception.Message);
 
                     this.Stash.UnstashAll();
                     this.UnbecomeStacked();
@@ -133,14 +158,19 @@
             public static readonly RefreshApplicationBuildsStart Instance = new RefreshApplicationBuildsStart();
         }
 
-        private class RefreshApplicationBuildsFinish
+        public class RefreshApplicationBuildsFinishSuccess
         {
-            public RefreshApplicationBuildsFinish(params string[] messageses)
+            public static readonly RefreshApplicationBuildsFinishSuccess Instance = new RefreshApplicationBuildsFinishSuccess();
+        }
+
+        public class RefreshApplicationBuildsFinishError
+        {
+            public RefreshApplicationBuildsFinishError(Exception exception)
             {
-                this.Messages = messageses;
+                this.Exception = exception;
             }
 
-            public string[] Messages { get; }
+            public Exception Exception { get; }
         }
     }
 }
