@@ -6,6 +6,7 @@ import moment from 'moment';
 import { distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import { concat, interval, merge, Observable, of, ReplaySubject, Subject, Subscription } from 'rxjs';
 import { Nullable, Optional } from 'types';
+import { handleHttpErrors } from '../reducers/errors/errors.epics';
 
 //https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-protocols-oauth-code
 
@@ -46,7 +47,11 @@ export class OAuthProcess {
         this.accessCodeRequest = new AccessCodeRequest(clientId, redirectUri, tokenUrl);
 
         const accessCodeResponse = this.authorizationCode.pipe(
-            switchMap((code: string) => this.accessCodeRequest.fetchNew(code)));
+            switchMap((code: string) => {
+                return this.accessCodeRequest.fetchNew(code).pipe(
+                    handleHttpErrors(false),
+                );
+            }));
 
         const refreshTokenObtainedAccessCodes = this.refreshTokenSource.pipe(
             switchMap(request => this.getPeriodicalRefreshTokens(request)),
@@ -55,7 +60,9 @@ export class OAuthProcess {
                     return of<Nullable<TokenResponse>>(null);
                 }
 
-                return this.accessCodeRequest.refresh(token);
+                return this.accessCodeRequest.refresh(token).pipe(
+                    handleHttpErrors(false),
+                );
             }));
 
         this.accessCodeSubscription = merge(accessCodeResponse, refreshTokenObtainedAccessCodes)
