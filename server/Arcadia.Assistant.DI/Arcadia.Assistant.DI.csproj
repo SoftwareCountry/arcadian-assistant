@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Arcadia.Assistant.Configuration\Arcadia.Assistant.Configuration.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.CSP\Arcadia.Assistant.CSP.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.InboxEmail\Arcadia.Assistant.InboxEmail.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Notifications.Push\Arcadia.Assistant.Notifications.Push.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Organization\Arcadia.Assistant.Organization.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.UserPreferences\Arcadia.Assistant.UserPreferences.csproj" />

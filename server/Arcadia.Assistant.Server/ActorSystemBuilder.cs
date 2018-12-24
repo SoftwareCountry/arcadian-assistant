@@ -8,6 +8,7 @@
     using Arcadia.Assistant.Feeds;
     using Arcadia.Assistant.Helpdesk;
     using Arcadia.Assistant.Health.Abstractions;
+    using Arcadia.Assistant.InboxEmail;
     using Arcadia.Assistant.Notifications;
     using Arcadia.Assistant.Notifications.Email;
     using Arcadia.Assistant.Notifications.Push;
@@ -34,6 +35,8 @@
             var feeds = this.actorSystem.ActorOf(Props.Create(() => new SharedFeedsActor(organization)), WellKnownActorPaths.SharedFeeds);
             var userPreferences = this.actorSystem.ActorOf(this.actorSystem.DI().Props<UserPreferencesActor>(), WellKnownActorPaths.UserPreferences);
             var pushNotificationsDevices = this.actorSystem.ActorOf(Props.Create(() => new PushNotificationsDevicesActor()), WellKnownActorPaths.PushNotificationsDevices);
+
+            this.actorSystem.ActorOf(this.actorSystem.DI().Props<InboxEmailActor>(), "inbox-email");
 
             this.CreateCalendarEventNotificationActors(
                 calendarEventsMailSettings,
