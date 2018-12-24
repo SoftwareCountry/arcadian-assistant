@@ -398,7 +398,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         const actions = provider.getEventActions(events, this.props.employee, userPermissions, this.props.approvals);
 
         return <View style={eventStyles.container}>
-            <StyledText style={layoutStyles.header}>Events</StyledText>
+            <StyledText style={layoutStyles.header}>{capitalizeFirstLetter('Events')}</StyledText>
             <EmployeeDetailsEventsList
                 eventActions={actions}
                 hoursToIntervalTitle={this.props.hoursToIntervalTitle}
@@ -421,7 +421,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             );
 
         return <View style={eventStyles.container}>
-            <StyledText style={layoutStyles.header}>Requests</StyledText>
+            <StyledText style={layoutStyles.header}>{capitalizeFirstLetter('Requests')}</StyledText>
             <EmployeeDetailsEventsList
                 eventActions={actions}
                 hoursToIntervalTitle={this.props.hoursToIntervalTitle}
