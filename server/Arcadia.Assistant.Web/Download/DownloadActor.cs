@@ -60,8 +60,8 @@
                     this.RespondLatestApplicationBuildPath(msg);
                     break;
 
-                case RefreshApplicationBuilds msg:
-                    this.Self.Tell(msg);
+                case RefreshApplicationBuilds _:
+                    this.Self.Tell(RefreshApplicationBuildsStart.Instance);
                     this.BecomeStacked(this.DownloadingApplicationBuilds);
                     break;
 
@@ -75,7 +75,7 @@
         {
             switch (message)
             {
-                case RefreshApplicationBuilds _:
+                case RefreshApplicationBuildsStart _:
                     var androidDownloadTask = this.androidDownloadBuildActor
                         .Ask<DownloadApplicationBuild.Response>(DownloadApplicationBuild.Instance);
                     var iosDownloadTask = this.iosDownloadBuildActor
@@ -127,6 +127,11 @@
         private class RefreshApplicationBuilds
         {
             public static readonly RefreshApplicationBuilds Instance = new RefreshApplicationBuilds();
+        }
+
+        private class RefreshApplicationBuildsStart
+        {
+            public static readonly RefreshApplicationBuildsStart Instance = new RefreshApplicationBuildsStart();
         }
 
         private class RefreshApplicationBuildsFinish

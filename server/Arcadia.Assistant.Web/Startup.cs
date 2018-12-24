@@ -49,15 +49,9 @@
             }
 
             this.AppSettings = configBuilder.Build().Get<AppSettings>();
-
-            var systemName = this.AppSettings.Server.ActorSystemName;
-            var config = ConfigurationFactory.ParseString(this.AppSettings.Akka);
-            this.ActorSystem = ActorSystem.Create(systemName, config);
         }
 
         public AppSettings AppSettings { get; }
-
-        public ActorSystem ActorSystem { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // ReSharper disable once UnusedMember.Global
@@ -131,13 +125,17 @@
             var host = appSettings.Server.Host;
             var port = appSettings.Server.Port;
 
+            var config = ConfigurationFactory.ParseString(this.AppSettings.Akka);
+
+            var actorSystem = ActorSystem.Create(systemName, config);
+
             var pathsBuilder = new ActorPathsBuilder(systemName, host, port);
 
             builder.RegisterInstance(appSettings).As<ITimeoutSettings>();
             builder.RegisterInstance(appSettings.Security).As<ISecuritySettings>();
             builder.RegisterInstance(appSettings.ServiceEndpointsAuthentication).As<IServiceEndpointsAuthenticationSettings>();
             builder.RegisterInstance(appSettings.DownloadApplication).As<IDownloadApplicationSettings>();
-            builder.RegisterInstance(this.ActorSystem).As<IActorRefFactory>();
+            builder.RegisterInstance(actorSystem).As<IActorRefFactory>().As<ActorSystem>();
             builder.RegisterInstance(pathsBuilder).AsSelf();
 
             builder.RegisterType<DownloadActor>().AsSelf();
@@ -162,7 +160,8 @@
             IApplicationBuilder app,
             IHostingEnvironment env,
             ISecuritySettings securitySettings,
-            ILifetimeScope container)
+            ILifetimeScope container,
+            ActorSystem actorSystem)
         {
             if (env.IsDevelopment())
             {
@@ -170,10 +169,10 @@
             }
 
             // ReSharper disable once ObjectCreationAsStatement
-            new AutoFacDependencyResolver(container, this.ActorSystem);
+            new AutoFacDependencyResolver(container, actorSystem);
 
-            this.ActorSystem.ActorOf(
-                this.ActorSystem.DI().Props<DownloadActor>(),
+            actorSystem.ActorOf(
+                actorSystem.DI().Props<DownloadActor>(),
                 WellKnownActorPaths.DownloadApplicationBuilds);
 
             app.UseAkkaTimeoutExceptionHandler();

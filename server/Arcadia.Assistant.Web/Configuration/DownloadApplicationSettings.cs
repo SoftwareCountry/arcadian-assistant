@@ -4,10 +4,6 @@
     {
         public string BuildsFolder { get; set; }
 
-        public string AndroidFilePattern { get; set; }
-
-        public string IosFilePattern { get; set; }
-
         public int DownloadBuildIntervalMinutes { get; set; }
 
         public string RenameBuildFilePattern { get; set; }
