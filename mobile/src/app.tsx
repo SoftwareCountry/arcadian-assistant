@@ -1,3 +1,7 @@
+/******************************************************************************
+ * Copyright (c) Arcadia, Inc. All rights reserved.
+ ******************************************************************************/
+
 import React, { Component } from 'react';
 import { RootNavigator } from './tabbar/tab-navigator';
 import { AppState } from './reducers/app.reducer';
@@ -10,6 +14,8 @@ import { NavigationService } from './navigation/navigation.service';
 import { YellowBox } from 'react-native';
 import { Dispatch } from 'redux';
 import { AuthActions, startLoginProcess } from './reducers/auth/auth.action';
+import Analytics from 'appcenter-analytics';
+import { getActiveRouteName } from './utils/navigation-state';
 
 //============================================================================
 interface AppStateProps {
@@ -66,10 +72,19 @@ export class App extends Component<AppStateProps & AppDispatchProps & AppOwnProp
         }
 
         return (
-            <RootNavigator ref={(navigationRef: NavigationContainerComponent) => {
-                this.props.navigationService.setNavigatorRef(navigationRef);
-                console.log('navigationRef:' + navigationRef);
-            }}/>
+            <RootNavigator
+                ref={(navigationRef: NavigationContainerComponent) => {
+                    this.props.navigationService.setNavigatorRef(navigationRef);
+                    console.log('navigationRef:' + navigationRef);
+                }}
+                onNavigationStateChange={(prevState, currentState) => {
+                    const currentScreen = getActiveRouteName(currentState);
+                    const prevScreen = getActiveRouteName(prevState);
+
+                    if (prevScreen !== currentScreen) {
+                        Analytics.trackEvent('Navigation', { Route: currentScreen });
+                    }
+                }}/>
         );
     }
 }
