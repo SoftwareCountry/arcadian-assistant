@@ -4,25 +4,9 @@ import { connect } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 import { Nullable } from 'types';
 import FastImage from 'react-native-fast-image';
+import { avatarStyles } from './styles';
 
-const styles = StyleSheet.create({
-    container: {
-        width: '100%',
-        height: '100%',
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    outerFrame: {
-        borderColor: '#2FAFCC',
-        borderWidth: 1
-    },
-    image: {
-        borderColor: '#fff',
-        flex: 1
-    }
-});
-
+//============================================================================
 export interface AvatarOwnProps {
     photoUrl?: string;
     style?: ViewStyle;
@@ -30,10 +14,12 @@ export interface AvatarOwnProps {
     useDefaultForEmployeesList?: boolean;
 }
 
+//============================================================================
 export interface AvatarReduxProps {
     jwtToken: Nullable<string>;
 }
 
+//----------------------------------------------------------------------------
 function mapStateToProps(state: AppState): AvatarReduxProps {
     return {
         jwtToken: state.authentication && state.authentication.authInfo ? state.authentication.authInfo.jwtToken : null,
@@ -45,22 +31,30 @@ const employeesListAvatarRect = require('./employeesListAvatarRect.png');
 // tslint:disable-next-line:no-var-requires
 const arcadiaIcon = require('./arcadia-icon.png');
 
+//============================================================================
 interface AvatarState {
     borderRadius?: number;
     size?: number;
     visible: boolean;
+    loadingErrorOccurred: boolean;
 }
 
+//----------------------------------------------------------------------------
 type AvatarProps = AvatarOwnProps & AvatarReduxProps;
 
+//============================================================================
 class AvatarImpl extends Component<AvatarProps, AvatarState> {
+
+    //----------------------------------------------------------------------------
     constructor(props: AvatarProps) {
         super(props);
         this.state = {
-            visible: false
+            visible: false,
+            loadingErrorOccurred: false,
         };
     }
 
+    //----------------------------------------------------------------------------
     public onLayout = (e: LayoutChangeEvent) => {
         let size = Math.min(e.nativeEvent.layout.width, e.nativeEvent.layout.height);
         this.setState({
@@ -70,13 +64,14 @@ class AvatarImpl extends Component<AvatarProps, AvatarState> {
         });
     };
 
+    //----------------------------------------------------------------------------
     public render() {
         if (!this.state.size) {
-            return <View onLayout={this.onLayout} style={styles.container}/>;
+            return <View onLayout={this.onLayout} style={avatarStyles.container}/>;
         }
 
         const outerFrameFlattenStyle = StyleSheet.flatten([
-            styles.outerFrame,
+            avatarStyles.outerFrame,
             {
                 borderRadius: this.state.borderRadius,
                 width: this.state.size,
@@ -87,7 +82,7 @@ class AvatarImpl extends Component<AvatarProps, AvatarState> {
         ]);
 
         return (
-            <View onLayout={this.onLayout} style={styles.container}>
+            <View onLayout={this.onLayout} style={avatarStyles.container}>
                 <View style={outerFrameFlattenStyle}>
                     {this.renderImage(outerFrameFlattenStyle)}
                 </View>
@@ -95,10 +90,11 @@ class AvatarImpl extends Component<AvatarProps, AvatarState> {
         );
     }
 
+    //----------------------------------------------------------------------------
     private renderImage(containerStyle: ViewStyle) {
         const imgSize = (containerStyle.width as number) - containerStyle.borderWidth! * 2;
         const imageFlattenStyle = StyleSheet.flatten([
-            styles.image,
+            avatarStyles.image,
             {
                 width: imgSize,
                 height: imgSize,
@@ -106,19 +102,37 @@ class AvatarImpl extends Component<AvatarProps, AvatarState> {
                 borderWidth: containerStyle.borderWidth! * 2 //by design it seems to be twice thicker than container border
             },
             this.props.imageStyle
-        ]);
+        ]) as ImageStyle;
 
-        if (!(this.props.photoUrl && this.props.jwtToken)) {
+        if (!(this.props.photoUrl && this.props.jwtToken) || this.state.loadingErrorOccurred) {
             const defaultImage = this.props.useDefaultForEmployeesList ? employeesListAvatarRect : arcadiaIcon;
 
-            return <Image source={defaultImage} style={imageFlattenStyle as ImageStyle}/>;
+            return <Image source={defaultImage} style={imageFlattenStyle}/>;
         }
 
         const headers = { 'Authorization': `Bearer ${this.props.jwtToken}` };
 
-        return <FastImage style={imageFlattenStyle as ImageStyle}
-                          source={{ uri: this.props.photoUrl, headers: headers }}/>;
+        return <FastImage style={imageFlattenStyle}
+                          source={{ uri: this.props.photoUrl, headers: headers }} onLoadEnd={this.onImageLoaded}
+                          onError={this.onImageLoadError}/>;
     }
+
+    //----------------------------------------------------------------------------
+    private onImageLoaded = () => {
+        this.setState({
+            ...this.state,
+            loadingErrorOccurred: false,
+        });
+    };
+
+    //----------------------------------------------------------------------------
+    private onImageLoadError = () => {
+        this.setState({
+            ...this.state,
+            loadingErrorOccurred: true,
+        });
+    };
 }
 
+//----------------------------------------------------------------------------
 export const Avatar = connect<AvatarReduxProps, {}, AvatarOwnProps, AppState>(mapStateToProps)(AvatarImpl);
