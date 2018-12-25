@@ -2,5 +2,11 @@
 {
     public class InboxEmailEventBus
     {
+        public InboxEmailEventBus(Email email)
+        {
+            this.Email = email;
+        }
+
+        public Email Email { get;  }
     }
 }
