@@ -45,7 +45,7 @@ export class HoursCreditCounter implements DaysCounter {
             return '0';
         }
 
-        return `${(this.days ? this.days : '')}${this.rest}`;
+        return `${(this.days ? this.days : '')}${this.rest ? this.rest : ''}`;
     }
 
     public get isWorkout(): boolean {
