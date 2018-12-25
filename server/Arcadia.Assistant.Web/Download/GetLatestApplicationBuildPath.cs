@@ -1,0 +1,28 @@
+﻿namespace Arcadia.Assistant.Web.Download
+{
+    public class GetLatestApplicationBuildPath
+    {
+        public GetLatestApplicationBuildPath(ApplicationTypeEnum applicationTypeEnum)
+        {
+            this.ApplicationType = applicationTypeEnum;
+        }
+
+        public ApplicationTypeEnum ApplicationType { get; }
+
+        public enum ApplicationTypeEnum
+        {
+            Android,
+            Ios
+        }
+
+        public class Response
+        {
+            public Response(string path)
+            {
+                this.Path = path;
+            }
+
+            public string Path { get; }
+        }
+    }
+}

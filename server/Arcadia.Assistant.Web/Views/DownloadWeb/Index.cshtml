@@ -1,0 +1,22 @@
+﻿@using Arcadia.Assistant.Web.Models
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Arcadia Assistant</title>
+</head>
+<body>
+    <div>
+        @Html.ActionLink(
+            "Download for Android",
+            "GetFile",
+            new { deviceType = DeviceType.Android })
+    </div>
+    <div>
+        @Html.ActionLink(
+            "Download for iOS",
+            "GetFile",
+            new { deviceType = DeviceType.Ios })
+    </div>
+</body>
+</html>

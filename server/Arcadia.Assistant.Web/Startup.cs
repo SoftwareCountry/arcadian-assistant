@@ -1,23 +1,8 @@
 ﻿namespace Arcadia.Assistant.Web
 {
     using System.Collections.Generic;
-    using Akka.Actor;
-    using Akka.Configuration;
-
-    using Arcadia.Assistant.Configuration;
-    using Arcadia.Assistant.Server.Interop;
-    using Arcadia.Assistant.Web.Authorization;
-    using Arcadia.Assistant.Web.Authorization.Handlers;
-    using Arcadia.Assistant.Web.Authorization.Requirements;
-    using Arcadia.Assistant.Web.Configuration;
-    using Arcadia.Assistant.Web.Employees;
-    using Arcadia.Assistant.Web.Health;
-    using Arcadia.Assistant.Web.Infrastructure;
-    using Arcadia.Assistant.Web.PushNotifications;
-    using Arcadia.Assistant.Web.Users;
 
     using Autofac;
-
     using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
@@ -26,8 +11,26 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Swashbuckle.AspNetCore.Swagger;
-    using UserPreferences;
     using ZNetCS.AspNetCore.Authentication.Basic;
+
+    using Akka.Actor;
+    using Akka.Configuration;
+    using Akka.DI.AutoFac;
+    using Akka.DI.Core;
+
+    using Arcadia.Assistant.Configuration;
+    using Arcadia.Assistant.Server.Interop;
+    using Arcadia.Assistant.Web.Authorization;
+    using Arcadia.Assistant.Web.Authorization.Handlers;
+    using Arcadia.Assistant.Web.Authorization.Requirements;
+    using Arcadia.Assistant.Web.Configuration;
+    using Arcadia.Assistant.Web.Download;
+    using Arcadia.Assistant.Web.Employees;
+    using Arcadia.Assistant.Web.Health;
+    using Arcadia.Assistant.Web.Infrastructure;
+    using Arcadia.Assistant.Web.PushNotifications;
+    using Arcadia.Assistant.Web.UserPreferences;
+    using Arcadia.Assistant.Web.Users;
 
     public class Startup
     {
@@ -55,6 +58,7 @@
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddHttpClient();
 
             var appSettings = this.AppSettings;
 
@@ -130,8 +134,11 @@
             builder.RegisterInstance(appSettings).As<ITimeoutSettings>();
             builder.RegisterInstance(appSettings.Security).As<ISecuritySettings>();
             builder.RegisterInstance(appSettings.ServiceEndpointsAuthentication).As<IServiceEndpointsAuthenticationSettings>();
-            builder.RegisterInstance(actorSystem).As<IActorRefFactory>();
+            builder.RegisterInstance(appSettings.DownloadApplication).As<IDownloadApplicationSettings>();
+            builder.RegisterInstance(actorSystem).As<IActorRefFactory>().As<ActorSystem>();
             builder.RegisterInstance(pathsBuilder).AsSelf();
+
+            builder.RegisterType<DownloadActor>().AsSelf();
 
             builder.RegisterType<EmployeesRegistry>().As<IEmployeesRegistry>();
             builder.RegisterType<UserEmployeeSearch>().As<IUserEmployeeSearch>();
@@ -149,12 +156,24 @@
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         // ReSharper disable once UnusedMember.Global
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ISecuritySettings securitySettings)
+        public void Configure(
+            IApplicationBuilder app,
+            IHostingEnvironment env,
+            ISecuritySettings securitySettings,
+            ILifetimeScope container,
+            ActorSystem actorSystem)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            // ReSharper disable once ObjectCreationAsStatement
+            new AutoFacDependencyResolver(container, actorSystem);
+
+            actorSystem.ActorOf(
+                actorSystem.DI().Props<DownloadActor>(),
+                WellKnownActorPaths.DownloadApplicationBuilds);
 
             app.UseAkkaTimeoutExceptionHandler();
             app.UseAuthentication();

@@ -7,7 +7,7 @@
         void RegisterDevice(
             string employeeId,
             string deviceId,
-            PushNotificationDeviceModel.DeviceTypeEnum deviceType);
+            DeviceType deviceType);
 
         void RemoveDevice(string employeeId, string deviceId);
     }

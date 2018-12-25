@@ -8,12 +8,7 @@
         public string DevicePushToken { get; set; }
 
         [Required]
-        public DeviceTypeEnum DeviceType { get; set; }
-
-        public enum DeviceTypeEnum
-        {
-            Android,
-            Ios
-        }
+        [EnumDataType(typeof(DeviceType))]
+        public DeviceType DeviceType { get; set; }
     }
 }
