@@ -46,10 +46,12 @@ declare module 'react-navigation' {
         ViewStyle
     } from 'react-native';
 
-    export class ScrollView extends React.Component<ScrollViewProps> {
+    import { NativeViewGestureHandlerProperties } from 'react-native-gesture-handler';
+
+    export class ScrollView extends React.Component<NativeViewGestureHandlerProperties & ScrollViewProps> {
     }
 
-    export class FlatList<ItemT> extends React.Component<FlatListProps<ItemT>> {
+    export class FlatList<ItemT> extends React.Component<NativeViewGestureHandlerProperties & FlatListProps<ItemT>> {
     }
 
     export class SectionList<ItemT> extends React.Component<SectionListProps<ItemT>> {

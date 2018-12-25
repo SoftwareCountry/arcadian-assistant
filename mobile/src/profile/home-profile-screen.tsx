@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Department } from '../reducers/organization/department.model';
-import { AppState } from '../reducers/app.reducer';
+import { AppState, getEmployee } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
 import { LayoutChangeEvent, RefreshControl, SafeAreaView, StyleSheet, View, ViewStyle } from 'react-native';
 import { Employee } from '../reducers/organization/employee.model';
@@ -17,7 +17,6 @@ import Style from '../layout/style';
 import { NavigationEvents, NavigationScreenConfig, NavigationStackScreenOptions, ScrollView } from 'react-navigation';
 import { Action, Dispatch } from 'redux';
 import { Optional } from 'types';
-import { getEmployee } from '../reducers/app.reducer';
 import { SettingsView } from '../user-preferences-screen/settings-view';
 import { employeeDetailsStyles } from '../employee-details/styles';
 
@@ -171,7 +170,8 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
         return (
             <ScrollView refreshControl={<RefreshControl tintColor={Style.color.white}
                                                         refreshing={false}
-                                                        onRefresh={this.onRefresh}/>}>
+                                                        onRefresh={this.onRefresh}/>}
+                        shouldCancelWhenOutside={false}>
 
                 <EmployeeDetails
                     department={department}

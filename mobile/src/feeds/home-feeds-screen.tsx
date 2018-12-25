@@ -42,6 +42,8 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>): FeedScreenDispatchProps
 
 //============================================================================
 class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenDispatchProps> {
+
+    //----------------------------------------------------------------------------
     public static navigationOptions: NavigationScreenConfig<NavigationStackScreenOptions> = {
         headerStyle: {
             backgroundColor: Style.color.base
@@ -70,6 +72,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
                       onEndReached={this.endReached}
                       onEndReachedThreshold={0.2}
                       ListFooterComponent={this.footer}
+                      shouldCancelWhenOutside={false}
             />
         </SafeAreaView>;
     }
