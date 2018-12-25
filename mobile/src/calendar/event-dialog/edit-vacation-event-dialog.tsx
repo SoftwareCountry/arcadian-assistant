@@ -9,7 +9,7 @@ import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dial
 import { CalendarEvent } from '../../reducers/calendar/calendar-event.model';
 import { cancelVacation } from '../../reducers/calendar/vacation.action';
 import { Employee } from '../../reducers/organization/employee.model';
-import { getEmployee } from '../../utils/utils';
+import { getEmployee } from '../../reducers/app.reducer';
 import { Optional } from 'types';
 
 interface EditVacationEventDialogDispatchProps {

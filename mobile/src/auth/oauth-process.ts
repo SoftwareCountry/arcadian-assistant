@@ -1,20 +1,28 @@
+/******************************************************************************
+ * Copyright (c) Arcadia, Inc. All rights reserved.
+ ******************************************************************************/
+
 import { AccessCodeRequest, TokenResponse } from './access-code-request';
 import { LoginRequest } from './login-request';
 import { RefreshTokenStorage } from './refresh-token-storage';
 import { AuthenticationState, NotAuthenticatedState } from './authentication-state';
 import moment from 'moment';
-import { distinctUntilChanged, map, switchMap } from 'rxjs/operators';
-import { concat, interval, merge, Observable, of, ReplaySubject, Subject, Subscription } from 'rxjs';
+import { catchError, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
+import { concat, EMPTY, interval, merge, Observable, of, ReplaySubject, Subject, Subscription } from 'rxjs';
 import { Nullable, Optional } from 'types';
+import { handleHttpErrors } from '../errors/error.operators';
 
 //https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-protocols-oauth-code
 
+//============================================================================
 const notAuthenticatedInstance: NotAuthenticatedState = { isAuthenticated: false }; //save a reference, so distinct works
 
+//============================================================================
 const cancellationErrorCode = '1';
 
+//============================================================================
 export class OAuthProcess {
-
+    //----------------------------------------------------------------------------
     public get authenticationState() {
         return this.authenticationStateSource.asObservable().pipe(distinctUntilChanged());
     }
@@ -35,6 +43,7 @@ export class OAuthProcess {
 
     private readonly accessCodeRequest: AccessCodeRequest;
 
+    //----------------------------------------------------------------------------
     constructor(
         clientId: string,
         authorizationUrl: string,
@@ -46,7 +55,11 @@ export class OAuthProcess {
         this.accessCodeRequest = new AccessCodeRequest(clientId, redirectUri, tokenUrl);
 
         const accessCodeResponse = this.authorizationCode.pipe(
-            switchMap((code: string) => this.accessCodeRequest.fetchNew(code)));
+            switchMap((code: string) => {
+                return this.accessCodeRequest.fetchNew(code).pipe(
+                    handleHttpErrors(false),
+                );
+            }));
 
         const refreshTokenObtainedAccessCodes = this.refreshTokenSource.pipe(
             switchMap(request => this.getPeriodicalRefreshTokens(request)),
@@ -55,13 +68,18 @@ export class OAuthProcess {
                     return of<Nullable<TokenResponse>>(null);
                 }
 
-                return this.accessCodeRequest.refresh(token);
+                return this.accessCodeRequest.refresh(token).pipe(
+                    catchError(() => {
+                        return EMPTY;
+                    }),
+                );
             }));
 
         this.accessCodeSubscription = merge(accessCodeResponse, refreshTokenObtainedAccessCodes)
             .subscribe(x => this.onNewTokenObtained(x), e => this.onTokenError(e));
     }
 
+    //----------------------------------------------------------------------------
     public handleAuthorizationCodeResponse(responseUrl: string) {
         try {
             const code = this.loginRequest.getAuthorizationCodeFromResponse(responseUrl);
@@ -71,6 +89,7 @@ export class OAuthProcess {
         }
     }
 
+    //----------------------------------------------------------------------------
     public async login() {
         let value: Optional<string> = undefined;
         try {
@@ -95,19 +114,23 @@ export class OAuthProcess {
         }
     }
 
+    //----------------------------------------------------------------------------
     public async logout() {
         this.forgetUser();
     }
 
+    //----------------------------------------------------------------------------
     public dispose() {
         this.accessCodeSubscription.unsubscribe();
     }
 
+    //----------------------------------------------------------------------------
     public async forgetUser() {
         await this.storeRefreshToken(null);
         this.refreshTokenSource.next(null);
     }
 
+    //----------------------------------------------------------------------------
     private onNewTokenObtained(tokenResponse: Nullable<TokenResponse>) {
         this.storeRefreshToken(tokenResponse ? tokenResponse.refreshToken : null);
 
@@ -124,6 +147,7 @@ export class OAuthProcess {
         }
     }
 
+    //----------------------------------------------------------------------------
     private onTokenError(error: any) {
         if (error && error.status === 0) {
             //ignore, no internet connection
@@ -135,6 +159,7 @@ export class OAuthProcess {
         }
     }
 
+    //----------------------------------------------------------------------------
     private async storeRefreshToken(token: string | null) {
         try {
             await this.refreshTokenStorage.storeToken(token);
@@ -143,6 +168,7 @@ export class OAuthProcess {
         }
     }
 
+    //----------------------------------------------------------------------------
     private getPeriodicalRefreshTokens(request: Nullable<RefreshTokenRequest>): Observable<Nullable<string>> {
         if (!request) {
             return of(null);
@@ -156,6 +182,7 @@ export class OAuthProcess {
         }
     }
 
+    //----------------------------------------------------------------------------
     private handleError(error: any) {
         const errorCode = error.code;
 
@@ -168,6 +195,7 @@ export class OAuthProcess {
         this.authenticationStateSource.next({ isAuthenticated: false, errorText: errorText });
     }
 
+    //----------------------------------------------------------------------------
     private getErrorMessage(error: any): string {
         const errorText =
             error
@@ -180,6 +208,8 @@ export class OAuthProcess {
     }
 }
 
+
+//============================================================================
 interface RefreshTokenRequest {
     tokenValue: string;
     immediateRefresh: boolean;

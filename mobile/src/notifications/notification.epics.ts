@@ -8,12 +8,14 @@ import { ignoreElements, map, switchMap } from 'rxjs/operators';
 import Push from 'appcenter-push';
 import { from, Observable } from 'rxjs';
 import { Action } from 'redux';
-import { openProfile } from '../navigation/navigation.actions';
+import { openEmployeeDetails, openProfile } from '../navigation/navigation.actions';
 import { AppState, DependenciesContainer } from '../reducers/app.reducer';
 import AppCenter from 'appcenter';
 import { installIdReceived, NotificationAction, NotificationActionType } from './notification.actions';
-import { handleHttpErrors } from '../reducers/errors/errors.epics';
+import { handleHttpErrors } from '../errors/error.operators';
 import { Platform } from 'react-native';
+import { loadPendingRequests } from '../reducers/calendar/pending-requests/pending-requests.action';
+import { loadCalendarEvents } from '../reducers/calendar/calendar.action';
 
 //----------------------------------------------------------------------------
 const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>, state$: StateObservable<AppState>) =>
@@ -23,15 +25,24 @@ const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>, state$:
                 Push.setListener({
                     onPushNotificationReceived: notification => {
                         if (!notification.customProperties || !notification.customProperties.employeeId) {
+                            console.warn(`Invalid notification payload: ${JSON.stringify(notification.customProperties)}`);
                             return;
                         }
 
                         const userInfo = state$.value.userInfo;
-                        if (!userInfo || notification.customProperties.employeeId !== userInfo.employeeId) {
+                        if (!userInfo || !userInfo.employeeId) {
                             return;
                         }
 
-                        observer.next(openProfile());
+                        const employeeId = notification.customProperties.employeeId;
+
+                        observer.next(loadPendingRequests());
+                        observer.next(loadCalendarEvents(employeeId));
+                        if (userInfo.employeeId === employeeId) {
+                            observer.next(openProfile());
+                        } else {
+                            observer.next(openEmployeeDetails(employeeId));
+                        }
                     },
                 });
 

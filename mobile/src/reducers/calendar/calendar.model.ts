@@ -1,25 +1,33 @@
+/******************************************************************************
+ * Copyright (c) Arcadia, Inc. All rights reserved.
+ ******************************************************************************/
+
 import moment, { Moment } from 'moment';
 import { CalendarEvent, CalendarEventType } from './calendar-event.model';
 import { IntervalsMetadata, ReadOnlyIntervalsMetadata } from './calendar-intervals-metadata.model';
 import { Nullable, Optional } from 'types';
 
+//============================================================================
 export interface DayModel {
     date: Moment;
     today: boolean;
     belongsToCurrentMonth: boolean;
 }
 
+//============================================================================
 export const defaultDayModel: DayModel = {
     date: moment(),
     today: true,
     belongsToCurrentMonth: true,
 };
 
+//============================================================================
 export interface WeekModel {
     days: DayModel[];
     weekIndex: number;
 }
 
+//============================================================================
 export enum IntervalType {
     StartInterval = 'StartInterval',
     Interval = 'Interval',
@@ -29,12 +37,14 @@ export enum IntervalType {
     IntervalRightBoundary = 'IntervalRightBoundary'
 }
 
+//============================================================================
 export interface IntervalModel {
     intervalType: Nullable<IntervalType>;
     calendarEvent: CalendarEvent;
     boundary: boolean;
 }
 
+//============================================================================
 export interface ReadOnlyIntervalsModel {
     readonly metadata: ReadOnlyIntervalsMetadata;
 
@@ -43,17 +53,21 @@ export interface ReadOnlyIntervalsModel {
     copy(): IntervalsModel;
 }
 
+//============================================================================
 type IntervalsModelDictionary = {
     [dateKey: string]: IntervalModel[];
 };
 
+//============================================================================
 export class IntervalsModel implements ReadOnlyIntervalsModel {
+    //----------------------------------------------------------------------------
     constructor(
         private readonly intervalsDictionary: IntervalsModelDictionary = {},
         public readonly intervalsMetadata: IntervalsMetadata = new IntervalsMetadata([])
     ) {
     }
 
+    //----------------------------------------------------------------------------
     public set(date: Moment, interval: IntervalModel) {
         const dateKey = IntervalsModel.generateKey(date);
 
@@ -66,15 +80,18 @@ export class IntervalsModel implements ReadOnlyIntervalsModel {
         intervals.push(interval);
     }
 
+    //----------------------------------------------------------------------------
     public get(date: Moment): IntervalModel[] | undefined {
         const dateKey = IntervalsModel.generateKey(date);
         return this.intervalsDictionary[dateKey];
     }
 
+    //----------------------------------------------------------------------------
     public get metadata(): ReadOnlyIntervalsMetadata {
         return this.intervalsMetadata;
     }
 
+    //----------------------------------------------------------------------------
     public copy(): IntervalsModel {
         const copiedDictionary = { ...this.intervalsDictionary };
 
@@ -91,26 +108,31 @@ export class IntervalsModel implements ReadOnlyIntervalsModel {
         return new IntervalsModel(copiedDictionary, copiedMetadata);
     }
 
+    //----------------------------------------------------------------------------
     public static generateKey(date: Moment): string {
         return date.format('DD-MM-YYYY');
     }
 }
 
+//============================================================================
 export interface SingleSelection {
     day?: DayModel;
 }
 
+//============================================================================
 export interface IntervalSelection {
     startDay?: DayModel;
     endDay?: DayModel;
     color?: string;
 }
 
+//============================================================================
 export interface CalendarSelection {
     single: SingleSelection;
     interval?: IntervalSelection;
 }
 
+//============================================================================
 export class ExtractedIntervals {
     public readonly vacation: Optional<IntervalModel> = undefined;
     public readonly dayoff: Optional<IntervalModel> = undefined;
@@ -125,6 +147,7 @@ export class ExtractedIntervals {
     }
 }
 
+//============================================================================
 export class CalendarPageModel {
     public readonly pageId: string;
 
@@ -136,4 +159,39 @@ export class CalendarPageModel {
     ) {
         this.pageId = date.format('MMMM YYYY');
     }
+}
+
+//----------------------------------------------------------------------------
+function getVacationIntervals(intervals: IntervalModel[], exclude: CalendarEvent[] = []): IntervalModel[] {
+    return intervals
+        .filter(interval => interval.calendarEvent.isVacation)
+        .filter(interval => !exclude.find(event => interval.calendarEvent.calendarEventId === event.calendarEventId));
+}
+
+//----------------------------------------------------------------------------
+export function isIntersectingAnotherVacation(startDay: DayModel | undefined,
+                                              endDay: DayModel | undefined,
+                                              intervals: ReadOnlyIntervalsModel,
+                                              exclude: CalendarEvent[] = []): boolean {
+    if (!startDay) {
+        return false;
+    }
+
+    if (!endDay) {
+        const intervalsForStartDay = intervals.get(startDay.date);
+        if (!intervalsForStartDay) {
+            return false;
+        }
+        return getVacationIntervals(intervalsForStartDay, exclude).length > 0;
+    }
+
+    let currentDay = startDay.date.clone();
+    while (currentDay.isSameOrBefore(endDay.date)) {
+        const intervalsForCurrentDay = intervals.get(currentDay);
+        if (intervalsForCurrentDay) {
+            return getVacationIntervals(intervalsForCurrentDay, exclude).length > 0;
+        }
+        currentDay = currentDay.add(1, 'days');
+    }
+    return false;
 }

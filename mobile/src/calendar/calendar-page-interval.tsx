@@ -40,7 +40,7 @@ export class HalfInterval extends Component<HalfIntervalProps> {
         const circleStyles = StyleSheet.flatten([
             {
                 borderRadius: size,
-                height: size,
+                height: Math.round(size),
                 width: Math.round(size),
                 backgroundColor: this.props.color
             },

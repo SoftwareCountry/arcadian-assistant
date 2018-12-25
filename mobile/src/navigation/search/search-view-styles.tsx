@@ -36,6 +36,7 @@ export const searchViewStyles = StyleSheet.create({
     loadingContainer: {
         flex: 1,
         alignItems: 'center',
+        backgroundColor: 'white',
         justifyContent: 'center'
     }
 });

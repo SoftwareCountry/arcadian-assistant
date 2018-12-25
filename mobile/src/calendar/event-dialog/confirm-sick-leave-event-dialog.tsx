@@ -10,7 +10,7 @@ import { confirmSickLeave } from '../../reducers/calendar/sick-leave.action';
 import moment, { Moment } from 'moment';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
 import { Optional } from 'types';
-import { getEmployee } from '../../utils/utils';
+import { getEmployee } from '../../reducers/app.reducer';
 
 interface ClaimSickLeaveEventDialogDispatchProps {
     back: () => void;

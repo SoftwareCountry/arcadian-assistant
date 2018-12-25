@@ -9,7 +9,7 @@ import { LoadingView } from '../navigation/loading';
 import { Action, Dispatch } from 'redux';
 import { openEmployeeDetails } from '../navigation/navigation.actions';
 import { Optional } from 'types';
-import { getEmployee } from '../utils/utils';
+import { getEmployee } from '../reducers/app.reducer';
 
 interface PeopleRoomPropsOwnProps {
     employees: EmployeesStore;
@@ -40,7 +40,7 @@ interface EmployeesListDispatchProps {
 }
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>): EmployeesListDispatchProps => ({
-    onItemClicked: (employee: Employee) => dispatch(openEmployeeDetails(employee))
+    onItemClicked: (employee: Employee) => dispatch(openEmployeeDetails(employee.employeeId))
 });
 
 class PeopleRoomImpl extends React.Component<PeopleRoomStateProps & EmployeesListDispatchProps> {

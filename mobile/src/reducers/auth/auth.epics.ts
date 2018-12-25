@@ -13,7 +13,7 @@ import {
     userLoggedOut
 } from './auth.action';
 import { refresh } from '../refresh/refresh.action';
-import { handleHttpErrors } from '../errors/errors.epics';
+import { handleHttpErrors } from '../../errors/error.operators';
 import { distinctUntilChanged, flatMap, ignoreElements, map, tap } from 'rxjs/operators';
 import { Alert } from 'react-native';
 import { AuthenticationState } from '../../auth/authentication-state';

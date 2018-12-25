@@ -6,7 +6,7 @@ import { getEventsAndPendingRequests } from './calendar.epics';
 import { flatMap } from 'rxjs/operators';
 import { openEventDialog, stopEventDialogProgress } from './event-dialog/event-dialog.action';
 import { EventDialogType } from './event-dialog/event-dialog-type.model';
-import { handleHttpErrorsWithDefaultValue } from '../errors/errors.epics';
+import { handleHttpErrorsWithDefaultValue } from '../../errors/error.operators';
 import { of } from 'rxjs';
 import { Action } from 'redux';
 

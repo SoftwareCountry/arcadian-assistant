@@ -16,7 +16,7 @@ import { DayModel, ExtractedIntervals, ReadOnlyIntervalsModel } from '../../redu
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
 import moment from 'moment';
 import { Optional } from 'types';
-import { isIntersectingAnotherVacation } from '../../utils/utils';
+import { isIntersectingAnotherVacation } from '../../reducers/calendar/calendar.model';
 
 //============================================================================
 interface ChangeVacationStartDateEventDialogDispatchProps {

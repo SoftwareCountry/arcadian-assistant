@@ -19,6 +19,9 @@
         [Required]
         public ServiceEndpointsAuthenticationSettings ServiceEndpointsAuthentication { get; set; }
 
+        [Required]
+        public DownloadApplicationSettings DownloadApplication { get; set; }
+
         public string Akka { get; set; }
     }
 }
