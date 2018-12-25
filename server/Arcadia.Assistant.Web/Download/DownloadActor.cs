@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
 
@@ -85,17 +86,10 @@
                         this.Self,
                         success: result =>
                         {
-                            var resultExceptions = new List<Exception>();
-
-                            if (result[0] is DownloadApplicationBuild.Error errAndroid)
-                            {
-                                resultExceptions.Add(errAndroid.Exception);
-                            }
-
-                            if (result[1] is DownloadApplicationBuild.Error errIos)
-                            {
-                                resultExceptions.Add(errIos.Exception);
-                            }
+                            var resultExceptions = result
+                                .OfType<DownloadApplicationBuild.Error>()
+                                .Select(x => x.Exception)
+                                .ToList();
 
                             if (resultExceptions.Count != 0)
                             {

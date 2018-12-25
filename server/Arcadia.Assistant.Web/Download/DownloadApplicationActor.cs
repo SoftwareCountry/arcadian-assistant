@@ -121,7 +121,7 @@
                 var contentString = await response.Content.ReadAsStringAsync();
 
                 var downloadModel = this.DeserializeJson<AppCenterBuildDownloadModel>(contentString);
-                downloadModel.BuildDate = build.FinishTime;
+                downloadModel.BuildNumber = build.Id;
 
                 return downloadModel;
             }
@@ -133,7 +133,7 @@
             var fileEntry = zipArchive.Entries.Single(e => !string.IsNullOrEmpty(e.Name));
 
             var fileName = this.downloadApplicationSettings.RenameBuildFilePattern
-                .Replace("{date}", buildDownloadModel.BuildDate.ToString("yyyy-MM-dd-hh-mm-ss"))
+                .Replace("{buildNumber}", buildDownloadModel.BuildNumber.ToString())
                 .Replace("{ext}", Path.GetExtension(fileEntry.Name));
 
             var buildsPath = Path.Combine(
