@@ -1,11 +1,10 @@
 ﻿namespace Arcadia.Assistant.InboxEmail.Abstractions
 {
     using System.Collections.Generic;
-    using System.IO;
 
     public class Email
     {
-        public Email(uint uniqueId, string text, IEnumerable<Stream> attachments)
+        public Email(uint uniqueId, string text, IEnumerable<byte[]> attachments)
         {
             this.UniqueId = uniqueId;
             this.Text = text;
@@ -16,6 +15,6 @@
 
         public string Text { get; }
 
-        public IEnumerable<Stream> Attachments { get; }
+        public IEnumerable<byte[]> Attachments { get; }
     }
 }

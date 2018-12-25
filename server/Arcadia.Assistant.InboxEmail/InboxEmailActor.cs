@@ -115,7 +115,7 @@
                             await mimePart.Content.DecodeToAsync(stream);
                         }
 
-                        return stream;
+                        return stream.ToArray();
                     });
                 var attachments = await Task.WhenAll(attachmentsTasks);
 
