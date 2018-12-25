@@ -132,18 +132,3 @@ export const companyDepartmentLevelPeople = StyleSheet.create({
         fontSize: 11
     }
 });
-
-export const noResult = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    text: {
-        fontSize: 20,
-        color: Style.color.base,
-        marginTop: 20,
-        fontFamily: 'CenturyGothic',
-        textAlign: 'center',
-    },
-});

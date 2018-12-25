@@ -2,14 +2,14 @@ import { ActionsObservable, StateObservable } from 'redux-observable';
 import { CancelDayoff, ConfirmProcessDayoff } from './dayoff.action';
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { CalendarEvent, CalendarEventStatus, CalendarEventType, DatesInterval } from './calendar-event.model';
-import { of } from 'rxjs';
-import { loadFailedError } from '../errors/errors.action';
 import { IntervalTypeConverter } from './interval-type-converter';
 import { getEventsAndPendingRequests } from './calendar.epics';
-import { catchError, flatMap } from 'rxjs/operators';
+import { flatMap } from 'rxjs/operators';
 import { openEventDialog, stopEventDialogProgress } from './event-dialog/event-dialog.action';
 import { EventDialogType } from './event-dialog/event-dialog-type.model';
 import { Action } from 'redux';
+import { handleHttpErrorsWithDefaultValue } from '../../errors/error.operators';
+import { of } from 'rxjs';
 
 export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('CONFIRM-PROCESS-DAYOFF').pipe(
@@ -42,9 +42,9 @@ export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff
                 { 'Content-Type': 'application/json' }
             ).pipe(
                 getEventsAndPendingRequests(x.employeeId, next),
+                handleHttpErrorsWithDefaultValue<Action>(of(stopEventDialogProgress())),
             );
         }),
-        catchError((e: Error) => of(loadFailedError(e.message)))
     );
 
 export const dayoffCanceledEpic$ = (action$: ActionsObservable<CancelDayoff>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
@@ -58,7 +58,9 @@ export const dayoffCanceledEpic$ = (action$: ActionsObservable<CancelDayoff>, _:
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
                 requestBody,
                 { 'Content-Type': 'application/json' }
-            ).pipe(getEventsAndPendingRequests(x.employeeId));
+            ).pipe(
+                getEventsAndPendingRequests(x.employeeId),
+                handleHttpErrorsWithDefaultValue<Action>(of(stopEventDialogProgress())),
+            );
         }),
-        catchError((e: Error) => of(loadFailedError(e.message))),
     );

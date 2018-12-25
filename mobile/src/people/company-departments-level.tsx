@@ -18,7 +18,6 @@ interface CompanyDepartmentsLevelProps {
     selection: DepartmentIdToSelectedId;
     onSelectedNode: (departmentId: string) => void;
     onPressEmployee: (employee: Employee) => void;
-    loadEmployeesForDepartment: (departmentId: string) => void;
 }
 
 export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelProps> {
@@ -63,8 +62,7 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
                 selectedDepartmentId={selectedDepartmentId}
                 onNextDepartment={this.props.onSelectedNode}
                 onPrevDepartment={this.props.onSelectedNode}
-                onPressChief={this.props.onPressEmployee}
-                loadEmployeesForDepartment={this.props.loadEmployeesForDepartment}/>
+                onPressChief={this.props.onPressEmployee}/>
         );
     }
 
@@ -91,8 +89,7 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
                 employeeIdsByDepartment={this.props.employeeIdsByDepartment}
                 selection={this.props.selection}
                 onSelectedNode={this.props.onSelectedNode}
-                onPressEmployee={this.props.onPressEmployee}
-                loadEmployeesForDepartment={this.props.loadEmployeesForDepartment}/>
+                onPressEmployee={this.props.onPressEmployee}/>
         );
     }
 

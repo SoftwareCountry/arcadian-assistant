@@ -8,10 +8,12 @@ import {
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { CalendarEvent, CalendarEventStatus, CalendarEventType, DatesInterval } from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
-import { loadFailedError } from '../errors/errors.action';
 import { getEventsAndPendingRequests } from './calendar.epics';
-import { catchError, flatMap, map } from 'rxjs/operators';
+import { flatMap, map } from 'rxjs/operators';
+import { handleHttpErrorsWithDefaultValue } from '../../errors/error.operators';
+import { Action } from 'redux';
 import { of } from 'rxjs';
+import { stopEventDialogProgress } from './event-dialog/event-dialog.action';
 
 export const sickLeaveSavedEpic$ = (action$: ActionsObservable<ConfirmClaimSickLeave>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('CONFIRM-CLAIM-SICK-LEAVE').pipe(
@@ -34,10 +36,10 @@ export const sickLeaveSavedEpic$ = (action$: ActionsObservable<ConfirmClaimSickL
                 { 'Content-Type': 'application/json' }
             ).pipe(
                 map(obj => deserialize(obj.response, CalendarEvent)),
-                getEventsAndPendingRequests(x.employeeId)
+                getEventsAndPendingRequests(x.employeeId),
+                handleHttpErrorsWithDefaultValue<Action>(of(stopEventDialogProgress())),
             );
         }),
-        catchError((e: Error) => of(loadFailedError(e.message))),
     );
 
 export const sickLeaveCompletedEpic$ = (action$: ActionsObservable<CompleteSickLeave>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
@@ -52,9 +54,11 @@ export const sickLeaveCompletedEpic$ = (action$: ActionsObservable<CompleteSickL
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
                 requestBody,
                 { 'Content-Type': 'application/json' }
-            ).pipe(getEventsAndPendingRequests(x.employeeId));
+            ).pipe(
+                getEventsAndPendingRequests(x.employeeId),
+                handleHttpErrorsWithDefaultValue<Action>(of(stopEventDialogProgress())),
+            );
         }),
-        catchError((e: Error) => of(loadFailedError(e.message))),
     );
 
 export const sickLeaveProlongedEpic$ = (action$: ActionsObservable<ConfirmProlongSickLeave>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
@@ -71,9 +75,11 @@ export const sickLeaveProlongedEpic$ = (action$: ActionsObservable<ConfirmProlon
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
                 requestBody,
                 { 'Content-Type': 'application/json' }
-            ).pipe(getEventsAndPendingRequests(x.employeeId));
+            ).pipe(
+                getEventsAndPendingRequests(x.employeeId),
+                handleHttpErrorsWithDefaultValue<Action>(of(stopEventDialogProgress())),
+            );
         }),
-        catchError((e: Error) => of(loadFailedError(e.message))),
     );
 
 export const sickLeaveCanceledEpic$ = (action$: ActionsObservable<CancelSickLeave>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
@@ -88,7 +94,9 @@ export const sickLeaveCanceledEpic$ = (action$: ActionsObservable<CancelSickLeav
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
                 requestBody,
                 { 'Content-Type': 'application/json' }
-            ).pipe(getEventsAndPendingRequests(x.employeeId));
+            ).pipe(
+                getEventsAndPendingRequests(x.employeeId),
+                handleHttpErrorsWithDefaultValue<Action>(of(stopEventDialogProgress())),
+            );
         }),
-        catchError((e: Error) => of(loadFailedError(e.message))),
     );

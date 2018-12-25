@@ -10,25 +10,26 @@
     using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.Notifications;
-    using Arcadia.Assistant.Notifications.Email;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.UserPreferences;
 
+    using EmailNotification = Arcadia.Assistant.Notifications.Email.EmailNotification;
+
     public class EventUserGrantedApprovalEmailNotificationActor : UntypedActor, ILogReceive
     {
-        private readonly IEmailSettings mailConfig;
+        private readonly IEmailNotification emailNotificationConfig;
         private readonly IActorRef organizationActor;
         private readonly IActorRef userPreferencesActor;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
         public EventUserGrantedApprovalEmailNotificationActor(
-            IEmailSettings mailConfig,
+            IEmailNotification emailNotificationConfig,
             IActorRef organizationActor,
             IActorRef userPreferencesActor)
         {
-            this.mailConfig = mailConfig;
+            this.emailNotificationConfig = emailNotificationConfig;
             this.organizationActor = organizationActor;
             this.userPreferencesActor = userPreferencesActor;
 
@@ -61,13 +62,13 @@
                 case CalendarEventApprovalsChangedWithAdditionalData msg
                     when msg.OwnerUserPreferences.EmailNotifications:
 
-                    this.logger.Debug("Sending notification about user {0} granted approval for event {1} of {2}",
-                        msg.Approver.Name, msg.Event.EventId, msg.Owner.Name);
+                    this.logger.Debug("Sending email notification about user {0} granted approval for event {1} of {2}",
+                        msg.Approver.EmployeeId, msg.Event.EventId, msg.Owner.EmployeeId);
 
-                    var sender = this.mailConfig.NotificationSender;
+                    var sender = this.emailNotificationConfig.NotificationSender;
                     var recipient = msg.Owner.Email;
-                    var subject = this.mailConfig.Subject;
-                    var body = string.Format(this.mailConfig.Body, msg.Event.Type, msg.Approver.Name);
+                    var subject = this.emailNotificationConfig.Subject;
+                    var body = string.Format(this.emailNotificationConfig.Body, msg.Event.Type, msg.Approver.Name);
 
                     Context.System.EventStream.Publish(
                         new NotificationEventBusMessage(

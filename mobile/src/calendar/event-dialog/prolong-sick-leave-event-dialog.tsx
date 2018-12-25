@@ -10,7 +10,7 @@ import { Employee } from '../../reducers/organization/employee.model';
 import { Moment } from 'moment';
 import { CalendarEvent } from '../../reducers/calendar/calendar-event.model';
 import { Action, Dispatch } from 'redux';
-import { getEmployee } from '../../utils/utils';
+import { getEmployee } from '../../reducers/app.reducer';
 import { Optional } from 'types';
 
 interface ProlongSickLeaveEventDialogDispatchProps {

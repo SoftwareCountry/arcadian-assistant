@@ -4,7 +4,7 @@
 
 import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
 import { flatMap, map, mergeMap, tap } from 'rxjs/operators';
-import { handleHttpErrors } from '../errors/errors.epics';
+import { handleHttpErrors } from '../../errors/error.operators';
 import { deserializeArray } from 'santee-dcts';
 import { ApprovalActionType, Approve, approveFinished, LoadApprovals, loadApprovalsFinished } from './approval.action';
 import { AppState, DependenciesContainer } from '../app.reducer';

@@ -64,8 +64,8 @@ export class IntervalBoundary extends Component<IntervalBoundaryProps> {
     }
 
     private halfCircleSizes(): { halfCircleSize: number, halfCircleRadius: number } {
-        const halfCircleSize = PixelRatio.roundToNearestPixel(this.props.size - (this.props.size * (this.margin + 0.08)));
-        const halfCircleRadius = PixelRatio.roundToNearestPixel(halfCircleSize / 2);
+        const halfCircleSize = Math.round(this.props.size - (this.props.size * (this.margin + 0.08)));
+        const halfCircleRadius = Math.round(halfCircleSize / 2);
 
         return { halfCircleSize, halfCircleRadius };
     }

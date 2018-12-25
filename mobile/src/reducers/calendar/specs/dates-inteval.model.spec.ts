@@ -11,6 +11,6 @@ describe('DatesInterval', () => {
     });
 
     it('should serialize startDate, endDate to DD/MM/YYYY date string', () => {
-        expect(JSON.stringify(dates)).toBe('{"startDate":"01/01/2018","endDate":"02/01/2018"}');
+        expect(JSON.stringify(dates)).toBe('{"startDate":"01/01/2018","endDate":"02/01/2018","startWorkingHour":0,"finishWorkingHour":0}');
     });
 });

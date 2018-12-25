@@ -49,7 +49,6 @@ export const layoutStyles = StyleSheet.create({
     header: {
         alignSelf: 'center',
         marginBottom: 5,
-        textTransform: 'capitalize',
     },
     avatarContainer: {
         borderRadius: circleDiameter / 2,

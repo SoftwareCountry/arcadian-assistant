@@ -5,7 +5,7 @@ import { MaterialTopTabBar, TabBarTopProps, TabLabelTextParam } from 'react-navi
 import { connect } from 'react-redux';
 import { AppState } from '../../reducers/app.reducer';
 import { Nullable, Optional } from 'types';
-import { getEmployee } from '../../utils/utils';
+import { getEmployee } from '../../reducers/app.reducer';
 import { toNullable } from '../../types/types-utils';
 
 //============================================================================

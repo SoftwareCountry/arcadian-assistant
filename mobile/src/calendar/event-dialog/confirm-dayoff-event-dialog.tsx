@@ -11,7 +11,7 @@ import { SelectorDayoffDuration } from './selector-dayoff-duration';
 import { confirmProcessDayoff } from '../../reducers/calendar/dayoff.action';
 import { Employee } from '../../reducers/organization/employee.model';
 import { HoursCreditType } from '../../reducers/calendar/days-counters.model';
-import { getEmployee } from '../../utils/utils';
+import { getEmployee } from '../../reducers/app.reducer';
 import { Optional } from 'types';
 
 interface ConfirmDayoffEventDialogDispatchProps {

@@ -9,7 +9,7 @@
 
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
-    using Arcadia.Assistant.Calendar.Vacations.Events;
+    using Arcadia.Assistant.Calendar.Events;
     using Arcadia.Assistant.Feeds;
     using Arcadia.Assistant.Feeds.Messages;
     using Arcadia.Assistant.Organization.Abstractions;

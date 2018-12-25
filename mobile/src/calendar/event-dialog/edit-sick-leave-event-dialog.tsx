@@ -10,7 +10,7 @@ import { CalendarEvent } from '../../reducers/calendar/calendar-event.model';
 import { completeSickLeave } from '../../reducers/calendar/sick-leave.action';
 import { Employee } from '../../reducers/organization/employee.model';
 import { Nullable, Optional } from 'types';
-import { getEmployee } from '../../utils/utils';
+import { getEmployee } from '../../reducers/app.reducer';
 
 interface EditSickLeaveEventDialogDispatchProps {
     prolong: () => void;

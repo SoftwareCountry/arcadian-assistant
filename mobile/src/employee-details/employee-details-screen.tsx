@@ -11,16 +11,21 @@ import Style from '../layout/style';
 import { layoutStyles } from '../profile/styles';
 import { Action, Dispatch } from 'redux';
 import { refresh } from '../reducers/refresh/refresh.action';
-import { Set } from 'immutable';
+import { Map, Set } from 'immutable';
+import { EmployeeId } from '../reducers/organization/employee.model';
+import { EmployeeMap } from '../reducers/organization/employees.reducer';
+import { loadEmployees } from '../reducers/organization/organization.action';
 
 //============================================================================
 interface EmployeeDetailsProps {
     departments: Set<Department>;
+    employees: EmployeeMap;
 }
 
 //============================================================================
 interface EmployeeDetailsDispatchProps {
     refresh: () => void;
+    loadEmployee: (employeeId: EmployeeId) => void;
 }
 
 //============================================================================
@@ -40,6 +45,14 @@ class EmployeeDetailsScreenImpl extends Component<EmployeeDetailsProps & Employe
             width: 0,
             height: 0,
         };
+    }
+
+    //----------------------------------------------------------------------------
+    public componentDidMount() {
+        const employeeId: EmployeeId | undefined = this.props.navigation.getParam('employeeId', undefined);
+        if (employeeId) {
+            this.props.loadEmployee(employeeId);
+        }
     }
 
     //----------------------------------------------------------------------------
@@ -85,10 +98,22 @@ class EmployeeDetailsScreenImpl extends Component<EmployeeDetailsProps & Employe
 
     //----------------------------------------------------------------------------
     private renderEmployeeDetails(): JSX.Element {
-        const employee = this.props.navigation.getParam('employee', undefined);
-        const department = this.props.departments.find(department => department.departmentId === employee.departmentId);
+        const employeeId: EmployeeId | undefined = this.props.navigation.getParam('employeeId', undefined);
+        if (!employeeId) {
+            return <LoadingView/>;
+        }
 
-        return employee && department ?
+        const employee = this.props.employees.get(employeeId);
+        if (!employee) {
+            return <LoadingView/>;
+        }
+
+        const department = this.props.departments.find(department => department.departmentId === employee.departmentId);
+        if (!department) {
+            return <LoadingView/>;
+        }
+
+        return (
             <ScrollView refreshControl={<RefreshControl tintColor={Style.color.white}
                                                         refreshing={false}
                                                         onRefresh={this.onRefresh}/>}>
@@ -97,8 +122,8 @@ class EmployeeDetailsScreenImpl extends Component<EmployeeDetailsProps & Employe
                     employee={employee}
                     layoutStylesChevronPlaceholder={layoutStyles.chevronPlaceholder as ViewStyle}
                 />
-            </ScrollView> :
-            <LoadingView/>;
+            </ScrollView>
+        );
     }
 
     //----------------------------------------------------------------------------
@@ -118,11 +143,13 @@ class EmployeeDetailsScreenImpl extends Component<EmployeeDetailsProps & Employe
 //----------------------------------------------------------------------------
 const stateToProps = (state: AppState): EmployeeDetailsProps => ({
     departments: state.organization ? Set(state.organization.departments) : Set(),
+    employees: state.organization ? state.organization.employees.employeesById : Map(),
 });
 
 //----------------------------------------------------------------------------
 const dispatchToProps = (dispatch: Dispatch<Action>): EmployeeDetailsDispatchProps => ({
     refresh: () => dispatch(refresh()),
+    loadEmployee: employeeId => dispatch(loadEmployees([employeeId])),
 });
 
 export const EmployeeDetailsScreen = connect(stateToProps, dispatchToProps)(EmployeeDetailsScreenImpl);

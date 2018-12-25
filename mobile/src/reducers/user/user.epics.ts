@@ -16,7 +16,7 @@ import {
 import { AppState } from 'react-native';
 import { DependenciesContainer } from '../app.reducer';
 import { Employee } from '../organization/employee.model';
-import { handleHttpErrors } from '../errors/errors.epics';
+import { handleHttpErrors } from '../../errors/error.operators';
 import { startLogoutProcess } from '../auth/auth.action';
 import { UserEmployeePermissions } from './user-employee-permissions.model';
 import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';

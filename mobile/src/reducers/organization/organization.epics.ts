@@ -1,5 +1,6 @@
 import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
 import {
+    LoadAllEmployees,
     LoadDepartments,
     loadDepartments,
     loadDepartmentsFinished,
@@ -17,8 +18,7 @@ import { deserialize, deserializeArray } from 'santee-dcts/src/deserializer';
 import { Department } from './department.model';
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { Employee } from './employee.model';
-import { loadFailedError } from '../errors/errors.action';
-import { handleHttpErrors } from '../errors/errors.epics';
+import { handleHttpErrors } from '../../errors/error.operators';
 import { catchError, filter, groupBy, map, mergeAll, mergeMap, switchMap } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
 import { Set } from 'immutable';
@@ -36,6 +36,17 @@ export const loadEmployeeEpic$ = (action$: ActionsObservable<LoadEmployees>, _: 
         return forkJoin(requests);
     }),
     map(employees => loadEmployeesFinished(employees)),
+);
+
+export const loadAllEmployeeEpic$ = (action$: ActionsObservable<LoadAllEmployees>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
+    ofType('LOAD_ALL_EMPLOYEES'),
+    switchMap(action => {
+        return deps.apiClient.getJSON(`/employees/`).pipe(
+            map(obj => deserializeArray(obj as any, Employee) as Employee[]),
+            map(employees => loadEmployeesFinished(employees)),
+            handleHttpErrors(),
+        );
+    }),
 );
 
 export const loadDepartmentsEpic$ = (action$: ActionsObservable<LoadDepartments>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
@@ -97,5 +108,4 @@ export const loadEmployeesForUserRoomEpic$ = (action$: ActionsObservable<LoadUse
 export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
     ofType('LOAD-USER-EMPLOYEE-FINISHED'),
     map(x => loadDepartments()),
-    catchError((e: Error) => of(loadFailedError(e.message))),
 );

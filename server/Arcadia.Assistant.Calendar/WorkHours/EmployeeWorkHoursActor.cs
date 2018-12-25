@@ -9,7 +9,7 @@
 
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
-    using Arcadia.Assistant.Calendar.WorkHours.Events;
+    using Arcadia.Assistant.Calendar.Events;
 
     public class EmployeeWorkHoursActor : CalendarEventsStorageBase
     {

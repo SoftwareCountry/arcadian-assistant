@@ -11,6 +11,9 @@
         public PushSettings Push { get; set; }
 
         [Required]
-        public CalendarEventsMessagingSettings CalendarEvents { get; set; }
+        public CalendarEventsMailSettings CalendarEventsMail { get; set; }
+
+        [Required]
+        public CalendarEventsPushSettings CalendarEventsPush { get; set; }
     }
 }

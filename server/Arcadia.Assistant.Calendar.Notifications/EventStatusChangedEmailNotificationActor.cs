@@ -10,25 +10,26 @@
     using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.Notifications;
-    using Arcadia.Assistant.Notifications.Email;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.UserPreferences;
 
+    using EmailNotification = Arcadia.Assistant.Notifications.Email.EmailNotification;
+
     public class EventStatusChangedEmailNotificationActor : UntypedActor, ILogReceive
     {
-        private readonly IEmailSettings mailConfig;
+        private readonly IEmailNotification emailNotificationConfig;
         private readonly IActorRef organizationActor;
         private readonly IActorRef userPreferencesActor;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
         public EventStatusChangedEmailNotificationActor(
-            IEmailSettings mailConfig,
+            IEmailNotification emailNotificationConfig,
             IActorRef organizationActor,
             IActorRef userPreferencesActor)
         {
-            this.mailConfig = mailConfig;
+            this.emailNotificationConfig = emailNotificationConfig;
             this.organizationActor = organizationActor;
             this.userPreferencesActor = userPreferencesActor;
 
@@ -62,12 +63,12 @@
                 case CalendarEventChangedWithAdditionalData msg
                     when msg.OwnerUserPreferences.EmailNotifications:
 
-                    this.logger.Debug("Sending notification about event {0} status changed to owner", msg.Event.EventId);
+                    this.logger.Debug("Sending email notification about event {0} status changed to owner", msg.Event.EventId);
 
-                    var sender = this.mailConfig.NotificationSender;
+                    var sender = this.emailNotificationConfig.NotificationSender;
                     var recipient = msg.Owner.Email;
-                    var subject = this.mailConfig.Subject;
-                    var body = string.Format(this.mailConfig.Body, msg.Event.Type, msg.Event.Status);
+                    var subject = this.emailNotificationConfig.Subject;
+                    var body = string.Format(this.emailNotificationConfig.Body, msg.Event.Type, msg.Event.Status);
 
                     Context.System.EventStream.Publish(
                         new NotificationEventBusMessage(

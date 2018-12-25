@@ -61,6 +61,8 @@
                             throw new Exception($"Event {cmd.Event.EventId}. Initial status must be {this.GetInitialStatus()}");
                         }
 
+                        this.EnsureDatesAreNotIntersected(cmd.Event);
+
                         this.InsertCalendarEvent(cmd.Event, cmd.UpdatedBy, cmd.Timestamp, ev =>
                         {
                             this.OnSuccessfulUpsert(ev);
@@ -84,6 +86,8 @@
                             throw new Exception($"Event {cmd.Event.EventId}. Status transition {oldEvent.Status} -> {cmd.Event.Status} " +
                                 $"is not allowed for {oldEvent.Type}");
                         }
+
+                        this.EnsureDatesAreNotIntersected(cmd.Event);
 
                         this.UpdateCalendarEvent(oldEvent, cmd.UpdatedBy, cmd.Timestamp, cmd.Event, ev =>
                         {
@@ -254,6 +258,17 @@
             else
             {
                 Context.System.EventStream.Publish(new CalendarEventAssignedToApprover(calendarEvent, null));
+            }
+        }
+
+        private void EnsureDatesAreNotIntersected(CalendarEvent @event)
+        {
+            var intersectedEvent = this.EventsById.Values
+                .Where(ev => ev.EventId != @event.EventId && ev.Type == @event.Type)
+                .FirstOrDefault(ev => ev.Dates.DatesIntersectsWith(@event.Dates));
+            if (intersectedEvent != null)
+            {
+                throw new Exception($"Event {@event.EventId}. Dates intersect with another {@event.Type} with id {intersectedEvent.EventId}");
             }
         }
 

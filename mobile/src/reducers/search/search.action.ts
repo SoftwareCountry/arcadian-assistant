@@ -1,5 +1,5 @@
 import { Action } from 'redux';
-import { SearchType } from '../../navigation/search-view';
+import { SearchType } from '../../navigation/search/search-view';
 
 export interface SetFilter extends Action {
     type: 'SEARCH-BY-TEXT-FILTER';

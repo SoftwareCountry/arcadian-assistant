@@ -11,13 +11,14 @@ import {
 } from '../reducers/people/people.model';
 import { selectCompanyDepartment } from '../reducers/people/people.action';
 import { EmployeeIdsGroupMap, EmployeeMap } from '../reducers/organization/employees.reducer';
-import { loadEmployeesForDepartment } from '../reducers/organization/organization.action';
 import { Employee } from '../reducers/organization/employee.model';
 import { ScrollView } from 'react-navigation';
 import { LoadingView } from '../navigation/loading';
 import { Action, Dispatch } from 'redux';
 import { openEmployeeDetails } from '../navigation/navigation.actions';
 import { Nullable } from 'types';
+import { NoResultView } from '../navigation/search/no-result-view';
+import { EmployeesList } from './employees-list';
 
 //============================================================================
 interface CompanyDepartmentsStateProps {
@@ -32,7 +33,6 @@ interface CompanyDepartmentsStateProps {
 //============================================================================
 interface CompanyDepartmentsDispatchProps {
     selectCompanyDepartment: (departmentId: string) => void;
-    loadEmployeesForDepartment: (departmentId: string) => void;
     onPressEmployee: (Employee: Employee) => void;
 }
 
@@ -57,6 +57,17 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
     //----------------------------------------------------------------------------
     public render() {
 
+        return this.props.headDepartment
+            ? this.renderDepartments()
+            : <LoadingView/>;
+    }
+
+    private renderDepartments() {
+
+        if (this.props.filter) {
+            return this.renderEmployees();
+        }
+
         const {
             employeesById,
             employeeIdsByDepartment,
@@ -64,43 +75,44 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
             selection
         } = this.buildData();
 
-        return this.props.headDepartment
-            ? (
-                <ScrollView overScrollMode={'auto'}>
-                    <CompanyDepartmentsLevel
-                        departmentId={rootId}
-                        departmentIdToChildren={departmentIdToChildren}
-                        employeesById={employeesById}
-                        employeeIdsByDepartment={employeeIdsByDepartment}
-                        selection={selection}
-                        onSelectedNode={this.props.selectCompanyDepartment}
-                        onPressEmployee={this.props.onPressEmployee}
-                        loadEmployeesForDepartment={this.props.loadEmployeesForDepartment}/>
-                </ScrollView>
-            ) : <LoadingView/>;
+        return employeesById ? (
+            <ScrollView overScrollMode={'auto'}>
+                <CompanyDepartmentsLevel
+                    departmentId={rootId}
+                    departmentIdToChildren={departmentIdToChildren}
+                    employeesById={employeesById}
+                    employeeIdsByDepartment={employeeIdsByDepartment}
+                    selection={selection}
+                    onSelectedNode={this.props.selectCompanyDepartment}
+                    onPressEmployee={this.props.onPressEmployee}/>
+            </ScrollView>
+        ) : <LoadingView/>;
+    }
+
+    private renderEmployees() {
+        const employeesById = this.filterEmployees();
+
+        return employeesById && !employeesById.isEmpty() ? (
+            <EmployeesList employees={employeesById.toIndexedSeq().toArray()}
+                           onItemClicked={this.props.onPressEmployee}/>
+        ) : <NoResultView/>;
     }
 
     //----------------------------------------------------------------------------
     private buildData() {
-        const employeesById = this.filterEmployees();
 
-        let departmentIdToNode = this.props.departmentIdToNode;
-
-        if (this.props.filter) {
-            const filteredDepartmentsNodes = this.filterDepartments(departmentIdToNode, employeesById);
-            departmentIdToNode = this.buildBranchFromChildToParent(departmentIdToNode, filteredDepartmentsNodes);
-        }
+        const { employeesById, departmentIdToNode, employeeIdsByDepartment } = this.props;
 
         const departmentIdToChildren = this.buildDepartmentIdToChildren(departmentIdToNode);
         const selectedCompanyDepartmentId = this.buildSelectedDepartmentId(departmentIdToNode, employeesById);
 
         const selection = selectedCompanyDepartmentId
-            ? this.buildDepartmentsSelection(this.props.departmentIdToNode, selectedCompanyDepartmentId)
+            ? this.buildDepartmentsSelection(departmentIdToNode, selectedCompanyDepartmentId)
             : {};
 
         return {
             employeesById: employeesById,
-            employeeIdsByDepartment: this.props.employeeIdsByDepartment,
+            employeeIdsByDepartment: employeeIdsByDepartment,
             departmentIdToChildren: departmentIdToChildren,
             selection: selection
         };
@@ -108,45 +120,18 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
 
     //----------------------------------------------------------------------------
     private filterEmployees(): Nullable<EmployeeMap> {
-        if (!this.props.employeesById) {
+        const { employeesById, filter } = this.props;
+
+        if (!employeesById) {
             return null;
         }
 
-        if (!this.props.filter) {
-            return this.props.employeesById;
+        if (!filter) {
+            return employeesById;
         }
 
-        return this.props.employeesById
-            .filter(employee => employee.name.toLowerCase().includes(this.props.filter.toLowerCase()))
-            .toMap();
-    }
-
-    //----------------------------------------------------------------------------
-    private filterDepartments(departmentIdToNode: Nullable<DepartmentIdToNode>,
-                              employeesById: Nullable<EmployeeMap>): DepartmentIdToNode {
-        if (!departmentIdToNode || !employeesById) {
-            return new Map();
-        }
-
-        const employees = employeesById.toIndexedSeq().toArray();
-        const array = Array.from(departmentIdToNode.entries());
-
-        const filteredDepartmentNodes = array.filter(([, departmentNode]) => {
-
-            for (let employee of employees) {
-                if (departmentNode.staffDepartmentId && departmentNode.staffDepartmentId === employee.departmentId) {
-                    return true;
-                }
-
-                if (employee.departmentId === departmentNode.departmentId) {
-                    return true;
-                }
-            }
-
-            return false;
-        });
-
-        return new Map(filteredDepartmentNodes);
+        return employeesById.filter(employee => employee.getSurname().toLowerCase().startsWith(this.props.filter.toLowerCase()) ||
+            employee.getName().toLowerCase().startsWith(this.props.filter.toLowerCase())).toMap();
     }
 
     //----------------------------------------------------------------------------
@@ -361,12 +346,10 @@ const dispatchToProps = (dispatch: Dispatch<Action>) => ({
     selectCompanyDepartment: (departmentId: string) => {
         dispatch(selectCompanyDepartment(departmentId));
     },
-    loadEmployeesForDepartment: (departmentId: string) => {
-        dispatch(loadEmployeesForDepartment(departmentId));
-    },
     onPressEmployee: (employee: Employee) => {
-        dispatch(openEmployeeDetails(employee));
+        dispatch(openEmployeeDetails(employee.employeeId));
     }
 });
 
+//----------------------------------------------------------------------------
 export const CompanyDepartments = connect(stateToProps, dispatchToProps)(CompanyDepartmentsImpl);
