@@ -21,12 +21,12 @@
         public void RegisterDevice(
             string employeeId,
             string deviceId,
-            PushNotificationDeviceModel.DeviceTypeEnum deviceType)
+            DeviceType deviceType)
         {
             var message = new RegisterPushNotificationsDevice(
                 employeeId,
                 deviceId,
-                deviceType == PushNotificationDeviceModel.DeviceTypeEnum.Android
+                deviceType == DeviceType.Android
                     ? PushDeviceTypes.Android
                     : PushDeviceTypes.Ios);
             this.pushNotificationsDevicesActor.Tell(message);

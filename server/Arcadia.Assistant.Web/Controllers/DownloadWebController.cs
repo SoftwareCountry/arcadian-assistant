@@ -5,6 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     using Akka.Actor;
@@ -12,6 +13,7 @@
     using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.Web.Configuration;
     using Arcadia.Assistant.Web.Download;
+    using Arcadia.Assistant.Web.Models;
 
     [Route("/download")]
     public class DownloadWebController : Controller
@@ -33,11 +35,11 @@
             return this.View();
         }
 
-        [Route("get/{applicationType}")]
+        [Route("get/{deviceType}")]
         [HttpGet]
-        public async Task<IActionResult> GetFile(string applicationType, CancellationToken token)
+        public async Task<IActionResult> GetFile(string deviceType, CancellationToken token)
         {
-            if (!Enum.TryParse(applicationType, out ApplicationType appType))
+            if (!Enum.TryParse(deviceType, out DeviceType appType))
             {
                 return this.BadRequest();
             }
@@ -45,9 +47,21 @@
             var downloadActor = this.actorSystem.ActorSelection(
                 $"/user/{WellKnownActorPaths.DownloadApplicationBuilds}");
 
-            var getBuildApplicationType = appType == ApplicationType.Android
-                ? GetLatestApplicationBuildPath.ApplicationTypeEnum.Android
-                : GetLatestApplicationBuildPath.ApplicationTypeEnum.Ios;
+            GetLatestApplicationBuildPath.ApplicationTypeEnum getBuildApplicationType;
+
+            if (appType == DeviceType.Android)
+            {
+                getBuildApplicationType = GetLatestApplicationBuildPath.ApplicationTypeEnum.Android;
+            }
+            else if (appType == DeviceType.Ios)
+            {
+                getBuildApplicationType = GetLatestApplicationBuildPath.ApplicationTypeEnum.Ios;
+            }
+            else
+            {
+                return this.StatusCode(StatusCodes.Status400BadRequest);
+            }
+
             var message = new GetLatestApplicationBuildPath(getBuildApplicationType);
 
             var buildPathResponse = await downloadActor.Ask<GetLatestApplicationBuildPath.Response>(
@@ -58,7 +72,7 @@
                 return this.NotFound();
             }
 
-            var fileContentType = appType == ApplicationType.Android
+            var fileContentType = appType == DeviceType.Android
                 ? "application/vnd.android.package-archive"
                 : "application/octet-stream";
 
@@ -66,12 +80,6 @@
                 buildPathResponse.Path,
                 fileContentType,
                 Path.GetFileName(buildPathResponse.Path));
-        }
-
-        public enum ApplicationType
-        {
-            Android,
-            Ios
         }
     }
 }
