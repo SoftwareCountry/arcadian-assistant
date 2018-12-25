@@ -1,17 +1,23 @@
 ﻿namespace Arcadia.Assistant.InboxEmail
 {
-    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
 
+    using MailKit;
     using MailKit.Net.Imap;
+    using MailKit.Search;
     using MailKit.Security;
+    using MimeKit;
 
     using Akka.Actor;
     using Akka.Event;
 
     using Arcadia.Assistant.Configuration.Configuration;
+    using Arcadia.Assistant.InboxEmail.Abstractions;
 
-    public class InboxEmailActor : UntypedActor, ILogReceive, IWithUnboundedStash
+    public class InboxEmailActor : UntypedActor, ILogReceive
     {
         private readonly IImapSettings imapSettings;
 
@@ -20,24 +26,18 @@
         public InboxEmailActor(IImapSettings imapSettings)
         {
             this.imapSettings = imapSettings;
-
-            Context.System.Scheduler.ScheduleTellRepeatedly(
-                TimeSpan.Zero,
-                TimeSpan.FromMinutes(imapSettings.RefreshIntervalMinutes),
-                this.Self,
-                LoadInboxEmails.Instance,
-                this.Self);
         }
-
-        public IStash Stash { get; set; }
 
         protected override void OnReceive(object message)
         {
             switch (message)
             {
-                case LoadInboxEmails _:
-                    this.Self.Tell(LoadInboxEmailsStart.Instance);
-                    this.BecomeStacked(this.LoadingInboxEmails);
+                case GetInboxEmails msg:
+                    this.GetEmails(msg.EmailSearchQuery).PipeTo(
+                        this.Self,
+                        success: res => new GetInboxEmails.Success(res),
+                        failure: err => new GetInboxEmails.Error(err)
+                    );
                     break;
 
                 default:
@@ -46,38 +46,11 @@
             }
         }
 
-        private void LoadingInboxEmails(object message)
-        {
-            switch (message)
-            {
-                case LoadInboxEmailsStart _:
-                    this.GetEmails().PipeTo(
-                        this.Self,
-                        success: () => LoadInboxEmailsFinish.Instance,
-                        failure: err => new LoadInboxEmailsFinish(err.Message));
-                    break;
-
-
-                case LoadInboxEmailsFinish msg:
-                    if (msg.Message != null)
-                    {
-                        this.logger.Warning(msg.Message);
-                    }
-
-                    this.Stash.UnstashAll();
-                    this.UnbecomeStacked();
-
-                    break;
-
-                default:
-                    this.Stash.Stash();
-                    break;
-            }
-        }
-
-        private async Task GetEmails()
+        private async Task<IEnumerable<Email>> GetEmails(EmailSearchQuery query)
         {
             this.logger.Debug("Loading inbox emails started");
+
+            IEnumerable<Email> emails;
 
             using (var client = new ImapClient())
             {
@@ -87,32 +60,69 @@
                     this.imapSettings.UseTls ? SecureSocketOptions.StartTls : SecureSocketOptions.None);
                 await client.AuthenticateAsync(this.imapSettings.User, this.imapSettings.Password);
 
-                client.Disconnect(true);
+                await client.Inbox.OpenAsync(FolderAccess.ReadOnly);
+
+                var inboxQuery = new SearchQuery();
+
+                if (query.Subject != null)
+                {
+                    inboxQuery = inboxQuery.And(SearchQuery.SubjectContains(query.Subject));
+                }
+
+                if (query.Sender != null)
+                {
+                    inboxQuery = inboxQuery.And(SearchQuery.FromContains(query.Sender));
+                }
+
+                var ids = await client.Inbox.SearchAsync(inboxQuery);
+
+                if (query.MinId != null)
+                {
+                    ids = ids.Where(x => x.Id > query.MinId).ToList();
+                }
+
+                var messages = await client.Inbox.FetchAsync(ids, MessageSummaryItems.BodyStructure);
+                emails = await this.ConvertMessages(client, messages);
+
+                await client.DisconnectAsync(true);
             }
 
             this.logger.Debug("Loading inbox emails finished");
+
+            return emails;
         }
 
-        private class LoadInboxEmails
+        private async Task<IEnumerable<Email>> ConvertMessages(ImapClient client, IEnumerable<IMessageSummary> messages)
         {
-            public static readonly LoadInboxEmails Instance = new LoadInboxEmails();
-        }
-
-        private class LoadInboxEmailsStart
-        {
-            public static readonly LoadInboxEmailsStart Instance = new LoadInboxEmailsStart();
-        }
-
-        private class LoadInboxEmailsFinish
-        {
-            public static readonly LoadInboxEmailsFinish Instance = new LoadInboxEmailsFinish();
-
-            public LoadInboxEmailsFinish(string message = null)
+            var emailsTasks = messages.Select(async m =>
             {
-                this.Message = message;
-            }
+                var textPart = (TextPart)await client.Inbox.GetBodyPartAsync(m.UniqueId, m.TextBody);
+                var text = textPart.Text;
 
-            public string Message { get; }
+                var attachmentsTasks = m.Attachments
+                    .Select(async a =>
+                    {
+                        var attachmentPart = await client.Inbox.GetBodyPartAsync(m.UniqueId, a);
+                        var stream = new MemoryStream();
+
+                        if (attachmentPart is MessagePart messagePart)
+                        {
+                            await messagePart.Message.WriteToAsync(stream);
+                        }
+                        else
+                        {
+                            var mimePart = (MimePart)attachmentPart;
+                            await mimePart.Content.DecodeToAsync(stream);
+                        }
+
+                        return stream;
+                    });
+                var attachments = await Task.WhenAll(attachmentsTasks);
+
+                return new Email(m.UniqueId.Id, text, attachments);
+            });
+
+            return await Task.WhenAll(emailsTasks);
         }
     }
 }
