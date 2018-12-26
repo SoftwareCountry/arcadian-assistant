@@ -15,7 +15,8 @@
     using Arcadia.Assistant.Web.Download;
     using Arcadia.Assistant.Web.Models;
 
-    [Route("/download")]
+    [Route("")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class DownloadWebController : Controller
     {
         private readonly IActorRefFactory actorSystem;
