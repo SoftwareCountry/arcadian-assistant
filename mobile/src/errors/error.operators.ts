@@ -31,9 +31,10 @@ function retryWhenErrorOccurred<T>(isForceLogout: boolean = false, customErrorMe
     return retryWhen(errors => {
         return errors.pipe(
             exhaustMap(e => new Promise((resolve, reject) => {
+                const errorDescription = e.status ? `HTTP ${e.status}` : e.toString();
                 let errorMessage = 'Unknown error occurred';
                 if (customErrorMessage) {
-                    errorMessage = `An error occurred ${e}. ${customErrorMessage}`;
+                    errorMessage = `An error occurred (${errorDescription}). ${customErrorMessage}`;
                 } else if (e.status === 401) {
                     errorMessage = 'Authentication failed';
                 } else if (e.status === 403) {
@@ -43,7 +44,7 @@ function retryWhenErrorOccurred<T>(isForceLogout: boolean = false, customErrorMe
                 } else if (e.status === 0) {
                     errorMessage = 'Cannot establish a connection to the server';
                 } else {
-                    errorMessage = `Unknown error occurred ${e}. Please contact administrator`;
+                    errorMessage = `An error occurred (${errorDescription}). Please contact administrator`;
                 }
 
                 showAlert(errorMessage, okButtonTitle, rejectButtonTitle, resolve, () => reject(e));
