@@ -1,4 +1,4 @@
-import { navigationEpic } from './navigation.epic';
+import { navigateEpic } from './navigation.epic';
 import {
     NavigationActionType,
     OpenCompanyAction,
@@ -12,43 +12,43 @@ import {
 import { combineEpics } from 'redux-observable';
 
 //----------------------------------------------------------------------------
-const openEmployeeDetails$ = navigationEpic<OpenEmployeeDetailsAction>(
+const openEmployeeDetails$ = navigateEpic<OpenEmployeeDetailsAction>(
     NavigationActionType.openEmployeeDetails,
     'CurrentProfile'
 );
 
 //----------------------------------------------------------------------------
-const openCompany$ = navigationEpic<OpenCompanyAction>(
+const openCompany$ = navigateEpic<OpenCompanyAction>(
     NavigationActionType.openCompany,
     'Company',
 );
 
 //----------------------------------------------------------------------------
-const openDepartment$ = navigationEpic<OpenDepartmentAction>(
+const openDepartment$ = navigateEpic<OpenDepartmentAction>(
     NavigationActionType.openDepartment,
     'CurrentDepartment'
 );
 
 //----------------------------------------------------------------------------
-const openRoom$ = navigationEpic<OpenRoomAction>(
+const openRoom$ = navigateEpic<OpenRoomAction>(
     NavigationActionType.openRoom,
     'CurrentRoom'
 );
 
 //----------------------------------------------------------------------------
-const openOrganization$ = navigationEpic<OpenOrganizationAction>(
+const openOrganization$ = navigateEpic<OpenOrganizationAction>(
     NavigationActionType.openOrganization,
     'CurrentOrganization'
 );
 
 //----------------------------------------------------------------------------
-const openUserPreferences$ = navigationEpic<OpenUserPreferencesAction>(
+const openUserPreferences$ = navigateEpic<OpenUserPreferencesAction>(
     NavigationActionType.openUserPreferences,
     'UserPreferences'
 );
 
 //----------------------------------------------------------------------------
-const openProfile$ = navigationEpic<OpenProfileAction>(
+const openProfile$ = navigateEpic<OpenProfileAction>(
     NavigationActionType.openProfile,
     'Profile'
 );

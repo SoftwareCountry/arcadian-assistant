@@ -8,10 +8,11 @@ import { NavigationDependenciesContainer } from './navigation-dependencies-conta
 //============================================================================
 export interface NavigateToAction<T = any> extends Action<T> {
     params?: { [key: string]: any };
+    key?: string;
 }
 
 //----------------------------------------------------------------------------
-export const navigationEpic = <A extends NavigateToAction>(type: A['type'], routeName: string) => {
+export const navigateEpic = <A extends NavigateToAction>(type: A['type'], routeName: string) => {
     return (action$: ActionsObservable<A>, _: StateObservable<AppState>, dependencies: NavigationDependenciesContainer) =>
         action$.ofType(type).pipe(
             map(action => {
@@ -19,6 +20,7 @@ export const navigationEpic = <A extends NavigateToAction>(type: A['type'], rout
                 const destination = {
                     routeName,
                     params: action.params,
+                    key: action.key,
                 };
 
                 dependencies.navigationService.dispatch(NavigationActions.navigate(destination));
