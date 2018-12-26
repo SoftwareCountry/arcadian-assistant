@@ -28,6 +28,7 @@
             container.RegisterModule(new NotificationsModule());
 
             container.RegisterModule(new Remote1CModule(config));
+            container.RegisterModule(new ArcadiaCspModule(config));
             container.RegisterModule(new HealthModule());
 
             return container.Build();
