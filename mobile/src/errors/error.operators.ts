@@ -5,6 +5,7 @@
 import { Alert } from 'react-native';
 import { EMPTY, Observable, pipe, UnaryFunction } from 'rxjs';
 import { catchError, exhaustMap, retryWhen } from 'rxjs/operators';
+import { logHttpError } from '../utils/analytics';
 
 //============================================================================
 function showAlert(errorMessage: string, okButtonTitle: string, rejectButtonTitle: string, okButton: () => void, rejectButton: () => void) {
@@ -45,6 +46,7 @@ function retryWhenErrorOccurred<T>(isForceLogout: boolean = false, customErrorMe
                     errorMessage = 'Cannot establish a connection to the server';
                 } else {
                     errorMessage = `An error occurred (${errorDescription}). Please contact administrator`;
+                    logHttpError(e);
                 }
 
                 showAlert(errorMessage, okButtonTitle, rejectButtonTitle, resolve, () => reject(e));
