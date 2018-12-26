@@ -1,5 +1,6 @@
 ﻿namespace Arcadia.Assistant.InboxEmail
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
@@ -34,7 +35,7 @@
             {
                 case GetInboxEmails msg:
                     this.GetEmails(msg.EmailSearchQuery).PipeTo(
-                        this.Self,
+                        this.Sender,
                         success: res => new GetInboxEmails.Success(res),
                         failure: err => new GetInboxEmails.Error(err)
                     );
@@ -81,8 +82,10 @@
                     ids = ids.Where(x => x.Id > query.MinId).ToList();
                 }
 
-                var messages = await client.Inbox.FetchAsync(ids, MessageSummaryItems.BodyStructure);
-                emails = await this.ConvertMessages(client, messages);
+                var messages = await client.Inbox.FetchAsync(
+                    ids,
+                    MessageSummaryItems.BodyStructure | MessageSummaryItems.Envelope);
+                emails = this.ConvertMessages(client, messages);
 
                 await client.DisconnectAsync(true);
             }
@@ -92,37 +95,43 @@
             return emails;
         }
 
-        private async Task<IEnumerable<Email>> ConvertMessages(ImapClient client, IEnumerable<IMessageSummary> messages)
+        private IEnumerable<Email> ConvertMessages(ImapClient client, IEnumerable<IMessageSummary> messages)
         {
-            var emailsTasks = messages.Select(async m =>
-            {
-                var textPart = (TextPart)await client.Inbox.GetBodyPartAsync(m.UniqueId, m.TextBody);
-                var text = textPart.Text;
+            var emails = messages
+                .Select(m =>
+                {
+                    var date = m.Envelope.Date ?? DateTimeOffset.Now;
+                    var sender = m.Envelope.From.ToString();
+                    var subject = m.NormalizedSubject;
 
-                var attachmentsTasks = m.Attachments
-                    .Select(async a =>
-                    {
-                        var attachmentPart = await client.Inbox.GetBodyPartAsync(m.UniqueId, a);
-                        var stream = new MemoryStream();
+                    var textPart = (TextPart)client.Inbox.GetBodyPart(m.UniqueId, m.TextBody);
+                    var text = textPart.Text;
 
-                        if (attachmentPart is MessagePart messagePart)
+                    var attachments = m.Attachments
+                        .Select(a =>
                         {
-                            await messagePart.Message.WriteToAsync(stream);
-                        }
-                        else
-                        {
-                            var mimePart = (MimePart)attachmentPart;
-                            await mimePart.Content.DecodeToAsync(stream);
-                        }
+                            var attachmentPart = client.Inbox.GetBodyPart(m.UniqueId, a);
+                            var stream = new MemoryStream();
 
-                        return stream.ToArray();
-                    });
-                var attachments = await Task.WhenAll(attachmentsTasks);
+                            if (attachmentPart is MessagePart messagePart)
+                            {
+                                messagePart.Message.WriteTo(stream);
+                            }
+                            else
+                            {
+                                var mimePart = (MimePart)attachmentPart;
+                                mimePart.Content.DecodeTo(stream);
+                            }
 
-                return new Email(m.UniqueId.Id, text, attachments);
-            });
+                            return stream.ToArray();
+                        })
+                        .ToList();
 
-            return await Task.WhenAll(emailsTasks);
+                    return new Email(m.UniqueId.Id, date, sender, subject, text, attachments);
+                })
+                .ToList();
+
+            return emails;
         }
     }
 }

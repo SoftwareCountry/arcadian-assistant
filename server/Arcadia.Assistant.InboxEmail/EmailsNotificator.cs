@@ -90,29 +90,31 @@
             var message = new GetInboxEmails(emailsSearchQuery);
             var newEmailsResponse = await this.inboxEmailActor.Ask<GetInboxEmails.Response>(message);
 
-            if (newEmailsResponse is GetInboxEmails.Error error)
+            switch (newEmailsResponse)
             {
-                this.logger.Warning(error.Exception.Message);
-                return;
-            }
+                case GetInboxEmails.Error error:
+                    this.logger.Warning(error.Exception.Message);
+                    break;
 
-            if (newEmailsResponse is GetInboxEmails.Success success)
-            {
-                if (this.lastEmailId == null)
-                {
-                    this.lastEmailId = success.Emails.Max(e => e.UniqueId);
-                }
-                else
-                {
-                    foreach (var email in success.Emails)
+                case GetInboxEmails.Success success:
+                    if (this.lastEmailId == null)
                     {
-                        var emailEventBus = new InboxEmailEventBus(email);
-                        Context.System.EventStream.Publish(emailEventBus);
+                        this.lastEmailId = success.Emails.Max(e => e.UniqueId);
                     }
-                }
-            }
+                    else
+                    {
+                        foreach (var email in success.Emails)
+                        {
+                            var emailEventBus = new InboxEmailEventBus(email);
+                            Context.System.EventStream.Publish(emailEventBus);
+                        }
+                    }
+                    break;
 
-            this.logger.Warning("Unexpected inbox emails response");
+                default:
+                    this.logger.Warning("Unexpected inbox emails response");
+                    break;
+            }
         }
 
         private class LoadInboxEmails
