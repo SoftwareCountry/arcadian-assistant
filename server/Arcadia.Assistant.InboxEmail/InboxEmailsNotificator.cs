@@ -103,11 +103,8 @@
                     }
                     else
                     {
-                        foreach (var email in success.Emails)
-                        {
-                            var emailEventBus = new InboxEmailEventBus(email);
-                            Context.System.EventStream.Publish(emailEventBus);
-                        }
+                        var emailsEventBus = new InboxEmailsEventBus(success.Emails.ToList());
+                        Context.System.EventStream.Publish(emailsEventBus);
                     }
                     break;
 

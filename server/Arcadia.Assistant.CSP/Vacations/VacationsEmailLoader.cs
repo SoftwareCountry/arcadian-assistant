@@ -83,7 +83,7 @@
         private void BecomeAfterInitial()
         {
             this.Stash.UnstashAll();
-            Context.System.EventStream.Subscribe<InboxEmailEventBus>(this.Self);
+            Context.System.EventStream.Subscribe<InboxEmailsEventBus>(this.Self);
             this.Become(this.AfterInitialState);
         }
 
@@ -96,8 +96,8 @@
                     this.Sender.Tell(result);
                     break;
 
-                case InboxEmailEventBus msg:
-                    this.LoadVacationsFromEmails(new[] { msg.Email });
+                case InboxEmailsEventBus msg:
+                    this.LoadVacationsFromEmails(msg.Emails);
                     break;
 
                 default:
