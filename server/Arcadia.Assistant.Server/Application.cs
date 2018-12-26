@@ -51,7 +51,8 @@
             var appSettings = this.container.Resolve<AppSettings>();
             this.ServerActors = builder.AddRootActors(
                 appSettings.Messaging.CalendarEventsMail,
-                appSettings.Messaging.CalendarEventsPush);
+                appSettings.Messaging.CalendarEventsPush,
+                appSettings.Messaging.Imap);
         }
 
         protected virtual void OnStart(ActorSystem actorSystem)

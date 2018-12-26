@@ -10,7 +10,7 @@
     using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.InboxEmail.Abstractions;
 
-    public class EmailsNotificator : UntypedActor, ILogReceive, IWithUnboundedStash
+    public class InboxEmailsNotificator : UntypedActor, ILogReceive, IWithUnboundedStash
     {
         private readonly IActorRef inboxEmailActor;
 
@@ -18,7 +18,7 @@
 
         private uint? lastEmailId;
 
-        public EmailsNotificator(IImapSettings imapSettings, IActorRef inboxEmailActor)
+        public InboxEmailsNotificator(IImapSettings imapSettings, IActorRef inboxEmailActor)
         {
             this.inboxEmailActor = inboxEmailActor;
 

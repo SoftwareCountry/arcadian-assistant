@@ -27,7 +27,8 @@
 
         public ServerActorsCollection AddRootActors(
             ICalendarEventsMailSettings calendarEventsMailSettings,
-            ICalendarEventsPushSettings calendarEventsPushSettings)
+            ICalendarEventsPushSettings calendarEventsPushSettings,
+            IImapSettings imapSettings)
         {
             var organization = this.actorSystem.ActorOf(this.actorSystem.DI().Props<OrganizationActor>(), WellKnownActorPaths.Organization);
             var health = this.actorSystem.ActorOf(this.actorSystem.DI().Props<HealthChecker>(), WellKnownActorPaths.Health);
@@ -36,7 +37,8 @@
             var userPreferences = this.actorSystem.ActorOf(this.actorSystem.DI().Props<UserPreferencesActor>(), WellKnownActorPaths.UserPreferences);
             var pushNotificationsDevices = this.actorSystem.ActorOf(Props.Create(() => new PushNotificationsDevicesActor()), WellKnownActorPaths.PushNotificationsDevices);
 
-            this.actorSystem.ActorOf(this.actorSystem.DI().Props<InboxEmailActor>(), "inbox-email");
+            var inboxEmailsActor = this.actorSystem.ActorOf(this.actorSystem.DI().Props<InboxEmailActor>(), "inbox-emails");
+            this.actorSystem.ActorOf(Props.Create(() => new InboxEmailsNotificator(imapSettings, inboxEmailsActor)), "emails-notificator");
 
             this.CreateCalendarEventNotificationActors(
                 calendarEventsMailSettings,
