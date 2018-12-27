@@ -107,7 +107,9 @@
             var content = new PushNotificationContent
             {
                 Title = this.pushNotificationConfig.Title,
-                Body = string.Format(this.pushNotificationConfig.Body, message.Event.Type, message.Approver.Name),
+                Body = this.pushNotificationConfig.Body
+                    .Replace("{eventType}", message.Event.Type)
+                    .Replace("{approver}", message.Approver.Name),
                 CustomData = new
                 {
                     message.Event.EventId,
