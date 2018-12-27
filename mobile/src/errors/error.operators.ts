@@ -3,8 +3,8 @@
  ******************************************************************************/
 
 import { Alert } from 'react-native';
-import { EMPTY, Observable, pipe, UnaryFunction } from 'rxjs';
-import { catchError, exhaustMap, retryWhen } from 'rxjs/operators';
+import { EMPTY, iif, Observable, pipe, throwError, timer, UnaryFunction } from 'rxjs';
+import { catchError, concatMap, exhaustMap, retryWhen } from 'rxjs/operators';
 import { logHttpError } from '../utils/analytics';
 
 //============================================================================
@@ -71,6 +71,25 @@ export function handleHttpErrors<T>(swallowErrors: boolean = true,
             retryWhenErrorOccurred(true, customErrorMessage)
         );
     }
+}
+
+//============================================================================
+export function retryDelayed<T>(maxRetries: number = 3, delay: number = 30): UnaryFunction<Observable<T>, Observable<T>> {
+    return <T>(source: Observable<T>) =>
+        source.pipe(
+            retryWhen<T>(errors =>
+                errors.pipe(
+                    concatMap((error, i) => {
+                        logHttpError(error);
+                        return iif(
+                            () => i < maxRetries,
+                            timer(delay * 1000),
+                            throwError(error)
+                        );
+                    })
+                )
+            )
+        );
 }
 
 //============================================================================
