@@ -17,3 +17,11 @@ export function logHttpError(error: any) {
     }
     Analytics.trackEvent('Error', properties);
 }
+
+//----------------------------------------------------------------------------
+export function logError(errorMessage: string, payload: any) {
+    let properties: { [name: string]: string } = {};
+    properties['Message'] = errorMessage;
+    properties['Payload'] = JSON.stringify(payload);
+    Analytics.trackEvent('Error', properties);
+}
