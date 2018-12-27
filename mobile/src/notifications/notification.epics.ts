@@ -12,7 +12,7 @@ import { openEmployeeDetails, openProfile } from '../navigation/navigation.actio
 import { AppState, DependenciesContainer } from '../reducers/app.reducer';
 import AppCenter from 'appcenter';
 import { installIdReceived, NotificationAction, NotificationActionType } from './notification.actions';
-import { handleHttpErrors } from '../errors/error.operators';
+import { handleHttpErrors, retryDelayed } from '../errors/error.operators';
 import { Platform } from 'react-native';
 import { loadPendingRequests } from '../reducers/calendar/pending-requests/pending-requests.action';
 import { loadCalendarEvents } from '../reducers/calendar/calendar.action';
@@ -76,6 +76,7 @@ const notificationsRegister$ = (action$: ActionsObservable<NotificationAction>, 
                                        deviceType,
                                    },
                                    { 'Content-Type': 'application/json' }).pipe(
+            retryDelayed(),
             handleHttpErrors(true, 'Push Notifications will not be received. Please contact administrator'),
         );
     }),

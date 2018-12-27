@@ -24,6 +24,7 @@ export interface OpenEmployeeDetailsAction extends NavigateToAction<NavigationAc
     params: {
         employeeId  : EmployeeId;
     };
+    key: EmployeeId;
 }
 
 export interface OpenCompanyAction extends NavigateToAction<NavigationActionType.openCompany> {
@@ -37,12 +38,14 @@ export interface OpenDepartmentAction extends NavigateToAction<NavigationActionT
         departmentId: string;
         departmentAbbreviation: string;
     };
+    key: string;
 }
 
 export interface OpenRoomAction extends NavigateToAction<NavigationActionType.openRoom> {
     params: {
         roomNumber: string;
     };
+    key: string;
 }
 
 export interface OpenOrganizationAction extends NavigateToAction<NavigationActionType.openOrganization> {
@@ -68,6 +71,7 @@ export const openEmployeeDetails = (employeeId: EmployeeId): OpenEmployeeDetails
         params: {
             employeeId,
         },
+        key: employeeId,
     };
 };
 
@@ -86,6 +90,7 @@ export const openDepartment = (departmentId: string, departmentAbbreviation: str
         params: {
             departmentId, departmentAbbreviation
         },
+        key: departmentId,
     };
 };
 
@@ -95,6 +100,7 @@ export const openRoom = (roomNumber: string): OpenRoomAction => {
         params: {
             roomNumber,
         },
+        key: roomNumber,
     };
 };
 
