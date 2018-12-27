@@ -16,6 +16,7 @@ import { handleHttpErrors, retryDelayed } from '../errors/error.operators';
 import { Platform } from 'react-native';
 import { loadPendingRequests } from '../reducers/calendar/pending-requests/pending-requests.action';
 import { loadCalendarEvents } from '../reducers/calendar/calendar.action';
+import { logError } from '../utils/analytics';
 
 //----------------------------------------------------------------------------
 const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>, state$: StateObservable<AppState>) =>
@@ -24,8 +25,7 @@ const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>, state$:
             return new Observable<Action>(observer => {
                 Push.setListener({
                     onPushNotificationReceived: notification => {
-                        if (!notification.customProperties || !notification.customProperties.employeeId) {
-                            console.warn(`Invalid notification payload: ${JSON.stringify(notification.customProperties)}`);
+                        if (!notification.customProperties) {
                             return;
                         }
 
@@ -35,13 +35,23 @@ const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>, state$:
                         }
 
                         const employeeId = notification.customProperties.employeeId;
+                        const approverId = notification.customProperties.approverId;
 
                         observer.next(loadPendingRequests());
-                        observer.next(loadCalendarEvents(employeeId));
-                        if (userInfo.employeeId === employeeId) {
-                            observer.next(openProfile());
+
+                        if (employeeId) {
+                            observer.next(loadCalendarEvents(employeeId));
+                            if (userInfo.employeeId === employeeId) {
+                                observer.next(openProfile());
+                            } else {
+                                observer.next(openEmployeeDetails(employeeId));
+                            }
+                        } else if (approverId) {
+                            if (userInfo.employeeId === approverId) {
+                                observer.next(openProfile());
+                            }
                         } else {
-                            observer.next(openEmployeeDetails(employeeId));
+                            logError('Unexpected notification payload', notification.customProperties);
                         }
                     },
                 });
