@@ -102,8 +102,8 @@
                     .Replace("{eventStatus}", message.Event.Status),
                 CustomData = new
                 {
-                    message.Event.EventId,
-                    message.Event.EmployeeId,
+                    EventId = message.Event.EventId,
+                    EmployeeId = message.Event.EmployeeId,
                     Type = CalendarEventPushNotificationTypes.EventStatusChanged
                 }
             };

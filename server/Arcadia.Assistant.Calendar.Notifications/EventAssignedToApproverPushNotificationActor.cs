@@ -110,8 +110,9 @@
                     .Replace("{employee}", message.Owner.Name),
                 CustomData = new
                 {
-                    message.Event.EventId,
-                    message.ApproverId,
+                    EventId = message.Event.EventId,
+                    EmployeeId = message.Event.EmployeeId,
+                    ApproverId = message.ApproverId,
                     Type = CalendarEventPushNotificationTypes.EventAssignedToApprover
                 }
             };

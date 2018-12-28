@@ -112,8 +112,9 @@
                     .Replace("{approver}", message.Approver.Name),
                 CustomData = new
                 {
-                    message.Event.EventId,
-                    message.Event.EmployeeId,
+                    EventId = message.Event.EventId,
+                    EmployeeId = message.Event.EmployeeId,
+                    ApproverId = message.Approver.EmployeeId,
                     Type = CalendarEventPushNotificationTypes.EventUserGrantedApproval
                 }
             };
