@@ -55,7 +55,12 @@ export class OAuthProcess {
 
         const accessCodeResponse = this.authorizationCode.pipe(
             switchMap((code: string) => {
-                return this.accessCodeRequest.fetchNew(code);
+                return this.accessCodeRequest.fetchNew(code).pipe(
+                    catchError((error) => {
+                        this.handleError(error);
+                        return EMPTY;
+                    }),
+                );
             }));
 
         const refreshTokenObtainedAccessCodes = this.refreshTokenSource.pipe(
@@ -189,12 +194,15 @@ export class OAuthProcess {
             return;
         }
 
-        const errorText = error.description ? error.description : this.getErrorMessage(error);
+        const errorText = this.getErrorMessage(error);
         this.authenticationStateSource.next({ isAuthenticated: false, errorText: errorText });
     }
 
     //----------------------------------------------------------------------------
     private getErrorMessage(error: any): string {
+        const detailedDescription = error && error.response && error.response.error_description ?
+            error.response.error_description : undefined;
+
         const errorText =
             error
                 ? error.message
@@ -202,7 +210,7 @@ export class OAuthProcess {
                 : error.toString()
                 : 'unknown error';
 
-        return errorText;
+        return detailedDescription ? detailedDescription : errorText;
     }
 }
 

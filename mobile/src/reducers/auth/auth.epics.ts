@@ -88,7 +88,7 @@ export const startLogoutProcessEpic$ = (action$: ActionsObservable<StartLogoutPr
     );
 
 //----------------------------------------------------------------------------
-export const listenerAuthStateEpic$ = (action$: ActionsObservable<any>, _: StateObservable<AppState>, dep: DependenciesContainer) =>
+export const listenerAuthStateEpic$ = (action$: ActionsObservable<any>, state$: StateObservable<AppState>, dep: DependenciesContainer) =>
     dep.oauthProcess.authenticationState
         .pipe(
             handleHttpErrors(),
@@ -101,6 +101,7 @@ export const listenerAuthStateEpic$ = (action$: ActionsObservable<any>, _: State
                             tap(() => {
                                 if (x.errorText) {
                                     showErrorMessage(x.errorText);
+                                    logout(dep, state$.value.notifications.installId);
                                 }
                             }));
                     }
