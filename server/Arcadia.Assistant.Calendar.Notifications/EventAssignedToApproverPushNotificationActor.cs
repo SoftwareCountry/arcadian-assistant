@@ -105,11 +105,14 @@
             var content = new PushNotificationContent
             {
                 Title = this.pushNotificationConfig.Title,
-                Body = string.Format(this.pushNotificationConfig.Body, message.Event.Type, message.Owner.Name),
+                Body = this.pushNotificationConfig.Body
+                    .Replace("{eventType}", message.Event.Type)
+                    .Replace("{employee}", message.Owner.Name),
                 CustomData = new
                 {
-                    message.Event.EventId,
-                    message.ApproverId,
+                    EventId = message.Event.EventId,
+                    EmployeeId = message.Event.EmployeeId,
+                    ApproverId = message.ApproverId,
                     Type = CalendarEventPushNotificationTypes.EventAssignedToApprover
                 }
             };

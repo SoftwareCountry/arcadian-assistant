@@ -20,6 +20,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Arcadia.Assistant.Configuration\Arcadia.Assistant.Configuration.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Health.Abstractions\Arcadia.Assistant.Health.Abstractions.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.InboxEmail.Abstractions\Arcadia.Assistant.InboxEmail.Abstractions.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.InboxEmail\Arcadia.Assistant.InboxEmail.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Organization.Abstractions\Arcadia.Assistant.Organization.Abstractions.csproj" />
   </ItemGroup>
   

@@ -5,6 +5,7 @@
     using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.CSP;
     using Arcadia.Assistant.CSP.Vacations;
+    using Arcadia.Assistant.InboxEmail;
     using Arcadia.Assistant.Organization;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.UserPreferences;
@@ -29,11 +30,14 @@
             builder.RegisterType<CspEmployeesInfoStorage>().As<EmployeesInfoStorage>();
 
             builder.RegisterType<ArcadiaVacationRegistry>().As<VacationsRegistry>();
-            builder.RegisterType<VacationsQueryExecutor>().AsSelf();
+            builder.RegisterType<EmployeesQueryExecutor>().AsSelf();
             builder.RegisterType<VacationsSyncExecutor>().AsSelf();
+            builder.RegisterType<VacationsEmailLoader>().AsSelf();
+
             builder.RegisterType<CspCalendarEventsApprovalsChecker>().As<CalendarEventsApprovalsChecker>();
 
             builder.RegisterType<UserPreferencesActor>().AsSelf();
+            builder.RegisterType<InboxEmailActor>().AsSelf();
         }
     }
 }

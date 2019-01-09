@@ -65,10 +65,17 @@
                     this.logger.Debug("Sending email notification about user {0} granted approval for event {1} of {2}",
                         msg.Approver.EmployeeId, msg.Event.EventId, msg.Owner.EmployeeId);
 
+                    var datesStr = msg.Event.Dates.StartDate == msg.Event.Dates.EndDate
+                        ? msg.Event.Dates.StartDate.ToString("d")
+                        : $"{msg.Event.Dates.StartDate:d} - {msg.Event.Dates.EndDate:d}";
+
                     var sender = this.emailNotificationConfig.NotificationSender;
                     var recipient = msg.Owner.Email;
                     var subject = this.emailNotificationConfig.Subject;
-                    var body = string.Format(this.emailNotificationConfig.Body, msg.Event.Type, msg.Approver.Name);
+                    var body = this.emailNotificationConfig.Body
+                        .Replace("{eventType}", msg.Event.Type)
+                        .Replace("{dates}", datesStr)
+                        .Replace("{approver}", msg.Approver.Name);
 
                     Context.System.EventStream.Publish(
                         new NotificationEventBusMessage(
