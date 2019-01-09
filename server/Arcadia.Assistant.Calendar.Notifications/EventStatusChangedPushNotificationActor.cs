@@ -97,11 +97,13 @@
             var content = new PushNotificationContent
             {
                 Title = this.pushNotificationConfig.Title,
-                Body = string.Format(this.pushNotificationConfig.Body, message.Event.Type, message.Event.Status),
+                Body = this.pushNotificationConfig.Body
+                    .Replace("{eventType}", message.Event.Type)
+                    .Replace("{eventStatus}", message.Event.Status),
                 CustomData = new
                 {
-                    message.Event.EventId,
-                    message.Event.EmployeeId,
+                    EventId = message.Event.EventId,
+                    EmployeeId = message.Event.EmployeeId,
                     Type = CalendarEventPushNotificationTypes.EventStatusChanged
                 }
             };

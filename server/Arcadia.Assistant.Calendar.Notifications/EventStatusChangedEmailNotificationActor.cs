@@ -65,10 +65,17 @@
 
                     this.logger.Debug("Sending email notification about event {0} status changed to owner", msg.Event.EventId);
 
+                    var datesStr = msg.Event.Dates.StartDate == msg.Event.Dates.EndDate
+                        ? msg.Event.Dates.StartDate.ToString("d")
+                        : $"{msg.Event.Dates.StartDate:d} - {msg.Event.Dates.EndDate:d}";
+
                     var sender = this.emailNotificationConfig.NotificationSender;
                     var recipient = msg.Owner.Email;
                     var subject = this.emailNotificationConfig.Subject;
-                    var body = string.Format(this.emailNotificationConfig.Body, msg.Event.Type, msg.Event.Status);
+                    var body = this.emailNotificationConfig.Body
+                        .Replace("{eventType}", msg.Event.Type)
+                        .Replace("{dates}", datesStr)
+                        .Replace("{eventStatus}", msg.Event.Status);
 
                     Context.System.EventStream.Publish(
                         new NotificationEventBusMessage(

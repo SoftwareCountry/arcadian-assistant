@@ -33,8 +33,8 @@
         {
             switch (message)
             {
-                case CalendarEventChanged msg 
-                    when msg.NewEvent.Type == CalendarEventTypes.Sickleave && 
+                case CalendarEventChanged msg
+                    when msg.NewEvent.Type == CalendarEventTypes.Sickleave &&
                     msg.NewEvent.Status == SickLeaveStatuses.Approved:
 
                     this.organizationActor
@@ -53,10 +53,9 @@
                     var sender = this.emailNotificationConfig.NotificationSender;
                     var recipient = this.emailNotificationConfig.NotificationRecipient;
                     var subject = this.emailNotificationConfig.Subject;
-                    var body = string.Format(
-                        this.emailNotificationConfig.Body,
-                        msg.Employee.Name,
-                        msg.Event.Dates.StartDate.ToString("D"));
+                    var body = this.emailNotificationConfig.Body
+                        .Replace("{employee}", msg.Employee.Name)
+                        .Replace("{startDate}", msg.Event.Dates.StartDate.ToString("D"));
 
                     Context.System.EventStream.Publish(
                         new NotificationEventBusMessage(
