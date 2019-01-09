@@ -8,6 +8,9 @@
         public SmtpSettings Smtp { get; set; }
 
         [Required]
+        public ImapSettings Imap { get; set; }
+
+        [Required]
         public PushSettings Push { get; set; }
 
         [Required]

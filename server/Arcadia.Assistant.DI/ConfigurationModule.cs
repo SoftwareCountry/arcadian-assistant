@@ -23,6 +23,7 @@
             builder.RegisterInstance(settings.Organization.RefreshInformation).As<IRefreshInformation>();
             builder.RegisterInstance(settings.Messaging.Smtp).As<ISmtpSettings>();
             builder.RegisterInstance(settings.Messaging.Push).As<IPushSettings>();
+            builder.RegisterInstance(settings.Messaging.Imap).As<IImapSettings>();
 
             var cspSettings = this.configurationRoot.GetSection("Csp").Get<CspConfiguration>();
             builder.RegisterInstance(cspSettings).AsSelf();
