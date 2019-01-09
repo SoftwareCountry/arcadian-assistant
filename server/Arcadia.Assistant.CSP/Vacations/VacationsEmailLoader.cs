@@ -83,7 +83,7 @@
         private void BecomeAfterInitial()
         {
             this.Stash.UnstashAll();
-            Context.System.EventStream.Subscribe<InboxEmailsEventBus>(this.Self);
+            Context.System.EventStream.Subscribe<EmailsReceivedEventBus>(this.Self);
             this.Become(this.AfterInitialState);
         }
 
@@ -96,7 +96,7 @@
                     this.Sender.Tell(result);
                     break;
 
-                case InboxEmailsEventBus msg:
+                case EmailsReceivedEventBus msg:
                     this.LoadVacationsFromEmails(msg.Emails);
                     break;
 
@@ -127,7 +127,7 @@
 
         private List<EmployeeVacationRecord> ParseVacations(string vacationsAttachment)
         {
-            var lines = vacationsAttachment.Split(new[] { "\r\n" }, StringSplitOptions.None);
+            var lines = vacationsAttachment.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
             var employeeLines = lines
                 .Select(l => l.Split(new[] { "\t" }, StringSplitOptions.None))
                 .Where(l => l.Length == 4)

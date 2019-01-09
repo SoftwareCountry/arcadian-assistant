@@ -101,11 +101,15 @@
             }
 
             var employees = employeesTask.Result;
-            var vacationsInfo = ((VacationsEmailLoader.GetVacationsInfo.Success)vacationsInfoTask.Result).EmployeeVacations;
+
+            if (!(vacationsInfoTask.Result is VacationsEmailLoader.GetVacationsInfo.Success vacationsInfoResult))
+            {
+                throw new Exception("Unexpected vacations info response");
+            }
 
             var employeesVacations = employees
                 .GroupJoin(
-                    vacationsInfo,
+                    vacationsInfoResult.EmployeeVacations,
                     employee => employee.Id.ToLower(),
                     vacation => vacation.Id.ToLower(),
                     (x, y) => new { x.Id, DaysLeft = y.Select(v => v.VacationDaysCount).FirstOrDefault() })

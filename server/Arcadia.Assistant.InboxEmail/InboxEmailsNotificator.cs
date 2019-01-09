@@ -103,7 +103,7 @@
                     }
                     else
                     {
-                        var emailsEventBus = new InboxEmailsEventBus(success.Emails.ToList());
+                        var emailsEventBus = new EmailsReceivedEventBus(success.Emails.ToList());
                         Context.System.EventStream.Publish(emailsEventBus);
                     }
                     break;

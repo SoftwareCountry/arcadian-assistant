@@ -2,9 +2,9 @@
 {
     using System.Collections.Generic;
 
-    public class InboxEmailsEventBus
+    public class EmailsReceivedEventBus
     {
-        public InboxEmailsEventBus(IEnumerable<Email> emails)
+        public EmailsReceivedEventBus(IEnumerable<Email> emails)
         {
             this.Emails = emails;
         }
