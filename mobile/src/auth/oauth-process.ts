@@ -10,7 +10,6 @@ import moment from 'moment';
 import { catchError, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import { concat, EMPTY, interval, merge, Observable, of, ReplaySubject, Subject, Subscription } from 'rxjs';
 import { Nullable, Optional } from 'types';
-import { handleHttpErrors } from '../errors/error.operators';
 
 //https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-protocols-oauth-code
 
@@ -56,9 +55,7 @@ export class OAuthProcess {
 
         const accessCodeResponse = this.authorizationCode.pipe(
             switchMap((code: string) => {
-                return this.accessCodeRequest.fetchNew(code).pipe(
-                    handleHttpErrors(false),
-                );
+                return this.accessCodeRequest.fetchNew(code);
             }));
 
         const refreshTokenObtainedAccessCodes = this.refreshTokenSource.pipe(
@@ -69,7 +66,8 @@ export class OAuthProcess {
                 }
 
                 return this.accessCodeRequest.refresh(token).pipe(
-                    catchError(() => {
+                    catchError((error) => {
+                        this.handleError(error);
                         return EMPTY;
                     }),
                 );
@@ -191,7 +189,7 @@ export class OAuthProcess {
             return;
         }
 
-        const errorText = this.getErrorMessage(error);
+        const errorText = error.description ? error.description : this.getErrorMessage(error);
         this.authenticationStateSource.next({ isAuthenticated: false, errorText: errorText });
     }
 
