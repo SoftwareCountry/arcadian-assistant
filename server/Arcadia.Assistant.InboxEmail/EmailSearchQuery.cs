@@ -44,5 +44,10 @@
                 MinId = this.MinId
             };
         }
+
+        public override string ToString()
+        {
+            return $"Subject: {this.Subject}; Sender: {this.Sender}; MinId: {this.MinId}";
+        }
     }
 }
