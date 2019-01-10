@@ -61,7 +61,7 @@
                     {
                         if (@event.IsPending)
                         {
-                            this.Self.Tell(new AssignCalendarEventNextApprover(@event.EventId));
+                            this.Self.Tell(new AddCalendarEventToPendingActions(@event.EventId));
                         }
                     }
                     break;
