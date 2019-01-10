@@ -51,6 +51,8 @@
         {
             this.logger.Debug("Loading inbox emails started");
 
+            this.logger.Debug($"Inbox emails query: {query}");
+
             IEnumerable<Email> emails;
 
             using (var client = new ImapClient())
@@ -65,7 +67,7 @@
 
                 var inboxQuery = new SearchQuery();
 
-                if (query.Subject != null)
+                if (!string.IsNullOrWhiteSpace(query.Subject))
                 {
                     inboxQuery = inboxQuery.And(SearchQuery.SubjectContains(query.Subject));
                 }
@@ -81,12 +83,14 @@
                     ids,
                     MessageSummaryItems.BodyStructure | MessageSummaryItems.Envelope);
 
-                if (query.Sender != null)
+                if (!string.IsNullOrWhiteSpace(query.Sender))
                 {
                     messages = messages
                         .Where(m => m.Envelope.From.Any(f => f.ToString().Contains(query.Sender)))
                         .ToList();
                 }
+
+                this.logger.Debug($"Total messages loaded: {messages.Count}");
 
                 emails = this.ConvertMessages(client, messages);
 
