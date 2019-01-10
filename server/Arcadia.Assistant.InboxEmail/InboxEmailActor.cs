@@ -70,11 +70,6 @@
                     inboxQuery = inboxQuery.And(SearchQuery.SubjectContains(query.Subject));
                 }
 
-                if (query.Sender != null)
-                {
-                    inboxQuery = inboxQuery.And(SearchQuery.FromContains(query.Sender));
-                }
-
                 var ids = await client.Inbox.SearchAsync(inboxQuery);
 
                 if (query.MinId != null)
@@ -85,6 +80,14 @@
                 var messages = await client.Inbox.FetchAsync(
                     ids,
                     MessageSummaryItems.BodyStructure | MessageSummaryItems.Envelope);
+
+                if (query.Sender != null)
+                {
+                    messages = messages
+                        .Where(m => m.Envelope.From.Any(f => f.ToString().Contains(query.Sender)))
+                        .ToList();
+                }
+
                 emails = this.ConvertMessages(client, messages);
 
                 await client.DisconnectAsync(true);
