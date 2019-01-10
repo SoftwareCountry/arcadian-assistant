@@ -86,6 +86,10 @@
             {
                 emailsSearchQuery.FromId(this.lastEmailId.Value);
             }
+            else
+            {
+                emailsSearchQuery.TakeLastNEmails(1);
+            }
 
             var message = new GetInboxEmails(emailsSearchQuery);
             var newEmailsResponse = await this.inboxEmailActor.Ask<GetInboxEmails.Response>(message);
@@ -96,15 +100,14 @@
                     throw new Exception("Loading inbox emails error", error.Exception);
 
                 case GetInboxEmails.Success success:
-                    if (this.lastEmailId == null)
-                    {
-                        this.lastEmailId = success.Emails.Max(e => e.UniqueId);
-                    }
-                    else
+                    if (this.lastEmailId != null)
                     {
                         var emailsEventBus = new EmailsReceivedEventBus(success.Emails.ToList());
                         Context.System.EventStream.Publish(emailsEventBus);
                     }
+
+                    this.lastEmailId = success.Emails.Max(e => e.UniqueId);
+
                     break;
 
                 default:
