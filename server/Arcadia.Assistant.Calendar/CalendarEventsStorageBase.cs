@@ -275,6 +275,7 @@
             else
             {
                 Context.System.EventStream.Publish(new CalendarEventAssignedToApprover(calendarEvent, null));
+                Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(calendarEvent, null));
             }
         }
 
