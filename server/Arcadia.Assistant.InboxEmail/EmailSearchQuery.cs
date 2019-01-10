@@ -12,6 +12,8 @@
 
         public uint? MinId { get; private set; }
 
+        public uint? LastNEmails { get; private set; }
+
         public static EmailSearchQuery Create() => new EmailSearchQuery();
 
         public EmailSearchQuery WithSubject(string subject)
@@ -35,19 +37,27 @@
             return query;
         }
 
+        public EmailSearchQuery TakeLastNEmails(uint lastNEmails)
+        {
+            var query = this.Clone();
+            this.LastNEmails = lastNEmails;
+            return query;
+        }
+
         private EmailSearchQuery Clone()
         {
             return new EmailSearchQuery
             {
                 Subject = this.Subject,
                 Sender = this.Sender,
-                MinId = this.MinId
+                MinId = this.MinId,
+                LastNEmails = this.LastNEmails
             };
         }
 
         public override string ToString()
         {
-            return $"Subject: {this.Subject}; Sender: {this.Sender}; MinId: {this.MinId}";
+            return $"Subject: {this.Subject}; Sender: {this.Sender}; MinId: {this.MinId}; LastNEmails: {this.LastNEmails}";
         }
     }
 }
