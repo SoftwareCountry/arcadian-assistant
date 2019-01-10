@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+
     using Akka.Actor;
     using Akka.DI.Core;
     using Akka.Event;
@@ -39,9 +40,12 @@
             switch (message)
             {
                 case LoadInitialState _:
+                    this.logger.Debug("Load initial vacation emails state started");
+
                     var emailsQuery = EmailSearchQuery.Create()
                         .WithSender(this.configuration.Sender)
                         .WithSubject(this.configuration.Subject);
+
                     this.inboxEmailActor.Ask<GetInboxEmails.Response>(new GetInboxEmails(emailsQuery))
                         .PipeTo(
                             this.Self,
@@ -57,7 +61,7 @@
 
                                     default:
                                         return new LoadInitialState.Error(
-                                            new Exception("Unexpected inbox emails response"));
+                                            new Exception($"Unexpected inbox emails response {x.GetType()}"));
                                 }
                             },
                             failure: err => new LoadInitialState.Error(err)
@@ -66,11 +70,14 @@
 
                 case LoadInitialState.Success msg:
                     this.LoadVacationsFromEmails(msg.Emails);
+                    this.logger.Debug("Load initial vacation emails state successfully finished");
+
                     this.BecomeAfterInitial();
+
                     break;
 
                 case LoadInitialState.Error msg:
-                    this.logger.Warning(msg.Exception.Message);
+                    this.logger.Warning(msg.Exception.ToString());
                     this.BecomeAfterInitial();
                     break;
 
@@ -129,23 +136,21 @@
         {
             var lines = vacationsAttachment.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
             var employeeLines = lines
+                .Skip(4) // Skip headers
                 .Select(l => l.Split(new[] { "\t" }, StringSplitOptions.None))
-                .Where(l => l.Length == 4)
-                .Skip(2); // Headers line and next line with tabs
+                .Where(l => l.Length == 2); // All valuable rows contains exactly 2 columns
 
             var vacations = employeeLines
                 .Select(l => new
                 {
-                    Name = l[0],
-                    Email = l[1],
-                    MainVacations = l[2],
-                    TotalVacations = l[3]
+                    Email = l[0],
+                    Vacations = l[1]
                 })
-                .Where(v => !string.IsNullOrWhiteSpace(v.Email) && !string.IsNullOrWhiteSpace(v.MainVacations))
+                .Where(v => !string.IsNullOrWhiteSpace(v.Email) && !string.IsNullOrWhiteSpace(v.Vacations) && double.TryParse(v.Vacations, out var _))
                 .Select(v => new EmployeeVacationRecord
                 {
                     Id = v.Email,
-                    VacationDaysCount = double.Parse(v.MainVacations)
+                    VacationDaysCount = double.Parse(v.Vacations)
                 })
                 .ToList();
             return vacations;
@@ -199,16 +204,6 @@
                 }
 
                 public IEnumerable<EmployeeVacationRecord> EmployeeVacations { get; }
-            }
-
-            public class Error : Response
-            {
-                public Error(Exception exception)
-                {
-                    this.Exception = exception;
-                }
-
-                public Exception Exception { get; }
             }
         }
 
