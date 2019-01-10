@@ -136,23 +136,21 @@
         {
             var lines = vacationsAttachment.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
             var employeeLines = lines
+                .Skip(4) // Skip headers
                 .Select(l => l.Split(new[] { "\t" }, StringSplitOptions.None))
-                .Where(l => l.Length == 4)
-                .Skip(2); // Headers line and next line with tabs
+                .Where(l => l.Length == 2); // All valuable rows contains exactly 2 columns
 
             var vacations = employeeLines
                 .Select(l => new
                 {
-                    Name = l[0],
-                    Email = l[1],
-                    MainVacations = l[2],
-                    TotalVacations = l[3]
+                    Email = l[0],
+                    Vacations = l[1]
                 })
-                .Where(v => !string.IsNullOrWhiteSpace(v.Email) && !string.IsNullOrWhiteSpace(v.MainVacations))
+                .Where(v => !string.IsNullOrWhiteSpace(v.Email) && !string.IsNullOrWhiteSpace(v.Vacations) && double.TryParse(v.Vacations, out var _))
                 .Select(v => new EmployeeVacationRecord
                 {
                     Id = v.Email,
-                    VacationDaysCount = double.Parse(v.MainVacations)
+                    VacationDaysCount = double.Parse(v.Vacations)
                 })
                 .ToList();
             return vacations;

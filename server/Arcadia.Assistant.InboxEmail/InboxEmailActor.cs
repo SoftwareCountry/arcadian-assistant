@@ -72,11 +72,6 @@
                     inboxQuery = inboxQuery.And(SearchQuery.SubjectContains(query.Subject));
                 }
 
-                if (!string.IsNullOrWhiteSpace(query.Sender))
-                {
-                    inboxQuery = inboxQuery.And(SearchQuery.FromContains(query.Sender));
-                }
-
                 var ids = await client.Inbox.SearchAsync(inboxQuery);
 
                 if (query.MinId != null)
@@ -87,6 +82,14 @@
                 var messages = await client.Inbox.FetchAsync(
                     ids,
                     MessageSummaryItems.BodyStructure | MessageSummaryItems.Envelope);
+
+                if (!string.IsNullOrWhiteSpace(query.Sender))
+                {
+                    messages = messages
+                        .Where(m => m.Envelope.From.Any(f => f.ToString().Contains(query.Sender)))
+                        .ToList();
+                }
+
                 this.logger.Debug($"Total messages loaded: {messages.Count}");
 
                 emails = this.ConvertMessages(client, messages);
