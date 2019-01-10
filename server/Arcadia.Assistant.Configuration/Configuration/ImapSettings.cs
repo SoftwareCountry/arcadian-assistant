@@ -1,6 +1,5 @@
 ﻿namespace Arcadia.Assistant.Configuration.Configuration
 {
-    using System;
     using System.ComponentModel.DataAnnotations;
 
     public class ImapSettings : IImapSettings
@@ -19,9 +18,6 @@
 
         [Required]
         public int Port { get; set; }
-
-        [Required]
-        public bool UseTls { get; set; }
 
         [Required]
         public int RefreshIntervalMinutes { get; set; }
