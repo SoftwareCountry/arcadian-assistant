@@ -12,8 +12,6 @@
 
         string Host { get; }
 
-        bool UseTls { get; }
-
         int RefreshIntervalMinutes { get; }
     }
 }
