@@ -59,8 +59,7 @@
             {
                 await client.ConnectAsync(
                     this.imapSettings.Host,
-                    this.imapSettings.Port,
-                    this.imapSettings.UseTls ? SecureSocketOptions.StartTls : SecureSocketOptions.None);
+                    this.imapSettings.Port);
                 await client.AuthenticateAsync(this.imapSettings.User, this.imapSettings.Password);
 
                 await client.Inbox.OpenAsync(FolderAccess.ReadOnly);
