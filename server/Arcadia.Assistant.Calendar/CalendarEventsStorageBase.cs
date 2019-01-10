@@ -250,7 +250,7 @@
             }
 
             Context.System.EventStream.Publish(new CalendarEventAssignedToApprover(oldEvent, nextApproverId));
-            Context.System.EventStream.Publish(new CalendarEventAddToPendingActions(oldEvent, nextApproverId));
+            Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(oldEvent, nextApproverId));
         }
 
         private void OnCalendarEventRecoveryComplete(string eventId, string nextApproverId)
@@ -261,7 +261,7 @@
                 return;
             }
 
-            Context.System.EventStream.Publish(new CalendarEventAddToPendingActions(oldEvent, nextApproverId));
+            Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(oldEvent, nextApproverId));
         }
 
         private void OnSuccessfulUpsert(CalendarEvent calendarEvent)

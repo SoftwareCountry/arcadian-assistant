@@ -1,8 +1,8 @@
 ﻿namespace Arcadia.Assistant.Calendar.Abstractions.EventBus
 {
-    public class CalendarEventAddToPendingActions
+    public class CalendarEventAddedToPendingActions
     {
-        public CalendarEventAddToPendingActions(CalendarEvent @event, string approverId)
+        public CalendarEventAddedToPendingActions(CalendarEvent @event, string approverId)
         {
             this.Event = @event;
             this.ApproverId = approverId;

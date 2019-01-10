@@ -19,7 +19,7 @@
         {
             this.employeeId = employeeId;
 
-            Context.System.EventStream.Subscribe<CalendarEventAddToPendingActions>(this.Self);
+            Context.System.EventStream.Subscribe<CalendarEventAddedToPendingActions>(this.Self);
         }
 
         public static Props CreateProps(string employeeId)
@@ -35,17 +35,17 @@
                     this.Sender.Tell(new GetEmployeePendingActions.Response(this.pendingActionEvents.Values.ToList()));
                     break;
 
-                case CalendarEventAddToPendingActions msg when msg.ApproverId == this.employeeId:
+                case CalendarEventAddedToPendingActions msg when msg.ApproverId == this.employeeId:
                     this.pendingActionEvents[msg.Event.EventId] = msg.Event;
                     break;
 
-                case CalendarEventAddToPendingActions msg
+                case CalendarEventAddedToPendingActions msg
                     when msg.ApproverId != this.employeeId && this.pendingActionEvents.ContainsKey(msg.Event.EventId):
 
                     this.pendingActionEvents.Remove(msg.Event.EventId);
                     break;
 
-                case CalendarEventAddToPendingActions _:
+                case CalendarEventAddedToPendingActions _:
                     // Simply ignore messages with other event ids
                     break;
 
