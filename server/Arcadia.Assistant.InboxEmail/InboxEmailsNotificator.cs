@@ -65,7 +65,7 @@
                     break;
 
                 case LoadInboxEmailsFinishError msg:
-                    this.logger.Warning(msg.Exception.Message);
+                    this.logger.Warning(msg.Exception.ToString());
 
                     this.Stash.UnstashAll();
                     this.UnbecomeStacked();
@@ -93,8 +93,7 @@
             switch (newEmailsResponse)
             {
                 case GetInboxEmails.Error error:
-                    this.logger.Warning(error.Exception.Message);
-                    break;
+                    throw new Exception("Loading inbox emails error", error.Exception);
 
                 case GetInboxEmails.Success success:
                     if (this.lastEmailId == null)
@@ -109,8 +108,7 @@
                     break;
 
                 default:
-                    this.logger.Warning("Unexpected inbox emails response");
-                    break;
+                    throw new Exception($"Unexpected inbox emails response: {newEmailsResponse.GetType()}");
             }
         }
 

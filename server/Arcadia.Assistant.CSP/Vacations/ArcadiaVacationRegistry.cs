@@ -63,11 +63,14 @@
                 case Refresh _:
                     this.logger.Info("Updating vacations information...");
                     this.LoadEmployeeVacationDays()
-                        .PipeTo(this.Self, success: x => new RefreshSuccess(x), failure: x => new RefreshFailed(x));
+                        .PipeTo(
+                            this.Self,
+                            success: x => new RefreshSuccess(x),
+                            failure: err => new RefreshFailed(err));
                     break;
 
                 case RefreshSuccess m:
-                    this.logger.Info("Vacations registry is updated");
+                    this.logger.Info("Vacations information is updated");
                     this.employeeIdsToDaysLeft = m.EmployeesToDaysLeft;
 
                     this.lastErrorMessage = null;
@@ -95,17 +98,16 @@
 
             await Task.WhenAll(employeesTask, vacationsInfoTask);
 
-            if (vacationsInfoTask.Result is VacationsEmailLoader.GetVacationsInfo.Error errorResult)
-            {
-                throw new Exception("Failed to load employee vacations info", errorResult.Exception);
-            }
-
-            var employees = employeesTask.Result;
-
             if (!(vacationsInfoTask.Result is VacationsEmailLoader.GetVacationsInfo.Success vacationsInfoResult))
             {
                 throw new Exception("Unexpected vacations info response");
             }
+
+            this.logger.Debug("Employees and vacations info is loaded");
+
+            var employees = employeesTask.Result.ToList();
+
+            this.logger.Debug($"Employees count: {employees.Count}; Vacations info count: {vacationsInfoResult.EmployeeVacations.Count()}");
 
             var employeesVacations = employees
                 .GroupJoin(
