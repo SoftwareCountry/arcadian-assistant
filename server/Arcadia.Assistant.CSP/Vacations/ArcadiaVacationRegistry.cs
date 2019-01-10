@@ -112,10 +112,10 @@
             var employeesVacations = employees
                 .GroupJoin(
                     vacationsInfoResult.EmployeeVacations,
-                    employee => employee.Id.ToLower(),
-                    vacation => vacation.Id.ToLower(),
+                    employee => employee.Email.ToLower(),
+                    vacation => vacation.Email.ToLower(),
                     (x, y) => new { x.Id, DaysLeft = y.Select(v => v.VacationDaysCount).FirstOrDefault() })
-                .ToDictionary(x => x.Id.ToString(), x => x.DaysLeft);
+                .ToDictionary(x => x.Id, x => x.DaysLeft);
             return employeesVacations;
         }
 

@@ -149,7 +149,7 @@
                 .Where(v => !string.IsNullOrWhiteSpace(v.Email) && !string.IsNullOrWhiteSpace(v.Vacations) && double.TryParse(v.Vacations, out var _))
                 .Select(v => new EmployeeVacationRecord
                 {
-                    Id = v.Email,
+                    Email = v.Email,
                     VacationDaysCount = double.Parse(v.Vacations)
                 })
                 .ToList();
@@ -209,7 +209,7 @@
 
         public class EmployeeVacationRecord
         {
-            public string Id { get; set; }
+            public string Email { get; set; }
 
             public double VacationDaysCount { get; set; }
         }

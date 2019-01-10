@@ -59,8 +59,7 @@
             {
                 await client.ConnectAsync(
                     this.imapSettings.Host,
-                    this.imapSettings.Port,
-                    this.imapSettings.UseTls ? SecureSocketOptions.StartTls : SecureSocketOptions.None);
+                    this.imapSettings.Port);
                 await client.AuthenticateAsync(this.imapSettings.User, this.imapSettings.Password);
 
                 await client.Inbox.OpenAsync(FolderAccess.ReadOnly);
@@ -79,14 +78,22 @@
                     ids = ids.Where(x => x.Id > query.MinId).ToList();
                 }
 
-                var messages = await client.Inbox.FetchAsync(
-                    ids,
-                    MessageSummaryItems.BodyStructure | MessageSummaryItems.Envelope);
+                var messages = (await client.Inbox
+                        .FetchAsync(ids, MessageSummaryItems.BodyStructure | MessageSummaryItems.Envelope))
+                    .OrderByDescending(m => m.Date)
+                    .ToList();
 
                 if (!string.IsNullOrWhiteSpace(query.Sender))
                 {
                     messages = messages
                         .Where(m => m.Envelope.From.Any(f => f.ToString().Contains(query.Sender)))
+                        .ToList();
+                }
+
+                if (query.LastNEmails != null)
+                {
+                    messages = messages
+                        .Take((int)query.LastNEmails.Value)
                         .ToList();
                 }
 

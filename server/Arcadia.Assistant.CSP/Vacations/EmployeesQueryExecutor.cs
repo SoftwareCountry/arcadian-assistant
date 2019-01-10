@@ -35,7 +35,8 @@
                     x =>
                         new CspEmployeeRecord
                         {
-                            Id = x.Email
+                            Id = x.Id.ToString(),
+                            Email = x.Email
                         }).ToListAsync();
             }
         }
@@ -43,6 +44,8 @@
         public class CspEmployeeRecord
         {
             public string Id { get; set; }
+
+            public string Email { get; set; }
         }
     }
 }
