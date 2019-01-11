@@ -5,6 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
@@ -21,13 +22,16 @@
     {
         private readonly IActorRefFactory actorSystem;
         private readonly ITimeoutSettings timeoutSettings;
+        private readonly IHostingEnvironment hostingEnvironment;
 
         public DownloadWebController(
             IActorRefFactory actorSystem,
-            ITimeoutSettings timeoutSettings)
+            ITimeoutSettings timeoutSettings,
+            IHostingEnvironment hostingEnvironment)
         {
             this.actorSystem = actorSystem;
             this.timeoutSettings = timeoutSettings;
+            this.hostingEnvironment = hostingEnvironment;
         }
 
         [HttpGet]
@@ -73,13 +77,18 @@
                 return this.NotFound();
             }
 
-            var fileContentType = appType == DeviceType.Android
-                ? "application/vnd.android.package-archive"
-                : "application/octet-stream";
+            if (appType == DeviceType.Ios)
+            {
+                var hostUrl = $"{this.Request.Scheme}://{this.Request.Host}";
+                var relativePath = Path
+                    .GetRelativePath(this.hostingEnvironment.ContentRootPath, buildPathResponse.Path)
+                    .Replace("\\", "/");
+                return this.Redirect($"itms-services://?action=download-manifest&url={hostUrl}/{relativePath}");
+            }
 
             return this.PhysicalFile(
                 buildPathResponse.Path,
-                fileContentType,
+                "application/vnd.android.package-archive",
                 Path.GetFileName(buildPathResponse.Path));
         }
     }

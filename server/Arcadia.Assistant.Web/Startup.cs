@@ -1,6 +1,7 @@
 ﻿namespace Arcadia.Assistant.Web
 {
     using System.Collections.Generic;
+    using System.IO;
 
     using Autofac;
     using Microsoft.ApplicationInsights.Extensibility;
@@ -8,8 +9,10 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.StaticFiles;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.FileProviders;
     using Swashbuckle.AspNetCore.Swagger;
     using ZNetCS.AspNetCore.Authentication.Basic;
 
@@ -194,7 +197,28 @@
                             );
                     });
 
+            this.UseApplicationBuildsStaticFiles(app, env);
+
             app.UseMvc();
+        }
+
+        private void UseApplicationBuildsStaticFiles(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            var provider = new FileExtensionContentTypeProvider
+            {
+                Mappings =
+                {
+                    [".ipa"] = "application/octet-stream",
+                    [".plist"] = "text/html"
+                }
+            };
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                RequestPath = "/Builds",
+                FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, "Builds")),
+                ContentTypeProvider = provider
+            });
         }
     }
 }
