@@ -9,7 +9,7 @@ export interface AuthenticatedState {
 
 export interface NotAuthenticatedState {
     isAuthenticated: false;
-    errorText?: string;
+    error?: any;
 }
 
 export type AuthenticationState = AuthenticatedState | NotAuthenticatedState;

@@ -40,15 +40,30 @@ function showAlert(message: string, okButtonTitle: string, rejectButtonTitle: st
 }
 
 //----------------------------------------------------------------------------
-function showErrorMessage(message: string) {
+function showErrorAlert(error: any) {
     Alert.alert(
         'Error occurred',
-        `${message}`,
+        `${getErrorMessage(error)}`,
         [
             {
                 text: 'OK', onPress: () => {},
             },
         ]);
+}
+
+//----------------------------------------------------------------------------
+function getErrorMessage(error: any): string {
+    const detailedDescription = error && error.response && error.response.error_description ?
+        error.response.error_description : undefined;
+
+    const errorText =
+        error
+            ? error.message
+            ? error.message.toString()
+            : error.toString()
+            : 'unknown error';
+
+    return detailedDescription ? detailedDescription : errorText;
 }
 
 //----------------------------------------------------------------------------
@@ -88,21 +103,19 @@ export const startLogoutProcessEpic$ = (action$: ActionsObservable<StartLogoutPr
     );
 
 //----------------------------------------------------------------------------
-export const listenerAuthStateEpic$ = (action$: ActionsObservable<any>, _: StateObservable<AppState>, dep: DependenciesContainer) =>
+export const listenerAuthStateEpic$ = (action$: ActionsObservable<any>, state$: StateObservable<AppState>, dep: DependenciesContainer) =>
     dep.oauthProcess.authenticationState
         .pipe(
             handleHttpErrors(),
             distinctUntilChanged<AuthenticationState>((x, y) => (x.isAuthenticated && y.isAuthenticated)),
-            flatMap<AuthenticationState, Action>(x => {
-                    if (x.isAuthenticated) {
+            flatMap<AuthenticationState, Action>(authState => {
+                    if (authState.isAuthenticated) {
                         return of(userLoggedIn(), refresh());
                     } else {
-                        return of(userLoggedOut()).pipe(
-                            tap(() => {
-                                if (x.errorText) {
-                                    showErrorMessage(x.errorText);
-                                }
-                            }));
+                        if (authState.error) {
+                            showErrorAlert(authState.error);
+                        }
+                        return of(userLoggedOut());
                     }
                 }
             ));
