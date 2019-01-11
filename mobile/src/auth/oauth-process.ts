@@ -10,6 +10,7 @@ import moment from 'moment';
 import { catchError, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import { concat, EMPTY, interval, merge, Observable, of, ReplaySubject, Subject, Subscription } from 'rxjs';
 import { Nullable, Optional } from 'types';
+import { Alert } from 'react-native';
 
 //https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-protocols-oauth-code
 
@@ -119,7 +120,7 @@ export class OAuthProcess {
 
     //----------------------------------------------------------------------------
     public async logout() {
-        this.forgetUser();
+        return this.forgetUser();
     }
 
     //----------------------------------------------------------------------------
@@ -128,7 +129,7 @@ export class OAuthProcess {
     }
 
     //----------------------------------------------------------------------------
-    public async forgetUser() {
+    private async forgetUser() {
         await this.storeRefreshToken(null);
         this.refreshTokenSource.next(null);
     }
@@ -157,7 +158,6 @@ export class OAuthProcess {
             console.warn('OAuth connectivity error occurred', error);
         } else {
             this.storeRefreshToken(null); // there was an error with /token endpoint so we delete existing token
-
             this.handleError(error);
         }
     }
@@ -189,28 +189,17 @@ export class OAuthProcess {
     private handleError(error: any) {
         const errorCode = error.code;
 
-        if (errorCode && errorCode === cancellationErrorCode) {
-            this.authenticationStateSource.next(notAuthenticatedInstance);
-            return;
+        let errorInstance: NotAuthenticatedState = notAuthenticatedInstance;
+
+        if (!errorCode || errorCode !== cancellationErrorCode) {
+            errorInstance = {
+                ...errorInstance,
+                error,
+            };
         }
 
-        const errorText = this.getErrorMessage(error);
-        this.authenticationStateSource.next({ isAuthenticated: false, errorText: errorText });
-    }
-
-    //----------------------------------------------------------------------------
-    private getErrorMessage(error: any): string {
-        const detailedDescription = error && error.response && error.response.error_description ?
-            error.response.error_description : undefined;
-
-        const errorText =
-            error
-                ? error.message
-                ? error.message.toString()
-                : error.toString()
-                : 'unknown error';
-
-        return detailedDescription ? detailedDescription : errorText;
+        this.refreshTokenSource.next(null);
+        this.authenticationStateSource.next(errorInstance);
     }
 }
 
