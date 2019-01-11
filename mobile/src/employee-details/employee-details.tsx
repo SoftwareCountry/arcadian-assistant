@@ -259,7 +259,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                 onPress: null
             },
             {
-                label: employee.hireDate.format('YYYY-D-MM'),
+                label: employee.hireDate.format('DD MMM YYYY'),
                 icon: 'handshake',
                 style: StyleSheet.flatten([tileStyles.icon]),
                 size: 20,
