@@ -64,7 +64,7 @@
                     break;
 
                 case CalendarEventApprovalsChangedWithAdditionalData msg
-                    when msg.OwnerUserPreferences.EmailNotifications:
+                    when msg.OwnerUserPreferences.PushNotifications:
 
                     this.logger.Debug("Sending email notification about user {0} granted approval for event {1} of {2}",
                         msg.Approver.EmployeeId, msg.Event.EventId, msg.Event.EmployeeId);
