@@ -60,7 +60,7 @@
                     break;
 
                 case LoadInboxEmailsFinishSuccess msg:
-                    if (msg.Emails.Any())
+                    if (msg.Emails != null)
                     {
                         var emailsEventBus = new EmailsReceivedEventBus(msg.Emails.ToList());
                         Context.System.EventStream.Publish(emailsEventBus);
@@ -107,13 +107,13 @@
                     throw new Exception("Loading inbox emails error", error.Exception);
 
                 case GetInboxEmails.Success success:
-                    this.lastEmailId = success.Emails.Max(e => e.UniqueId);
+                    if (success.Emails.Any())
+                    {
+                        this.lastEmailId = success.Emails.Max(e => e.UniqueId);
+                        return success.Emails;
+                    }
 
-                    var newEmails = this.lastEmailId == null
-                        ? Enumerable.Empty<Email>()
-                        : success.Emails;
-
-                    return newEmails;
+                    return null;
 
                 default:
                     throw new Exception($"Unexpected inbox emails response: {newEmailsResponse.GetType()}");
