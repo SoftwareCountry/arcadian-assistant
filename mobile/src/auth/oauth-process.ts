@@ -10,7 +10,6 @@ import moment from 'moment';
 import { catchError, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import { concat, EMPTY, interval, merge, Observable, of, ReplaySubject, Subject, Subscription } from 'rxjs';
 import { Nullable, Optional } from 'types';
-import { Alert } from 'react-native';
 
 //https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-protocols-oauth-code
 
