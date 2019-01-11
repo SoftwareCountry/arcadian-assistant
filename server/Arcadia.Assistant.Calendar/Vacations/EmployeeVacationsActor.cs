@@ -209,17 +209,6 @@
             }
         }
 
-        protected override void OnSuccessfulApprove(UserGrantedCalendarEventApproval message)
-        {
-            var calendarEvent = this.EventsById[message.EventId];
-
-            var text = $"Vacation from {calendarEvent.Dates.StartDate.ToLongDateString()} to {calendarEvent.Dates.EndDate.ToLongDateString()} got one new approval";
-            var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, message.TimeStamp.Date);
-            this.employeeFeed.Tell(new PostMessage(msg));
-
-            base.OnSuccessfulApprove(message);
-        }
-
         private void OnVacationRequested(VacationIsRequested message)
         {
             var datesPeriod = new DatesPeriod(message.StartDate, message.EndDate);
@@ -258,7 +247,7 @@
                     VacationStatuses.Approved,
                     calendarEvent.EmployeeId);
 
-                var text = $"Got vacation approved from {calendarEvent.Dates.StartDate.ToLongDateString()} to {calendarEvent.Dates.EndDate.ToLongDateString()}";
+                var text = $"Vacation approved from {calendarEvent.Dates.StartDate.ToLongDateString()} to {calendarEvent.Dates.EndDate.ToLongDateString()}";
                 var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, message.TimeStamp.Date);
                 this.employeeFeed.Tell(new PostMessage(msg));
             }
@@ -266,13 +255,9 @@
 
         private void OnVacationCancel(VacationIsCancelled message)
         {
-            if (this.EventsById.TryGetValue(message.EventId, out var calendarEvent))
+            if (this.EventsById.ContainsKey(message.EventId))
             {
                 this.EventsById.Remove(message.EventId);
-
-                var text = $"Got vacation canceled ({calendarEvent.Dates.StartDate.ToLongDateString()} - {calendarEvent.Dates.EndDate.ToLongDateString()})";
-                var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, message.TimeStamp.Date);
-                this.employeeFeed.Tell(new PostMessage(msg));
             }
         }
 
