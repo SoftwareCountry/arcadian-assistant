@@ -1,22 +1,14 @@
-﻿@using Arcadia.Assistant.Web.Models
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <title>Arcadia Assistant</title>
 </head>
 <body>
     <div>
-        @Html.ActionLink(
-            "Download for Android",
-            "GetFile",
-            new { deviceType = DeviceType.Android })
+        @Html.ActionLink("Download for Android", "GetAndroid")
     </div>
     <div>
-        @Html.ActionLink(
-            "Download for iOS",
-            "GetFile",
-            new { deviceType = DeviceType.Ios })
+        <a href="itms-services://?action=download-manifest&url=@Url.Link("get-ios-manifest", null)">Download for iOS</a>
     </div>
 </body>
 </html>

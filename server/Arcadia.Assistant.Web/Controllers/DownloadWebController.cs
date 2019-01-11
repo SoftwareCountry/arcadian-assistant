@@ -1,11 +1,10 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
-    using System;
     using System.IO;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
 
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     using Akka.Actor;
@@ -14,6 +13,7 @@
     using Arcadia.Assistant.Web.Configuration;
     using Arcadia.Assistant.Web.Download;
     using Arcadia.Assistant.Web.Models;
+    using Arcadia.Assistant.Web.Properties;
 
     [Route("")]
     [ApiExplorerSettings(IgnoreApi = true)]
@@ -36,44 +36,52 @@
             return this.View();
         }
 
-        [Route("get/{deviceType}")]
+        [Route("get-android")]
         [HttpGet]
-        public async Task<IActionResult> GetFile(string deviceType, CancellationToken token)
+        public Task<IActionResult> GetAndroid(CancellationToken cancellationToken)
         {
-            if (!Enum.TryParse(deviceType, out DeviceType appType))
-            {
-                return this.BadRequest();
-            }
+            return this.GetFile(DeviceType.Android, cancellationToken);
+        }
 
+        [Route("get-ios", Name = "get-ios")]
+        [HttpGet]
+        public Task<IActionResult> GetIos(CancellationToken cancellationToken)
+        {
+            return this.GetFile(DeviceType.Ios, cancellationToken);
+        }
+
+        [Route("get-ios-manifest", Name = "get-ios-manifest")]
+        [HttpGet]
+        public IActionResult GetIosManifest(CancellationToken cancellationToken)
+        {
+            var getIosFileLink = Url.Link("get-ios", null);
+
+            var manifestContent = Resources.IosManifest
+                .Replace("{downloadApplicationUrl}", getIosFileLink);
+
+            return this.File(Encoding.UTF8.GetBytes(manifestContent), "text/html");
+        }
+
+        public async Task<IActionResult> GetFile(DeviceType deviceType, CancellationToken token)
+        {
             var downloadActor = this.actorSystem.ActorSelection(
                 $"/user/{WellKnownActorPaths.DownloadApplicationBuilds}");
 
-            GetLatestApplicationBuildPath.ApplicationTypeEnum getBuildApplicationType;
-
-            if (appType == DeviceType.Android)
-            {
-                getBuildApplicationType = GetLatestApplicationBuildPath.ApplicationTypeEnum.Android;
-            }
-            else if (appType == DeviceType.Ios)
-            {
-                getBuildApplicationType = GetLatestApplicationBuildPath.ApplicationTypeEnum.Ios;
-            }
-            else
-            {
-                return this.StatusCode(StatusCodes.Status400BadRequest);
-            }
-
-            var message = new GetLatestApplicationBuildPath(getBuildApplicationType);
+            var getBuildApplicationType = deviceType == DeviceType.Android
+                ? GetLatestApplicationBuildPath.ApplicationTypeEnum.Android
+                : GetLatestApplicationBuildPath.ApplicationTypeEnum.Ios;
 
             var buildPathResponse = await downloadActor.Ask<GetLatestApplicationBuildPath.Response>(
-                message, this.timeoutSettings.Timeout, token);
+                new GetLatestApplicationBuildPath(getBuildApplicationType),
+                this.timeoutSettings.Timeout,
+                token);
 
             if (buildPathResponse.Path == null)
             {
                 return this.NotFound();
             }
 
-            var fileContentType = appType == DeviceType.Android
+            var fileContentType = deviceType == DeviceType.Android
                 ? "application/vnd.android.package-archive"
                 : "application/octet-stream";
 
