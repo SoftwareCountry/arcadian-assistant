@@ -19,5 +19,7 @@
         string IosGetBuildDownloadLinkTemplateUrl { get; }
 
         string IosManifestTemplateFileName { get; }
+
+        string DownloadFileUrl { get; }
     }
 }

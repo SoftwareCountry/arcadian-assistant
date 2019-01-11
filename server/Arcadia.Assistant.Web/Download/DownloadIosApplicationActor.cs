@@ -1,5 +1,6 @@
 ﻿namespace Arcadia.Assistant.Web.Download
 {
+    using System.IO;
     using System.Net.Http;
     using System.Threading.Tasks;
 
@@ -12,6 +13,8 @@
 
     public class DownloadIosApplicationActor : DownloadApplicationActorBase, ILogReceive
     {
+        private readonly IDownloadApplicationSettings downloadApplicationSettings;
+        private readonly IHostingEnvironment hostingEnvironment;
         private readonly string getBuildsUrl;
         private readonly AppCenterDownloader appCenterDownloader;
 
@@ -26,6 +29,8 @@
             string getBuildsUrl,
             string getBuildDownloadLinkTemplateUrl)
         {
+            this.downloadApplicationSettings = downloadApplicationSettings;
+            this.hostingEnvironment = hostingEnvironment;
             this.getBuildsUrl = getBuildsUrl;
 
             this.appCenterDownloader = new AppCenterDownloader(
@@ -59,10 +64,39 @@
                 return;
             }
 
-            if (this.latestBuildResult?.BuildNumber != newBuildResult.BuildNumber)
+            if (this.latestBuildResult?.BuildNumber == newBuildResult.BuildNumber)
             {
-                this.latestBuildResult = newBuildResult;
+                return;
             }
+
+            var manifestFilePath = await this.CreateManifestFile(newBuildResult.FilePath);
+            this.latestBuildResult = new AppCenterDownloadResult(newBuildResult.BuildNumber, manifestFilePath);
+        }
+
+        private async Task<string> CreateManifestFile(string applicationPath)
+        {
+            var manifestFilePath = Path.ChangeExtension(applicationPath, ".plist");
+
+            string manifestTemplate;
+
+            using (var manifestTemplateFile = File.OpenText(this.downloadApplicationSettings.IosManifestTemplateFileName))
+            {
+                manifestTemplate = await manifestTemplateFile.ReadToEndAsync();
+            }
+
+            var relativeFilePath = Path
+                .GetRelativePath(this.hostingEnvironment.ContentRootPath, applicationPath)
+                .Replace("\\", "/");
+            var downloadUrl = this.downloadApplicationSettings.DownloadFileUrl
+                .Replace("{filePath}", relativeFilePath);
+            manifestTemplate = manifestTemplate.Replace("{downloadApplicationUrl}", downloadUrl);
+
+            using (var file = File.CreateText(manifestFilePath))
+            {
+                await file.WriteAsync(manifestTemplate);
+            }
+
+            return manifestFilePath;
         }
     }
 }

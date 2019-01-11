@@ -23,15 +23,18 @@
         private readonly IActorRefFactory actorSystem;
         private readonly ITimeoutSettings timeoutSettings;
         private readonly IHostingEnvironment hostingEnvironment;
+        private readonly IDownloadApplicationSettings downloadApplicationSettings;
 
         public DownloadWebController(
             IActorRefFactory actorSystem,
             ITimeoutSettings timeoutSettings,
-            IHostingEnvironment hostingEnvironment)
+            IHostingEnvironment hostingEnvironment,
+            IDownloadApplicationSettings downloadApplicationSettings)
         {
             this.actorSystem = actorSystem;
             this.timeoutSettings = timeoutSettings;
             this.hostingEnvironment = hostingEnvironment;
+            this.downloadApplicationSettings = downloadApplicationSettings;
         }
 
         [HttpGet]
@@ -79,11 +82,12 @@
 
             if (appType == DeviceType.Ios)
             {
-                var hostUrl = $"{this.Request.Scheme}://{this.Request.Host}";
-                var relativePath = Path
+                var relativeFilePath = Path
                     .GetRelativePath(this.hostingEnvironment.ContentRootPath, buildPathResponse.Path)
                     .Replace("\\", "/");
-                return this.Redirect($"itms-services://?action=download-manifest&url={hostUrl}/{relativePath}");
+                var downloadUrl = this.downloadApplicationSettings.DownloadFileUrl
+                    .Replace("{filePath}", relativeFilePath);
+                return this.Redirect($"itms-services://?action=download-manifest&url={downloadUrl}");
             }
 
             return this.PhysicalFile(
