@@ -1,7 +1,6 @@
 ﻿namespace Arcadia.Assistant.Web.Download
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
@@ -26,7 +25,7 @@
             IHostingEnvironment hostingEnvironment)
         {
             this.androidDownloadBuildActor = Context.ActorOf(
-                Props.Create(() => new DownloadApplicationActor(
+                Props.Create(() => new DownloadAndroidApplicationActor(
                     downloadApplicationSettings,
                     httpClientFactory,
                     hostingEnvironment,
@@ -35,7 +34,7 @@
                 "download-android-build");
 
             this.iosDownloadBuildActor = Context.ActorOf(
-                Props.Create(() => new DownloadApplicationActor(
+                Props.Create(() => new DownloadIosApplicationActor(
                     downloadApplicationSettings,
                     httpClientFactory,
                     hostingEnvironment,

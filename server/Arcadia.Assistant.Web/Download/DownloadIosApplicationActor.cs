@@ -10,7 +10,7 @@
 
     using Arcadia.Assistant.Web.Configuration;
 
-    public class DownloadApplicationActor : UntypedActor, ILogReceive
+    public class DownloadIosApplicationActor : DownloadApplicationActorBase, ILogReceive
     {
         private readonly string getBuildsUrl;
         private readonly AppCenterDownloader appCenterDownloader;
@@ -19,7 +19,7 @@
 
         private AppCenterDownloadResult latestBuildResult;
 
-        public DownloadApplicationActor(
+        public DownloadIosApplicationActor(
             IDownloadApplicationSettings downloadApplicationSettings,
             IHttpClientFactory httpClientFactory,
             IHostingEnvironment hostingEnvironment,
@@ -36,31 +36,18 @@
                 getBuildDownloadLinkTemplateUrl);
         }
 
-        protected override void OnReceive(object message)
-        {
-            switch (message)
-            {
-                case GetLatestApplicationBuildPath _:
-                    this.RespondLatestBuildPath();
-                    break;
-
-                case DownloadApplicationBuild _:
-                    this.DownloadBuild()
-                        .PipeTo(
-                            this.Sender,
-                            success: () => DownloadApplicationBuild.Success.Instance,
-                            failure: err => new DownloadApplicationBuild.Error(err));
-                    break;
-
-                default:
-                    this.Unhandled(message);
-                    break;
-            }
-        }
-
-        private void RespondLatestBuildPath()
+        protected override void RespondLatestBuildPath()
         {
             this.Sender.Tell(new GetLatestApplicationBuildPath.Response(this.latestBuildResult?.FilePath));
+        }
+
+        protected override void RespondDownloadApplicationBuild()
+        {
+            this.DownloadBuild()
+                .PipeTo(
+                    this.Sender,
+                    success: () => DownloadApplicationBuild.Success.Instance,
+                    failure: err => new DownloadApplicationBuild.Error(err));
         }
 
         private async Task DownloadBuild()
