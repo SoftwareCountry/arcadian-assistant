@@ -1,6 +1,7 @@
 ﻿namespace Arcadia.Assistant.InboxEmail
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -52,13 +53,19 @@
             switch (message)
             {
                 case LoadInboxEmailsStart _:
-                    this.BroadcastNewEmails().PipeTo(
+                    this.GetNewEmails().PipeTo(
                         this.Self,
-                        success: () => LoadInboxEmailsFinishSuccess.Instance,
+                        success: x => new LoadInboxEmailsFinishSuccess(x),
                         failure: err => new LoadInboxEmailsFinishError(err));
                     break;
 
-                case LoadInboxEmailsFinishSuccess _:
+                case LoadInboxEmailsFinishSuccess msg:
+                    if (msg.Emails != null)
+                    {
+                        var emailsEventBus = new EmailsReceivedEventBus(msg.Emails.ToList());
+                        Context.System.EventStream.Publish(emailsEventBus);
+                    }
+
                     this.Stash.UnstashAll();
                     this.UnbecomeStacked();
 
@@ -78,7 +85,7 @@
             }
         }
 
-        private async Task BroadcastNewEmails()
+        private async Task<IEnumerable<Email>> GetNewEmails()
         {
             var emailsSearchQuery = EmailSearchQuery.Create();
 
@@ -100,15 +107,13 @@
                     throw new Exception("Loading inbox emails error", error.Exception);
 
                 case GetInboxEmails.Success success:
-                    if (this.lastEmailId != null)
+                    if (success.Emails.Any())
                     {
-                        var emailsEventBus = new EmailsReceivedEventBus(success.Emails.ToList());
-                        Context.System.EventStream.Publish(emailsEventBus);
+                        this.lastEmailId = success.Emails.Max(e => e.UniqueId);
+                        return success.Emails;
                     }
 
-                    this.lastEmailId = success.Emails.Max(e => e.UniqueId);
-
-                    break;
+                    return null;
 
                 default:
                     throw new Exception($"Unexpected inbox emails response: {newEmailsResponse.GetType()}");
@@ -127,7 +132,12 @@
 
         private class LoadInboxEmailsFinishSuccess
         {
-            public static readonly LoadInboxEmailsFinishSuccess Instance = new LoadInboxEmailsFinishSuccess();
+            public LoadInboxEmailsFinishSuccess(IEnumerable<Email> emails)
+            {
+                this.Emails = emails;
+            }
+
+            public IEnumerable<Email> Emails { get; }
         }
 
         private class LoadInboxEmailsFinishError
