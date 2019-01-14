@@ -24,7 +24,7 @@
             IDownloadApplicationSettings downloadApplicationSettings,
             IHttpClientFactory httpClientFactory,
             IHostingEnvironment hostingEnvironment)
-        {
+        {            
             this.androidDownloadBuildActor = Context.ActorOf(
                 Props.Create(() => new DownloadApplicationActor(
                     downloadApplicationSettings,
@@ -33,7 +33,7 @@
                     downloadApplicationSettings.AndroidGetBuildsUrl,
                     downloadApplicationSettings.AndroidGetBuildDownloadLinkTemplateUrl)),
                 "download-android-build");
-
+                
             this.iosDownloadBuildActor = Context.ActorOf(
                 Props.Create(() => new DownloadApplicationActor(
                     downloadApplicationSettings,
