@@ -6,7 +6,8 @@ declare module 'react-native-fingerprint-scanner' {
     }
 
     export interface OnAttemptObject {
-        onAttempt: (error: Error) => void;
+        onAttempt?: (error: Error) => void;
+        description?: string;
     }
 
     export function isSensorAvailable(): Promise<string>;

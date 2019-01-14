@@ -1,12 +1,18 @@
+/******************************************************************************
+ * Copyright (c) Arcadia, Inc. All rights reserved.
+ ******************************************************************************/
+
 import SInfo from 'react-native-sensitive-info';
 import { Platform } from 'react-native';
 
+//============================================================================
 export interface RefreshTokenStorage {
     storeToken(refreshToken: string | null): Promise<void>;
 
     getRefreshToken(): Promise<string>;
 }
 
+//============================================================================
 class RefreshTokenBaseStorage {
     private readonly keyName = 'refresh-token';
     private refreshToken: string | null = null;
@@ -40,6 +46,8 @@ class RefreshTokenBaseStorage {
     }
 }
 
+//============================================================================
+// noinspection JSUnusedGlobalSymbols
 export class RefreshTokenProtectedStorage extends RefreshTokenBaseStorage implements RefreshTokenStorage {
 
     public async storeToken(refreshToken: string | null) {
@@ -47,6 +55,7 @@ export class RefreshTokenProtectedStorage extends RefreshTokenBaseStorage implem
     }
 }
 
+//============================================================================
 export class RefreshTokenUnprotectedStorage extends RefreshTokenBaseStorage implements RefreshTokenStorage {
 
     public async storeToken(refreshToken: string | null) {
@@ -54,12 +63,12 @@ export class RefreshTokenUnprotectedStorage extends RefreshTokenBaseStorage impl
     }
 }
 
+//----------------------------------------------------------------------------
 export const createRefreshTokenStorage = (): RefreshTokenStorage => {
 
-    const isAndroid = Platform.OS === 'android';
-    const isSensorAvailable = !isAndroid && SInfo.isSensorAvailable();
-
-    return isSensorAvailable ?
-        new RefreshTokenProtectedStorage() :
-        new RefreshTokenUnprotectedStorage();
+    // In current implementation the storage itself is not fingerprint protected.
+    // FingerprintScanner is used on the SplashScreen to allow/disallow user to proceed with the
+    // token value stored.
+    // TODO: get rid of SInfo component in future versions
+    return new RefreshTokenUnprotectedStorage();
 };
