@@ -1,0 +1,11 @@
+FROM microsoft/dotnet:2.1-sdk AS build-env
+WORKDIR /app
+
+COPY . ./
+RUN dotnet publish Arcadia.Assistant.Web/Arcadia.Assistant.Web.csproj -c Release -o out
+
+FROM microsoft/dotnet:2.1-aspnetcore-runtime
+WORKDIR /app
+EXPOSE 80 63302
+COPY --from=build-env /app/Arcadia.Assistant.Web/out .
+ENTRYPOINT ["dotnet", "Arcadia.Assistant.Web.dll"]
