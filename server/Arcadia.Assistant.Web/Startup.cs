@@ -1,6 +1,7 @@
 ﻿namespace Arcadia.Assistant.Web
 {
     using System.Collections.Generic;
+    using System.Net.Http;
 
     using Autofac;
     using Microsoft.ApplicationInsights.Extensibility;
@@ -161,7 +162,10 @@
             IHostingEnvironment env,
             ISecuritySettings securitySettings,
             ILifetimeScope container,
-            ActorSystem actorSystem)
+            ActorSystem actorSystem,
+            IHttpClientFactory httpClientFactory,
+            IDownloadApplicationSettings downloadApplicationSettings
+            )
         {
             if (env.IsDevelopment())
             {
@@ -172,7 +176,7 @@
             new AutoFacDependencyResolver(container, actorSystem);
 
             actorSystem.ActorOf(
-                actorSystem.DI().Props<DownloadActor>(),
+                Props.Create(() => new DownloadActor(downloadApplicationSettings, httpClientFactory, env)),
                 WellKnownActorPaths.DownloadApplicationBuilds);
 
             app.UseAkkaTimeoutExceptionHandler();
