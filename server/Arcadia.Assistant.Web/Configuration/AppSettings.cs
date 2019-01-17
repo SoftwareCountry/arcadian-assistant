@@ -3,10 +3,12 @@
     using System;
     using System.ComponentModel.DataAnnotations;
 
-    public class AppSettings : ITimeoutSettings
+    public class AppSettings : ITimeoutSettings, ISslSettings
     {
         [Required]
         public int TimeoutSeconds { get; set; }
+
+        public bool SslOffloading { get; set; } = false;
 
         public TimeSpan Timeout => TimeSpan.FromSeconds(this.TimeoutSeconds);
 

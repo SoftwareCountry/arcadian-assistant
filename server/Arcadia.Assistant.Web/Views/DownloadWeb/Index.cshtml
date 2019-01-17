@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@model Arcadia.Assistant.Web.Models.HomeViewModel
+
+<!DOCTYPE html>
 <html>
 <head>
     <title>Arcadia Assistant</title>
@@ -8,7 +10,7 @@
         @Html.ActionLink("Download for Android", "GetAndroid")
     </div>
     <div>
-        <a href="itms-services://?action=download-manifest&url=@Url.Link("get-ios-manifest", null)">Download for iOS</a>
+        <a href="itms-services://?action=download-manifest&url=@Model.ManifestLink">Download for iOS</a>
     </div>
 </body>
 </html>
