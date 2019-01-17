@@ -37,11 +37,18 @@
 
         private readonly IPermissionsLoader permissionsLoader;
 
-        public EmployeesController(IEmployeesRegistry employeesRegistry, ITimeoutSettings timeoutSettings, IPermissionsLoader permissionsLoader)
+        private readonly ISslSettings sslSettings;
+
+        public EmployeesController(
+            IEmployeesRegistry employeesRegistry,
+            ITimeoutSettings timeoutSettings,
+            IPermissionsLoader permissionsLoader,
+            ISslSettings sslSettings)
         {
             this.employeesRegistry = employeesRegistry;
             this.timeoutSettings = timeoutSettings;
             this.permissionsLoader = permissionsLoader;
+            this.sslSettings = sslSettings;
         }
 
         [Route("{employeeId}")]
@@ -146,7 +153,8 @@
             {
                 try
                 {
-                    employee.PhotoUrl = this.Url.Action(nameof(EmployeePhotoController.GetImage), "EmployeePhoto", new { employeeId = employee.EmployeeId }, this.Request.GetUri().Scheme);
+                    var protocol = this.sslSettings.SslOffloading ? "https" : this.Request.GetUri().Scheme;
+                    employee.PhotoUrl = this.Url.Action(nameof(EmployeePhotoController.GetImage), "EmployeePhoto", new { employeeId = employee.EmployeeId }, protocol);
                 }
                 catch (Exception e)
                 {
