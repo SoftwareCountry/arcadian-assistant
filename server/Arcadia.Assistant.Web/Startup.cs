@@ -132,6 +132,7 @@
 
             var pathsBuilder = new ActorPathsBuilder(systemName, host, port);
 
+            builder.RegisterInstance(appSettings).As<ISslSettings>();
             builder.RegisterInstance(appSettings).As<ITimeoutSettings>();
             builder.RegisterInstance(appSettings.Security).As<ISecuritySettings>();
             builder.RegisterInstance(appSettings.ServiceEndpointsAuthentication).As<IServiceEndpointsAuthenticationSettings>();

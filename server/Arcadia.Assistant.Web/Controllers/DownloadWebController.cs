@@ -19,13 +19,17 @@
     [ApiExplorerSettings(IgnoreApi = true)]
     public class DownloadWebController : Controller
     {
+        private readonly ISslSettings sslSettings;
+
         private readonly IActorRefFactory actorSystem;
         private readonly ITimeoutSettings timeoutSettings;
 
         public DownloadWebController(
+            ISslSettings sslSettings,
             IActorRefFactory actorSystem,
             ITimeoutSettings timeoutSettings)
         {
+            this.sslSettings = sslSettings;
             this.actorSystem = actorSystem;
             this.timeoutSettings = timeoutSettings;
         }
@@ -33,7 +37,10 @@
         [HttpGet]
         public IActionResult Index()
         {
-            return this.View();
+            return this.View(new HomeViewModel()
+                {
+                    ManifestLink = this.GetAbsoluteUrl("get-ios-manifest")
+                });
         }
 
         [Route("get-android")]
@@ -54,8 +61,8 @@
         [HttpGet]
         public IActionResult GetIosManifest(CancellationToken cancellationToken)
         {
-            var getIosFileLink = Url.Link("get-ios", null);
-
+            var getIosFileLink = this.GetAbsoluteUrl("get-ios");
+            
             var manifestContent = Resources.IosManifest
                 .Replace("{downloadApplicationUrl}", getIosFileLink);
 
@@ -89,6 +96,15 @@
                 buildPathResponse.Path,
                 fileContentType,
                 Path.GetFileName(buildPathResponse.Path));
+        }
+
+        private string GetAbsoluteUrl(string routeName)
+        {
+            var absoluteUrl = this.sslSettings.SslOffloading
+                ? this.Url.RouteUrl(routeName, null, "https")
+                : this.Url.Link(routeName, null);
+
+            return absoluteUrl;
         }
     }
 }
