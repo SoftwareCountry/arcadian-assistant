@@ -43,7 +43,7 @@ export class SecuredApiClient {
 
     //----------------------------------------------------------------------------
     private isAuthenticated(state: AuthenticationState): state is AuthenticatedState {
-        if (state.isAuthenticated) {
+        if (state.isAuthenticated && state.jwtToken) {
             return moment().isBefore(state.validUntil);
         }
         return false;

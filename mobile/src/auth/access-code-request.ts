@@ -47,6 +47,12 @@ export class TokenResponse {
 
     @dataMember({ fieldName: 'id_token' })
     public idToken: string = '';
+
+    constructor(refreshToken?: string) {
+        if (refreshToken) {
+            this.refreshToken = refreshToken;
+        }
+    }
 }
 
 export class AccessCodeRequest {
