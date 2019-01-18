@@ -196,12 +196,14 @@ export class OAuthProcess {
         this.authenticationStateSource.next(errorInstance);
     }
 
+    //----------------------------------------------------------------------------
     private isCancellationError(error: any): boolean {
         const errorCode = error.code;
 
         return errorCode && errorCode === cancellationErrorCode;
     }
 
+    //----------------------------------------------------------------------------
     private isNetworkError(error: any): boolean {
         const errorStatus = error.status;
 

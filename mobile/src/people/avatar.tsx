@@ -104,7 +104,7 @@ class AvatarImpl extends Component<AvatarProps, AvatarState> {
             this.props.imageStyle
         ]) as ImageStyle;
 
-        if (!(this.props.photoUrl) || this.state.loadingErrorOccurred) {
+        if (!this.props.photoUrl || this.state.loadingErrorOccurred) {
             const defaultImage = this.props.useDefaultForEmployeesList ? employeesListAvatarRect : arcadiaIcon;
 
             return <Image source={defaultImage} style={imageFlattenStyle}/>;
