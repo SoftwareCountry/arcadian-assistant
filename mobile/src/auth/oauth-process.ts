@@ -18,6 +18,7 @@ const notAuthenticatedInstance: NotAuthenticatedState = { isAuthenticated: false
 
 //============================================================================
 const cancellationErrorCode = '1';
+const networkErrorStatus = 0;
 
 //============================================================================
 export class OAuthProcess {
@@ -72,14 +73,19 @@ export class OAuthProcess {
 
                 return this.accessCodeRequest.refresh(token).pipe(
                     catchError((error) => {
-                        this.handleError(error);
-                        return EMPTY;
+
+                        if (!this.isNetworkError(error)) {
+                            this.handleError(error);
+                            return EMPTY;
+                        }
+
+                        return of(new TokenResponse(token));
                     }),
                 );
             }));
 
         this.accessCodeSubscription = merge(accessCodeResponse, refreshTokenObtainedAccessCodes)
-            .subscribe(x => this.onNewTokenObtained(x), e => this.onTokenError(e));
+            .subscribe(x => this.onNewTokenObtained(x));
     }
 
     //----------------------------------------------------------------------------
@@ -151,17 +157,6 @@ export class OAuthProcess {
     }
 
     //----------------------------------------------------------------------------
-    private onTokenError(error: any) {
-        if (error && error.status === 0) {
-            //ignore, no internet connection
-            console.warn('OAuth connectivity error occurred', error);
-        } else {
-            this.storeRefreshToken(null); // there was an error with /token endpoint so we delete existing token
-            this.handleError(error);
-        }
-    }
-
-    //----------------------------------------------------------------------------
     private async storeRefreshToken(token: string | null) {
         try {
             await this.refreshTokenStorage.storeToken(token);
@@ -186,11 +181,11 @@ export class OAuthProcess {
 
     //----------------------------------------------------------------------------
     private handleError(error: any) {
-        const errorCode = error.code;
 
         let errorInstance: NotAuthenticatedState = notAuthenticatedInstance;
 
-        if (!errorCode || errorCode !== cancellationErrorCode) {
+
+        if (!this.isCancellationError(error)) {
             errorInstance = {
                 ...errorInstance,
                 error,
@@ -199,6 +194,20 @@ export class OAuthProcess {
 
         this.refreshTokenSource.next(null);
         this.authenticationStateSource.next(errorInstance);
+    }
+
+    //----------------------------------------------------------------------------
+    private isCancellationError(error: any): boolean {
+        const errorCode = error.code;
+
+        return errorCode && errorCode === cancellationErrorCode;
+    }
+
+    //----------------------------------------------------------------------------
+    private isNetworkError(error: any): boolean {
+        const errorStatus = error.status;
+
+        return (errorStatus !== undefined && errorStatus === networkErrorStatus);
     }
 }
 
