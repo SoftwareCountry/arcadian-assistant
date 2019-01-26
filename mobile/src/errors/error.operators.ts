@@ -26,29 +26,36 @@ function showAlert(errorMessage: string, okButtonTitle: string, rejectButtonTitl
 }
 
 //============================================================================
+export function getHttpErrorMessage(error: any, customErrorMessage?: string): string {
+    const errorDescription = error.status ? `HTTP ${error.status}` : error.toString();
+    let errorMessage = 'Unknown error occurred';
+    if (customErrorMessage) {
+        errorMessage = `An error occurred (${errorDescription}). ${customErrorMessage}`;
+    } else if (error.status === 401) {
+        errorMessage = 'Authentication failed';
+    } else if (error.status === 403) {
+        errorMessage = 'Authorization error. Please contact administrator';
+    } else if (error.status === 503) {
+        errorMessage = 'Server is not available. Please try again later';
+    } else if (error.status === 0) {
+        errorMessage = 'Cannot establish a connection to the server';
+    } else if (errorDescription.includes('TimeoutError')) {
+        errorMessage = 'Unable to connect to server. Please try again later';
+    } else {
+        errorMessage = `An error occurred (${errorDescription}). Please contact administrator`;
+        logHttpError(error);
+    }
+    return errorMessage;
+}
+
+//============================================================================
 function retryWhenErrorOccurred<T>(isForceLogout: boolean = false, customErrorMessage: string | undefined = undefined): UnaryFunction<Observable<T>, Observable<T>> {
     let okButtonTitle = 'Try again';
     let rejectButtonTitle = isForceLogout ? 'Logout' : 'Cancel';
     return retryWhen(errors => {
         return errors.pipe(
             exhaustMap(e => new Promise((resolve, reject) => {
-                const errorDescription = e.status ? `HTTP ${e.status}` : e.toString();
-                let errorMessage = 'Unknown error occurred';
-                if (customErrorMessage) {
-                    errorMessage = `An error occurred (${errorDescription}). ${customErrorMessage}`;
-                } else if (e.status === 401) {
-                    errorMessage = 'Authentication failed';
-                } else if (e.status === 403) {
-                    errorMessage = 'Authorization error. Please contact administrator';
-                } else if (e.status === 503) {
-                    errorMessage = 'Server is not available. Please try again later';
-                } else if (e.status === 0) {
-                    errorMessage = 'Cannot establish a connection to the server';
-                } else {
-                    errorMessage = `An error occurred (${errorDescription}). Please contact administrator`;
-                    logHttpError(e);
-                }
-
+                const errorMessage = getHttpErrorMessage(e, customErrorMessage);
                 showAlert(errorMessage, okButtonTitle, rejectButtonTitle, resolve, () => reject(e));
             })));
     });

@@ -13,7 +13,7 @@ import {
     userLoggedOut
 } from './auth.action';
 import { refresh } from '../refresh/refresh.action';
-import { handleHttpErrors } from '../../errors/error.operators';
+import { getHttpErrorMessage, handleHttpErrors } from '../../errors/error.operators';
 import { distinctUntilChanged, flatMap, ignoreElements, map, tap } from 'rxjs/operators';
 import { Alert } from 'react-native';
 import { AuthenticationState } from '../../auth/authentication-state';
@@ -42,7 +42,7 @@ function showAlert(message: string, okButtonTitle: string, rejectButtonTitle: st
 //----------------------------------------------------------------------------
 function showErrorAlert(error: any) {
     Alert.alert(
-        'Error occurred',
+        'Error',
         `${getErrorMessage(error)}`,
         [
             {
@@ -56,12 +56,7 @@ function getErrorMessage(error: any): string {
     const detailedDescription = error && error.response && error.response.error_description ?
         error.response.error_description : undefined;
 
-    const errorText =
-        error
-            ? error.message
-            ? error.message.toString()
-            : error.toString()
-            : 'unknown error';
+    const errorText = getHttpErrorMessage(error);
 
     return detailedDescription ? detailedDescription : errorText;
 }
