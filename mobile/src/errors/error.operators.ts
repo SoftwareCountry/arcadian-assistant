@@ -40,7 +40,7 @@ export function getHttpErrorMessage(error: any, customErrorMessage?: string): st
     } else if (error.status === 0) {
         errorMessage = 'Cannot establish a connection to the server';
     } else if (errorDescription.includes('TimeoutError')) {
-        errorMessage = 'Unable to connect to server. Please try again later';
+        errorMessage = 'Unable to connect to the server. Please try again later';
     } else {
         errorMessage = `An error occurred (${errorDescription}). Please contact administrator`;
         logHttpError(error);
