@@ -1,11 +1,13 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
+    using System;
     using System.IO;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Net.Http.Headers;
 
     using Akka.Actor;
 
@@ -37,7 +39,12 @@
         [HttpGet]
         public IActionResult Index()
         {
-            return this.RedirectToAction("DownloadForIos");
+            var userAgent = this.Request.Headers[HeaderNames.UserAgent];
+            var deviceType = this.GetDeviceTypeByUserAgent(userAgent);
+
+            return deviceType == DeviceType.Android
+                ? this.RedirectToAction("DownloadForAndroid")
+                : this.RedirectToAction("DownloadForIos");
         }
 
         [Route("download-for-android")]
@@ -110,6 +117,17 @@
                 buildPathResponse.Path,
                 fileContentType,
                 Path.GetFileName(buildPathResponse.Path));
+        }
+
+        private DeviceType GetDeviceTypeByUserAgent(string userAgent)
+        {
+            var androidUserAgent = userAgent.IndexOf("android", StringComparison.InvariantCultureIgnoreCase);
+            if (androidUserAgent != -1)
+            {
+                return DeviceType.Android;
+            }
+
+            return DeviceType.Ios;
         }
 
         private string GetAbsoluteUrl(string routeName)
