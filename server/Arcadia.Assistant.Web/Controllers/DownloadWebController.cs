@@ -121,7 +121,7 @@
 
         private DeviceType GetDeviceTypeByUserAgent(string userAgent)
         {
-            var androidUserAgent = userAgent.IndexOf("android", StringComparison.InvariantCultureIgnoreCase);
+            var androidUserAgent = userAgent?.IndexOf("android", StringComparison.InvariantCultureIgnoreCase);
             if (androidUserAgent != -1)
             {
                 return DeviceType.Android;
