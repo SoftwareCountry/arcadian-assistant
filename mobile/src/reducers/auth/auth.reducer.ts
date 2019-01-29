@@ -1,12 +1,13 @@
 import { combineEpics } from 'redux-observable';
-import { jwtTokenEpic$, listenerAuthStateEpic$, startLoginProcessEpic$, startLogoutProcessEpic$ } from './auth.epics';
+//import { jwtTokenEpic$, listenerAuthStateEpic$, startLoginProcessEpic$, startLogoutProcessEpic$ } from './auth.epics';
+import {startLoginProcessEpic$, startLogoutProcessEpic$ } from './auth.epics';
 import { AuthActions, AuthActionType } from './auth.action';
 
 export const authEpics$ = combineEpics(
     startLoginProcessEpic$ as any,
     startLogoutProcessEpic$ as any,
-    listenerAuthStateEpic$ as any,
-    jwtTokenEpic$ as any
+    //listenerAuthStateEpic$ as any,
+    //jwtTokenEpic$ as any
 );
 
 export interface AuthInfo {

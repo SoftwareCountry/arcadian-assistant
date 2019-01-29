@@ -18,7 +18,7 @@ import { distinctUntilChanged, flatMap, ignoreElements, map, tap } from 'rxjs/op
 import { Alert } from 'react-native';
 import { AuthenticationState } from '../../auth/authentication-state';
 import { Action } from 'redux';
-import { of } from 'rxjs';
+import { of, concat, Observable, from } from 'rxjs';
 import { notificationsUnregister } from '../../notifications/notification.epics';
 
 //----------------------------------------------------------------------------
@@ -69,8 +69,8 @@ function getErrorMessage(error: any): string {
 //----------------------------------------------------------------------------
 export const startLoginProcessEpic$ = (action$: ActionsObservable<StartLoginProcess>, _: StateObservable<AppState>, dep: DependenciesContainer) =>
     action$.ofType(AuthActionType.startLoginProcess).pipe(
-        tap(x => dep.oauthProcess.login()),
-        ignoreElements(),
+        flatMap(x => dep.oauthProcess.login().catch()), //TODO: redirect back
+        flatMap(x => of(userLoggedIn(), refresh()))
     );
 
 //----------------------------------------------------------------------------
@@ -78,7 +78,7 @@ function logout(dependencies: DependenciesContainer, installId?: string) {
     if (installId) {
         notificationsUnregister(dependencies, installId).catch(console.warn);
     }
-    dependencies.oauthProcess.logout();
+    dependencies.oauthProcess.logout().catch(); //TODO: fix it
 }
 
 //----------------------------------------------------------------------------
@@ -102,6 +102,7 @@ export const startLogoutProcessEpic$ = (action$: ActionsObservable<StartLogoutPr
         ignoreElements()
     );
 
+    /*
 //----------------------------------------------------------------------------
 export const listenerAuthStateEpic$ = (action$: ActionsObservable<any>, state$: StateObservable<AppState>, dep: DependenciesContainer) =>
     dep.oauthProcess.authenticationState
@@ -126,3 +127,4 @@ export const jwtTokenEpic$ = (action$: ActionsObservable<any>, _: StateObservabl
         .pipe(
             map((x: AuthenticationState) => x.isAuthenticated ? jwtTokenSet(x.jwtToken) : jwtTokenSet(null))
         );
+*/

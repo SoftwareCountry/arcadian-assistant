@@ -100,7 +100,7 @@ export class OAuthProcess {
 
     //----------------------------------------------------------------------------
     public async login() {
-        let value: Optional<string> = undefined;
+        let value: Nullable<string> = null;
         try {
             value = await this.refreshTokenStorage.getRefreshToken();
         } catch (e) {

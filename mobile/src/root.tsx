@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { OAuthManager } from './auth/oauth-manager';
-import { OAuthProcess } from './auth/oauth-process';
+import { OAuthProcess } from './auth/oauth-process-2';
 import { Provider } from 'react-redux';
 import { storeFactory } from './reducers/app.reducer';
 import { AppWithNavigationState } from './app';
@@ -32,7 +32,7 @@ export class Root extends Component<{}> {
 
     public componentWillUnmount() {
         if (this.oauthProcess) {
-            this.oauthProcess.dispose();
+            //this.oauthProcess.dispose(); //TODO: if dispose needed
         }
 
         this.navigationService.dispose();

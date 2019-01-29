@@ -10,9 +10,9 @@ import { userInfoReducer, UserInfoState } from './user/user-info.reducer';
 import { userEpics } from './user/user.reducer';
 import { feedsEpics, feedsReducer, FeedsState } from './feeds/feeds.reducer';
 import { calendarEpics, calendarReducer, CalendarState } from './calendar/calendar.reducer';
-import { SecuredApiClient } from '../auth/secured-api-client';
+import { SecuredApiClient } from '../auth/secured-api-client2';
 import config from '../config';
-import { OAuthProcess } from '../auth/oauth-process';
+import { OAuthProcess } from '../auth/oauth-process-2';
 import { peopleReducer, PeopleState } from './people/people.reducer';
 import { authEpics$, authReducer, AuthState } from './auth/auth.reducer';
 import { refreshEpics } from './refresh/refresh.reducer';
@@ -23,6 +23,7 @@ import { notifications$ } from '../notifications/notification.epics';
 import { notificationsReducer, NotificationState } from '../notifications/notifications.reducer';
 import { Optional } from 'types';
 import { Employee } from './organization/employee.model';
+import { JwtTokenHandler } from '../auth/jwt-token-handler';
 
 //import { createLogger } from 'redux-logger';
 
@@ -86,7 +87,7 @@ export interface DependenciesContainer extends NavigationDependenciesContainer {
 //----------------------------------------------------------------------------
 export const storeFactory = (oauthProcess: OAuthProcess, navigationService: NavigationService) => {
     const dependencies: DependenciesContainer = {
-        apiClient: new SecuredApiClient(config.apiUrl, oauthProcess.authenticationState),
+        apiClient: new SecuredApiClient(config.apiUrl, oauthProcess.jwtTokenHandler),
         oauthProcess: oauthProcess,
         navigationService: navigationService,
     };
