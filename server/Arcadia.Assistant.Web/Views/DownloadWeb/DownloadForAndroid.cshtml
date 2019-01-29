@@ -1,8 +1,24 @@
-﻿<div>
-    <a href="@Url.Action("GetAndroid")">
-        <img src="~/Content/download_android.png" alt="Download for Android" />
-    </a>
-</div>
-<div class="another-application">
-    @Html.ActionLink("Not an Android?", "DownloadForIos")
+﻿<style>
+    @@media screen and (max-width: 499px) {
+        .android-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="android-content">
+    <div class="download-block">
+        <div>
+            <a href="@Url.Action("GetAndroid")">
+                <img src="~/Content/download_android.png" alt="Download for Android" />
+            </a>
+        </div>
+        <div class="another-application-link">
+            @Html.ActionLink("Not an Android?", "DownloadForIos")
+        </div>
+    </div>
 </div>

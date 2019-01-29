@@ -5,13 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arcadia Assistant</title>
     <style>
-        header {
-            margin-bottom: 30px;
+        html {
+            height: 100%;
+            display: flex;
         }
 
-        .another-application {
+        body {
+            flex: 1 0 auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        content {
+            flex: 1 0 auto;
+        }
+
+        .download-block {
+            display: inline-block;
+        }
+
+        .another-application-link {
             margin-top: 20px;
             font-size: 20px;
+            text-align: center;
+        }
+
+        @@media screen and (min-width: 500px) {
+            content {
+                margin-top: 30px;
+            }
         }
     </style>
 </head>
