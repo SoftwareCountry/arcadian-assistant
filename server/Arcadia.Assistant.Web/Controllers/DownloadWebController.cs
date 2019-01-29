@@ -37,10 +37,24 @@
         [HttpGet]
         public IActionResult Index()
         {
-            return this.View(new HomeViewModel()
-                {
-                    ManifestLink = this.GetAbsoluteUrl("get-ios-manifest")
-                });
+            return this.RedirectToAction("DownloadForIos");
+        }
+
+        [Route("download-for-android")]
+        [HttpGet]
+        public IActionResult DownloadForAndroid()
+        {
+            return this.View();
+        }
+
+        [Route("download-for-ios")]
+        [HttpGet]
+        public IActionResult DownloadForIos()
+        {
+            return this.View(new HomeViewModel
+            {
+                ManifestLink = this.GetAbsoluteUrl("get-ios-manifest")
+            });
         }
 
         [Route("get-android")]
@@ -62,7 +76,7 @@
         public IActionResult GetIosManifest(CancellationToken cancellationToken)
         {
             var getIosFileLink = this.GetAbsoluteUrl("get-ios");
-            
+
             var manifestContent = Resources.IosManifest
                 .Replace("{downloadApplicationUrl}", getIosFileLink);
 
