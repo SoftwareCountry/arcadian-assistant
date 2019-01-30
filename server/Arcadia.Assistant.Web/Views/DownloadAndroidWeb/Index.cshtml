@@ -13,12 +13,12 @@
 <div class="android-content">
     <div class="download-block">
         <div>
-            <a href="@Url.Action("GetAndroid")">
+            <a href="@Url.Action("GetAndroid", "GetFileWeb")">
                 <img src="~/Content/download_android.png" alt="Download for Android" />
             </a>
         </div>
         <div class="another-application-link">
-            @Html.ActionLink("Not an Android?", "DownloadForIos")
+            @Html.ActionLink("Not an Android?", "Index", "DownloadIosWeb")
         </div>
     </div>
 </div>
