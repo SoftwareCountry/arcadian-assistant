@@ -10,6 +10,7 @@
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Events;
     using Arcadia.Assistant.Organization.Abstractions;
+    using Arcadia.Assistant.Patterns;
 
     public class EmployeeSickLeaveActor : CalendarEventsStorageBase
     {
@@ -23,7 +24,7 @@
 
         public static Props CreateProps(EmployeeMetadata employee, IActorRef calendarEventsApprovalsChecker)
         {
-            return Props.Create(() => new EmployeeSickLeaveActor(employee, calendarEventsApprovalsChecker));
+            return new PersistenceSupervisorFactory().Get(Props.Create(() => new EmployeeSickLeaveActor(employee, calendarEventsApprovalsChecker)));
         }
 
         protected override void OnRecover(object message)

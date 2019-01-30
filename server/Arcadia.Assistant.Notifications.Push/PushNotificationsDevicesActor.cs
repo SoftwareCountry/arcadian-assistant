@@ -8,6 +8,7 @@
     using Akka.Persistence;
 
     using Arcadia.Assistant.Notifications.Push.Events;
+    using Arcadia.Assistant.Patterns;
 
     public class PushNotificationsDevicesActor : UntypedPersistentActor, ILogReceive
     {
@@ -15,6 +16,11 @@
         private readonly Dictionary<string, string> deviceTypeByToken = new Dictionary<string, string>();
 
         public override string PersistenceId => "push-notifications-devices";
+
+        public static Props CreateProps()
+        {
+            return new PersistenceSupervisorFactory().Get(Props.Create(() => new PushNotificationsDevicesActor()));
+        }
 
         protected override void OnCommand(object message)
         {

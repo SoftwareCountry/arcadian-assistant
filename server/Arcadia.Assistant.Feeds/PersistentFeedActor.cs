@@ -1,9 +1,13 @@
 ﻿namespace Arcadia.Assistant.Feeds
 {
+    using System;
+
     using Akka.Actor;
+    using Akka.Pattern;
     using Akka.Persistence;
 
     using Arcadia.Assistant.Feeds.Messages;
+    using Arcadia.Assistant.Patterns;
 
     public class PersistentFeedActor : UntypedPersistentActor
     {
@@ -61,6 +65,9 @@
             this.internalFeed.Tell(new PostMessage(new Message(e.MessageId, e.EmployeeId, e.Title, e.Text, e.PostedDate)));
         }
 
-        public static Props CreateProps(string feedId) => Props.Create(() => new PersistentFeedActor(feedId));
+        public static Props CreateProps(string feedId)
+        {
+            return new PersistenceSupervisorFactory().Get(Props.Create(() => new PersistentFeedActor(feedId)));
+        }
     }
 }

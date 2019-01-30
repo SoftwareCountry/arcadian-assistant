@@ -22,8 +22,8 @@
 
         public SharedFeedsActor(IActorRef organization)
         {
-            var newsFeed = Context.ActorOf(Props.Create(() => new PersistentFeedActor(NewsFeedId)), NewsFeedId);
-            var systemFeed = Context.ActorOf(Props.Create(() => new PersistentFeedActor(SystemFeedId)), SystemFeedId);
+            var newsFeed = Context.ActorOf(PersistentFeedActor.CreateProps(NewsFeedId), NewsFeedId);
+            var systemFeed = Context.ActorOf(PersistentFeedActor.CreateProps(SystemFeedId), SystemFeedId);
 
             var birthdayFeed = Context.ActorOf(EmployeesBirthdaysFeedActor.CreateProps(organization), BirthdaysFeedId);
             var anniversariesFeed = Context.ActorOf(EmployeesAnniversariesFeedActor.CreateProps(organization), AnniversariesFeedId);

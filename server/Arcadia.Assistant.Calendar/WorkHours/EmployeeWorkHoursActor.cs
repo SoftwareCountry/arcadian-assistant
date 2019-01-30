@@ -10,12 +10,13 @@
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
     using Arcadia.Assistant.Calendar.Events;
+    using Arcadia.Assistant.Patterns;
 
     public class EmployeeWorkHoursActor : CalendarEventsStorageBase
     {
         /// <summary>
         /// Positive values means that these days must be worked out.
-        /// Negative means that these can be taked as days off
+        /// Negative means that these can be taken as days off
         /// </summary>
         private int hoursCredit = 0;
 
@@ -27,7 +28,8 @@
 
         public static Props CreateProps(string employeeId, IActorRef calendarEventsApprovalsChecker)
         {
-            return Props.Create(() => new EmployeeWorkHoursActor(employeeId, calendarEventsApprovalsChecker));
+            return new PersistenceSupervisorFactory().Get(
+                Props.Create(() => new EmployeeWorkHoursActor(employeeId, calendarEventsApprovalsChecker)));
         }
 
         public override string PersistenceId { get; }

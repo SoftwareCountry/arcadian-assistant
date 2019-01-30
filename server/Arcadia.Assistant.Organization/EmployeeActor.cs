@@ -16,6 +16,7 @@
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.Organization.Events;
+    using Arcadia.Assistant.Patterns;
 
     public class EmployeeActor : UntypedPersistentActor, ILogReceive
     {
@@ -212,14 +213,12 @@
             }
         }
 
-        public static Props GetProps(EmployeeStoredInformation employeeStoredInformation,
-            IActorRef imageResizer,
-            IActorRef vacationsRegistry,
-            IActorRef calendarEventsApprovalsChecker
-        ) => Props.Create(() => new EmployeeActor(
-            employeeStoredInformation,
-            imageResizer,
-            vacationsRegistry,
-            calendarEventsApprovalsChecker));
+        public static Props GetProps(EmployeeStoredInformation employeeStoredInformation, IActorRef imageResizer, IActorRef vacationsRegistry, IActorRef calendarEventsApprovalsChecker)
+        {
+            var childProps = Props.Create(() => 
+                new EmployeeActor(employeeStoredInformation, imageResizer, vacationsRegistry, calendarEventsApprovalsChecker));
+
+            return new PersistenceSupervisorFactory().Get(childProps);
+        }
     }
 }
