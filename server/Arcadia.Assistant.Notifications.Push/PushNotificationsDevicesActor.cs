@@ -95,6 +95,8 @@
 
         private void OnEmployeeDeviceRegistered(EmployeeDeviceRegistered @event)
         {
+            this.RemoveDeviceTokenFromPreviousEmployees(@event.DeviceToken);
+
             if (!this.deviceTokensByEmployeeId.TryGetValue(@event.EmployeeId, out var deviceTokens))
             {
                 deviceTokens = new HashSet<string>();
@@ -114,6 +116,15 @@
 
             deviceTokens.Remove(@event.DeviceToken);
             this.deviceTypeByToken.Remove(@event.DeviceToken);
+        }
+
+        private void RemoveDeviceTokenFromPreviousEmployees(string deviceToken)
+        {
+            var employeesTokens = this.deviceTokensByEmployeeId.Values.ToList();
+            foreach (var employeeTokens in employeesTokens)
+            {
+                employeeTokens.Remove(deviceToken);
+            }
         }
     }
 }
