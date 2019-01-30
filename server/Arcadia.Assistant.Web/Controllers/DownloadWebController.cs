@@ -47,14 +47,14 @@
                 : this.RedirectToAction("DownloadForIos");
         }
 
-        [Route("download-for-android")]
+        [Route("download/android")]
         [HttpGet]
         public IActionResult DownloadForAndroid()
         {
             return this.View();
         }
 
-        [Route("download-for-ios")]
+        [Route("download/ios")]
         [HttpGet]
         public IActionResult DownloadForIos()
         {
@@ -64,21 +64,21 @@
             });
         }
 
-        [Route("get-android")]
+        [Route("get/android")]
         [HttpGet]
         public Task<IActionResult> GetAndroid(CancellationToken cancellationToken)
         {
             return this.GetFile(DeviceType.Android, cancellationToken);
         }
 
-        [Route("get-ios", Name = "get-ios")]
+        [Route("get/ios", Name = "get-ios")]
         [HttpGet]
         public Task<IActionResult> GetIos(CancellationToken cancellationToken)
         {
             return this.GetFile(DeviceType.Ios, cancellationToken);
         }
 
-        [Route("get-ios-manifest", Name = "get-ios-manifest")]
+        [Route("get/ios-manifest", Name = "get-ios-manifest")]
         [HttpGet]
         public IActionResult GetIosManifest(CancellationToken cancellationToken)
         {
