@@ -4,21 +4,18 @@
 
 import React, { Component } from 'react';
 import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base';
-import { AppState } from '../../reducers/app.reducer';
+import { AppState, getEmployee, getEndDay, getStartDay } from '../../reducers/app.reducer';
 import { Action, Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
+import { closeEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import {
     DayModel,
-    defaultDayModel,
     isIntersectingAnotherVacation,
     ReadOnlyIntervalsModel
 } from '../../reducers/calendar/calendar.model';
 import { Employee } from '../../reducers/organization/employee.model';
 import { confirmVacation } from '../../reducers/calendar/vacation.action';
 import { Moment } from 'moment';
-import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
-import { getEmployee} from '../../reducers/app.reducer';
 import { Optional } from 'types';
 
 //============================================================================
@@ -74,28 +71,6 @@ class ConfirmVacationEventDialogImpl extends Component<ClaimVacationEventDialogP
     private get text(): string {
         return `Your vacation starts on ${this.props.startDay.date.format(eventDialogTextDateFormat)}${this.props.endDay ? ` and completes on ${this.props.endDay.date.format(eventDialogTextDateFormat)}` : ''}`;
     }
-}
-
-//============================================================================
-function getStartDay(state: AppState): DayModel {
-    if (!state.calendar ||
-        !state.calendar.calendarEvents.selection.interval ||
-        !state.calendar.calendarEvents.selection.interval.startDay) {
-        return defaultDayModel;
-    }
-
-    return state.calendar.calendarEvents.selection.interval.startDay;
-}
-
-//============================================================================
-function getEndDay(state: AppState): DayModel {
-    if (!state.calendar ||
-        !state.calendar.calendarEvents.selection.interval ||
-        !state.calendar.calendarEvents.selection.interval.endDay) {
-        return defaultDayModel;
-    }
-
-    return state.calendar.calendarEvents.selection.interval.endDay;
 }
 
 //============================================================================
