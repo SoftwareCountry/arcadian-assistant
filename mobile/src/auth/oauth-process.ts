@@ -45,37 +45,4 @@ export class OAuthProcess {
             return false;
         } 
     }
-
-    /*
-    //----------------------------------------------------------------------------
-    private handleError(error: any) {
-
-        let errorInstance: NotAuthenticatedState = notAuthenticatedInstance;
-
-
-        if (!this.isCancellationError(error)) {
-            errorInstance = {
-                ...errorInstance,
-                error,
-            };
-        }
-
-        this.refreshTokenSource.next(null);
-        this.authenticationStateSource.next(errorInstance);
-    }
-
-    //----------------------------------------------------------------------------
-    private isCancellationError(error: any): boolean {
-        const errorCode = error.code;
-
-        return errorCode && errorCode === cancellationErrorCode;
-    }
-
-    //----------------------------------------------------------------------------
-    private isNetworkError(error: any): boolean {
-        const errorStatus = error.status;
-
-        return (errorStatus !== undefined && errorStatus === networkErrorStatus);
-    }
-    */
 }
