@@ -18,7 +18,7 @@
             {
                 case GetUserPreferencesMessage msg:
                     this.userPreferencesById.TryGetValue(msg.EmployeeId, out var userPreferences);
-                    this.Sender.Tell(new GetUserPreferencesMessage.Response(userPreferences ?? UserPreferences.Default));
+                    this.Sender.Tell(new GetUserPreferencesMessage.Response(userPreferences ?? UserPreferences.CreateDefault()));
                     break;
 
                 case SaveUserPreferencesMessage msg:
@@ -78,17 +78,10 @@
 
         private void SetDefaultPreferencesIfNotExists(string userId)
         {
-            if (this.userPreferencesById.ContainsKey(userId))
+            if (!this.userPreferencesById.ContainsKey(userId))
             {
-                return;
+                this.userPreferencesById[userId] = UserPreferences.CreateDefault();
             }
-
-            var userPreferences = new UserPreferences
-            {
-                EmailNotifications = UserPreferences.Default.EmailNotifications,
-                PushNotifications = UserPreferences.Default.PushNotifications
-            };
-            this.userPreferencesById[userId] = userPreferences;
         }
     }
 }

@@ -2,7 +2,7 @@
 {
     public class UserPreferences
     {
-        public static UserPreferences Default = new UserPreferences
+        public static UserPreferences CreateDefault() => new UserPreferences
         {
             EmailNotifications = false,
             PushNotifications = true,
