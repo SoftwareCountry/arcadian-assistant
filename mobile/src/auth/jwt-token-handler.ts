@@ -49,7 +49,7 @@ export class JwtTokenHandler {
             }
 
             await this.refresh();
-            return this.get(); //refresh and reiterate
+            return this.get(); 
         }
     }
 
@@ -58,7 +58,7 @@ export class JwtTokenHandler {
     }
 
     public async refresh() {
-        this.reset(await this.getExistingToken());
+       return this.reset(await this.getExistingToken());
     }
 
     public async reset(refreshToken: RefreshToken) {
@@ -68,6 +68,8 @@ export class JwtTokenHandler {
         })();
 
         this.notifyAboutNewToken(this.token);
+
+        return this.token;
     }
 
     public async clean() {

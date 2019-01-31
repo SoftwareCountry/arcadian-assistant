@@ -33,12 +33,8 @@ export class OAuthProcess {
     }
 
     private async loginOnLoginPage() {
-        try {
-            const refreshToken = await this.loginRequest.getRefreshTokenFromLoginPage(true);
-            await this.jwtTokenHandler.reset(refreshToken);
-        } catch (e) {
-            // TODO: handle
-        }
+        const refreshToken = await this.loginRequest.getRefreshTokenFromLoginPage(true);
+        await this.jwtTokenHandler.reset(refreshToken);
     }
 
     private async isAuthenticated() {
