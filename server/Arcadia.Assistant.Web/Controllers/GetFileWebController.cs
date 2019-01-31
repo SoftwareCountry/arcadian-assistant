@@ -14,6 +14,7 @@
     using Arcadia.Assistant.Web.Download;
     using Arcadia.Assistant.Web.Models;
 
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class GetFileWebController : Controller
     {
         private readonly IActorRefFactory actorSystem;

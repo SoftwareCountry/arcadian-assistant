@@ -8,6 +8,7 @@
     using Arcadia.Assistant.Web.Models;
     using Arcadia.Assistant.Web.Properties;
 
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class DownloadIosWebController : Controller
     {
         private readonly ISslSettings sslSettings;
