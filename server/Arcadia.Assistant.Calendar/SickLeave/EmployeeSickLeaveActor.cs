@@ -10,7 +10,6 @@
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Events;
     using Arcadia.Assistant.Organization.Abstractions;
-    using Arcadia.Assistant.Patterns;
 
     public class EmployeeSickLeaveActor : CalendarEventsStorageBase
     {

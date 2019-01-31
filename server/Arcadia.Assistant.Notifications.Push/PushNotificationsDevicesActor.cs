@@ -8,7 +8,6 @@
     using Akka.Persistence;
 
     using Arcadia.Assistant.Notifications.Push.Events;
-    using Arcadia.Assistant.Patterns;
 
     public class PushNotificationsDevicesActor : UntypedPersistentActor, ILogReceive
     {

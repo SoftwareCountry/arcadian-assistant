@@ -5,7 +5,6 @@
     using System.Linq;
 
     using Akka.Actor;
-    using Akka.Pattern;
     using Akka.Persistence;
 
     using Arcadia.Assistant.Calendar.Abstractions;
@@ -14,7 +13,6 @@
     using Arcadia.Assistant.Feeds;
     using Arcadia.Assistant.Feeds.Messages;
     using Arcadia.Assistant.Organization.Abstractions;
-    using Arcadia.Assistant.Patterns;
 
     public class EmployeeVacationsActor : CalendarEventsStorageBase
     {

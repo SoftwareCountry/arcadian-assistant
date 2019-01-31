@@ -1,13 +1,9 @@
 ﻿namespace Arcadia.Assistant.Feeds
 {
-    using System;
-
     using Akka.Actor;
-    using Akka.Pattern;
     using Akka.Persistence;
 
     using Arcadia.Assistant.Feeds.Messages;
-    using Arcadia.Assistant.Patterns;
 
     public class PersistentFeedActor : UntypedPersistentActor
     {

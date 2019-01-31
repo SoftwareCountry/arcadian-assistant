@@ -1,6 +1,5 @@
 ﻿namespace Arcadia.Assistant.Feeds
 {
-    using System;
     using System.Collections.Generic;
 
     using Akka.Actor;
