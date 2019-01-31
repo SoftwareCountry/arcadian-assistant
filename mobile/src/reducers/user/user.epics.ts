@@ -41,14 +41,16 @@ export const loadUserEmployeePermissionsEpic$ = (action$: ActionsObservable<Load
     action$.ofType('LOAD-USER-EMPLOYEE-PERMISSIONS').pipe(
         switchMap(x => deps.apiClient.getJSON(`/user/permissions/${x.employeeId}`).pipe(handleHttpErrors(false))),
         map(obj => deserialize(obj, UserEmployeePermissions)),
-        map(x => loadUserEmployeePermissionsFinished(x)));
+        map(x => loadUserEmployeePermissionsFinished(x)),
+        catchError(e => of(startLogoutProcess())));
 
 export const loadUserPreferencesEpic$ = (action$: ActionsObservable<LoadUserPreferences>, appState: AppState, deps: DependenciesContainer) =>
     action$.ofType('LOAD-USER-PREFERENCES').pipe(
         switchMap(() => deps.apiClient.getJSON(`/user-preferences/`)
             .pipe(handleHttpErrors(false))),
         map(obj => deserialize(obj, UserPreferences)),
-        map(response => loadUserPreferencesFinished(response)));
+        map(response => loadUserPreferencesFinished(response)),
+        catchError(e => of(startLogoutProcess())));
 
 export const updateUserPreferencesEpic$ = (action$: ActionsObservable<UpdateUserPreferences>, appState: AppState, deps: DependenciesContainer) =>
     action$.ofType('UPDATE-USER-PREFERENCES').pipe(
@@ -57,6 +59,7 @@ export const updateUserPreferencesEpic$ = (action$: ActionsObservable<UpdateUser
 
             return deps.apiClient.put(`/user-preferences/`, requestBody, {}).pipe(
                 handleHttpErrors(false),
-                map(_ => loadUserPreferencesFinished(action.preferences))
+                map(_ => loadUserPreferencesFinished(action.preferences)),
+                catchError(e => of(startLogoutProcess()))
             );
         }));
