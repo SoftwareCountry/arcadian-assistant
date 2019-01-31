@@ -13,14 +13,11 @@ export class AuthenticationState {
     }
 
     public async forgetUser() {
-        this.jwtTokenHandler.clean();
-        // maybe, this call should be performed in 'clean' method above,
-        // but i didn't really like that idea because there might be more logic involved
-        await this.refreshTokenStorage.storeToken(null);
+        await this.jwtTokenHandler.clean();
     }
 
     public async reset(refreshToken: RefreshToken) {
         await this.refreshTokenStorage.storeToken(refreshToken.value);
-        this.jwtTokenHandler.refresh();
+        await this.jwtTokenHandler.refresh();
     }
 }

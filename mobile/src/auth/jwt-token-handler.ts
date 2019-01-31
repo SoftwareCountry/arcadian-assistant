@@ -2,8 +2,9 @@ import { AccessCodeRequest } from './access-code-request';
 import moment from 'moment';
 import { map } from 'rxjs/operators';
 import { RefreshTokenStorage } from './refresh-token-storage';
-import { Observable, from, Subject } from 'rxjs';
+import { Observable, from, Subject, BehaviorSubject } from 'rxjs';
 import { OauthError } from './oauth-error';
+import { RefreshToken } from './login-request.1';
 
 export class NoJwtTokenError extends Error {
     constructor() {
@@ -30,6 +31,7 @@ export class JwtToken {
 
 export class JwtTokenHandler {
     private token: Promise<JwtToken> | null = null;
+    private tokenSource = new BehaviorSubject<JwtToken | null>(null);
 
     constructor(
         private readonly accessCodeRequest: AccessCodeRequest,
@@ -46,30 +48,53 @@ export class JwtTokenHandler {
                 return token;
             }
 
-            this.refresh();
+            await this.refresh();
             return this.get(); //refresh and reiterate
         }
     }
 
-    public get$(): Observable<JwtToken> {
-        return from<JwtToken>([]);
+    public get$(): Observable<JwtToken | null> {
+        return this.tokenSource.asObservable();
     }
 
-    public refresh() {
-        this.token = new Promise(resolve => resolve(this.getNewToken()));
+    public async refresh() {
+        this.reset(await this.getExistingToken());
     }
 
-    public clean() {
+    public async reset(refreshToken: RefreshToken) {
+        this.token = (async () => {
+            await this.refreshTokenStorage.storeToken(refreshToken.value);
+            return this.getNewToken();
+        })();
+
+        this.notifyAboutNewToken(this.token);
+    }
+
+    public async clean() {
+        await this.refreshTokenStorage.storeToken(null);
         this.token = null;
+        this.tokenSource.next(null);
     }
 
-    private async getNewToken() {
+    private notifyAboutNewToken(token: Promise<JwtToken>) {
+        token
+            .then((x) => this.tokenSource.next(x))
+            .catch(x => { console.warn(x); this.tokenSource.next(null); });
+    } 
+
+    private async getExistingToken(): Promise<RefreshToken> {
         const oldRefreshToken = await this.refreshTokenStorage.getRefreshToken();
         if (!oldRefreshToken) {
             throw new OauthError('refresh token is empty, it should be set in storage first');
         }
 
-        const accessCodeResponse = await this.accessCodeRequest.refresh(oldRefreshToken)
+        return { value: oldRefreshToken };
+    }
+
+    private async getNewToken() {
+        const oldRefreshToken = await this.getExistingToken();
+
+        const accessCodeResponse = await this.accessCodeRequest.refresh(oldRefreshToken.value)
             .toPromise();
 
         await this.refreshTokenStorage.storeToken(accessCodeResponse.refreshToken);
