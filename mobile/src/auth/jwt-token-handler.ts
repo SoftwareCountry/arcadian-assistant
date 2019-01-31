@@ -4,7 +4,7 @@ import { map } from 'rxjs/operators';
 import { RefreshTokenStorage } from './refresh-token-storage';
 import { Observable, from, Subject, BehaviorSubject } from 'rxjs';
 import { OauthError } from './oauth-error';
-import { RefreshToken } from './login-request.1';
+import { RefreshToken } from './login-request';
 
 export class NoJwtTokenError extends Error {
     constructor() {

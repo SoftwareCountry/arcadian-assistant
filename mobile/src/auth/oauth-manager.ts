@@ -1,5 +1,5 @@
 import { createRefreshTokenStorage } from './refresh-token-storage';
-import { OAuthProcess } from './oauth-process-2';
+import { OAuthProcess } from './oauth-process';
 import { JwtTokenHandler } from './jwt-token-handler';
 import { AccessCodeRequest } from './access-code-request';
 

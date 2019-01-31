@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { OAuthManager } from './auth/oauth-manager';
-import { OAuthProcess } from './auth/oauth-process-2';
+import { OAuthProcess } from './auth/oauth-process';
 import { Provider } from 'react-redux';
 import { storeFactory } from './reducers/app.reducer';
 import { AppWithNavigationState } from './app';
