@@ -19,7 +19,7 @@
 
         public static Props CreateProps()
         {
-            return new PersistenceSupervisorFactory().Get(Props.Create(() => new PushNotificationsDevicesActor()));
+            return Props.Create(() => new PushNotificationsDevicesActor());
         }
 
         protected override void OnCommand(object message)

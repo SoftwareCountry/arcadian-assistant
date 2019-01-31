@@ -42,23 +42,31 @@
 
             this.employeeFeed = Context.ActorOf(FeedActor.GetProps(), "feed");
 
+            var persistenceSupervisorFactory = new PersistenceSupervisorFactory();
+
+            var vacationActorProps = EmployeeVacationsActor.CreateProps(
+                this.employeeMetadata.EmployeeId,
+                this.employeeFeed,
+                vacationsRegistry,
+                calendarEventsApprovalsChecker);
+
+            var sickLeaveActorProps = EmployeeSickLeaveActor.CreateProps(
+                this.employeeMetadata,
+                calendarEventsApprovalsChecker);
+
+            var workHoursActorProps = EmployeeWorkHoursActor.CreateProps(
+                this.employeeMetadata.EmployeeId,
+                calendarEventsApprovalsChecker);
+
             var vacationsActor = Context.ActorOf(
-                EmployeeVacationsActor.CreateProps(
-                    this.employeeMetadata.EmployeeId,
-                    this.employeeFeed,
-                    vacationsRegistry,
-                    calendarEventsApprovalsChecker),
+                persistenceSupervisorFactory.Get(vacationActorProps),
                 "vacations");
             var sickLeavesActor = Context.ActorOf(
-                EmployeeSickLeaveActor.CreateProps(
-                    this.employeeMetadata,
-                    calendarEventsApprovalsChecker),
+                persistenceSupervisorFactory.Get(sickLeaveActorProps),
                 "sick-leaves");
             var workHoursActor = Context.ActorOf(
-                EmployeeWorkHoursActor.CreateProps(
-                    this.employeeMetadata.EmployeeId,
-                    calendarEventsApprovalsChecker),
-            "work-hours");
+                persistenceSupervisorFactory.Get(workHoursActorProps),
+                "work-hours");
 
             Context.Watch(vacationsActor);
             Context.Watch(sickLeavesActor);
@@ -213,12 +221,15 @@
             }
         }
 
-        public static Props GetProps(EmployeeStoredInformation employeeStoredInformation, IActorRef imageResizer, IActorRef vacationsRegistry, IActorRef calendarEventsApprovalsChecker)
-        {
-            var childProps = Props.Create(() => 
-                new EmployeeActor(employeeStoredInformation, imageResizer, vacationsRegistry, calendarEventsApprovalsChecker));
-
-            return new PersistenceSupervisorFactory().Get(childProps);
-        }
+        public static Props GetProps(
+            EmployeeStoredInformation employeeStoredInformation,
+            IActorRef imageResizer,
+            IActorRef vacationsRegistry,
+            IActorRef calendarEventsApprovalsChecker
+        ) => Props.Create(() => new EmployeeActor(
+            employeeStoredInformation,
+            imageResizer,
+            vacationsRegistry,
+            calendarEventsApprovalsChecker));
     }
 }

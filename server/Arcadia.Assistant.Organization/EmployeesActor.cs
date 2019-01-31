@@ -11,6 +11,7 @@
     using Arcadia.Assistant.Images;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
+    using Arcadia.Assistant.Patterns;
 
     public class EmployeesActor : UntypedActor, IWithUnboundedStash, ILogReceive
     {
@@ -124,6 +125,8 @@
                 this.employeesById.Remove(removedId);
             }
 
+            var persistenceSupervisorFactory = new PersistenceSupervisorFactory();
+
             var newEmployeesCount = 0;
             foreach (var employeeNewInfo in allEmployees)
             {
@@ -137,12 +140,13 @@
                 }
                 else
                 {
+                    var employeeActorProps = EmployeeActor.GetProps(
+                        employeeNewInfo,
+                        this.imageResizer,
+                        this.vacationsRegistry,
+                        this.calendarEventsApprovalsChecker);
                     employeeActor = Context.ActorOf(
-                        EmployeeActor.GetProps(
-                            employeeNewInfo,
-                            this.imageResizer,
-                            this.vacationsRegistry,
-                            this.calendarEventsApprovalsChecker),
+                        persistenceSupervisorFactory.Get(employeeActorProps),
                         $"employee-{Uri.EscapeDataString(employeeId)}");
 
                     Context.Watch(employeeActor);

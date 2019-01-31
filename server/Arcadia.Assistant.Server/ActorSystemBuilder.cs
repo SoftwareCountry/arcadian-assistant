@@ -36,9 +36,17 @@
             var helpdesk = this.actorSystem.ActorOf(Props.Create(() => new HelpdeskActor()), WellKnownActorPaths.Helpdesk);
             var feeds = this.actorSystem.ActorOf(Props.Create(() => new SharedFeedsActor(organization)), WellKnownActorPaths.SharedFeeds);
 
+            var persistenceSupervisorFactory = new PersistenceSupervisorFactory();
+
             var userPreferenceActorProps = this.actorSystem.DI().Props<UserPreferencesActor>();
-            var userPreferences = this.actorSystem.ActorOf(new PersistenceSupervisorFactory().Get(userPreferenceActorProps), WellKnownActorPaths.UserPreferences);
-            var pushNotificationsDevices = this.actorSystem.ActorOf(PushNotificationsDevicesActor.CreateProps(), WellKnownActorPaths.PushNotificationsDevices);
+            var userPreferences = this.actorSystem.ActorOf(
+                persistenceSupervisorFactory.Get(userPreferenceActorProps),
+                WellKnownActorPaths.UserPreferences);
+
+            var pushNotificationsDevicesActorProps = PushNotificationsDevicesActor.CreateProps();
+            var pushNotificationsDevices = this.actorSystem.ActorOf(
+                persistenceSupervisorFactory.Get(pushNotificationsDevicesActorProps),
+                WellKnownActorPaths.PushNotificationsDevices);
 
             var inboxEmailsActor = this.actorSystem.ActorOf(this.actorSystem.DI().Props<InboxEmailActor>(), "inbox-emails");
             this.actorSystem.ActorOf(Props.Create(() => new InboxEmailsNotificator(imapSettings, inboxEmailsActor)), "emails-notificator");

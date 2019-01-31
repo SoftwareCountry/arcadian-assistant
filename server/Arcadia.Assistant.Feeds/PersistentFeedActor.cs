@@ -29,13 +29,13 @@
 
                     //TODO: Broadcast new message information to hubs/etc
                     var newEvent = new MessageIsPostedToFeedEvent()
-                        {
-                            MessageId = postMessage.Message.MessageId,
-                            EmployeeId = postMessage.Message.PostedByEmployeeId,
-                            PostedDate = postMessage.Message.DatePosted,
-                            Text = postMessage.Message.Text,
-                            Title = postMessage.Message.Title
-                        };
+                    {
+                        MessageId = postMessage.Message.MessageId,
+                        EmployeeId = postMessage.Message.PostedByEmployeeId,
+                        PostedDate = postMessage.Message.DatePosted,
+                        Text = postMessage.Message.Text,
+                        Title = postMessage.Message.Title
+                    };
 
                     this.Persist(newEvent, this.MessagePosted);
                     break;
@@ -65,9 +65,6 @@
             this.internalFeed.Tell(new PostMessage(new Message(e.MessageId, e.EmployeeId, e.Title, e.Text, e.PostedDate)));
         }
 
-        public static Props CreateProps(string feedId)
-        {
-            return new PersistenceSupervisorFactory().Get(Props.Create(() => new PersistentFeedActor(feedId)));
-        }
+        public static Props CreateProps(string feedId) => Props.Create(() => new PersistentFeedActor(feedId));
     }
 }

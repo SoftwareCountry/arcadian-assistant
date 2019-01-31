@@ -28,8 +28,7 @@
 
         public static Props CreateProps(string employeeId, IActorRef calendarEventsApprovalsChecker)
         {
-            return new PersistenceSupervisorFactory().Get(
-                Props.Create(() => new EmployeeWorkHoursActor(employeeId, calendarEventsApprovalsChecker)));
+            return Props.Create(() => new EmployeeWorkHoursActor(employeeId, calendarEventsApprovalsChecker));
         }
 
         public override string PersistenceId { get; }

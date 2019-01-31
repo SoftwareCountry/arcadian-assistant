@@ -24,7 +24,7 @@
 
         public static Props CreateProps(EmployeeMetadata employee, IActorRef calendarEventsApprovalsChecker)
         {
-            return new PersistenceSupervisorFactory().Get(Props.Create(() => new EmployeeSickLeaveActor(employee, calendarEventsApprovalsChecker)));
+            return Props.Create(() => new EmployeeSickLeaveActor(employee, calendarEventsApprovalsChecker));
         }
 
         protected override void OnRecover(object message)
