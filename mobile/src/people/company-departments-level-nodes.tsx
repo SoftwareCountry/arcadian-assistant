@@ -48,7 +48,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
         };
     }
 
-    public componentDidMount() {
+    public componentWillMount() {
         this.panResponder = PanResponder.create({
             onMoveShouldSetPanResponderCapture: (evt, gestureState) => {
                 if (Math.abs(gestureState.dx) < 8 && Math.abs(gestureState.dy) < 8) {
