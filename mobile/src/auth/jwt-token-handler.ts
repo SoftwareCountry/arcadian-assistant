@@ -76,6 +76,10 @@ export class JwtTokenHandler {
         this.tokenSource.next(null);
     }
 
+    public async isAuthenticated() {
+        return !!(await this.refreshTokenStorage.getRefreshToken());
+    }
+
     private notifyAboutNewToken(token: Promise<JwtToken>) {
         token
             .then((x) => this.tokenSource.next(x))

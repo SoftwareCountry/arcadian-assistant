@@ -17,6 +17,6 @@ export class OAuthManager {
         const accessCodeRequest = new AccessCodeRequest(clientId, redirectUri, tokenUrl);
         const jwtTokenHandler = new JwtTokenHandler(accessCodeRequest, refreshTokenStorage);
 
-        return new OAuthProcess(clientId, authorizationUrl, tokenUrl, redirectUri, refreshTokenStorage, jwtTokenHandler);
+        return new OAuthProcess(clientId, authorizationUrl, tokenUrl, redirectUri, jwtTokenHandler);
     }
 }

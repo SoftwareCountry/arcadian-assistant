@@ -1,12 +1,9 @@
-import { AuthenticationState } from './authentication-state.1';
 import { LoginRequest } from './login-request.1';
-import { RefreshTokenStorage } from './refresh-token-storage';
 import { JwtTokenHandler } from './jwt-token-handler';
 
 export class OAuthProcess {
 
     private readonly loginRequest: LoginRequest;
-    private readonly authenticationState: AuthenticationState;
 
     //----------------------------------------------------------------------------
     constructor(
@@ -14,12 +11,10 @@ export class OAuthProcess {
         authorizationUrl: string,
         tokenUrl: string,
         redirectUri: string,
-        private readonly refreshTokenStorage: RefreshTokenStorage,
         public readonly jwtTokenHandler: JwtTokenHandler //TODO: public so far
         ) {
 
         this.loginRequest = new LoginRequest(clientId, redirectUri, authorizationUrl, tokenUrl);
-        this.authenticationState = new AuthenticationState(refreshTokenStorage, jwtTokenHandler);
     }
 
     //----------------------------------------------------------------------------
@@ -34,14 +29,13 @@ export class OAuthProcess {
     }
 
     public async logout() {
-        await this.authenticationState.forgetUser();
+        await this.jwtTokenHandler.clean();
     }
 
     private async loginOnLoginPage() {
         try {
             const refreshToken = await this.loginRequest.getRefreshTokenFromLoginPage(true);
             await this.jwtTokenHandler.reset(refreshToken);
-            //this.authenticationState.reset(refreshToken);
         } catch (e) {
             // TODO: handle
         }
@@ -49,7 +43,7 @@ export class OAuthProcess {
 
     private async isAuthenticated() {
         try {
-            return await this.authenticationState.isAuthenticated();
+            return await this.jwtTokenHandler.isAuthenticated();
         } catch (e) {
             console.log('Error getting initial state, considering user unauthenticated', e);
             return false;
