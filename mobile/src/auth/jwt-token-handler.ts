@@ -61,7 +61,7 @@ export class JwtTokenHandler {
        return this.reset(await this.getExistingToken());
     }
 
-    public async reset(refreshToken: RefreshToken) {
+    public reset(refreshToken: RefreshToken) {
         this.token = (async () => {
             await this.refreshTokenStorage.storeToken(refreshToken.value);
             return this.getNewToken();
@@ -98,6 +98,7 @@ export class JwtTokenHandler {
     }
 
     private async getNewToken() {
+        console.log('updating jwt token');
         const oldRefreshToken = await this.getExistingToken();
 
         const accessCodeResponse = await this.accessCodeRequest.refresh(oldRefreshToken.value)
