@@ -1,4 +1,4 @@
-import { LoginRequest } from './login-request.1';
+import { LoginRequest } from './login-request';
 import { JwtTokenHandler } from './jwt-token-handler';
 
 export class OAuthProcess {
