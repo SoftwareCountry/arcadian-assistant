@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcadia Assistant</title>
+    <style>
+        html {
+            height: 100%;
+            display: flex;
+        }
+
+        body {
+            flex: 1 0 auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a, a:visited {
+            color: rgb(0, 0, 238);
+        }
+
+        content {
+            flex: 1 0 auto;
+        }
+
+        .download-block {
+            display: inline-block;
+        }
+
+        .another-application-link {
+            margin-top: 20px;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        @@media screen and (min-width: 500px) {
+            content {
+                margin-top: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="~/Content/arcadia-logo-dark.png" />
+    </header>
+    <content>
+        @RenderBody()
+    </content>
+</body>
+</html>
