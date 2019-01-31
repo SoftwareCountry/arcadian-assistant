@@ -78,10 +78,17 @@
 
         private void SetDefaultPreferencesIfNotExists(string userId)
         {
-            if (!this.userPreferencesById.ContainsKey(userId))
+            if (this.userPreferencesById.ContainsKey(userId))
             {
-                this.userPreferencesById[userId] = UserPreferences.Default;
+                return;
             }
+
+            var userPreferences = new UserPreferences
+            {
+                EmailNotifications = UserPreferences.Default.EmailNotifications,
+                PushNotifications = UserPreferences.Default.PushNotifications
+            };
+            this.userPreferencesById[userId] = userPreferences;
         }
     }
 }
