@@ -32,6 +32,7 @@
     using Arcadia.Assistant.Web.PushNotifications;
     using Arcadia.Assistant.Web.UserPreferences;
     using Arcadia.Assistant.Web.Users;
+    using Microsoft.Extensions.FileProviders;
 
     public class Startup
     {
@@ -198,6 +199,11 @@
                             additionalQueryStringParameters: new Dictionary<string, string>() { { "resource", securitySettings.ClientId } }
                             );
                     });
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(env.ContentRootPath)
+            });
 
             app.UseMvc();
         }

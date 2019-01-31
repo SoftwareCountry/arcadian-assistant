@@ -24,6 +24,7 @@ import { notificationsReducer, NotificationState } from '../notifications/notifi
 import { Optional } from 'types';
 import { Employee } from './organization/employee.model';
 import { JwtTokenHandler } from '../auth/jwt-token-handler';
+import { DayModel, defaultDayModel } from './calendar/calendar.model';
 
 //import { createLogger } from 'redux-logger';
 
@@ -44,6 +45,50 @@ export function getEmployee(state: AppState): Optional<Employee> {
     return (state.organization && state.userInfo && state.userInfo.employeeId) ?
         state.organization.employees.employeesById.get(state.userInfo.employeeId) :
         undefined;
+}
+
+//----------------------------------------------------------------------------
+export function getStartDay(state: AppState): DayModel {
+    if (!state.calendar ||
+        !state.calendar.calendarEvents ||
+        !state.calendar.calendarEvents.selection ||
+        !state.calendar.calendarEvents.selection.interval) {
+        return defaultDayModel;
+    }
+
+    const selection = state.calendar.calendarEvents.selection;
+
+    if (!selection.interval ||
+        !selection.interval.startDay ||
+        !selection.interval.endDay ||
+        !selection.single ||
+        !selection.single.day) {
+        return selection.single && selection.single.day ? selection.single.day : defaultDayModel;
+    }
+
+    return selection.interval.startDay;
+}
+
+//----------------------------------------------------------------------------
+export function getEndDay(state: AppState): DayModel {
+    if (!state.calendar ||
+        !state.calendar.calendarEvents.selection.interval ||
+        !state.calendar.calendarEvents.selection ||
+        !state.calendar.calendarEvents.selection.interval) {
+        return defaultDayModel;
+    }
+
+    const selection = state.calendar.calendarEvents.selection;
+
+    if (!selection.interval ||
+        !selection.interval.startDay ||
+        !selection.interval.endDay ||
+        !selection.single ||
+        !selection.single.day) {
+        return selection.single && selection.single.day ? selection.single.day : defaultDayModel;
+    }
+
+    return selection.interval.endDay;
 }
 
 //----------------------------------------------------------------------------

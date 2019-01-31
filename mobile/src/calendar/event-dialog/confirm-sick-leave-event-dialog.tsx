@@ -1,16 +1,15 @@
 import React, { Component } from 'react';
 import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base';
-import { AppState } from '../../reducers/app.reducer';
+import { AppState, getEmployee, getEndDay, getStartDay } from '../../reducers/app.reducer';
 import { Action, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import { DayModel } from '../../reducers/calendar/calendar.model';
 import { Employee } from '../../reducers/organization/employee.model';
 import { confirmSickLeave } from '../../reducers/calendar/sick-leave.action';
-import moment, { Moment } from 'moment';
+import { Moment } from 'moment';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
 import { Optional } from 'types';
-import { getEmployee } from '../../reducers/app.reducer';
 
 interface ClaimSickLeaveEventDialogDispatchProps {
     back: () => void;
@@ -62,12 +61,8 @@ class ConfirmSickLeaveEventDialogImpl extends Component<ClaimSickLeaveEventDialo
 const mapStateToProps = (state: AppState): ClaimSickLeaveEventDialogProps => {
 
     return {
-        startDay: state.calendar && state.calendar.calendarEvents.selection.interval && state.calendar.calendarEvents.selection.interval.startDay ? state.calendar.calendarEvents.selection.interval.startDay : {
-            date: moment(), today: true, belongsToCurrentMonth: true,
-        },
-        endDay: state.calendar && state.calendar.calendarEvents.selection.interval && state.calendar.calendarEvents.selection.interval.endDay ? state.calendar.calendarEvents.selection.interval.endDay : {
-            date: moment(), today: true, belongsToCurrentMonth: true,
-        },
+        startDay: getStartDay(state),
+        endDay: getEndDay(state),
         userEmployee: getEmployee(state),
     };
 };

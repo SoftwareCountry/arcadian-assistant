@@ -65,8 +65,6 @@ public class AuthenticationSessionModule extends ReactContextBaseJavaModule impl
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
             builder.setShowTitle(false);
             CustomTabsIntent customTabsIntent = builder.build();
-            //customTabsIntent.intent.setPackage(CHROME_PACKAGE_NAME);
-            customTabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             customTabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             customTabsIntent.launchUrl(getCurrentActivity(), Uri.parse(uri));
         }
