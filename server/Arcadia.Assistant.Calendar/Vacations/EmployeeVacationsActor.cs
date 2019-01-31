@@ -103,7 +103,7 @@
                     throw new Exception($"Date change is not allowed in status {oldEvent.Status} for {oldEvent.Type}");
                 }
 
-                if (this.ApprovalsByEvent[oldEvent.EmployeeId].Count != 0)
+                if (this.ApprovalsByEvent.TryGetValue(oldEvent.EventId, out var approvals) && approvals.Count != 0)
                 {
                     throw new Exception($"Date change is not allowed when there is at least one user approval for {oldEvent.Type}");
                 }
