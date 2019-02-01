@@ -58,17 +58,6 @@
                     Context.ActorOf(Props.Create(() => new EmployeeSearch(this.employeesById.Values.ToList(), requesters, query)));
                     break;
 
-                case Terminated t:
-                    this.logger.Debug($"Employee actor got terminated - {t.ActorRef}");
-                    // unexpected employee actor termination
-                    var deadEmployees = this.employeesById.Where(x => x.Value.EmployeeActor.Equals(t.ActorRef)).Select(x => x.Key).ToList();
-                    foreach (var deadEmployee in deadEmployees)
-                    {
-                        this.logger.Warning($"Employee actor {deadEmployee} died unexpectedly");
-                        this.employeesById.Remove(deadEmployee);
-                    }
-                    break;
-
                 default:
                     this.Unhandled(message);
                     break;
@@ -119,9 +108,6 @@
 
             foreach (var removedId in removedIds)
             {
-                var actorToRemove = this.employeesById[removedId];
-                Context.Unwatch(actorToRemove.EmployeeActor);
-                actorToRemove.EmployeeActor.Tell(PoisonPill.Instance);
                 this.employeesById.Remove(removedId);
             }
 
@@ -149,7 +135,6 @@
                         persistenceSupervisorFactory.Get(employeeActorProps),
                         $"employee-{Uri.EscapeDataString(employeeId)}");
 
-                    Context.Watch(employeeActor);
                     newEmployeesCount++;
                 }
 

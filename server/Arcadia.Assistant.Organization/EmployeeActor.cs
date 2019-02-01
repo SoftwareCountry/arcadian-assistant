@@ -68,10 +68,6 @@
                 persistenceSupervisorFactory.Get(workHoursActorProps),
                 "work-hours");
 
-            Context.Watch(vacationsActor);
-            Context.Watch(sickLeavesActor);
-            Context.Watch(workHoursActor);
-
             var calendarActor = Context.ActorOf(
                 EmployeeCalendarActor.CreateProps(
                     this.employeeMetadata.EmployeeId,
@@ -114,11 +110,6 @@
                     this.UpdateEmployeeMetadata(newInfo.Information.Metadata);
                     break;
 
-                //TODO: get rid of it somehow, now it monitors that actors were able to restore.
-                case Terminated t:
-                    Context.Stop(this.Self);
-                    break;
-
                 default:
                     this.Unhandled(message);
                     break;
@@ -129,7 +120,7 @@
         {
             switch (message)
             {
-                case EmployeeChangedDepartment ev:
+                case EmployeeChangedDepartment _:
                     break;
 
                 case EmployeeChangedName ev:
