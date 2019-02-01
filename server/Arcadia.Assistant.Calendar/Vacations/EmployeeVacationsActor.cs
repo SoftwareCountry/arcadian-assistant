@@ -109,14 +109,14 @@
                 }
 
                 var eventToPersist = new VacationDatesAreEdited
-                    {
-                        EventId = newEvent.EventId,
-                        StartDate = newEvent.Dates.StartDate,
-                        EndDate = newEvent.Dates.EndDate,
-                        TimeStamp = timestamp,
-                        UserId = updatedBy
-                    };
-                    this.Persist(eventToPersist, this.OnVacationDatesEdit);
+                {
+                    EventId = newEvent.EventId,
+                    StartDate = newEvent.Dates.StartDate,
+                    EndDate = newEvent.Dates.EndDate,
+                    TimeStamp = timestamp,
+                    UserId = updatedBy
+                };
+                this.Persist(eventToPersist, this.OnVacationDatesEdit);
             }
 
             if (oldEvent.Status != newEvent.Status)

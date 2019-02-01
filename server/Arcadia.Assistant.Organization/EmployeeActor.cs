@@ -16,6 +16,7 @@
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.Organization.Events;
+    using Arcadia.Assistant.Patterns;
 
     public class EmployeeActor : UntypedPersistentActor, ILogReceive
     {
@@ -41,27 +42,31 @@
 
             this.employeeFeed = Context.ActorOf(FeedActor.GetProps(), "feed");
 
+            var persistenceSupervisorFactory = new PersistenceSupervisorFactory();
+
+            var vacationActorProps = EmployeeVacationsActor.CreateProps(
+                this.employeeMetadata.EmployeeId,
+                this.employeeFeed,
+                vacationsRegistry,
+                calendarEventsApprovalsChecker);
+
+            var sickLeaveActorProps = EmployeeSickLeaveActor.CreateProps(
+                this.employeeMetadata,
+                calendarEventsApprovalsChecker);
+
+            var workHoursActorProps = EmployeeWorkHoursActor.CreateProps(
+                this.employeeMetadata.EmployeeId,
+                calendarEventsApprovalsChecker);
+
             var vacationsActor = Context.ActorOf(
-                EmployeeVacationsActor.CreateProps(
-                    this.employeeMetadata.EmployeeId,
-                    this.employeeFeed,
-                    vacationsRegistry,
-                    calendarEventsApprovalsChecker),
+                persistenceSupervisorFactory.Get(vacationActorProps),
                 "vacations");
             var sickLeavesActor = Context.ActorOf(
-                EmployeeSickLeaveActor.CreateProps(
-                    this.employeeMetadata,
-                    calendarEventsApprovalsChecker),
+                persistenceSupervisorFactory.Get(sickLeaveActorProps),
                 "sick-leaves");
             var workHoursActor = Context.ActorOf(
-                EmployeeWorkHoursActor.CreateProps(
-                    this.employeeMetadata.EmployeeId,
-                    calendarEventsApprovalsChecker),
-            "work-hours");
-
-            Context.Watch(vacationsActor);
-            Context.Watch(sickLeavesActor);
-            Context.Watch(workHoursActor);
+                persistenceSupervisorFactory.Get(workHoursActorProps),
+                "work-hours");
 
             var calendarActor = Context.ActorOf(
                 EmployeeCalendarActor.CreateProps(
@@ -105,11 +110,6 @@
                     this.UpdateEmployeeMetadata(newInfo.Information.Metadata);
                     break;
 
-                //TODO: get rid of it somehow, now it monitors that actors were able to restore.
-                case Terminated t:
-                    Context.Stop(this.Self);
-                    break;
-
                 default:
                     this.Unhandled(message);
                     break;
@@ -120,7 +120,7 @@
         {
             switch (message)
             {
-                case EmployeeChangedDepartment ev:
+                case EmployeeChangedDepartment _:
                     break;
 
                 case EmployeeChangedName ev:
@@ -212,7 +212,8 @@
             }
         }
 
-        public static Props GetProps(EmployeeStoredInformation employeeStoredInformation,
+        public static Props GetProps(
+            EmployeeStoredInformation employeeStoredInformation,
             IActorRef imageResizer,
             IActorRef vacationsRegistry,
             IActorRef calendarEventsApprovalsChecker

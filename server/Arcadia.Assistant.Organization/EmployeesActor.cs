@@ -11,6 +11,7 @@
     using Arcadia.Assistant.Images;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
+    using Arcadia.Assistant.Patterns;
 
     public class EmployeesActor : UntypedActor, IWithUnboundedStash, ILogReceive
     {
@@ -55,17 +56,6 @@
                 case EmployeesQuery query:
                     var requesters = new[] { this.Sender };
                     Context.ActorOf(Props.Create(() => new EmployeeSearch(this.employeesById.Values.ToList(), requesters, query)));
-                    break;
-
-                case Terminated t:
-                    this.logger.Debug($"Employee actor got terminated - {t.ActorRef}");
-                    // unexpected employee actor termination
-                    var deadEmployees = this.employeesById.Where(x => x.Value.EmployeeActor.Equals(t.ActorRef)).Select(x => x.Key).ToList();
-                    foreach (var deadEmployee in deadEmployees)
-                    {
-                        this.logger.Warning($"Employee actor {deadEmployee} died unexpectedly");
-                        this.employeesById.Remove(deadEmployee);
-                    }
                     break;
 
                 default:
@@ -118,11 +108,10 @@
 
             foreach (var removedId in removedIds)
             {
-                var actorToRemove = this.employeesById[removedId];
-                Context.Unwatch(actorToRemove.EmployeeActor);
-                actorToRemove.EmployeeActor.Tell(PoisonPill.Instance);
                 this.employeesById.Remove(removedId);
             }
+
+            var persistenceSupervisorFactory = new PersistenceSupervisorFactory();
 
             var newEmployeesCount = 0;
             foreach (var employeeNewInfo in allEmployees)
@@ -137,15 +126,15 @@
                 }
                 else
                 {
+                    var employeeActorProps = EmployeeActor.GetProps(
+                        employeeNewInfo,
+                        this.imageResizer,
+                        this.vacationsRegistry,
+                        this.calendarEventsApprovalsChecker);
                     employeeActor = Context.ActorOf(
-                        EmployeeActor.GetProps(
-                            employeeNewInfo,
-                            this.imageResizer,
-                            this.vacationsRegistry,
-                            this.calendarEventsApprovalsChecker),
+                        persistenceSupervisorFactory.Get(employeeActorProps),
                         $"employee-{Uri.EscapeDataString(employeeId)}");
 
-                    Context.Watch(employeeActor);
                     newEmployeesCount++;
                 }
 

@@ -13,6 +13,7 @@
     using Arcadia.Assistant.Notifications.Email;
     using Arcadia.Assistant.Notifications.Push;
     using Arcadia.Assistant.Organization;
+    using Arcadia.Assistant.Patterns;
     using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.UserPreferences;
 
@@ -34,8 +35,18 @@
             var health = this.actorSystem.ActorOf(this.actorSystem.DI().Props<HealthChecker>(), WellKnownActorPaths.Health);
             var helpdesk = this.actorSystem.ActorOf(Props.Create(() => new HelpdeskActor()), WellKnownActorPaths.Helpdesk);
             var feeds = this.actorSystem.ActorOf(Props.Create(() => new SharedFeedsActor(organization)), WellKnownActorPaths.SharedFeeds);
-            var userPreferences = this.actorSystem.ActorOf(this.actorSystem.DI().Props<UserPreferencesActor>(), WellKnownActorPaths.UserPreferences);
-            var pushNotificationsDevices = this.actorSystem.ActorOf(Props.Create(() => new PushNotificationsDevicesActor()), WellKnownActorPaths.PushNotificationsDevices);
+
+            var persistenceSupervisorFactory = new PersistenceSupervisorFactory();
+
+            var userPreferenceActorProps = this.actorSystem.DI().Props<UserPreferencesActor>();
+            var userPreferences = this.actorSystem.ActorOf(
+                persistenceSupervisorFactory.Get(userPreferenceActorProps),
+                WellKnownActorPaths.UserPreferences);
+
+            var pushNotificationsDevicesActorProps = PushNotificationsDevicesActor.CreateProps();
+            var pushNotificationsDevices = this.actorSystem.ActorOf(
+                persistenceSupervisorFactory.Get(pushNotificationsDevicesActorProps),
+                WellKnownActorPaths.PushNotificationsDevices);
 
             var inboxEmailsActor = this.actorSystem.ActorOf(this.actorSystem.DI().Props<InboxEmailActor>(), "inbox-emails");
             this.actorSystem.ActorOf(Props.Create(() => new InboxEmailsNotificator(imapSettings, inboxEmailsActor)), "emails-notificator");
