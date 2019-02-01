@@ -14,6 +14,7 @@
         private readonly HashSet<IActorRef> requesters;
 
         private readonly HashSet<IActorRef> employeeActorsToReply;
+        private readonly HashSet<string> employeeIdsToReply;
 
         private readonly List<EmployeeContainer> results = new List<EmployeeContainer>();
 
@@ -23,7 +24,11 @@
 
         public EmployeeSearch(IEnumerable<EmployeeIndexEntry> allEmployees, IEnumerable<IActorRef> requesters, EmployeesQuery query)
         {
-            this.employeeActorsToReply = GetInitialSearchSet(allEmployees, query);
+            var employeeEntries = GetInitialSearchSet(allEmployees, query);
+
+            this.employeeActorsToReply = new HashSet<IActorRef>(employeeEntries.Select(x => x.EmployeeActor));
+            this.employeeIdsToReply = new HashSet<string>(employeeEntries.Select(x => x.Metadata.EmployeeId));
+
             this.requesters = new HashSet<IActorRef>(requesters);
 
             this.Self.Tell(StartSearch);
@@ -51,9 +56,9 @@
 
                     this.results.Add(response.Employee);
 
-                    this.employeeActorsToReply.Remove(response.Employee.Actor);
+                    this.employeeIdsToReply.Remove(response.Employee.Metadata.EmployeeId);
 
-                    if (this.employeeActorsToReply.Count == 0)
+                    if (this.employeeIdsToReply.Count == 0)
                     {
                         this.Self.Tell(SearchFinished);
                     }
@@ -76,12 +81,11 @@
             }
         }
 
-        private static HashSet<IActorRef> GetInitialSearchSet(IEnumerable<EmployeeIndexEntry> employees, EmployeesQuery query)
+        private static List<EmployeeIndexEntry> GetInitialSearchSet(IEnumerable<EmployeeIndexEntry> employees, EmployeesQuery query)
         {
-            return new HashSet<IActorRef>(
-                employees
-                    .Where(x => CheckFilter(x.Metadata, query))
-                    .Select(x => x.EmployeeActor));
+            return employees
+                .Where(x => CheckFilter(x.Metadata, query))
+                .ToList();
         }
 
         private static bool CheckFilter(EmployeeMetadata employee, EmployeesQuery query)
