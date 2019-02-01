@@ -3,13 +3,12 @@
  ******************************************************************************/
 
 import SInfo from 'react-native-sensitive-info';
-import { Platform } from 'react-native';
 
 //============================================================================
 export interface RefreshTokenStorage {
     storeToken(refreshToken: string | null): Promise<void>;
 
-    getRefreshToken(): Promise<string>;
+    getRefreshToken(): Promise<string | null>;
 }
 
 //============================================================================
@@ -17,7 +16,7 @@ class RefreshTokenBaseStorage {
     private readonly keyName = 'refresh-token';
     private refreshToken: string | null = null;
 
-    public async getRefreshToken() {
+    public async getRefreshToken(): Promise<string | null> {
         if (this.refreshToken !== null) {
             return this.refreshToken;
         }

@@ -22,7 +22,7 @@ export interface AvatarReduxProps {
 //----------------------------------------------------------------------------
 function mapStateToProps(state: AppState): AvatarReduxProps {
     return {
-        jwtToken: state.authentication && state.authentication.authInfo ? state.authentication.authInfo.jwtToken : null,
+        jwtToken: state.authentication && state.authentication.jwtToken ? state.authentication.jwtToken.value : null,
     };
 }
 

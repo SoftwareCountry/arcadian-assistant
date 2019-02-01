@@ -2,21 +2,19 @@
  * Copyright (c) Arcadia, Inc. All rights reserved.
  ******************************************************************************/
 
-import { AuthenticatedState, AuthenticationState } from './authentication-state';
-import moment from 'moment';
-import { Observable } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import { first, flatMap, map, timeout } from 'rxjs/operators';
+import { flatMap, map } from 'rxjs/operators';
+import { JwtTokenHandler } from './jwt-token-handler';
+import { of, from } from 'rxjs';
 
 //============================================================================
 export class SecuredApiClient {
     //----------------------------------------------------------------------------
-    constructor(private apiRootUrl: string, private authState: Observable<AuthenticationState>) {
+    constructor(private apiRootUrl: string, private jwtTokenHandler: JwtTokenHandler) {
     }
 
     //----------------------------------------------------------------------------
-    public getJSON<T>
-    (relativeUrl: string, headers?: Object) {
+    public getJSON<T>(relativeUrl: string, headers?: Object) {
         return this.getHeaders(headers).pipe(flatMap(newHeaders => ajax.getJSON<T>(this.getFullUrl(relativeUrl), newHeaders)));
     }
 
@@ -42,22 +40,12 @@ export class SecuredApiClient {
     }
 
     //----------------------------------------------------------------------------
-    private isAuthenticated(state: AuthenticationState): state is AuthenticatedState {
-        if (state.isAuthenticated && state.jwtToken) {
-            return moment().isBefore(state.validUntil);
-        }
-        return false;
-    }
-
-    //----------------------------------------------------------------------------
     private getHeaders(headers?: Object) {
-        return this.authState.pipe(
-            first(this.isAuthenticated),
-            timeout(30000),
+        const jwtToken = this.jwtTokenHandler.get();
+        return from(jwtToken).pipe(
             map(x => ({
-                ...headers,
-                'Authorization': `Bearer ${x.jwtToken}`
-            })),
-        );
+            ...headers,
+            'Authorization': `Bearer ${x.value}`
+        })));
     }
 }

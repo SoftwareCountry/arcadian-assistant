@@ -23,6 +23,7 @@ import { notifications$ } from '../notifications/notification.epics';
 import { notificationsReducer, NotificationState } from '../notifications/notifications.reducer';
 import { Optional } from 'types';
 import { Employee } from './organization/employee.model';
+import { JwtTokenHandler } from '../auth/jwt-token-handler';
 import { DayModel, defaultDayModel } from './calendar/calendar.model';
 
 //import { createLogger } from 'redux-logger';
@@ -131,7 +132,7 @@ export interface DependenciesContainer extends NavigationDependenciesContainer {
 //----------------------------------------------------------------------------
 export const storeFactory = (oauthProcess: OAuthProcess, navigationService: NavigationService) => {
     const dependencies: DependenciesContainer = {
-        apiClient: new SecuredApiClient(config.apiUrl, oauthProcess.authenticationState),
+        apiClient: new SecuredApiClient(config.apiUrl, oauthProcess.jwtTokenHandler),
         oauthProcess: oauthProcess,
         navigationService: navigationService,
     };

@@ -4,6 +4,7 @@
 
 import { Action } from 'redux';
 import { Nullable } from 'types';
+import { JwtToken } from '../../auth/jwt-token-handler';
 
 //============================================================================
 export enum AuthActionType {
@@ -37,7 +38,7 @@ export interface UserLoggedOut extends Action {
 
 export interface JwtTokenSet extends Action {
     type: AuthActionType.jwtTokenSet;
-    jwtToken: Nullable<string>;
+    jwtToken: Nullable<JwtToken>;
 }
 
 export type AuthActions = StartLoginProcess
@@ -76,7 +77,7 @@ export const userLoggedOut = (): UserLoggedOut => {
     };
 };
 
-export const jwtTokenSet = (jwtToken: Nullable<string>): JwtTokenSet => {
+export const jwtTokenSet = (jwtToken: Nullable<JwtToken>): JwtTokenSet => {
     return {
         type: AuthActionType.jwtTokenSet,
         jwtToken,
