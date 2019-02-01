@@ -17,6 +17,7 @@
     <ProjectReference Include="..\Arcadia.Assistant.Notifications.Email\Arcadia.Assistant.Notifications.Email.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Notifications\Arcadia.Assistant.Notifications.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Organization.Abstractions\Arcadia.Assistant.Organization.Abstractions.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.Patterns\Arcadia.Assistant.Patterns.csproj" />
   </ItemGroup>
 
 </Project>

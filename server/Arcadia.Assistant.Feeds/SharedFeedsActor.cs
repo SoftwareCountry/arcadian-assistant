@@ -1,12 +1,12 @@
 ﻿namespace Arcadia.Assistant.Feeds
 {
-    using System;
     using System.Collections.Generic;
 
     using Akka.Actor;
 
     using Arcadia.Assistant.Feeds.Employees;
     using Arcadia.Assistant.Feeds.Messages;
+    using Arcadia.Assistant.Patterns;
 
     public class SharedFeedsActor : UntypedActor, ILogReceive
     {
@@ -22,8 +22,13 @@
 
         public SharedFeedsActor(IActorRef organization)
         {
-            var newsFeed = Context.ActorOf(Props.Create(() => new PersistentFeedActor(NewsFeedId)), NewsFeedId);
-            var systemFeed = Context.ActorOf(Props.Create(() => new PersistentFeedActor(SystemFeedId)), SystemFeedId);
+            var persistenceSupervisorFactory = new PersistenceSupervisorFactory();
+
+            var newsFeedActorProps = PersistentFeedActor.CreateProps(NewsFeedId);
+            var newsFeed = Context.ActorOf(persistenceSupervisorFactory.Get(newsFeedActorProps), NewsFeedId);
+
+            var systemFeedActorProps = PersistentFeedActor.CreateProps(SystemFeedId);
+            var systemFeed = Context.ActorOf(persistenceSupervisorFactory.Get(systemFeedActorProps), SystemFeedId);
 
             var birthdayFeed = Context.ActorOf(EmployeesBirthdaysFeedActor.CreateProps(organization), BirthdaysFeedId);
             var anniversariesFeed = Context.ActorOf(EmployeesAnniversariesFeedActor.CreateProps(organization), AnniversariesFeedId);

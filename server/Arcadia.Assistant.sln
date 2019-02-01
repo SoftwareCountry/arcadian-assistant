@@ -59,9 +59,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Calendar.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Notifications.Push", "Arcadia.Assistant.Notifications.Push\Arcadia.Assistant.Notifications.Push.csproj", "{79594908-4475-4287-A0C2-3BD1D82BF615}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.InboxEmail", "Arcadia.Assistant.InboxEmail\Arcadia.Assistant.InboxEmail.csproj", "{C77FED76-B322-4172-9BB4-69568D0B80F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.InboxEmail", "Arcadia.Assistant.InboxEmail\Arcadia.Assistant.InboxEmail.csproj", "{C77FED76-B322-4172-9BB4-69568D0B80F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.InboxEmail.Abstractions", "Arcadia.Assistant.InboxEmail.Abstractions\Arcadia.Assistant.InboxEmail.Abstractions.csproj", "{C23EEEFF-4912-469B-AA8E-CF5EAE22ECBC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.InboxEmail.Abstractions", "Arcadia.Assistant.InboxEmail.Abstractions\Arcadia.Assistant.InboxEmail.Abstractions.csproj", "{C23EEEFF-4912-469B-AA8E-CF5EAE22ECBC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Patterns", "Arcadia.Assistant.Patterns\Arcadia.Assistant.Patterns.csproj", "{44B9A684-2DB5-41DE-8643-63D3432C1B8F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -170,6 +172,10 @@ Global
 		{C23EEEFF-4912-469B-AA8E-CF5EAE22ECBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C23EEEFF-4912-469B-AA8E-CF5EAE22ECBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C23EEEFF-4912-469B-AA8E-CF5EAE22ECBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44B9A684-2DB5-41DE-8643-63D3432C1B8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44B9A684-2DB5-41DE-8643-63D3432C1B8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44B9A684-2DB5-41DE-8643-63D3432C1B8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44B9A684-2DB5-41DE-8643-63D3432C1B8F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

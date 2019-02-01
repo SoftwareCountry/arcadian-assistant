@@ -16,6 +16,11 @@
 
         public override string PersistenceId => "push-notifications-devices";
 
+        public static Props CreateProps()
+        {
+            return Props.Create(() => new PushNotificationsDevicesActor());
+        }
+
         protected override void OnCommand(object message)
         {
             switch (message)
