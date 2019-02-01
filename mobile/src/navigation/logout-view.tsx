@@ -22,7 +22,7 @@ class LogoutViewImpl extends Component<LogoutDispatchProps> {
     public render() {
         return <TouchableOpacity onPress={this.props.onLogoutClicked}>
             <View style={LogoutStyle.container}>
-                <Image style={LogoutStyle.image} source={require('./logout-image.png')}/>
+                <Image style={LogoutStyle.image} source={require('./logout-image.png')} resizeMethod={'resize'}/>
             </View>
         </TouchableOpacity>;
     }

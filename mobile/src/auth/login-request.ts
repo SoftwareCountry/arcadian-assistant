@@ -1,6 +1,7 @@
 import { OauthError } from './oauth-error';
 import { BrowserLogin } from './browser-login';
 import uuid from 'uuid/v1';
+import { AccessCodeRequest } from './access-code-request';
 
 interface AuthorizationCodeRequestParams {
     clientId: string;
@@ -18,14 +19,23 @@ interface AuthorizationCodeRequestParams {
     domain_hint?: string;
 }
 
+export interface RefreshToken {
+    value: string;
+}
+
 export class LoginRequest {
 
     private readonly csrfSecret = uuid();
 
-    constructor(private clientId: string, private redirectUri: string, private authorizationUrl: string) {
+    constructor(
+        private readonly clientId: string,
+        private readonly redirectUri: string,
+        private readonly authorizationUrl: string,
+        private readonly tokenUrl: string
+        ) {
     }
 
-    public async openLoginPage(forceLogin = false): Promise<string> {
+    public async getRefreshTokenFromLoginPage(forceLogin = false): Promise<RefreshToken> {
         let params: AuthorizationCodeRequestParams = {
             clientId: this.clientId,
             responseType: 'code',
@@ -41,11 +51,13 @@ export class LoginRequest {
 
         const url = this.getAuthorizationUrl(this.authorizationUrl, params);
 
-        const code = await BrowserLogin.getAuthorizationCode(url, this.redirectUri);
-        return code;
+        const response = await BrowserLogin.getAuthorizationCode(url, this.redirectUri);
+
+        const refreshCode = await this.getRefreshTokenFromResponse(response);
+        return refreshCode;
     }
 
-    public getAuthorizationCodeFromResponse(responseUrl: string) {
+    private async getRefreshTokenFromResponse(responseUrl: string): Promise<RefreshToken> {
         const match = responseUrl.match(/.*\?(.*)/);
         if (!match) {
             throw new OauthError('Auth Error: provided url is in wrong format');
@@ -63,7 +75,14 @@ export class LoginRequest {
             throw new OauthError('Auth Error: no auth code is provided');
         }
 
-        return code;
+        const refreshToken = await this.accessCodeToRefreshToken(code);
+
+        return { value: refreshToken.refreshToken };
+    }
+
+    private accessCodeToRefreshToken(accessCode: string) {
+        const accessCodeRequest = new AccessCodeRequest(this.clientId, this.redirectUri, this.tokenUrl);
+        return accessCodeRequest.fetchNew(accessCode).toPromise();
     }
 
     private getAuthorizationUrl(authUrl: string, params: AuthorizationCodeRequestParams) {

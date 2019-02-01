@@ -56,7 +56,7 @@ class SplashScreenImpl extends React.Component<SplashScreenDispatchProps, Splash
     }
 
     //----------------------------------------------------------------------------
-    public componentWillMount(): void {
+    public componentDidMount(): void {
         FingerprintScanner.isSensorAvailable()
             .then((biometry) => {
                 this.handleBiometry(biometry);

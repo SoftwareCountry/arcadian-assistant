@@ -1,37 +1,37 @@
 import { combineEpics } from 'redux-observable';
-import { jwtTokenEpic$, listenerAuthStateEpic$, startLoginProcessEpic$, startLogoutProcessEpic$ } from './auth.epics';
+import { shouldRefreshEpic$, jwtTokenEpic$ } from './auth.epics';
 import { AuthActions, AuthActionType } from './auth.action';
+import { JwtToken } from '../../auth/jwt-token-handler';
+import { startLogoutProcessEpic$ } from './logout.epics';
+import { startLoginProcessEpic$ } from './login.epics';
 
 export const authEpics$ = combineEpics(
-    startLoginProcessEpic$ as any,
-    startLogoutProcessEpic$ as any,
-    listenerAuthStateEpic$ as any,
-    jwtTokenEpic$ as any
+    startLoginProcessEpic$,
+    startLogoutProcessEpic$,
+    shouldRefreshEpic$,
+    jwtTokenEpic$
 );
 
 export interface AuthInfo {
     isAuthenticated: boolean;
-    jwtToken: string | null;
 }
 
 export interface AuthState {
     authInfo: AuthInfo | null;
+    jwtToken: JwtToken | null;
 }
 
 const initState: AuthState = {
     authInfo: null,
+    jwtToken: null
 };
 
 export const authReducer = (state: AuthState = initState, action: AuthActions): AuthState => {
-    const jwtToken = state.authInfo ? state.authInfo.jwtToken : null;
-    const isAuthenticated = state.authInfo ? state.authInfo.isAuthenticated : false;
-
     switch (action.type) {
         case AuthActionType.userLoggedIn:
             return {
                 ...state,
                 authInfo: {
-                    jwtToken: jwtToken,
                     isAuthenticated: true,
                 }
             };
@@ -41,17 +41,14 @@ export const authReducer = (state: AuthState = initState, action: AuthActions): 
                 ...state,
                 authInfo: {
                     isAuthenticated: false,
-                    jwtToken: null
-                }
+                },
+                jwtToken: null
             };
 
         case AuthActionType.jwtTokenSet:
             return {
                 ...state,
-                authInfo: {
-                    isAuthenticated: isAuthenticated,
-                    jwtToken: action.jwtToken
-                }
+                jwtToken: action.jwtToken
             };
         default:
             return state;

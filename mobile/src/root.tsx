@@ -31,10 +31,6 @@ export class Root extends Component<{}> {
     }
 
     public componentWillUnmount() {
-        if (this.oauthProcess) {
-            this.oauthProcess.dispose();
-        }
-
         this.navigationService.dispose();
     }
 }

@@ -2,7 +2,7 @@
  * Copyright (c) Arcadia, Inc. All rights reserved.
  ******************************************************************************/
 
-import React, { Component } from 'react';
+import React, { Component, Dispatch } from 'react';
 import { RootNavigator } from './tabbar/tab-navigator';
 import { AppState } from './reducers/app.reducer';
 import { connect } from 'react-redux';
@@ -84,5 +84,5 @@ const stateToProps = (state: AppState) => ({
     authentication: state.authentication,
 });
 
-export const AppWithNavigationState = connect<AppStateProps, {}, AppOwnProps, AppState>(stateToProps)(App);
+export const AppWithNavigationState = connect(stateToProps)(App);
 
