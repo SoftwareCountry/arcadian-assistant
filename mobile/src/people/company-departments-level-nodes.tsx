@@ -46,21 +46,7 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
         this.state = {
             xCoordinate: new Animated.Value(0)
         };
-    }
 
-    public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelNodesProps, nextState: CompanyDepartmentsLevelNodesState) {
-        const isNodesEqual = this.areNodesEqual(this.props.nodes, nextProps.nodes);
-        const isChiefsEqual = this.areChiefsEqual(this.props.chiefs, nextProps.chiefs);
-
-        return !isNodesEqual
-            || !isChiefsEqual
-            || this.props.selectedDepartmentId !== nextProps.selectedDepartmentId
-            || this.props.height !== nextProps.height
-            || this.props.width !== nextProps.width
-            || this.props.onPressChief !== nextProps.onPressChief;
-    }
-
-    public componentDidMount() {
         this.panResponder = PanResponder.create({
             onMoveShouldSetPanResponderCapture: (evt, gestureState) => {
                 if (Math.abs(gestureState.dx) < 8 && Math.abs(gestureState.dy) < 8) {
@@ -88,7 +74,21 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
             },
             onPanResponderTerminationRequest: (e, gesture) => false,
         });
+    }
 
+    public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelNodesProps, nextState: CompanyDepartmentsLevelNodesState) {
+        const isNodesEqual = this.areNodesEqual(this.props.nodes, nextProps.nodes);
+        const isChiefsEqual = this.areChiefsEqual(this.props.chiefs, nextProps.chiefs);
+
+        return !isNodesEqual
+            || !isChiefsEqual
+            || this.props.selectedDepartmentId !== nextProps.selectedDepartmentId
+            || this.props.height !== nextProps.height
+            || this.props.width !== nextProps.width
+            || this.props.onPressChief !== nextProps.onPressChief;
+    }
+
+    public componentDidMount() {
         this.scrollToSelectedDepartment();
     }
 
