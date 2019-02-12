@@ -44,7 +44,7 @@
         {
             var absoluteUrl = this.sslSettings.SslOffloading
                 ? this.Url.Action(actionName, controllerName, null, "https")
-                : this.Url.Action(actionName, controllerName, null);
+                : this.Url.Action(actionName, controllerName, null, this.Request.Scheme);
 
             return absoluteUrl;
         }
