@@ -25,6 +25,7 @@ const peopleScreenNavigatorConfig: TabNavigatorConfig = {
         labelStyle: peopleScreenNavigatorStyles.tabBarLabel,
         showIcon: false,
     },
+    initialRouteName: PeopleScreenNavigationRouteName.company,
 };
 
 //----------------------------------------------------------------------------
