@@ -5,9 +5,11 @@
     using System.Linq;
 
     using Akka.Actor;
+    using Akka.Event;
     using Akka.Persistence;
 
     using Arcadia.Assistant.Calendar.Abstractions;
+    using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
     using Arcadia.Assistant.Calendar.Events;
     using Arcadia.Assistant.Feeds;
@@ -33,6 +35,8 @@
             this.employeeFeed = employeeFeed;
             this.vacationsRegistry = vacationsRegistry;
             this.PersistenceId = $"employee-vacations-{this.EmployeeId}";
+
+            Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);
         }
 
         public static Props CreateProps(
@@ -76,6 +80,16 @@
         {
             switch (message)
             {
+                case CalendarEventChanged msg when
+                    msg.NewEvent.Status == VacationStatuses.Approved &&
+                    msg.NewEvent.EmployeeId == this.EmployeeId:
+
+                    var text = $"Vacation approved from {msg.NewEvent.Dates.StartDate.ToLongDateString()} to {msg.NewEvent.Dates.EndDate.ToLongDateString()}";
+                    var feedMessage = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, msg.Timestamp.Date);
+                    this.employeeFeed.Tell(new PostMessage(feedMessage));
+
+                    break;
+
                 case GetVacationsCredit _:
                     this.vacationsRegistry
                         .Ask<VacationsRegistry.GetVacationInfo.Response>(new VacationsRegistry.GetVacationInfo(this.EmployeeId))
@@ -246,10 +260,6 @@
                     calendarEvent.Dates,
                     VacationStatuses.Approved,
                     calendarEvent.EmployeeId);
-
-                var text = $"Vacation approved from {calendarEvent.Dates.StartDate.ToLongDateString()} to {calendarEvent.Dates.EndDate.ToLongDateString()}";
-                var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, message.TimeStamp.Date);
-                this.employeeFeed.Tell(new PostMessage(msg));
             }
         }
 
