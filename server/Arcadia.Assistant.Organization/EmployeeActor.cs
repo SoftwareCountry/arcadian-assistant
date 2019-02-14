@@ -31,8 +31,7 @@
         public EmployeeActor(
             EmployeeStoredInformation storedInformation,
             IActorRef imageResizer,
-            IActorRef vacationsCreditRegistry,
-            IActorRef calendarEventsApprovalsChecker)
+            IActorRef vacationsCreditRegistry)
         {
             this.employeeMetadata = storedInformation.Metadata;
             this.PersistenceId = $"employee-info-{Uri.EscapeDataString(this.employeeMetadata.EmployeeId)}";
@@ -48,15 +47,10 @@
                 this.employeeMetadata.EmployeeId,
                 this.employeeFeed,
                 vacationsCreditRegistry,
-                calendarEventsApprovalsChecker);
+                null);
 
-            var sickLeaveActorProps = EmployeeSickLeaveActor.CreateProps(
-                this.employeeMetadata,
-                calendarEventsApprovalsChecker);
-
-            var workHoursActorProps = EmployeeWorkHoursActor.CreateProps(
-                this.employeeMetadata.EmployeeId,
-                calendarEventsApprovalsChecker);
+            var sickLeaveActorProps = EmployeeSickLeaveActor.CreateProps(this.employeeMetadata);
+            var workHoursActorProps = EmployeeWorkHoursActor.CreateProps(this.employeeMetadata.EmployeeId);
 
             var vacationsActor = Context.ActorOf(
                 persistenceSupervisorFactory.Get(vacationActorProps),
@@ -215,12 +209,10 @@
         public static Props GetProps(
             EmployeeStoredInformation employeeStoredInformation,
             IActorRef imageResizer,
-            IActorRef vacationsCreditRegistry,
-            IActorRef calendarEventsApprovalsChecker
+            IActorRef vacationsCreditRegistry
         ) => Props.Create(() => new EmployeeActor(
             employeeStoredInformation,
             imageResizer,
-            vacationsCreditRegistry,
-            calendarEventsApprovalsChecker));
+            vacationsCreditRegistry));
     }
 }

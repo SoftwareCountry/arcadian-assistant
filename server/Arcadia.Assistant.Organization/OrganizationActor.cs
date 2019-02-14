@@ -6,7 +6,6 @@
     using Akka.Event;
 
     using Arcadia.Assistant.Configuration.Configuration;
-    using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public class OrganizationActor : UntypedActor, ILogReceive, IWithUnboundedStash
@@ -20,9 +19,7 @@
 
         public OrganizationActor(IRefreshInformation refreshInformation)
         {
-            var calendarEventsApprovalsCheckerActor = Context.ActorOf(CalendarEventsApprovalsChecker.GetProps(), "calendar-events-approvals-checker");
-
-            this.employeesActor = Context.ActorOf(EmployeesActor.GetProps(calendarEventsApprovalsCheckerActor), "employees");
+            this.employeesActor = Context.ActorOf(EmployeesActor.GetProps(), "employees");
             this.departmentsActor = Context.ActorOf(DepartmentsActor.GetProps(this.employeesActor), "departments");
 
             Context.System.Scheduler.ScheduleTellRepeatedly(
