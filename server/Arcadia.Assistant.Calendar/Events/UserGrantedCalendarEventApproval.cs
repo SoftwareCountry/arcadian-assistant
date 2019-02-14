@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.Calendar
+﻿namespace Arcadia.Assistant.Calendar.Events
 {
     using System;
     using System.Runtime.Serialization;

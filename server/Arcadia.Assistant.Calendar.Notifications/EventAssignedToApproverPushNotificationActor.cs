@@ -45,7 +45,7 @@
         {
             switch (message)
             {
-                case CalendarEventAssignedToApprover msg when msg.ApproverId != null:
+                case CalendarEventAssignedToApprover msg:
                     this.GetAdditionalData(msg)
                         .ContinueWith(task =>
                         {
@@ -60,9 +60,6 @@
                         })
                         .PipeTo(this.Self);
 
-                    break;
-
-                case CalendarEventAssignedToApprover _:
                     break;
 
                 case CalendarEventAssignedWithAdditionalData msg

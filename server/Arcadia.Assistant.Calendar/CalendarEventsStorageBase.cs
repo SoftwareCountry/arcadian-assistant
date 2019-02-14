@@ -12,6 +12,7 @@
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
+    using Arcadia.Assistant.Calendar.Events;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public abstract class CalendarEventsStorageBase : UntypedPersistentActor, ILogReceive
@@ -274,8 +275,8 @@
             }
             else
             {
-                Context.System.EventStream.Publish(new CalendarEventAssignedToApprover(calendarEvent, null));
-                Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(calendarEvent, null));
+                Context.System.EventStream.Publish(new CalendarEventRemovedFromApprovers(calendarEvent));
+                Context.System.EventStream.Publish(new CalendarEventRemovedFromPendingActions(calendarEvent));
             }
         }
 
