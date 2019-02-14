@@ -20,7 +20,7 @@
     {
         private readonly IActorRef employeeFeed;
 
-        private readonly IActorRef vacationsRegistry;
+        private readonly IActorRef vacationsCreditRegistry;
 
         public override string PersistenceId { get; }
 
@@ -28,12 +28,13 @@
 
         public EmployeeVacationsActor(string employeeId,
             IActorRef employeeFeed,
-            IActorRef vacationsRegistry,
+            IActorRef vacationsCreditRegistry,
             IActorRef calendarEventsApprovalsChecker
         ) : base(employeeId, calendarEventsApprovalsChecker)
         {
             this.employeeFeed = employeeFeed;
-            this.vacationsRegistry = vacationsRegistry;
+            this.vacationsCreditRegistry = vacationsCreditRegistry;
+
             this.PersistenceId = $"employee-vacations-{this.EmployeeId}";
 
             Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);
@@ -42,13 +43,13 @@
         public static Props CreateProps(
             string employeeId,
             IActorRef employeeFeed,
-            IActorRef vacationsRegistry,
+            IActorRef vacationsCreditRegistry,
             IActorRef calendarEventsApprovalsChecker)
         {
             return Props.Create(() => new EmployeeVacationsActor(
                 employeeId,
                 employeeFeed,
-                vacationsRegistry,
+                vacationsCreditRegistry,
                 calendarEventsApprovalsChecker)
             );
         }
@@ -91,8 +92,8 @@
                     break;
 
                 case GetVacationsCredit _:
-                    this.vacationsRegistry
-                        .Ask<VacationsRegistry.GetVacationInfo.Response>(new VacationsRegistry.GetVacationInfo(this.EmployeeId))
+                    this.vacationsCreditRegistry
+                        .Ask<VacationsCreditRegistry.GetVacationInfo.Response>(new VacationsCreditRegistry.GetVacationInfo(this.employeeId))
                         .ContinueWith(x => new GetVacationsCredit.Response(x.Result.VacationsCredit))
                         .PipeTo(this.Sender);
                     break;

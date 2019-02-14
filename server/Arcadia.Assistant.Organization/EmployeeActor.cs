@@ -31,7 +31,7 @@
         public EmployeeActor(
             EmployeeStoredInformation storedInformation,
             IActorRef imageResizer,
-            IActorRef vacationsRegistry,
+            IActorRef vacationsCreditRegistry,
             IActorRef calendarEventsApprovalsChecker)
         {
             this.employeeMetadata = storedInformation.Metadata;
@@ -47,7 +47,7 @@
             var vacationActorProps = EmployeeVacationsActor.CreateProps(
                 this.employeeMetadata.EmployeeId,
                 this.employeeFeed,
-                vacationsRegistry,
+                vacationsCreditRegistry,
                 calendarEventsApprovalsChecker);
 
             var sickLeaveActorProps = EmployeeSickLeaveActor.CreateProps(
@@ -215,12 +215,12 @@
         public static Props GetProps(
             EmployeeStoredInformation employeeStoredInformation,
             IActorRef imageResizer,
-            IActorRef vacationsRegistry,
+            IActorRef vacationsCreditRegistry,
             IActorRef calendarEventsApprovalsChecker
         ) => Props.Create(() => new EmployeeActor(
             employeeStoredInformation,
             imageResizer,
-            vacationsRegistry,
+            vacationsCreditRegistry,
             calendarEventsApprovalsChecker));
     }
 }
