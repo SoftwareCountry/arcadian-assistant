@@ -22,19 +22,25 @@
 
         private readonly IActorRef vacationsRegistry;
 
+        private readonly IActorRef vacationsSource;
+
         public override string PersistenceId { get; }
 
-        //private int vacationsCredit = 28;
-
-        public EmployeeVacationsActor(string employeeId,
+        public EmployeeVacationsActor(
+            string employeeId,
             IActorRef employeeFeed,
             IActorRef vacationsRegistry,
-            IActorRef calendarEventsApprovalsChecker
+            IActorRef calendarEventsApprovalsChecker,
+            IEmployeeVacationsSourceActorPropsFactory vacationsSourcePropsFactory
         ) : base(employeeId, calendarEventsApprovalsChecker)
         {
             this.employeeFeed = employeeFeed;
             this.vacationsRegistry = vacationsRegistry;
-            this.PersistenceId = $"employee-vacations-{this.EmployeeId}";
+            this.vacationsSource = Context.ActorOf(
+                vacationsSourcePropsFactory.CreateProps(employeeId),
+                "vacations-source");
+
+            this.PersistenceId = $"employee-vacations-test-{this.EmployeeId}";
 
             Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);
         }
@@ -43,13 +49,15 @@
             string employeeId,
             IActorRef employeeFeed,
             IActorRef vacationsRegistry,
-            IActorRef calendarEventsApprovalsChecker)
+            IActorRef calendarEventsApprovalsChecker,
+            IEmployeeVacationsSourceActorPropsFactory employeeVacationsSourceActorPropsFactory)
         {
             return Props.Create(() => new EmployeeVacationsActor(
                 employeeId,
                 employeeFeed,
                 vacationsRegistry,
-                calendarEventsApprovalsChecker)
+                calendarEventsApprovalsChecker,
+                employeeVacationsSourceActorPropsFactory)
             );
         }
 

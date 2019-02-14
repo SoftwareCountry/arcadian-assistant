@@ -6,6 +6,7 @@
     using Akka.Persistence;
 
     using Arcadia.Assistant.Calendar;
+    using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.PendingActions;
     using Arcadia.Assistant.Calendar.SickLeave;
     using Arcadia.Assistant.Calendar.Vacations;
@@ -32,7 +33,8 @@
             EmployeeStoredInformation storedInformation,
             IActorRef imageResizer,
             IActorRef vacationsRegistry,
-            IActorRef calendarEventsApprovalsChecker)
+            IActorRef calendarEventsApprovalsChecker,
+            IEmployeeVacationsSourceActorPropsFactory employeeVacationsSourceActorPropsFactory)
         {
             this.employeeMetadata = storedInformation.Metadata;
             this.PersistenceId = $"employee-info-{Uri.EscapeDataString(this.employeeMetadata.EmployeeId)}";
@@ -48,7 +50,8 @@
                 this.employeeMetadata.EmployeeId,
                 this.employeeFeed,
                 vacationsRegistry,
-                calendarEventsApprovalsChecker);
+                calendarEventsApprovalsChecker,
+                employeeVacationsSourceActorPropsFactory);
 
             var sickLeaveActorProps = EmployeeSickLeaveActor.CreateProps(
                 this.employeeMetadata,
@@ -216,11 +219,13 @@
             EmployeeStoredInformation employeeStoredInformation,
             IActorRef imageResizer,
             IActorRef vacationsRegistry,
-            IActorRef calendarEventsApprovalsChecker
+            IActorRef calendarEventsApprovalsChecker,
+            IEmployeeVacationsSourceActorPropsFactory employeeVacationsSourceActorPropsFactory
         ) => Props.Create(() => new EmployeeActor(
             employeeStoredInformation,
             imageResizer,
             vacationsRegistry,
-            calendarEventsApprovalsChecker));
+            calendarEventsApprovalsChecker,
+            employeeVacationsSourceActorPropsFactory));
     }
 }

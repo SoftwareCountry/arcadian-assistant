@@ -7,7 +7,7 @@
     using Akka.Actor;
     using Akka.Event;
     using Akka.Routing;
-
+    using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Images;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
@@ -27,10 +27,13 @@
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
         private readonly IActorRef calendarEventsApprovalsChecker;
+        private readonly IEmployeeVacationsSourceActorPropsFactory employeeVacationsSourceActorPropsFactory;
 
         public IStash Stash { get; set; }
 
-        public EmployeesActor(IActorRef calendarEventsApprovalsChecker)
+        public EmployeesActor(
+            IActorRef calendarEventsApprovalsChecker,
+            IEmployeeVacationsSourceActorPropsFactory employeeVacationsSourceActorPropsFactory)
         {
             this.employeesInfoStorage = Context.ActorOf(EmployeesInfoStorage.GetProps, "employees-storage");
             this.logger.Info($"Image resizers pool size: {ResizersCount}");
@@ -41,6 +44,7 @@
             this.vacationsRegistry = Context.ActorOf(VacationsRegistry.GetProps, "vacations-registry");
 
             this.calendarEventsApprovalsChecker = calendarEventsApprovalsChecker;
+            this.employeeVacationsSourceActorPropsFactory = employeeVacationsSourceActorPropsFactory;
         }
 
         protected override void OnReceive(object message)
@@ -130,7 +134,8 @@
                         employeeNewInfo,
                         this.imageResizer,
                         this.vacationsRegistry,
-                        this.calendarEventsApprovalsChecker);
+                        this.calendarEventsApprovalsChecker,
+                        this.employeeVacationsSourceActorPropsFactory);
                     employeeActor = Context.ActorOf(
                         persistenceSupervisorFactory.Get(employeeActorProps),
                         $"employee-{Uri.EscapeDataString(employeeId)}");
@@ -154,7 +159,11 @@
             }
         }
 
-        public static Props GetProps(IActorRef calendarEventsApprovalsChecker) =>
-            Props.Create(() => new EmployeesActor(calendarEventsApprovalsChecker));
+        public static Props GetProps(
+            IActorRef calendarEventsApprovalsChecker,
+            IEmployeeVacationsSourceActorPropsFactory employeeVacationsSourceActorPropsFactory
+        ) => Props.Create(() => new EmployeesActor(
+            calendarEventsApprovalsChecker,
+            employeeVacationsSourceActorPropsFactory));
     }
 }

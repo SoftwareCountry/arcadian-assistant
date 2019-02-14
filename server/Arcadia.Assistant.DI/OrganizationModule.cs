@@ -22,7 +22,9 @@
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<EmployeesActor>().AsSelf();
-            builder.Register(ctx => new OrganizationActor(this.refreshInformation));
+            builder.Register(ctx => new OrganizationActor(
+                this.refreshInformation,
+                ctx.Resolve<IEmployeeVacationsSourceActorPropsFactory>()));
 
             builder.RegisterType<DepartmentsStorage>().AsSelf();
 
