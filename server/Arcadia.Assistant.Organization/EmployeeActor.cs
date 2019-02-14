@@ -33,7 +33,6 @@
             EmployeeStoredInformation storedInformation,
             IActorRef imageResizer,
             IActorRef vacationsCreditRegistry,
-            IActorRef calendarEventsApprovalsChecker,
             IEmployeeVacationsSourceActorPropsFactory employeeVacationsSourceActorPropsFactory)
         {
             this.employeeMetadata = storedInformation.Metadata;
@@ -50,16 +49,11 @@
                 this.employeeMetadata.EmployeeId,
                 this.employeeFeed,
                 vacationsCreditRegistry,
-                calendarEventsApprovalsChecker,
+                null,
                 employeeVacationsSourceActorPropsFactory);
 
-            var sickLeaveActorProps = EmployeeSickLeaveActor.CreateProps(
-                this.employeeMetadata,
-                calendarEventsApprovalsChecker);
-
-            var workHoursActorProps = EmployeeWorkHoursActor.CreateProps(
-                this.employeeMetadata.EmployeeId,
-                calendarEventsApprovalsChecker);
+            var sickLeaveActorProps = EmployeeSickLeaveActor.CreateProps(this.employeeMetadata);
+            var workHoursActorProps = EmployeeWorkHoursActor.CreateProps(this.employeeMetadata.EmployeeId);
 
             var vacationsActor = Context.ActorOf(
                 persistenceSupervisorFactory.Get(vacationActorProps),
@@ -219,13 +213,11 @@
             EmployeeStoredInformation employeeStoredInformation,
             IActorRef imageResizer,
             IActorRef vacationsCreditRegistry,
-            IActorRef calendarEventsApprovalsChecker,
             IEmployeeVacationsSourceActorPropsFactory employeeVacationsSourceActorPropsFactory
         ) => Props.Create(() => new EmployeeActor(
             employeeStoredInformation,
             imageResizer,
             vacationsCreditRegistry,
-            calendarEventsApprovalsChecker,
             employeeVacationsSourceActorPropsFactory));
     }
 }

@@ -26,13 +26,11 @@
         private readonly Dictionary<string, EmployeeIndexEntry> employeesById = new Dictionary<string, EmployeeIndexEntry>();
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
-        private readonly IActorRef calendarEventsApprovalsChecker;
         private readonly IEmployeeVacationsSourceActorPropsFactory employeeVacationsSourceActorPropsFactory;
 
         public IStash Stash { get; set; }
 
         public EmployeesActor(
-            IActorRef calendarEventsApprovalsChecker,
             IEmployeeVacationsSourceActorPropsFactory employeeVacationsSourceActorPropsFactory)
         {
             this.employeesInfoStorage = Context.ActorOf(EmployeesInfoStorage.GetProps, "employees-storage");
@@ -43,7 +41,6 @@
 
             this.vacationsCreditRegistry = Context.ActorOf(VacationsCreditRegistry.GetProps, "vacations-credit-registry");
 
-            this.calendarEventsApprovalsChecker = calendarEventsApprovalsChecker;
             this.employeeVacationsSourceActorPropsFactory = employeeVacationsSourceActorPropsFactory;
         }
 
@@ -134,7 +131,6 @@
                         employeeNewInfo,
                         this.imageResizer,
                         this.vacationsCreditRegistry,
-                        this.calendarEventsApprovalsChecker,
                         this.employeeVacationsSourceActorPropsFactory);
                     employeeActor = Context.ActorOf(
                         persistenceSupervisorFactory.Get(employeeActorProps),
@@ -160,10 +156,8 @@
         }
 
         public static Props GetProps(
-            IActorRef calendarEventsApprovalsChecker,
             IEmployeeVacationsSourceActorPropsFactory employeeVacationsSourceActorPropsFactory
         ) => Props.Create(() => new EmployeesActor(
-            calendarEventsApprovalsChecker,
             employeeVacationsSourceActorPropsFactory));
     }
 }

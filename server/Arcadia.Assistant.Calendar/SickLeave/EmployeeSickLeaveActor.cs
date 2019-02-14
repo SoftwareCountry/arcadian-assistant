@@ -14,17 +14,17 @@
 
     public class EmployeeSickLeaveActor : CalendarEventsStorageBase
     {
-        public EmployeeSickLeaveActor(EmployeeMetadata employee, IActorRef calendarEventsApprovalsChecker)
-            : base(employee.EmployeeId, calendarEventsApprovalsChecker)
+        public EmployeeSickLeaveActor(EmployeeMetadata employee)
+            : base(employee.EmployeeId)
         {
             this.PersistenceId = $"employee-sickleaves-{this.EmployeeId}";
         }
 
         public override string PersistenceId { get; }
 
-        public static Props CreateProps(EmployeeMetadata employee, IActorRef calendarEventsApprovalsChecker)
+        public static Props CreateProps(EmployeeMetadata employee)
         {
-            return Props.Create(() => new EmployeeSickLeaveActor(employee, calendarEventsApprovalsChecker));
+            return Props.Create(() => new EmployeeSickLeaveActor(employee));
         }
 
         protected override void OnRecover(object message)
@@ -64,7 +64,7 @@
                     {
                         if (@event.IsPending)
                         {
-                            Context.System.EventStream.Publish(new CalendarEventRecovered(@event));
+                            Context.System.EventStream.Publish(new CalendarEventRecoverComplete(@event));
                         }
                     }
                     break;

@@ -2,7 +2,7 @@
 {
     using Akka.Actor;
     using Akka.DI.Core;
-
+    using Arcadia.Assistant.Calendar;
     using Arcadia.Assistant.Calendar.Notifications;
     using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.Feeds;
@@ -63,6 +63,8 @@
             this.actorSystem.ActorOf(
                 Props.Create(() => new NotificationsDispatcherActor(emailNotificationsActorProps, pushNotificationsActorProps)),
                 "notifications");
+
+            this.actorSystem.ActorOf(CalendarEventsApprovalsActor.GetProps(), "calendar-events-approvals");
 
             return new ServerActorsCollection(organization, health, helpdesk, feeds, userPreferences, pushNotificationsDevices);
         }

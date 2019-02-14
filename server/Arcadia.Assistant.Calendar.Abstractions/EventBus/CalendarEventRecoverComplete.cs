@@ -1,8 +1,8 @@
 ﻿namespace Arcadia.Assistant.Calendar.Abstractions.EventBus
 {
-    public class CalendarEventRecovered
+    public class CalendarEventRecoverComplete
     {
-        public CalendarEventRecovered(CalendarEvent @event)
+        public CalendarEventRecoverComplete(CalendarEvent @event)
         {
             this.Event = @event;
         }

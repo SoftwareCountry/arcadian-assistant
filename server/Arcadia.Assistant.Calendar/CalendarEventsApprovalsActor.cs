@@ -23,14 +23,20 @@
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
-        public CalendarEventsApprovalsActor(IActorRef calendarEventsApprovalsChecker)
+        public CalendarEventsApprovalsActor()
         {
-            this.calendarEventsApprovalsChecker = calendarEventsApprovalsChecker;
+            this.calendarEventsApprovalsChecker = Context.ActorOf(CalendarEventsApprovalsChecker.GetProps(), "calendar-events-approvals-checker");
             this.organizationActor = Context.ActorSelection(OrganizationActorPath);
 
             Context.System.EventStream.Subscribe<CalendarEventCreated>(this.Self);
             Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);
-            Context.System.EventStream.Subscribe<CalendarEventRecovered>(this.Self);
+            Context.System.EventStream.Subscribe<CalendarEventApprovalsChanged>(this.Self);
+            Context.System.EventStream.Subscribe<CalendarEventRecoverComplete>(this.Self);
+        }
+
+        public static Props GetProps()
+        {
+            return Props.Create<CalendarEventsApprovalsActor>();
         }
 
         protected override void OnReceive(object message)
@@ -45,18 +51,28 @@
                     this.OnCalendarEventNeedNextApprover(msg.NewEvent);
                     break;
 
-                case CalendarEventRecovered msg:
+                case CalendarEventApprovalsChanged msg:
                     this.OnCalendarEventNeedNextApprover(msg.Event);
+                    break;
+
+                case CalendarEventRecoverComplete msg:
+                    this.OnCalendarEventRecoverComplete(msg.Event);
                     break;
 
                 case GetNextApproverSuccess msg:
                     if (msg.NextApproverId != null)
                     {
-                        Context.System.EventStream.Publish(new CalendarEventAssignedToApprover(msg.Event, msg.NextApproverId));
+                        if (!msg.CalendarEventRecoverComplete)
+                        {
+                            Context.System.EventStream.Publish(new CalendarEventAssignedToApprover(msg.Event, msg.NextApproverId));
+                        }
+
+                        Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(msg.Event, msg.NextApproverId));
                     }
-                    else
+                    else if (!msg.CalendarEventRecoverComplete)
                     {
                         Context.System.EventStream.Publish(new CalendarEventRemovedFromApprovers(msg.Event));
+                        Context.System.EventStream.Publish(new CalendarEventRemovedFromPendingActions(msg.Event));
                     }
 
                     break;
@@ -76,6 +92,7 @@
         {
             if (!@event.IsPending)
             {
+                Context.System.EventStream.Publish(new CalendarEventRemovedFromApprovers(@event));
                 return;
             }
 
@@ -83,6 +100,21 @@
                 .PipeTo(
                     this.Self,
                     success: nextApproverId => new GetNextApproverSuccess(@event, nextApproverId),
+                    failure: err => new GetNextApproverError(@event.EventId, err.Message)
+                );
+        }
+
+        private void OnCalendarEventRecoverComplete(CalendarEvent @event)
+        {
+            if (!@event.IsPending)
+            {
+                return;
+            }
+
+            this.GetNextApproverId(@event)
+                .PipeTo(
+                    this.Self,
+                    success: nextApproverId => new GetNextApproverSuccess(@event, nextApproverId, true),
                     failure: err => new GetNextApproverError(@event.EventId, err.Message)
                 );
         }
@@ -138,15 +170,18 @@
 
         public class GetNextApproverSuccess
         {
-            public GetNextApproverSuccess(CalendarEvent @event, string nextApproverId)
+            public GetNextApproverSuccess(CalendarEvent @event, string nextApproverId, bool calendarEventRecoverComplete = false)
             {
                 this.Event = @event;
                 this.NextApproverId = nextApproverId;
+                this.CalendarEventRecoverComplete = calendarEventRecoverComplete;
             }
 
             public CalendarEvent Event { get; }
 
             public string NextApproverId { get; }
+
+            public bool CalendarEventRecoverComplete { get; }
         }
 
         public class GetNextApproverError

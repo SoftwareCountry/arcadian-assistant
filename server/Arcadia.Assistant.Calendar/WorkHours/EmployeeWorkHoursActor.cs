@@ -20,15 +20,15 @@
         /// </summary>
         private int hoursCredit = 0;
 
-        public EmployeeWorkHoursActor(string employeeId, IActorRef calendarEventsApprovalsChecker)
-            : base(employeeId, calendarEventsApprovalsChecker)
+        public EmployeeWorkHoursActor(string employeeId)
+            : base(employeeId)
         {
             this.PersistenceId = $"employee-workhours-{this.EmployeeId}";
         }
 
-        public static Props CreateProps(string employeeId, IActorRef calendarEventsApprovalsChecker)
+        public static Props CreateProps(string employeeId)
         {
-            return Props.Create(() => new EmployeeWorkHoursActor(employeeId, calendarEventsApprovalsChecker));
+            return Props.Create(() => new EmployeeWorkHoursActor(employeeId));
         }
 
         public override string PersistenceId { get; }
@@ -62,7 +62,7 @@
                     {
                         if (@event.IsPending)
                         {
-                            Context.System.EventStream.Publish(new CalendarEventRecovered(@event));
+                            Context.System.EventStream.Publish(new CalendarEventRecoverComplete(@event));
                         }
                     }
                     break;
