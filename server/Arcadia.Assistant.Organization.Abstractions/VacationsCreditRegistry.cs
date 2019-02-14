@@ -3,9 +3,9 @@
     using Akka.Actor;
     using Akka.DI.Core;
 
-    public abstract class VacationsRegistry : UntypedActor
+    public abstract class VacationsCreditRegistry : UntypedActor
     {
-        public static Props GetProps => Context.DI().Props<VacationsRegistry>();
+        public static Props GetProps => Context.DI().Props<VacationsCreditRegistry>();
 
         public class GetVacationInfo
         {

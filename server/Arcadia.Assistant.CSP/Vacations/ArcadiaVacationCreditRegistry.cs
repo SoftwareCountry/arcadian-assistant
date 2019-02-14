@@ -11,7 +11,7 @@
     using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.Organization.Abstractions;
 
-    public class ArcadiaVacationRegistry : VacationsRegistry, ILogReceive
+    public class ArcadiaVacationCreditRegistry : VacationsCreditRegistry, ILogReceive
     {
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
@@ -22,7 +22,7 @@
 
         private string lastErrorMessage;
 
-        public ArcadiaVacationRegistry(
+        public ArcadiaVacationCreditRegistry(
             EmployeesQueryExecutor employeesQueryExecutor,
             VacationsSyncExecutor vacationsSyncExecutor,
             IRefreshInformation refreshInformation)

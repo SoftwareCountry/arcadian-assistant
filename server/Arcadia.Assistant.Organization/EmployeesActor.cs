@@ -21,7 +21,7 @@
 
         private readonly IActorRef imageResizer;
 
-        private readonly IActorRef vacationsRegistry;
+        private readonly IActorRef vacationsCreditRegistry;
 
         private readonly Dictionary<string, EmployeeIndexEntry> employeesById = new Dictionary<string, EmployeeIndexEntry>();
 
@@ -41,7 +41,7 @@
                 Props.Create(() => new ImageResizer()).WithRouter(new RoundRobinPool(ResizersCount)),
                 "image-resizer");
 
-            this.vacationsRegistry = Context.ActorOf(VacationsRegistry.GetProps, "vacations-registry");
+            this.vacationsCreditRegistry = Context.ActorOf(VacationsCreditRegistry.GetProps, "vacations-credit-registry");
 
             this.calendarEventsApprovalsChecker = calendarEventsApprovalsChecker;
             this.employeeVacationsSourceActorPropsFactory = employeeVacationsSourceActorPropsFactory;
@@ -133,7 +133,7 @@
                     var employeeActorProps = EmployeeActor.GetProps(
                         employeeNewInfo,
                         this.imageResizer,
-                        this.vacationsRegistry,
+                        this.vacationsCreditRegistry,
                         this.calendarEventsApprovalsChecker,
                         this.employeeVacationsSourceActorPropsFactory);
                     employeeActor = Context.ActorOf(

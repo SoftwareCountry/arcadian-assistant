@@ -32,7 +32,7 @@
         public EmployeeActor(
             EmployeeStoredInformation storedInformation,
             IActorRef imageResizer,
-            IActorRef vacationsRegistry,
+            IActorRef vacationsCreditRegistry,
             IActorRef calendarEventsApprovalsChecker,
             IEmployeeVacationsSourceActorPropsFactory employeeVacationsSourceActorPropsFactory)
         {
@@ -49,7 +49,7 @@
             var vacationActorProps = EmployeeVacationsActor.CreateProps(
                 this.employeeMetadata.EmployeeId,
                 this.employeeFeed,
-                vacationsRegistry,
+                vacationsCreditRegistry,
                 calendarEventsApprovalsChecker,
                 employeeVacationsSourceActorPropsFactory);
 
@@ -218,13 +218,13 @@
         public static Props GetProps(
             EmployeeStoredInformation employeeStoredInformation,
             IActorRef imageResizer,
-            IActorRef vacationsRegistry,
+            IActorRef vacationsCreditRegistry,
             IActorRef calendarEventsApprovalsChecker,
             IEmployeeVacationsSourceActorPropsFactory employeeVacationsSourceActorPropsFactory
         ) => Props.Create(() => new EmployeeActor(
             employeeStoredInformation,
             imageResizer,
-            vacationsRegistry,
+            vacationsCreditRegistry,
             calendarEventsApprovalsChecker,
             employeeVacationsSourceActorPropsFactory));
     }

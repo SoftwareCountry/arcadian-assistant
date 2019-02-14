@@ -26,7 +26,7 @@
 
             builder.RegisterType<CspDepartmentsStorage>().As<DepartmentsStorage>();
             builder.RegisterType<CspEmployeesInfoStorage>().As<EmployeesInfoStorage>();
-            builder.RegisterType<ArcadiaVacationRegistry>().As<VacationsRegistry>();
+            builder.RegisterType<ArcadiaVacationCreditRegistry>().As<VacationsCreditRegistry>();
             builder.RegisterType<EmployeesQueryExecutor>().AsSelf();
             builder.RegisterType<VacationsSyncExecutor>().AsSelf();
             builder.RegisterType<VacationsEmailLoader>().AsSelf();
