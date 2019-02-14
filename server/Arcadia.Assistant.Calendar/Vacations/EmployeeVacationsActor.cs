@@ -24,13 +24,10 @@
 
         public override string PersistenceId { get; }
 
-        //private int vacationsCredit = 28;
-
         public EmployeeVacationsActor(string employeeId,
             IActorRef employeeFeed,
-            IActorRef vacationsCreditRegistry,
-            IActorRef calendarEventsApprovalsChecker
-        ) : base(employeeId, calendarEventsApprovalsChecker)
+            IActorRef vacationsCreditRegistry
+        ) : base(employeeId)
         {
             this.employeeFeed = employeeFeed;
             this.vacationsCreditRegistry = vacationsCreditRegistry;
@@ -49,8 +46,7 @@
             return Props.Create(() => new EmployeeVacationsActor(
                 employeeId,
                 employeeFeed,
-                vacationsCreditRegistry,
-                calendarEventsApprovalsChecker)
+                vacationsCreditRegistry)
             );
         }
 
@@ -93,7 +89,7 @@
 
                 case GetVacationsCredit _:
                     this.vacationsCreditRegistry
-                        .Ask<VacationsCreditRegistry.GetVacationInfo.Response>(new VacationsCreditRegistry.GetVacationInfo(this.employeeId))
+                        .Ask<VacationsCreditRegistry.GetVacationInfo.Response>(new VacationsCreditRegistry.GetVacationInfo(this.EmployeeId))
                         .ContinueWith(x => new GetVacationsCredit.Response(x.Result.VacationsCredit))
                         .PipeTo(this.Sender);
                     break;
@@ -217,7 +213,7 @@
                     {
                         if (@event.IsPending)
                         {
-                            this.Self.Tell(new AddCalendarEventToPendingActions(@event.EventId));
+                            Context.System.EventStream.Publish(new CalendarEventRecoverComplete(@event));
                         }
                     }
                     break;
