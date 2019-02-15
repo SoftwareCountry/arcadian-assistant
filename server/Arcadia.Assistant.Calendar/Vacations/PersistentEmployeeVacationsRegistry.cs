@@ -4,11 +4,11 @@
     using Akka.Actor;
     using Akka.Persistence;
 
-    public class PersistentEmployeeVacationsSourceActor : UntypedPersistentActor, ILogReceive
+    public class PersistentEmployeeVacationsRegistry : UntypedPersistentActor, ILogReceive
     {
         private readonly string employeeId;
 
-        public PersistentEmployeeVacationsSourceActor(string employeeId)
+        public PersistentEmployeeVacationsRegistry(string employeeId)
         {
             this.employeeId = employeeId;
             this.PersistenceId = $"employee-vacations-{employeeId}";
