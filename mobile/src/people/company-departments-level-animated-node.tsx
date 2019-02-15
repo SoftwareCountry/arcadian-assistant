@@ -156,12 +156,14 @@ interface CompanyDepartmentsLevelAnimatedNodeProps {
 
 export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepartmentsLevelAnimatedNodeProps> {
     private readonly animatedContainerOpacity = new Animated.Value(0);
-    private readonly isAndroid70: boolean = false;
+    private readonly isAndroid7x: boolean = false;
 
     constructor(props: CompanyDepartmentsLevelAnimatedNodeProps, context: any) {
         super(props, context);
 
-        this.isAndroid70 = Platform.OS === 'android' && Platform.Version === 24;
+        this.isAndroid7x = Platform.OS === 'android' &&
+            (Platform.Version === 24 ||
+             Platform.Version === 25);
     }
 
     public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelAnimatedNodeProps) {
@@ -298,6 +300,6 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
     };
 
     private scaleAnimationSupported = (): boolean => {
-        return !this.isAndroid70;
+        return !this.isAndroid7x;
     };
 }
