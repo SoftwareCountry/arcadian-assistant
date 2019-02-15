@@ -49,7 +49,6 @@
                 this.employeeMetadata.EmployeeId,
                 this.employeeFeed,
                 vacationsCreditRegistry,
-                null,
                 employeeVacationsSourceActorPropsFactory);
 
             var sickLeaveActorProps = EmployeeSickLeaveActor.CreateProps(this.employeeMetadata);

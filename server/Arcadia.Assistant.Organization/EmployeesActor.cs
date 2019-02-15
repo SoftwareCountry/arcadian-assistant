@@ -30,8 +30,7 @@
 
         public IStash Stash { get; set; }
 
-        public EmployeesActor(
-            IEmployeeVacationsSourceActorPropsFactory employeeVacationsSourceActorPropsFactory)
+        public EmployeesActor(IEmployeeVacationsSourceActorPropsFactory employeeVacationsSourceActorPropsFactory)
         {
             this.employeesInfoStorage = Context.ActorOf(EmployeesInfoStorage.GetProps, "employees-storage");
             this.logger.Info($"Image resizers pool size: {ResizersCount}");
@@ -155,9 +154,7 @@
             }
         }
 
-        public static Props GetProps(
-            IEmployeeVacationsSourceActorPropsFactory employeeVacationsSourceActorPropsFactory
-        ) => Props.Create(() => new EmployeesActor(
-            employeeVacationsSourceActorPropsFactory));
+        public static Props GetProps(IEmployeeVacationsSourceActorPropsFactory employeeVacationsSourceActorPropsFactory)
+            => Props.Create(() => new EmployeesActor(employeeVacationsSourceActorPropsFactory));
     }
 }

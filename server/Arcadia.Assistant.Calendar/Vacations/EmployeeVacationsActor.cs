@@ -29,7 +29,6 @@
             string employeeId,
             IActorRef employeeFeed,
             IActorRef vacationsCreditRegistry,
-            IActorRef calendarEventsApprovalsChecker,
             IEmployeeVacationsSourceActorPropsFactory vacationsSourcePropsFactory
         ) : base(employeeId, calendarEventsApprovalsChecker)
         {
@@ -48,14 +47,12 @@
             string employeeId,
             IActorRef employeeFeed,
             IActorRef vacationsCreditRegistry,
-            IActorRef calendarEventsApprovalsChecker,
             IEmployeeVacationsSourceActorPropsFactory employeeVacationsSourceActorPropsFactory)
         {
             return Props.Create(() => new EmployeeVacationsActor(
                 employeeId,
                 employeeFeed,
                 vacationsCreditRegistry,
-                calendarEventsApprovalsChecker,
                 employeeVacationsSourceActorPropsFactory)
             );
         }
@@ -99,7 +96,7 @@
 
                 case GetVacationsCredit _:
                     this.vacationsCreditRegistry
-                        .Ask<VacationsCreditRegistry.GetVacationInfo.Response>(new VacationsCreditRegistry.GetVacationInfo(this.employeeId))
+                        .Ask<VacationsCreditRegistry.GetVacationInfo.Response>(new VacationsCreditRegistry.GetVacationInfo(this.EmployeeId))
                         .ContinueWith(x => new GetVacationsCredit.Response(x.Result.VacationsCredit))
                         .PipeTo(this.Sender);
                     break;
@@ -223,7 +220,7 @@
                     {
                         if (@event.IsPending)
                         {
-                            this.Self.Tell(new AddCalendarEventToPendingActions(@event.EventId));
+                            Context.System.EventStream.Publish(new CalendarEventRecoverComplete(@event));
                         }
                     }
                     break;
