@@ -46,8 +46,7 @@
             var vacationActorProps = EmployeeVacationsActor.CreateProps(
                 this.employeeMetadata.EmployeeId,
                 this.employeeFeed,
-                vacationsCreditRegistry,
-                null);
+                vacationsCreditRegistry);
 
             var sickLeaveActorProps = EmployeeSickLeaveActor.CreateProps(this.employeeMetadata);
             var workHoursActorProps = EmployeeWorkHoursActor.CreateProps(this.employeeMetadata.EmployeeId);

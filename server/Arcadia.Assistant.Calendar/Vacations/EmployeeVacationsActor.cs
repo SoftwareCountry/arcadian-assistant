@@ -40,8 +40,7 @@
         public static Props CreateProps(
             string employeeId,
             IActorRef employeeFeed,
-            IActorRef vacationsCreditRegistry,
-            IActorRef calendarEventsApprovalsChecker)
+            IActorRef vacationsCreditRegistry)
         {
             return Props.Create(() => new EmployeeVacationsActor(
                 employeeId,
