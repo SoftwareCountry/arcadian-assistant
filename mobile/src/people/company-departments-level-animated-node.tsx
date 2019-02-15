@@ -18,6 +18,10 @@ interface ScaleAnimation {
     opacity: Animated.AnimatedInterpolation;
 }
 
+interface OpacityAnimation {
+    opacity: Animated.AnimatedInterpolation;
+}
+
 interface HorizontalStickyAnimation {
     translateX: Animated.AnimatedInterpolation;
 }
@@ -64,6 +68,21 @@ class Animations {
                 })
             }
         ],
+        opacity: xCoordinate.interpolate({
+            inputRange: [
+                -width * (index + 1),
+                -width * index,
+                width * (1 - index)
+            ],
+            outputRange: [0.3, 1.2, 0.3]
+        })
+    });
+
+    public static opacityAnimation = (
+        index: number,
+        width: number,
+        xCoordinate: Animated.Value
+    ): OpacityAnimation => ({
         opacity: xCoordinate.interpolate({
             inputRange: [
                 -width * (index + 1),
@@ -137,6 +156,13 @@ interface CompanyDepartmentsLevelAnimatedNodeProps {
 
 export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepartmentsLevelAnimatedNodeProps> {
     private readonly animatedContainerOpacity = new Animated.Value(0);
+    private readonly isAndroid70: boolean = false;
+
+    constructor(props: CompanyDepartmentsLevelAnimatedNodeProps, context: any) {
+        super(props, context);
+
+        this.isAndroid70 = Platform.OS === 'android' && Platform.Version === 24;
+    }
 
     public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelAnimatedNodeProps) {
         return this.props.index !== nextProps.index
@@ -161,8 +187,9 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
     public render() {
         const {
             containerStyles,
-            stickyContainerStyles,
             scaleContainerStyles,
+            opacityContainerStyles,
+            stickyContainerStyles,
             contentStyles,
             touchableStyles
         } = this.calculateStyles();
@@ -176,7 +203,7 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
         return (
             <Animated.View style={containerStyles}>
                 <Animated.View style={stickyContainerStyles}>
-                    <Animated.View style={scaleContainerStyles}>
+                    <Animated.View style={this.scaleAnimationSupported() ? scaleContainerStyles : opacityContainerStyles}>
                         <TouchableOpacity style={touchableStyles} onPress={this.onPressChief}>
                             <Avatar photoUrl={photo} useDefaultForEmployeesList={showStaffIcon}/>
                         </TouchableOpacity>
@@ -223,13 +250,19 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
         ]);
 
         const rectSize: ViewStyle = {
-            width: height,
-            height: height
+            width: this.scaleAnimationSupported() ? height : height * 0.9,
+            height: this.scaleAnimationSupported() ? height : height * 0.9,
         };
 
         const scaleContainerStyles = StyleSheet.flatten([
             companyDepartmentsAnimatedNode.scaleContainer,
             Animations.scaleAnimation(index, calculatedWidth, gap, xCoordinate) as any,
+            rectSize
+        ]);
+
+        const opacityContainerStyles = StyleSheet.flatten([
+            companyDepartmentsAnimatedNode.scaleContainer,
+            Animations.opacityAnimation(index, calculatedWidth, xCoordinate) as any,
             rectSize
         ]);
 
@@ -251,6 +284,7 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
         return {
             containerStyles,
             scaleContainerStyles,
+            opacityContainerStyles,
             stickyContainerStyles,
             contentStyles,
             touchableStyles
@@ -261,5 +295,9 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
         if (this.props.chief) {
             this.props.onPressChief(this.props.chief);
         }
+    };
+
+    private scaleAnimationSupported = (): boolean => {
+        return !this.isAndroid70;
     };
 }
