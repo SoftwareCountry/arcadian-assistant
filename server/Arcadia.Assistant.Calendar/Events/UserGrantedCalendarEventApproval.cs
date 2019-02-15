@@ -1,4 +1,6 @@
-﻿namespace Arcadia.Assistant.Calendar.Events
+﻿// ReSharper disable once CheckNamespace
+// Needed for Akka Event Journal
+namespace Arcadia.Assistant.Calendar
 {
     using System;
     using System.Runtime.Serialization;
