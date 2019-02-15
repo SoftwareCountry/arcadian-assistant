@@ -11,7 +11,6 @@
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
-    using Arcadia.Assistant.Calendar.Events;
 
     public abstract class CalendarEventsStorageBase : UntypedPersistentActor, ILogReceive
     {

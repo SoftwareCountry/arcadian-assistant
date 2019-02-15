@@ -26,11 +26,11 @@
         private readonly Dictionary<string, EmployeeIndexEntry> employeesById = new Dictionary<string, EmployeeIndexEntry>();
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
-        private readonly IEmployeeVacationsSourceActorPropsFactory employeeVacationsSourceActorPropsFactory;
+        private readonly IEmployeeVacationsRegistryPropsFactory employeeVacationsRegistryPropsFactory;
 
         public IStash Stash { get; set; }
 
-        public EmployeesActor(IEmployeeVacationsSourceActorPropsFactory employeeVacationsSourceActorPropsFactory)
+        public EmployeesActor(IEmployeeVacationsRegistryPropsFactory employeeVacationsRegistryPropsFactory)
         {
             this.employeesInfoStorage = Context.ActorOf(EmployeesInfoStorage.GetProps, "employees-storage");
             this.logger.Info($"Image resizers pool size: {ResizersCount}");
@@ -40,7 +40,7 @@
 
             this.vacationsCreditRegistry = Context.ActorOf(VacationsCreditRegistry.GetProps, "vacations-credit-registry");
 
-            this.employeeVacationsSourceActorPropsFactory = employeeVacationsSourceActorPropsFactory;
+            this.employeeVacationsRegistryPropsFactory = employeeVacationsRegistryPropsFactory;
         }
 
         protected override void OnReceive(object message)
@@ -130,7 +130,7 @@
                         employeeNewInfo,
                         this.imageResizer,
                         this.vacationsCreditRegistry,
-                        this.employeeVacationsSourceActorPropsFactory);
+                        this.employeeVacationsRegistryPropsFactory);
                     employeeActor = Context.ActorOf(
                         persistenceSupervisorFactory.Get(employeeActorProps),
                         $"employee-{Uri.EscapeDataString(employeeId)}");
@@ -154,7 +154,7 @@
             }
         }
 
-        public static Props GetProps(IEmployeeVacationsSourceActorPropsFactory employeeVacationsSourceActorPropsFactory)
-            => Props.Create(() => new EmployeesActor(employeeVacationsSourceActorPropsFactory));
+        public static Props GetProps(IEmployeeVacationsRegistryPropsFactory employeeVacationsRegistryPropsFactory)
+            => Props.Create(() => new EmployeesActor(employeeVacationsRegistryPropsFactory));
     }
 }

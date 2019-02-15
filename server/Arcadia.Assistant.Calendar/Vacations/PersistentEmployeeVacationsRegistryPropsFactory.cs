@@ -5,11 +5,9 @@
 
     public class PersistentEmployeeVacationsRegistryPropsFactory : IEmployeeVacationsRegistryPropsFactory
     {
-        public Props CreateProps(string employeeId, IActorRef calendarEventsApprovalsChecker)
+        public Props CreateProps(string employeeId)
         {
-            return Props.Create(() => new PersistentEmployeeVacationsRegistry(
-                employeeId,
-                calendarEventsApprovalsChecker));
+            return Props.Create(() => new PersistentEmployeeVacationsRegistry(employeeId));
         }
     }
 }

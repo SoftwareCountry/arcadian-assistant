@@ -19,11 +19,10 @@
 
         public OrganizationActor(
             IRefreshInformation refreshInformation,
-            IEmployeeVacationsSourceActorPropsFactory employeeVacationsSourceActorPropsFactory)
+            IEmployeeVacationsRegistryPropsFactory employeeVacationsRegistryPropsFactory)
         {
             this.employeesActor = Context.ActorOf(
-                EmployeesActor.GetProps(
-                    employeeVacationsSourceActorPropsFactory),
+                EmployeesActor.GetProps(employeeVacationsRegistryPropsFactory),
                 "employees");
             this.departmentsActor = Context.ActorOf(DepartmentsActor.GetProps(this.employeesActor), "departments");
 

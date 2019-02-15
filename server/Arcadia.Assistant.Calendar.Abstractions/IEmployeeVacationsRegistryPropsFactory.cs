@@ -4,6 +4,6 @@
 
     public interface IEmployeeVacationsRegistryPropsFactory
     {
-        Props CreateProps(string employeeId, IActorRef calendarEventsApprovalChecker);
+        Props CreateProps(string employeeId);
     }
 }

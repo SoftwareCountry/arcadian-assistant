@@ -24,12 +24,12 @@
             builder.RegisterType<EmployeesActor>().AsSelf();
             builder.Register(ctx => new OrganizationActor(
                 this.refreshInformation,
-                ctx.Resolve<IEmployeeVacationsSourceActorPropsFactory>()));
+                ctx.Resolve<IEmployeeVacationsRegistryPropsFactory>()));
 
             builder.RegisterType<DepartmentsStorage>().AsSelf();
 
-            builder.RegisterType<PersistentEmployeeVacationsSourceActorPropsFactory>()
-                .As<IEmployeeVacationsSourceActorPropsFactory>();
+            builder.RegisterType<PersistentEmployeeVacationsRegistryPropsFactory>()
+                .As<IEmployeeVacationsRegistryPropsFactory>();
 
             builder.RegisterType<UserPreferencesActor>().AsSelf();
             builder.RegisterType<InboxEmailActor>().AsSelf();
