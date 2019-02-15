@@ -124,11 +124,11 @@
 
                     break;
 
-                case CalendarEventAssignedToApprover msg:
+                case CalendarEventAssignedToApprover msg when this.EventsById.ContainsKey(msg.Event.EventId):
                     this.OnCalendarEventNextApproverReceived(msg.Event.EventId, msg.ApproverId);
                     break;
 
-                case CalendarEventRemovedFromApprovers msg:
+                case CalendarEventRemovedFromApprovers msg when this.EventsById.ContainsKey(msg.Event.EventId):
                     this.OnCalendarEventNextApproverReceived(msg.Event.EventId, null);
                     break;
 
@@ -220,9 +220,6 @@
                     Context.System.EventStream.Publish(new CalendarEventChanged(oldEvent, updatedBy, timestamp, ev));
                 });
             }
-
-            Context.System.EventStream.Publish(new CalendarEventAssignedToApprover(oldEvent, nextApproverId));
-            Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(oldEvent, nextApproverId));
         }
 
         private void OnSuccessfulUpsert(CalendarEvent calendarEvent)
