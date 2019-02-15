@@ -8,6 +8,7 @@
     using Akka.Persistence;
 
     using Arcadia.Assistant.Calendar.Abstractions;
+    using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
     using Arcadia.Assistant.Calendar.Events;
 
@@ -19,15 +20,15 @@
         /// </summary>
         private int hoursCredit = 0;
 
-        public EmployeeWorkHoursActor(string employeeId, IActorRef calendarEventsApprovalsChecker)
-            : base(employeeId, calendarEventsApprovalsChecker)
+        public EmployeeWorkHoursActor(string employeeId)
+            : base(employeeId)
         {
             this.PersistenceId = $"employee-workhours-{this.EmployeeId}";
         }
 
-        public static Props CreateProps(string employeeId, IActorRef calendarEventsApprovalsChecker)
+        public static Props CreateProps(string employeeId)
         {
-            return Props.Create(() => new EmployeeWorkHoursActor(employeeId, calendarEventsApprovalsChecker));
+            return Props.Create(() => new EmployeeWorkHoursActor(employeeId));
         }
 
         public override string PersistenceId { get; }
@@ -61,7 +62,7 @@
                     {
                         if (@event.IsPending)
                         {
-                            this.Self.Tell(new AddCalendarEventToPendingActions(@event.EventId));
+                            Context.System.EventStream.Publish(new CalendarEventRecoverComplete(@event));
                         }
                     }
                     break;

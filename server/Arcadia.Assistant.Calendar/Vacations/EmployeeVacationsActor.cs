@@ -5,9 +5,11 @@
     using System.Linq;
 
     using Akka.Actor;
+    using Akka.Event;
     using Akka.Persistence;
 
     using Arcadia.Assistant.Calendar.Abstractions;
+    using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
     using Arcadia.Assistant.Calendar.Events;
     using Arcadia.Assistant.Feeds;
@@ -18,34 +20,32 @@
     {
         private readonly IActorRef employeeFeed;
 
-        private readonly IActorRef vacationsRegistry;
+        private readonly IActorRef vacationsCreditRegistry;
 
         public override string PersistenceId { get; }
 
-        //private int vacationsCredit = 28;
-
         public EmployeeVacationsActor(string employeeId,
             IActorRef employeeFeed,
-            IActorRef vacationsRegistry,
-            IActorRef calendarEventsApprovalsChecker
-        ) : base(employeeId, calendarEventsApprovalsChecker)
+            IActorRef vacationsCreditRegistry
+        ) : base(employeeId)
         {
             this.employeeFeed = employeeFeed;
-            this.vacationsRegistry = vacationsRegistry;
+            this.vacationsCreditRegistry = vacationsCreditRegistry;
+
             this.PersistenceId = $"employee-vacations-{this.EmployeeId}";
+
+            Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);
         }
 
         public static Props CreateProps(
             string employeeId,
             IActorRef employeeFeed,
-            IActorRef vacationsRegistry,
-            IActorRef calendarEventsApprovalsChecker)
+            IActorRef vacationsCreditRegistry)
         {
             return Props.Create(() => new EmployeeVacationsActor(
                 employeeId,
                 employeeFeed,
-                vacationsRegistry,
-                calendarEventsApprovalsChecker)
+                vacationsCreditRegistry)
             );
         }
 
@@ -76,9 +76,19 @@
         {
             switch (message)
             {
+                case CalendarEventChanged msg when
+                    msg.NewEvent.Status == VacationStatuses.Approved &&
+                    msg.NewEvent.EmployeeId == this.EmployeeId:
+
+                    var text = $"Vacation approved from {msg.NewEvent.Dates.StartDate.ToLongDateString()} to {msg.NewEvent.Dates.EndDate.ToLongDateString()}";
+                    var feedMessage = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, msg.Timestamp.Date);
+                    this.employeeFeed.Tell(new PostMessage(feedMessage));
+
+                    break;
+
                 case GetVacationsCredit _:
-                    this.vacationsRegistry
-                        .Ask<VacationsRegistry.GetVacationInfo.Response>(new VacationsRegistry.GetVacationInfo(this.EmployeeId))
+                    this.vacationsCreditRegistry
+                        .Ask<VacationsCreditRegistry.GetVacationInfo.Response>(new VacationsCreditRegistry.GetVacationInfo(this.EmployeeId))
                         .ContinueWith(x => new GetVacationsCredit.Response(x.Result.VacationsCredit))
                         .PipeTo(this.Sender);
                     break;
@@ -202,7 +212,7 @@
                     {
                         if (@event.IsPending)
                         {
-                            this.Self.Tell(new AddCalendarEventToPendingActions(@event.EventId));
+                            Context.System.EventStream.Publish(new CalendarEventRecoverComplete(@event));
                         }
                     }
                     break;
@@ -246,10 +256,6 @@
                     calendarEvent.Dates,
                     VacationStatuses.Approved,
                     calendarEvent.EmployeeId);
-
-                var text = $"Vacation approved from {calendarEvent.Dates.StartDate.ToLongDateString()} to {calendarEvent.Dates.EndDate.ToLongDateString()}";
-                var msg = new Message(Guid.NewGuid().ToString(), this.EmployeeId, "Vacation", text, message.TimeStamp.Date);
-                this.employeeFeed.Tell(new PostMessage(msg));
             }
         }
 

@@ -8,22 +8,23 @@
     using Akka.Persistence;
 
     using Arcadia.Assistant.Calendar.Abstractions;
+    using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.Calendar.Events;
     using Arcadia.Assistant.Organization.Abstractions;
 
     public class EmployeeSickLeaveActor : CalendarEventsStorageBase
     {
-        public EmployeeSickLeaveActor(EmployeeMetadata employee, IActorRef calendarEventsApprovalsChecker)
-            : base(employee.EmployeeId, calendarEventsApprovalsChecker)
+        public EmployeeSickLeaveActor(EmployeeMetadata employee)
+            : base(employee.EmployeeId)
         {
             this.PersistenceId = $"employee-sickleaves-{this.EmployeeId}";
         }
 
         public override string PersistenceId { get; }
 
-        public static Props CreateProps(EmployeeMetadata employee, IActorRef calendarEventsApprovalsChecker)
+        public static Props CreateProps(EmployeeMetadata employee)
         {
-            return Props.Create(() => new EmployeeSickLeaveActor(employee, calendarEventsApprovalsChecker));
+            return Props.Create(() => new EmployeeSickLeaveActor(employee));
         }
 
         protected override void OnRecover(object message)
@@ -63,7 +64,7 @@
                     {
                         if (@event.IsPending)
                         {
-                            this.Self.Tell(new AddCalendarEventToPendingActions(@event.EventId));
+                            Context.System.EventStream.Publish(new CalendarEventRecoverComplete(@event));
                         }
                     }
                     break;
