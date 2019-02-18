@@ -24,7 +24,6 @@
 
         public ArcadiaVacationCreditRegistry(
             EmployeesQueryExecutor employeesQueryExecutor,
-            VacationsSyncExecutor vacationsSyncExecutor,
             IRefreshInformation refreshInformation)
         {
             this.employeesQueryExecutor = employeesQueryExecutor;
@@ -35,8 +34,6 @@
                 this.Self,
                 Refresh.Instance,
                 this.Self);
-
-            Context.ActorOf(VacationsSyncActor.CreateProps(vacationsSyncExecutor), "vacations-sync");
 
             this.vacationsEmailLoader = Context.ActorOf(VacationsEmailLoader.CreateProps(), "vacations-email-loader");
         }
@@ -61,7 +58,7 @@
                     break;
 
                 case Refresh _:
-                    this.logger.Info("Updating vacations information...");
+                    this.logger.Info("Updating vacations credit information...");
                     this.LoadEmployeeVacationDays()
                         .PipeTo(
                             this.Self,
@@ -70,7 +67,7 @@
                     break;
 
                 case RefreshSuccess m:
-                    this.logger.Info("Vacations information is updated");
+                    this.logger.Info("Vacations credit information is updated");
                     this.employeeIdsToDaysLeft = m.EmployeesToDaysLeft;
 
                     this.lastErrorMessage = null;
@@ -78,7 +75,7 @@
                     break;
 
                 case RefreshFailed e:
-                    this.logger.Error(e.Exception, $"Failed to load vacations information: {e.Exception.Message}");
+                    this.logger.Error(e.Exception, $"Failed to load vacations credit information: {e.Exception.Message}");
 
                     this.lastErrorMessage = e.Exception.Message;
 
