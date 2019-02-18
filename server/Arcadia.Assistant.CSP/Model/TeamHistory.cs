@@ -18,9 +18,9 @@ namespace Arcadia.Assistant.CSP.Model
         public int? LeadHistoryId { get; set; }
         public string Description { get; set; }
         public string IntrabaseId { get; set; }
-        public bool? IsDelete { get; set; }
+        public bool IsDelete { get; set; }
         public DateTime? HistoryDate { get; set; }
-        public bool? HistoryFlag { get; set; }
+        public bool HistoryFlag { get; set; }
 
         public EmployeeHistory LeadHistory { get; set; }
         public Employee ModifiedByNavigation { get; set; }

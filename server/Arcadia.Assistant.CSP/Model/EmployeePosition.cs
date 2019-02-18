@@ -15,7 +15,9 @@ namespace Arcadia.Assistant.CSP.Model
         public string Title { get; set; }
         public string Description { get; set; }
         public string IntrabaseId { get; set; }
-        public bool? IsDelete { get; set; }
+        public bool IsDelete { get; set; }
+        public string TitleShort { get; set; }
+        public string TitleRus { get; set; }
 
         public ICollection<Employee> Employee { get; set; }
         public ICollection<EmployeePositionHistory> EmployeePositionHistory { get; set; }
