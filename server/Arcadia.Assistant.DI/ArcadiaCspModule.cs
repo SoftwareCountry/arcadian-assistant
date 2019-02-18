@@ -4,6 +4,7 @@
 
     using Autofac;
 
+    using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.CSP;
     using Arcadia.Assistant.CSP.Vacations;
     using Arcadia.Assistant.Organization.Abstractions;
@@ -31,6 +32,8 @@
             builder.RegisterType<VacationsSyncExecutor>().AsSelf();
             builder.RegisterType<VacationsEmailLoader>().AsSelf();
             builder.RegisterType<CspCalendarEventsApprovalsChecker>().As<CalendarEventsApprovalsChecker>();
+
+            builder.RegisterType<CspEmployeeVacationsRegistryPropsFactory>().As<IEmployeeVacationsRegistryPropsFactory>();
         }
     }
 }
