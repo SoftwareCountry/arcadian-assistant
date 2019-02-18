@@ -1,5 +1,7 @@
 ﻿namespace Arcadia.Assistant.DI
 {
+    using Arcadia.Assistant.Calendar.Abstractions;
+    using Arcadia.Assistant.Calendar.Vacations;
     using Autofac;
 
     using Arcadia.Assistant.Configuration.Configuration;
@@ -20,10 +22,14 @@
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<EmployeesActor>().AsSelf();
-            builder.Register(ctx => new OrganizationActor(this.refreshInformation));
+            builder.Register(ctx => new OrganizationActor(
+                this.refreshInformation,
+                ctx.Resolve<IEmployeeVacationsRegistryPropsFactory>()));
 
             builder.RegisterType<DepartmentsStorage>().AsSelf();
 
+            builder.RegisterType<PersistentEmployeeVacationsRegistryPropsFactory>()
+                .As<IEmployeeVacationsRegistryPropsFactory>();
 
             builder.RegisterType<UserPreferencesActor>().AsSelf();
             builder.RegisterType<InboxEmailActor>().AsSelf();

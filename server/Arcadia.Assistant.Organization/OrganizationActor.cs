@@ -4,7 +4,7 @@
 
     using Akka.Actor;
     using Akka.Event;
-
+    using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
@@ -17,9 +17,13 @@
 
         public IStash Stash { get; set; }
 
-        public OrganizationActor(IRefreshInformation refreshInformation)
+        public OrganizationActor(
+            IRefreshInformation refreshInformation,
+            IEmployeeVacationsRegistryPropsFactory employeeVacationsRegistryPropsFactory)
         {
-            this.employeesActor = Context.ActorOf(EmployeesActor.GetProps(), "employees");
+            this.employeesActor = Context.ActorOf(
+                EmployeesActor.GetProps(employeeVacationsRegistryPropsFactory),
+                "employees");
             this.departmentsActor = Context.ActorOf(DepartmentsActor.GetProps(this.employeesActor), "departments");
 
             Context.System.Scheduler.ScheduleTellRepeatedly(

@@ -6,6 +6,7 @@
     using Akka.Persistence;
 
     using Arcadia.Assistant.Calendar;
+    using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.PendingActions;
     using Arcadia.Assistant.Calendar.SickLeave;
     using Arcadia.Assistant.Calendar.Vacations;
@@ -31,7 +32,8 @@
         public EmployeeActor(
             EmployeeStoredInformation storedInformation,
             IActorRef imageResizer,
-            IActorRef vacationsCreditRegistry)
+            IActorRef vacationsCreditRegistry,
+            IEmployeeVacationsRegistryPropsFactory employeeVacationsRegistryPropsFactory)
         {
             this.employeeMetadata = storedInformation.Metadata;
             this.PersistenceId = $"employee-info-{Uri.EscapeDataString(this.employeeMetadata.EmployeeId)}";
@@ -46,7 +48,8 @@
             var vacationActorProps = EmployeeVacationsActor.CreateProps(
                 this.employeeMetadata.EmployeeId,
                 this.employeeFeed,
-                vacationsCreditRegistry);
+                vacationsCreditRegistry,
+                employeeVacationsRegistryPropsFactory);
 
             var sickLeaveActorProps = EmployeeSickLeaveActor.CreateProps(this.employeeMetadata);
             var workHoursActorProps = EmployeeWorkHoursActor.CreateProps(this.employeeMetadata.EmployeeId);
@@ -208,10 +211,12 @@
         public static Props GetProps(
             EmployeeStoredInformation employeeStoredInformation,
             IActorRef imageResizer,
-            IActorRef vacationsCreditRegistry
+            IActorRef vacationsCreditRegistry,
+            IEmployeeVacationsRegistryPropsFactory employeeVacationsRegistryPropsFactory
         ) => Props.Create(() => new EmployeeActor(
             employeeStoredInformation,
             imageResizer,
-            vacationsCreditRegistry));
+            vacationsCreditRegistry,
+            employeeVacationsRegistryPropsFactory));
     }
 }
