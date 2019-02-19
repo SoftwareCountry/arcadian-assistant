@@ -69,6 +69,30 @@
                 case RefreshFailed msg:
                     this.logger.Error(msg.Exception, $"Failed to load vacations information for employee {this.employeeId}: {msg.Exception.Message}");
                     break;
+
+                case GetCalendarEvents _:
+                    this.Sender.Tell(new GetCalendarEvents.Response(this.employeeId, this.eventsById.Values.ToList()));
+                    break;
+
+                case GetCalendarEvent msg when this.eventsById.ContainsKey(msg.EventId):
+                    this.Sender.Tell(new GetCalendarEvent.Response.Found(this.eventsById[msg.EventId]));
+                    break;
+
+                case GetCalendarEvent _:
+                    this.Sender.Tell(new GetCalendarEvent.Response.NotFound());
+                    break;
+
+                case GetCalendarEventApprovals msg when this.approvalsByEvent.ContainsKey(msg.Event.EventId):
+                    this.Sender.Tell(new GetCalendarEventApprovals.SuccessResponse(this.approvalsByEvent[msg.Event.EventId]));
+                    break;
+
+                case GetCalendarEventApprovals msg:
+                    this.Sender.Tell(new GetCalendarEventApprovals.ErrorResponse($"Event with event id {msg.Event.EventId} is not found"));
+                    break;
+
+                default:
+                    this.Unhandled(message);
+                    break;
             }
         }
 
