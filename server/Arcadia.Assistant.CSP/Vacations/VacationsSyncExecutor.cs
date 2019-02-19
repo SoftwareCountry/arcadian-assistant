@@ -26,7 +26,7 @@
         {
             using (var context = this.contextFactory())
             {
-                var vacations = await this.GetVacationsInternal(context, int.Parse(employeeId), trackChanges: false);
+                var vacations = await this.GetMatchingVacations(context, int.Parse(employeeId), trackChanges: false);
 
                 var calendarEventsWithApprovals = vacations
                     .Select(v =>
@@ -55,12 +55,11 @@
 
             using (var context = this.contextFactory())
             {
-                var existingVacations = await this.GetVacationsInternal(
+                var existingVacations = await this.GetMatchingVacations(
                     context,
                     int.Parse(@event.EmployeeId),
-                    true,
-                    matchInterval.Start,
-                    matchInterval.End);
+                    startDate: matchInterval.Start,
+                    endDate: matchInterval.End);
 
                 this.logger.Debug(
                     $"{existingVacations.Count} vacations found in CSP database for match parameters: " +
@@ -125,12 +124,10 @@
 
             using (var context = this.contextFactory())
             {
-                var existingVacations = await this.GetVacationsInternal(
+                var existingVacations = await this.GetMatchingVacations(
                     context,
                     int.Parse(@event.EmployeeId),
-                    true,
-                    matchInterval.Start,
-                    matchInterval.End);
+                    Int32.Parse(@event.EventId));
 
                 this.logger.Debug(
                     $"{existingVacations.Count} vacations found in CSP database for match parameters: " +
@@ -163,10 +160,10 @@
             }
         }
 
-        private Task<List<Vacations>> GetVacationsInternal(
+        private Task<List<Vacations>> GetMatchingVacations(
             ArcadiaCspContext context,
             int employeeId,
-            bool onlyActual = true,
+            int? vacationId = null,
             DateTime? startDate = null,
             DateTime? endDate = null,
             bool trackChanges = true)
@@ -175,12 +172,12 @@
                 .Include(v => v.VacationApprovals)
                 .Include(v => v.VacationCancellations)
                 .Include(v => v.VacationProcesses)
-                .Where(v => v.EmployeeId == employeeId)
-                .Where(v => startDate != null ? v.Start.Date == startDate : true)
-                .Where(v => endDate != null ? v.End.Date == endDate : true)
-                .Where(v => !onlyActual
-                    ? true
-                    : !v.VacationCancellations.Any() && v.VacationApprovals.All(va => va.Status != (int)VacationApprovalStatus.Declined));
+                .Where(v =>
+                    v.EmployeeId == employeeId &&
+                    (vacationId == null || v.Id == vacationId) &&
+                    (startDate == null || v.Start.Date == startDate) &&
+                    (endDate == null || v.End.Date == endDate))
+                .Where(v => !v.VacationCancellations.Any() && v.VacationApprovals.All(va => va.Status != (int)VacationApprovalStatus.Declined));
 
             if (!trackChanges)
             {
@@ -188,6 +185,14 @@
             }
 
             return vacations.ToListAsync();
+        }
+
+        private void EnsureVacationIsNotProcessed(Vacations vacation)
+        {
+            if (vacation.VacationProcesses.Any())
+            {
+                throw new Exception($"Vacation from {vacation.Start.Date} to {vacation.End.Date} is already processed and cannot be changed");
+            }
         }
 
         private Vacations CreateVacationFromCalendarEvent(
@@ -241,14 +246,6 @@
             }
 
             return vacation;
-        }
-
-        private void EnsureVacationIsNotProcessed(Vacations vacation)
-        {
-            if (vacation.VacationProcesses.Any())
-            {
-                throw new Exception($"Vacation from {vacation.Start.Date} to {vacation.End.Date} is already processed and cannot be changed");
-            }
         }
 
         private CalendarEvent CreateCalendarEventFromVacation(Vacations vacation)
