@@ -26,7 +26,7 @@
         {
             using (var context = this.contextFactory())
             {
-                var vacations = await this.GetVacationsInternal(context, int.Parse(employeeId));
+                var vacations = await this.GetVacationsInternal(context, int.Parse(employeeId), trackChanges: false);
 
                 var calendarEventsWithApprovals = vacations
                     .Select(v =>
@@ -78,6 +78,8 @@
                 {
                     foreach (var existingVacation in existingVacations)
                     {
+                        this.EnsureVacationIsNotProcessed(existingVacation);
+
                         existingVacation.Start = vacation.Start.Date;
                         existingVacation.End = vacation.End.Date;
                         //existingVacation.CancelledAt = vacation.CancelledAt;
@@ -138,6 +140,8 @@
 
                 foreach (var existingVacation in existingVacations)
                 {
+                    this.EnsureVacationIsNotProcessed(existingVacation);
+
                     var existingApproval = existingVacation.VacationApprovals
                         .FirstOrDefault(va => va.ApproverId == approvedById);
                     if (existingApproval == null)
@@ -164,9 +168,10 @@
             int employeeId,
             bool onlyActual = true,
             DateTime? startDate = null,
-            DateTime? endDate = null)
+            DateTime? endDate = null,
+            bool trackChanges = true)
         {
-            return context.Vacations
+            var vacations = context.Vacations
                 .Include(v => v.VacationApprovals)
                 .Include(v => v.VacationCancellations)
                 .Include(v => v.VacationProcesses)
@@ -175,8 +180,14 @@
                 .Where(v => endDate != null ? v.End.Date == endDate : true)
                 .Where(v => !onlyActual
                     ? true
-                    : !v.VacationCancellations.Any() && v.VacationApprovals.All(va => va.Status != (int)VacationApprovalStatus.Declined))
-                .ToListAsync();
+                    : !v.VacationCancellations.Any() && v.VacationApprovals.All(va => va.Status != (int)VacationApprovalStatus.Declined));
+
+            if (!trackChanges)
+            {
+                vacations = vacations.AsNoTracking();
+            }
+
+            return vacations.ToListAsync();
         }
 
         private Vacations CreateVacationFromCalendarEvent(
@@ -232,7 +243,15 @@
             return vacation;
         }
 
-        public CalendarEvent CreateCalendarEventFromVacation(Vacations vacation)
+        private void EnsureVacationIsNotProcessed(Vacations vacation)
+        {
+            if (vacation.VacationProcesses.Any())
+            {
+                throw new Exception($"Vacation from {vacation.Start.Date} to {vacation.End.Date} is already processed and cannot be changed");
+            }
+        }
+
+        private CalendarEvent CreateCalendarEventFromVacation(Vacations vacation)
         {
             var isProcessed = vacation.VacationProcesses.Any();
             var isCancelled = vacation.VacationCancellations.Any();
