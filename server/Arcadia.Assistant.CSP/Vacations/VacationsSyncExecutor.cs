@@ -29,6 +29,7 @@
                 var vacations = await this.GetVacationsInternal(context, int.Parse(employeeId), trackChanges: false);
 
                 var calendarEventsWithApprovals = vacations
+                    .Where(v => v.Type == (int)VacationType.Regular)
                     .Select(v =>
                     {
                         var calendarEvent = this.CreateCalendarEventFromVacation(v);
