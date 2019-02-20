@@ -26,7 +26,7 @@
         {
             using (var context = this.contextFactory())
             {
-                var vacations = await this.GetMatchingVacations(context, int.Parse(employeeId), trackChanges: false);
+                var vacations = await this.GetVacationsInternal(context, int.Parse(employeeId), trackChanges: false);
 
                 var calendarEventsWithApprovals = vacations
                     .Select(v =>
@@ -44,105 +44,118 @@
             }
         }
 
-        public async Task<CalendarEvent> UpsertVacation(
+        public async Task<CalendarEventWithApprovals> InsertVacation(
             CalendarEvent @event,
             DateTimeOffset timestamp,
-            string updatedBy,
-            VacationsMatchInterval matchInterval)
+            string createdBy)
         {
             this.logger.Debug(
-                $"Starting to upsert vacation event from {@event.Dates.StartDate} to {@event.Dates.EndDate} " +
-                $"for employee {@event.EmployeeId} matching dates from {matchInterval.Start} to {matchInterval.End}");
+                $"Start adding new vacation from {@event.Dates.StartDate} to {@event.Dates.EndDate} " +
+                $"for employee {@event.EmployeeId} to CSP database");
 
             using (var context = this.contextFactory())
             {
-                var existingVacations = await this.GetMatchingVacations(
+                var vacation = this.CreateVacationFromCalendarEvent(@event, timestamp, createdBy);
+
+                await context.Vacations.AddAsync(vacation);
+                await context.SaveChangesAsync();
+
+                this.logger.Debug(
+                    $"New vacation with id {vacation.Id} is created in CSP database for vacation event from " +
+                    $"{@event.Dates.StartDate} to {@event.Dates.EndDate} and employee {@event.EmployeeId}");
+
+                var result = new CalendarEventWithApprovals(
+                    this.CreateCalendarEventFromVacation(vacation),
+                    Enumerable.Empty<Approval>());
+                return result;
+            }
+        }
+
+        public async Task<CalendarEventWithApprovals> UpdateVacation(
+            CalendarEvent @event,
+            DateTimeOffset timestamp,
+            string updatedBy)
+        {
+            this.logger.Debug(
+                $"Start updating vacation with id {@event.EventId} from {@event.Dates.StartDate} to {@event.Dates.EndDate} " +
+                $"for employee {@event.EmployeeId}");
+
+            using (var context = this.contextFactory())
+            {
+                var existingVacations = await this.GetVacationsInternal(
                     context,
                     int.Parse(@event.EmployeeId),
-                    startDate: matchInterval.Start,
-                    endDate: matchInterval.End);
-
-                if (existingVacations.Count > 1)
-                {
-                    throw new Exception(
-                        "There are multiple actual vacations in CSP database matching dates from " +
-                        $"{matchInterval.Start} to {matchInterval.End}");
-                }
+                    int.Parse(@event.EventId));
 
                 var existingVacation = existingVacations.FirstOrDefault();
                 var newVacation = this.CreateVacationFromCalendarEvent(@event, timestamp, updatedBy);
 
-                if (existingVacation != null)
+                if (existingVacation == null)
                 {
-                    this.logger.Debug(
-                        $"Vacation with id {existingVacation.Id} is found in CSP database for match parameters: " +
-                        $"employeeId {@event.EmployeeId}, startDate {matchInterval.Start}, endDate {matchInterval.End}");
+                    throw new Exception($"Vacation with id {@event.EventId} was not found in CSP database");
+                }
 
-                    this.EnsureVacationIsNotProcessed(existingVacation);
+                this.EnsureVacationIsNotProcessed(existingVacation);
 
-                    existingVacation.Start = newVacation.Start.Date;
-                    existingVacation.End = newVacation.End.Date;
+                existingVacation.Start = newVacation.Start.Date;
+                existingVacation.End = newVacation.End.Date;
 
-                    foreach (var cancellation in newVacation.VacationCancellations)
+                foreach (var cancellation in newVacation.VacationCancellations)
+                {
+                    var existingCancellation = existingVacation.VacationCancellations
+                        .FirstOrDefault(vc => vc.CancelledById == cancellation.CancelledById);
+                    if (existingCancellation == null)
                     {
-                        var existingCancellation = existingVacation.VacationCancellations
-                            .FirstOrDefault(vc => vc.CancelledById == cancellation.CancelledById);
-                        if (existingCancellation == null)
-                        {
-                            existingVacation.VacationCancellations.Add(cancellation);
-                        }
+                        existingVacation.VacationCancellations.Add(cancellation);
                     }
+                }
 
-                    foreach (var approval in newVacation.VacationApprovals)
+                foreach (var approval in newVacation.VacationApprovals)
+                {
+                    var existingApproval = existingVacation.VacationApprovals
+                        .FirstOrDefault(va => va.ApproverId == approval.ApproverId);
+                    if (existingApproval == null)
                     {
-                        var existingApproval = existingVacation.VacationApprovals
-                            .FirstOrDefault(va => va.ApproverId == approval.ApproverId);
-                        if (existingApproval == null)
-                        {
-                            existingVacation.VacationApprovals.Add(approval);
-                        }
-                        else
-                        {
-                            existingApproval.Status = approval.Status;
+                        existingVacation.VacationApprovals.Add(approval);
+                    }
+                    else
+                    {
+                        existingApproval.Status = approval.Status;
+                        existingApproval.IsFinal = approval.IsFinal;
 
-                            if (existingApproval.TimeStamp == null)
-                            {
-                                existingApproval.TimeStamp = approval.TimeStamp;
-                            }
+                        if (existingApproval.TimeStamp == null)
+                        {
+                            existingApproval.TimeStamp = approval.TimeStamp;
                         }
                     }
 
                     context.Vacations.Update(existingVacation);
-
-                    this.logger.Debug($"Vacation from {@event.Dates.StartDate} to {@event.Dates.EndDate} " +
-                        $"for employee {@event.EmployeeId} is updated in CSP database vacation with id {existingVacation.Id}");
-                }
-                else
-                {
-                    existingVacation = newVacation;
-                    await context.Vacations.AddAsync(newVacation);
-
-                    this.logger.Debug($"New vacation is created in CSP database for event {@event.EventId} " +
-                        $"and employee {@event.EmployeeId}");
                 }
 
                 await context.SaveChangesAsync();
 
-                return this.CreateCalendarEventFromVacation(existingVacation);
+                this.logger.Debug($"Vacation with id {existingVacation.Id} is updated in CSP database");
+
+                var resultEvent = this.CreateCalendarEventFromVacation(existingVacation);
+                var resultApprovals = existingVacation.VacationApprovals
+                    .Where(va => va.Status == (int)VacationApprovalStatus.Approved)
+                    .Select(va => new Approval(va.TimeStamp ?? DateTimeOffset.Now, va.ApproverId.ToString()))
+                    .ToList();
+
+                return new CalendarEventWithApprovals(resultEvent, resultApprovals);
             }
         }
 
         public async Task<Approval> UpsertVacationApproval(
             CalendarEvent @event,
             DateTimeOffset timestamp,
-            string approvedBy,
-            VacationsMatchInterval matchInterval)
+            string approvedBy)
         {
             this.logger.Debug($"Starting to upsert vacation approvals for event with id {@event.EventId} to CSP database");
 
             using (var context = this.contextFactory())
             {
-                var existingVacations = await this.GetMatchingVacations(
+                var existingVacations = await this.GetVacationsInternal(
                     context,
                     int.Parse(@event.EmployeeId),
                     int.Parse(@event.EventId));
@@ -186,23 +199,17 @@
             }
         }
 
-        private Task<List<Vacations>> GetMatchingVacations(
+        private Task<List<Vacations>> GetVacationsInternal(
             ArcadiaCspContext context,
             int employeeId,
             int? vacationId = null,
-            DateTime? startDate = null,
-            DateTime? endDate = null,
             bool trackChanges = true)
         {
             var vacations = context.Vacations
                 .Include(v => v.VacationApprovals)
                 .Include(v => v.VacationCancellations)
                 .Include(v => v.VacationProcesses)
-                .Where(v =>
-                    v.EmployeeId == employeeId &&
-                    (vacationId == null || v.Id == vacationId) &&
-                    (startDate == null || v.Start.Date == startDate) &&
-                    (endDate == null || v.End.Date == endDate))
+                .Where(v => v.EmployeeId == employeeId && (vacationId == null || v.Id == vacationId))
                 .Where(v => !v.VacationCancellations.Any() && v.VacationApprovals.All(va => va.Status != (int)VacationApprovalStatus.Declined));
 
             if (!trackChanges)
@@ -239,9 +246,6 @@
 
             if (@event.Status == VacationStatuses.Cancelled)
             {
-                this.logger.Debug($"Adding vacation cancellation for event {@event.EventId} " +
-                    $"by employee {updatedById}");
-
                 var vacationCancellation = new VacationCancellations
                 {
                     CancelledAt = timestamp,
@@ -249,31 +253,26 @@
                 };
                 vacation.VacationCancellations.Add(vacationCancellation);
             }
-
-            if (@event.Status == VacationStatuses.Rejected)
+            else if (@event.Status == VacationStatuses.Rejected)
             {
-                var existingApproval = vacation.VacationApprovals
-                    .FirstOrDefault(va => va.ApproverId == updatedById);
-
-                if (existingApproval != null)
+                var rejectedApproval = new VacationApprovals
                 {
-                    this.logger.Debug("Changing previously confirmed approval to declined " +
-                        $"for event {@event.EventId} by employee {updatedById}");
-                    existingApproval.TimeStamp = timestamp;
-                    existingApproval.Status = (int)VacationApprovalStatus.Declined;
-                }
-                else
+                    ApproverId = updatedById,
+                    TimeStamp = timestamp,
+                    Status = (int)VacationApprovalStatus.Declined
+                };
+                vacation.VacationApprovals.Add(rejectedApproval);
+            }
+            else if (@event.Status == VacationStatuses.Approved)
+            {
+                var finalApproval = new VacationApprovals
                 {
-                    this.logger.Debug($"Adding declined approval for event {@event.EventId} " +
-                        $"by employee {updatedById}");
-                    var rejectedApproval = new VacationApprovals
-                    {
-                        ApproverId = updatedById,
-                        TimeStamp = timestamp,
-                        Status = (int)VacationApprovalStatus.Declined
-                    };
-                    vacation.VacationApprovals.Add(rejectedApproval);
-                }
+                    ApproverId = updatedById,
+                    TimeStamp = timestamp,
+                    Status = (int)VacationApprovalStatus.Approved,
+                    IsFinal = true
+                };
+                vacation.VacationApprovals.Add(finalApproval);
             }
 
             return vacation;
@@ -284,22 +283,25 @@
             var isProcessed = vacation.VacationProcesses.Any();
             var isCancelled = vacation.VacationCancellations.Any();
             var isDeclined = vacation.VacationApprovals.Any(va => va.Status == (int)VacationApprovalStatus.Declined);
+            var isApproved = !isDeclined && vacation.VacationApprovals.Any(va => va.Status == (int)VacationApprovalStatus.Approved && va.IsFinal);
 
             string status = VacationStatuses.Requested;
-
-            if (isCancelled)
-            {
-                status = VacationStatuses.Cancelled;
-            }
-
-            if (isDeclined)
-            {
-                status = VacationStatuses.Rejected;
-            }
 
             if (isProcessed)
             {
                 status = VacationStatuses.Processed;
+            }
+            else if (isDeclined)
+            {
+                status = VacationStatuses.Rejected;
+            }
+            else if (isCancelled)
+            {
+                status = VacationStatuses.Cancelled;
+            }
+            else if (isApproved)
+            {
+                status = VacationStatuses.Approved;
             }
 
             var calendarEvent = new CalendarEvent(
@@ -309,19 +311,6 @@
                 status,
                 vacation.EmployeeId.ToString());
             return calendarEvent;
-        }
-
-        public class VacationsMatchInterval
-        {
-            public VacationsMatchInterval(DateTime start, DateTime end)
-            {
-                this.Start = start;
-                this.End = end;
-            }
-
-            public DateTime Start { get; }
-
-            public DateTime End { get; }
         }
 
         private enum VacationType
