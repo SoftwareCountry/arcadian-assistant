@@ -948,9 +948,6 @@ namespace Arcadia.Assistant.CSP.Model
                 entity.HasIndex(e => e.ApproverId)
                     .HasName("IX_ApproverId");
 
-                entity.HasIndex(e => e.NextApprovalId)
-                    .HasName("IX_NextApprovalId");
-
                 entity.HasIndex(e => e.VacationId)
                     .HasName("IX_VacationId");
 
@@ -959,11 +956,6 @@ namespace Arcadia.Assistant.CSP.Model
                     .HasForeignKey(d => d.ApproverId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_dbo.VacationApprovals_dbo.Employee_ApproverId");
-
-                entity.HasOne(d => d.NextApproval)
-                    .WithMany(p => p.InverseNextApproval)
-                    .HasForeignKey(d => d.NextApprovalId)
-                    .HasConstraintName("FK_dbo.VacationApprovals_dbo.VacationApprovals_NextApprovalId");
 
                 entity.HasOne(d => d.Vacation)
                     .WithMany(p => p.VacationApprovals)
