@@ -49,9 +49,7 @@
             DateTimeOffset timestamp,
             string createdBy)
         {
-            this.logger.Debug(
-                $"Start adding new vacation from {@event.Dates.StartDate} to {@event.Dates.EndDate} " +
-                $"for employee {@event.EmployeeId} to CSP database");
+            this.logger.Debug($"Start adding new vacation from {@event.Dates.StartDate:d} to {@event.Dates.EndDate:d} for employee {@event.EmployeeId}");
 
             using (var context = this.contextFactory())
             {
@@ -62,7 +60,7 @@
 
                 this.logger.Debug(
                     $"New vacation with id {vacation.Id} is created in CSP database for vacation event from " +
-                    $"{@event.Dates.StartDate} to {@event.Dates.EndDate} and employee {@event.EmployeeId}");
+                    $"{@event.Dates.StartDate:d} to {@event.Dates.EndDate:d} and employee {@event.EmployeeId}");
 
                 var result = new CalendarEventWithApprovals(
                     this.CreateCalendarEventFromVacation(vacation),
@@ -76,9 +74,7 @@
             DateTimeOffset timestamp,
             string updatedBy)
         {
-            this.logger.Debug(
-                $"Start updating vacation with id {@event.EventId} from {@event.Dates.StartDate} to {@event.Dates.EndDate} " +
-                $"for employee {@event.EmployeeId}");
+            this.logger.Debug($"Start updating vacation with id {@event.EventId} for employee {@event.EmployeeId}");
 
             using (var context = this.contextFactory())
             {
@@ -92,7 +88,7 @@
 
                 if (existingVacation == null)
                 {
-                    throw new Exception($"Vacation with id {@event.EventId} was not found in CSP database");
+                    throw new Exception($"Vacation with id {@event.EventId} is not found");
                 }
 
                 this.EnsureVacationIsNotProcessed(existingVacation);
@@ -128,13 +124,12 @@
                             existingApproval.TimeStamp = approval.TimeStamp;
                         }
                     }
-
-                    context.Vacations.Update(existingVacation);
                 }
 
+                context.Vacations.Update(existingVacation);
                 await context.SaveChangesAsync();
 
-                this.logger.Debug($"Vacation with id {existingVacation.Id} is updated in CSP database");
+                this.logger.Debug($"Vacation with id {existingVacation.Id} is updated");
 
                 var resultEvent = this.CreateCalendarEventFromVacation(existingVacation);
                 var resultApprovals = existingVacation.VacationApprovals
@@ -151,7 +146,7 @@
             DateTimeOffset timestamp,
             string approvedBy)
         {
-            this.logger.Debug($"Starting to upsert vacation approvals for event with id {@event.EventId} to CSP database");
+            this.logger.Debug($"Starting to upsert vacation approvals for event with id {@event.EventId} for employee {@event.EmployeeId}");
 
             using (var context = this.contextFactory())
             {
@@ -164,7 +159,7 @@
 
                 if (existingVacation == null)
                 {
-                    throw new Exception($"There are no vacations in CSP database with id {@event.EventId}");
+                    throw new Exception($"Vacation with id {@event.EventId} is not found");
                 }
 
                 var approvedById = int.Parse(approvedBy);
@@ -177,8 +172,7 @@
                     .FirstOrDefault(va => va.ApproverId == approvedById);
                 if (existingApproval == null)
                 {
-                    this.logger.Debug($"New approval created for employee {approvedById} for vacation " +
-                        $"with id {existingVacation.Id}");
+                    this.logger.Debug($"New approval created for employee {approvedById} for vacation with id {existingVacation.Id}");
 
                     newApproval = new VacationApprovals
                     {
@@ -224,7 +218,7 @@
         {
             if (vacation.VacationProcesses.Any())
             {
-                throw new Exception($"Vacation from {vacation.Start.Date} to {vacation.End.Date} is already processed and cannot be changed");
+                throw new Exception($"Vacation with id {vacation.Id} have been already processed and cannot be changed");
             }
         }
 
