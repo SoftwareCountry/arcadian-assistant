@@ -3,22 +3,25 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+
     using Akka.Actor;
     using Akka.Event;
+
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
     using Arcadia.Assistant.Configuration.Configuration;
-    using Arcadia.Assistant.CSP.Model;
 
-    public class CspEmployeeVacationsRegistry : UntypedActor, ILogReceive
+    public class CspEmployeeVacationsRegistry : UntypedActor, ILogReceive, IWithUnboundedStash
     {
         private readonly VacationsSyncExecutor vacationsSyncExecutor;
         private readonly string employeeId;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
-        private Dictionary<string, CalendarEvent> eventsById = new Dictionary<string, CalendarEvent>();
-        private Dictionary<string, IEnumerable<Approval>> approvalsByEvent = new Dictionary<string, IEnumerable<Approval>>();
+        private readonly Dictionary<string, CalendarEvent> eventsById =
+            new Dictionary<string, CalendarEvent>();
+        private readonly Dictionary<string, IEnumerable<Approval>> approvalsByEvent =
+            new Dictionary<string, IEnumerable<Approval>>();
 
         public CspEmployeeVacationsRegistry(
             VacationsSyncExecutor vacationsSyncExecutor,
@@ -36,6 +39,8 @@
                 this.Self);
         }
 
+        public IStash Stash { get; set; }
+
         protected override void OnReceive(object message)
         {
             switch (message)
@@ -50,24 +55,8 @@
                             failure: err => new RefreshFailed(err)
                         );
 
-                    break;
+                    this.Become(this.RefreshingVacations);
 
-                case RefreshSuccess msg:
-                    this.logger.Debug($"Vacations information for employee {this.employeeId} is updated");
-
-                    this.eventsById.Clear();
-                    this.approvalsByEvent.Clear();
-
-                    foreach (var vacation in msg.Vacations)
-                    {
-                        this.eventsById[vacation.CalendarEvent.EventId] = vacation.CalendarEvent;
-                        this.approvalsByEvent[vacation.CalendarEvent.EventId] = vacation.Approvals;
-                    }
-
-                    break;
-
-                case RefreshFailed msg:
-                    this.logger.Error(msg.Exception, $"Failed to load vacations information for employee {this.employeeId}: {msg.Exception.Message}");
                     break;
 
                 case GetCalendarEvents _:
@@ -92,6 +81,48 @@
 
                 default:
                     this.Unhandled(message);
+                    break;
+            }
+        }
+
+        private UntypedReceive DefaultState()
+        {
+            this.Stash.UnstashAll();
+            return this.OnReceive;
+        }
+
+        private void RefreshingVacations(object message)
+        {
+            switch (message)
+            {
+                case Refresh _:
+                    // Ignore cause it is already in progress
+                    break;
+
+                case RefreshSuccess msg:
+                    this.logger.Debug($"Vacations information for employee {this.employeeId} is updated");
+
+                    this.eventsById.Clear();
+                    this.approvalsByEvent.Clear();
+
+                    foreach (var vacation in msg.Vacations)
+                    {
+                        this.eventsById[vacation.CalendarEvent.EventId] = vacation.CalendarEvent;
+                        this.approvalsByEvent[vacation.CalendarEvent.EventId] = vacation.Approvals;
+                    }
+
+                    this.Become(this.DefaultState());
+
+                    break;
+
+                case RefreshFailed msg:
+                    this.logger.Error(msg.Exception, $"Failed to load vacations information for employee {this.employeeId}: {msg.Exception.Message}");
+                    this.Become(this.DefaultState());
+
+                    break;
+
+                default:
+                    this.Stash.Stash();
                     break;
             }
         }
