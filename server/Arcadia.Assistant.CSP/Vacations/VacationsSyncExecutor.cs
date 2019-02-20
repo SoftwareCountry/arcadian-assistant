@@ -26,22 +26,30 @@
         {
             using (var context = this.contextFactory())
             {
-                var vacations = await this.GetVacationsInternal(context, int.Parse(employeeId), trackChanges: false);
+                var vacations = await this.GetVacationsInternal(context, employeeId, trackChanges: false);
 
                 var calendarEventsWithApprovals = vacations
                     .Where(v => v.Type == (int)VacationType.Regular)
-                    .Select(v =>
-                    {
-                        var calendarEvent = this.CreateCalendarEventFromVacation(v);
-                        var approvals = v.VacationApprovals
-                            .Where(va => va.Status == (int)VacationApprovalStatus.Approved)
-                            .Select(va => new Approval(va.TimeStamp ?? DateTimeOffset.Now, va.ApproverId.ToString()))
-                            .ToList();
-
-                        return new CalendarEventWithApprovals(calendarEvent, approvals);
-                    })
+                    .Select(this.CreateCalendarEventFromVacation)
                     .ToList();
                 return calendarEventsWithApprovals;
+            }
+        }
+
+        public async Task<CalendarEventWithApprovals> GetVacation(string employeeId, string vacationId)
+        {
+            using (var context = this.contextFactory())
+            {
+                var vacations = await this.GetVacationsInternal(
+                    context,
+                    employeeId,
+                    vacationId,
+                    false);
+
+                var vacation = vacations.FirstOrDefault();
+                return vacation != null
+                    ? this.CreateCalendarEventFromVacation(vacation)
+                    : null;
             }
         }
 
@@ -63,10 +71,7 @@
                     $"New vacation with id {vacation.Id} is created in CSP database for vacation event from " +
                     $"{@event.Dates.StartDate:d} to {@event.Dates.EndDate:d} and employee {@event.EmployeeId}");
 
-                var result = new CalendarEventWithApprovals(
-                    this.CreateCalendarEventFromVacation(vacation),
-                    Enumerable.Empty<Approval>());
-                return result;
+                return this.CreateCalendarEventFromVacation(vacation);
             }
         }
 
@@ -81,8 +86,8 @@
             {
                 var existingVacations = await this.GetVacationsInternal(
                     context,
-                    int.Parse(@event.EmployeeId),
-                    int.Parse(@event.EventId));
+                    @event.EmployeeId,
+                    @event.EventId);
 
                 var existingVacation = existingVacations.FirstOrDefault();
                 var newVacation = this.CreateVacationFromCalendarEvent(@event, timestamp, updatedBy);
@@ -132,13 +137,7 @@
 
                 this.logger.Debug($"Vacation with id {existingVacation.Id} is updated");
 
-                var resultEvent = this.CreateCalendarEventFromVacation(existingVacation);
-                var resultApprovals = existingVacation.VacationApprovals
-                    .Where(va => va.Status == (int)VacationApprovalStatus.Approved)
-                    .Select(va => new Approval(va.TimeStamp ?? DateTimeOffset.Now, va.ApproverId.ToString()))
-                    .ToList();
-
-                return new CalendarEventWithApprovals(resultEvent, resultApprovals);
+                return this.CreateCalendarEventFromVacation(existingVacation);
             }
         }
 
@@ -153,8 +152,8 @@
             {
                 var existingVacations = await this.GetVacationsInternal(
                     context,
-                    int.Parse(@event.EmployeeId),
-                    int.Parse(@event.EventId));
+                    @event.EmployeeId,
+                    @event.EventId);
 
                 var existingVacation = existingVacations.FirstOrDefault();
 
@@ -196,15 +195,27 @@
 
         private Task<List<Vacations>> GetVacationsInternal(
             ArcadiaCspContext context,
-            int employeeId,
-            int? vacationId = null,
+            string employeeId,
+            string vacationId = null,
             bool trackChanges = true)
         {
+            var employeeDbId = int.Parse(employeeId);
+
+            int? vacationDbId;
+            if (int.TryParse(vacationId, out var temp))
+            {
+                vacationDbId = temp;
+            }
+            else
+            {
+                vacationDbId = null;
+            }
+
             var vacations = context.Vacations
                 .Include(v => v.VacationApprovals)
                 .Include(v => v.VacationCancellations)
                 .Include(v => v.VacationProcesses)
-                .Where(v => v.EmployeeId == employeeId && (vacationId == null || v.Id == vacationId))
+                .Where(v => v.EmployeeId == employeeDbId && (vacationId == null || v.Id == vacationDbId))
                 .Where(v => !v.VacationCancellations.Any() && v.VacationApprovals.All(va => va.Status != (int)VacationApprovalStatus.Declined));
 
             if (!trackChanges)
@@ -273,7 +284,7 @@
             return vacation;
         }
 
-        private CalendarEvent CreateCalendarEventFromVacation(Vacations vacation)
+        private CalendarEventWithApprovals CreateCalendarEventFromVacation(Vacations vacation)
         {
             var isProcessed = vacation.VacationProcesses.Any();
             var isCancelled = vacation.VacationCancellations.Any();
@@ -305,7 +316,13 @@
                 new DatesPeriod(vacation.Start.Date, vacation.End.Date),
                 status,
                 vacation.EmployeeId.ToString());
-            return calendarEvent;
+
+            var approvals = vacation.VacationApprovals
+                .Where(va => va.Status == (int)VacationApprovalStatus.Approved)
+                .Select(va => new Approval(va.TimeStamp ?? DateTimeOffset.Now, va.ApproverId.ToString()))
+                .ToList();
+
+            return new CalendarEventWithApprovals(calendarEvent, approvals);
         }
 
         private enum VacationType

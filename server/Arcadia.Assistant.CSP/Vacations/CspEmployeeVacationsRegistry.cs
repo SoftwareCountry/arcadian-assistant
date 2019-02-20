@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     using Akka.Actor;
     using Akka.Event;
@@ -10,78 +11,96 @@
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
-    using Arcadia.Assistant.Configuration.Configuration;
 
-    public class CspEmployeeVacationsRegistry : UntypedActor, ILogReceive, IWithUnboundedStash
+    public class CspEmployeeVacationsRegistry : UntypedActor, ILogReceive
     {
         private readonly VacationsSyncExecutor vacationsSyncExecutor;
         private readonly string employeeId;
 
-        private readonly ILoggingAdapter logger = Context.GetLogger();
-
-        private readonly Dictionary<string, CalendarEvent> eventsById =
-            new Dictionary<string, CalendarEvent>();
-        private readonly Dictionary<string, List<Approval>> approvalsByEvent =
-            new Dictionary<string, List<Approval>>();
-
         public CspEmployeeVacationsRegistry(
             VacationsSyncExecutor vacationsSyncExecutor,
-            IRefreshInformation refreshInformation,
             string employeeId)
         {
             this.vacationsSyncExecutor = vacationsSyncExecutor;
             this.employeeId = employeeId;
 
-            Context.System.Scheduler.ScheduleTellRepeatedly(
-                TimeSpan.Zero,
-                TimeSpan.FromMinutes(refreshInformation.IntervalInMinutes),
-                this.Self,
-                Refresh.Instance,
-                this.Self);
-
-            Context.System.EventStream.Subscribe<CalendarEventAssignedToApprover>(this.Self);
             Context.System.EventStream.Subscribe<CalendarEventRemovedFromApprovers>(this.Self);
         }
-
-        public IStash Stash { get; set; }
 
         protected override void OnReceive(object message)
         {
             switch (message)
             {
-                case Refresh _:
-                    this.vacationsSyncExecutor.GetVacations(this.employeeId)
-                        .PipeTo(
-                            this.Self,
-                            success: result => new RefreshSuccess(result),
-                            failure: err => new RefreshFailed(err)
-                        );
-
-                    this.Become(this.OnRefreshingVacationsReceive);
-
-                    break;
-
                 case GetCalendarEvents _:
-                    this.Sender.Tell(new GetCalendarEvents.Response(this.employeeId, this.eventsById.Values.ToList()));
+                    this.GetVacations()
+                        .PipeTo(
+                            this.Sender,
+                            success: result =>
+                            {
+                                var vacations = result.Select(x => x.CalendarEvent).ToList();
+                                return new GetCalendarEvents.Response(this.employeeId, vacations);
+                            });
                     break;
 
-                case GetCalendarEvent msg when this.eventsById.ContainsKey(msg.EventId):
-                    this.Sender.Tell(new GetCalendarEvent.Response.Found(this.eventsById[msg.EventId]));
-                    break;
 
-                case GetCalendarEvent _:
-                    this.Sender.Tell(new GetCalendarEvent.Response.NotFound());
-                    break;
+                case GetCalendarEvent msg:
+                    this.GetVacation(msg.EventId)
+                        .PipeTo(
+                            this.Sender,
+                            success: result =>
+                            {
+                                if (result != null)
+                                {
+                                    return new GetCalendarEvent.Response.Found(result.CalendarEvent);
+                                }
 
-                case GetCalendarEventApprovals msg when this.approvalsByEvent.ContainsKey(msg.Event.EventId):
-                    this.Sender.Tell(new GetCalendarEventApprovals.SuccessResponse(this.approvalsByEvent[msg.Event.EventId]));
+                                return new GetCalendarEvent.Response.NotFound();
+                            },
+                            failure: err => new GetCalendarEvent.Response.NotFound());
                     break;
 
                 case GetCalendarEventApprovals msg:
-                    this.Sender.Tell(new GetCalendarEventApprovals.ErrorResponse($"Event with event id {msg.Event.EventId} is not found"));
+                    this.GetVacation(msg.Event.EventId)
+                        .PipeTo(
+                            this.Sender,
+                            success: result =>
+                            {
+                                if (result != null)
+                                {
+                                    return new GetCalendarEventApprovals.SuccessResponse(result.Approvals.ToList());
+                                }
+
+                                return new GetCalendarEventApprovals.ErrorResponse($"Vacation with id {msg.Event.EventId} is not found");
+                            },
+                            failure: err => new GetCalendarEventApprovals.ErrorResponse(err.Message));
                     break;
 
-                case UpsertCalendarEvent msg when !this.eventsById.ContainsKey(msg.Event.EventId):
+                case UpsertCalendarEvent msg:
+                    this.GetVacation(msg.Event.EventId)
+                        .PipeTo(
+                            this.Self,
+                            this.Sender,
+                            result =>
+                            {
+                                if (result == null)
+                                {
+                                    return new InsertCalendarEvent(msg.Event, msg.UpdatedBy, msg.Timestamp);
+                                }
+
+                                return new UpdateCalendarEvent(
+                                    msg.Event,
+                                    result,
+                                    msg.UpdatedBy,
+                                    msg.Timestamp);
+                            },
+                            err => new UpsertCalendarEvent.Error(err.Message));
+                    break;
+
+                case UpsertCalendarEvent.Error msg:
+                    this.Sender.Tell(msg);
+                    break;
+
+                case InsertCalendarEvent msg:
                     try
                     {
                         if (msg.Event.Status != this.GetInitialStatus())
@@ -93,40 +112,42 @@
                     }
                     catch (Exception ex)
                     {
-                        this.Sender.Tell(new UpsertCalendarEvent.Error(ex.Message));
+                        this.Sender.Tell(new InsertCalendarEvent.Error(ex));
                         break;
                     }
 
-                    var calendarEvent = new CalendarEvent(null, msg.Event.Type, msg.Event.Dates, msg.Event.Status, msg.Event.EmployeeId);
-
-                    this.vacationsSyncExecutor.InsertVacation(calendarEvent, msg.Timestamp, msg.UpdatedBy)
+                    this.vacationsSyncExecutor.InsertVacation(msg.Event, msg.Timestamp, msg.CreatedBy)
                         .PipeTo(
+                            this.Self,
                             this.Sender,
-                            success: result =>
-                            {
-                                this.UpdateVacationsCache(result);
-
-                                //Context.System.EventStream.Publish(new CalendarEventCreated(calendarEvent, msg.UpdatedBy, msg.Timestamp));
-                                return new UpsertCalendarEvent.Success(result.CalendarEvent);
-                            },
-                            failure: err => new UpsertCalendarEvent.Error(err.Message));
+                            result => new InsertCalendarEvent.Success(result.CalendarEvent, msg.CreatedBy, msg.Timestamp),
+                            err => new InsertCalendarEvent.Error(err));
 
                     break;
 
-                case UpsertCalendarEvent msg:
-                    var oldEvent = this.eventsById[msg.Event.EventId];
+                case InsertCalendarEvent.Success msg:
+                    Context.System.EventStream.Publish(new CalendarEventCreated(msg.Event, msg.CreatedBy, msg.Timestamp));
+                    this.Sender.Tell(new UpsertCalendarEvent.Success(msg.Event));
+                    break;
+
+                case InsertCalendarEvent.Error msg:
+                    this.Sender.Tell(new UpsertCalendarEvent.Error(msg.Exception.Message));
+                    break;
+
+                case UpdateCalendarEvent msg:
+                    var oldEvent = msg.OldEvent.CalendarEvent;
 
                     try
                     {
-                        var newEvent = msg.Event;
+                        var newEvent = msg.NewEvent;
                         if (oldEvent.Status != newEvent.Status && !this.IsStatusTransitionAllowed(oldEvent.Status, newEvent.Status))
                         {
                             throw new Exception(
-                                $"Event {msg.Event.EventId}. Status transition {oldEvent.Status} -> {msg.Event.Status} " +
+                                $"Event {msg.NewEvent.EventId}. Status transition {oldEvent.Status} -> {msg.NewEvent.Status} " +
                                 "is not allowed for vacation");
                         }
 
-                        this.EnsureDatesAreNotIntersected(msg.Event);
+                        this.EnsureDatesAreNotIntersected(msg.NewEvent);
 
                         if (oldEvent.Dates != newEvent.Dates)
                         {
@@ -135,7 +156,8 @@
                                 throw new Exception($"Date change is not allowed in status {oldEvent.Status} for {oldEvent.Type}");
                             }
 
-                            if (this.approvalsByEvent.TryGetValue(oldEvent.EventId, out var approvals) && approvals.Count != 0)
+                            var approvals = msg.OldEvent.Approvals;
+                            if (approvals.Count() != 0)
                             {
                                 throw new Exception($"Date change is not allowed when there is at least one user approval for {oldEvent.Type}");
                             }
@@ -143,47 +165,106 @@
                     }
                     catch (Exception ex)
                     {
-                        this.Sender.Tell(new UpsertCalendarEvent.Error(ex.Message));
+                        this.Sender.Tell(new UpdateCalendarEvent.Error(ex));
                         break;
                     }
 
-                    this.vacationsSyncExecutor.UpdateVacation(msg.Event, msg.Timestamp, msg.UpdatedBy)
+                    this.vacationsSyncExecutor.UpdateVacation(msg.NewEvent, msg.Timestamp, msg.UpdatedBy)
                         .PipeTo(
+                            this.Self,
                             this.Sender,
-                            success: result =>
-                            {
-                                this.UpdateVacationsCache(result);
+                            result => new UpdateCalendarEvent.Success(result.CalendarEvent, oldEvent, msg.UpdatedBy, msg.Timestamp),
+                            err => new UpdateCalendarEvent.Error(err));
 
-                                //Context.System.EventStream.Publish(new CalendarEventChanged(
-                                //    oldEvent,
-                                //    msg.UpdatedBy,
-                                //    msg.Timestamp,
-                                //    result.CalendarEvent));
+                    break;
 
-                                return new UpsertCalendarEvent.Success(result.CalendarEvent);
-                            },
-                            failure: err => new UpsertCalendarEvent.Error(err.Message));
+                case UpdateCalendarEvent.Success msg:
+                    Context.System.EventStream.Publish(new CalendarEventChanged(
+                        msg.OldEvent,
+                        msg.UpdatedBy,
+                        msg.Timestamp,
+                        msg.NewEvent));
 
+                    this.Sender.Tell(new UpsertCalendarEvent.Success(msg.NewEvent));
+
+                    break;
+
+                case UpdateCalendarEvent.Error msg:
+                    this.Sender.Tell(new UpsertCalendarEvent.Error(msg.Exception.Message));
                     break;
 
                 case ApproveCalendarEvent msg:
-                    try
+                    this.GetVacation(msg.Event.EventId)
+                        .PipeTo(
+                            this.Self,
+                            this.Sender,
+                            result =>
+                            {
+                                if (result != null)
+                                {
+                                    return new ApproveCalendarEventWithAdditionalData(result, msg.ApproverId, msg.Timestamp);
+                                }
+
+                                return new ApproveCalendarEvent.ErrorResponse($"Vacation with id {msg.Event.EventId} is not found");
+                            },
+                            err => new ApproveCalendarEvent.ErrorResponse(err.Message));
+                    break;
+
+                case ApproveCalendarEvent.ErrorResponse msg:
+                    this.Sender.Tell(msg);
+                    break;
+
+                case ApproveCalendarEventWithAdditionalData msg:
+                    this.GrantCalendarEventApproval(msg)
+                        .PipeTo(
+                            this.Self,
+                            this.Sender,
+                            result => new ApproveCalendarEventWithAdditionalData.Success(result),
+                            err => new ApproveCalendarEventWithAdditionalData.Error(err));
+                    break;
+
+                case ApproveCalendarEventWithAdditionalData.Success msg:
+                    if (msg.NewEvent != null)
                     {
-                        this.ApproveCalendarEvent(msg);
+                        Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(
+                            msg.NewEvent.CalendarEvent,
+                            msg.NewEvent.Approvals.ToList()));
                     }
-                    catch (Exception ex)
+
+                    this.Sender.Tell(Calendar.Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
+
+                    break;
+
+                case ApproveCalendarEventWithAdditionalData.Error msg:
+                    if (msg.Exception is ArgumentException)
                     {
-                        this.Sender.Tell(new ApproveCalendarEvent.ErrorResponse(ex.Message));
+                        this.Sender.Tell(new ApproveCalendarEvent.BadRequestResponse(msg.Exception.Message));
+                    }
+                    else
+                    {
+                        this.Sender.Tell(new ApproveCalendarEvent.ErrorResponse(msg.Exception.Message));
                     }
 
                     break;
 
-                case CalendarEventAssignedToApprover msg when this.eventsById.ContainsKey(msg.Event.EventId):
-                    this.OnCalendarEventNextApproverReceived(msg.Event.EventId, msg.ApproverId);
+                case CalendarEventRemovedFromApprovers msg:
+                    this.ApproveCalendarEvent(msg.Event.EventId)
+                        .PipeTo(
+                            this.Self,
+                            this.Sender,
+                            result => new CalendarEventApproved(result));
                     break;
 
-                case CalendarEventRemovedFromApprovers msg when this.eventsById.ContainsKey(msg.Event.EventId):
-                    this.OnCalendarEventNextApproverReceived(msg.Event.EventId, null);
+                case CalendarEventApproved msg:
+                    if (msg.Data != null)
+                    {
+                        Context.System.EventStream.Publish(new CalendarEventChanged(
+                            msg.Data.OldEvent,
+                            msg.Data.UpdatedBy,
+                            msg.Data.Timestamp,
+                            msg.Data.NewEvent));
+                    }
+
                     break;
 
                 default:
@@ -192,137 +273,74 @@
             }
         }
 
-        private void OnRefreshingVacationsReceive(object message)
+        private async Task<IEnumerable<CalendarEventWithApprovals>> GetVacations()
         {
-            switch (message)
-            {
-                case Refresh _:
-                    // Ignore because it is already in progress
-                    break;
-
-                case RefreshSuccess msg:
-                    this.eventsById.Clear();
-                    this.approvalsByEvent.Clear();
-
-                    foreach (var vacation in msg.Vacations.Where(v => this.IsCalendarEventActual(v.CalendarEvent)))
-                    {
-                        this.eventsById[vacation.CalendarEvent.EventId] = vacation.CalendarEvent;
-                        this.approvalsByEvent[vacation.CalendarEvent.EventId] = vacation.Approvals.ToList();
-                    }
-
-                    this.Become(this.DefaultState());
-
-                    break;
-
-                case RefreshFailed msg:
-                    this.logger.Error(msg.Exception, $"Failed to load vacations information for employee {this.employeeId}: {msg.Exception.Message}");
-                    this.Become(this.DefaultState());
-
-                    break;
-
-                default:
-                    this.Stash.Stash();
-                    break;
-            }
+            var vacations = await this.vacationsSyncExecutor.GetVacations(this.employeeId);
+            return vacations
+                .Where(v => this.IsCalendarEventActual(v.CalendarEvent))
+                .ToList();
         }
 
-        private void UpdateVacationsCache(CalendarEventWithApprovals result)
+        private Task<CalendarEventWithApprovals> GetVacation(string eventId)
         {
-            if (this.IsCalendarEventActual(result.CalendarEvent))
-            {
-                this.eventsById[result.CalendarEvent.EventId] = result.CalendarEvent;
-                this.approvalsByEvent[result.CalendarEvent.EventId] = result.Approvals.ToList();
-            }
-            else if (this.eventsById.ContainsKey(result.CalendarEvent.EventId))
-            {
-                this.eventsById.Remove(result.CalendarEvent.EventId);
-                this.approvalsByEvent.Remove(result.CalendarEvent.EventId);
-            }
+            return this.vacationsSyncExecutor.GetVacation(this.employeeId, eventId);
         }
 
-        private void ApproveCalendarEvent(ApproveCalendarEvent message)
+        private async Task<CalendarEventWithApprovals> GrantCalendarEventApproval(ApproveCalendarEventWithAdditionalData message)
         {
-            var calendarEvent = this.eventsById[message.Event.EventId];
-            var approvals = this.approvalsByEvent[message.Event.EventId];
+            var calendarEvent = message.Event.CalendarEvent;
+            var approvals = message.Event.Approvals;
 
             if (!calendarEvent.IsPending)
             {
-                var errorMessage = $"Approval of non-pending event {message.Event} is not allowed";
-                this.Sender.Tell(new ApproveCalendarEvent.BadRequestResponse(errorMessage));
-                return;
+                var errorMessage = $"Approval of non-pending event {message.Event.CalendarEvent.EventId} is not allowed";
+                throw new ArgumentException(errorMessage);
+                //var approveResponse = new ApproveCalendarEvent.BadRequestResponse(errorMessage);
             }
 
-            if (approvals.Any(a => a.ApprovedBy == message.ApproverId))
+            if (approvals.Any(a => a.ApprovedBy == message.ApprovedBy))
             {
-                this.Sender.Tell(Calendar.Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
-                return;
+                return null;
             }
 
-            this.vacationsSyncExecutor.UpsertVacationApproval(calendarEvent, message.Timestamp, message.ApproverId)
-                .PipeTo(
-                    this.Sender,
-                    success: result =>
-                    {
-                        this.approvalsByEvent[calendarEvent.EventId].Add(result);
+            await this.vacationsSyncExecutor.UpsertVacationApproval(calendarEvent, message.Timestamp, message.ApprovedBy);
 
-                        //Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(calendarEvent, approvals.ToList()));
-                        return Calendar.Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance;
-                    },
-                    failure: err => new ApproveCalendarEvent.ErrorResponse(err.Message));
+            var newEvent = await this.GetVacation(calendarEvent.EventId);
+            return newEvent;
         }
 
-        private void OnCalendarEventNextApproverReceived(string eventId, string nextApproverId)
+        private async Task<CalendarEventApprovedData> ApproveCalendarEvent(string eventId)
         {
-            var oldEvent = this.eventsById[eventId];
-            if (!oldEvent.IsPending)
+            var oldVacation = await this.GetVacation(eventId);
+
+            var oldEvent = oldVacation?.CalendarEvent;
+            if (oldEvent?.IsPending != true)
             {
-                return;
+                return null;
             }
 
-            if (nextApproverId == null)
-            {
-                var approvedStatus = new CalendarEventStatuses().ApprovedForType(oldEvent.Type);
-                var newEvent = new CalendarEvent(
-                    oldEvent.EventId,
-                    oldEvent.Type,
-                    oldEvent.Dates,
-                    approvedStatus,
-                    oldEvent.EmployeeId
-                );
+            var approvedStatus = new CalendarEventStatuses().ApprovedForType(oldEvent.Type);
+            var newEvent = new CalendarEvent(
+                oldEvent.EventId,
+                oldEvent.Type,
+                oldEvent.Dates,
+                approvedStatus,
+                oldEvent.EmployeeId
+            );
 
-                var approvals = this.approvalsByEvent[eventId];
+            var approvals = oldVacation.Approvals;
 
-                var lastApproval = approvals
-                    .OrderByDescending(a => a.Timestamp)
-                    .FirstOrDefault();
+            var lastApproval = approvals
+                .OrderByDescending(a => a.Timestamp)
+                .FirstOrDefault();
 
-                // If there is no approvals, then employee is Director General and event is updated by himself
-                var updatedBy = lastApproval?.ApprovedBy ?? newEvent.EmployeeId;
-                var timestamp = lastApproval?.Timestamp ?? DateTimeOffset.Now;
+            // If there is no approvals, then employee is Director General and event is updated by himself
+            var updatedBy = lastApproval?.ApprovedBy ?? newEvent.EmployeeId;
+            var timestamp = lastApproval?.Timestamp ?? DateTimeOffset.Now;
 
-                this.vacationsSyncExecutor.UpdateVacation(newEvent, timestamp, updatedBy)
-                    .PipeTo(
-                        this.Sender,
-                        success: result =>
-                        {
-                            this.UpdateVacationsCache(result);
+            var newVacation = await this.vacationsSyncExecutor.UpdateVacation(newEvent, timestamp, updatedBy);
 
-                            //Context.System.EventStream.Publish(new CalendarEventChanged(
-                            //    oldEvent,
-                            //    msg.UpdatedBy,
-                            //    msg.Timestamp,
-                            //    result.CalendarEvent));
-
-                            return new UpsertCalendarEvent.Success(result.CalendarEvent);
-                        },
-                        failure: err => new UpsertCalendarEvent.Error(err.Message));
-            }
-        }
-
-        private UntypedReceive DefaultState()
-        {
-            this.Stash.UnstashAll();
-            return this.OnReceive;
+            return new CalendarEventApprovedData(oldEvent, newVacation.CalendarEvent, updatedBy, timestamp);
         }
 
         private string GetInitialStatus()
@@ -341,13 +359,13 @@
 
         private void EnsureDatesAreNotIntersected(CalendarEvent @event)
         {
-            var intersectedEvent = this.eventsById.Values
-                .Where(ev => ev.EventId != @event.EventId)
-                .FirstOrDefault(ev => ev.Dates.DatesIntersectsWith(@event.Dates));
-            if (intersectedEvent != null)
-            {
-                throw new Exception($"Event {@event.EventId}. Dates intersect with another vacation with id {intersectedEvent.EventId}");
-            }
+            //var intersectedEvent = this.eventsById.Values
+            //    .Where(ev => ev.EventId != @event.EventId)
+            //    .FirstOrDefault(ev => ev.Dates.DatesIntersectsWith(@event.Dates));
+            //if (intersectedEvent != null)
+            //{
+            //    throw new Exception($"Event {@event.EventId}. Dates intersect with another vacation with id {intersectedEvent.EventId}");
+            //}
         }
 
         private bool IsCalendarEventActual(CalendarEvent @event)
@@ -355,29 +373,169 @@
             return VacationStatuses.Actual.Contains(@event.Status);
         }
 
-        private class Refresh
+        private class InsertCalendarEvent
         {
-            public static readonly Refresh Instance = new Refresh();
-        }
-
-        private class RefreshSuccess
-        {
-            public RefreshSuccess(IReadOnlyCollection<CalendarEventWithApprovals> vacations)
+            public InsertCalendarEvent(CalendarEvent @event, string createdBy, DateTimeOffset timestamp)
             {
-                this.Vacations = vacations;
+                this.Event = @event;
+                this.CreatedBy = createdBy;
+                this.Timestamp = timestamp;
             }
 
-            public IReadOnlyCollection<CalendarEventWithApprovals> Vacations { get; }
-        }
+            public CalendarEvent Event { get; }
 
-        private class RefreshFailed
-        {
-            public RefreshFailed(Exception exception)
+            public string CreatedBy { get; }
+
+            public DateTimeOffset Timestamp { get; }
+
+
+            public class Success
             {
-                this.Exception = exception;
+                public Success(CalendarEvent @event, string createdBy, DateTimeOffset timestamp)
+                {
+                    this.Event = @event;
+                    this.CreatedBy = createdBy;
+                    this.Timestamp = timestamp;
+                }
+
+                public CalendarEvent Event { get; }
+
+                public string CreatedBy { get; }
+
+                public DateTimeOffset Timestamp { get; }
             }
 
-            public Exception Exception { get; }
+            public class Error
+            {
+                public Error(Exception exception)
+                {
+                    this.Exception = exception;
+                }
+
+                public Exception Exception { get; }
+            }
+        }
+
+        private class UpdateCalendarEvent
+        {
+            public UpdateCalendarEvent(
+                CalendarEvent newEvent,
+                CalendarEventWithApprovals oldEvent,
+                string updatedBy,
+                DateTimeOffset timestamp)
+            {
+                this.NewEvent = newEvent;
+                this.OldEvent = oldEvent;
+                this.UpdatedBy = updatedBy;
+                this.Timestamp = timestamp;
+            }
+
+            public CalendarEvent NewEvent { get; }
+
+            public CalendarEventWithApprovals OldEvent { get; }
+
+            public string UpdatedBy { get; }
+
+            public DateTimeOffset Timestamp { get; }
+
+            public class Success
+            {
+                public Success(CalendarEvent newEvent, CalendarEvent oldEvent, string updatedBy, DateTimeOffset timestamp)
+                {
+                    this.NewEvent = newEvent;
+                    this.OldEvent = oldEvent;
+                    this.UpdatedBy = updatedBy;
+                    this.Timestamp = timestamp;
+                }
+
+                public CalendarEvent NewEvent { get; }
+
+                public CalendarEvent OldEvent { get; }
+
+                public string UpdatedBy { get; }
+
+                public DateTimeOffset Timestamp { get; }
+            }
+
+            public class Error
+            {
+                public Error(Exception exception)
+                {
+                    this.Exception = exception;
+                }
+
+                public Exception Exception { get; }
+            }
+        }
+
+        private class ApproveCalendarEventWithAdditionalData
+        {
+            public ApproveCalendarEventWithAdditionalData(CalendarEventWithApprovals @event, string approvedBy, DateTimeOffset timestamp)
+            {
+                this.Event = @event;
+                this.ApprovedBy = approvedBy;
+                this.Timestamp = timestamp;
+            }
+
+            public CalendarEventWithApprovals Event { get; }
+
+            public string ApprovedBy { get; }
+
+            public DateTimeOffset Timestamp { get; }
+
+            public class Success
+            {
+                public Success(CalendarEventWithApprovals newEvent)
+                {
+                    this.NewEvent = newEvent;
+                }
+
+                public CalendarEventWithApprovals NewEvent { get; }
+            }
+
+            public class Error
+            {
+                public Error(Exception exception)
+                {
+                    this.Exception = exception;
+                }
+
+                public Exception Exception { get; }
+            }
+        }
+
+        private class CalendarEventApprovedData
+        {
+            public CalendarEventApprovedData(
+                CalendarEvent oldEvent,
+                CalendarEvent newEvent,
+                string updatedBy,
+                DateTimeOffset timestamp)
+            {
+                this.OldEvent = oldEvent;
+                this.NewEvent = newEvent;
+                this.UpdatedBy = updatedBy;
+                this.Timestamp = timestamp;
+            }
+
+            public CalendarEvent OldEvent { get; }
+
+            public CalendarEvent NewEvent { get; }
+
+            public string UpdatedBy { get; }
+
+            public DateTimeOffset Timestamp { get; }
+
+        }
+
+        private class CalendarEventApproved
+        {
+            public CalendarEventApproved(CalendarEventApprovedData data)
+            {
+                this.Data = data;
+            }
+
+            public CalendarEventApprovedData Data { get; }
         }
     }
 }
