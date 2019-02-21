@@ -16,6 +16,7 @@
     using Arcadia.Assistant.Feeds.Messages;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
+    using Arcadia.Assistant.Patterns;
 
     public class EmployeeVacationsActor : UntypedActor, ILogReceive
     {
@@ -41,8 +42,12 @@
 
             this.calendarEventsApprovalsChecker = Context.ActorSelection(CalendarEventsApprovalsCheckerActorPath);
 
+            var persistenceSupervisorFactory = new PersistenceSupervisorFactory();
+
+            var vacationsRegistryProps = vacationsRegistryPropsFactory.CreateProps(employeeId);
+
             this.vacationsRegistry = Context.ActorOf(
-                vacationsRegistryPropsFactory.CreateProps(employeeId),
+                persistenceSupervisorFactory.Get(vacationsRegistryProps),
                 "vacations-registry");
 
             Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);

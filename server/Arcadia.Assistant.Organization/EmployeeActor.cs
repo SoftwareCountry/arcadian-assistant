@@ -54,12 +54,12 @@
             var sickLeaveActorProps = EmployeeSickLeaveActor.CreateProps(this.employeeMetadata);
             var workHoursActorProps = EmployeeWorkHoursActor.CreateProps(this.employeeMetadata.EmployeeId);
 
-            var vacationsActor = Context.ActorOf(
-                persistenceSupervisorFactory.Get(vacationActorProps),
-                "vacations");
+            var vacationsActor = Context.ActorOf(vacationActorProps, "vacations");
+
             var sickLeavesActor = Context.ActorOf(
                 persistenceSupervisorFactory.Get(sickLeaveActorProps),
                 "sick-leaves");
+
             var workHoursActor = Context.ActorOf(
                 persistenceSupervisorFactory.Get(workHoursActorProps),
                 "work-hours");
