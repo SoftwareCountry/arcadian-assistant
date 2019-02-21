@@ -15,12 +15,17 @@
     using Arcadia.Assistant.Feeds;
     using Arcadia.Assistant.Feeds.Messages;
     using Arcadia.Assistant.Organization.Abstractions;
+    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public class EmployeeVacationsActor : UntypedActor, ILogReceive
     {
+        // Ugly, but it is the simplest way to achieve the goal for now
+        private const string CalendarEventsApprovalsCheckerActorPath = @"/user/calendar-events-approvals/calendar-events-approvals-checker";
+
         private readonly string employeeId;
         private readonly IActorRef employeeFeed;
         private readonly IActorRef vacationsCreditRegistry;
+        private readonly ActorSelection calendarEventsApprovalsChecker;
         private readonly IActorRef vacationsRegistry;
 
         public EmployeeVacationsActor(
@@ -33,6 +38,9 @@
             this.employeeId = employeeId;
             this.employeeFeed = employeeFeed;
             this.vacationsCreditRegistry = vacationsCreditRegistry;
+
+            this.calendarEventsApprovalsChecker = Context.ActorSelection(CalendarEventsApprovalsCheckerActorPath);
+
             this.vacationsRegistry = Context.ActorOf(
                 vacationsRegistryPropsFactory.CreateProps(employeeId),
                 "vacations-registry");
@@ -182,7 +190,7 @@
                     break;
 
                 case ApproveVacation msg:
-                    this.ApproveVacation(msg)
+                    this.GrantVacationApproval(msg)
                         .PipeTo(
                             this.Self,
                             this.Sender,
@@ -237,7 +245,7 @@
                     throw new Exception(error.Message);
 
                 default:
-                    throw new Exception("Not supported response type");
+                    throw new Exception("Not expected response type");
             }
         }
 
@@ -250,19 +258,24 @@
             switch (response)
             {
                 case InsertVacation.Success success:
+                    await this.ApproveVacationIfNeeded(success.Event);
                     return success.Event;
 
                 case InsertVacation.Error error:
                     throw new Exception("Error occured on vacation insert", error.Exception);
 
                 default:
-                    throw new Exception("Not supported response type");
+                    throw new Exception("Not expected response type");
             }
         }
 
-        private async Task<CalendarEvent> UpdateVacation(UpdateVacation message)
+        private async Task<CalendarEvent> UpdateVacation(UpdateVacation message, bool needCheckUpdateAvailable = true)
         {
-            await this.EnsureUpdateAvailable(message.NewEvent, message.OldEvent);
+            // When vacation is changed from internal code (change to Approved when all approvals granted), availability should not be checked
+            if (needCheckUpdateAvailable)
+            {
+                await this.EnsureUpdateAvailable(message.NewEvent, message.OldEvent);
+            }
 
             var response = await this.vacationsRegistry.Ask<UpdateVacation.Response>(message);
 
@@ -275,11 +288,11 @@
                     throw new Exception("Error occured on vacation update", error.Exception);
 
                 default:
-                    throw new Exception("Not supported response type");
+                    throw new Exception("Not expected response type");
             }
         }
 
-        private async Task<CalendarEventWithApprovals> ApproveVacation(ApproveVacation message)
+        private async Task<CalendarEventWithApprovals> GrantVacationApproval(ApproveVacation message)
         {
             this.EnsureApprovalAvailable(message.Event);
 
@@ -288,13 +301,64 @@
             switch (response)
             {
                 case ApproveVacation.Success success:
+                    await this.ApproveVacationIfNeeded(success.Event, success.Approvals, message.ApprovedBy, message.Timestamp);
                     return new CalendarEventWithApprovals(success.Event, success.Approvals);
 
-                case Abstractions.EmployeeVacations.ApproveVacation.Error error:
+                case ApproveVacation.Error error:
                     throw new Exception("Error occured on vacation approval granted", error.Exception);
 
                 default:
-                    throw new Exception("Not supported response type");
+                    throw new Exception("Not expected response type");
+            }
+        }
+
+        private async Task ApproveVacationIfNeeded(
+            CalendarEvent @event,
+            IEnumerable<Approval> approvals = null,
+            string approvedBy = null,
+            DateTimeOffset? timestamp = null)
+        {
+            var nextApproverId = await this.GetNextApproverId(@event, approvals ?? Enumerable.Empty<Approval>());
+            if (nextApproverId != null)
+            {
+                return;
+            }
+
+            var approvedStatus = new CalendarEventStatuses().ApprovedForType(@event.Type);
+            var newEvent = new CalendarEvent(
+                @event.EventId,
+                @event.Type,
+                @event.Dates,
+                approvedStatus,
+                @event.EmployeeId
+            );
+
+            // If there is no approvals, then employee is Director General and event is updated by himself
+            approvedBy = approvedBy ?? @event.EmployeeId;
+            timestamp = timestamp ?? DateTimeOffset.Now;
+
+            var message = new UpdateVacation(newEvent, @event, approvedBy, (DateTimeOffset)timestamp);
+            await this.UpdateVacation(message, false);
+        }
+
+        private async Task<string> GetNextApproverId(CalendarEvent @event, IEnumerable<Approval> approvals)
+        {
+            var approvedBy = approvals.Select(a => a.ApprovedBy);
+
+            var response = await this.calendarEventsApprovalsChecker
+                .Ask<GetNextCalendarEventApprover.Response>(
+                    new GetNextCalendarEventApprover(@event.EmployeeId, approvedBy, @event.Type));
+
+            switch (response)
+            {
+                case GetNextCalendarEventApprover.SuccessResponse msg:
+                    return msg.NextApproverEmployeeId;
+
+                case GetNextCalendarEventApprover.ErrorResponse msg:
+                    throw new Exception(msg.Message);
+
+                default:
+                    throw new Exception("Not expected response type");
             }
         }
 

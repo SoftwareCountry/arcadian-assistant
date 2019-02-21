@@ -5,7 +5,6 @@
     using System.Linq;
 
     using Akka.Actor;
-    using Akka.Event;
     using Akka.Persistence;
 
     using Arcadia.Assistant.Calendar.Abstractions;
@@ -28,8 +27,6 @@
             this.employeeId = employeeId;
 
             this.PersistenceId = $"employee-vacations-{employeeId}";
-
-            Context.System.EventStream.Subscribe<CalendarEventRemovedFromApprovers>(this.Self);
         }
 
         public override string PersistenceId { get; }
@@ -81,10 +78,6 @@
                         this.Sender.Tell(new ApproveCalendarEvent.ErrorResponse(ex.Message));
                     }
 
-                    break;
-
-                case CalendarEventRemovedFromApprovers msg when this.eventsById.TryGetValue(msg.Event.EventId, out var @event) && @event.IsPending:
-                    this.OnCalendarEventNextApproverReceived(msg.Event.EventId);
                     break;
 
                 case CheckDatesAvailability msg:
@@ -245,32 +238,6 @@
         {
             var approvals = this.approvalsByEvent[message.EventId];
             approvals.Add(new Approval(message.TimeStamp, message.UserId));
-        }
-
-        private void OnCalendarEventNextApproverReceived(string eventId)
-        {
-            var oldEvent = this.eventsById[eventId];
-
-            var approvedStatus = new CalendarEventStatuses().ApprovedForType(oldEvent.Type);
-            var newEvent = new CalendarEvent(
-                oldEvent.EventId,
-                oldEvent.Type,
-                oldEvent.Dates,
-                approvedStatus,
-                oldEvent.EmployeeId
-            );
-
-            var approvals = this.approvalsByEvent[eventId];
-
-            var lastApproval = approvals
-                .OrderByDescending(a => a.Timestamp)
-                .FirstOrDefault();
-
-            // If there is no approvals, then employee is Director General and event is updated by himself
-            var updatedBy = lastApproval?.ApprovedBy ?? newEvent.EmployeeId;
-            var timestamp = lastApproval?.Timestamp ?? DateTimeOffset.Now;
-
-            this.UpdateVacation(oldEvent, updatedBy, timestamp, newEvent);
         }
 
         private void OnVacationRequested(VacationIsRequested message)

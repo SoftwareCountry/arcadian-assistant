@@ -6,11 +6,9 @@
     using System.Threading.Tasks;
 
     using Akka.Actor;
-    using Akka.Event;
 
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
-    using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
 
     public class CspEmployeeVacationsRegistry : UntypedActor, ILogReceive
@@ -24,8 +22,6 @@
         {
             this.vacationsSyncExecutor = vacationsSyncExecutor;
             this.employeeId = employeeId;
-
-            Context.System.EventStream.Subscribe<CalendarEventRemovedFromApprovers>(this.Self);
         }
 
         protected override void OnReceive(object message)
@@ -108,26 +104,6 @@
                             failure: err => new ApproveVacation.Error(err));
                     break;
 
-                case CalendarEventRemovedFromApprovers msg:
-                    this.ApproveCalendarEvent(msg.Event.EventId)
-                        .PipeTo(
-                            this.Self,
-                            this.Sender,
-                            result => new CalendarEventApproved(result));
-                    break;
-
-                case CalendarEventApproved msg:
-                    if (msg.Data != null)
-                    {
-                        Context.System.EventStream.Publish(new CalendarEventChanged(
-                            msg.Data.OldEvent,
-                            msg.Data.UpdatedBy,
-                            msg.Data.Timestamp,
-                            msg.Data.NewEvent));
-                    }
-
-                    break;
-
                 case CheckDatesAvailability msg:
                     var datesAvailable = this.CheckDatesAvailability(msg.Event);
                     this.Sender.Tell(new CheckDatesAvailability.Response(datesAvailable));
@@ -174,40 +150,6 @@
             return newEvent;
         }
 
-        private async Task<CalendarEventApprovedData> ApproveCalendarEvent(string eventId)
-        {
-            var oldVacation = await this.GetVacation(eventId);
-
-            var oldEvent = oldVacation?.CalendarEvent;
-            if (oldEvent?.IsPending != true)
-            {
-                return null;
-            }
-
-            var approvedStatus = new CalendarEventStatuses().ApprovedForType(oldEvent.Type);
-            var newEvent = new CalendarEvent(
-                oldEvent.EventId,
-                oldEvent.Type,
-                oldEvent.Dates,
-                approvedStatus,
-                oldEvent.EmployeeId
-            );
-
-            var approvals = oldVacation.Approvals;
-
-            var lastApproval = approvals
-                .OrderByDescending(a => a.Timestamp)
-                .FirstOrDefault();
-
-            // If there is no approvals, then employee is Director General and event is updated by himself
-            var updatedBy = lastApproval?.ApprovedBy ?? newEvent.EmployeeId;
-            var timestamp = lastApproval?.Timestamp ?? DateTimeOffset.Now;
-
-            var newVacation = await this.vacationsSyncExecutor.UpdateVacation(newEvent, timestamp, updatedBy);
-
-            return new CalendarEventApprovedData(oldEvent, newVacation.CalendarEvent, updatedBy, timestamp);
-        }
-
         private bool CheckDatesAvailability(CalendarEvent @event)
         {
             return true;
@@ -220,40 +162,6 @@
         private bool IsCalendarEventActual(CalendarEvent @event)
         {
             return VacationStatuses.Actual.Contains(@event.Status);
-        }
-
-        private class CalendarEventApprovedData
-        {
-            public CalendarEventApprovedData(
-                CalendarEvent oldEvent,
-                CalendarEvent newEvent,
-                string updatedBy,
-                DateTimeOffset timestamp)
-            {
-                this.OldEvent = oldEvent;
-                this.NewEvent = newEvent;
-                this.UpdatedBy = updatedBy;
-                this.Timestamp = timestamp;
-            }
-
-            public CalendarEvent OldEvent { get; }
-
-            public CalendarEvent NewEvent { get; }
-
-            public string UpdatedBy { get; }
-
-            public DateTimeOffset Timestamp { get; }
-
-        }
-
-        private class CalendarEventApproved
-        {
-            public CalendarEventApproved(CalendarEventApprovedData data)
-            {
-                this.Data = data;
-            }
-
-            public CalendarEventApprovedData Data { get; }
         }
     }
 }
