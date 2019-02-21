@@ -82,7 +82,7 @@
 
                 case CheckDatesAvailability msg:
                     var datesAvailable = this.CheckDatesAvailability(msg.Event);
-                    this.Sender.Tell(new CheckDatesAvailability.Response(datesAvailable));
+                    this.Sender.Tell(new CheckDatesAvailability.Success(datesAvailable));
                     break;
 
                 default:

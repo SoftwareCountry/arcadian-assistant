@@ -105,8 +105,11 @@
                     break;
 
                 case CheckDatesAvailability msg:
-                    var datesAvailable = this.CheckDatesAvailability(msg.Event);
-                    this.Sender.Tell(new CheckDatesAvailability.Response(datesAvailable));
+                    this.CheckDatesAvailability(msg.Event)
+                        .PipeTo(
+                            this.Sender,
+                            success: result => new CheckDatesAvailability.Success(result),
+                            failure: err => new CheckDatesAvailability.Error(err));
                     break;
 
                 default:
@@ -150,13 +153,14 @@
             return newEvent;
         }
 
-        private bool CheckDatesAvailability(CalendarEvent @event)
+        private async Task<bool> CheckDatesAvailability(CalendarEvent @event)
         {
-            return true;
-            //var intersectedEventExists = this.eventsById.Values
-            //    .Where(ev => ev.EventId != @event.EventId)
-            //    .Any(ev => ev.Dates.DatesIntersectsWith(@event.Dates));
-            //return !intersectedEventExists;
+            var vacations = await this.GetVacations();
+
+            var intersectedEventExists = vacations
+                .Where(v => v.CalendarEvent.EventId != @event.EventId)
+                .Any(v => v.CalendarEvent.Dates.DatesIntersectsWith(@event.Dates));
+            return !intersectedEventExists;
         }
 
         private bool IsCalendarEventActual(CalendarEvent @event)

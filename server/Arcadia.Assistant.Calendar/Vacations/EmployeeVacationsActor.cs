@@ -409,11 +409,23 @@
         private async Task EnsureDatesAreNotIntersected(CalendarEvent @event)
         {
             var message = new CheckDatesAvailability(@event);
-            var checkDatesAvailability = await this.vacationsRegistry.Ask<CheckDatesAvailability.Response>(message);
+            var response = await this.vacationsRegistry.Ask<CheckDatesAvailability.Response>(message);
 
-            if (!checkDatesAvailability.Result)
+            switch (response)
             {
-                throw new Exception($"Event {@event.EventId}. Dates intersect with another actual vacation");
+                case CheckDatesAvailability.Success success:
+                    if (!success.Result)
+                    {
+                        throw new Exception($"Event {@event.EventId}. Dates intersect with another actual vacation");
+                    }
+
+                    return;
+
+                case CheckDatesAvailability.Error error:
+                    throw new Exception("Error occured on dates availability check", error.Exception);
+
+                default:
+                    throw new Exception("Not expected response type");
             }
         }
 
