@@ -6,7 +6,7 @@
     using Akka.Persistence;
 
     using Arcadia.Assistant.Calendar;
-    using Arcadia.Assistant.Calendar.Abstractions;
+    using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
     using Arcadia.Assistant.Calendar.PendingActions;
     using Arcadia.Assistant.Calendar.SickLeave;
     using Arcadia.Assistant.Calendar.Vacations;

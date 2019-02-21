@@ -1,8 +1,8 @@
 ﻿namespace Arcadia.Assistant.DI
 {
-    using Arcadia.Assistant.Calendar.Abstractions;
     using Autofac;
 
+    using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
     using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.InboxEmail;
     using Arcadia.Assistant.Organization;

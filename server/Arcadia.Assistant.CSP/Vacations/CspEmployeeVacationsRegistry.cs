@@ -9,6 +9,7 @@
     using Akka.Event;
 
     using Arcadia.Assistant.Calendar.Abstractions;
+    using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
     using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
 
@@ -75,176 +76,36 @@
                             failure: err => new GetCalendarEventApprovals.ErrorResponse(err.Message));
                     break;
 
-                case UpsertCalendarEvent msg:
-                    this.GetVacation(msg.Event.EventId)
-                        .PipeTo(
-                            this.Self,
-                            this.Sender,
-                            result =>
-                            {
-                                if (result == null)
-                                {
-                                    return new InsertCalendarEvent(msg.Event, msg.UpdatedBy, msg.Timestamp);
-                                }
-
-                                return new UpdateCalendarEvent(
-                                    msg.Event,
-                                    result,
-                                    msg.UpdatedBy,
-                                    msg.Timestamp);
-                            },
-                            err => new UpsertCalendarEvent.Error(err.Message));
-                    break;
-
-                case UpsertCalendarEvent.Error msg:
-                    this.Sender.Tell(msg);
-                    break;
-
-                case InsertCalendarEvent msg:
-                    try
-                    {
-                        if (msg.Event.Status != this.GetInitialStatus())
-                        {
-                            throw new Exception($"Event {msg.Event.EventId}. Initial status must be {this.GetInitialStatus()}");
-                        }
-
-                        this.EnsureDatesAreNotIntersected(msg.Event);
-                    }
-                    catch (Exception ex)
-                    {
-                        this.Sender.Tell(new InsertCalendarEvent.Error(ex));
-                        break;
-                    }
-
+                case InsertVacation msg:
                     this.vacationsSyncExecutor.InsertVacation(msg.Event, msg.Timestamp, msg.CreatedBy)
                         .PipeTo(
-                            this.Self,
                             this.Sender,
-                            result => new InsertCalendarEvent.Success(result.CalendarEvent, msg.CreatedBy, msg.Timestamp),
-                            err => new InsertCalendarEvent.Error(err));
-
+                            success: result => new InsertVacation.Success(result.CalendarEvent, msg.CreatedBy, msg.Timestamp),
+                            failure: err => new InsertVacation.Error(err));
                     break;
 
-                case InsertCalendarEvent.Success msg:
-                    Context.System.EventStream.Publish(new CalendarEventCreated(msg.Event, msg.CreatedBy, msg.Timestamp));
-                    this.Sender.Tell(new UpsertCalendarEvent.Success(msg.Event));
-                    break;
-
-                case InsertCalendarEvent.Error msg:
-                    this.Sender.Tell(new UpsertCalendarEvent.Error(msg.Exception.Message));
-                    break;
-
-                case UpdateCalendarEvent msg:
-                    var oldEvent = msg.OldEvent.CalendarEvent;
-
-                    try
-                    {
-                        var newEvent = msg.NewEvent;
-                        if (oldEvent.Status != newEvent.Status && !this.IsStatusTransitionAllowed(oldEvent.Status, newEvent.Status))
-                        {
-                            throw new Exception(
-                                $"Event {msg.NewEvent.EventId}. Status transition {oldEvent.Status} -> {msg.NewEvent.Status} " +
-                                "is not allowed for vacation");
-                        }
-
-                        this.EnsureDatesAreNotIntersected(msg.NewEvent);
-
-                        if (oldEvent.Dates != newEvent.Dates)
-                        {
-                            if (!oldEvent.IsPending)
-                            {
-                                throw new Exception($"Date change is not allowed in status {oldEvent.Status} for {oldEvent.Type}");
-                            }
-
-                            var approvals = msg.OldEvent.Approvals;
-                            if (approvals.Count() != 0)
-                            {
-                                throw new Exception($"Date change is not allowed when there is at least one user approval for {oldEvent.Type}");
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        this.Sender.Tell(new UpdateCalendarEvent.Error(ex));
-                        break;
-                    }
-
+                case UpdateVacation msg:
                     this.vacationsSyncExecutor.UpdateVacation(msg.NewEvent, msg.Timestamp, msg.UpdatedBy)
                         .PipeTo(
-                            this.Self,
                             this.Sender,
-                            result => new UpdateCalendarEvent.Success(result.CalendarEvent, oldEvent, msg.UpdatedBy, msg.Timestamp),
-                            err => new UpdateCalendarEvent.Error(err));
-
+                            success: result => new UpdateVacation.Success(result.CalendarEvent, msg.OldEvent, msg.UpdatedBy, msg.Timestamp),
+                            failure: err => new UpdateVacation.Error(err));
                     break;
 
-                case UpdateCalendarEvent.Success msg:
-                    Context.System.EventStream.Publish(new CalendarEventChanged(
-                        msg.OldEvent,
-                        msg.UpdatedBy,
-                        msg.Timestamp,
-                        msg.NewEvent));
-
-                    this.Sender.Tell(new UpsertCalendarEvent.Success(msg.NewEvent));
-
-                    break;
-
-                case UpdateCalendarEvent.Error msg:
-                    this.Sender.Tell(new UpsertCalendarEvent.Error(msg.Exception.Message));
-                    break;
-
-                case ApproveCalendarEvent msg:
-                    this.GetVacation(msg.Event.EventId)
+                case ApproveVacation msg:
+                    this.ApproveVacation(msg)
                         .PipeTo(
-                            this.Self,
                             this.Sender,
-                            result =>
+                            success: result =>
                             {
                                 if (result != null)
                                 {
-                                    return new ApproveCalendarEventWithAdditionalData(result, msg.ApproverId, msg.Timestamp);
+                                    return new ApproveVacation.Success(result.CalendarEvent, result.Approvals.ToList());
                                 }
 
-                                return new ApproveCalendarEvent.ErrorResponse($"Vacation with id {msg.Event.EventId} is not found");
+                                return Calendar.Abstractions.EmployeeVacations.ApproveVacation.Success.Instance;
                             },
-                            err => new ApproveCalendarEvent.ErrorResponse(err.Message));
-                    break;
-
-                case ApproveCalendarEvent.ErrorResponse msg:
-                    this.Sender.Tell(msg);
-                    break;
-
-                case ApproveCalendarEventWithAdditionalData msg:
-                    this.GrantCalendarEventApproval(msg)
-                        .PipeTo(
-                            this.Self,
-                            this.Sender,
-                            result => new ApproveCalendarEventWithAdditionalData.Success(result),
-                            err => new ApproveCalendarEventWithAdditionalData.Error(err));
-                    break;
-
-                case ApproveCalendarEventWithAdditionalData.Success msg:
-                    if (msg.NewEvent != null)
-                    {
-                        Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(
-                            msg.NewEvent.CalendarEvent,
-                            msg.NewEvent.Approvals.ToList()));
-                    }
-
-                    this.Sender.Tell(Calendar.Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
-
-                    break;
-
-                case ApproveCalendarEventWithAdditionalData.Error msg:
-                    if (msg.Exception is ArgumentException)
-                    {
-                        this.Sender.Tell(new ApproveCalendarEvent.BadRequestResponse(msg.Exception.Message));
-                    }
-                    else
-                    {
-                        this.Sender.Tell(new ApproveCalendarEvent.ErrorResponse(msg.Exception.Message));
-                    }
-
+                            failure: err => new ApproveVacation.Error(err));
                     break;
 
                 case CalendarEventRemovedFromApprovers msg:
@@ -267,6 +128,11 @@
 
                     break;
 
+                case CheckDatesAvailability msg:
+                    var datesAvailable = this.CheckDatesAvailability(msg.Event);
+                    this.Sender.Tell(new CheckDatesAvailability.Response(datesAvailable));
+                    break;
+
                 default:
                     this.Unhandled(message);
                     break;
@@ -286,17 +152,16 @@
             return this.vacationsSyncExecutor.GetVacation(this.employeeId, eventId);
         }
 
-        private async Task<CalendarEventWithApprovals> GrantCalendarEventApproval(ApproveCalendarEventWithAdditionalData message)
+        private async Task<CalendarEventWithApprovals> ApproveVacation(ApproveVacation message)
         {
-            var calendarEvent = message.Event.CalendarEvent;
-            var approvals = message.Event.Approvals;
-
-            if (!calendarEvent.IsPending)
+            var vacation = await this.GetVacation(message.Event.EventId);
+            if (vacation == null)
             {
-                var errorMessage = $"Approval of non-pending event {message.Event.CalendarEvent.EventId} is not allowed";
-                throw new ArgumentException(errorMessage);
-                //var approveResponse = new ApproveCalendarEvent.BadRequestResponse(errorMessage);
+                throw new Exception($"Vacation with id {message.Event.EventId} is not found");
             }
+
+            var calendarEvent = vacation.CalendarEvent;
+            var approvals = vacation.Approvals;
 
             if (approvals.Any(a => a.ApprovedBy == message.ApprovedBy))
             {
@@ -343,165 +208,18 @@
             return new CalendarEventApprovedData(oldEvent, newVacation.CalendarEvent, updatedBy, timestamp);
         }
 
-        private string GetInitialStatus()
+        private bool CheckDatesAvailability(CalendarEvent @event)
         {
-            return VacationStatuses.Requested;
-        }
-
-        private bool IsStatusTransitionAllowed(string oldCalendarEventStatus, string newCalendarEventStatus)
-        {
-            return VacationStatuses.All.Contains(newCalendarEventStatus)
-                && (oldCalendarEventStatus != VacationStatuses.Cancelled)
-                && (oldCalendarEventStatus != VacationStatuses.Rejected)
-                && (newCalendarEventStatus != this.GetInitialStatus())
-                && (newCalendarEventStatus != VacationStatuses.Approved);
-        }
-
-        private void EnsureDatesAreNotIntersected(CalendarEvent @event)
-        {
-            //var intersectedEvent = this.eventsById.Values
+            return true;
+            //var intersectedEventExists = this.eventsById.Values
             //    .Where(ev => ev.EventId != @event.EventId)
-            //    .FirstOrDefault(ev => ev.Dates.DatesIntersectsWith(@event.Dates));
-            //if (intersectedEvent != null)
-            //{
-            //    throw new Exception($"Event {@event.EventId}. Dates intersect with another vacation with id {intersectedEvent.EventId}");
-            //}
+            //    .Any(ev => ev.Dates.DatesIntersectsWith(@event.Dates));
+            //return !intersectedEventExists;
         }
 
         private bool IsCalendarEventActual(CalendarEvent @event)
         {
             return VacationStatuses.Actual.Contains(@event.Status);
-        }
-
-        private class InsertCalendarEvent
-        {
-            public InsertCalendarEvent(CalendarEvent @event, string createdBy, DateTimeOffset timestamp)
-            {
-                this.Event = @event;
-                this.CreatedBy = createdBy;
-                this.Timestamp = timestamp;
-            }
-
-            public CalendarEvent Event { get; }
-
-            public string CreatedBy { get; }
-
-            public DateTimeOffset Timestamp { get; }
-
-
-            public class Success
-            {
-                public Success(CalendarEvent @event, string createdBy, DateTimeOffset timestamp)
-                {
-                    this.Event = @event;
-                    this.CreatedBy = createdBy;
-                    this.Timestamp = timestamp;
-                }
-
-                public CalendarEvent Event { get; }
-
-                public string CreatedBy { get; }
-
-                public DateTimeOffset Timestamp { get; }
-            }
-
-            public class Error
-            {
-                public Error(Exception exception)
-                {
-                    this.Exception = exception;
-                }
-
-                public Exception Exception { get; }
-            }
-        }
-
-        private class UpdateCalendarEvent
-        {
-            public UpdateCalendarEvent(
-                CalendarEvent newEvent,
-                CalendarEventWithApprovals oldEvent,
-                string updatedBy,
-                DateTimeOffset timestamp)
-            {
-                this.NewEvent = newEvent;
-                this.OldEvent = oldEvent;
-                this.UpdatedBy = updatedBy;
-                this.Timestamp = timestamp;
-            }
-
-            public CalendarEvent NewEvent { get; }
-
-            public CalendarEventWithApprovals OldEvent { get; }
-
-            public string UpdatedBy { get; }
-
-            public DateTimeOffset Timestamp { get; }
-
-            public class Success
-            {
-                public Success(CalendarEvent newEvent, CalendarEvent oldEvent, string updatedBy, DateTimeOffset timestamp)
-                {
-                    this.NewEvent = newEvent;
-                    this.OldEvent = oldEvent;
-                    this.UpdatedBy = updatedBy;
-                    this.Timestamp = timestamp;
-                }
-
-                public CalendarEvent NewEvent { get; }
-
-                public CalendarEvent OldEvent { get; }
-
-                public string UpdatedBy { get; }
-
-                public DateTimeOffset Timestamp { get; }
-            }
-
-            public class Error
-            {
-                public Error(Exception exception)
-                {
-                    this.Exception = exception;
-                }
-
-                public Exception Exception { get; }
-            }
-        }
-
-        private class ApproveCalendarEventWithAdditionalData
-        {
-            public ApproveCalendarEventWithAdditionalData(CalendarEventWithApprovals @event, string approvedBy, DateTimeOffset timestamp)
-            {
-                this.Event = @event;
-                this.ApprovedBy = approvedBy;
-                this.Timestamp = timestamp;
-            }
-
-            public CalendarEventWithApprovals Event { get; }
-
-            public string ApprovedBy { get; }
-
-            public DateTimeOffset Timestamp { get; }
-
-            public class Success
-            {
-                public Success(CalendarEventWithApprovals newEvent)
-                {
-                    this.NewEvent = newEvent;
-                }
-
-                public CalendarEventWithApprovals NewEvent { get; }
-            }
-
-            public class Error
-            {
-                public Error(Exception exception)
-                {
-                    this.Exception = exception;
-                }
-
-                public Exception Exception { get; }
-            }
         }
 
         private class CalendarEventApprovedData

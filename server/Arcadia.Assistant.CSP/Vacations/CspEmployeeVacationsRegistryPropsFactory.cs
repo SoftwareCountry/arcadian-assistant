@@ -1,7 +1,7 @@
 ﻿namespace Arcadia.Assistant.CSP.Vacations
 {
     using Akka.Actor;
-    using Arcadia.Assistant.Calendar.Abstractions;
+    using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
     using Arcadia.Assistant.Configuration.Configuration;
 
     public class CspEmployeeVacationsRegistryPropsFactory : IEmployeeVacationsRegistryPropsFactory

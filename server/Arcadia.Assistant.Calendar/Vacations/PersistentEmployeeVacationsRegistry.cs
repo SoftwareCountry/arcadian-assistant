@@ -9,6 +9,7 @@
     using Akka.Persistence;
 
     using Arcadia.Assistant.Calendar.Abstractions;
+    using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
     using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
     using Arcadia.Assistant.Calendar.Events;
@@ -28,7 +29,6 @@
 
             this.PersistenceId = $"employee-vacations-{employeeId}";
 
-            Context.System.EventStream.Subscribe<CalendarEventAssignedToApprover>(this.Self);
             Context.System.EventStream.Subscribe<CalendarEventRemovedFromApprovers>(this.Self);
         }
 
@@ -50,52 +50,6 @@
                     this.Sender.Tell(new GetCalendarEvent.Response.Found(this.eventsById[msg.EventId]));
                     break;
 
-                case UpsertCalendarEvent msg when msg.Event.EventId == null:
-                    this.Sender.Tell(new UpsertCalendarEvent.Error(new ArgumentNullException(nameof(msg.Event.EventId)).Message));
-                    break;
-
-                case UpsertCalendarEvent cmd when !this.eventsById.ContainsKey(cmd.Event.EventId):
-                    try
-                    {
-                        if (cmd.Event.Status != this.GetInitialStatus())
-                        {
-                            throw new Exception($"Event {cmd.Event.EventId}. Initial status must be {this.GetInitialStatus()}");
-                        }
-
-                        this.EnsureDatesAreNotIntersected(cmd.Event);
-
-                        this.InsertCalendarEvent(cmd.Event, cmd.UpdatedBy, cmd.Timestamp);
-                    }
-                    catch (Exception ex)
-                    {
-                        this.Sender.Tell(new UpsertCalendarEvent.Error(ex.Message));
-                    }
-
-                    break;
-
-                case UpsertCalendarEvent cmd:
-                    try
-                    {
-                        var oldEvent = this.eventsById[cmd.Event.EventId];
-
-                        if (oldEvent.Status != cmd.Event.Status && !this.IsStatusTransitionAllowed(oldEvent.Status, cmd.Event.Status))
-                        {
-                            throw new Exception(
-                                $"Event {cmd.Event.EventId}. Status transition {oldEvent.Status} -> {cmd.Event.Status} " +
-                                "is not allowed for vacation");
-                        }
-
-                        this.EnsureDatesAreNotIntersected(cmd.Event);
-
-                        this.UpdateCalendarEvent(oldEvent, cmd.UpdatedBy, cmd.Timestamp, cmd.Event);
-                    }
-                    catch (Exception ex)
-                    {
-                        this.Sender.Tell(new UpsertCalendarEvent.Error(ex.Message));
-                    }
-
-                    break;
-
                 case GetCalendarEventApprovals msg:
                     if (!this.approvalsByEvent.TryGetValue(msg.Event.EventId, out var approvals))
                     {
@@ -105,10 +59,22 @@
                     this.Sender.Tell(new GetCalendarEventApprovals.SuccessResponse(approvals));
                     break;
 
-                case ApproveCalendarEvent msg:
+                case InsertVacation msg when msg.Event.EventId == null:
+                    this.Sender.Tell(new InsertVacation.Error(new ArgumentNullException(nameof(msg.Event.EventId))));
+                    break;
+
+                case InsertVacation cmd:
+                    this.InsertVacation(cmd.Event, cmd.CreatedBy, cmd.Timestamp);
+                    break;
+
+                case UpdateVacation cmd:
+                    this.UpdateVacation(cmd.OldEvent, cmd.UpdatedBy, cmd.Timestamp, cmd.NewEvent);
+                    break;
+
+                case ApproveVacation msg:
                     try
                     {
-                        this.ApproveCalendarEvent(msg);
+                        this.ApproveVacation(msg);
                     }
                     catch (Exception ex)
                     {
@@ -117,12 +83,13 @@
 
                     break;
 
-                case CalendarEventAssignedToApprover msg when this.eventsById.ContainsKey(msg.Event.EventId):
-                    this.OnCalendarEventNextApproverReceived(msg.Event.EventId, msg.ApproverId);
+                case CalendarEventRemovedFromApprovers msg when this.eventsById.TryGetValue(msg.Event.EventId, out var @event) && @event.IsPending:
+                    this.OnCalendarEventNextApproverReceived(msg.Event.EventId);
                     break;
 
-                case CalendarEventRemovedFromApprovers msg when this.eventsById.ContainsKey(msg.Event.EventId):
-                    this.OnCalendarEventNextApproverReceived(msg.Event.EventId, null);
+                case CheckDatesAvailability msg:
+                    var datesAvailable = this.CheckDatesAvailability(msg.Event);
+                    this.Sender.Tell(new CheckDatesAvailability.Response(datesAvailable));
                     break;
 
                 default:
@@ -172,7 +139,7 @@
             }
         }
 
-        private void InsertCalendarEvent(
+        private void InsertVacation(
             CalendarEvent calendarEvent,
             string createdBy,
             DateTimeOffset timestamp)
@@ -188,13 +155,11 @@
             }, ev =>
             {
                 this.OnVacationRequested(ev);
-
-                Context.System.EventStream.Publish(new CalendarEventCreated(calendarEvent, createdBy, timestamp));
-                this.Sender.Tell(new UpsertCalendarEvent.Success(calendarEvent));
+                this.Sender.Tell(new InsertVacation.Success(calendarEvent, createdBy, timestamp));
             });
         }
 
-        private void UpdateCalendarEvent(
+        private void UpdateVacation(
             CalendarEvent oldEvent,
             string updatedBy,
             DateTimeOffset timestamp,
@@ -202,16 +167,6 @@
         {
             if (oldEvent.Dates != newEvent.Dates)
             {
-                if (!oldEvent.IsPending)
-                {
-                    throw new Exception($"Date change is not allowed in status {oldEvent.Status} for {oldEvent.Type}");
-                }
-
-                if (this.approvalsByEvent.TryGetValue(oldEvent.EventId, out var approvals) && approvals.Count != 0)
-                {
-                    throw new Exception($"Date change is not allowed when there is at least one user approval for {oldEvent.Type}");
-                }
-
                 this.Persist(new VacationDatesAreEdited
                 {
                     EventId = newEvent.EventId,
@@ -255,30 +210,22 @@
                 }
             }
 
-            Context.System.EventStream.Publish(new CalendarEventChanged(
-                oldEvent,
-                updatedBy,
-                timestamp,
-                newEvent));
-
-            this.Sender.Tell(new UpsertCalendarEvent.Success(newEvent));
+            this.Sender.Tell(new UpdateVacation.Success(newEvent, oldEvent, updatedBy, timestamp));
         }
 
-        private void ApproveCalendarEvent(ApproveCalendarEvent message)
+        private void ApproveVacation(ApproveVacation message)
         {
+            if (!this.eventsById.ContainsKey(message.Event.EventId))
+            {
+                throw new Exception($"Vacation with id {message.Event.EventId} is not found");
+            }
+
             var calendarEvent = this.eventsById[message.Event.EventId];
             var approvals = this.approvalsByEvent[message.Event.EventId];
 
-            if (!calendarEvent.IsPending)
+            if (approvals.Any(a => a.ApprovedBy == message.ApprovedBy))
             {
-                var errorMessage = $"Approval of non-pending event {message.Event} is not allowed";
-                this.Sender.Tell(new ApproveCalendarEvent.BadRequestResponse(errorMessage));
-                return;
-            }
-
-            if (approvals.Any(a => a.ApprovedBy == message.ApproverId))
-            {
-                this.Sender.Tell(Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
+                this.Sender.Tell(Abstractions.EmployeeVacations.ApproveVacation.Success.Instance);
                 return;
             }
 
@@ -286,53 +233,44 @@
             {
                 EventId = message.Event.EventId,
                 TimeStamp = message.Timestamp,
-                UserId = message.ApproverId
+                UserId = message.ApprovedBy
             }, ev =>
             {
                 this.OnSuccessfulApprove(ev);
-
-                this.Sender.Tell(Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
-                Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(calendarEvent, approvals.ToList()));
+                this.Sender.Tell(new ApproveVacation.Success(calendarEvent, approvals.ToList()));
             });
         }
 
-        protected virtual void OnSuccessfulApprove(UserGrantedCalendarEventApproval message)
+        private void OnSuccessfulApprove(UserGrantedCalendarEventApproval message)
         {
             var approvals = this.approvalsByEvent[message.EventId];
             approvals.Add(new Approval(message.TimeStamp, message.UserId));
         }
 
-        private void OnCalendarEventNextApproverReceived(string eventId, string nextApproverId)
+        private void OnCalendarEventNextApproverReceived(string eventId)
         {
             var oldEvent = this.eventsById[eventId];
-            if (!oldEvent.IsPending)
-            {
-                return;
-            }
 
-            if (nextApproverId == null)
-            {
-                var approvedStatus = new CalendarEventStatuses().ApprovedForType(oldEvent.Type);
-                var newEvent = new CalendarEvent(
-                    oldEvent.EventId,
-                    oldEvent.Type,
-                    oldEvent.Dates,
-                    approvedStatus,
-                    oldEvent.EmployeeId
-                );
+            var approvedStatus = new CalendarEventStatuses().ApprovedForType(oldEvent.Type);
+            var newEvent = new CalendarEvent(
+                oldEvent.EventId,
+                oldEvent.Type,
+                oldEvent.Dates,
+                approvedStatus,
+                oldEvent.EmployeeId
+            );
 
-                var approvals = this.approvalsByEvent[eventId];
+            var approvals = this.approvalsByEvent[eventId];
 
-                var lastApproval = approvals
-                    .OrderByDescending(a => a.Timestamp)
-                    .FirstOrDefault();
+            var lastApproval = approvals
+                .OrderByDescending(a => a.Timestamp)
+                .FirstOrDefault();
 
-                // If there is no approvals, then employee is Director General and event is updated by himself
-                var updatedBy = lastApproval?.ApprovedBy ?? newEvent.EmployeeId;
-                var timestamp = lastApproval?.Timestamp ?? DateTimeOffset.Now;
+            // If there is no approvals, then employee is Director General and event is updated by himself
+            var updatedBy = lastApproval?.ApprovedBy ?? newEvent.EmployeeId;
+            var timestamp = lastApproval?.Timestamp ?? DateTimeOffset.Now;
 
-                this.UpdateCalendarEvent(oldEvent, updatedBy, timestamp, newEvent);
-            }
+            this.UpdateVacation(oldEvent, updatedBy, timestamp, newEvent);
         }
 
         private void OnVacationRequested(VacationIsRequested message)
@@ -391,29 +329,12 @@
             }
         }
 
-        private string GetInitialStatus()
+        private bool CheckDatesAvailability(CalendarEvent @event)
         {
-            return VacationStatuses.Requested;
-        }
-
-        private bool IsStatusTransitionAllowed(string oldCalendarEventStatus, string newCalendarEventStatus)
-        {
-            return VacationStatuses.All.Contains(newCalendarEventStatus)
-                && (oldCalendarEventStatus != VacationStatuses.Cancelled)
-                && (oldCalendarEventStatus != VacationStatuses.Rejected)
-                && (newCalendarEventStatus != this.GetInitialStatus())
-                && (newCalendarEventStatus != VacationStatuses.Approved);
-        }
-
-        private void EnsureDatesAreNotIntersected(CalendarEvent @event)
-        {
-            var intersectedEvent = this.eventsById.Values
+            var intersectedEventExists = this.eventsById.Values
                 .Where(ev => ev.EventId != @event.EventId)
-                .FirstOrDefault(ev => ev.Dates.DatesIntersectsWith(@event.Dates));
-            if (intersectedEvent != null)
-            {
-                throw new Exception($"Event {@event.EventId}. Dates intersect with another vacation with id {intersectedEvent.EventId}");
-            }
+                .Any(ev => ev.Dates.DatesIntersectsWith(@event.Dates));
+            return !intersectedEventExists;
         }
     }
 }
