@@ -76,6 +76,9 @@
 
                     break;
 
+                case CalendarEventChanged _:
+                    break;
+
                 case GetVacationsCredit _:
                     this.vacationsCreditRegistry
                         .Ask<VacationsCreditRegistry.GetVacationInfo.Response>(new VacationsCreditRegistry.GetVacationInfo(this.employeeId))
