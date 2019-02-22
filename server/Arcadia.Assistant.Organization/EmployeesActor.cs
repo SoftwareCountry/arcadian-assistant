@@ -7,7 +7,7 @@
     using Akka.Actor;
     using Akka.Event;
     using Akka.Routing;
-    using Arcadia.Assistant.Calendar.Abstractions;
+    using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
     using Arcadia.Assistant.Images;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;

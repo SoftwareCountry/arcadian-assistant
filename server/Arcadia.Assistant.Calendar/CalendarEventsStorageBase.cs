@@ -127,8 +127,14 @@
                     this.OnCalendarEventNextApproverReceived(msg.Event.EventId, msg.ApproverId);
                     break;
 
+                case CalendarEventAssignedToApprover _:
+                    break;
+
                 case CalendarEventRemovedFromApprovers msg when this.EventsById.ContainsKey(msg.Event.EventId):
                     this.OnCalendarEventNextApproverReceived(msg.Event.EventId, null);
+                    break;
+
+                case CalendarEventRemovedFromApprovers _:
                     break;
 
                 default:

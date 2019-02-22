@@ -16,11 +16,18 @@ namespace Arcadia.Assistant.CSP.Model
             EmployeePositionHistory = new HashSet<EmployeePositionHistory>();
             EmployeeRoles = new HashSet<EmployeeRoles>();
             EmployeeTeam = new HashSet<EmployeeTeam>();
+            ForeignPassport = new HashSet<ForeignPassport>();
+            ForeignPassportHistory = new HashSet<ForeignPassportHistory>();
+            Notifications = new HashSet<Notifications>();
             Team = new HashSet<Team>();
             TeamHistory = new HashSet<TeamHistory>();
-            VacationApprovals = new HashSet<VacationApproval>();
-            VacationsCancelledBy = new HashSet<Vacation>();
-            VacationsEmployee = new HashSet<Vacation>();
+            VacationApprovals = new HashSet<VacationApprovals>();
+            VacationCancellations = new HashSet<VacationCancellations>();
+            VacationProcesses = new HashSet<VacationProcesses>();
+            VacationsEmployee = new HashSet<Vacations>();
+            VacationsEmployeeId1Navigation = new HashSet<Vacations>();
+            Visa = new HashSet<Visa>();
+            VisaHistory = new HashSet<VisaHistory>();
         }
 
         public int Id { get; set; }
@@ -81,10 +88,17 @@ namespace Arcadia.Assistant.CSP.Model
         public ICollection<EmployeePositionHistory> EmployeePositionHistory { get; set; }
         public ICollection<EmployeeRoles> EmployeeRoles { get; set; }
         public ICollection<EmployeeTeam> EmployeeTeam { get; set; }
+        public ICollection<ForeignPassport> ForeignPassport { get; set; }
+        public ICollection<ForeignPassportHistory> ForeignPassportHistory { get; set; }
+        public ICollection<Notifications> Notifications { get; set; }
         public ICollection<Team> Team { get; set; }
         public ICollection<TeamHistory> TeamHistory { get; set; }
-        public ICollection<VacationApproval> VacationApprovals { get; set; }
-        public ICollection<Vacation> VacationsCancelledBy { get; set; }
-        public ICollection<Vacation> VacationsEmployee { get; set; }
+        public ICollection<VacationApprovals> VacationApprovals { get; set; }
+        public ICollection<VacationCancellations> VacationCancellations { get; set; }
+        public ICollection<VacationProcesses> VacationProcesses { get; set; }
+        public ICollection<Vacations> VacationsEmployee { get; set; }
+        public ICollection<Vacations> VacationsEmployeeId1Navigation { get; set; }
+        public ICollection<Visa> Visa { get; set; }
+        public ICollection<VisaHistory> VisaHistory { get; set; }
     }
 }

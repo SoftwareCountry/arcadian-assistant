@@ -31,9 +31,9 @@ namespace Arcadia.Assistant.CSP.Model
         public string BusinessPhone { get; set; }
         public string BusinessFax { get; set; }
         public int? CompanyHistoryId { get; set; }
-        public bool? IsDelete { get; set; }
+        public bool IsDelete { get; set; }
         public DateTime? HistoryDate { get; set; }
-        public bool? HistoryFlag { get; set; }
+        public bool HistoryFlag { get; set; }
 
         public EmployeeHistory Chief { get; set; }
         public CompanyHistory CompanyHistory { get; set; }

@@ -17,9 +17,11 @@ namespace Arcadia.Assistant.CSP.Model
         public string Title { get; set; }
         public string IntrabaseId { get; set; }
         public string Description { get; set; }
-        public bool? IsDelete { get; set; }
+        public bool IsDelete { get; set; }
         public DateTime? HistoryDate { get; set; }
-        public bool? HistoryFlag { get; set; }
+        public bool HistoryFlag { get; set; }
+        public string TitleShort { get; set; }
+        public string TitleRus { get; set; }
 
         public EmployeePosition EmployeePosition { get; set; }
         public Employee ModifiedByNavigation { get; set; }

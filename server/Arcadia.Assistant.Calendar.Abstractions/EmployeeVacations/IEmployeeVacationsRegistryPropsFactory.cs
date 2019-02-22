@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.Calendar.Abstractions
+﻿namespace Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations
 {
     using Akka.Actor;
 

@@ -1,9 +1,8 @@
 ﻿namespace Arcadia.Assistant.DI
 {
-    using Arcadia.Assistant.Calendar.Abstractions;
-    using Arcadia.Assistant.Calendar.Vacations;
     using Autofac;
 
+    using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
     using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.InboxEmail;
     using Arcadia.Assistant.Organization;
@@ -28,8 +27,8 @@
 
             builder.RegisterType<DepartmentsStorage>().AsSelf();
 
-            builder.RegisterType<PersistentEmployeeVacationsRegistryPropsFactory>()
-                .As<IEmployeeVacationsRegistryPropsFactory>();
+            //builder.RegisterType<PersistentEmployeeVacationsRegistryPropsFactory>()
+            //    .As<IEmployeeVacationsRegistryPropsFactory>();
 
             builder.RegisterType<UserPreferencesActor>().AsSelf();
             builder.RegisterType<InboxEmailActor>().AsSelf();
