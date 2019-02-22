@@ -4,7 +4,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Akka.Actor;
-    using Configuration.Configuration;
+    using Arcadia.Assistant.Configuration.Configuration;
     using Health.Abstractions;
 
     public class ArcadiaHealthChecker : HealthChecker

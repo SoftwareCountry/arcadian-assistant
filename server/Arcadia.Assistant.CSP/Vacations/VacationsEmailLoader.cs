@@ -8,7 +8,8 @@
     using Akka.Actor;
     using Akka.DI.Core;
     using Akka.Event;
-
+    
+    using Arcadia.Assistant.CSP.Configuration;
     using Arcadia.Assistant.InboxEmail;
     using Arcadia.Assistant.InboxEmail.Abstractions;
 

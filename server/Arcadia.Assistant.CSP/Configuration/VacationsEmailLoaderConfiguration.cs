@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.CSP.Vacations
+﻿namespace Arcadia.Assistant.CSP.Configuration
 {
     public class VacationsEmailLoaderConfiguration
     {
