@@ -153,8 +153,8 @@
             {
                 Title = this.reminderConfiguration.Reminder.Title,
                 Body = this.reminderConfiguration.Reminder.Body
-                    .Replace("{startDate}", @event.Dates.StartDate.ToString("D"))
-                    .Replace("{endDate}", @event.Dates.EndDate.ToString("D")),
+                    .Replace("{startDate}", @event.Dates.StartDate.ToString("d"))
+                    .Replace("{endDate}", @event.Dates.EndDate.ToString("d")),
                 CustomData = new
                 {
                     @event.EventId,
