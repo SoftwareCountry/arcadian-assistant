@@ -6,9 +6,11 @@
     using System.Threading.Tasks;
 
     using Akka.Actor;
+    using Akka.Event;
 
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
+    using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
 
     public class CspEmployeeVacationsRegistry : UntypedActor, ILogReceive
@@ -16,18 +18,46 @@
         private readonly VacationsSyncExecutor vacationsSyncExecutor;
         private readonly string employeeId;
 
+        private readonly ILoggingAdapter logger = Context.GetLogger();
+
         public CspEmployeeVacationsRegistry(
             VacationsSyncExecutor vacationsSyncExecutor,
             string employeeId)
         {
             this.vacationsSyncExecutor = vacationsSyncExecutor;
             this.employeeId = employeeId;
+
+            Context.System.Scheduler.ScheduleTellOnce(
+                TimeSpan.Zero,
+                this.Self,
+                Initialization.Instance,
+                this.Self);
         }
 
         protected override void OnReceive(object message)
         {
             switch (message)
             {
+                case Initialization _:
+                    this.GetVacations()
+                        .PipeTo(
+                            this.Self,
+                            success: result => new Initialization.Success(result),
+                            failure: err => new Initialization.Error(err));
+                    break;
+
+                case Initialization.Success msg:
+                    foreach (var @event in msg.Events.Where(e => e.CalendarEvent.IsPending))
+                    {
+                        Context.System.EventStream.Publish(new CalendarEventRecoverComplete(@event.CalendarEvent));
+                    }
+
+                    break;
+
+                case Initialization.Error msg:
+                    this.logger.Warning($"Error occured on vacations recover for employee {this.employeeId}: {msg.Exception.Message}");
+                    break;
+
                 case GetCalendarEvents _:
                     this.GetVacations()
                         .PipeTo(
@@ -166,6 +196,31 @@
         private bool IsCalendarEventActual(CalendarEvent @event)
         {
             return VacationStatuses.Actual.Contains(@event.Status);
+        }
+
+        private class Initialization
+        {
+            public static readonly Initialization Instance = new Initialization();
+
+            public class Success
+            {
+                public Success(IEnumerable<CalendarEventWithApprovals> events)
+                {
+                    this.Events = events;
+                }
+
+                public IEnumerable<CalendarEventWithApprovals> Events { get; }
+            }
+
+            public class Error
+            {
+                public Error(Exception exception)
+                {
+                    this.Exception = exception;
+                }
+
+                public Exception Exception { get; }
+            }
         }
     }
 }
