@@ -38,6 +38,7 @@
             builder.RegisterType<VacationsSyncExecutor>().AsSelf();
             builder.RegisterType<VacationsEmailLoader>().AsSelf();
             builder.RegisterType<CspCalendarEventsApprovalsChecker>().As<CalendarEventsApprovalsChecker>();
+            builder.RegisterType<EmployeeVacationApprovedAccountingReminderActor>().AsSelf();
 
             builder.RegisterType<CspEmployeeVacationsRegistryPropsFactory>().As<IEmployeeVacationsRegistryPropsFactory>();
         }
