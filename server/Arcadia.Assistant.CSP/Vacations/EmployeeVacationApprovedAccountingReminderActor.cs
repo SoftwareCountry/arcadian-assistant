@@ -31,7 +31,7 @@
         private readonly ActorSelection userPreferences;
         private readonly ActorSelection pushDevices;
 
-        private readonly Dictionary<string, CalendarEvent> remindedEvents = new Dictionary<string, CalendarEvent>();
+        private readonly Dictionary<string, CalendarEvent> vacationsToRemind = new Dictionary<string, CalendarEvent>();
 
         public EmployeeVacationApprovedAccountingReminderActor(string employeeId, AccountingReminderConfiguration reminderConfiguration)
         {
@@ -120,15 +120,15 @@
         {
             if (@event.Status != VacationStatuses.Approved)
             {
-                if (this.remindedEvents.ContainsKey(@event.EventId))
+                if (this.vacationsToRemind.ContainsKey(@event.EventId))
                 {
-                    this.remindedEvents.Remove(@event.EventId);
+                    this.vacationsToRemind.Remove(@event.EventId);
                 }
 
                 return;
             }
 
-            this.remindedEvents.Add(@event.EventId, @event);
+            this.vacationsToRemind.Add(@event.EventId, @event);
         }
 
         private async Task<IEnumerable<PushNotification>> SendReminderNotifications()
@@ -143,7 +143,7 @@
                 return Enumerable.Empty<PushNotification>();
             }
 
-            return this.remindedEvents.Values
+            return this.vacationsToRemind.Values
                 .Select(e => this.CreatePushNotification(e, pushTokensResponse.DevicePushTokens));
         }
 
