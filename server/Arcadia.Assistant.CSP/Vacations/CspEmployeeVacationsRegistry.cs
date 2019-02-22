@@ -33,12 +33,8 @@
             Context.ActorOf(
                 EmployeeVacationApprovedAccountingReminderActor.CreateProps(employeeId, reminderConfiguration),
                 $"vacations-reminder-{employeeId}");
-       
-            Context.System.Scheduler.ScheduleTellOnce(
-                TimeSpan.Zero,
-                this.Self,
-                Initialization.Instance,
-                this.Self);
+
+            this.Self.Tell(Initialization.Instance);
         }
 
         protected override void OnReceive(object message)
@@ -133,7 +129,11 @@
                             {
                                 if (result != null)
                                 {
-                                    return new ApproveVacation.Success(result.CalendarEvent, result.Approvals.ToList());
+                                    return new ApproveVacation.Success(
+                                        result.CalendarEvent,
+                                        result.Approvals.ToList(),
+                                        msg.ApprovedBy,
+                                        msg.Timestamp);
                                 }
 
                                 return Calendar.Abstractions.EmployeeVacations.ApproveVacation.Success.Instance;

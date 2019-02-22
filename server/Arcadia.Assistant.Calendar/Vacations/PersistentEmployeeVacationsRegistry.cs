@@ -227,7 +227,7 @@
             }, ev =>
             {
                 this.OnSuccessfulApprove(ev);
-                this.Sender.Tell(new ApproveVacation.Success(calendarEvent, approvals.ToList()));
+                this.Sender.Tell(new ApproveVacation.Success(calendarEvent, approvals.ToList(), message.ApprovedBy, message.Timestamp));
             });
         }
 
