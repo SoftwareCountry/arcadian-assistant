@@ -10,6 +10,7 @@
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
+    using Arcadia.Assistant.CSP.Configuration;
 
     public class CspEmployeeVacationsRegistry : UntypedActor, ILogReceive
     {
@@ -18,10 +19,16 @@
 
         public CspEmployeeVacationsRegistry(
             VacationsSyncExecutor vacationsSyncExecutor,
+            AccountingReminderConfiguration reminderConfiguration,
             string employeeId)
         {
             this.vacationsSyncExecutor = vacationsSyncExecutor;
             this.employeeId = employeeId;
+
+            // Not better place to create it, but I don't know where we can do it else
+            Context.ActorOf(
+                EmployeeVacationApprovedAccountingReminderActor.CreateProps(employeeId, reminderConfiguration),
+                $"vacations-reminder-{employeeId}");
         }
 
         protected override void OnReceive(object message)
