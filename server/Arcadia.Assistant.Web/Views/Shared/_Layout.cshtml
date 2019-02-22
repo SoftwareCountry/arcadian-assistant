@@ -7,11 +7,11 @@
     <style>
         html {
             height: 100%;
-            display: flex;
         }
 
         body {
-            flex: 1 0 auto;
+            margin: 8px;
+            width: calc(100% - 16px);
             display: flex;
             flex-direction: column;
         }
@@ -24,8 +24,17 @@
             flex: 1 0 auto;
         }
 
+        .logo {
+            width: 100%;
+            max-width: 384px; /* Image width */
+        }
+
         .download-block {
             display: inline-block;
+        }
+
+        .download-block img {
+            width: 100%;
         }
 
         .another-application-link {
@@ -43,7 +52,7 @@
 </head>
 <body>
     <header>
-        <img src="~/Content/arcadia-logo-dark.png" />
+        <img class="logo" src="~/Content/arcadia_logo.svg" />
     </header>
     <content>
         @RenderBody()

@@ -10,9 +10,9 @@
 
   <ItemGroup>
     <None Remove="akka.conf" />
-    <None Remove="Content\arcadia-logo-dark.png" />
-    <None Remove="Content\download_android.png" />
-    <None Remove="Content\download_ios.png" />
+    <None Remove="Content\arcadia_logo.svg" />
+    <None Remove="Content\download_android.svg" />
+    <None Remove="Content\download_ios.svg" />
     <None Remove="Content\ios-installation-screenshots\step_1.png" />
     <None Remove="Content\ios-installation-screenshots\step_2.png" />
     <None Remove="Content\ios-installation-screenshots\step_3.png" />
@@ -25,15 +25,9 @@
     <Content Include="akka.conf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\arcadia-logo-dark.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\download_android.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\download_ios.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Content\arcadia_logo.svg" />
+    <Content Include="Content\download_android.svg" />
+    <Content Include="Content\download_ios.svg" />
     <Content Include="Content\ios-installation-screenshots\step_1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
