@@ -122,10 +122,7 @@
                 case RecoveryCompleted _:
                     foreach (var @event in this.eventsById.Values)
                     {
-                        if (@event.IsPending)
-                        {
-                            Context.System.EventStream.Publish(new CalendarEventRecoverComplete(@event));
-                        }
+                        Context.System.EventStream.Publish(new CalendarEventRecoverComplete(@event));
                     }
 
                     break;
