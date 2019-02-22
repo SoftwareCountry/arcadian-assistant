@@ -38,9 +38,9 @@ namespace Arcadia.Assistant.CSP.Model
         public string Web { get; set; }
         public string ContactName { get; set; }
         public string TypeOfBusiness { get; set; }
-        public bool? IsDelete { get; set; }
+        public bool IsDelete { get; set; }
         public DateTime? HistoryDate { get; set; }
-        public bool? HistoryFlag { get; set; }
+        public bool HistoryFlag { get; set; }
 
         public Company Company { get; set; }
         public Employee ModifiedByNavigation { get; set; }

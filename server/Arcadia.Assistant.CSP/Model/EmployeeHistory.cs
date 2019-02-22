@@ -9,7 +9,9 @@ namespace Arcadia.Assistant.CSP.Model
         {
             DepartmentHistory = new HashSet<DepartmentHistory>();
             EmployeeTeamHistory = new HashSet<EmployeeTeamHistory>();
+            ForeignPassportHistory = new HashSet<ForeignPassportHistory>();
             TeamHistory = new HashSet<TeamHistory>();
+            VisaHistory = new HashSet<VisaHistory>();
         }
 
         public int Id { get; set; }
@@ -59,9 +61,9 @@ namespace Arcadia.Assistant.CSP.Model
         public DateTime ProbationEnd { get; set; }
         public int WeekHours { get; set; }
         public int? PartTime { get; set; }
-        public bool? IsDelete { get; set; }
+        public bool IsDelete { get; set; }
         public DateTime? HistoryDate { get; set; }
-        public bool? HistoryFlag { get; set; }
+        public bool HistoryFlag { get; set; }
 
         public CompanyHistory Company { get; set; }
         public DepartmentHistory Department { get; set; }
@@ -70,6 +72,8 @@ namespace Arcadia.Assistant.CSP.Model
         public EmployeePositionHistory Position { get; set; }
         public ICollection<DepartmentHistory> DepartmentHistory { get; set; }
         public ICollection<EmployeeTeamHistory> EmployeeTeamHistory { get; set; }
+        public ICollection<ForeignPassportHistory> ForeignPassportHistory { get; set; }
         public ICollection<TeamHistory> TeamHistory { get; set; }
+        public ICollection<VisaHistory> VisaHistory { get; set; }
     }
 }

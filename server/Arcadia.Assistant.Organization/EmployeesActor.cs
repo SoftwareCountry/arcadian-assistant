@@ -7,7 +7,7 @@
     using Akka.Actor;
     using Akka.Event;
     using Akka.Routing;
-
+    using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
     using Arcadia.Assistant.Images;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
@@ -21,16 +21,16 @@
 
         private readonly IActorRef imageResizer;
 
-        private readonly IActorRef vacationsRegistry;
+        private readonly IActorRef vacationsCreditRegistry;
 
         private readonly Dictionary<string, EmployeeIndexEntry> employeesById = new Dictionary<string, EmployeeIndexEntry>();
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
-        private readonly IActorRef calendarEventsApprovalsChecker;
+        private readonly IEmployeeVacationsRegistryPropsFactory employeeVacationsRegistryPropsFactory;
 
         public IStash Stash { get; set; }
 
-        public EmployeesActor(IActorRef calendarEventsApprovalsChecker)
+        public EmployeesActor(IEmployeeVacationsRegistryPropsFactory employeeVacationsRegistryPropsFactory)
         {
             this.employeesInfoStorage = Context.ActorOf(EmployeesInfoStorage.GetProps, "employees-storage");
             this.logger.Info($"Image resizers pool size: {ResizersCount}");
@@ -38,9 +38,9 @@
                 Props.Create(() => new ImageResizer()).WithRouter(new RoundRobinPool(ResizersCount)),
                 "image-resizer");
 
-            this.vacationsRegistry = Context.ActorOf(VacationsRegistry.GetProps, "vacations-registry");
+            this.vacationsCreditRegistry = Context.ActorOf(VacationsCreditRegistry.GetProps, "vacations-credit-registry");
 
-            this.calendarEventsApprovalsChecker = calendarEventsApprovalsChecker;
+            this.employeeVacationsRegistryPropsFactory = employeeVacationsRegistryPropsFactory;
         }
 
         protected override void OnReceive(object message)
@@ -129,8 +129,8 @@
                     var employeeActorProps = EmployeeActor.GetProps(
                         employeeNewInfo,
                         this.imageResizer,
-                        this.vacationsRegistry,
-                        this.calendarEventsApprovalsChecker);
+                        this.vacationsCreditRegistry,
+                        this.employeeVacationsRegistryPropsFactory);
                     employeeActor = Context.ActorOf(
                         persistenceSupervisorFactory.Get(employeeActorProps),
                         $"employee-{Uri.EscapeDataString(employeeId)}");
@@ -154,7 +154,7 @@
             }
         }
 
-        public static Props GetProps(IActorRef calendarEventsApprovalsChecker) =>
-            Props.Create(() => new EmployeesActor(calendarEventsApprovalsChecker));
+        public static Props GetProps(IEmployeeVacationsRegistryPropsFactory employeeVacationsRegistryPropsFactory)
+            => Props.Create(() => new EmployeesActor(employeeVacationsRegistryPropsFactory));
     }
 }

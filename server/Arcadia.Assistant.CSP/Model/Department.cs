@@ -29,7 +29,7 @@ namespace Arcadia.Assistant.CSP.Model
         public string BusinessStreet3 { get; set; }
         public string BusinessPhone { get; set; }
         public string BusinessFax { get; set; }
-        public bool? IsDelete { get; set; }
+        public bool IsDelete { get; set; }
 
         public Employee Chief { get; set; }
         public Company Company { get; set; }

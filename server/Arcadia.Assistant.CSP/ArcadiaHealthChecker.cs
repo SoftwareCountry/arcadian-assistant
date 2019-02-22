@@ -9,7 +9,7 @@
 
     public class ArcadiaHealthChecker : HealthChecker
     {
-        private const string VacationRegistryActorPath = @"/user/organization/employees/vacations-registry";
+        private const string VacationRegistryActorPath = @"/user/organization/employees/vacations-credit-registry";
         private const string DepartmentStorageActorPath = @"/user/organization/departments/departments-storage";
         private const string EmployeesInfoStorageActorPath = @"/user/organization/employees/employees-storage";
 
@@ -24,12 +24,12 @@
 
         protected override async Task<HealthCheckMessageResponse> GetHealthStates()
         {
-            var vacationsRegistry = Context.ActorSelection(VacationRegistryActorPath);
+            var vacationsCreditRegistry = Context.ActorSelection(VacationRegistryActorPath);
             var departmentsStorage = Context.ActorSelection(DepartmentStorageActorPath);
             var employeesInfoStorage = Context.ActorSelection(EmployeesInfoStorageActorPath);
 
             var result = await Task.WhenAll(
-                this.GetActorHealthState(vacationsRegistry),
+                this.GetActorHealthState(vacationsCreditRegistry),
                 this.GetActorHealthState(departmentsStorage),
                 this.GetActorHealthState(employeesInfoStorage));
 

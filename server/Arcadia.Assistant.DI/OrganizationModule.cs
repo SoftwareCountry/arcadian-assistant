@@ -2,9 +2,8 @@
 {
     using Autofac;
 
+    using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
     using Arcadia.Assistant.Configuration.Configuration;
-    using Arcadia.Assistant.CSP;
-    using Arcadia.Assistant.CSP.Vacations;
     using Arcadia.Assistant.InboxEmail;
     using Arcadia.Assistant.Organization;
     using Arcadia.Assistant.Organization.Abstractions;
@@ -22,19 +21,14 @@
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<EmployeesActor>().AsSelf();
-            builder.Register(ctx => new OrganizationActor(this.refreshInformation));
+            builder.Register(ctx => new OrganizationActor(
+                this.refreshInformation,
+                ctx.Resolve<IEmployeeVacationsRegistryPropsFactory>()));
 
             builder.RegisterType<DepartmentsStorage>().AsSelf();
 
-            builder.RegisterType<CspDepartmentsStorage>().As<DepartmentsStorage>();
-            builder.RegisterType<CspEmployeesInfoStorage>().As<EmployeesInfoStorage>();
-
-            builder.RegisterType<ArcadiaVacationRegistry>().As<VacationsRegistry>();
-            builder.RegisterType<EmployeesQueryExecutor>().AsSelf();
-            builder.RegisterType<VacationsSyncExecutor>().AsSelf();
-            builder.RegisterType<VacationsEmailLoader>().AsSelf();
-
-            builder.RegisterType<CspCalendarEventsApprovalsChecker>().As<CalendarEventsApprovalsChecker>();
+            //builder.RegisterType<PersistentEmployeeVacationsRegistryPropsFactory>()
+            //    .As<IEmployeeVacationsRegistryPropsFactory>();
 
             builder.RegisterType<UserPreferencesActor>().AsSelf();
             builder.RegisterType<InboxEmailActor>().AsSelf();

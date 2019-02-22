@@ -7,9 +7,9 @@ namespace Arcadia.Assistant.CSP.Model
     {
         public Company()
         {
-            this.CompanyHistory = new HashSet<CompanyHistory>();
-            this.Department = new HashSet<Department>();
-            this.Employee = new HashSet<Employee>();
+            CompanyHistory = new HashSet<CompanyHistory>();
+            Department = new HashSet<Department>();
+            Employee = new HashSet<Employee>();
         }
 
         public int Id { get; set; }
@@ -36,7 +36,7 @@ namespace Arcadia.Assistant.CSP.Model
         public string Web { get; set; }
         public string ContactName { get; set; }
         public string TypeOfBusiness { get; set; }
-        public bool? IsDelete { get; set; }
+        public bool IsDelete { get; set; }
 
         public ICollection<CompanyHistory> CompanyHistory { get; set; }
         public ICollection<Department> Department { get; set; }
