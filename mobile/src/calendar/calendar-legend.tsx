@@ -7,6 +7,7 @@ import { CalendarEventsColor, legendStyles as styles } from './styles';
 import { StyledText } from '../override/styled-text';
 import { Optional } from 'types';
 import moment from 'moment';
+import { CalendarEvent } from '../reducers/calendar/calendar-event.model';
 
 //============================================================================
 interface CalendarLegendProps {
@@ -19,12 +20,18 @@ class CalendarLegendImpl extends Component<CalendarLegendProps> {
     //----------------------------------------------------------------------------
     public render() {
         const selectedEvents = this.getEventsForSelectedDate();
-        const legend = selectedEvents.map((type, index) => {
-            const style = StyleSheet.flatten([styles.marker, { backgroundColor: CalendarEventsColor.getColor(type) }]);
+        const legend = selectedEvents.map((event, index) => {
+            const style = StyleSheet.flatten(
+                [
+                    styles.marker,
+                    { backgroundColor: CalendarEventsColor.getColor(event.type) },
+                ]
+            );
+
             return (
-                <View key={type + index} style={styles.itemContainer}>
+                <View key={event.type + index} style={styles.itemContainer}>
                     <View style={style}/>
-                    <StyledText style={styles.label}>{type}</StyledText>
+                    <StyledText style={styles.label}>{event.type}</StyledText>
                 </View>
             );
         });
@@ -39,14 +46,14 @@ class CalendarLegendImpl extends Component<CalendarLegendProps> {
     }
 
     //----------------------------------------------------------------------------
-    private getEventsForSelectedDate() {
+    private getEventsForSelectedDate(): CalendarEvent[] {
         const { intervals, selectedDay } = this.props;
 
         if (!selectedDay || !intervals) {
             return [];
         }
 
-        return (intervals.get(selectedDay.date) || []).map(interval => interval.calendarEvent.type);
+        return (intervals.get(selectedDay.date) || []).map(interval => interval.calendarEvent);
     }
 }
 

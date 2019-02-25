@@ -5,7 +5,7 @@ export enum CalendarEventType {
     Vacation = 'Vacation',
     Sickleave = 'Sickleave',
     Dayoff = 'Dayoff',
-    Workout = 'Workout'
+    Workout = 'Workout',
 }
 
 export enum CalendarEventStatus {
@@ -13,7 +13,8 @@ export enum CalendarEventStatus {
     Completed = 'Completed',
     Cancelled = 'Cancelled',
     Approved = 'Approved',
-    Rejected = 'Rejected'
+    Rejected = 'Rejected',
+    Processed = 'Processed',
 }
 
 export class DatesInterval {

@@ -1,5 +1,5 @@
 import { PixelRatio, StyleSheet } from 'react-native';
-import { CalendarEventType } from '../reducers/calendar/calendar-event.model';
+import { CalendarEventStatus, CalendarEventType } from '../reducers/calendar/calendar-event.model';
 
 const daysCounterTitleColor = '#18515E';
 
@@ -116,23 +116,48 @@ export class CalendarEventsColor {
     public static dayoff = '#EB5757';
     public static workout = '#219653';
 
-    public static getColor(type: CalendarEventType) {
+    private static noOpacity = '';
+    private static processedOpacity = '80';
+
+    public static getColor(type: CalendarEventType, status?: CalendarEventStatus) {
+        let color: string = CalendarEventsColor.defaultColor;
+
         switch (type) {
             case CalendarEventType.Vacation:
-                return CalendarEventsColor.vacation;
+                color = CalendarEventsColor.vacation;
+                break;
 
             case CalendarEventType.Sickleave:
-                return CalendarEventsColor.sickLeave;
+                color = CalendarEventsColor.sickLeave;
+                break;
 
             case CalendarEventType.Dayoff:
-                return CalendarEventsColor.dayoff;
+                color = CalendarEventsColor.dayoff;
+                break;
 
             case CalendarEventType.Workout:
-                return CalendarEventsColor.workout;
+                color = CalendarEventsColor.workout;
+                break;
 
             default:
-                return CalendarEventsColor.defaultColor;
+                color = CalendarEventsColor.defaultColor;
+                break;
         }
+
+        return color.concat(CalendarEventsColor.getOpacity(type, status));
+    }
+
+    private static getOpacity(type: CalendarEventType, status?: CalendarEventStatus) {
+        if (!status) {
+            return this.noOpacity;
+        }
+
+        if (type === CalendarEventType.Vacation &&
+            status === CalendarEventStatus.Processed) {
+            return this.processedOpacity;
+        }
+
+        return this.noOpacity;
     }
 }
 
