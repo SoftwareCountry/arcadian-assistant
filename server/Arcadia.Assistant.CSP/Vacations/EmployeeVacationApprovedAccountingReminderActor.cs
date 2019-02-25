@@ -6,7 +6,6 @@
     using System.Threading.Tasks;
 
     using Akka.Actor;
-    using Akka.DI.Core;
     using Akka.Event;
 
     using Arcadia.Assistant.Calendar.Abstractions;
@@ -14,12 +13,18 @@
     using Arcadia.Assistant.CSP.Configuration;
     using Arcadia.Assistant.Notifications;
     using Arcadia.Assistant.Notifications.Push;
+    using Arcadia.Assistant.Organization.Abstractions;
+    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.UserPreferences;
+
+    using EmailNotification = Notifications.Email.EmailNotification;
+    using PushNotification = Notifications.Push.PushNotification;
 
     public class EmployeeVacationApprovedAccountingReminderActor : UntypedActor, ILogReceive
     {
         private const string UserPreferencesActorPath = "/user/user-preferences";
         private const string PushDevicesActorPath = "/user/push-notifications-devices";
+        private const string OrganizationActorPath = "/user/organization";
 
         private const string VacationReminderPushNotificationType = "VacationApprovedReminder";
 
@@ -28,18 +33,22 @@
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
-        private readonly ActorSelection userPreferences;
-        private readonly ActorSelection pushDevices;
+        private readonly ActorSelection userPreferencesActor;
+        private readonly ActorSelection pushDevicesActor;
+        private readonly ActorSelection organizationActor;
 
         private readonly Dictionary<string, CalendarEvent> vacationsToRemind = new Dictionary<string, CalendarEvent>();
 
-        public EmployeeVacationApprovedAccountingReminderActor(string employeeId, AccountingReminderConfiguration reminderConfiguration)
+        public EmployeeVacationApprovedAccountingReminderActor(
+            string employeeId,
+            AccountingReminderConfiguration reminderConfiguration)
         {
             this.employeeId = employeeId;
             this.reminderConfiguration = reminderConfiguration;
 
-            this.userPreferences = Context.ActorSelection(UserPreferencesActorPath);
-            this.pushDevices = Context.ActorSelection(PushDevicesActorPath);
+            this.userPreferencesActor = Context.ActorSelection(UserPreferencesActorPath);
+            this.pushDevicesActor = Context.ActorSelection(PushDevicesActorPath);
+            this.organizationActor = Context.ActorSelection(OrganizationActorPath);
 
             Context.System.Scheduler.ScheduleTellRepeatedly(
                 this.GetInitialSchedulerDelay(),
@@ -84,7 +93,7 @@
                     break;
 
                 case RemindVacations _:
-                    this.SendReminderNotifications()
+                    this.GetNotifications()
                         .PipeTo(
                             this.Self,
                             success: result => new RemindVacations.Success(result),
@@ -92,14 +101,14 @@
                     break;
 
                 case RemindVacations.Success msg:
-                    if (msg.PushNotifications.Any())
+                    if (msg.Notifications.Any())
                     {
-                        this.logger.Debug($"Sending push reminder notifications about approved vacations of employee {this.employeeId}");
+                        this.logger.Debug($"Sending reminder notifications about approved vacations of employee {this.employeeId}");
                     }
 
-                    foreach (var pushNotification in msg.PushNotifications)
+                    foreach (var notification in msg.Notifications)
                     {
-                        Context.System.EventStream.Publish(new NotificationEventBusMessage(pushNotification));
+                        Context.System.EventStream.Publish(new NotificationEventBusMessage(notification));
                     }
 
                     break;
@@ -131,17 +140,27 @@
             this.vacationsToRemind.Add(@event.EventId, @event);
         }
 
-        private async Task<IEnumerable<PushNotification>> SendReminderNotifications()
+        private async Task<IEnumerable<object>> GetNotifications()
         {
-            var ownerPreferencesResponse = await this.userPreferences.Ask<GetUserPreferencesMessage.Response>(
+            var userPreferencesResponse = await this.userPreferencesActor.Ask<GetUserPreferencesMessage.Response>(
                 new GetUserPreferencesMessage(this.employeeId));
-            var pushTokensResponse = await this.pushDevices.Ask<GetDevicePushTokens.Success>(
-                new GetDevicePushTokens(this.employeeId));
 
-            if (!ownerPreferencesResponse.UserPreferences.PushNotifications)
+            var pushNotificationsTask = this.GetPushNotifications(userPreferencesResponse.UserPreferences);
+            var emailNotificationsTask = this.GetEmailNotifications(userPreferencesResponse.UserPreferences);
+
+            var result = await Task.WhenAll(pushNotificationsTask, emailNotificationsTask);
+            return result.SelectMany(x => x);
+        }
+
+        private async Task<IEnumerable<object>> GetPushNotifications(UserPreferences userPreferences)
+        {
+            if (!userPreferences.PushNotifications)
             {
                 return Enumerable.Empty<PushNotification>();
             }
+
+            var pushTokensResponse = await this.pushDevicesActor.Ask<GetDevicePushTokens.Success>(
+                new GetDevicePushTokens(this.employeeId));
 
             return this.vacationsToRemind.Values
                 .Select(e => this.CreatePushNotification(e, pushTokensResponse.DevicePushTokens));
@@ -151,8 +170,8 @@
         {
             var content = new PushNotificationContent
             {
-                Title = this.reminderConfiguration.Reminder.Title,
-                Body = this.reminderConfiguration.Reminder.Body
+                Title = this.reminderConfiguration.ReminderPush.Title,
+                Body = this.reminderConfiguration.ReminderPush.Body
                     .Replace("{startDate}", @event.Dates.StartDate.ToString("d"))
                     .Replace("{endDate}", @event.Dates.EndDate.ToString("d")),
                 CustomData = new
@@ -164,6 +183,33 @@
             };
 
             return new PushNotification(content, deviceTokens.ToList());
+        }
+
+        private async Task<IEnumerable<object>> GetEmailNotifications(UserPreferences userPreferences)
+        {
+            if (!userPreferences.EmailNotifications)
+            {
+                return Enumerable.Empty<EmailNotification>();
+            }
+
+            var employeeResponse = await this.organizationActor.Ask<EmployeesQuery.Response>(
+                EmployeesQuery.Create().WithId(this.employeeId));
+            var employeeMetadata = employeeResponse.Employees.First().Metadata;
+
+            return this.vacationsToRemind.Values
+                .Select(e => this.CreateEmailNotification(e, employeeMetadata));
+        }
+
+        private EmailNotification CreateEmailNotification(CalendarEvent @event, EmployeeMetadata employeeMetadata)
+        {
+            var sender = this.reminderConfiguration.ReminderEmail.NotificationSender;
+            var recipient = employeeMetadata.Email;
+            var subject = this.reminderConfiguration.ReminderEmail.Subject;
+            var body = this.reminderConfiguration.ReminderEmail.Body
+                .Replace("{startDate}", @event.Dates.StartDate.ToString("d"))
+                .Replace("{endDate}", @event.Dates.EndDate.ToString("d"));
+
+            return new EmailNotification(sender, new[] { recipient }, subject, body);
         }
 
         private TimeSpan GetInitialSchedulerDelay()
@@ -185,12 +231,12 @@
 
             public class Success
             {
-                public Success(IEnumerable<PushNotification> pushNotifications)
+                public Success(IEnumerable<object> notifications)
                 {
-                    this.PushNotifications = pushNotifications;
+                    this.Notifications = notifications;
                 }
 
-                public IEnumerable<PushNotification> PushNotifications { get; }
+                public IEnumerable<object> Notifications { get; }
             }
 
             public class Error
