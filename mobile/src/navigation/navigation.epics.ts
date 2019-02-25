@@ -1,3 +1,7 @@
+/******************************************************************************
+ * Copyright (c) Arcadia, Inc. All rights reserved.
+ ******************************************************************************/
+
 import { navigateEpic } from './navigation.epic';
 import {
     NavigationActionType,
@@ -9,7 +13,9 @@ import {
     OpenRoomAction,
     OpenUserPreferencesAction
 } from './navigation.actions';
-import { combineEpics } from 'redux-observable';
+import { ActionsObservable, combineEpics, ofType } from 'redux-observable';
+import { map } from 'rxjs/operators';
+import { loadEmployeesForDepartment } from '../reducers/organization/organization.action';
 
 //----------------------------------------------------------------------------
 const openEmployeeDetails$ = navigateEpic<OpenEmployeeDetailsAction>(
@@ -27,6 +33,12 @@ const openCompany$ = navigateEpic<OpenCompanyAction>(
 const openDepartment$ = navigateEpic<OpenDepartmentAction>(
     NavigationActionType.openDepartment,
     'CurrentDepartment'
+);
+
+//----------------------------------------------------------------------------
+const loadDepartment$ = (action$: ActionsObservable<OpenDepartmentAction>) => action$.pipe(
+    ofType(NavigationActionType.openDepartment),
+    map(x => loadEmployeesForDepartment(x.params.departmentId)),
 );
 
 //----------------------------------------------------------------------------
@@ -58,6 +70,7 @@ export const navigationEpics$ = combineEpics(
     openEmployeeDetails$,
     openCompany$,
     openDepartment$,
+    loadDepartment$,
     openRoom$,
     openOrganization$,
     openUserPreferences$,
