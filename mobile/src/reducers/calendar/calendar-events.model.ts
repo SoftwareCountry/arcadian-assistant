@@ -79,6 +79,7 @@ export class CalendarEvents {
         intervalsModel.intervalsMetadata.addCalendarEvent(calendarEvent);
     }
 
+    // noinspection JSMethodCanBeStatic
     private getBoundaryType(calendarEvent: CalendarEvent): IntervalType | null {
         const { startWorkingHour, finishWorkingHour } = calendarEvent.dates;
 

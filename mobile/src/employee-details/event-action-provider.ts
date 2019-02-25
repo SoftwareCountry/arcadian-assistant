@@ -86,12 +86,18 @@ export class EventActionProvider {
                            permissions: UserEmployeePermissions,
                            approvals: Map<CalendarEventId, Set<Approval>>): Optional<EventAction> {
 
-        const eventStatusRequested = event.status === CalendarEventStatus.Requested;
-        const permissionApprove = permissions.has(Permission.approveCalendarEvents);
-        const approvedByMe = this.approvedByMe(event, approvals);
+        switch (event.status) {
+            case CalendarEventStatus.Requested:
+                const permissionApprove = permissions.has(Permission.approveCalendarEvents);
+                const approvedByMe = this.approvedByMe(event, approvals);
 
-        if (eventStatusRequested && permissionApprove && !approvedByMe) {
-            return this.approveAction(event, employee);
+                if (permissionApprove && !approvedByMe) {
+                    return this.approveAction(event, employee);
+                }
+                break;
+
+            default:
+                break;
         }
 
         return undefined;

@@ -6,6 +6,7 @@
 
     using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
     using Arcadia.Assistant.CSP;
+    using Arcadia.Assistant.CSP.Configuration;
     using Arcadia.Assistant.CSP.Vacations;
     using Arcadia.Assistant.Organization.Abstractions;
 
@@ -20,10 +21,15 @@
 
         protected override void Load(ContainerBuilder builder)
         {
-            var settings = this.configuration
+            var vacationsEmailLoaderConfiguration = this.configuration
                 .GetSection("VacationsEmailLoader")
                 .Get<VacationsEmailLoaderConfiguration>();
-            builder.RegisterInstance(settings).AsSelf();
+            builder.RegisterInstance(vacationsEmailLoaderConfiguration).AsSelf();
+
+            var accountingReminderConfiguration = this.configuration
+                .GetSection("AccountingReminder")
+                .Get<AccountingReminderConfiguration>();
+            builder.RegisterInstance(accountingReminderConfiguration).AsSelf();
 
             builder.RegisterType<CspDepartmentsStorage>().As<DepartmentsStorage>();
             builder.RegisterType<CspEmployeesInfoStorage>().As<EmployeesInfoStorage>();
@@ -32,6 +38,7 @@
             builder.RegisterType<VacationsSyncExecutor>().AsSelf();
             builder.RegisterType<VacationsEmailLoader>().AsSelf();
             builder.RegisterType<CspCalendarEventsApprovalsChecker>().As<CalendarEventsApprovalsChecker>();
+            builder.RegisterType<EmployeeVacationApprovedAccountingReminderActor>().AsSelf();
 
             builder.RegisterType<CspEmployeeVacationsRegistryPropsFactory>().As<IEmployeeVacationsRegistryPropsFactory>();
         }
