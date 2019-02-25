@@ -1,3 +1,7 @@
+/******************************************************************************
+ * Copyright (c) Arcadia, Inc. All rights reserved.
+ ******************************************************************************/
+
 import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
 import {
     LoadAllEmployees,
@@ -19,10 +23,12 @@ import { Department } from './department.model';
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { Employee } from './employee.model';
 import { handleHttpErrors } from '../../errors/error.operators';
-import { catchError, filter, groupBy, map, mergeAll, mergeMap, switchMap } from 'rxjs/operators';
-import { forkJoin, of } from 'rxjs';
+import { filter, groupBy, map, mergeAll, mergeMap, switchMap } from 'rxjs/operators';
+import { forkJoin } from 'rxjs';
 import { Set } from 'immutable';
+import { NavigationActionType, OpenDepartmentAction } from '../../navigation/navigation.actions';
 
+//----------------------------------------------------------------------------
 export const loadEmployeeEpic$ = (action$: ActionsObservable<LoadEmployees>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
     ofType('LOAD_EMPLOYEES'),
     mergeMap(action => {
@@ -38,6 +44,7 @@ export const loadEmployeeEpic$ = (action$: ActionsObservable<LoadEmployees>, _: 
     map(employees => loadEmployeesFinished(employees)),
 );
 
+//----------------------------------------------------------------------------
 export const loadAllEmployeeEpic$ = (action$: ActionsObservable<LoadAllEmployees>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
     ofType('LOAD_ALL_EMPLOYEES'),
     switchMap(action => {
@@ -49,6 +56,7 @@ export const loadAllEmployeeEpic$ = (action$: ActionsObservable<LoadAllEmployees
     }),
 );
 
+//----------------------------------------------------------------------------
 export const loadDepartmentsEpic$ = (action$: ActionsObservable<LoadDepartments>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
     ofType('LOAD-DEPARTMENTS'),
     switchMap(() => deps.apiClient.getJSON(`/departments`).pipe(
@@ -59,6 +67,7 @@ export const loadDepartmentsEpic$ = (action$: ActionsObservable<LoadDepartments>
     ),
 );
 
+//----------------------------------------------------------------------------
 export const loadChiefsEpic$ = (action$: ActionsObservable<LoadDepartmentsFinished>) => action$.pipe(
     ofType('LOAD-DEPARTMENTS-FINISHED'),
     map(action => action.departments.filter(department => !!department.chiefId)),
@@ -66,6 +75,7 @@ export const loadChiefsEpic$ = (action$: ActionsObservable<LoadDepartmentsFinish
     map(chiefIds => loadEmployees(chiefIds))
 );
 
+//----------------------------------------------------------------------------
 export const loadEmployeesForDepartmentEpic$ = (action$: ActionsObservable<LoadEmployeesForDepartment>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
     ofType('LOAD_EMPLOYEES_FOR_DEPARTMENT'),
     groupBy(action => action.departmentId),
@@ -79,6 +89,7 @@ export const loadEmployeesForDepartmentEpic$ = (action$: ActionsObservable<LoadE
     map(loadEmployeesFinished)
 );
 
+//----------------------------------------------------------------------------
 export const loadEmployeesForRoomEpic$ = (action$: ActionsObservable<LoadEmployeesForRoom>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
     ofType('LOAD_EMPLOYEES_FOR_ROOM'),
     groupBy(action => action.roomNumber),
@@ -92,11 +103,13 @@ export const loadEmployeesForRoomEpic$ = (action$: ActionsObservable<LoadEmploye
     map(loadEmployeesFinished)
 );
 
+//----------------------------------------------------------------------------
 export const loadEmployeesForUserDepartmentEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>) => action$.pipe(
     ofType('LOAD-USER-EMPLOYEE-FINISHED'),
     map(x => loadEmployeesForDepartment(x.employee.departmentId)),
 );
 
+//----------------------------------------------------------------------------
 export const loadEmployeesForUserRoomEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>) => action$.pipe(
     ofType('LOAD-USER-EMPLOYEE-FINISHED'),
     filter(action => {
@@ -105,7 +118,14 @@ export const loadEmployeesForUserRoomEpic$ = (action$: ActionsObservable<LoadUse
     map(x => loadEmployeesForRoom(x.employee.roomNumber!)),
 );
 
+//----------------------------------------------------------------------------
 export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
     ofType('LOAD-USER-EMPLOYEE-FINISHED'),
     map(x => loadDepartments()),
+);
+
+//----------------------------------------------------------------------------
+export const handleDepartmentNavigation$ = (action$: ActionsObservable<OpenDepartmentAction>) => action$.pipe(
+    ofType(NavigationActionType.openDepartment),
+    map(x => loadEmployeesForDepartment(x.params.departmentId)),
 );

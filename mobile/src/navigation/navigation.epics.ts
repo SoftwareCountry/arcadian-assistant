@@ -13,9 +13,7 @@ import {
     OpenRoomAction,
     OpenUserPreferencesAction
 } from './navigation.actions';
-import { ActionsObservable, combineEpics, ofType } from 'redux-observable';
-import { map } from 'rxjs/operators';
-import { loadEmployeesForDepartment } from '../reducers/organization/organization.action';
+import { combineEpics } from 'redux-observable';
 
 //----------------------------------------------------------------------------
 const openEmployeeDetails$ = navigateEpic<OpenEmployeeDetailsAction>(
@@ -33,12 +31,6 @@ const openCompany$ = navigateEpic<OpenCompanyAction>(
 const openDepartment$ = navigateEpic<OpenDepartmentAction>(
     NavigationActionType.openDepartment,
     'CurrentDepartment'
-);
-
-//----------------------------------------------------------------------------
-const loadDepartment$ = (action$: ActionsObservable<OpenDepartmentAction>) => action$.pipe(
-    ofType(NavigationActionType.openDepartment),
-    map(x => loadEmployeesForDepartment(x.params.departmentId)),
 );
 
 //----------------------------------------------------------------------------
@@ -70,7 +62,6 @@ export const navigationEpics$ = combineEpics(
     openEmployeeDetails$,
     openCompany$,
     openDepartment$,
-    loadDepartment$,
     openRoom$,
     openOrganization$,
     openUserPreferences$,
