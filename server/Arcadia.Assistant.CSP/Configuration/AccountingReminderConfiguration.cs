@@ -9,6 +9,9 @@
         public string DailyRemindTime { get; set; }
 
         [Required]
-        public PushNotification Reminder { get; set; }
+        public PushNotification ReminderPush { get; set; }
+
+        [Required]
+        public EmailNotification ReminderEmail { get; set; }
     }
 }
