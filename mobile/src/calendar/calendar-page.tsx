@@ -255,7 +255,7 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
 
     //----------------------------------------------------------------------------
     private renderInterval(interval: IntervalModel, elementKey: number): JSX.Element | null {
-        const color = CalendarEventsColor.getColor(interval.calendarEvent.type, interval.calendarEvent.status) || '#FFFFFF';
+        const color = CalendarEventsColor.getColor(interval.calendarEvent.type, interval.calendarEvent.status) || Style.color.white;
 
         switch (interval.intervalType) {
             case IntervalType.StartInterval:
