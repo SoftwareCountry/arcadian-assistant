@@ -120,7 +120,7 @@
                     break;
 
                 case RecoveryCompleted _:
-                    foreach (var @event in this.eventsById.Values.Where(e => e.IsPending))
+                    foreach (var @event in this.eventsById.Values)
                     {
                         Context.System.EventStream.Publish(new CalendarEventRecoverComplete(@event));
                     }
@@ -227,7 +227,7 @@
             }, ev =>
             {
                 this.OnSuccessfulApprove(ev);
-                this.Sender.Tell(new ApproveVacation.Success(calendarEvent, approvals.ToList()));
+                this.Sender.Tell(new ApproveVacation.Success(calendarEvent, approvals.ToList(), message.ApprovedBy, message.Timestamp));
             });
         }
 

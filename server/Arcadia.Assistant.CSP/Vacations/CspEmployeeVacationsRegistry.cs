@@ -12,6 +12,7 @@
     using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
     using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
+    using Arcadia.Assistant.CSP.Configuration;
 
     public class CspEmployeeVacationsRegistry : UntypedActor, ILogReceive
     {
@@ -22,16 +23,18 @@
 
         public CspEmployeeVacationsRegistry(
             VacationsSyncExecutor vacationsSyncExecutor,
+            AccountingReminderConfiguration reminderConfiguration,
             string employeeId)
         {
             this.vacationsSyncExecutor = vacationsSyncExecutor;
             this.employeeId = employeeId;
 
-            Context.System.Scheduler.ScheduleTellOnce(
-                TimeSpan.Zero,
-                this.Self,
-                Initialization.Instance,
-                this.Self);
+            // Not better place to create it, but I don't know where we can do it else
+            Context.ActorOf(
+                EmployeeVacationApprovedAccountingReminderActor.CreateProps(employeeId, reminderConfiguration),
+                $"vacations-reminder-{employeeId}");
+
+            this.Self.Tell(Initialization.Instance);
         }
 
         protected override void OnReceive(object message)
@@ -47,7 +50,7 @@
                     break;
 
                 case Initialization.Success msg:
-                    foreach (var @event in msg.Events.Where(e => e.CalendarEvent.IsPending))
+                    foreach (var @event in msg.Events)
                     {
                         Context.System.EventStream.Publish(new CalendarEventRecoverComplete(@event.CalendarEvent));
                     }
@@ -126,7 +129,11 @@
                             {
                                 if (result != null)
                                 {
-                                    return new ApproveVacation.Success(result.CalendarEvent, result.Approvals.ToList());
+                                    return new ApproveVacation.Success(
+                                        result.CalendarEvent,
+                                        result.Approvals.ToList(),
+                                        msg.ApprovedBy,
+                                        msg.Timestamp);
                                 }
 
                                 return Calendar.Abstractions.EmployeeVacations.ApproveVacation.Success.Instance;

@@ -24,17 +24,23 @@
 
         public class Success : Response
         {
-            public static readonly Success Instance = new Success(null, null);
+            public static readonly Success Instance = new Success(null, null, null, null);
 
-            public Success(CalendarEvent @event, IEnumerable<Approval> approvals)
+            public Success(CalendarEvent @event, IEnumerable<Approval> approvals, string approvedBy, DateTimeOffset? timestamp)
             {
                 this.Event = @event;
                 this.Approvals = approvals;
+                this.ApprovedBy = approvedBy;
+                this.Timestamp = timestamp;
             }
 
             public CalendarEvent Event { get; }
 
             public IEnumerable<Approval> Approvals { get; }
+
+            public string ApprovedBy { get; }
+
+            public DateTimeOffset? Timestamp { get; }
         }
 
         public class Error : Response

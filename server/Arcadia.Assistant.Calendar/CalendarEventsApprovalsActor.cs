@@ -55,8 +55,11 @@
                     this.OnCalendarEventNeedNextApprover(msg.Event);
                     break;
 
-                case CalendarEventRecoverComplete msg:
+                case CalendarEventRecoverComplete msg when msg.Event.IsPending:
                     this.OnCalendarEventRecoverComplete(msg.Event);
+                    break;
+
+                case CalendarEventRecoverComplete _:
                     break;
 
                 case GetNextApproverSuccess msg:
