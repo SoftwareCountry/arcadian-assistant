@@ -73,7 +73,7 @@
                     break;
 
                 case RefreshDatabase _:
-                    this.GetVacations()
+                    this.GetVacations(false)
                         .PipeTo(
                             this.Self,
                             success: result => new RefreshDatabase.Success(result),
@@ -89,7 +89,7 @@
                     break;
 
                 case GetCalendarEvents _:
-                    this.GetVacations()
+                    this.GetVacations(false)
                         .PipeTo(
                             this.Self,
                             this.Sender,
@@ -204,7 +204,10 @@
 
         private void FinishGetCalendarEvents(GetCalendarEventsSuccess msg)
         {
-            var vacations = msg.Events.Select(x => x.CalendarEvent).ToList();
+            var vacations = msg.Events
+                .Where(e => this.IsCalendarEventActual(e.CalendarEvent))
+                .Select(x => x.CalendarEvent)
+                .ToList();
             this.Sender.Tell(new GetCalendarEvents.Response(this.employeeId, vacations));
 
             this.UpdateDatabaseVacationsCache(msg.Events.ToList());
@@ -294,17 +297,28 @@
             }
         }
 
-        private async Task<IEnumerable<CalendarEventWithApprovals>> GetVacations()
+        private async Task<IEnumerable<CalendarEventWithApprovals>> GetVacations(bool onlyActual = true)
         {
             var vacations = await this.vacationsSyncExecutor.GetVacations(this.employeeId);
-            return vacations
-                .Where(v => this.IsCalendarEventActual(v.CalendarEvent))
-                .ToList();
+
+            if (onlyActual)
+            {
+                vacations = vacations.Where(v => this.IsCalendarEventActual(v.CalendarEvent)).ToList();
+            }
+
+            return vacations;
         }
 
-        private Task<CalendarEventWithApprovals> GetVacation(string eventId)
+        private async Task<CalendarEventWithApprovals> GetVacation(string eventId)
         {
-            return this.vacationsSyncExecutor.GetVacation(this.employeeId, eventId);
+            var vacation = await this.vacationsSyncExecutor.GetVacation(this.employeeId, eventId);
+
+            if (vacation == null)
+            {
+                return null;
+            }
+
+            return this.IsCalendarEventActual(vacation.CalendarEvent) ? vacation : null;
         }
 
         private async Task<CalendarEventWithApprovals> ApproveVacation(ApproveVacation message)
