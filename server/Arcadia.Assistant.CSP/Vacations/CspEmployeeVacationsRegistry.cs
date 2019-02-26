@@ -144,9 +144,19 @@
                 case InsertVacation msg:
                     this.vacationsSyncExecutor.InsertVacation(msg.Event, msg.Timestamp, msg.CreatedBy)
                         .PipeTo(
+                            this.Self,
                             this.Sender,
-                            success: result => new InsertVacation.Success(result.CalendarEvent, msg.CreatedBy, msg.Timestamp),
-                            failure: err => new InsertVacation.Error(err));
+                            result => new InsertVacationSuccess(result, msg.CreatedBy, msg.Timestamp),
+                            failure: err => new InsertVacationError(err));
+                    break;
+
+                case InsertVacationSuccess msg:
+                    this.FinishInsertVacation(msg);
+                    break;
+
+                case InsertVacationError msg:
+                    this.logger.Error(msg.Exception, $"Error occured on insert vacation to CSP database for employee {this.employeeId}");
+                    this.Sender.Tell(new InsertVacation.Error(msg.Exception));
                     break;
 
                 case UpdateVacation msg:
@@ -233,6 +243,12 @@
                 this.Sender.Tell(new GetCalendarEventApprovals.SuccessResponse(msg.Event.Approvals.ToList()));
                 this.UpdateEventInDatabaseCache(msg.Event);
             }
+        }
+
+        private void FinishInsertVacation(InsertVacationSuccess msg)
+        {
+            this.Sender.Tell(new InsertVacation.Success(msg.Event.CalendarEvent, msg.CreatedBy, msg.Timestamp));
+            this.databaseVacationsCache[msg.Event.CalendarEvent.EventId] = msg.Event;
         }
 
         private void RemoveEventFromDatabaseCache(string eventId)
@@ -515,6 +531,32 @@
             }
 
             public string EventId { get; }
+
+            public Exception Exception { get; }
+        }
+
+        private class InsertVacationSuccess
+        {
+            public InsertVacationSuccess(CalendarEventWithApprovals @event, string createdBy, DateTimeOffset timestamp)
+            {
+                this.Event = @event;
+                this.CreatedBy = createdBy;
+                this.Timestamp = timestamp;
+            }
+
+            public CalendarEventWithApprovals Event { get; }
+
+            public string CreatedBy { get; }
+
+            public DateTimeOffset Timestamp { get; }
+        }
+
+        private class InsertVacationError
+        {
+            public InsertVacationError(Exception exception)
+            {
+                this.Exception = exception;
+            }
 
             public Exception Exception { get; }
         }
