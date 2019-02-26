@@ -12,21 +12,28 @@
     using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
     using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
+    using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.CSP.Configuration;
 
     public class CspEmployeeVacationsRegistry : UntypedActor, ILogReceive
     {
         private readonly VacationsSyncExecutor vacationsSyncExecutor;
+        private readonly IRefreshInformation refreshInformation;
         private readonly string employeeId;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
+        private ICancelable databaseRefreshSchedule;
+        private Dictionary<string, CalendarEventWithApprovals> databaseVacationsCache;
+
         public CspEmployeeVacationsRegistry(
             VacationsSyncExecutor vacationsSyncExecutor,
             AccountingReminderConfiguration reminderConfiguration,
+            IRefreshInformation refreshInformation,
             string employeeId)
         {
             this.vacationsSyncExecutor = vacationsSyncExecutor;
+            this.refreshInformation = refreshInformation;
             this.employeeId = employeeId;
 
             // Not better place to create it, but I don't know where we can do it else
@@ -34,31 +41,51 @@
                 EmployeeVacationApprovedAccountingReminderActor.CreateProps(employeeId, reminderConfiguration),
                 $"vacations-reminder-{employeeId}");
 
-            this.Self.Tell(Initialization.Instance);
+            this.Self.Tell(Initialize.Instance);
         }
 
         protected override void OnReceive(object message)
         {
             switch (message)
             {
-                case Initialization _:
+                case Initialize _:
                     this.GetVacations()
                         .PipeTo(
                             this.Self,
-                            success: result => new Initialization.Success(result),
-                            failure: err => new Initialization.Error(err));
+                            success: result => new Initialize.Success(result),
+                            failure: err => new Initialize.Error(err));
                     break;
 
-                case Initialization.Success msg:
+                case Initialize.Success msg:
+                    this.databaseVacationsCache = msg.Events.ToDictionary(x => x.CalendarEvent.EventId);
+
                     foreach (var @event in msg.Events)
                     {
                         Context.System.EventStream.Publish(new CalendarEventRecoverComplete(@event.CalendarEvent));
                     }
 
+                    this.ScheduleNextDatabaseRefresh();
+
                     break;
 
-                case Initialization.Error msg:
-                    this.logger.Warning($"Error occured on vacations recover for employee {this.employeeId}: {msg.Exception.Message}");
+                case Initialize.Error msg:
+                    this.logger.Error(msg.Exception, $"Error occured on vacations recover for employee {this.employeeId}");
+                    break;
+
+                case RefreshDatabase _:
+                    this.GetVacations()
+                        .PipeTo(
+                            this.Self,
+                            success: result => new RefreshDatabase.Success(result),
+                            failure: err => new RefreshDatabase.Error(err));
+                    break;
+
+                case RefreshDatabase.Success msg:
+                    this.FinishDatabaseRefresh(msg);
+                    break;
+
+                case RefreshDatabase.Error msg:
+                    this.logger.Error(msg.Exception, $"Error occured on refresh vacations from CSP database for employee {this.employeeId}");
                     break;
 
                 case GetCalendarEvents _:
@@ -71,7 +98,6 @@
                                 return new GetCalendarEvents.Response(this.employeeId, vacations);
                             });
                     break;
-
 
                 case GetCalendarEvent msg:
                     this.GetVacation(msg.EventId)
@@ -155,6 +181,61 @@
             }
         }
 
+        private void FinishDatabaseRefresh(RefreshDatabase.Success msg)
+        {
+            var createdEvents = new List<CalendarEventWithApprovals>();
+            var updatedEvents = new List<CalendarEventWithApprovals>();
+
+            foreach (var @event in msg.Events)
+            {
+                if (!this.databaseVacationsCache.ContainsKey(@event.CalendarEvent.EventId))
+                {
+                    if (@event.CalendarEvent.Status == VacationStatuses.Requested)
+                    {
+                        createdEvents.Add(@event);
+                    }
+                    else
+                    {
+                        updatedEvents.Add(@event);
+                    }
+                }
+                else
+                {
+                    var cacheEvent = this.databaseVacationsCache[@event.CalendarEvent.EventId];
+
+                    if (cacheEvent.CalendarEvent.Status != @event.CalendarEvent.Status || cacheEvent.CalendarEvent.Dates != @event.CalendarEvent.Dates)
+                    {
+                        updatedEvents.Add(@event);
+                    }
+                }
+            }
+
+            var removedEvents = this.databaseVacationsCache
+                .Where(x => msg.Events.All(e => e.CalendarEvent.EventId != x.Key))
+                .Select(x => x.Value);
+
+            foreach (var @event in createdEvents)
+            {
+                Context.System.EventStream.Publish(new CalendarEventCreated(@event.CalendarEvent, @event.CalendarEvent.EmployeeId, DateTimeOffset.Now));
+                this.databaseVacationsCache[@event.CalendarEvent.EventId] = @event;
+            }
+
+            foreach (var @event in updatedEvents)
+            {
+                var oldEvent = this.databaseVacationsCache[@event.CalendarEvent.EventId];
+                Context.System.EventStream.Publish(new CalendarEventChanged(oldEvent.CalendarEvent, @event.CalendarEvent.EmployeeId, DateTimeOffset.Now, @event.CalendarEvent));
+
+                this.databaseVacationsCache[@event.CalendarEvent.EventId] = @event;
+            }
+
+            foreach (var @event in removedEvents)
+            {
+                // New event will be published here
+            }
+
+            this.ScheduleNextDatabaseRefresh();
+        }
+
         private async Task<IEnumerable<CalendarEventWithApprovals>> GetVacations()
         {
             var vacations = await this.vacationsSyncExecutor.GetVacations(this.employeeId);
@@ -205,9 +286,45 @@
             return VacationStatuses.Actual.Contains(@event.Status);
         }
 
-        private class Initialization
+        private void ScheduleNextDatabaseRefresh()
         {
-            public static readonly Initialization Instance = new Initialization();
+            this.databaseRefreshSchedule.CancelIfNotNull();
+
+            this.databaseRefreshSchedule = Context.System.Scheduler.ScheduleTellOnceCancelable(
+                TimeSpan.FromMinutes(this.refreshInformation.IntervalInMinutes),
+                this.Self,
+                RefreshDatabase.Instance,
+                this.Self);
+        }
+
+        private class Initialize
+        {
+            public static readonly Initialize Instance = new Initialize();
+
+            public class Success
+            {
+                public Success(IEnumerable<CalendarEventWithApprovals> events)
+                {
+                    this.Events = events;
+                }
+
+                public IEnumerable<CalendarEventWithApprovals> Events { get; }
+            }
+
+            public class Error
+            {
+                public Error(Exception exception)
+                {
+                    this.Exception = exception;
+                }
+
+                public Exception Exception { get; }
+            }
+        }
+
+        private class RefreshDatabase
+        {
+            public static readonly RefreshDatabase Instance = new RefreshDatabase();
 
             public class Success
             {
