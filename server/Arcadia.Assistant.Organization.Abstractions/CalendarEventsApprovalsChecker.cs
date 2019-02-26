@@ -24,7 +24,7 @@
                         .PipeTo(
                             this.Sender,
                             success: r => new GetNextCalendarEventApprover.SuccessResponse(r),
-                            failure: err => new GetNextCalendarEventApprover.ErrorResponse(err.Message));
+                            failure: err => new GetNextCalendarEventApprover.ErrorResponse(err.ToString()));
                     break;
 
                 default:

@@ -116,7 +116,7 @@
                 case RemindVacations.Error msg:
                     this.logger.Error(
                         "Error occured on send push reminder notifications about approved vacations " +
-                        $"of employee {this.employeeId}: {msg.Exception.Message}");
+                        $"of employee {this.employeeId}: {msg.Exception}");
                     break;
 
                 default:

@@ -75,9 +75,9 @@
                     break;
 
                 case RefreshFailed e:
-                    this.logger.Error(e.Exception, $"Failed to load vacations credit information: {e.Exception.Message}");
+                    this.logger.Error(e.Exception, $"Failed to load vacations credit information: {e.Exception}");
 
-                    this.lastErrorMessage = e.Exception.Message;
+                    this.lastErrorMessage = e.Exception.ToString();
 
                     break;
 
