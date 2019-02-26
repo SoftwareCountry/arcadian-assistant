@@ -44,7 +44,7 @@
             }
             catch (Exception ex)
             {
-                this.lastErrorMessage = ex.Message;
+                this.lastErrorMessage = ex.ToString();
                 throw;
             }
         }

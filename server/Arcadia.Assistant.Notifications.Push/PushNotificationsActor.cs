@@ -35,7 +35,7 @@
                         .PipeTo(
                             this.Self,
                             success: () => SendPushNotificationResultFinish.Instance,
-                            failure: err => new SendPushNotificationResultFinish(err.Message));
+                            failure: err => new SendPushNotificationResultFinish(err.ToString()));
                     break;
 
                 case SendPushNotificationResultFinish msg:
