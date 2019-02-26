@@ -140,55 +140,46 @@
                 case InsertVacation msg:
                     this.vacationsSyncExecutor.InsertVacation(msg.Event, msg.Timestamp, msg.CreatedBy)
                         .PipeTo(
-                            this.Self,
                             this.Sender,
-                            result => new InsertVacationSuccess(result, msg.CreatedBy, msg.Timestamp),
-                            failure: err => new InsertVacationError(err));
-                    break;
-
-                case InsertVacationSuccess msg:
-                    this.FinishInsertVacation(msg);
-                    break;
-
-                case InsertVacationError msg:
-                    this.logger.Error(msg.Exception, $"Error occured on insert vacation to CSP database for employee {this.employeeId}");
-                    this.Sender.Tell(new InsertVacation.Error(msg.Exception));
+                            success: result =>
+                            {
+                                this.databaseVacationsCache[msg.Event.EventId] = result;
+                                return new InsertVacation.Success(result.CalendarEvent, msg.CreatedBy, msg.Timestamp);
+                            },
+                            failure: err => new InsertVacation.Error(err));
                     break;
 
                 case UpdateVacation msg:
                     this.vacationsSyncExecutor.UpdateVacation(msg.NewEvent, msg.Timestamp, msg.UpdatedBy)
                         .PipeTo(
-                            this.Self,
                             this.Sender,
-                            result => new UpdateVacationSuccess(result, msg.OldEvent, msg.UpdatedBy, msg.Timestamp),
-                            err => new UpdateVacationError(err));
-                    break;
-
-                case UpdateVacationSuccess msg:
-                    this.FinishUpdateVacation(msg);
-                    break;
-
-                case UpdateVacationError msg:
-                    this.logger.Error(msg.Exception, $"Error occured on update vacation in CSP database for employee {this.employeeId}");
-                    this.Sender.Tell(new UpdateVacation.Error(msg.Exception));
+                            success: result =>
+                            {
+                                this.databaseVacationsCache[msg.OldEvent.EventId] = result;
+                                return new UpdateVacation.Success(result.CalendarEvent, msg.OldEvent, msg.UpdatedBy, msg.Timestamp);
+                            },
+                            failure: err => new UpdateVacation.Error(err));
                     break;
 
                 case ApproveVacation msg:
                     this.ApproveVacation(msg)
                         .PipeTo(
-                            this.Self,
                             this.Sender,
-                            result => new ApproveVacationSuccess(result, msg.ApprovedBy, msg.Timestamp),
-                            err => new ApproveVacationError(err));
-                    break;
+                            success: result =>
+                            {
+                                if (result != null)
+                                {
+                                    this.databaseVacationsCache[msg.Event.EventId] = result;
+                                    return new ApproveVacation.Success(
+                                        result.CalendarEvent,
+                                        result.Approvals.ToList(),
+                                        msg.ApprovedBy,
+                                        msg.Timestamp);
+                                }
 
-                case ApproveVacationSuccess msg:
-                    this.FinishApproveVacation(msg);
-                    break;
-
-                case ApproveVacationError msg:
-                    this.logger.Error(msg.Exception, $"Error occured on update vacation in CSP database for employee {this.employeeId}");
-                    this.Sender.Tell(new ApproveVacation.Error(msg.Exception));
+                                return Calendar.Abstractions.EmployeeVacations.ApproveVacation.Success.Instance;
+                            },
+                            failure: err => new ApproveVacation.Error(err));
                     break;
 
                 case CheckDatesAvailability msg:
@@ -219,37 +210,6 @@
             this.UpdateDatabaseVacationsCache(msg.Events.ToList());
 
             this.ScheduleNextDatabaseRefresh();
-        }
-
-        private void FinishInsertVacation(InsertVacationSuccess msg)
-        {
-            this.Sender.Tell(new InsertVacation.Success(msg.Event.CalendarEvent, msg.CreatedBy, msg.Timestamp));
-            this.databaseVacationsCache[msg.Event.CalendarEvent.EventId] = msg.Event;
-        }
-
-        private void FinishUpdateVacation(UpdateVacationSuccess msg)
-        {
-            this.Sender.Tell(new UpdateVacation.Success(msg.Event.CalendarEvent, msg.OldEvent, msg.UpdatedBy, msg.Timestamp));
-            this.databaseVacationsCache[msg.OldEvent.EventId] = msg.Event;
-        }
-
-        private void FinishApproveVacation(ApproveVacationSuccess msg)
-        {
-            if (msg.Event != null)
-            {
-                this.Sender.Tell(new ApproveVacation.Success(
-                    msg.Event.CalendarEvent,
-                    msg.Event.Approvals.ToList(),
-                    msg.ApprovedBy,
-                    msg.Timestamp)
-                );
-
-                this.databaseVacationsCache[msg.Event.CalendarEvent.EventId] = msg.Event;
-            }
-            else
-            {
-                this.Sender.Tell(Calendar.Abstractions.EmployeeVacations.ApproveVacation.Success.Instance);
-            }
         }
 
         private void UpdateDatabaseVacationsCache(List<CalendarEventWithApprovals> databaseVacations)
@@ -458,87 +418,6 @@
         private class GetCalendarEventsError
         {
             public GetCalendarEventsError(Exception exception)
-            {
-                this.Exception = exception;
-            }
-
-            public Exception Exception { get; }
-        }
-
-        private class InsertVacationSuccess
-        {
-            public InsertVacationSuccess(CalendarEventWithApprovals @event, string createdBy, DateTimeOffset timestamp)
-            {
-                this.Event = @event;
-                this.CreatedBy = createdBy;
-                this.Timestamp = timestamp;
-            }
-
-            public CalendarEventWithApprovals Event { get; }
-
-            public string CreatedBy { get; }
-
-            public DateTimeOffset Timestamp { get; }
-        }
-
-        private class InsertVacationError
-        {
-            public InsertVacationError(Exception exception)
-            {
-                this.Exception = exception;
-            }
-
-            public Exception Exception { get; }
-        }
-
-        private class UpdateVacationSuccess
-        {
-            public UpdateVacationSuccess(CalendarEventWithApprovals @event, CalendarEvent oldEvent, string updatedBy, DateTimeOffset timestamp)
-            {
-                this.Event = @event;
-                this.OldEvent = oldEvent;
-                this.UpdatedBy = updatedBy;
-                this.Timestamp = timestamp;
-            }
-
-            public CalendarEventWithApprovals Event { get; }
-
-            public CalendarEvent OldEvent { get; }
-
-            public string UpdatedBy { get; }
-
-            public DateTimeOffset Timestamp { get; }
-        }
-
-        private class UpdateVacationError
-        {
-            public UpdateVacationError(Exception exception)
-            {
-                this.Exception = exception;
-            }
-
-            public Exception Exception { get; }
-        }
-
-        private class ApproveVacationSuccess
-        {
-            public ApproveVacationSuccess(CalendarEventWithApprovals @event, string approvedBy, DateTimeOffset timestamp)
-            {
-                this.Event = @event;
-                this.ApprovedBy = approvedBy;
-                this.Timestamp = timestamp;
-            }
-
-            public CalendarEventWithApprovals Event { get; }
-
-            public string ApprovedBy { get; }
-
-            public DateTimeOffset Timestamp { get; }
-        }
-
-        private class ApproveVacationError
-        {
-            public ApproveVacationError(Exception exception)
             {
                 this.Exception = exception;
             }
