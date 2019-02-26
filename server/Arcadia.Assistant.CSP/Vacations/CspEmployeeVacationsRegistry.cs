@@ -134,7 +134,7 @@
 
                                 return new GetCalendarEventApprovals.ErrorResponse($"Vacation with id {msg.Event.EventId} is not found");
                             },
-                            failure: err => new GetCalendarEventApprovals.ErrorResponse(err.Message));
+                            failure: err => new GetCalendarEventApprovals.ErrorResponse(err.ToString()));
                     break;
 
                 case InsertVacation msg:

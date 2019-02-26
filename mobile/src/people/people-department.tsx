@@ -1,6 +1,9 @@
+/******************************************************************************
+ * Copyright (c) Arcadia, Inc. All rights reserved.
+ ******************************************************************************/
+
 import React from 'react';
 import { connect } from 'react-redux';
-
 import { EmployeesList } from './employees-list';
 import { AppState } from '../reducers/app.reducer';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
@@ -11,11 +14,13 @@ import { openEmployeeDetails } from '../navigation/navigation.actions';
 import { Optional } from 'types';
 import { getEmployee } from '../reducers/app.reducer';
 
+//============================================================================
 interface PeopleDepartmentPropsOwnProps {
     employees: EmployeesStore;
     customEmployeesPredicate?: (employee: Employee) => boolean;
 }
 
+//============================================================================
 interface PeopleDepartmentStateProps {
     isLoading: boolean;
     employees: EmployeesStore;
@@ -35,15 +40,19 @@ const mapStateToProps = (state: AppState, ownProps: PeopleDepartmentPropsOwnProp
     });
 };
 
+//============================================================================
 interface EmployeesListDispatchProps {
     onItemClicked: (employee: Employee) => void;
 }
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>): EmployeesListDispatchProps => ({
-    onItemClicked: (employee: Employee) => dispatch(openEmployeeDetails(employee.employeeId))
+    onItemClicked: (employee: Employee) => dispatch(openEmployeeDetails(employee.employeeId)),
 });
 
+
+//============================================================================
 export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentStateProps & EmployeesListDispatchProps & PeopleDepartmentPropsOwnProps> {
+    //----------------------------------------------------------------------------
     public shouldComponentUpdate(nextProps: PeopleDepartmentStateProps & EmployeesListDispatchProps & PeopleDepartmentPropsOwnProps) {
         if (this.props.employees === nextProps.employees
             && this.props.userEmployee === nextProps.userEmployee
@@ -58,6 +67,7 @@ export class PeopleDepartmentImpl extends React.Component<PeopleDepartmentStateP
         return !employees.equals(nextEmployees);
     }
 
+    //----------------------------------------------------------------------------
     public render() {
         const employees = this.props.employees.employeesById.toIndexedSeq().toArray().filter(this.props.employeesPredicate);
         if (this.props.isLoading) {

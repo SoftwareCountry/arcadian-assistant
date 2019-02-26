@@ -1,3 +1,7 @@
+/******************************************************************************
+ * Copyright (c) Arcadia, Inc. All rights reserved.
+ ******************************************************************************/
+
 import { navigateEpic } from './navigation.epic';
 import {
     NavigationActionType,

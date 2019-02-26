@@ -50,7 +50,7 @@
                     break;
 
                 case UpsertCalendarEvent cmd when cmd.Event.EventId == null:
-                    this.Sender.Tell(new UpsertCalendarEvent.Error(new ArgumentNullException(nameof(cmd.Event.EventId)).Message));
+                    this.Sender.Tell(new UpsertCalendarEvent.Error(new ArgumentNullException(nameof(cmd.Event.EventId)).ToString()));
                     break;
 
                 case UpsertCalendarEvent cmd:
