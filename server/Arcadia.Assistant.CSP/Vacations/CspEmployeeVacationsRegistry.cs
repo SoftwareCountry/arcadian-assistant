@@ -207,6 +207,7 @@
         {
             var createdEvents = new List<CalendarEventWithApprovals>();
             var updatedEvents = new List<CalendarEventWithApprovals>();
+            var approvalsUpdatedEvents = new List<CalendarEventWithApprovals>();
 
             foreach (var @event in databaseVacations)
             {
@@ -214,7 +215,14 @@
                 {
                     if (@event.CalendarEvent.Status == VacationStatuses.Requested)
                     {
-                        createdEvents.Add(@event);
+                        if (!@event.Approvals.Any())
+                        {
+                            createdEvents.Add(@event);
+                        }
+                        else
+                        {
+                            approvalsUpdatedEvents.Add(@event);
+                        }
                     }
                     else
                     {
@@ -228,6 +236,17 @@
                     if (cacheEvent.CalendarEvent.Status != @event.CalendarEvent.Status || cacheEvent.CalendarEvent.Dates != @event.CalendarEvent.Dates)
                     {
                         updatedEvents.Add(@event);
+                    }
+
+                    if (@event.CalendarEvent.Status == VacationStatuses.Requested)
+                    {
+                        var cacheApprovals = cacheEvent.Approvals.Select(x => x.ApprovedBy).ToList();
+                        var databaseApprovals = @event.Approvals.Select(x => x.ApprovedBy);
+
+                        if (cacheApprovals.Intersect(databaseApprovals).Count() != cacheApprovals.Count)
+                        {
+                            approvalsUpdatedEvents.Add(@event);
+                        }
                     }
                 }
             }
@@ -247,6 +266,12 @@
                 var oldEvent = this.databaseVacationsCache[@event.CalendarEvent.EventId];
                 Context.System.EventStream.Publish(new CalendarEventChanged(oldEvent.CalendarEvent, @event.CalendarEvent.EmployeeId, DateTimeOffset.Now, @event.CalendarEvent));
 
+                this.databaseVacationsCache[@event.CalendarEvent.EventId] = @event;
+            }
+
+            foreach (var @event in approvalsUpdatedEvents)
+            {
+                Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(@event.CalendarEvent, @event.Approvals));
                 this.databaseVacationsCache[@event.CalendarEvent.EventId] = @event;
             }
 
