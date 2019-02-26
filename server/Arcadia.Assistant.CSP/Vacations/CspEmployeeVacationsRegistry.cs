@@ -340,10 +340,10 @@
 
                     if (@event.CalendarEvent.Status == VacationStatuses.Requested)
                     {
-                        var cacheApprovals = cacheEvent.Approvals.Select(x => x.ApprovedBy).ToList();
-                        var databaseApprovals = @event.Approvals.Select(x => x.ApprovedBy);
+                        var cacheApprovals = cacheEvent.Approvals.Select(x => x.ApprovedBy);
+                        var databaseApprovals = @event.Approvals.Select(x => x.ApprovedBy).ToList();
 
-                        if (cacheApprovals.Intersect(databaseApprovals).Count() != cacheApprovals.Count)
+                        if (cacheApprovals.Intersect(databaseApprovals).Count() != databaseApprovals.Count)
                         {
                             approvalsUpdatedEvents.Add(@event);
                         }
