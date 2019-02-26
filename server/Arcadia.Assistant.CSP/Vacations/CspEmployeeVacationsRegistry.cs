@@ -277,12 +277,14 @@
 
             foreach (var @event in createdEvents)
             {
+                this.logger.Debug($"Vacation with id {@event.CalendarEvent.EventId} was added to CSP database manually");
                 Context.System.EventStream.Publish(new CalendarEventCreated(@event.CalendarEvent, @event.CalendarEvent.EmployeeId, DateTimeOffset.Now));
                 this.databaseVacationsCache[@event.CalendarEvent.EventId] = @event;
             }
 
             foreach (var @event in updatedEvents)
             {
+                this.logger.Debug($"Vacation with id {@event.CalendarEvent.EventId} was updated in CSP database manually");
                 var oldEvent = this.databaseVacationsCache[@event.CalendarEvent.EventId];
                 Context.System.EventStream.Publish(new CalendarEventChanged(oldEvent.CalendarEvent, @event.CalendarEvent.EmployeeId, DateTimeOffset.Now, @event.CalendarEvent));
 
@@ -291,12 +293,14 @@
 
             foreach (var @event in approvalsUpdatedEvents)
             {
+                this.logger.Debug($"Approvals for vacation with id {@event.CalendarEvent.EventId} was updated in CSP database manually");
                 Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(@event.CalendarEvent, @event.Approvals));
                 this.databaseVacationsCache[@event.CalendarEvent.EventId] = @event;
             }
 
             foreach (var @event in removedEvents)
             {
+                this.logger.Debug($"Vacation with id {@event.CalendarEvent.EventId} was removed from CSP database manually");
                 // New event will be published here
             }
         }
