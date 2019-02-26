@@ -49,7 +49,7 @@
             switch (message)
             {
                 case Initialize _:
-                    this.GetVacations()
+                    this.GetVacations(false)
                         .PipeTo(
                             this.Self,
                             success: result => new Initialize.Success(result),
@@ -59,7 +59,7 @@
                 case Initialize.Success msg:
                     this.databaseVacationsCache = msg.Events.ToDictionary(x => x.CalendarEvent.EventId);
 
-                    foreach (var @event in msg.Events)
+                    foreach (var @event in msg.Events.Where(e => this.IsCalendarEventActual(e.CalendarEvent)))
                     {
                         Context.System.EventStream.Publish(new CalendarEventRecoverComplete(@event.CalendarEvent));
                     }
@@ -263,9 +263,12 @@
                 }
             }
 
+            var databaseVacationsById = databaseVacations.ToDictionary(x => x.CalendarEvent.EventId);
+
             var removedEvents = this.databaseVacationsCache
-                .Where(x => databaseVacations.All(e => e.CalendarEvent.EventId != x.Key))
-                .Select(x => x.Value);
+                .Where(x => !databaseVacationsById.ContainsKey(x.Key))
+                .Select(x => x.Value)
+                .ToList();
 
             foreach (var @event in createdEvents)
             {
@@ -293,7 +296,8 @@
             foreach (var @event in removedEvents)
             {
                 this.logger.Debug($"Vacation with id {@event.CalendarEvent.EventId} for employee {this.employeeId} was removed from CSP database manually");
-                // New event will be published here
+                Context.System.EventStream.Publish(new CalendarEventRemoved(@event.CalendarEvent));
+                this.databaseVacationsCache.Remove(@event.CalendarEvent.EventId);
             }
         }
 
