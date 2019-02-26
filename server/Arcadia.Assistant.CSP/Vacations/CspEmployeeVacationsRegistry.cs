@@ -102,23 +102,25 @@
                     break;
 
                 case GetCalendarEventsError msg:
-                    this.logger.Error(msg.Exception, "Error occured on get vacations from CSP database");
+                    this.logger.Error(msg.Exception, $"Error occured on get vacations from CSP database for employee {this.employeeId}");
                     break;
 
                 case GetCalendarEvent msg:
                     this.GetVacation(msg.EventId)
                         .PipeTo(
+                            this.Self,
                             this.Sender,
-                            success: result =>
-                            {
-                                if (result != null)
-                                {
-                                    return new GetCalendarEvent.Response.Found(result.CalendarEvent);
-                                }
+                            result => new GetCalendarEventSuccess(msg.EventId, result),
+                            err => new GetCalendarEventError(msg.EventId, err));
+                    break;
 
-                                return new GetCalendarEvent.Response.NotFound();
-                            },
-                            failure: err => new GetCalendarEvent.Response.NotFound());
+                case GetCalendarEventSuccess msg:
+                    this.FinishGetCalendarEvent(msg);
+                    break;
+
+                case GetCalendarEventError msg:
+                    this.logger.Error(msg.Exception, $"Error occured on get vacation with id {msg.EventId} from CSP database for employee {this.employeeId}");
+                    this.Sender.Tell(new GetCalendarEvent.Response.NotFound());
                     break;
 
                 case GetCalendarEventApprovals msg:
@@ -201,6 +203,24 @@
             this.UpdateDatabaseVacationsCache(msg.Events.ToList());
 
             this.ScheduleNextDatabaseRefresh();
+        }
+
+        private void FinishGetCalendarEvent(GetCalendarEventSuccess msg)
+        {
+            if (msg.Event == null)
+            {
+                this.Sender.Tell(new GetCalendarEvent.Response.NotFound());
+
+                var newDatabaseVacations = this.databaseVacationsCache.Values
+                    .Where(x => x.CalendarEvent.EventId != msg.EventId)
+                    .ToList();
+                this.UpdateDatabaseVacationsCache(newDatabaseVacations);
+            }
+            else
+            {
+                this.Sender.Tell(new GetCalendarEvent.Response.Found(msg.Event.CalendarEvent));
+                this.databaseVacationsCache[msg.EventId] = msg.Event;
+            }
         }
 
         private void UpdateDatabaseVacationsCache(List<CalendarEventWithApprovals> databaseVacations)
@@ -408,6 +428,32 @@
             {
                 this.Exception = exception;
             }
+
+            public Exception Exception { get; }
+        }
+
+        private class GetCalendarEventSuccess
+        {
+            public GetCalendarEventSuccess(string eventId, CalendarEventWithApprovals @event)
+            {
+                this.EventId = eventId;
+                this.Event = @event;
+            }
+
+            public string EventId { get; }
+
+            public CalendarEventWithApprovals Event { get; }
+        }
+
+        private class GetCalendarEventError
+        {
+            public GetCalendarEventError(string eventId, Exception exception)
+            {
+                this.EventId = eventId;
+                this.Exception = exception;
+            }
+
+            public string EventId { get; }
 
             public Exception Exception { get; }
         }
