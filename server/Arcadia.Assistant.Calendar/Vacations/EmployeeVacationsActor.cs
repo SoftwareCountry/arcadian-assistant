@@ -119,7 +119,7 @@
 
                                 return new UpdateVacation(msg.Event, vacation, msg.UpdatedBy, msg.Timestamp);
                             },
-                            err => new UpsertCalendarEvent.Error(err.Message));
+                            err => new UpsertCalendarEvent.Error(err.ToString()));
                     break;
 
                 case UpsertCalendarEvent.Error msg:
@@ -144,7 +144,7 @@
                     break;
 
                 case InsertVacation.Error msg:
-                    this.Sender.Tell(new UpsertCalendarEvent.Error(msg.Exception.Message));
+                    this.Sender.Tell(new UpsertCalendarEvent.Error(msg.Exception.ToString()));
                     break;
 
                 case UpdateVacation msg:
@@ -166,7 +166,7 @@
                     break;
 
                 case UpdateVacation.Error msg:
-                    this.Sender.Tell(new UpsertCalendarEvent.Error(msg.Exception.Message));
+                    this.Sender.Tell(new UpsertCalendarEvent.Error(msg.Exception.ToString()));
                     break;
 
                 case ApproveCalendarEvent msg:
@@ -187,10 +187,10 @@
                             {
                                 if (err is ArgumentException)
                                 {
-                                    return new ApproveCalendarEvent.BadRequestResponse(err.Message);
+                                    return new ApproveCalendarEvent.BadRequestResponse(err.ToString());
                                 }
 
-                                return new ApproveCalendarEvent.ErrorResponse(err.Message);
+                                return new ApproveCalendarEvent.ErrorResponse(err.ToString());
                             });
                     break;
 
@@ -224,7 +224,7 @@
                     break;
 
                 case ApproveVacation.Error msg:
-                    this.Sender.Tell(new ApproveCalendarEvent.ErrorResponse(msg.Exception.Message));
+                    this.Sender.Tell(new ApproveCalendarEvent.ErrorResponse(msg.Exception.ToString()));
                     break;
 
                 case CompleteVacationSuccess msg:
@@ -243,7 +243,7 @@
                 case CompleteVacationError msg:
                     this.logger.Error(
                         "Error occured on approve vacation after all user approvals granted " +
-                        $"for employee {this.employeeId}: {msg.Exception.Message}");
+                        $"for employee {this.employeeId}: {msg.Exception}");
                     break;
 
                 default:

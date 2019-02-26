@@ -58,7 +58,7 @@
                     break;
 
                 case Initialization.Error msg:
-                    this.logger.Warning($"Error occured on vacations recover for employee {this.employeeId}: {msg.Exception.Message}");
+                    this.logger.Warning($"Error occured on vacations recover for employee {this.employeeId}: {msg.Exception}");
                     break;
 
                 case GetCalendarEvents _:
@@ -102,7 +102,7 @@
 
                                 return new GetCalendarEventApprovals.ErrorResponse($"Vacation with id {msg.Event.EventId} is not found");
                             },
-                            failure: err => new GetCalendarEventApprovals.ErrorResponse(err.Message));
+                            failure: err => new GetCalendarEventApprovals.ErrorResponse(err.ToString()));
                     break;
 
                 case InsertVacation msg:

@@ -42,7 +42,7 @@
             {
                 return new Dictionary<string, HealthState>
                 {
-                    { WellKnownHealthStateName.Server, this.GetServerHealthState(false, ex.Message) }
+                    { WellKnownHealthStateName.Server, this.GetServerHealthState(false, ex.ToString()) }
                 };
             }
         }

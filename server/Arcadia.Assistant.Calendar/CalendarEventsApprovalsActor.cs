@@ -103,7 +103,7 @@
                 .PipeTo(
                     this.Self,
                     success: nextApproverId => new GetNextApproverSuccess(@event, nextApproverId),
-                    failure: err => new GetNextApproverError(@event.EventId, err.Message)
+                    failure: err => new GetNextApproverError(@event.EventId, err.ToString())
                 );
         }
 
@@ -118,7 +118,7 @@
                 .PipeTo(
                     this.Self,
                     success: nextApproverId => new GetNextApproverSuccess(@event, nextApproverId, true),
-                    failure: err => new GetNextApproverError(@event.EventId, err.Message)
+                    failure: err => new GetNextApproverError(@event.EventId, err.ToString())
                 );
         }
 

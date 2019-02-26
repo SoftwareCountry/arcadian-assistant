@@ -46,7 +46,7 @@
                     break;
 
                 case UpsertCalendarEvent cmd when cmd.Event.EventId == null:
-                    this.Sender.Tell(new UpsertCalendarEvent.Error(new ArgumentNullException(nameof(cmd.Event.EventId)).Message));
+                    this.Sender.Tell(new UpsertCalendarEvent.Error(new ArgumentNullException(nameof(cmd.Event.EventId)).ToString()));
                     break;
 
                 //insert
@@ -68,7 +68,7 @@
                     }
                     catch (Exception ex)
                     {
-                        this.Sender.Tell(new UpsertCalendarEvent.Error(ex.Message));
+                        this.Sender.Tell(new UpsertCalendarEvent.Error(ex.ToString()));
                     }
                     break;
 
@@ -98,7 +98,7 @@
                     }
                     catch (Exception ex)
                     {
-                        this.Sender.Tell(new UpsertCalendarEvent.Error(ex.Message));
+                        this.Sender.Tell(new UpsertCalendarEvent.Error(ex.ToString()));
                     }
                     break;
 
@@ -118,7 +118,7 @@
                     }
                     catch (Exception ex)
                     {
-                        this.Sender.Tell(new ApproveCalendarEvent.ErrorResponse(ex.Message));
+                        this.Sender.Tell(new ApproveCalendarEvent.ErrorResponse(ex.ToString()));
                     }
 
                     break;

@@ -75,7 +75,7 @@
                     }
                     catch (Exception ex)
                     {
-                        this.Sender.Tell(new ApproveCalendarEvent.ErrorResponse(ex.Message));
+                        this.Sender.Tell(new ApproveCalendarEvent.ErrorResponse(ex.ToString()));
                     }
 
                     break;

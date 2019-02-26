@@ -55,7 +55,7 @@
             }
             catch (Exception ex)
             {
-                return new HealthState(false, ex.Message);
+                return new HealthState(false, ex.ToString());
             }
         }
     }
