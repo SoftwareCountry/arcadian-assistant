@@ -91,12 +91,18 @@
                 case GetCalendarEvents _:
                     this.GetVacations()
                         .PipeTo(
+                            this.Self,
                             this.Sender,
-                            success: result =>
-                            {
-                                var vacations = result.Select(x => x.CalendarEvent).ToList();
-                                return new GetCalendarEvents.Response(this.employeeId, vacations);
-                            });
+                            result => new GetCalendarEventsSuccess(result),
+                            err => new GetCalendarEventsError(err));
+                    break;
+
+                case GetCalendarEventsSuccess msg:
+                    this.FinishGetCalendarEvents(msg);
+                    break;
+
+                case GetCalendarEventsError msg:
+                    this.logger.Error(msg.Exception, "Error occured on get vacations from CSP database");
                     break;
 
                 case GetCalendarEvent msg:
@@ -183,10 +189,26 @@
 
         private void FinishDatabaseRefresh(RefreshDatabase.Success msg)
         {
+            this.UpdateDatabaseVacationsCache(msg.Events.ToList());
+            this.ScheduleNextDatabaseRefresh();
+        }
+
+        private void FinishGetCalendarEvents(GetCalendarEventsSuccess msg)
+        {
+            var vacations = msg.Events.Select(x => x.CalendarEvent).ToList();
+            this.Sender.Tell(new GetCalendarEvents.Response(this.employeeId, vacations));
+
+            this.UpdateDatabaseVacationsCache(msg.Events.ToList());
+
+            this.ScheduleNextDatabaseRefresh();
+        }
+
+        private void UpdateDatabaseVacationsCache(List<CalendarEventWithApprovals> databaseVacations)
+        {
             var createdEvents = new List<CalendarEventWithApprovals>();
             var updatedEvents = new List<CalendarEventWithApprovals>();
 
-            foreach (var @event in msg.Events)
+            foreach (var @event in databaseVacations)
             {
                 if (!this.databaseVacationsCache.ContainsKey(@event.CalendarEvent.EventId))
                 {
@@ -211,7 +233,7 @@
             }
 
             var removedEvents = this.databaseVacationsCache
-                .Where(x => msg.Events.All(e => e.CalendarEvent.EventId != x.Key))
+                .Where(x => databaseVacations.All(e => e.CalendarEvent.EventId != x.Key))
                 .Select(x => x.Value);
 
             foreach (var @event in createdEvents)
@@ -232,8 +254,6 @@
             {
                 // New event will be published here
             }
-
-            this.ScheduleNextDatabaseRefresh();
         }
 
         private async Task<IEnumerable<CalendarEventWithApprovals>> GetVacations()
@@ -345,6 +365,26 @@
 
                 public Exception Exception { get; }
             }
+        }
+
+        private class GetCalendarEventsSuccess
+        {
+            public GetCalendarEventsSuccess(IEnumerable<CalendarEventWithApprovals> events)
+            {
+                this.Events = events;
+            }
+
+            public IEnumerable<CalendarEventWithApprovals> Events { get; }
+        }
+
+        private class GetCalendarEventsError
+        {
+            public GetCalendarEventsError(Exception exception)
+            {
+                this.Exception = exception;
+            }
+
+            public Exception Exception { get; }
         }
     }
 }
