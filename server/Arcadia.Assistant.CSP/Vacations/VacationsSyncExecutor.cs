@@ -215,8 +215,7 @@
                 .Include(v => v.VacationApprovals)
                 .Include(v => v.VacationCancellations)
                 .Include(v => v.VacationProcesses)
-                .Where(v => v.EmployeeId == employeeDbId && (vacationId == null || v.Id == vacationDbId))
-                .Where(v => !v.VacationCancellations.Any() && v.VacationApprovals.All(va => va.Status != (int)VacationApprovalStatus.Declined));
+                .Where(v => v.EmployeeId == employeeDbId && (vacationId == null || v.Id == vacationDbId));
 
             if (!trackChanges)
             {

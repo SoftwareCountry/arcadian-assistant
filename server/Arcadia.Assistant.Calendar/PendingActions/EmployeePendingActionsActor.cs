@@ -21,6 +21,9 @@
 
             Context.System.EventStream.Subscribe<CalendarEventAddedToPendingActions>(this.Self);
             Context.System.EventStream.Subscribe<CalendarEventRemovedFromPendingActions>(this.Self);
+            Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);
+            Context.System.EventStream.Subscribe<CalendarEventApprovalsChanged>(this.Self);
+            Context.System.EventStream.Subscribe<CalendarEventRemoved>(this.Self);
         }
 
         public static Props CreateProps(string employeeId)
@@ -37,25 +40,59 @@
                     break;
 
                 case CalendarEventAddedToPendingActions msg when msg.ApproverId == this.employeeId:
-                    this.pendingActionEvents[msg.Event.EventId] = msg.Event;
+                    this.AddPendingAction(msg.Event);
                     break;
 
                 case CalendarEventAddedToPendingActions _:
-                    // Simply ignore messages with other event ids
                     break;
 
-                case CalendarEventRemovedFromPendingActions msg when this.pendingActionEvents.ContainsKey(msg.Event.EventId):
-                    this.pendingActionEvents.Remove(msg.Event.EventId);
+                case CalendarEventRemovedFromPendingActions msg when this.HasPendingAction(msg.Event.EventId):
+                    this.RemovedFromPendingActions(msg.Event);
                     break;
 
                 case CalendarEventRemovedFromPendingActions _:
-                    // Simply ignore messages with other event ids
+                    break;
+
+                case CalendarEventChanged msg when !msg.NewEvent.IsPending && this.HasPendingAction(msg.NewEvent.EventId):
+                    this.RemovedFromPendingActions(msg.NewEvent);
+                    break;
+
+                case CalendarEventChanged _:
+                    break;
+
+                case CalendarEventApprovalsChanged msg when !msg.Event.IsPending && this.HasPendingAction(msg.Event.EventId):
+                    this.RemovedFromPendingActions(msg.Event);
+                    break;
+
+                case CalendarEventApprovalsChanged _:
+                    break;
+
+                case CalendarEventRemoved msg when this.HasPendingAction(msg.Event.EventId):
+                    this.RemovedFromPendingActions(msg.Event);
+                    break;
+
+                case CalendarEventRemoved _:
                     break;
 
                 default:
                     this.Unhandled(message);
                     break;
             }
+        }
+
+        private void AddPendingAction(CalendarEvent @event)
+        {
+            this.pendingActionEvents[@event.EventId] = @event;
+        }
+
+        private void RemovedFromPendingActions(CalendarEvent @event)
+        {
+            this.pendingActionEvents.Remove(@event.EventId);
+        }
+
+        private bool HasPendingAction(string eventId)
+        {
+            return this.pendingActionEvents.ContainsKey(eventId);
         }
     }
 }
