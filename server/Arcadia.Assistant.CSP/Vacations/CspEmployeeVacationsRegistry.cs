@@ -24,7 +24,7 @@
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
         private ICancelable databaseRefreshSchedule;
-        private Dictionary<string, CalendarEventWithApprovals> databaseVacationsCache;
+        private DatabaseVacationsCache databaseVacationsCache;
 
         public CspEmployeeVacationsRegistry(
             VacationsSyncExecutor vacationsSyncExecutor,
@@ -57,7 +57,8 @@
                     break;
 
                 case Initialize.Success msg:
-                    this.databaseVacationsCache = msg.Events.ToDictionary(x => x.CalendarEvent.EventId);
+                    var eventsById = msg.Events.ToDictionary(x => x.CalendarEvent.EventId);
+                    this.databaseVacationsCache = new DatabaseVacationsCache(eventsById);
 
                     foreach (var @event in msg.Events.Where(e => this.IsCalendarEventActual(e.CalendarEvent)))
                     {
@@ -217,88 +218,36 @@
 
         private void UpdateDatabaseVacationsCache(List<CalendarEventWithApprovals> databaseVacations)
         {
-            var createdEvents = new List<CalendarEventWithApprovals>();
-            var updatedEvents = new List<CalendarEventWithApprovals>();
-            var approvalsUpdatedEvents = new List<CalendarEventWithApprovals>();
-
-            foreach (var @event in databaseVacations)
-            {
-                if (!this.databaseVacationsCache.ContainsKey(@event.CalendarEvent.EventId))
-                {
-                    if (@event.CalendarEvent.Status == VacationStatuses.Requested)
-                    {
-                        if (!@event.Approvals.Any())
-                        {
-                            createdEvents.Add(@event);
-                        }
-                        else
-                        {
-                            approvalsUpdatedEvents.Add(@event);
-                        }
-                    }
-                    else
-                    {
-                        updatedEvents.Add(@event);
-                    }
-                }
-                else
-                {
-                    var cacheEvent = this.databaseVacationsCache[@event.CalendarEvent.EventId];
-
-                    if (cacheEvent.CalendarEvent.Status != @event.CalendarEvent.Status || cacheEvent.CalendarEvent.Dates != @event.CalendarEvent.Dates)
-                    {
-                        updatedEvents.Add(@event);
-                    }
-
-                    if (@event.CalendarEvent.Status == VacationStatuses.Requested)
-                    {
-                        var cacheApprovals = cacheEvent.Approvals.Select(x => x.ApprovedBy);
-                        var databaseApprovals = @event.Approvals.Select(x => x.ApprovedBy).ToList();
-
-                        if (cacheApprovals.Intersect(databaseApprovals).Count() != databaseApprovals.Count)
-                        {
-                            approvalsUpdatedEvents.Add(@event);
-                        }
-                    }
-                }
-            }
-
             var databaseVacationsById = databaseVacations.ToDictionary(x => x.CalendarEvent.EventId);
 
-            var removedEvents = this.databaseVacationsCache
-                .Where(x => !databaseVacationsById.ContainsKey(x.Key))
-                .Select(x => x.Value)
-                .ToList();
+            var diff = this.databaseVacationsCache.Difference(databaseVacationsById);
 
-            foreach (var @event in createdEvents)
+            foreach (var @event in diff.Created)
             {
                 this.logger.Debug($"Vacation with id {@event.CalendarEvent.EventId} for employee {this.employeeId} was added to CSP database manually");
                 Context.System.EventStream.Publish(new CalendarEventCreated(@event.CalendarEvent, @event.CalendarEvent.EmployeeId, DateTimeOffset.Now));
-                this.databaseVacationsCache[@event.CalendarEvent.EventId] = @event;
             }
 
-            foreach (var @event in updatedEvents)
+            foreach (var @event in diff.Updated)
             {
                 this.logger.Debug($"Vacation with id {@event.CalendarEvent.EventId} for employee {this.employeeId} was updated in CSP database manually");
                 var oldEvent = this.databaseVacationsCache[@event.CalendarEvent.EventId];
                 Context.System.EventStream.Publish(new CalendarEventChanged(oldEvent.CalendarEvent, @event.CalendarEvent.EmployeeId, DateTimeOffset.Now, @event.CalendarEvent));
-
-                this.databaseVacationsCache[@event.CalendarEvent.EventId] = @event;
             }
 
-            foreach (var @event in approvalsUpdatedEvents)
+            foreach (var @event in diff.ApprovalsUpdated)
             {
                 this.logger.Debug($"Approvals for vacation with id {@event.CalendarEvent.EventId} for employee {this.employeeId} were updated in CSP database manually");
                 Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(@event.CalendarEvent, @event.Approvals));
-                this.databaseVacationsCache[@event.CalendarEvent.EventId] = @event;
             }
 
-            foreach (var @event in removedEvents)
+            foreach (var @event in diff.Removed)
             {
                 this.logger.Debug($"Vacation with id {@event.CalendarEvent.EventId} for employee {this.employeeId} was removed from CSP database manually");
                 Context.System.EventStream.Publish(new CalendarEventRemoved(@event.CalendarEvent));
-                this.databaseVacationsCache.Remove(@event.CalendarEvent.EventId);
             }
+
+            this.databaseVacationsCache.Update(diff);
         }
 
         private async Task<IEnumerable<CalendarEventWithApprovals>> GetVacations(bool onlyActual = true)
