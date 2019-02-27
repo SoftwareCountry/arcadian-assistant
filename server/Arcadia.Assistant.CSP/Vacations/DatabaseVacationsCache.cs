@@ -60,7 +60,7 @@
                             .Select(x => x.ApprovedBy)
                             .OrderBy(x => x);
 
-                        if (cacheApprovals.SequenceEqual(databaseApprovals))
+                        if (!cacheApprovals.SequenceEqual(databaseApprovals))
                         {
                             approvalsUpdatedEvents.Add(@event);
                         }
