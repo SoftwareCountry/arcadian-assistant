@@ -74,7 +74,6 @@
                     }
                     else if (!msg.CalendarEventRecoverComplete)
                     {
-                        Context.System.EventStream.Publish(new CalendarEventRemovedFromApprovers(msg.Event));
                         Context.System.EventStream.Publish(new CalendarEventRemovedFromPendingActions(msg.Event));
                     }
 
@@ -95,7 +94,6 @@
         {
             if (!@event.IsPending)
             {
-                Context.System.EventStream.Publish(new CalendarEventRemovedFromApprovers(@event));
                 return;
             }
 
