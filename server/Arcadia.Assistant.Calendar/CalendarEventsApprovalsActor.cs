@@ -43,20 +43,29 @@
         {
             switch (message)
             {
-                case CalendarEventCreated msg:
+                case CalendarEventCreated msg when msg.Event.IsPending:
                     this.OnCalendarEventNeedNextApprover(msg.Event);
                     break;
 
-                case CalendarEventChanged msg:
+                case CalendarEventCreated _:
+                    break;
+
+                case CalendarEventChanged msg when msg.NewEvent.IsPending:
                     this.OnCalendarEventNeedNextApprover(msg.NewEvent);
                     break;
 
-                case CalendarEventApprovalsChanged msg:
+                case CalendarEventChanged _:
+                    break;
+
+                case CalendarEventApprovalsChanged msg when msg.Event.IsPending:
                     this.OnCalendarEventNeedNextApprover(msg.Event);
                     break;
 
+                case CalendarEventApprovalsChanged _:
+                    break;
+
                 case CalendarEventRecoverComplete msg when msg.Event.IsPending:
-                    this.OnCalendarEventRecoverComplete(msg.Event);
+                    this.OnCalendarEventNeedNextApprover(msg.Event, true);
                     break;
 
                 case CalendarEventRecoverComplete _:
@@ -74,7 +83,6 @@
                     }
                     else if (!msg.CalendarEventRecoverComplete)
                     {
-                        Context.System.EventStream.Publish(new CalendarEventRemovedFromApprovers(msg.Event));
                         Context.System.EventStream.Publish(new CalendarEventRemovedFromPendingActions(msg.Event));
                     }
 
@@ -84,40 +92,18 @@
                     this.logger.Warning($"Failed to get next approver for the event {msg.EventId}. Error: {msg.Message}");
                     break;
 
-
                 default:
                     this.Unhandled(message);
                     break;
             }
         }
 
-        private void OnCalendarEventNeedNextApprover(CalendarEvent @event)
+        private void OnCalendarEventNeedNextApprover(CalendarEvent @event, bool isRecoverComplete = false)
         {
-            if (!@event.IsPending)
-            {
-                Context.System.EventStream.Publish(new CalendarEventRemovedFromApprovers(@event));
-                return;
-            }
-
             this.GetNextApproverId(@event)
                 .PipeTo(
                     this.Self,
-                    success: nextApproverId => new GetNextApproverSuccess(@event, nextApproverId),
-                    failure: err => new GetNextApproverError(@event.EventId, err.ToString())
-                );
-        }
-
-        private void OnCalendarEventRecoverComplete(CalendarEvent @event)
-        {
-            if (!@event.IsPending)
-            {
-                return;
-            }
-
-            this.GetNextApproverId(@event)
-                .PipeTo(
-                    this.Self,
-                    success: nextApproverId => new GetNextApproverSuccess(@event, nextApproverId, true),
+                    success: nextApproverId => new GetNextApproverSuccess(@event, nextApproverId, isRecoverComplete),
                     failure: err => new GetNextApproverError(@event.EventId, err.ToString())
                 );
         }

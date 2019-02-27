@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     using Akka.Actor;
     using Akka.Event;
@@ -11,12 +12,20 @@
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
+    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public abstract class CalendarEventsStorageBase : UntypedPersistentActor, ILogReceive
     {
+        // Ugly, but it is the simplest way to achieve the goal for now
+        private const string CalendarEventsApprovalsCheckerActorPath = @"/user/calendar-events-approvals/calendar-events-approvals-checker";
+
         protected delegate void OnSuccessfulUpsertCallback(CalendarEvent changedEvent);
 
         protected string EmployeeId { get; }
+
+        private readonly ILoggingAdapter logger = Context.GetLogger();
+
+        private readonly ActorSelection calendarEventsApprovalsChecker;
 
         protected readonly Dictionary<string, CalendarEvent> EventsById = new Dictionary<string, CalendarEvent>();
         protected readonly Dictionary<string, List<Approval>> ApprovalsByEvent = new Dictionary<string, List<Approval>>();
@@ -25,8 +34,7 @@
         {
             this.EmployeeId = employeeId;
 
-            Context.System.EventStream.Subscribe<CalendarEventAssignedToApprover>(this.Self);
-            Context.System.EventStream.Subscribe<CalendarEventRemovedFromApprovers>(this.Self);
+            this.calendarEventsApprovalsChecker = Context.ActorSelection(CalendarEventsApprovalsCheckerActorPath);
         }
 
         protected override void OnCommand(object message)
@@ -64,6 +72,8 @@
                         {
                             this.OnSuccessfulUpsert(ev);
                             Context.System.EventStream.Publish(new CalendarEventCreated(ev, cmd.UpdatedBy, cmd.Timestamp));
+
+                            this.CompleteEventIfNeeded(ev, cmd.UpdatedBy, cmd.Timestamp);
                         });
                     }
                     catch (Exception ex)
@@ -123,18 +133,25 @@
 
                     break;
 
-                case CalendarEventAssignedToApprover msg when this.EventsById.ContainsKey(msg.Event.EventId):
-                    this.OnCalendarEventNextApproverReceived(msg.Event.EventId, msg.ApproverId);
+                case CompleteEventSuccess msg:
+                    if (msg.Data != null)
+                    {
+                        this.UpdateCalendarEvent(msg.Data.OldEvent, msg.Data.CompleteBy, msg.Data.Timestamp, msg.Data.NewEvent, ev =>
+                        {
+                            Context.System.EventStream.Publish(
+                                new CalendarEventChanged(
+                                    msg.Data.OldEvent,
+                                    msg.Data.CompleteBy,
+                                    msg.Data.Timestamp,
+                                    msg.Data.NewEvent));
+                        });
+                    }
                     break;
 
-                case CalendarEventAssignedToApprover _:
-                    break;
-
-                case CalendarEventRemovedFromApprovers msg when this.EventsById.ContainsKey(msg.Event.EventId):
-                    this.OnCalendarEventNextApproverReceived(msg.Event.EventId, null);
-                    break;
-
-                case CalendarEventRemovedFromApprovers _:
+                case CompleteEventError msg:
+                    this.logger.Error(
+                        "Error occured on approve event after all user approvals granted " +
+                        $"for employee {this.EmployeeId}: {msg.Exception}");
                     break;
 
                 default:
@@ -188,45 +205,68 @@
 
                 this.Sender.Tell(Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
                 Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(calendarEvent, approvals.ToList()));
+
+                this.CompleteEventIfNeeded(calendarEvent, message.ApproverId, message.Timestamp, approvals.ToList());
             });
         }
 
-        private void OnCalendarEventNextApproverReceived(string eventId, string nextApproverId)
+        private void CompleteEventIfNeeded(
+            CalendarEvent @event,
+            string approvedBy,
+            DateTimeOffset timestamp,
+            IEnumerable<Approval> approvals = null)
         {
-            var oldEvent = this.EventsById[eventId];
-            if (!oldEvent.IsPending)
-            {
-                return;
-            }
-
-            if (nextApproverId == null)
-            {
-                var approvedStatus = new CalendarEventStatuses().ApprovedForType(oldEvent.Type);
-                var newEvent = new CalendarEvent(
-                    oldEvent.EventId,
-                    oldEvent.Type,
-                    oldEvent.Dates,
-                    approvedStatus,
-                    oldEvent.EmployeeId
-                );
-
-                var approvals = this.ApprovalsByEvent[eventId];
-
-                var lastApproval = approvals
-                    .OrderByDescending(a => a.Timestamp)
-                    .FirstOrDefault();
-
-                // If there is no approvals, then employee is Director General and event is updated by himself
-                var updatedBy = lastApproval?.ApprovedBy ?? newEvent.EmployeeId;
-                var timestamp = lastApproval?.Timestamp ?? DateTimeOffset.Now;
-
-                this.UpdateCalendarEvent(oldEvent, updatedBy, timestamp, newEvent, ev =>
-                {
-                    Context.System.EventStream.Publish(new CalendarEventChanged(oldEvent, updatedBy, timestamp, ev));
-                });
-            }
+            this.GetCompleteEventData(@event, approvedBy, timestamp, approvals ?? Enumerable.Empty<Approval>())
+                .PipeTo(
+                    this.Self,
+                    success: result => new CompleteEventSuccess(result),
+                    failure: err => new CompleteEventError(err));
         }
 
+        private async Task<CompleteEventData> GetCompleteEventData(
+            CalendarEvent @event,
+            string completeBy,
+            DateTimeOffset timestamp,
+            IEnumerable<Approval> approvals = null)
+        {
+            var nextApproverId = await this.GetNextApproverId(@event, approvals ?? Enumerable.Empty<Approval>());
+            if (nextApproverId != null)
+            {
+                return null;
+            }
+
+            var approvedStatus = new CalendarEventStatuses().ApprovedForType(@event.Type);
+            var newEvent = new CalendarEvent(
+                @event.EventId,
+                @event.Type,
+                @event.Dates,
+                approvedStatus,
+                @event.EmployeeId
+            );
+
+            return new CompleteEventData(newEvent, @event, completeBy, timestamp);
+        }
+
+        private async Task<string> GetNextApproverId(CalendarEvent @event, IEnumerable<Approval> approvals)
+        {
+            var approvedBy = approvals.Select(a => a.ApprovedBy);
+
+            var response = await this.calendarEventsApprovalsChecker
+                .Ask<GetNextCalendarEventApprover.Response>(
+                    new GetNextCalendarEventApprover(@event.EmployeeId, approvedBy, @event.Type));
+
+            switch (response)
+            {
+                case GetNextCalendarEventApprover.SuccessResponse msg:
+                    return msg.NextApproverEmployeeId;
+
+                case GetNextCalendarEventApprover.ErrorResponse msg:
+                    throw new Exception(msg.Message);
+
+                default:
+                    throw new Exception("Not expected response type");
+            }
+        }
         private void OnSuccessfulUpsert(CalendarEvent calendarEvent)
         {
             this.Sender.Tell(new UpsertCalendarEvent.Success(calendarEvent));
@@ -241,6 +281,45 @@
             {
                 throw new Exception($"Event {@event.EventId}. Dates intersect with another {@event.Type} with id {intersectedEvent.EventId}");
             }
+        }
+
+        private class CompleteEventData
+        {
+            public CompleteEventData(CalendarEvent newEvent, CalendarEvent oldEvent, string completeBy, DateTimeOffset timestamp)
+            {
+                this.NewEvent = newEvent;
+                this.OldEvent = oldEvent;
+                this.CompleteBy = completeBy;
+                this.Timestamp = timestamp;
+            }
+
+            public CalendarEvent NewEvent { get; }
+
+            public CalendarEvent OldEvent { get; }
+
+            public string CompleteBy { get; }
+
+            public DateTimeOffset Timestamp { get; }
+        }
+
+        private class CompleteEventSuccess
+        {
+            public CompleteEventSuccess(CompleteEventData data)
+            {
+                this.Data = data;
+            }
+
+            public CompleteEventData Data { get; }
+        }
+
+        private class CompleteEventError
+        {
+            public CompleteEventError(Exception exception)
+            {
+                this.Exception = exception;
+            }
+
+            public Exception Exception { get; }
         }
     }
 }
