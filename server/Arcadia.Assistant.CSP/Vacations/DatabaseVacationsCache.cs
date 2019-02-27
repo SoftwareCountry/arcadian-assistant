@@ -27,7 +27,7 @@
 
             foreach (var @event in values.Values)
             {
-                if (!this.cache.ContainsKey(@event.CalendarEvent.EventId))
+                if (!this.cache.TryGetValue(@event.CalendarEvent.EventId, out var cacheEvent))
                 {
                     if (@event.CalendarEvent.Status == VacationStatuses.Requested)
                     {
@@ -47,8 +47,6 @@
                 }
                 else
                 {
-                    var cacheEvent = this.cache[@event.CalendarEvent.EventId];
-
                     if (cacheEvent.CalendarEvent.Status != @event.CalendarEvent.Status || cacheEvent.CalendarEvent.Dates != @event.CalendarEvent.Dates)
                     {
                         updatedEvents.Add(@event);
