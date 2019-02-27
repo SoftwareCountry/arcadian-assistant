@@ -142,7 +142,7 @@
         private async Task<IEnumerable<Approval>> GetEmployeeApprovals(EmployeeContainer employee, CalendarEvent @event)
         {
             var message = new GetCalendarEventApprovals(@event);
-            var response = await employee.Calendar.VacationsActor.Ask<GetCalendarEventApprovals.Response>(message);
+            var response = await employee.Calendar.CalendarActor.Ask<GetCalendarEventApprovals.Response>(message);
 
             switch (response)
             {
