@@ -51,13 +51,16 @@
                     {
                         updatedEvents.Add(@event);
                     }
-
-                    if (@event.CalendarEvent.Status == VacationStatuses.Requested)
+                    else
                     {
-                        var cacheApprovals = cacheEvent.Approvals.Select(x => x.ApprovedBy);
-                        var databaseApprovals = @event.Approvals.Select(x => x.ApprovedBy).ToList();
+                        var cacheApprovals = cacheEvent.Approvals
+                            .Select(x => x.ApprovedBy)
+                            .OrderBy(x => x);
+                        var databaseApprovals = @event.Approvals
+                            .Select(x => x.ApprovedBy)
+                            .OrderBy(x => x);
 
-                        if (cacheApprovals.Intersect(databaseApprovals).Count() != databaseApprovals.Count)
+                        if (cacheApprovals.SequenceEqual(databaseApprovals))
                         {
                             approvalsUpdatedEvents.Add(@event);
                         }
