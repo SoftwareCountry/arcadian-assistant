@@ -144,7 +144,7 @@
                             this.Sender,
                             success: result =>
                             {
-                                this.databaseVacationsCache[msg.Event.EventId] = result;
+                                this.databaseVacationsCache[result.CalendarEvent.EventId] = result;
                                 return new InsertVacation.Success(result.CalendarEvent, msg.CreatedBy, msg.Timestamp);
                             },
                             failure: err => new InsertVacation.Error(err));
@@ -156,7 +156,7 @@
                             this.Sender,
                             success: result =>
                             {
-                                this.databaseVacationsCache[msg.OldEvent.EventId] = result;
+                                this.databaseVacationsCache[result.CalendarEvent.EventId] = result;
                                 return new UpdateVacation.Success(result.CalendarEvent, msg.OldEvent, msg.UpdatedBy, msg.Timestamp);
                             },
                             failure: err => new UpdateVacation.Error(err));
@@ -170,7 +170,7 @@
                             {
                                 if (result != null)
                                 {
-                                    this.databaseVacationsCache[msg.Event.EventId] = result;
+                                    this.databaseVacationsCache[result.CalendarEvent.EventId] = result;
                                     return new ApproveVacation.Success(
                                         result.CalendarEvent,
                                         result.Approvals.ToList(),
