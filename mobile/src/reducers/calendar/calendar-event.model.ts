@@ -89,6 +89,10 @@ export class CalendarEvent {
         return this.status === CalendarEventStatus.Approved;
     }
 
+    public get isProcessed(): boolean {
+        return this.status === CalendarEventStatus.Processed;
+    }
+
     public get isSickLeave(): boolean {
         return this.type === CalendarEventType.Sickleave;
     }

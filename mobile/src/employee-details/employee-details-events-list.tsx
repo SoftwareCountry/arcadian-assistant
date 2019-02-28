@@ -124,7 +124,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
 
         if (event.isRequested) {
             description = `requests ${event.type.toLowerCase()}`;
-        } else if (event.isApproved) {
+        } else if (event.isApproved || event.isProcessed) {
             const prefix = event.dates.endDate.isAfter(moment(), 'date') ? 'has coming ' : 'on ';
             description = prefix + event.type.toLowerCase();
         } else if (event.isCompleted) {
