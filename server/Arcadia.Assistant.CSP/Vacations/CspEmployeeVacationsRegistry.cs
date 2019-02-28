@@ -216,7 +216,7 @@
             this.ScheduleNextDatabaseRefresh();
         }
 
-        private void UpdateDatabaseVacationsCache(List<CalendarEventWithApprovals> databaseVacations)
+        private void UpdateDatabaseVacationsCache(List<CalendarEventWithAdditionalData> databaseVacations)
         {
             var databaseVacationsById = databaseVacations.ToDictionary(x => x.CalendarEvent.EventId);
 
@@ -250,7 +250,7 @@
             this.databaseVacationsCache.Update(diff);
         }
 
-        private async Task<IEnumerable<CalendarEventWithApprovals>> GetVacations(bool onlyActual = true)
+        private async Task<IEnumerable<CalendarEventWithAdditionalData>> GetVacations(bool onlyActual = true)
         {
             var vacations = await this.vacationsSyncExecutor.GetVacations(this.employeeId);
 
@@ -262,7 +262,7 @@
             return vacations;
         }
 
-        private async Task<CalendarEventWithApprovals> GetVacation(string eventId)
+        private async Task<CalendarEventWithAdditionalData> GetVacation(string eventId)
         {
             var vacation = await this.vacationsSyncExecutor.GetVacation(this.employeeId, eventId);
 
@@ -274,7 +274,7 @@
             return this.IsCalendarEventActual(vacation.CalendarEvent) ? vacation : null;
         }
 
-        private async Task<CalendarEventWithApprovals> ApproveVacation(ApproveVacation message)
+        private async Task<CalendarEventWithAdditionalData> ApproveVacation(ApproveVacation message)
         {
             var vacation = await this.GetVacation(message.Event.EventId);
             if (vacation == null)
@@ -328,12 +328,12 @@
 
             public class Success
             {
-                public Success(IEnumerable<CalendarEventWithApprovals> events)
+                public Success(IEnumerable<CalendarEventWithAdditionalData> events)
                 {
                     this.Events = events;
                 }
 
-                public IEnumerable<CalendarEventWithApprovals> Events { get; }
+                public IEnumerable<CalendarEventWithAdditionalData> Events { get; }
             }
 
             public class Error
@@ -353,12 +353,12 @@
 
             public class Success
             {
-                public Success(IEnumerable<CalendarEventWithApprovals> events)
+                public Success(IEnumerable<CalendarEventWithAdditionalData> events)
                 {
                     this.Events = events;
                 }
 
-                public IEnumerable<CalendarEventWithApprovals> Events { get; }
+                public IEnumerable<CalendarEventWithAdditionalData> Events { get; }
             }
 
             public class Error
@@ -374,12 +374,12 @@
 
         private class GetCalendarEventsSuccess
         {
-            public GetCalendarEventsSuccess(IEnumerable<CalendarEventWithApprovals> events)
+            public GetCalendarEventsSuccess(IEnumerable<CalendarEventWithAdditionalData> events)
             {
                 this.Events = events;
             }
 
-            public IEnumerable<CalendarEventWithApprovals> Events { get; }
+            public IEnumerable<CalendarEventWithAdditionalData> Events { get; }
         }
 
         private class GetCalendarEventsError
