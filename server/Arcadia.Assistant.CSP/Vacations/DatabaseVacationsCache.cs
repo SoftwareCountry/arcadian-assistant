@@ -6,24 +6,24 @@
 
     internal class DatabaseVacationsCache
     {
-        private readonly Dictionary<string, CalendarEventWithApprovals> cache;
+        private readonly Dictionary<string, CalendarEventWithAdditionalData> cache;
 
-        public DatabaseVacationsCache(Dictionary<string, CalendarEventWithApprovals> values)
+        public DatabaseVacationsCache(Dictionary<string, CalendarEventWithAdditionalData> values)
         {
-            this.cache = new Dictionary<string, CalendarEventWithApprovals>(values);
+            this.cache = new Dictionary<string, CalendarEventWithAdditionalData>(values);
         }
 
-        public CalendarEventWithApprovals this[string index]
+        public CalendarEventWithAdditionalData this[string index]
         {
             get => this.cache[index];
             set => this.cache[index] = value;
         }
 
-        public Diff Difference(Dictionary<string, CalendarEventWithApprovals> values)
+        public Diff Difference(Dictionary<string, CalendarEventWithAdditionalData> values)
         {
-            var createdEvents = new List<CalendarEventWithApprovals>();
-            var updatedEvents = new List<CalendarEventWithApprovals>();
-            var approvalsUpdatedEvents = new List<CalendarEventWithApprovals>();
+            var createdEvents = new List<CalendarEventWithAdditionalData>();
+            var updatedEvents = new List<CalendarEventWithAdditionalData>();
+            var approvalsUpdatedEvents = new List<CalendarEventWithAdditionalData>();
 
             foreach (var @event in values.Values)
             {
@@ -99,10 +99,10 @@
         public class Diff
         {
             public Diff(
-                IEnumerable<CalendarEventWithApprovals> created,
-                IEnumerable<CalendarEventWithApprovals> updated,
-                IEnumerable<CalendarEventWithApprovals> approvalsUpdated,
-                IEnumerable<CalendarEventWithApprovals> removed)
+                IEnumerable<CalendarEventWithAdditionalData> created,
+                IEnumerable<CalendarEventWithAdditionalData> updated,
+                IEnumerable<CalendarEventWithAdditionalData> approvalsUpdated,
+                IEnumerable<CalendarEventWithAdditionalData> removed)
             {
                 this.Created = created;
                 this.Updated = updated;
@@ -110,13 +110,13 @@
                 this.Removed = removed;
             }
 
-            public IEnumerable<CalendarEventWithApprovals> Created { get; }
+            public IEnumerable<CalendarEventWithAdditionalData> Created { get; }
 
-            public IEnumerable<CalendarEventWithApprovals> Updated { get; }
+            public IEnumerable<CalendarEventWithAdditionalData> Updated { get; }
 
-            public IEnumerable<CalendarEventWithApprovals> ApprovalsUpdated { get; }
+            public IEnumerable<CalendarEventWithAdditionalData> ApprovalsUpdated { get; }
 
-            public IEnumerable<CalendarEventWithApprovals> Removed { get; }
+            public IEnumerable<CalendarEventWithAdditionalData> Removed { get; }
         }
     }
 }
