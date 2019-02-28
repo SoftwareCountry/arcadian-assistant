@@ -74,7 +74,8 @@
             switch (message)
             {
                 case CalendarEventChanged msg when
-                    msg.NewEvent.Status == VacationStatuses.Approved &&
+                    msg.NewEvent.Type == CalendarEventTypes.Vacation &&
+                    msg.NewEvent.Status == VacationStatuses.Processed &&
                     msg.NewEvent.EmployeeId == this.employeeId:
 
                     var text = $"Vacation approved from {msg.NewEvent.Dates.StartDate.ToLongDateString()} to {msg.NewEvent.Dates.EndDate.ToLongDateString()}";

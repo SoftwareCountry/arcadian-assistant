@@ -38,7 +38,7 @@ export class DatesInterval {
 
     @dataMember()
     @required()
-    public finishWorkingHour: number = 0;
+    public finishWorkingHour: number = 8;
 
     public toJSON(): Object {
         const overrided: { [key in keyof DatesInterval]?: any } = {
@@ -87,6 +87,10 @@ export class CalendarEvent {
 
     public get isApproved(): boolean {
         return this.status === CalendarEventStatus.Approved;
+    }
+
+    public get isProcessed(): boolean {
+        return this.status === CalendarEventStatus.Processed;
     }
 
     public get isSickLeave(): boolean {

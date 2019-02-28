@@ -22,7 +22,7 @@
             this.contextFactory = contextFactory;
         }
 
-        public async Task<IReadOnlyCollection<CalendarEventWithApprovals>> GetVacations(string employeeId)
+        public async Task<IReadOnlyCollection<CalendarEventWithAdditionalData>> GetVacations(string employeeId)
         {
             using (var context = this.contextFactory())
             {
@@ -36,7 +36,7 @@
             }
         }
 
-        public async Task<CalendarEventWithApprovals> GetVacation(string employeeId, string vacationId)
+        public async Task<CalendarEventWithAdditionalData> GetVacation(string employeeId, string vacationId)
         {
             using (var context = this.contextFactory())
             {
@@ -53,7 +53,7 @@
             }
         }
 
-        public async Task<CalendarEventWithApprovals> InsertVacation(
+        public async Task<CalendarEventWithAdditionalData> InsertVacation(
             CalendarEvent @event,
             DateTimeOffset timestamp,
             string createdBy)
@@ -75,7 +75,7 @@
             }
         }
 
-        public async Task<CalendarEventWithApprovals> UpdateVacation(
+        public async Task<CalendarEventWithAdditionalData> UpdateVacation(
             CalendarEvent @event,
             DateTimeOffset timestamp,
             string updatedBy)
@@ -283,24 +283,34 @@
             return vacation;
         }
 
-        private CalendarEventWithApprovals CreateCalendarEventFromVacation(Vacations vacation)
+        private CalendarEventWithAdditionalData CreateCalendarEventFromVacation(Vacations vacation)
         {
-            var isProcessed = vacation.VacationProcesses.Any();
-            var isCancelled = vacation.VacationCancellations.Any();
-            var isDeclined = vacation.VacationApprovals.Any(va => va.Status == (int)VacationApprovalStatus.Declined);
-            var isApproved = !isDeclined && vacation.VacationApprovals.Any(va => va.Status == (int)VacationApprovalStatus.Approved && va.IsFinal);
+            var processed = vacation.VacationProcesses
+                .Select(vp => new CalendarEventWithAdditionalData.VacationProcessing(vp.ProcessById.ToString(), vp.ProcessedAt))
+                .FirstOrDefault();
+
+            var cancelled = vacation.VacationCancellations
+                .Select(vc => new CalendarEventWithAdditionalData.VacationCancellation(vc.CancelledById.ToString(), vc.CancelledAt))
+                .FirstOrDefault();
+
+            var rejected = vacation.VacationApprovals
+                .Where(va => va.Status == (int)VacationApprovalStatus.Declined)
+                .Select(va => new CalendarEventWithAdditionalData.VacationRejection(va.ApproverId.ToString(), va.TimeStamp ?? DateTimeOffset.Now))
+                .FirstOrDefault();
+
+            var isApproved = rejected == null && vacation.VacationApprovals.Any(va => va.Status == (int)VacationApprovalStatus.Approved && va.IsFinal);
 
             string status = VacationStatuses.Requested;
 
-            if (isProcessed)
+            if (processed != null)
             {
                 status = VacationStatuses.Processed;
             }
-            else if (isDeclined)
+            else if (rejected != null)
             {
                 status = VacationStatuses.Rejected;
             }
-            else if (isCancelled)
+            else if (cancelled != null)
             {
                 status = VacationStatuses.Cancelled;
             }
@@ -321,7 +331,7 @@
                 .Select(va => new Approval(va.TimeStamp ?? DateTimeOffset.Now, va.ApproverId.ToString()))
                 .ToList();
 
-            return new CalendarEventWithApprovals(calendarEvent, approvals);
+            return new CalendarEventWithAdditionalData(calendarEvent, approvals, processed, cancelled, rejected);
         }
 
         private enum VacationType

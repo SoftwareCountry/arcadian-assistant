@@ -4,7 +4,7 @@ import { Dimensions, FlatList, ListRenderItemInfo, View, ViewStyle } from 'react
 import { StyledText } from '../override/styled-text';
 import { Avatar } from '../people/avatar';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
-import { CalendarEvent } from '../reducers/calendar/calendar-event.model';
+import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { EventManagementToolset } from './event-management-toolset';
 import { CalendarEventIcon } from '../calendar/calendar-event-icon';
 import { Nullable } from 'types';
@@ -122,15 +122,39 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
     private descriptionStatus(event: CalendarEvent): string {
         let description = '';
 
-        if (event.isRequested) {
-            description = `requests ${event.type.toLowerCase()}`;
-        } else if (event.isApproved) {
-            const prefix = event.dates.endDate.isAfter(moment(), 'date') ? 'has coming ' : 'on ';
-            description = prefix + event.type.toLowerCase();
-        } else if (event.isCompleted) {
-            description = `has completed ${event.type.toLowerCase()}`;
+        switch (this.preprocessStatus(event)) {
+            case CalendarEventStatus.Requested:
+                description = `requests ${event.type.toLowerCase()}`;
+                break;
+            case CalendarEventStatus.Approved:
+                const prefix = event.dates.endDate.isAfter(moment(), 'date') ? 'has coming ' : 'on ';
+                description = prefix + event.type.toLowerCase();
+                break;
+            case CalendarEventStatus.Completed:
+                description = `has completed ${event.type.toLowerCase()}`;
+                break;
+            default:
+                break;
         }
 
         return description;
+    }
+
+    //----------------------------------------------------------------------------
+    // noinspection JSMethodCanBeStatic
+    private preprocessStatus(event: CalendarEvent): CalendarEventStatus {
+        if (!event.isVacation) {
+            return event.status;
+        }
+
+        switch (event.status) {
+            case CalendarEventStatus.Requested:
+            case CalendarEventStatus.Approved:
+                return CalendarEventStatus.Requested;
+            case CalendarEventStatus.Processed:
+                return CalendarEventStatus.Approved;
+            default:
+                return event.status;
+        }
     }
 }
