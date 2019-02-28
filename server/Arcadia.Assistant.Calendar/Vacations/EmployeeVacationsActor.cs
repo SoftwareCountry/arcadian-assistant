@@ -74,6 +74,7 @@
             switch (message)
             {
                 case CalendarEventChanged msg when
+                    msg.NewEvent.Type == CalendarEventTypes.Vacation &&
                     msg.NewEvent.Status == VacationStatuses.Processed &&
                     msg.NewEvent.EmployeeId == this.employeeId:
 
