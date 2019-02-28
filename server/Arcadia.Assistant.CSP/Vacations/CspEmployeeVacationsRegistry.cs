@@ -231,8 +231,45 @@
             foreach (var @event in diff.Updated)
             {
                 this.logger.Debug($"Vacation with id {@event.CalendarEvent.EventId} for employee {this.employeeId} was updated in CSP database manually");
-                var oldEvent = this.databaseVacationsCache[@event.CalendarEvent.EventId];
-                Context.System.EventStream.Publish(new CalendarEventChanged(oldEvent.CalendarEvent, @event.CalendarEvent.EmployeeId, DateTimeOffset.Now, @event.CalendarEvent));
+
+                var newEvent = @event.CalendarEvent;
+                var oldEvent = this.databaseVacationsCache[@event.CalendarEvent.EventId].CalendarEvent;
+
+                string updatedBy = this.employeeId;
+                DateTimeOffset timestamp = DateTimeOffset.Now;
+
+                if (oldEvent.Status != newEvent.Status)
+                {
+                    switch (newEvent.Status)
+                    {
+                        case VacationStatuses.Approved:
+                            var lastApproval = @event.Approvals
+                                .OrderByDescending(x => x.Timestamp)
+                                .First();
+
+                            updatedBy = lastApproval.ApprovedBy;
+                            timestamp = lastApproval.Timestamp;
+
+                            break;
+
+                        case VacationStatuses.Rejected:
+                            updatedBy = @event.Rejected.RejectedBy;
+                            timestamp = @event.Rejected.Timestamp;
+                            break;
+
+                        case VacationStatuses.Processed:
+                            updatedBy = @event.Processed.ProcessedBy;
+                            timestamp = @event.Processed.Timestamp;
+                            break;
+
+                        case VacationStatuses.Cancelled:
+                            updatedBy = @event.Cancelled.CancelledBy;
+                            timestamp = @event.Cancelled.Timestamp;
+                            break;
+                    }
+                }
+
+                Context.System.EventStream.Publish(new CalendarEventChanged(oldEvent, updatedBy, timestamp, newEvent));
             }
 
             foreach (var @event in diff.ApprovalsUpdated)
