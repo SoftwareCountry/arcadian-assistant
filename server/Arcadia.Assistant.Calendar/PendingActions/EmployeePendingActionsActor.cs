@@ -43,7 +43,8 @@
                     this.AddPendingAction(msg.Event);
                     break;
 
-                case CalendarEventAddedToPendingActions _:
+                case CalendarEventAddedToPendingActions msg:
+                    this.RemovedFromPendingActions(msg.Event);
                     break;
 
                 case CalendarEventRemovedFromPendingActions msg when this.HasPendingAction(msg.Event.EventId):
@@ -87,7 +88,10 @@
 
         private void RemovedFromPendingActions(CalendarEvent @event)
         {
-            this.pendingActionEvents.Remove(@event.EventId);
+            if (this.pendingActionEvents.ContainsKey(@event.EventId))
+            {
+                this.pendingActionEvents.Remove(@event.EventId);
+            }
         }
 
         private bool HasPendingAction(string eventId)
