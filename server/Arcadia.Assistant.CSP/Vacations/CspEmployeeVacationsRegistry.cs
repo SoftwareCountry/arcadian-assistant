@@ -233,7 +233,19 @@
                 this.logger.Debug($"Vacation with id {@event.CalendarEvent.EventId} for employee {this.employeeId} was updated in CSP database manually");
 
                 var newEvent = @event.CalendarEvent;
-                var oldEvent = this.databaseVacationsCache[@event.CalendarEvent.EventId].CalendarEvent;
+
+                var oldEvent = this.databaseVacationsCache[@event.CalendarEvent.EventId]?.CalendarEvent;
+                if (oldEvent == null)
+                {
+                    // If vacation has entirely processed its flow in the database and has same status differs from initial,
+                    // we imply, for simplicity, that it was changed from the same vacation, but with initial status
+                    oldEvent = new CalendarEvent(
+                        newEvent.EventId,
+                        newEvent.Type,
+                        newEvent.Dates,
+                        VacationStatuses.Requested,
+                        newEvent.EmployeeId);
+                }
 
                 string updatedBy = this.employeeId;
                 DateTimeOffset timestamp = DateTimeOffset.Now;
