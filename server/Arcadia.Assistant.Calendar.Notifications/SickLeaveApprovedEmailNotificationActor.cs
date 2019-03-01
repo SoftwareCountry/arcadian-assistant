@@ -35,7 +35,8 @@
             {
                 case CalendarEventChanged msg
                     when msg.NewEvent.Type == CalendarEventTypes.Sickleave &&
-                    msg.NewEvent.Status == SickLeaveStatuses.Approved:
+                    msg.NewEvent.Status == SickLeaveStatuses.Approved &&
+                    msg.OldEvent.Status != SickLeaveStatuses.Approved:
 
                     this.organizationActor
                         .Ask<EmployeesQuery.Response>(EmployeesQuery.Create().WithId(msg.NewEvent.EmployeeId))
