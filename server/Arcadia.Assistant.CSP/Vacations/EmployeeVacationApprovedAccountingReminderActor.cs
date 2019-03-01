@@ -172,8 +172,8 @@
             {
                 Title = this.reminderConfiguration.ReminderPush.Title,
                 Body = this.reminderConfiguration.ReminderPush.Body
-                    .Replace("{startDate}", @event.Dates.StartDate.ToString("d"))
-                    .Replace("{endDate}", @event.Dates.EndDate.ToString("d")),
+                    .Replace("{startDate}", @event.Dates.StartDate.ToString("dd/MM/yyyy"))
+                    .Replace("{endDate}", @event.Dates.EndDate.ToString("dd/MM/yyyy")),
                 CustomData = new
                 {
                     @event.EventId,
@@ -206,8 +206,8 @@
             var recipient = employeeMetadata.Email;
             var subject = this.reminderConfiguration.ReminderEmail.Subject;
             var body = this.reminderConfiguration.ReminderEmail.Body
-                .Replace("{startDate}", @event.Dates.StartDate.ToString("d"))
-                .Replace("{endDate}", @event.Dates.EndDate.ToString("d"));
+                .Replace("{startDate}", @event.Dates.StartDate.ToString("dd/MM/yyyy"))
+                .Replace("{endDate}", @event.Dates.EndDate.ToString("dd/MM/yyyy"));
 
             return new EmailNotification(sender, new[] { recipient }, subject, body);
         }

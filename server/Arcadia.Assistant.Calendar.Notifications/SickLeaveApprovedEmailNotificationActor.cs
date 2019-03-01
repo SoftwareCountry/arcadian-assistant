@@ -55,7 +55,7 @@
                     var subject = this.emailNotificationConfig.Subject;
                     var body = this.emailNotificationConfig.Body
                         .Replace("{employee}", msg.Employee.Name)
-                        .Replace("{startDate}", msg.Event.Dates.StartDate.ToString("D"));
+                        .Replace("{startDate}", msg.Event.Dates.StartDate.ToString("dd/MM/yyyy"));
 
                     Context.System.EventStream.Publish(
                         new NotificationEventBusMessage(
