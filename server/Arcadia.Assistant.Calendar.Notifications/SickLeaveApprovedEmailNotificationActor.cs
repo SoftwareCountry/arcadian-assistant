@@ -35,7 +35,8 @@
             {
                 case CalendarEventChanged msg
                     when msg.NewEvent.Type == CalendarEventTypes.Sickleave &&
-                    msg.NewEvent.Status == SickLeaveStatuses.Approved:
+                    msg.NewEvent.Status == SickLeaveStatuses.Approved &&
+                    msg.OldEvent.Status != SickLeaveStatuses.Approved:
 
                     this.organizationActor
                         .Ask<EmployeesQuery.Response>(EmployeesQuery.Create().WithId(msg.NewEvent.EmployeeId))
@@ -55,7 +56,7 @@
                     var subject = this.emailNotificationConfig.Subject;
                     var body = this.emailNotificationConfig.Body
                         .Replace("{employee}", msg.Employee.Name)
-                        .Replace("{startDate}", msg.Event.Dates.StartDate.ToString("D"));
+                        .Replace("{startDate}", msg.Event.Dates.StartDate.ToString("dd/MM/yyyy"));
 
                     Context.System.EventStream.Publish(
                         new NotificationEventBusMessage(

@@ -63,8 +63,8 @@
                         msg.Event.EventId, msg.Owner.EmployeeId, msg.Approver.EmployeeId);
 
                     var datesStr = msg.Event.Dates.StartDate == msg.Event.Dates.EndDate
-                        ? msg.Event.Dates.StartDate.ToString("d")
-                        : $"{msg.Event.Dates.StartDate:d} - {msg.Event.Dates.EndDate:d}";
+                        ? msg.Event.Dates.StartDate.ToString("dd/MM/yyyy")
+                        : $"{msg.Event.Dates.StartDate:dd/MM/yyyy} - {msg.Event.Dates.EndDate:dd/MM/yyyy}";
 
                     var sender = this.emailNotificationConfig.NotificationSender;
                     var recipient = msg.Approver.Email;
