@@ -15,7 +15,7 @@
 
         public CalendarEventWithAdditionalData this[string index]
         {
-            get => this.cache[index];
+            get => this.cache.TryGetValue(index, out var value) ? value : null;
             set => this.cache[index] = value;
         }
 
