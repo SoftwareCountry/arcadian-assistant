@@ -1,8 +1,6 @@
 import { Dimensions, StyleSheet } from 'react-native';
 import Style from '../layout/style';
 
-export const chevronColor = '#2FAFCC';
-
 const circleDiameter = Dimensions.get('window').width * 0.5;
 const chevronHeight = 50;
 const placeholderHeight = circleDiameter * 0.5;
@@ -10,7 +8,7 @@ const placeholderHeight = circleDiameter * 0.5;
 export const layoutStylesForEmployeeDetailsScreen = StyleSheet.create({
     chevronPlaceholder: {
         height: Math.round(placeholderHeight - chevronHeight * 0.5),
-        backgroundColor: chevronColor
+        backgroundColor: Style.color.base
     },
     eventsContainer: {
         marginTop: 10,

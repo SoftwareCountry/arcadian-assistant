@@ -1,5 +1,6 @@
 import { PixelRatio, StyleSheet } from 'react-native';
 import { CalendarEventStatus, CalendarEventType } from '../reducers/calendar/calendar-event.model';
+import Style from '../layout/style';
 
 const daysCounterTitleColor = '#18515E';
 
@@ -110,7 +111,7 @@ export const calendarStyles = StyleSheet.create({
 });
 
 export class CalendarEventsColor {
-    public static defaultColor = '#000000';
+    public static defaultColor = Style.color.black;
     public static vacation = '#2F80ED';
     public static sickLeave = '#F2C94C';
     public static dayoff = '#EB5757';

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { IntervalProps } from './calendar-page-interval';
 import { PixelRatio, StyleSheet, View, ViewStyle } from 'react-native';
 import { calendarIntervalStyles, intervalMargin } from './styles';
+import Style from '../layout/style';
 
 interface IntervalBoundaryProps extends IntervalProps {
     boundary: 'full' | 'left' | 'right';
@@ -39,7 +40,7 @@ export class IntervalBoundary extends Component<IntervalBoundaryProps> {
                 borderRadius: circleRadius,
                 height: circleSize,
                 width: circleSize,
-                backgroundColor: '#fff',
+                backgroundColor: Style.color.white,
                 justifyContent: 'center',
                 alignItems: 'center',
                 flexDirection: 'row',
