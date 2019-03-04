@@ -15,6 +15,7 @@ import { AppState } from '../../reducers/app.reducer';
 // - Props
 //============================================================================
 interface EventDialogBaseDefaultProps {
+    disableCancel?: boolean;
     disableAccept?: boolean;
 }
 
@@ -35,14 +36,14 @@ interface EventDialogMappedProps {
 
 type EventDialogBaseProps = EventDialogBaseOwnProps & EventDialogMappedProps;
 
-
 //============================================================================
 export const eventDialogTextDateFormat = 'MMMM D, YYYY';
 
 export class EventDialogBaseImpl extends Component<EventDialogBaseProps> {
     //----------------------------------------------------------------------------
     public static defaultProps: EventDialogBaseDefaultProps = {
-        disableAccept: false
+        disableCancel: false,
+        disableAccept: false,
     };
 
     //----------------------------------------------------------------------------
@@ -77,14 +78,10 @@ export class EventDialogBaseImpl extends Component<EventDialogBaseProps> {
 
     //----------------------------------------------------------------------------
     private renderActionButtons() {
-        const { acceptLabel, disableAccept } = this.props;
         return (
             <View style={layout.buttons}>
                 {this.renderCancelButton()}
-                <CalendarActionButton title={acceptLabel} onPress={this.accept}
-                                      style={buttons.accept as ViewStyle}
-                                      textStyle={buttons.acceptLabel as TextStyle}
-                                      disabled={disableAccept || this.props.inProgress}/>
+                {this.renderAcceptButton()}
                 {this.renderActivityIndicator()}
             </View>
         );
@@ -92,14 +89,26 @@ export class EventDialogBaseImpl extends Component<EventDialogBaseProps> {
 
     //----------------------------------------------------------------------------
     private renderCancelButton() {
-        const { cancelLabel } = this.props;
+        const { cancelLabel, disableCancel } = this.props;
         if (!cancelLabel) {
             return null;
         }
         return <CalendarActionButton title={cancelLabel} onPress={this.cancel}
                                      style={buttons.cancel as ViewStyle}
                                      textStyle={buttons.cancelLabel as TextStyle}
-                                     disabled={this.props.inProgress}/>;
+                                     disabled={disableCancel || this.props.inProgress}/>;
+    }
+
+    //----------------------------------------------------------------------------
+    private renderAcceptButton() {
+        const { acceptLabel, disableAccept } = this.props;
+        if (!acceptLabel) {
+            return null;
+        }
+        return <CalendarActionButton title={acceptLabel} onPress={this.accept}
+                                     style={buttons.accept as ViewStyle}
+                                     textStyle={buttons.acceptLabel as TextStyle}
+                                     disabled={disableAccept || this.props.inProgress}/>;
     }
 
     //----------------------------------------------------------------------------

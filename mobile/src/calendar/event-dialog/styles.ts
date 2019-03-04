@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import Style from '../../layout/style';
 
 export const layout = StyleSheet.create({
     container: {
@@ -31,19 +32,18 @@ export const layout = StyleSheet.create({
     }
 });
 
-const textColor = '#fff';
 export const content = StyleSheet.create({
     icon: {
-        color: textColor,
+        color: Style.color.white,
         fontSize: 70
     },
     title: {
-        color: textColor,
+        color: Style.color.white,
         fontSize: 14,
         paddingLeft: 10
     },
     text: {
-        color: textColor,
+        color: Style.color.white,
         fontSize: 10,
         paddingLeft: 10,
         paddingTop: 13

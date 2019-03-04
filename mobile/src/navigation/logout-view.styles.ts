@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import Style from '../layout/style';
 
 //----------------------------------------------------------------------------
 export const LogoutStyle = StyleSheet.create({
@@ -9,6 +10,6 @@ export const LogoutStyle = StyleSheet.create({
     image: {
         height: 25,
         width: 25,
-        tintColor: '#fff'
+        tintColor: Style.color.white
     }
 });

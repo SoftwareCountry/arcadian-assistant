@@ -6,7 +6,7 @@ export const searchViewStyles = StyleSheet.create({
         flex: 1,
         paddingLeft: 5,
         paddingRight: 5,
-        backgroundColor: '#2FAFCC',
+        backgroundColor: Style.color.base,
         flexDirection: 'row',
         alignItems: 'center'
     },

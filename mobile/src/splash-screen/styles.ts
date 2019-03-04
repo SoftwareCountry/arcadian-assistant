@@ -1,8 +1,9 @@
 import { StyleSheet } from 'react-native';
+import Style from '../layout/style';
 
 export const splashScreenStyles = StyleSheet.create({
     container: {
-        backgroundColor: '#2FAFCC',
+        backgroundColor: Style.color.base,
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center'

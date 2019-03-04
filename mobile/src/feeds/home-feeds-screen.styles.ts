@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
+import Style from '../layout/style';
 
 const screenPadding = 19;
-export const baseColor = '#2FAFCC';
 
 export const ListStyle = StyleSheet.create({
     footer: {
@@ -15,7 +15,7 @@ export const ListStyle = StyleSheet.create({
 export const ScreenStyle = StyleSheet.create({
     view: {
         flex: 1,
-        backgroundColor: '#FFF'
+        backgroundColor: Style.color.white
     },
     viewHeaderText: {
         fontSize: 12,
@@ -72,7 +72,7 @@ export const FeedStyle = StyleSheet.create({
         fontSize: 11
     },
     tags: {
-        color: '#2FAFCC',
+        color: Style.color.base,
         fontSize: 11
     },
     date: {
