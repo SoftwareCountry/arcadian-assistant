@@ -46,7 +46,10 @@ export class VacationActionButton extends Component<VacationActionButtonProps> {
     private disableCalendarAction(): boolean {
         const { interval } = this.props;
 
-        return !!interval && (interval.calendarEvent.isCompleted || interval.calendarEvent.isApproved);
+        return !!interval &&
+            (interval.calendarEvent.isCompleted ||
+             interval.calendarEvent.isApproved ||
+             interval.calendarEvent.isProcessed);
     }
 }
 
