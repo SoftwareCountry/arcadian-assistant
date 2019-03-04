@@ -6,7 +6,7 @@ import { Feed } from '../reducers/feeds/feed.model';
 import { connect } from 'react-redux';
 import { AppState } from '../reducers/app.reducer';
 import { FeedMessage } from './feed-message';
-import { baseColor, ListStyle, ScreenStyle } from './home-feeds-screen.styles';
+import { ListStyle, ScreenStyle } from './home-feeds-screen.styles';
 import { fetchNewFeeds, fetchOldFeeds } from '../reducers/feeds/feeds.action';
 import { FeedsById } from '../reducers/feeds/feeds.reducer';
 import { LoadingView } from '../navigation/loading';
@@ -116,7 +116,7 @@ class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenD
     private footer = (): React.ReactElement<any> => {
         return (
             <View style={ListStyle.footer}>
-                <ActivityIndicator color={baseColor}/>
+                <ActivityIndicator color={Style.color.base}/>
             </View>
         );
     };

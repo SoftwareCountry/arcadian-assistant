@@ -6,10 +6,10 @@ const screenWidth = Dimensions.get('window').width;
 
 export const employeesListStyles = StyleSheet.create({
     company: {
-        backgroundColor: '#FFF'
+        backgroundColor: Style.color.white
     },
     view: {
-        backgroundColor: '#FFF'
+        backgroundColor: Style.color.white
     },
 });
 
@@ -57,7 +57,7 @@ export const nodesContainerWidth = screenWidth;
 export const companyDepartments = StyleSheet.create({
     levelContainer: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: Style.color.white,
         borderTopWidth: 1,
         borderColor: 'rgba(0, 0, 0, 0.15)'
     },
@@ -99,7 +99,7 @@ export const companyDepartmentsAnimatedNode = StyleSheet.create({
     },
     contentDepartmentAbbreviation: {
         fontSize: 9,
-        color: '#2FAFCC',
+        color: Style.color.base,
     }
 });
 
@@ -143,11 +143,11 @@ export const avatarStyles = StyleSheet.create({
         alignItems: 'center'
     },
     outerFrame: {
-        borderColor: '#2FAFCC',
+        borderColor: Style.color.base,
         borderWidth: 1
     },
     image: {
-        borderColor: '#fff',
+        borderColor: Style.color.white,
         flex: 1
     }
 });

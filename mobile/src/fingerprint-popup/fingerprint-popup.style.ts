@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import Style from '../layout/style';
 
 //----------------------------------------------------------------------------
 const view = StyleSheet.create({
@@ -57,7 +58,7 @@ const text = StyleSheet.create({
         marginBottom: 24,
     },
     buttonText: {
-        color: '#2fafcc',
+        color: Style.color.base,
         fontSize: 14,
         letterSpacing: 1.25,
     },

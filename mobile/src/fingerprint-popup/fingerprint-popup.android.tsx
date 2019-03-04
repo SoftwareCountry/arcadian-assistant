@@ -3,6 +3,7 @@ import FingerprintScanner from 'react-native-fingerprint-scanner';
 import { FingerprintPopupStyle } from './fingerprint-popup.style';
 import { Image, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import Modal from 'react-native-modal';
+import Style from '../layout/style';
 
 //============================================================================
 interface FingerprintPopupState {
@@ -96,7 +97,7 @@ export class FingerprintPopupAndroid extends Component<FingerprintPopupProps, Fi
     //----------------------------------------------------------------------------
     private fingerprintContainerColor = (): StyleProp<ViewStyle> => {
         return {
-            backgroundColor: this.state.error ? '#ea3d13' : '#2fafcc',
+            backgroundColor: this.state.error ? '#ea3d13' : Style.color.base,
         };
     };
 

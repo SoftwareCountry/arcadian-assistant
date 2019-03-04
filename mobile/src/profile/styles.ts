@@ -1,8 +1,6 @@
 import { Dimensions, StyleSheet } from 'react-native';
 import Style from '../layout/style';
 
-export const chevronColor = '#2FAFCC';
-
 const circleDiameter = Dimensions.get('window').width * 0.5;
 const chevronHeight = 50;
 const headerGap = 20; //adds additional gap over the avatar. used mainly for ios
@@ -26,7 +24,7 @@ export const chevronStyles = StyleSheet.create({
         borderStyle: 'solid',
         borderLeftColor: 'transparent',
         borderRightColor: 'transparent',
-        borderBottomColor: chevronColor,
+        borderBottomColor: Style.color.base,
         position: 'absolute',
         transform: [
             { rotate: '180deg' }
@@ -64,7 +62,7 @@ export const layoutStyles = StyleSheet.create({
     },
     chevronPlaceholder: {
         height: Math.round(placeholderHeight - chevronHeight * 0.5),
-        backgroundColor: chevronColor
+        backgroundColor: Style.color.base
     }
 });
 
@@ -83,7 +81,7 @@ export const contentStyles = StyleSheet.create({
     department: {
         fontSize: 13,
         textAlign: 'center',
-        color: '#2FAFCC',
+        color: Style.color.base,
         fontWeight: 'bold',
         marginTop: 8
     },
@@ -127,7 +125,7 @@ export const tileStyles = StyleSheet.create({
     },
     separator: {
         flexBasis: 1,
-        backgroundColor: '#fff'
+        backgroundColor: Style.color.white
     }
 });
 
