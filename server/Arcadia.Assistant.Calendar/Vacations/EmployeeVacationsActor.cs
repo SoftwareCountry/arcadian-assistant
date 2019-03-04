@@ -29,8 +29,6 @@
         private readonly ActorSelection calendarEventsApprovalsChecker;
         private readonly IActorRef vacationsRegistry;
 
-        private readonly ILoggingAdapter logger = Context.GetLogger();
-
         public EmployeeVacationsActor(
             string employeeId,
             IActorRef employeeFeed,
@@ -132,15 +130,20 @@
                         .PipeTo(
                             this.Self,
                             this.Sender,
-                            result => new InsertVacation.Success(result, msg.CreatedBy, msg.Timestamp),
+                            result => new InsertVacationSuccess(result),
                             err => new InsertVacation.Error(err));
                     break;
 
-                case InsertVacation.Success msg:
-                    Context.System.EventStream.Publish(new CalendarEventCreated(msg.Event, msg.CreatedBy, msg.Timestamp));
-                    this.Sender.Tell(new UpsertCalendarEvent.Success(msg.Event));
+                case InsertVacationSuccess msg:
+                    Context.System.EventStream.Publish(new CalendarEventCreated(msg.Data.Event, msg.Data.CreatedBy, msg.Data.Timestamp));
 
-                    this.CompleteVacationIfNeeded(msg.Event, msg.CreatedBy, msg.Timestamp);
+                    if (msg.Data.NextApprover != null)
+                    {
+                        Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(msg.Data.Event, msg.Data.NextApprover));
+                        Context.System.EventStream.Publish(new CalendarEventAssignedToApprover(msg.Data.Event, msg.Data.NextApprover));
+                    }
+
+                    this.Sender.Tell(new UpsertCalendarEvent.Success(msg.Data.Event));
 
                     break;
 
@@ -163,7 +166,14 @@
                         msg.UpdatedBy,
                         msg.Timestamp,
                         msg.NewEvent));
+
+                    if (!msg.NewEvent.IsPending)
+                    {
+                        Context.System.EventStream.Publish(new CalendarEventRemovedFromPendingActions(msg.NewEvent));
+                    }
+
                     this.Sender.Tell(new UpsertCalendarEvent.Success(msg.NewEvent));
+
                     break;
 
                 case UpdateVacation.Error msg:
@@ -208,43 +218,39 @@
                         .PipeTo(
                             this.Self,
                             this.Sender,
-                            result => new ApproveVacation.Success(result.Event, result.Approvals, msg.ApprovedBy, msg.Timestamp),
+                            result => new ApproveVacationSuccess(result),
                             err => new ApproveVacation.Error(err));
                     break;
 
-                case ApproveVacation.Success msg:
-                    if (msg.Event != null)
+                case ApproveVacationSuccess msg:
+                    if (msg.Data.NewEvent != null)
                     {
-                        Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(msg.Event, msg.Approvals.ToList()));
+                        Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(msg.Data.NewEvent, msg.Data.Approvals.ToList()));
+
+                        if (msg.Data.NextApprover != null)
+                        {
+                            Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(msg.Data.NewEvent, msg.Data.NextApprover));
+                            Context.System.EventStream.Publish(new CalendarEventAssignedToApprover(msg.Data.NewEvent, msg.Data.NextApprover));
+                        }
+                        else
+                        {
+                            Context.System.EventStream.Publish(
+                                new CalendarEventChanged(
+                                    msg.Data.OldEvent,
+                                    msg.Data.ApprovedBy,
+                                    msg.Data.Timestamp,
+                                    msg.Data.NewEvent));
+
+                            Context.System.EventStream.Publish(new CalendarEventRemovedFromPendingActions(msg.Data.NewEvent));
+                        }
                     }
 
                     this.Sender.Tell(ApproveCalendarEvent.SuccessResponse.Instance);
-
-                    this.CompleteVacationIfNeeded(msg.Event, msg.ApprovedBy, msg.Timestamp ?? DateTimeOffset.Now, msg.Approvals);
 
                     break;
 
                 case ApproveVacation.Error msg:
                     this.Sender.Tell(new ApproveCalendarEvent.ErrorResponse(msg.Exception.ToString()));
-                    break;
-
-                case CompleteVacationSuccess msg:
-                    if (msg.Data != null)
-                    {
-                        Context.System.EventStream.Publish(
-                            new CalendarEventChanged(
-                                msg.Data.OldEvent,
-                                msg.Data.CompleteBy,
-                                msg.Data.Timestamp,
-                                msg.Data.NewEvent));
-                    }
-
-                    break;
-
-                case CompleteVacationError msg:
-                    this.logger.Error(
-                        "Error occured on approve vacation after all user approvals granted " +
-                        $"for employee {this.employeeId}: {msg.Exception}");
                     break;
 
                 default:
@@ -284,7 +290,7 @@
             }
         }
 
-        private async Task<CalendarEvent> InsertVacation(InsertVacation message)
+        private async Task<InsertVacationSuccessData> InsertVacation(InsertVacation message)
         {
             await this.EnsureInsertAvailable(message.Event);
 
@@ -293,7 +299,15 @@
             switch (response)
             {
                 case InsertVacation.Success success:
-                    return success.Event;
+                    var @event = success.Event;
+
+                    var nextApprover = await this.GetNextApproverId(success.Event, Enumerable.Empty<Approval>());
+                    if (nextApprover == null)
+                    {
+                        @event = await this.CompleteVacation(@event, message.CreatedBy, message.Timestamp);
+                    }
+
+                    return new InsertVacationSuccessData(@event, message.CreatedBy, message.Timestamp, nextApprover);
 
                 case InsertVacation.Error error:
                     throw new Exception("Error occured on vacation insert", error.Exception);
@@ -326,7 +340,7 @@
             }
         }
 
-        private async Task<CalendarEventWithApprovals> GrantVacationApproval(ApproveVacation message)
+        private async Task<ApproveVacationSuccessData> GrantVacationApproval(ApproveVacation message)
         {
             this.EnsureApprovalAvailable(message.Event);
 
@@ -335,7 +349,25 @@
             switch (response)
             {
                 case ApproveVacation.Success success:
-                    return new CalendarEventWithApprovals(success.Event, success.Approvals);
+                    string nextApprover = null;
+                    CalendarEvent newEvent = success.Event;
+
+                    if (success.Event != null)
+                    {
+                        nextApprover = await this.GetNextApproverId(success.Event, success.Approvals);
+                        if (nextApprover == null)
+                        {
+                            newEvent = await this.CompleteVacation(newEvent, message.ApprovedBy, message.Timestamp);
+                        }
+                    }
+
+                    return new ApproveVacationSuccessData(
+                        newEvent,
+                        message.Event,
+                        success.Approvals,
+                        message.ApprovedBy,
+                        message.Timestamp,
+                        nextApprover);
 
                 case ApproveVacation.Error error:
                     throw new Exception("Error occured on vacation approval granted", error.Exception);
@@ -345,31 +377,8 @@
             }
         }
 
-        private void CompleteVacationIfNeeded(
-            CalendarEvent @event,
-            string approvedBy,
-            DateTimeOffset timestamp,
-            IEnumerable<Approval> approvals = null)
+        private async Task<CalendarEvent> CompleteVacation(CalendarEvent @event, string completeBy, DateTimeOffset timestamp)
         {
-            this.CheckApproverAndCompleteVacation(@event, approvedBy, timestamp, approvals ?? Enumerable.Empty<Approval>())
-                .PipeTo(
-                    this.Self,
-                    success: result => new CompleteVacationSuccess(result),
-                    failure: err => new CompleteVacationError(err));
-        }
-
-        private async Task<CompleteVacationData> CheckApproverAndCompleteVacation(
-            CalendarEvent @event,
-            string completeBy,
-            DateTimeOffset timestamp,
-            IEnumerable<Approval> approvals = null)
-        {
-            var nextApproverId = await this.GetNextApproverId(@event, approvals ?? Enumerable.Empty<Approval>());
-            if (nextApproverId != null)
-            {
-                return null;
-            }
-
             var approvedStatus = new CalendarEventStatuses().ApprovedForType(@event.Type);
             var newEvent = new CalendarEvent(
                 @event.EventId,
@@ -380,9 +389,9 @@
             );
 
             var updateMessage = new UpdateVacation(newEvent, @event, completeBy, timestamp);
-            var result = await this.UpdateVacation(updateMessage, false);
+            var updatedVacation = await this.UpdateVacation(updateMessage, false);
 
-            return new CompleteVacationData(result, @event, completeBy, timestamp);
+            return updatedVacation;
         }
 
         private async Task<string> GetNextApproverId(CalendarEvent @event, IEnumerable<Approval> approvals)
@@ -489,56 +498,74 @@
                 && newCalendarEventStatus != VacationStatuses.Processed;
         }
 
-        private class CalendarEventWithApprovals
+        private class InsertVacationSuccessData
         {
-            public CalendarEventWithApprovals(CalendarEvent @event, IEnumerable<Approval> approvals)
+            public InsertVacationSuccessData(CalendarEvent @event, string createdBy, DateTimeOffset timestamp, string nextApprover)
             {
                 this.Event = @event;
-                this.Approvals = approvals;
+                this.CreatedBy = createdBy;
+                this.Timestamp = timestamp;
+                this.NextApprover = nextApprover;
             }
 
             public CalendarEvent Event { get; }
 
-            public IEnumerable<Approval> Approvals { get; }
+            public string CreatedBy { get; }
+
+            public DateTimeOffset Timestamp { get; }
+
+            public string NextApprover { get; }
         }
 
-        private class CompleteVacationData
+        private class InsertVacationSuccess
         {
-            public CompleteVacationData(CalendarEvent newEvent, CalendarEvent oldEvent, string completeBy, DateTimeOffset timestamp)
+            public InsertVacationSuccess(InsertVacationSuccessData data)
+            {
+                this.Data = data;
+            }
+
+            public InsertVacationSuccessData Data { get; }
+        }
+
+        private class ApproveVacationSuccessData
+        {
+            public ApproveVacationSuccessData(
+                CalendarEvent newEvent,
+                CalendarEvent oldEvent,
+                IEnumerable<Approval> approvals,
+                string approvedBy,
+                DateTimeOffset timestamp,
+                string nextApprover)
             {
                 this.NewEvent = newEvent;
                 this.OldEvent = oldEvent;
-                this.CompleteBy = completeBy;
+                this.Approvals = approvals;
+                this.ApprovedBy = approvedBy;
                 this.Timestamp = timestamp;
+                this.NextApprover = nextApprover;
             }
 
             public CalendarEvent NewEvent { get; }
 
             public CalendarEvent OldEvent { get; }
 
-            public string CompleteBy { get; }
+            public IEnumerable<Approval> Approvals { get; }
+
+            public string ApprovedBy { get; }
 
             public DateTimeOffset Timestamp { get; }
+
+            public string NextApprover { get; }
         }
 
-        private class CompleteVacationSuccess
+        private class ApproveVacationSuccess
         {
-            public CompleteVacationSuccess(CompleteVacationData data)
+            public ApproveVacationSuccess(ApproveVacationSuccessData data)
             {
                 this.Data = data;
             }
 
-            public CompleteVacationData Data { get; }
-        }
-
-        private class CompleteVacationError
-        {
-            public CompleteVacationError(Exception exception)
-            {
-                this.Exception = exception;
-            }
-
-            public Exception Exception { get; }
+            public ApproveVacationSuccessData Data { get; }
         }
     }
 }
