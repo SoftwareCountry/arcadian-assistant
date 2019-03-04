@@ -24,30 +24,38 @@ interface EditSickLeaveEventDialogProps {
 }
 
 class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogProps & EditSickLeaveEventDialogDispatchProps> {
+
     public render() {
+        const selectedSickLeave = this.selectedSickLeave();
         return <EventDialogBase
             title={'Hey! Hope you feel better'}
             text={this.text}
             icon={'sick_leave'}
             cancelLabel={'Prolong'}
+            disableCancel={!selectedSickLeave}
             acceptLabel={'Complete'}
+            disableAccept={!selectedSickLeave}
             onAcceptPress={this.acceptAction}
             onCancelPress={this.cancelAction}
             onClosePress={this.closeDialog}/>;
     }
 
     private cancelAction = () => {
+        const selectedSickLeave = this.selectedSickLeave();
+        if (!selectedSickLeave) {
+            return;
+        }
+
         this.props.prolong();
     };
 
     private acceptAction = () => {
-        const { userEmployee, intervals } = this.props;
-
-        if (!userEmployee || !intervals || !intervals.sickleave) {
+        const selectedSickLeave = this.selectedSickLeave();
+        if (!selectedSickLeave) {
             return;
         }
 
-        this.props.completeSickLeave(userEmployee.employeeId, intervals.sickleave.calendarEvent);
+        this.props.completeSickLeave(selectedSickLeave.userEmployee.employeeId, selectedSickLeave.calendarEvent);
     };
 
     private closeDialog = () => {
@@ -56,6 +64,10 @@ class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogPro
 
     public get text(): string {
         const startDate = this.getSickLeaveStartDate();
+
+        if (!startDate) {
+            return `Please select a sick leave you want to edit.`;
+        }
 
         return `Your sick leave has started on ${startDate} and still is not completed.`;
     }
@@ -67,6 +79,17 @@ class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogPro
 
         return this.props.intervals.sickleave.calendarEvent.dates.startDate.format(eventDialogTextDateFormat);
     }
+
+    private selectedSickLeave = (): Optional<{ userEmployee: Employee, calendarEvent: CalendarEvent }> => {
+        const { userEmployee, intervals } = this.props;
+
+        // noinspection RedundantIfStatementJS
+        if (!userEmployee || !intervals || !intervals.sickleave) {
+            return undefined;
+        }
+
+        return { userEmployee: userEmployee, calendarEvent: intervals.sickleave.calendarEvent };
+    };
 }
 
 const mapStateToProps = (state: AppState): EditSickLeaveEventDialogProps => {
