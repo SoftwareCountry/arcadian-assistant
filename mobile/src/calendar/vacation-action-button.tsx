@@ -3,6 +3,7 @@ import { CalendarActionButton } from './calendar-action-button';
 import { IntervalModel } from '../reducers/calendar/calendar.model';
 import { CalendarEventsColor } from './styles';
 
+//============================================================================
 interface VacationActionButtonProps {
     interval?: IntervalModel;
     disabled: boolean;
@@ -10,7 +11,9 @@ interface VacationActionButtonProps {
     edit: () => void;
 }
 
+//============================================================================
 export class VacationActionButton extends Component<VacationActionButtonProps> {
+    //----------------------------------------------------------------------------
     public render() {
         const disableActionButton = this.disableCalendarAction();
 
@@ -23,12 +26,14 @@ export class VacationActionButton extends Component<VacationActionButtonProps> {
         );
     }
 
+    //----------------------------------------------------------------------------
     public get title(): string {
         return !this.props.interval
             ? 'Request Vacation'
             : 'Edit Vacation';
     }
 
+    //----------------------------------------------------------------------------
     public onVacationAction = () => {
         if (!this.props.interval) {
             this.props.request();
@@ -37,6 +42,7 @@ export class VacationActionButton extends Component<VacationActionButtonProps> {
         }
     };
 
+    //----------------------------------------------------------------------------
     private disableCalendarAction(): boolean {
         const { interval } = this.props;
 
