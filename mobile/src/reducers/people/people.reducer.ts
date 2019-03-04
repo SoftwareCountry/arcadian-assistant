@@ -1,5 +1,3 @@
-import { Reducer } from 'redux';
-import { NavigationAction } from 'react-navigation';
 import { LoadDepartmentsFinished, LoadEmployeesFinished } from '../organization/organization.action';
 import { PeopleActions } from './people.action';
 import { SearchActions } from '../search/search.action';
@@ -8,6 +6,7 @@ import { LoadUserEmployeeFinished } from '../user/user.action';
 import { DepartmentIdToNode, DepartmentNode } from './people.model';
 import { appendRoot } from './append-root';
 import { Nullable } from 'types';
+import { NavigationActionType, OpenCompanyAction } from '../../navigation/navigation.actions';
 
 export interface PeopleState {
     departmentIdToNodes: DepartmentIdToNode;
@@ -25,19 +24,17 @@ const initState: PeopleState = {
     selectedCompanyDepartmentId: null,
 };
 
-export const peopleReducer: Reducer<PeopleState> = (state = initState, action: PeopleActions | NavigationAction |
+export const peopleReducer = (state = initState, action: OpenCompanyAction | PeopleActions |
     LoadUserEmployeeFinished | LoadDepartmentsFinished | SearchActions | LoadEmployeesFinished): PeopleState => {
     switch (action.type) {
-        case 'Navigation/NAVIGATE':
-            if (action.routeName === 'Company') {
-                if (action.params) {
-                    const { departmentId } = action.params;
+        case NavigationActionType.openCompany:
+            if (action.params) {
+                const { departmentId } = action.params;
 
-                    return {
-                        ...state,
-                        selectedCompanyDepartmentId: departmentId
-                    };
-                }
+                return {
+                    ...state,
+                    selectedCompanyDepartmentId: departmentId
+                };
             }
             return state;
         case 'LOAD-USER-EMPLOYEE-FINISHED':
