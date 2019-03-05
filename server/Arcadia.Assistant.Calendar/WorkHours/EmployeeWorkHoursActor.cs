@@ -58,10 +58,8 @@
                     break;
 
                 case RecoveryCompleted _:
-                    foreach (var @event in this.EventsById.Values)
-                    {
-                        Context.System.EventStream.Publish(new CalendarEventRecoverComplete(@event));
-                    }
+                    var pendingEvents = this.EventsById.Values.Where(e => e.IsPending);
+                    this.OnRecoveryComplete(pendingEvents);
                     break;
             }
         }
