@@ -6,7 +6,6 @@
     using System.Threading.Tasks;
 
     using Akka.Actor;
-    using Akka.Event;
     using Akka.Persistence;
 
     using Arcadia.Assistant.Calendar.Abstractions;
@@ -22,8 +21,6 @@
         protected delegate void OnSuccessfulUpsertCallback(CalendarEvent changedEvent);
 
         protected string EmployeeId { get; }
-
-        private readonly ILoggingAdapter logger = Context.GetLogger();
 
         private readonly ActorSelection calendarEventsApprovalsChecker;
 
@@ -70,16 +67,43 @@
 
                         this.InsertCalendarEvent(cmd.Event, cmd.UpdatedBy, cmd.Timestamp, ev =>
                         {
-                            this.OnSuccessfulUpsert(ev);
-                            Context.System.EventStream.Publish(new CalendarEventCreated(ev, cmd.UpdatedBy, cmd.Timestamp));
-
-                            this.CompleteEventIfNeeded(ev, cmd.UpdatedBy, cmd.Timestamp);
+                            this.GetNextApproverId(ev, Enumerable.Empty<Approval>())
+                                .PipeTo(
+                                    this.Self,
+                                    this.Sender,
+                                    result => new InsertCalendarEventSuccess(ev, cmd.UpdatedBy, cmd.Timestamp, result),
+                                    err => new InsertCalendarEventError(err));
                         });
                     }
                     catch (Exception ex)
                     {
                         this.Sender.Tell(new UpsertCalendarEvent.Error(ex.ToString()));
                     }
+
+                    break;
+
+                case InsertCalendarEventSuccess msg:
+
+                    var insertResult = msg.Event;
+
+                    if (msg.NextApprover != null)
+                    {
+                        Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(msg.Event, msg.NextApprover));
+                        Context.System.EventStream.Publish(new CalendarEventAssignedToApprover(msg.Event, msg.NextApprover));
+                    }
+                    else
+                    {
+                        insertResult = this.CompleteCalendarEvent(msg.Event, msg.CreatedBy, msg.Timestamp);
+                    }
+
+                    Context.System.EventStream.Publish(new CalendarEventCreated(insertResult, msg.CreatedBy, msg.Timestamp));
+
+                    this.Sender.Tell(new UpsertCalendarEvent.Success(insertResult));
+
+                    break;
+
+                case InsertCalendarEventError msg:
+                    this.Sender.Tell(new UpsertCalendarEvent.Error(msg.Exception.ToString()));
                     break;
 
                 //update
@@ -98,18 +122,25 @@
 
                         this.UpdateCalendarEvent(oldEvent, cmd.UpdatedBy, cmd.Timestamp, cmd.Event, ev =>
                         {
-                            this.OnSuccessfulUpsert(ev);
                             Context.System.EventStream.Publish(new CalendarEventChanged(
                                 oldEvent,
                                 cmd.UpdatedBy,
                                 cmd.Timestamp,
                                 ev));
+
+                            if (!ev.IsPending)
+                            {
+                                Context.System.EventStream.Publish(new CalendarEventRemovedFromPendingActions(ev));
+                            }
+
+                            this.Sender.Tell(new UpsertCalendarEvent.Success(ev));
                         });
                     }
                     catch (Exception ex)
                     {
                         this.Sender.Tell(new UpsertCalendarEvent.Error(ex.ToString()));
                     }
+
                     break;
 
                 case GetCalendarEventApprovals msg:
@@ -133,25 +164,34 @@
 
                     break;
 
-                case CompleteEventSuccess msg:
-                    if (msg.Data != null)
+                case ApproveCalendarEventSuccess msg:
+                    Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(msg.Event, msg.Approvals.ToList()));
+
+                    if (msg.NextApprover != null)
                     {
-                        this.UpdateCalendarEvent(msg.Data.OldEvent, msg.Data.CompleteBy, msg.Data.Timestamp, msg.Data.NewEvent, ev =>
-                        {
-                            Context.System.EventStream.Publish(
-                                new CalendarEventChanged(
-                                    msg.Data.OldEvent,
-                                    msg.Data.CompleteBy,
-                                    msg.Data.Timestamp,
-                                    msg.Data.NewEvent));
-                        });
+                        Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(msg.Event, msg.NextApprover));
+                        Context.System.EventStream.Publish(new CalendarEventAssignedToApprover(msg.Event, msg.NextApprover));
                     }
+                    else
+                    {
+                        var approveResult = this.CompleteCalendarEvent(msg.Event, msg.UpdatedBy, msg.Timestamp);
+
+                        Context.System.EventStream.Publish(
+                            new CalendarEventChanged(
+                                msg.Event,
+                                msg.UpdatedBy,
+                                msg.Timestamp,
+                                approveResult));
+
+                        Context.System.EventStream.Publish(new CalendarEventRemovedFromPendingActions(msg.Event));
+                    }
+
+                    this.Sender.Tell(Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
+
                     break;
 
-                case CompleteEventError msg:
-                    this.logger.Error(
-                        "Error occured on approve event after all user approvals granted " +
-                        $"for employee {this.EmployeeId}: {msg.Exception}");
+                case ApproveCalendarEventError msg:
+                    this.Sender.Tell(new ApproveCalendarEvent.ErrorResponse(msg.Exception.ToString()));
                     break;
 
                 default:
@@ -199,42 +239,28 @@
                 UserId = message.ApproverId
             };
 
+            this.OnSuccessfulApprove(@event);
+
+            var newApprovals = this.ApprovalsByEvent[message.Event.EventId];
+
             this.Persist(@event, ev =>
             {
-                this.OnSuccessfulApprove(ev);
-
-                this.Sender.Tell(Abstractions.Messages.ApproveCalendarEvent.SuccessResponse.Instance);
-                Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(calendarEvent, approvals.ToList()));
-
-                this.CompleteEventIfNeeded(calendarEvent, message.ApproverId, message.Timestamp, approvals.ToList());
+                this.GetNextApproverId(message.Event, approvals)
+                    .PipeTo(
+                        this.Self,
+                        this.Sender,
+                        result => new ApproveCalendarEventSuccess(
+                            message.Event,
+                            newApprovals.ToList(),
+                            message.ApproverId,
+                            message.Timestamp,
+                            result),
+                        err => new ApproveCalendarEventError(err));
             });
         }
 
-        private void CompleteEventIfNeeded(
-            CalendarEvent @event,
-            string approvedBy,
-            DateTimeOffset timestamp,
-            IEnumerable<Approval> approvals = null)
+        private CalendarEvent CompleteCalendarEvent(CalendarEvent @event, string completeBy, DateTimeOffset timestamp)
         {
-            this.GetCompleteEventData(@event, approvedBy, timestamp, approvals ?? Enumerable.Empty<Approval>())
-                .PipeTo(
-                    this.Self,
-                    success: result => new CompleteEventSuccess(result),
-                    failure: err => new CompleteEventError(err));
-        }
-
-        private async Task<CompleteEventData> GetCompleteEventData(
-            CalendarEvent @event,
-            string completeBy,
-            DateTimeOffset timestamp,
-            IEnumerable<Approval> approvals = null)
-        {
-            var nextApproverId = await this.GetNextApproverId(@event, approvals ?? Enumerable.Empty<Approval>());
-            if (nextApproverId != null)
-            {
-                return null;
-            }
-
             var approvedStatus = new CalendarEventStatuses().ApprovedForType(@event.Type);
             var newEvent = new CalendarEvent(
                 @event.EventId,
@@ -244,7 +270,8 @@
                 @event.EmployeeId
             );
 
-            return new CompleteEventData(newEvent, @event, completeBy, timestamp);
+            this.UpdateCalendarEvent(@event, completeBy, timestamp, newEvent, ev => { });
+            return newEvent;
         }
 
         private async Task<string> GetNextApproverId(CalendarEvent @event, IEnumerable<Approval> approvals)
@@ -267,10 +294,6 @@
                     throw new Exception("Not expected response type");
             }
         }
-        private void OnSuccessfulUpsert(CalendarEvent calendarEvent)
-        {
-            this.Sender.Tell(new UpsertCalendarEvent.Success(calendarEvent));
-        }
 
         private void EnsureDatesAreNotIntersected(CalendarEvent @event)
         {
@@ -283,38 +306,69 @@
             }
         }
 
-        private class CompleteEventData
+        private class InsertCalendarEventSuccess
         {
-            public CompleteEventData(CalendarEvent newEvent, CalendarEvent oldEvent, string completeBy, DateTimeOffset timestamp)
+            public InsertCalendarEventSuccess(
+                CalendarEvent @event,
+                string createdBy,
+                DateTimeOffset timestamp,
+                string nextApprover)
             {
-                this.NewEvent = newEvent;
-                this.OldEvent = oldEvent;
-                this.CompleteBy = completeBy;
+                this.Event = @event;
+                this.CreatedBy = createdBy;
                 this.Timestamp = timestamp;
+                this.NextApprover = nextApprover;
             }
 
-            public CalendarEvent NewEvent { get; }
+            public CalendarEvent Event { get; }
 
-            public CalendarEvent OldEvent { get; }
-
-            public string CompleteBy { get; }
+            public string CreatedBy { get; }
 
             public DateTimeOffset Timestamp { get; }
+
+            public string NextApprover { get; }
         }
 
-        private class CompleteEventSuccess
+        private class InsertCalendarEventError
         {
-            public CompleteEventSuccess(CompleteEventData data)
+            public InsertCalendarEventError(Exception exception)
             {
-                this.Data = data;
+                this.Exception = exception;
             }
 
-            public CompleteEventData Data { get; }
+            public Exception Exception { get; }
         }
 
-        private class CompleteEventError
+        private class ApproveCalendarEventSuccess
         {
-            public CompleteEventError(Exception exception)
+            public ApproveCalendarEventSuccess(
+                CalendarEvent @event,
+                IEnumerable<Approval> approvals,
+                string updatedBy,
+                DateTimeOffset timestamp,
+                string nextApprover)
+            {
+                this.Event = @event;
+                this.Approvals = approvals;
+                this.UpdatedBy = updatedBy;
+                this.Timestamp = timestamp;
+                this.NextApprover = nextApprover;
+            }
+
+            public CalendarEvent @Event { get; }
+
+            public IEnumerable<Approval> Approvals { get; }
+
+            public string UpdatedBy { get; }
+
+            public DateTimeOffset Timestamp { get; }
+
+            public string NextApprover { get; }
+        }
+
+        private class ApproveCalendarEventError
+        {
+            public ApproveCalendarEventError(Exception exception)
             {
                 this.Exception = exception;
             }
