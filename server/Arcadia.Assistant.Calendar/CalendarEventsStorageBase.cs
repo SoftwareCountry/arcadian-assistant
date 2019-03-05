@@ -15,8 +15,7 @@
 
     public abstract class CalendarEventsStorageBase : UntypedPersistentActor, ILogReceive
     {
-        // Ugly, but it is the simplest way to achieve the goal for now
-        private const string CalendarEventsApprovalsCheckerActorPath = @"/user/calendar-events-approvals/calendar-events-approvals-checker";
+        private const string CalendarEventsApprovalsCheckerActorPath = @"/user/calendar-events-approvals";
 
         protected delegate void OnSuccessfulUpsertCallback(CalendarEvent changedEvent);
 

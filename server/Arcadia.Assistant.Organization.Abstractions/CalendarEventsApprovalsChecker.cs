@@ -4,17 +4,11 @@
     using System.Threading.Tasks;
 
     using Akka.Actor;
-    using Akka.DI.Core;
 
     using OrganizationRequests;
 
     public abstract class CalendarEventsApprovalsChecker : UntypedActor, ILogReceive
     {
-        public static Props GetProps()
-        {
-            return Context.DI().Props<CalendarEventsApprovalsChecker>();
-        }
-
         protected override void OnReceive(object message)
         {
             switch (message)
