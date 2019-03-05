@@ -5,12 +5,12 @@ import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { LoadingView } from '../navigation/loading';
 import { PeopleRoom } from './people-room';
 import { PeopleDepartment } from './people-department';
-import { filterEmployees } from '../reducers/search/search.epics';
-import { is, Map } from 'immutable';
+import { is, Map, Set } from 'immutable';
 import { CompanyDepartments } from './company-departments';
 import { Action, Dispatch } from 'redux';
 import { NavigationEventSubscription, NavigationScreenProps } from 'react-navigation';
 import { loadAllEmployees } from '../reducers/organization/organization.action';
+import { Employee } from '../reducers/organization/employee.model';
 
 //============================================================================
 interface PeopleProps {
@@ -94,6 +94,33 @@ function shouldUpdate(curProps: PeopleProps, nextProps: PeopleProps) {
     const somethingUndefined = !curProps.employees || !nextProps.employees;
     const arrays = !is(curProps.employees.employeesById, nextProps.employees.employeesById);
     return somethingUndefined || !somethingUndefined && arrays;
+}
+
+//----------------------------------------------------------------------------
+function filterEmployees(employees: EmployeesStore, filter: string) {
+    const lowercasedFilter = filter.toLowerCase();
+    const employeesPredicate = (employee: Employee) => {
+        if (!filter) {
+            return true;
+        }
+
+        if (employee.name && employee.name.toLowerCase().includes(lowercasedFilter)) {
+            return true;
+        }
+
+        if (employee.position && employee.position.toLowerCase().includes(lowercasedFilter)) {
+            return true;
+        }
+
+        return false;
+    };
+    // filter employees
+    const filteredEmployeesById: Map<string, Employee> = employees.employeesById.filter(employeesPredicate) as Map<string, Employee>;
+    let filteredEmployeesByDep: Map<string, Set<string>> =
+        employees.employeeIdsByDepartment.map(d => d.filter(e => filteredEmployeesById.has(e))) as Map<string, Set<string>>;
+    // clear empty departments
+    filteredEmployeesByDep = filteredEmployeesByDep.filter(e => !e.isEmpty()) as Map<string, Set<string>>;
+    return { employeesById: filteredEmployeesById, employeeIdsByDepartment: filteredEmployeesByDep };
 }
 
 export const PeopleCompanyFiltered = connect(mapStateToProps, companyDispatchToProps)(PeopleCompanyFilteredImpl);
