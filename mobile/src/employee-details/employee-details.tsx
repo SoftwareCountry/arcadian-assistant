@@ -5,7 +5,7 @@
 import React, { Component } from 'react';
 import { connect, MapStateToProps } from 'react-redux';
 import { Map, Set } from 'immutable';
-import { Linking, ScrollView, StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { Linking, StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 import { contactStyles, contentStyles, eventStyles, layoutStyles, tileStyles } from '../profile/styles';
 import { Chevron } from '../profile/chevron';
@@ -31,6 +31,8 @@ import { approve } from '../reducers/calendar/approval.action';
 import { Approval } from '../reducers/calendar/approval.model';
 import { EventActionContainer, EventActionProvider } from './event-action-provider';
 import { capitalizeFirstLetter, uppercase } from '../utils/string';
+import { endSearch } from '../reducers/search/search.action';
+import { SearchType } from '../navigation/search/search-view';
 
 //============================================================================
 interface TileData {
@@ -101,12 +103,15 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>): EmployeeDetailsDispatch
     },
     openCompany: (departmentId: string) => {
         dispatch(openCompany(departmentId));
+        dispatch(endSearch(SearchType.People));
     },
     openDepartment: (departmentId: string, departmentAbbreviation: string) => {
         dispatch(openDepartment(departmentId, departmentAbbreviation));
+        dispatch(endSearch(SearchType.People));
     },
     openRoom: (departmentId: string) => {
         dispatch(openRoom(departmentId));
+        dispatch(endSearch(SearchType.People));
     }
 });
 
@@ -381,7 +386,8 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                     <ApplicationIcon name={dayoffTitle} size={35} style={contactStyles.icon}/>
                 </View>
                 <View style={contactStyles.textContainer}>
-                    <StyledText style={contactStyles.title}>{capitalizeFirstLetter(hoursCreditCounter.title.join(' '))}</StyledText>
+                    <StyledText
+                        style={contactStyles.title}>{capitalizeFirstLetter(hoursCreditCounter.title.join(' '))}</StyledText>
                     <StyledText style={contactStyles.text}>{hoursCreditCounter.toString()}</StyledText>
                 </View>
             </View>

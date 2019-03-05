@@ -251,10 +251,10 @@
                 case ApproveVacationSuccess msg:
                     if (msg.Data.NewEvent != null)
                     {
-                        Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(msg.Data.NewEvent, msg.Data.Approvals.ToList()));
-
                         if (msg.Data.NextApprover != null)
                         {
+                            Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(msg.Data.NewEvent, msg.Data.Approvals.ToList()));
+
                             Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(msg.Data.NewEvent, msg.Data.NextApprover));
                             Context.System.EventStream.Publish(new CalendarEventAssignedToApprover(msg.Data.NewEvent, msg.Data.NextApprover));
                         }
