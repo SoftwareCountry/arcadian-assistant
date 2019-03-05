@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
 
     using Akka.Actor;
+    using Akka.Event;
     using Akka.Persistence;
 
     using Arcadia.Assistant.Calendar.Abstractions;
@@ -20,6 +21,8 @@
         protected delegate void OnSuccessfulUpsertCallback(CalendarEvent changedEvent);
 
         protected string EmployeeId { get; }
+
+        private readonly ILoggingAdapter logger = Context.GetLogger();
 
         private readonly ActorSelection calendarEventsApprovalsChecker;
 
@@ -37,6 +40,14 @@
         {
             switch (message)
             {
+                case RecoveryCompleteSuccess msg:
+                    Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(msg.Event, msg.NextApprover));
+                    break;
+
+                case RecoveryCompleteError msg:
+                    this.logger.Error(msg.Exception, $"Error occured on event {msg.Event} recover for employee {this.EmployeeId}");
+                    break;
+
                 case GetCalendarEvents _:
                     this.Sender.Tell(new GetCalendarEvents.Response(this.EmployeeId, this.EventsById.Values.ToList()));
                     break;
@@ -199,6 +210,20 @@
             }
         }
 
+        protected void OnRecoveryComplete(IEnumerable<CalendarEvent> pendingEvents)
+        {
+            foreach (var @event in pendingEvents)
+            {
+                var approvals = this.ApprovalsByEvent[@event.EventId];
+
+                this.GetNextApproverId(@event, approvals)
+                    .PipeTo(
+                        this.Self,
+                        success: result => new RecoveryCompleteSuccess(@event, result),
+                        failure: err => new RecoveryCompleteError(@event, err));
+            }
+        }
+
         protected abstract void InsertCalendarEvent(CalendarEvent calendarEvent, string updatedBy, DateTimeOffset timestamp, OnSuccessfulUpsertCallback onUpsert);
 
         protected abstract void UpdateCalendarEvent(CalendarEvent oldEvent, string updatedBy, DateTimeOffset timestamp, CalendarEvent newEvent, OnSuccessfulUpsertCallback onUpsert);
@@ -305,6 +330,32 @@
             }
         }
 
+        private class RecoveryCompleteSuccess
+        {
+            public RecoveryCompleteSuccess(CalendarEvent @event, string nextApprover)
+            {
+                this.Event = @event;
+                this.NextApprover = nextApprover;
+            }
+
+            public CalendarEvent Event { get; }
+
+            public string NextApprover { get; }
+        }
+
+        private class RecoveryCompleteError
+        {
+            public RecoveryCompleteError(CalendarEvent @event, Exception exception)
+            {
+                this.Event = @event;
+                this.Exception = exception;
+            }
+
+            public CalendarEvent Event { get; }
+
+            public Exception Exception { get; }
+        }
+
         private class InsertCalendarEventSuccess
         {
             public InsertCalendarEventSuccess(
@@ -354,7 +405,7 @@
                 this.NextApprover = nextApprover;
             }
 
-            public CalendarEvent @Event { get; }
+            public CalendarEvent Event { get; }
 
             public IEnumerable<Approval> Approvals { get; }
 
