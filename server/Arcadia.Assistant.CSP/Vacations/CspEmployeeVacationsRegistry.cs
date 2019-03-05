@@ -14,12 +14,16 @@
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
     using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.CSP.Configuration;
+    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public class CspEmployeeVacationsRegistry : UntypedActor, ILogReceive
     {
+        private const string CalendarEventsApprovalsCheckerActorPath = @"/user/calendar-events-approvals";
+
         private readonly VacationsSyncExecutor vacationsSyncExecutor;
         private readonly IRefreshInformation refreshInformation;
         private readonly string employeeId;
+        private readonly ActorSelection calendarEventsApprovalsChecker;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
@@ -35,6 +39,7 @@
             this.vacationsSyncExecutor = vacationsSyncExecutor;
             this.refreshInformation = refreshInformation;
             this.employeeId = employeeId;
+            this.calendarEventsApprovalsChecker = Context.ActorSelection(CalendarEventsApprovalsCheckerActorPath);
 
             // Not better place to create it, but I don't know where we can do it else
             Context.ActorOf(
@@ -87,6 +92,37 @@
 
                 case RefreshDatabase.Error msg:
                     this.logger.Error(msg.Exception, $"Error occured on refresh vacations from CSP database for employee {this.employeeId}");
+                    break;
+
+                case RefreshDatabaseCreatedSuccess msg:
+                    this.logger.Debug($"Vacation with id {msg.Event.EventId} for employee {this.employeeId} was added to CSP database manually");
+
+                    Context.System.EventStream.Publish(new CalendarEventCreated(msg.Event, msg.CreatedBy, msg.Timestamp));
+
+                    if (msg.NextApprover != null)
+                    {
+                        Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(msg.Event, msg.NextApprover));
+                        Context.System.EventStream.Publish(new CalendarEventAssignedToApprover(msg.Event, msg.NextApprover));
+                    }
+
+                    break;
+
+                case RefreshDatabaseApprovalsUpdatedSuccess msg:
+                    this.logger.Debug(
+                        $"Approvals for vacation with id {msg.Event.EventId} for employee {this.employeeId} " +
+                        "were updated in CSP database manually");
+                    Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(msg.Event, msg.Approvals));
+
+                    if (msg.NextApprover != null)
+                    {
+                        Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(msg.Event, msg.NextApprover));
+                        Context.System.EventStream.Publish(new CalendarEventAssignedToApprover(msg.Event, msg.NextApprover));
+                    }
+
+                    break;
+
+                case RefreshDatabaseUpdateCache msg:
+                    this.databaseVacationsCache.Update(msg.Diff);
                     break;
 
                 case GetCalendarEvents _:
@@ -222,16 +258,25 @@
 
             var diff = this.databaseVacationsCache.Difference(databaseVacationsById);
 
+            var updateCacheTasks = new List<Task>();
+
             foreach (var @event in diff.Created)
             {
-                this.logger.Debug($"Vacation with id {@event.CalendarEvent.EventId} for employee {this.employeeId} was added to CSP database manually");
-                Context.System.EventStream.Publish(new CalendarEventCreated(@event.CalendarEvent, @event.CalendarEvent.EmployeeId, DateTimeOffset.Now));
+                var task = this.GetNextApproverId(@event.CalendarEvent, @event.Approvals);
+                updateCacheTasks.Add(task);
+
+                task.PipeTo(
+                    this.Self,
+                    success: result => new RefreshDatabaseCreatedSuccess(
+                        @event.CalendarEvent,
+                        @event.CalendarEvent.EmployeeId,
+                        DateTimeOffset.Now,
+                        result),
+                    failure: err => new RefreshDatabase.Error(err));
             }
 
             foreach (var @event in diff.Updated)
             {
-                this.logger.Debug($"Vacation with id {@event.CalendarEvent.EventId} for employee {this.employeeId} was updated in CSP database manually");
-
                 var newEvent = @event.CalendarEvent;
 
                 var oldEvent = this.databaseVacationsCache[@event.CalendarEvent.EventId]?.CalendarEvent;
@@ -281,13 +326,25 @@
                     }
                 }
 
+                this.logger.Debug($"Vacation with id {newEvent.EventId} for employee {this.employeeId} was updated in CSP database manually");
+
                 Context.System.EventStream.Publish(new CalendarEventChanged(oldEvent, updatedBy, timestamp, newEvent));
+
+                if (!newEvent.IsPending)
+                {
+                    Context.System.EventStream.Publish(new CalendarEventRemovedFromPendingActions(newEvent));
+                }
             }
 
             foreach (var @event in diff.ApprovalsUpdated)
             {
-                this.logger.Debug($"Approvals for vacation with id {@event.CalendarEvent.EventId} for employee {this.employeeId} were updated in CSP database manually");
-                Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(@event.CalendarEvent, @event.Approvals));
+                var task = this.GetNextApproverId(@event.CalendarEvent, @event.Approvals);
+                updateCacheTasks.Add(task);
+
+                task.PipeTo(
+                    this.Self,
+                    success: result => new RefreshDatabaseApprovalsUpdatedSuccess(@event.CalendarEvent, @event.Approvals, result),
+                    failure: err => new RefreshDatabase.Error(err));
             }
 
             foreach (var @event in diff.Removed)
@@ -296,7 +353,10 @@
                 Context.System.EventStream.Publish(new CalendarEventRemoved(@event.CalendarEvent));
             }
 
-            this.databaseVacationsCache.Update(diff);
+            Task.WhenAll(updateCacheTasks)
+                .PipeTo(
+                    this.Self,
+                    success: () => new RefreshDatabaseUpdateCache(diff));
         }
 
         private async Task<IEnumerable<CalendarEventWithAdditionalData>> GetVacations(bool onlyActual = true)
@@ -345,6 +405,27 @@
             return newEvent;
         }
 
+        private async Task<string> GetNextApproverId(CalendarEvent @event, IEnumerable<Approval> approvals)
+        {
+            var approvedBy = approvals.Select(a => a.ApprovedBy);
+
+            var response = await this.calendarEventsApprovalsChecker
+                .Ask<GetNextCalendarEventApprover.Response>(
+                    new GetNextCalendarEventApprover(@event.EmployeeId, approvedBy, @event.Type));
+
+            switch (response)
+            {
+                case GetNextCalendarEventApprover.SuccessResponse msg:
+                    return msg.NextApproverEmployeeId;
+
+                case GetNextCalendarEventApprover.ErrorResponse msg:
+                    throw new Exception(msg.Message);
+
+                default:
+                    throw new Exception("Not expected response type");
+            }
+        }
+
         private async Task<bool> CheckDatesAvailability(CalendarEvent @event)
         {
             var vacations = await this.GetVacations();
@@ -365,7 +446,8 @@
             this.databaseRefreshSchedule.CancelIfNotNull();
 
             this.databaseRefreshSchedule = Context.System.Scheduler.ScheduleTellOnceCancelable(
-                TimeSpan.FromMinutes(this.refreshInformation.IntervalInMinutes),
+                //TimeSpan.FromMinutes(this.refreshInformation.IntervalInMinutes),
+                TimeSpan.FromMinutes(1),
                 this.Self,
                 RefreshDatabase.Instance,
                 this.Self);
@@ -419,6 +501,58 @@
 
                 public Exception Exception { get; }
             }
+        }
+
+        private class RefreshDatabaseCreatedSuccess
+        {
+            public RefreshDatabaseCreatedSuccess(
+                CalendarEvent @event,
+                string createdBy,
+                DateTimeOffset timestamp,
+                string nextApprover)
+            {
+                this.Event = @event;
+                this.CreatedBy = createdBy;
+                this.Timestamp = timestamp;
+                this.NextApprover = nextApprover;
+            }
+
+            public CalendarEvent Event { get; }
+
+            public string CreatedBy { get; }
+
+            public DateTimeOffset Timestamp { get; }
+
+            public string NextApprover { get; }
+        }
+
+        private class RefreshDatabaseApprovalsUpdatedSuccess
+        {
+            public RefreshDatabaseApprovalsUpdatedSuccess(
+                CalendarEvent @event,
+                IEnumerable<Approval> approvals,
+                string nextApprover)
+            {
+                this.Event = @event;
+                this.Approvals = approvals;
+                this.NextApprover = nextApprover;
+            }
+
+            public CalendarEvent Event { get; }
+
+            public IEnumerable<Approval> Approvals { get; }
+
+            public string NextApprover { get; }
+        }
+
+        private class RefreshDatabaseUpdateCache
+        {
+            public RefreshDatabaseUpdateCache(DatabaseVacationsCache.Diff diff)
+            {
+                this.Diff = diff;
+            }
+
+            public DatabaseVacationsCache.Diff Diff { get; }
         }
 
         private class GetCalendarEventsSuccess

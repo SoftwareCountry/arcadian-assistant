@@ -54,6 +54,10 @@
                 case CalendarEventRemovedFromPendingActions _:
                     break;
 
+                case CalendarEventChanged msg when msg.NewEvent.IsPending && this.HasPendingAction(msg.NewEvent.EventId):
+                    this.AddPendingAction(msg.NewEvent);
+                    break;
+
                 case CalendarEventChanged msg when !msg.NewEvent.IsPending && this.HasPendingAction(msg.NewEvent.EventId):
                     this.RemovedFromPendingActions(msg.NewEvent);
                     break;
