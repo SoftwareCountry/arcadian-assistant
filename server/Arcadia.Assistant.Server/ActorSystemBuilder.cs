@@ -13,6 +13,7 @@
     using Arcadia.Assistant.Notifications.Email;
     using Arcadia.Assistant.Notifications.Push;
     using Arcadia.Assistant.Organization;
+    using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Patterns;
     using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.UserPreferences;
@@ -64,7 +65,7 @@
                 Props.Create(() => new NotificationsDispatcherActor(emailNotificationsActorProps, pushNotificationsActorProps)),
                 "notifications");
 
-            this.actorSystem.ActorOf(CalendarEventsApprovalsActor.GetProps(), "calendar-events-approvals");
+            this.actorSystem.ActorOf(this.actorSystem.DI().Props<CalendarEventsApprovalsChecker>(), "calendar-events-approvals");
 
             return new ServerActorsCollection(organization, health, helpdesk, feeds, userPreferences, pushNotificationsDevices);
         }
