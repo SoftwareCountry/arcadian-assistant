@@ -28,6 +28,8 @@
         private readonly ActorSelection calendarEventsApprovalsChecker;
         private readonly IActorRef vacationsRegistry;
 
+        private readonly ILoggingAdapter logger = Context.GetLogger();
+
         public EmployeeVacationsActor(
             string employeeId,
             IActorRef employeeFeed,
@@ -50,6 +52,7 @@
                 "vacations-registry");
 
             Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);
+            Context.System.EventStream.Subscribe<CalendarEventRecoverComplete>(this.Self);
         }
 
         public static Props CreateProps(
@@ -82,6 +85,30 @@
                     break;
 
                 case CalendarEventChanged _:
+                    break;
+
+                case CalendarEventRecoverComplete msg when
+                    msg.Event.Type == CalendarEventTypes.Vacation &&
+                    msg.Event.EmployeeId == this.employeeId &&
+                    msg.Event.IsPending:
+
+                    this.GetRecoveryCompleteApprover(msg.Event)
+                        .PipeTo(
+                            this.Self,
+                            success: result => new RecoveryCompleteSuccess(msg.Event, result),
+                            failure: err => new RecoveryCompleteError(msg.Event, err));
+
+                    break;
+
+                case CalendarEventRecoverComplete _:
+                    break;
+
+                case RecoveryCompleteSuccess msg:
+                    Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(msg.Event, msg.NextApprover));
+                    break;
+
+                case RecoveryCompleteError msg:
+                    this.logger.Error(msg.Exception, $"Error occured on event {msg.Event.EventId} recover for employee {this.employeeId}");
                     break;
 
                 case GetVacationsCredit _:
@@ -256,6 +283,13 @@
                     this.Unhandled(message);
                     break;
             }
+        }
+
+        private async Task<string> GetRecoveryCompleteApprover(CalendarEvent @event)
+        {
+            var approvals = await this.GetApprovals(@event);
+            var nextApprover = await this.GetNextApproverId(@event, approvals);
+            return nextApprover;
         }
 
         private async Task<CalendarEvent> GetVacation(string eventId)
@@ -524,6 +558,32 @@
             }
 
             public InsertVacationSuccessData Data { get; }
+        }
+
+        private class RecoveryCompleteSuccess
+        {
+            public RecoveryCompleteSuccess(CalendarEvent @event, string nextApprover)
+            {
+                this.Event = @event;
+                this.NextApprover = nextApprover;
+            }
+
+            public CalendarEvent Event { get; }
+
+            public string NextApprover { get; }
+        }
+
+        private class RecoveryCompleteError
+        {
+            public RecoveryCompleteError(CalendarEvent @event, Exception exception)
+            {
+                this.Event = @event;
+                this.Exception = exception;
+            }
+
+            public CalendarEvent Event { get; }
+
+            public Exception Exception { get; }
         }
 
         private class ApproveVacationSuccessData

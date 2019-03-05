@@ -45,7 +45,7 @@
                     break;
 
                 case RecoveryCompleteError msg:
-                    this.logger.Error(msg.Exception, $"Error occured on event {msg.Event} recover for employee {this.EmployeeId}");
+                    this.logger.Error(msg.Exception, $"Error occured on event {msg.Event.EventId} recover for employee {this.EmployeeId}");
                     break;
 
                 case GetCalendarEvents _:
