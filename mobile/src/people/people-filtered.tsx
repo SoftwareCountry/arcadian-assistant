@@ -98,22 +98,19 @@ function shouldUpdate(curProps: PeopleProps, nextProps: PeopleProps) {
 
 //----------------------------------------------------------------------------
 function filterEmployees(employees: EmployeesStore, filter: string) {
-    const lowercasedFilter = filter.toLowerCase();
+
+    const lowerCasedFilter = filter.toLowerCase();
+
     const employeesPredicate = (employee: Employee) => {
-        if (!filter) {
-            return true;
-        }
+        const name = employee.getName().toLowerCase();
+        const surname = employee.getSurname().toLowerCase();
+        const position = employee.position.toLowerCase();
 
-        if (employee.name && employee.name.toLowerCase().includes(lowercasedFilter)) {
-            return true;
-        }
-
-        if (employee.position && employee.position.toLowerCase().includes(lowercasedFilter)) {
-            return true;
-        }
-
-        return false;
+        return surname.startsWith(lowerCasedFilter) ||
+            name.startsWith(lowerCasedFilter) ||
+            position.startsWith(lowerCasedFilter);
     };
+    
     // filter employees
     const filteredEmployeesById: Map<string, Employee> = employees.employeesById.filter(employeesPredicate) as Map<string, Employee>;
     let filteredEmployeesByDep: Map<string, Set<string>> =

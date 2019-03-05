@@ -130,8 +130,17 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
             return employeesById;
         }
 
-        return employeesById.filter(employee => employee.getSurname().toLowerCase().startsWith(this.props.filter.toLowerCase()) ||
-            employee.getName().toLowerCase().startsWith(this.props.filter.toLowerCase())).toMap();
+        const lowerCasedFilter = filter.toLowerCase();
+
+        return employeesById.filter(employee => {
+            const name = employee.getName().toLowerCase();
+            const surname = employee.getSurname().toLowerCase();
+            const position = employee.position.toLowerCase();
+
+            return surname.startsWith(lowerCasedFilter) ||
+                name.startsWith(lowerCasedFilter) ||
+                position.startsWith(lowerCasedFilter);
+        }).toMap();
     }
 
     //----------------------------------------------------------------------------
