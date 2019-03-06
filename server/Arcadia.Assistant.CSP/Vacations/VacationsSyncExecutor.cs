@@ -302,17 +302,17 @@
 
             string status = VacationStatuses.Requested;
 
-            if (processed != null)
-            {
-                status = VacationStatuses.Processed;
-            }
-            else if (rejected != null)
+            if (rejected != null)
             {
                 status = VacationStatuses.Rejected;
             }
             else if (cancelled != null)
             {
                 status = VacationStatuses.Cancelled;
+            }
+            else if (processed != null)
+            {
+                status = VacationStatuses.Processed;
             }
             else if (isApproved)
             {
