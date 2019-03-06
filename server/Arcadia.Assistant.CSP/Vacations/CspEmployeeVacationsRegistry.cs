@@ -446,8 +446,7 @@
             this.databaseRefreshSchedule.CancelIfNotNull();
 
             this.databaseRefreshSchedule = Context.System.Scheduler.ScheduleTellOnceCancelable(
-                //TimeSpan.FromMinutes(this.refreshInformation.IntervalInMinutes),
-                TimeSpan.FromMinutes(1),
+                TimeSpan.FromMinutes(this.refreshInformation.IntervalInMinutes),
                 this.Self,
                 RefreshDatabase.Instance,
                 this.Self);
