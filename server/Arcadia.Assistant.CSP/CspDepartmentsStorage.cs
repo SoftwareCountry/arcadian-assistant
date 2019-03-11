@@ -31,7 +31,7 @@
             this.contextFactory = contextFactory;
             this.configuration = configuration;
 
-            // It shouldn't be here, but there is not place for now where we can create specific CSP actor
+            // It shouldn't be here, but there is no place for now where we can create specific CSP actor
             var cspVacationsRegistryProps = Props.Create(() => new CspVacationsRegistry(vacationsSyncExecutor, refreshInformation));
             Context.ActorOf(cspVacationsRegistryProps, "csp-vacations-registry");
         }
