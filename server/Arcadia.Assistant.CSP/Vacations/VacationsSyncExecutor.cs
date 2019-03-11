@@ -22,11 +22,11 @@
             this.contextFactory = contextFactory;
         }
 
-        public async Task<IReadOnlyCollection<CalendarEventWithAdditionalData>> GetVacations(string employeeId)
+        public async Task<IReadOnlyCollection<CalendarEventWithAdditionalData>> GetVacations()
         {
             using (var context = this.contextFactory())
             {
-                var vacations = await this.GetVacationsInternal(context, employeeId, trackChanges: false);
+                var vacations = await this.GetVacationsInternal(context, trackChanges: false);
 
                 var calendarEventsWithApprovals = vacations
                     .Where(v => v.Type == (int)VacationType.Regular)
@@ -195,27 +195,27 @@
 
         private Task<List<Vacations>> GetVacationsInternal(
             ArcadiaCspContext context,
-            string employeeId,
+            string employeeId = null,
             string vacationId = null,
             bool trackChanges = true)
         {
-            var employeeDbId = int.Parse(employeeId);
-
-            int? vacationDbId;
-            if (int.TryParse(vacationId, out var temp))
+            int? employeeDbId = null;
+            if (int.TryParse(employeeId, out var tempEmployeeId))
             {
-                vacationDbId = temp;
+                employeeDbId = tempEmployeeId;
             }
-            else
+
+            int? vacationDbId = null;
+            if (int.TryParse(vacationId, out var tempVacationId))
             {
-                vacationDbId = null;
+                vacationDbId = tempVacationId;
             }
 
             var vacations = context.Vacations
                 .Include(v => v.VacationApprovals)
                 .Include(v => v.VacationCancellations)
                 .Include(v => v.VacationProcesses)
-                .Where(v => v.EmployeeId == employeeDbId && (vacationId == null || v.Id == vacationDbId));
+                .Where(v => (employeeId == null || v.EmployeeId == employeeDbId) && (vacationId == null || v.Id == vacationDbId));
 
             if (!trackChanges)
             {
