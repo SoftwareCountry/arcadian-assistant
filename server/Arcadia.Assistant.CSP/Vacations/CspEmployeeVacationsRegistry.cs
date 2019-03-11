@@ -13,7 +13,7 @@
 
     public class CspEmployeeVacationsRegistry : UntypedActor, ILogReceive
     {
-        private const string CspVacationsRegistryActorPath = @"/user/departments-storage/csp-vacations-registry";
+        private const string CspVacationsRegistryActorPath = @"/user/organization/departments/departments-storage/csp-vacations-registry";
 
         private readonly string employeeId;
         private readonly ActorSelection cspVacationsRegistryActor;
