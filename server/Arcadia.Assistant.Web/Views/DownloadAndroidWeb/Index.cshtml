@@ -1,4 +1,6 @@
-﻿<style>
+﻿@model Arcadia.Assistant.Web.Models.HomeViewModel
+
+<style>
     @@media screen and (max-width: 499px) {
         .android-content {
             width: 100%;
@@ -20,6 +22,9 @@
         </div>
         <div class="another-application-link">
             @Html.ActionLink("Not an Android?", "Index", "DownloadIosWeb")
+        </div>
+        <div class="help-link">
+            <a href="@Model.HelpLink" target="_blank">Read Usage Guide</a>
         </div>
     </div>
 </div>

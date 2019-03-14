@@ -12,10 +12,12 @@
     public class DownloadIosWebController : Controller
     {
         private readonly ISslSettings sslSettings;
+        private readonly IHelpSettings helpSettings;
 
-        public DownloadIosWebController(ISslSettings sslSettings)
+        public DownloadIosWebController(ISslSettings sslSettings, IHelpSettings helpSettings)
         {
             this.sslSettings = sslSettings;
+            this.helpSettings = helpSettings;
         }
 
         [Route("download/ios")]
@@ -24,7 +26,8 @@
         {
             return this.View(new HomeViewModel
             {
-                ManifestLink = this.GetAbsoluteUrl("GetIosManifest", "DownloadIosWeb")
+                ManifestLink = this.GetAbsoluteUrl("GetIosManifest", "DownloadIosWeb"),
+                HelpLink = this.helpSettings.HelpLink
             });
         }
 
