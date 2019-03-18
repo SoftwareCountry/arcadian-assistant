@@ -177,7 +177,7 @@ export const calendarIntervalStyles = StyleSheet.create({
         zIndex: intervalZIndex
     },
     halfInterval: {
-        width: '50%'
+        width: '30%'
     },
     interval: {
         flex: 1
