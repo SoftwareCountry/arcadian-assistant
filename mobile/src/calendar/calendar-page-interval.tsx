@@ -58,7 +58,7 @@ export class HalfInterval extends Component<HalfIntervalProps> {
         const intervalStyles = StyleSheet.flatten([
             calendarIntervalStyles.halfInterval,
             {
-                height: size,
+                height: Math.round(size),
                 backgroundColor: this.props.color
             }
         ]);
@@ -90,7 +90,7 @@ export const Interval = (props: IntervalProps) => {
     const intervalStyles = StyleSheet.flatten([
         calendarIntervalStyles.interval,
         {
-            height: size,
+            height: Math.round(size),
             backgroundColor: props.color
         }
     ]);

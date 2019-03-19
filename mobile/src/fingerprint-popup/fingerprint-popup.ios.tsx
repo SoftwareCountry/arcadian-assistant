@@ -15,7 +15,10 @@ export class FingerprintPopupIOS extends Component<FingerprintPopupProps> {
 
     //----------------------------------------------------------------------------
     public componentDidMount(): void {
-        FingerprintScanner.authenticate({ description: 'Touch the fingerprint sensor' })
+        FingerprintScanner.authenticate({
+            description: 'Touch the fingerprint sensor',
+            fallbackEnabled: false,
+        })
             .then(() => {
                 this.props.onPopupHidden(true);
             })
