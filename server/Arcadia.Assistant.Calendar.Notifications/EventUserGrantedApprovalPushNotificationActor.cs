@@ -104,16 +104,20 @@
 
         private PushNotification CreatePushNotification(CalendarEventApprovalsChangedWithAdditionalData message)
         {
+            var templateExpressionContext = new Dictionary<string, string>
+            {
+                ["eventType"] = message.Event.Type,
+                ["approver"] = message.Approver.Name
+            };
+
             var content = new PushNotificationContent
             {
                 Title = this.pushNotificationConfig.Title,
-                Body = this.pushNotificationConfig.Body
-                    .Replace("{eventType}", message.Event.Type)
-                    .Replace("{approver}", message.Approver.Name),
+                Body = this.pushNotificationConfig.Body.ParseTemplateExpression(templateExpressionContext),
                 CustomData = new
                 {
-                    EventId = message.Event.EventId,
-                    EmployeeId = message.Event.EmployeeId,
+                    message.Event.EventId,
+                    message.Event.EmployeeId,
                     ApproverId = message.Approver.EmployeeId,
                     Type = CalendarEventPushNotificationTypes.EventUserGrantedApproval
                 }

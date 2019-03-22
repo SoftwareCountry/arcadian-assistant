@@ -10,6 +10,7 @@
 
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.EventBus;
+    using Arcadia.Assistant.Calendar.Notifications;
     using Arcadia.Assistant.CSP.Configuration;
     using Arcadia.Assistant.Notifications;
     using Arcadia.Assistant.Notifications.Email;
@@ -177,12 +178,16 @@
 
         private PushNotification CreatePushNotification(CalendarEvent @event, IEnumerable<DevicePushToken> deviceTokens)
         {
+            var templateExpressionContext = new Dictionary<string, string>
+            {
+                ["startDate"] = @event.Dates.StartDate.ToString("dd/MM/yyyy"),
+                ["endDate"] = @event.Dates.EndDate.ToString("dd/MM/yyyy")
+            };
+
             var content = new PushNotificationContent
             {
                 Title = this.reminderConfiguration.ReminderPush.Title,
-                Body = this.reminderConfiguration.ReminderPush.Body
-                    .Replace("{startDate}", @event.Dates.StartDate.ToString("dd/MM/yyyy"))
-                    .Replace("{endDate}", @event.Dates.EndDate.ToString("dd/MM/yyyy")),
+                Body = this.reminderConfiguration.ReminderPush.Body.ParseTemplateExpression(templateExpressionContext),
                 CustomData = new
                 {
                     @event.EventId,
@@ -210,12 +215,16 @@
 
         private EmailNotification CreateEmailNotification(CalendarEvent @event, EmployeeMetadata employeeMetadata)
         {
+            var templateExpressionContext = new Dictionary<string, string>
+            {
+                ["startDate"] = @event.Dates.StartDate.ToString("dd/MM/yyyy"),
+                ["endDate"] = @event.Dates.EndDate.ToString("dd/MM/yyyy")
+            };
+
             var sender = this.reminderConfiguration.ReminderEmail.NotificationSender;
             var recipient = employeeMetadata.Email;
             var subject = this.reminderConfiguration.ReminderEmail.Subject;
-            var body = this.reminderConfiguration.ReminderEmail.Body
-                .Replace("{startDate}", @event.Dates.StartDate.ToString("dd/MM/yyyy"))
-                .Replace("{endDate}", @event.Dates.EndDate.ToString("dd/MM/yyyy"));
+            var body = this.reminderConfiguration.ReminderEmail.Body.ParseTemplateExpression(templateExpressionContext);
 
             return new EmailNotification(sender, new[] { recipient }, subject, body);
         }

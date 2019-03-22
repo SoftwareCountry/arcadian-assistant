@@ -94,16 +94,20 @@
 
         private PushNotification CreatePushNotification(CalendarEventChangedWithAdditionalData message)
         {
+            var templateExpressionContext = new Dictionary<string, string>
+            {
+                ["eventType"] = message.Event.Type,
+                ["eventStatus"] = message.Event.Status
+            };
+
             var content = new PushNotificationContent
             {
                 Title = this.pushNotificationConfig.Title,
-                Body = this.pushNotificationConfig.Body
-                    .Replace("{eventType}", message.Event.Type)
-                    .Replace("{eventStatus}", message.Event.Status),
+                Body = this.pushNotificationConfig.Body.ParseTemplateExpression(templateExpressionContext),
                 CustomData = new
                 {
-                    EventId = message.Event.EventId,
-                    EmployeeId = message.Event.EmployeeId,
+                    message.Event.EventId,
+                    message.Event.EmployeeId,
                     Type = CalendarEventPushNotificationTypes.EventStatusChanged
                 }
             };
