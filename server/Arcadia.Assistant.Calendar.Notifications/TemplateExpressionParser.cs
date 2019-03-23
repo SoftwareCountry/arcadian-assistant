@@ -11,6 +11,11 @@
 
         public static string ParseTemplateExpression(this string template, IDictionary<string, string> context)
         {
+            if (template == null || context == null)
+            {
+                return template;
+            }
+
             Match ifBlockMatch;
             while ((ifBlockMatch = ifBlockRegex.Match(template)).Success)
             {
