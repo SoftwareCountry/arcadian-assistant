@@ -13,7 +13,7 @@
 
     public class VacationsSyncExecutor
     {
-        private const string VacationCloseReasonDataKey = "CloseReason";
+        private const string VacationCancelReasonDataKey = "CancelReason";
 
         private readonly Func<ArcadiaCspContext> contextFactory;
 
@@ -326,7 +326,7 @@
             {
                 additionalData = new Dictionary<string, string>
                 {
-                    [VacationCloseReasonDataKey] = cancelled.CancelReason
+                    [VacationCancelReasonDataKey] = cancelled.CancelReason
                 };
             }
 
