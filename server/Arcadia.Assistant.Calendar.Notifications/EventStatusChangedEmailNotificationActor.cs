@@ -75,7 +75,8 @@
                         ["eventType"] = msg.Event.Type,
                         ["dates"] = datesStr,
                         ["eventStatus"] = msg.Event.Status
-                    };
+                    }
+                    .Merge(msg.Event.AdditionalData);
 
                     var sender = this.emailNotificationConfig.NotificationSender;
                     var recipient = msg.Owner.Email;

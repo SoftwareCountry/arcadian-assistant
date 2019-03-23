@@ -98,7 +98,8 @@
             {
                 ["eventType"] = message.Event.Type,
                 ["eventStatus"] = message.Event.Status
-            };
+            }
+            .Merge(message.Event.AdditionalData);
 
             var content = new PushNotificationContent
             {

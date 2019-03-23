@@ -103,7 +103,8 @@
             {
                 ["eventType"] = message.Event.Type,
                 ["employee"] = message.Owner.Name
-            };
+            }
+            .Merge(message.Event.AdditionalData);
 
             var content = new PushNotificationContent
             {

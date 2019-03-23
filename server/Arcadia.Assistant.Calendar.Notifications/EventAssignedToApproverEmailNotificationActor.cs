@@ -72,7 +72,8 @@
                         ["eventType"] = msg.Event.Type,
                         ["dates"] = datesStr,
                         ["employee"] = msg.Owner.Name
-                    };
+                    }
+                    .Merge(msg.Event.AdditionalData);
 
                     var sender = this.emailNotificationConfig.NotificationSender;
                     var recipient = msg.Approver.Email;

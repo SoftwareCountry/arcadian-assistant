@@ -108,7 +108,8 @@
             {
                 ["eventType"] = message.Event.Type,
                 ["approver"] = message.Approver.Name
-            };
+            }
+            .Merge(message.Event.AdditionalData);
 
             var content = new PushNotificationContent
             {

@@ -182,7 +182,8 @@
             {
                 ["startDate"] = @event.Dates.StartDate.ToString("dd/MM/yyyy"),
                 ["endDate"] = @event.Dates.EndDate.ToString("dd/MM/yyyy")
-            };
+            }
+            .Merge(@event.AdditionalData);
 
             var content = new PushNotificationContent
             {
@@ -219,7 +220,8 @@
             {
                 ["startDate"] = @event.Dates.StartDate.ToString("dd/MM/yyyy"),
                 ["endDate"] = @event.Dates.EndDate.ToString("dd/MM/yyyy")
-            };
+            }
+            .Merge(@event.AdditionalData);
 
             var sender = this.reminderConfiguration.ReminderEmail.NotificationSender;
             var recipient = employeeMetadata.Email;

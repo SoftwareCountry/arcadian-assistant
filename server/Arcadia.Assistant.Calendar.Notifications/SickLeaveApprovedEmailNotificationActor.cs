@@ -56,7 +56,8 @@
                     {
                         ["employee"] = msg.Employee.Name,
                         ["startDate"] = msg.Event.Dates.StartDate.ToString("dd/MM/yyyy")
-                    };
+                    }
+                    .Merge(msg.Event.AdditionalData);
 
                     var sender = this.emailNotificationConfig.NotificationSender;
                     var recipient = this.emailNotificationConfig.NotificationRecipient;
