@@ -36,7 +36,6 @@ namespace Arcadia.Assistant.CSP.Model
         public virtual DbSet<Holidays> Holidays { get; set; }
         public virtual DbSet<MigrationHistory> MigrationHistory { get; set; }
         public virtual DbSet<NetwrixAuditErrors> NetwrixAuditErrors { get; set; }
-        public virtual DbSet<Notifications> Notifications { get; set; }
         public virtual DbSet<Rooms> Rooms { get; set; }
         public virtual DbSet<Team> Team { get; set; }
         public virtual DbSet<TeamHistory> TeamHistory { get; set; }
@@ -823,62 +822,6 @@ namespace Arcadia.Assistant.CSP.Model
                 entity.Property(e => e.Workstation).IsRequired();
             });
 
-            modelBuilder.Entity<Notifications>(entity =>
-            {
-                entity.HasIndex(e => e.EmployeeId)
-                    .HasName("IX_EmployeeId");
-
-                entity.HasIndex(e => e.VacationApprovalId)
-                    .HasName("IX_VacationApprovalId");
-
-                entity.HasIndex(e => e.VacationApprovalId1)
-                    .HasName("IX_VacationApprovalId1");
-
-                entity.HasIndex(e => e.VacationApprovalId2)
-                    .HasName("IX_VacationApprovalId2");
-
-                entity.HasIndex(e => e.VacationId)
-                    .HasName("IX_VacationId");
-
-                entity.HasIndex(e => e.VacationId1)
-                    .HasName("IX_VacationId1");
-
-                entity.Property(e => e.DateTime).HasColumnType("datetime");
-
-                entity.Property(e => e.NotificationType).HasMaxLength(128);
-
-                entity.HasOne(d => d.Employee)
-                    .WithMany(p => p.Notifications)
-                    .HasForeignKey(d => d.EmployeeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_dbo.Notifications_dbo.Employee_EmployeeId");
-
-                entity.HasOne(d => d.VacationApproval)
-                    .WithMany(p => p.NotificationsVacationApproval)
-                    .HasForeignKey(d => d.VacationApprovalId)
-                    .HasConstraintName("FK_dbo.Notifications_dbo.VacationApprovals_VacationApprovalId");
-
-                entity.HasOne(d => d.VacationApprovalId1Navigation)
-                    .WithMany(p => p.NotificationsVacationApprovalId1Navigation)
-                    .HasForeignKey(d => d.VacationApprovalId1)
-                    .HasConstraintName("FK_dbo.Notifications_dbo.VacationApprovals_VacationApprovalId1");
-
-                entity.HasOne(d => d.VacationApprovalId2Navigation)
-                    .WithMany(p => p.NotificationsVacationApprovalId2Navigation)
-                    .HasForeignKey(d => d.VacationApprovalId2)
-                    .HasConstraintName("FK_dbo.Notifications_dbo.VacationApprovals_VacationApprovalId2");
-
-                entity.HasOne(d => d.Vacation)
-                    .WithMany(p => p.NotificationsVacation)
-                    .HasForeignKey(d => d.VacationId)
-                    .HasConstraintName("FK_dbo.Notifications_dbo.Vacations_VacationId");
-
-                entity.HasOne(d => d.VacationId1Navigation)
-                    .WithMany(p => p.NotificationsVacationId1Navigation)
-                    .HasForeignKey(d => d.VacationId1)
-                    .HasConstraintName("FK_dbo.Notifications_dbo.Vacations_VacationId1");
-            });
-
             modelBuilder.Entity<Rooms>(entity =>
             {
                 entity.Property(e => e.Name).HasMaxLength(200);
@@ -971,6 +914,8 @@ namespace Arcadia.Assistant.CSP.Model
 
                 entity.HasIndex(e => e.VacationId)
                     .HasName("IX_VacationId");
+
+                entity.Property(e => e.Reason).HasMaxLength(1000);
 
                 entity.HasOne(d => d.CancelledBy)
                     .WithMany(p => p.VacationCancellations)
