@@ -13,6 +13,8 @@
 
     public class VacationsSyncExecutor
     {
+        private const string VacationCloseReasonDataKey = "CloseReason";
+
         private readonly Func<ArcadiaCspContext> contextFactory;
 
         private readonly ILogger logger = LogManager.GetCurrentClassLogger();
@@ -290,7 +292,7 @@
                 .FirstOrDefault();
 
             var cancelled = vacation.VacationCancellations
-                .Select(vc => new CalendarEventWithAdditionalData.VacationCancellation(vc.CancelledById.ToString(), vc.CancelledAt))
+                .Select(vc => new CalendarEventWithAdditionalData.VacationCancellation(vc.CancelledById.ToString(), vc.CancelledAt, vc.Reason))
                 .FirstOrDefault();
 
             var rejected = vacation.VacationApprovals
@@ -319,12 +321,22 @@
                 status = VacationStatuses.Approved;
             }
 
+            Dictionary<string, string> additionalData = null;
+            if (cancelled != null && !string.IsNullOrWhiteSpace(cancelled.CancelReason))
+            {
+                additionalData = new Dictionary<string, string>
+                {
+                    [VacationCloseReasonDataKey] = cancelled.CancelReason
+                };
+            }
+
             var calendarEvent = new CalendarEvent(
                 vacation.Id.ToString(),
                 CalendarEventTypes.Vacation,
                 new DatesPeriod(vacation.Start.Date, vacation.End.Date),
                 status,
-                vacation.EmployeeId.ToString());
+                vacation.EmployeeId.ToString(),
+                additionalData);
 
             var approvals = vacation.VacationApprovals
                 .Where(va => va.Status == (int)VacationApprovalStatus.Approved)
