@@ -32,7 +32,7 @@
             this.Status = status;
             this.Type = type;
             this.EmployeeId = employeeId;
-            this.AdditionalData = additionalData;
+            this.AdditionalData = additionalData ?? new Dictionary<string, string>();
             this.IsPending = new CalendarEventStatuses().PendingForType(type).Contains(status);
         }
     }

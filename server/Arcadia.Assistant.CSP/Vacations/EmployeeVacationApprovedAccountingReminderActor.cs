@@ -182,13 +182,14 @@
             {
                 ["startDate"] = @event.Dates.StartDate.ToString("dd/MM/yyyy"),
                 ["endDate"] = @event.Dates.EndDate.ToString("dd/MM/yyyy")
-            }
-            .Merge(@event.AdditionalData);
+            };
+
+            templateExpressionContext = new DictionaryMerge().Perform(templateExpressionContext, @event.AdditionalData);
 
             var content = new PushNotificationContent
             {
                 Title = this.reminderConfiguration.ReminderPush.Title,
-                Body = this.reminderConfiguration.ReminderPush.Body.ParseTemplateExpression(templateExpressionContext),
+                Body = new TemplateExpressionParser().Parse(this.reminderConfiguration.ReminderPush.Body, templateExpressionContext),
                 CustomData = new
                 {
                     @event.EventId,
@@ -220,13 +221,14 @@
             {
                 ["startDate"] = @event.Dates.StartDate.ToString("dd/MM/yyyy"),
                 ["endDate"] = @event.Dates.EndDate.ToString("dd/MM/yyyy")
-            }
-            .Merge(@event.AdditionalData);
+            };
+
+            templateExpressionContext = new DictionaryMerge().Perform(templateExpressionContext, @event.AdditionalData);
 
             var sender = this.reminderConfiguration.ReminderEmail.NotificationSender;
             var recipient = employeeMetadata.Email;
             var subject = this.reminderConfiguration.ReminderEmail.Subject;
-            var body = this.reminderConfiguration.ReminderEmail.Body.ParseTemplateExpression(templateExpressionContext);
+            var body = new TemplateExpressionParser().Parse(this.reminderConfiguration.ReminderEmail.Body, templateExpressionContext);
 
             return new EmailNotification(sender, new[] { recipient }, subject, body);
         }

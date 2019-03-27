@@ -98,13 +98,14 @@
             {
                 ["eventType"] = message.Event.Type,
                 ["eventStatus"] = message.Event.Status
-            }
-            .Merge(message.Event.AdditionalData);
+            };
+
+            templateExpressionContext = new DictionaryMerge().Perform(templateExpressionContext, message.Event.AdditionalData);
 
             var content = new PushNotificationContent
             {
                 Title = this.pushNotificationConfig.Title,
-                Body = this.pushNotificationConfig.Body.ParseTemplateExpression(templateExpressionContext),
+                Body = new TemplateExpressionParser().Parse(this.pushNotificationConfig.Body, templateExpressionContext),
                 CustomData = new
                 {
                     message.Event.EventId,

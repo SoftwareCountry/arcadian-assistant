@@ -56,13 +56,14 @@
                     {
                         ["employee"] = msg.Employee.Name,
                         ["startDate"] = msg.Event.Dates.StartDate.ToString("dd/MM/yyyy")
-                    }
-                    .Merge(msg.Event.AdditionalData);
+                    };
+
+                    templateExpressionContext = new DictionaryMerge().Perform(templateExpressionContext, msg.Event.AdditionalData);
 
                     var sender = this.emailNotificationConfig.NotificationSender;
                     var recipient = this.emailNotificationConfig.NotificationRecipient;
                     var subject = this.emailNotificationConfig.Subject;
-                    var body = this.emailNotificationConfig.Body.ParseTemplateExpression(templateExpressionContext);
+                    var body = new TemplateExpressionParser().Parse(this.emailNotificationConfig.Body, templateExpressionContext);
 
                     Context.System.EventStream.Publish(
                         new NotificationEventBusMessage(

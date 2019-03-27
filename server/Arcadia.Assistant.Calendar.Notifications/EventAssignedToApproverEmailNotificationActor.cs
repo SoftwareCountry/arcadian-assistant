@@ -72,13 +72,14 @@
                         ["eventType"] = msg.Event.Type,
                         ["dates"] = datesStr,
                         ["employee"] = msg.Owner.Name
-                    }
-                    .Merge(msg.Event.AdditionalData);
+                    };
+
+                    templateExpressionContext = new DictionaryMerge().Perform(templateExpressionContext, msg.Event.AdditionalData);
 
                     var sender = this.emailNotificationConfig.NotificationSender;
                     var recipient = msg.Approver.Email;
                     var subject = this.emailNotificationConfig.Subject;
-                    var body = this.emailNotificationConfig.Body.ParseTemplateExpression(templateExpressionContext);
+                    var body = new TemplateExpressionParser().Parse(this.emailNotificationConfig.Body, templateExpressionContext);
 
                     Context.System.EventStream.Publish(
                         new NotificationEventBusMessage(

@@ -5,11 +5,11 @@
     using System.Linq;
     using System.Text.RegularExpressions;
 
-    public static class TemplateExpressionParser
+    public class TemplateExpressionParser
     {
-        private static readonly Regex ifBlockRegex = new Regex("(?<startIfGroup>{if:(?<startIfToken>.*?)}).*?(?<endIfGroup>{endif:(?<endIfToken>.*?)})");
+        private readonly Regex ifBlockRegex = new Regex("(?<startIfGroup>{if:(?<startIfToken>.*?)}).*?(?<endIfGroup>{endif:(?<endIfToken>.*?)})");
 
-        public static string ParseTemplateExpression(this string template, IDictionary<string, string> context)
+        public string Parse(string template, IDictionary<string, string> context)
         {
             if (template == null || context == null)
             {
