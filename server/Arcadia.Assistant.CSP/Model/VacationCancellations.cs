@@ -9,6 +9,7 @@ namespace Arcadia.Assistant.CSP.Model
         public int VacationId { get; set; }
         public int CancelledById { get; set; }
         public DateTimeOffset CancelledAt { get; set; }
+        public string Reason { get; set; }
 
         public Employee CancelledBy { get; set; }
         public Vacations Vacation { get; set; }

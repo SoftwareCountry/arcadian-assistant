@@ -1,5 +1,6 @@
 ﻿namespace Arcadia.Assistant.Calendar.Notifications
 {
+    using System.Collections.Generic;
     using System.Linq;
 
     using Akka.Actor;
@@ -51,12 +52,18 @@
                     this.logger.Debug("Sending a sick leave email notification for user {0}",
                         msg.Event.EmployeeId);
 
+                    var templateExpressionContext = new Dictionary<string, string>
+                    {
+                        ["employee"] = msg.Employee.Name,
+                        ["startDate"] = msg.Event.Dates.StartDate.ToString("dd/MM/yyyy")
+                    };
+
+                    templateExpressionContext = new DictionaryMerge().Perform(templateExpressionContext, msg.Event.AdditionalData);
+
                     var sender = this.emailNotificationConfig.NotificationSender;
                     var recipient = this.emailNotificationConfig.NotificationRecipient;
                     var subject = this.emailNotificationConfig.Subject;
-                    var body = this.emailNotificationConfig.Body
-                        .Replace("{employee}", msg.Employee.Name)
-                        .Replace("{startDate}", msg.Event.Dates.StartDate.ToString("dd/MM/yyyy"));
+                    var body = new TemplateExpressionParser().Parse(this.emailNotificationConfig.Body, templateExpressionContext);
 
                     Context.System.EventStream.Publish(
                         new NotificationEventBusMessage(

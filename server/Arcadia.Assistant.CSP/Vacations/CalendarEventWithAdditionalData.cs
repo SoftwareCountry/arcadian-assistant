@@ -45,15 +45,18 @@
 
         public class VacationCancellation
         {
-            public VacationCancellation(string cancelledBy, DateTimeOffset timestamp)
+            public VacationCancellation(string cancelledBy, DateTimeOffset timestamp, string cancelReason)
             {
                 this.CancelledBy = cancelledBy;
                 this.Timestamp = timestamp;
+                this.CancelReason = cancelReason;
             }
 
             public string CancelledBy { get; }
 
             public DateTimeOffset Timestamp { get; set; }
+
+            public string CancelReason { get; }
         }
 
         public class VacationRejection
