@@ -1,5 +1,6 @@
 ﻿namespace Arcadia.Assistant.Calendar.Notifications
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -69,13 +70,19 @@
                         ? msg.Event.Dates.StartDate.ToString("dd/MM/yyyy")
                         : $"{msg.Event.Dates.StartDate:dd/MM/yyyy} - {msg.Event.Dates.EndDate:dd/MM/yyyy}";
 
+                    var templateExpressionContext = new Dictionary<string, string>
+                    {
+                        ["eventType"] = msg.Event.Type,
+                        ["dates"] = datesStr,
+                        ["eventStatus"] = msg.Event.Status
+                    };
+
+                    templateExpressionContext = new DictionaryMerge().Perform(templateExpressionContext, msg.Event.AdditionalData);
+
                     var sender = this.emailNotificationConfig.NotificationSender;
                     var recipient = msg.Owner.Email;
                     var subject = this.emailNotificationConfig.Subject;
-                    var body = this.emailNotificationConfig.Body
-                        .Replace("{eventType}", msg.Event.Type)
-                        .Replace("{dates}", datesStr)
-                        .Replace("{eventStatus}", msg.Event.Status);
+                    var body = new TemplateExpressionParser().Parse(this.emailNotificationConfig.Body, templateExpressionContext);
 
                     Context.System.EventStream.Publish(
                         new NotificationEventBusMessage(
