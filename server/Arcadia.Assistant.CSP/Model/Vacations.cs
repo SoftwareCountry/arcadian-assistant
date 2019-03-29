@@ -19,6 +19,7 @@ namespace Arcadia.Assistant.CSP.Model
         public DateTime End { get; set; }
         public int Type { get; set; }
         public int? EmployeeId1 { get; set; }
+        public bool Ready { get; set; }
 
         public Employee Employee { get; set; }
         public Employee EmployeeId1Navigation { get; set; }
