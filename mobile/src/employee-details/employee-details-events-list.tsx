@@ -130,6 +130,9 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
                 const prefix = event.dates.endDate.isAfter(moment(), 'date') ? 'has coming ' : 'on ';
                 description = prefix + event.type.toLowerCase();
                 break;
+            case CalendarEventStatus.AccountingReady:
+                description = `has ${event.type.toLowerCase()} documents ready`;
+                break;
             case CalendarEventStatus.Completed:
                 description = `has completed ${event.type.toLowerCase()}`;
                 break;
