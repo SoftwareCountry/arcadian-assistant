@@ -224,6 +224,7 @@
                 .Include(v => v.VacationApprovals)
                 .Include(v => v.VacationCancellations)
                 .Include(v => v.VacationProcesses)
+                .Include(v => v.VacationReadies)
                 .Where(v => (employeeId == null || v.EmployeeId == employeeDbId) && (vacationId == null || v.Id == vacationDbId));
 
             if (!trackChanges)
@@ -307,9 +308,9 @@
                 .Select(va => new CalendarEventWithAdditionalData.VacationRejection(va.ApproverId.ToString(), va.TimeStamp ?? DateTimeOffset.Now))
                 .FirstOrDefault();
 
-            var accountingReady = vacation.Ready
-                ? new CalendarEventWithAdditionalData.VacationAccountingReady(vacation.EmployeeId.ToString(), DateTimeOffset.Now)
-                : null;
+            var accountingReady = vacation.VacationReadies
+                .Select(vr => new CalendarEventWithAdditionalData.VacationAccountingReady(vr.ReadyById.ToString(), vr.ReadyAt))
+                .FirstOrDefault();
 
             var isApproved = vacation.VacationApprovals.Any(va => va.Status == (int)VacationApprovalStatus.Approved && va.IsFinal);
 
