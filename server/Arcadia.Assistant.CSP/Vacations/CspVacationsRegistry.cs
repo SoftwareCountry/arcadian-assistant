@@ -84,7 +84,8 @@
                     break;
 
                 case RefreshDatabase.Success msg:
-                    this.FinishDatabaseRefresh(msg);
+                    this.UpdateDatabaseVacationsCache(msg.Events.ToList());
+                    this.ScheduleNextDatabaseRefresh();
                     break;
 
                 case RefreshDatabase.Error msg:
@@ -229,12 +230,6 @@
             }
         }
 
-        private void FinishDatabaseRefresh(RefreshDatabase.Success msg)
-        {
-            this.UpdateDatabaseVacationsCache(msg.Events.ToList());
-            this.ScheduleNextDatabaseRefresh();
-        }
-
         private void FinishGetCalendarEvents(GetEmployeeCalendarEventsSuccess msg)
         {
             var employeeVacations = msg.Events
@@ -275,21 +270,19 @@
             {
                 var newEvent = @event.CalendarEvent;
 
-                var oldEvent = this.databaseVacationsCache[@event.CalendarEvent.EventId]?.CalendarEvent;
-                if (oldEvent == null)
-                {
-                    // If vacation has entirely processed its flow in the database and has same status differs from initial,
-                    // we imply, for simplicity, that it was changed from the same vacation, but with initial status
-                    oldEvent = new CalendarEvent(
+                // If vacation has entirely processed its flow in the database and has same status differs from initial,
+                // we imply, for simplicity, that it was changed from the same vacation, but with initial status
+                var oldEvent =
+                    this.databaseVacationsCache[@event.CalendarEvent.EventId]?.CalendarEvent ??
+                    new CalendarEvent(
                         newEvent.EventId,
                         newEvent.Type,
                         newEvent.Dates,
                         VacationStatuses.Requested,
                         newEvent.EmployeeId);
-                }
 
-                string updatedBy = newEvent.EmployeeId;
-                DateTimeOffset timestamp = DateTimeOffset.Now;
+                var updatedBy = newEvent.EmployeeId;
+                var timestamp = DateTimeOffset.Now;
 
                 if (oldEvent.Status != newEvent.Status)
                 {
@@ -318,6 +311,11 @@
                         case VacationStatuses.Cancelled:
                             updatedBy = @event.Cancelled.CancelledBy;
                             timestamp = @event.Cancelled.Timestamp;
+                            break;
+
+                        case VacationStatuses.AccountingReady:
+                            updatedBy = @event.AccountingReady.ReadyBy;
+                            timestamp = @event.AccountingReady.Timestamp;
                             break;
                     }
                 }

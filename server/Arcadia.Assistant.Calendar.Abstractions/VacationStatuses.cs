@@ -10,12 +10,14 @@
 
         public const string Rejected = "Rejected";
 
+        public const string AccountingReady = "AccountingReady";
+
         public const string Processed = "Processed";
 
-        public static readonly string[] All = { Requested, Approved, Cancelled, Rejected, Processed };
+        public static readonly string[] All = { Requested, Approved, Cancelled, Rejected, AccountingReady, Processed };
 
         public static readonly string[] Pending = { Requested };
 
-        public static readonly string[] Actual = { Requested, Approved, Processed };
+        public static readonly string[] Actual = { Requested, Approved, AccountingReady, Processed };
     }
 }
