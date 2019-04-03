@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator, NavigationRouteConfigMap } from 'react-navigation';
 import { HomeFeedsScreen } from './home-feeds-screen';
-import { stackNavigatorConfig } from '../override/stack-navigator-config';
+import { transparentHeaderStackNavigatorConfig } from '../override/stack-navigator-config';
 import { EmployeeDetailsScreen } from '../employee-details/employee-details-screen';
 import { CurrentPeopleDepartment } from '../people/current-people-department';
 import { CurrentPeopleRoom } from '../people/current-people-room';
@@ -27,4 +27,4 @@ const routeConfig: NavigationRouteConfigMap = {
 };
 
 //----------------------------------------------------------------------------
-export const FeedsScreen = createStackNavigator(routeConfig, stackNavigatorConfig);
+export const FeedsScreen = createStackNavigator(routeConfig, transparentHeaderStackNavigatorConfig);

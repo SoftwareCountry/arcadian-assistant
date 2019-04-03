@@ -19,13 +19,6 @@ interface CalendarScreenProps {
 class CalendarScreenImpl extends React.Component<CalendarScreenProps & NavigationScreenProps> {
 
     //----------------------------------------------------------------------------
-    public static navigationOptions = {
-        headerStyle: {
-            backgroundColor: Style.color.base
-        }
-    };
-
-    //----------------------------------------------------------------------------
     public render() {
 
         const { employee } = this.props;

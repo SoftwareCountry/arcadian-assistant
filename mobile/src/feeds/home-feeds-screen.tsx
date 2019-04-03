@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, ListRenderItemInfo, RefreshControl, SafeAreaView, View } from 'react-native';
+import { ActivityIndicator, ListRenderItemInfo, RefreshControl, SafeAreaView, StatusBar, View } from 'react-native';
 import { Employee } from '../reducers/organization/employee.model';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Feed } from '../reducers/feeds/feed.model';
@@ -12,7 +12,7 @@ import { FeedsById } from '../reducers/feeds/feeds.reducer';
 import { LoadingView } from '../navigation/loading';
 import Style from '../layout/style';
 import { Action, Dispatch } from 'redux';
-import { FlatList, NavigationScreenConfig, NavigationStackScreenOptions } from 'react-navigation';
+import { FlatList } from 'react-navigation';
 import { openEmployeeDetails } from '../navigation/navigation.actions';
 import { Nullable, Optional } from 'types';
 
@@ -42,13 +42,6 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>): FeedScreenDispatchProps
 
 //============================================================================
 class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenDispatchProps> {
-
-    //----------------------------------------------------------------------------
-    public static navigationOptions: NavigationScreenConfig<NavigationStackScreenOptions> = {
-        headerStyle: {
-            backgroundColor: Style.color.base
-        }
-    };
 
     //----------------------------------------------------------------------------
     public render(): React.ReactNode {
