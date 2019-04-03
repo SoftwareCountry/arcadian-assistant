@@ -60,10 +60,12 @@
 
                     templateExpressionContext = new DictionaryMerge().Perform(templateExpressionContext, msg.Event.AdditionalData);
 
+                    var templateExpressionParser = new TemplateExpressionParser();
+
                     var sender = this.emailNotificationConfig.NotificationSender;
                     var recipient = this.emailNotificationConfig.NotificationRecipient;
-                    var subject = this.emailNotificationConfig.Subject;
-                    var body = new TemplateExpressionParser().Parse(this.emailNotificationConfig.Body, templateExpressionContext);
+                    var subject = templateExpressionParser.Parse(this.emailNotificationConfig.Subject, templateExpressionContext);
+                    var body = templateExpressionParser.Parse(this.emailNotificationConfig.Body, templateExpressionContext);
 
                     Context.System.EventStream.Publish(
                         new NotificationEventBusMessage(
