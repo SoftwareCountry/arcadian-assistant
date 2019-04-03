@@ -18,11 +18,13 @@ namespace Arcadia.Assistant.CSP.Model
             EmployeeTeam = new HashSet<EmployeeTeam>();
             ForeignPassport = new HashSet<ForeignPassport>();
             ForeignPassportHistory = new HashSet<ForeignPassportHistory>();
+            SickLeaves = new HashSet<SickLeaves>();
             Team = new HashSet<Team>();
             TeamHistory = new HashSet<TeamHistory>();
             VacationApprovals = new HashSet<VacationApprovals>();
             VacationCancellations = new HashSet<VacationCancellations>();
             VacationProcesses = new HashSet<VacationProcesses>();
+            VacationReadies = new HashSet<VacationReadies>();
             VacationsEmployee = new HashSet<Vacations>();
             VacationsEmployeeId1Navigation = new HashSet<Vacations>();
             Visa = new HashSet<Visa>();
@@ -89,11 +91,13 @@ namespace Arcadia.Assistant.CSP.Model
         public ICollection<EmployeeTeam> EmployeeTeam { get; set; }
         public ICollection<ForeignPassport> ForeignPassport { get; set; }
         public ICollection<ForeignPassportHistory> ForeignPassportHistory { get; set; }
+        public ICollection<SickLeaves> SickLeaves { get; set; }
         public ICollection<Team> Team { get; set; }
         public ICollection<TeamHistory> TeamHistory { get; set; }
         public ICollection<VacationApprovals> VacationApprovals { get; set; }
         public ICollection<VacationCancellations> VacationCancellations { get; set; }
         public ICollection<VacationProcesses> VacationProcesses { get; set; }
+        public ICollection<VacationReadies> VacationReadies { get; set; }
         public ICollection<Vacations> VacationsEmployee { get; set; }
         public ICollection<Vacations> VacationsEmployeeId1Navigation { get; set; }
         public ICollection<Visa> Visa { get; set; }

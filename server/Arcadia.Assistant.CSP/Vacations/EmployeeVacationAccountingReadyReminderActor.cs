@@ -19,13 +19,13 @@
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.UserPreferences;
 
-    public class EmployeeVacationApprovedAccountingReminderActor : UntypedActor, ILogReceive
+    public class EmployeeVacationAccountingReadyReminderActor : UntypedActor, ILogReceive
     {
         private const string UserPreferencesActorPath = "/user/user-preferences";
         private const string PushDevicesActorPath = "/user/push-notifications-devices";
         private const string OrganizationActorPath = "/user/organization";
 
-        private const string VacationReminderPushNotificationType = "VacationApprovedReminder";
+        private const string VacationReminderPushNotificationType = "VacationReadyReminder";
 
         private readonly string employeeId;
         private readonly AccountingReminderConfiguration reminderConfiguration;
@@ -38,7 +38,7 @@
 
         private readonly Dictionary<string, CalendarEvent> vacationsToRemind = new Dictionary<string, CalendarEvent>();
 
-        public EmployeeVacationApprovedAccountingReminderActor(
+        public EmployeeVacationAccountingReadyReminderActor(
             string employeeId,
             AccountingReminderConfiguration reminderConfiguration)
         {
@@ -62,7 +62,7 @@
 
         public static Props CreateProps(string employeeId, AccountingReminderConfiguration reminderConfiguration)
         {
-            return Props.Create(() => new EmployeeVacationApprovedAccountingReminderActor(
+            return Props.Create(() => new EmployeeVacationAccountingReadyReminderActor(
                 employeeId,
                 reminderConfiguration));
         }
@@ -122,7 +122,7 @@
 
         private void OnEventReceived(CalendarEvent @event, bool isRecovered = false)
         {
-            if (@event.Status != VacationStatuses.Approved)
+            if (@event.Status != VacationStatuses.AccountingReady)
             {
                 if (this.vacationsToRemind.ContainsKey(@event.EventId))
                 {
