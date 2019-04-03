@@ -14,6 +14,7 @@ export enum CalendarEventStatus {
     Cancelled = 'Cancelled',
     Approved = 'Approved',
     Rejected = 'Rejected',
+    AccountingReady = 'AccountingReady',
     Processed = 'Processed',
 }
 
@@ -87,6 +88,10 @@ export class CalendarEvent {
 
     public get isApproved(): boolean {
         return this.status === CalendarEventStatus.Approved;
+    }
+
+    public get isAccountingReady(): boolean {
+        return this.status === CalendarEventStatus.AccountingReady;
     }
 
     public get isProcessed(): boolean {

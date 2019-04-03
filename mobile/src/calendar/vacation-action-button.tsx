@@ -49,6 +49,7 @@ export class VacationActionButton extends Component<VacationActionButtonProps> {
         return !!interval &&
             (interval.calendarEvent.isCompleted ||
              interval.calendarEvent.isApproved ||
+             interval.calendarEvent.isAccountingReady ||
              interval.calendarEvent.isProcessed);
     }
 }
