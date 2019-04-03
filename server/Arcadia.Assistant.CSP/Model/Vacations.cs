@@ -10,6 +10,7 @@ namespace Arcadia.Assistant.CSP.Model
             VacationApprovals = new HashSet<VacationApprovals>();
             VacationCancellations = new HashSet<VacationCancellations>();
             VacationProcesses = new HashSet<VacationProcesses>();
+            VacationReadies = new HashSet<VacationReadies>();
         }
 
         public int Id { get; set; }
@@ -19,12 +20,12 @@ namespace Arcadia.Assistant.CSP.Model
         public DateTime End { get; set; }
         public int Type { get; set; }
         public int? EmployeeId1 { get; set; }
-        public bool Ready { get; set; }
 
         public Employee Employee { get; set; }
         public Employee EmployeeId1Navigation { get; set; }
         public ICollection<VacationApprovals> VacationApprovals { get; set; }
         public ICollection<VacationCancellations> VacationCancellations { get; set; }
         public ICollection<VacationProcesses> VacationProcesses { get; set; }
+        public ICollection<VacationReadies> VacationReadies { get; set; }
     }
 }
