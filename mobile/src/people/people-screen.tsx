@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator, NavigationRouteConfigMap } from 'react-navigation';
 import { EmployeeDetailsScreen } from '../employee-details/employee-details-screen';
-import { defaultStackNavigatorConfig } from '../override/stack-navigator-config';
+import { stackNavigatorConfig } from '../override/stack-navigator-config';
 import { PeopleScreenNavigator } from './navigator/people-screen-navigator';
 import { SearchViewPeople } from '../navigation/search/search-view';
 import { CurrentPeopleDepartment } from './current-people-department';
@@ -29,4 +29,4 @@ const routeConfig: NavigationRouteConfigMap = {
     }
 };
 
-export const PeopleScreen = createStackNavigator(routeConfig, defaultStackNavigatorConfig);
+export const PeopleScreen = createStackNavigator(routeConfig, stackNavigatorConfig);

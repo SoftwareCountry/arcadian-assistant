@@ -12,7 +12,7 @@ import { FeedsById } from '../reducers/feeds/feeds.reducer';
 import { LoadingView } from '../navigation/loading';
 import Style from '../layout/style';
 import { Action, Dispatch } from 'redux';
-import { FlatList } from 'react-navigation';
+import { FlatList, NavigationScreenConfig, NavigationStackScreenOptions } from 'react-navigation';
 import { openEmployeeDetails } from '../navigation/navigation.actions';
 import { Nullable, Optional } from 'types';
 
@@ -42,6 +42,14 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>): FeedScreenDispatchProps
 
 //============================================================================
 class HomeFeedsScreenImpl extends React.Component<FeedsScreenProps & FeedScreenDispatchProps> {
+
+    //----------------------------------------------------------------------------
+    public static navigationOptions: NavigationScreenConfig<NavigationStackScreenOptions> = {
+        headerStyle: {
+            backgroundColor: Style.color.base,
+            height: 0,
+        }
+    };
 
     //----------------------------------------------------------------------------
     public render(): React.ReactNode {
