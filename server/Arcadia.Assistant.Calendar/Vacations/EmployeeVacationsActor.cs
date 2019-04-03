@@ -525,9 +525,11 @@
             return VacationStatuses.All.Contains(newCalendarEventStatus)
                 && oldCalendarEventStatus != VacationStatuses.Cancelled
                 && oldCalendarEventStatus != VacationStatuses.Rejected
+                && oldCalendarEventStatus != VacationStatuses.AccountingReady
                 && oldCalendarEventStatus != VacationStatuses.Processed
                 && newCalendarEventStatus != VacationStatuses.Requested
                 && newCalendarEventStatus != VacationStatuses.Approved
+                && newCalendarEventStatus != VacationStatuses.AccountingReady
                 && newCalendarEventStatus != VacationStatuses.Processed;
         }
 

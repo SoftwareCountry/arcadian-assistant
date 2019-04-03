@@ -5,11 +5,12 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    using Microsoft.EntityFrameworkCore;
-    using NLog;
-
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.CSP.Model;
+
+    using Microsoft.EntityFrameworkCore;
+
+    using NLog;
 
     public class VacationsSyncExecutor
     {
@@ -49,6 +50,7 @@
                     false);
 
                 var vacation = vacations.FirstOrDefault();
+
                 return vacation != null
                     ? this.CreateCalendarEventFromVacation(vacation)
                     : null;
@@ -108,6 +110,7 @@
                 {
                     var existingCancellation = existingVacation.VacationCancellations
                         .FirstOrDefault(vc => vc.CancelledById == cancellation.CancelledById);
+
                     if (existingCancellation == null)
                     {
                         existingVacation.VacationCancellations.Add(cancellation);
@@ -118,6 +121,7 @@
                 {
                     var existingApproval = existingVacation.VacationApprovals
                         .FirstOrDefault(va => va.ApproverId == approval.ApproverId);
+
                     if (existingApproval == null)
                     {
                         existingVacation.VacationApprovals.Add(approval);
@@ -172,6 +176,7 @@
 
                 var existingApproval = existingVacation.VacationApprovals
                     .FirstOrDefault(va => va.ApproverId == approvedById);
+
                 if (existingApproval == null)
                 {
                     this.logger.Debug($"New approval created for employee {approvedById} for vacation with id {existingVacation.Id}");
@@ -202,12 +207,14 @@
             bool trackChanges = true)
         {
             int? employeeDbId = null;
+
             if (int.TryParse(employeeId, out var tempEmployeeId))
             {
                 employeeDbId = tempEmployeeId;
             }
 
             int? vacationDbId = null;
+
             if (int.TryParse(vacationId, out var tempVacationId))
             {
                 vacationDbId = tempVacationId;
@@ -300,9 +307,13 @@
                 .Select(va => new CalendarEventWithAdditionalData.VacationRejection(va.ApproverId.ToString(), va.TimeStamp ?? DateTimeOffset.Now))
                 .FirstOrDefault();
 
-            var isApproved = rejected == null && vacation.VacationApprovals.Any(va => va.Status == (int)VacationApprovalStatus.Approved && va.IsFinal);
+            var accountingReady = vacation.Ready
+                ? new CalendarEventWithAdditionalData.VacationAccountingReady(vacation.EmployeeId.ToString(), DateTimeOffset.Now)
+                : null;
 
-            string status = VacationStatuses.Requested;
+            var isApproved = vacation.VacationApprovals.Any(va => va.Status == (int)VacationApprovalStatus.Approved && va.IsFinal);
+
+            var status = VacationStatuses.Requested;
 
             if (rejected != null)
             {
@@ -311,6 +322,10 @@
             else if (cancelled != null)
             {
                 status = VacationStatuses.Cancelled;
+            }
+            else if (accountingReady != null)
+            {
+                status = VacationStatuses.AccountingReady;
             }
             else if (processed != null)
             {
@@ -322,6 +337,7 @@
             }
 
             Dictionary<string, string> additionalData = null;
+
             if (cancelled != null && !string.IsNullOrWhiteSpace(cancelled.CancelReason))
             {
                 additionalData = new Dictionary<string, string>
@@ -343,7 +359,7 @@
                 .Select(va => new Approval(va.TimeStamp ?? DateTimeOffset.Now, va.ApproverId.ToString()))
                 .ToList();
 
-            return new CalendarEventWithAdditionalData(calendarEvent, approvals, processed, cancelled, rejected);
+            return new CalendarEventWithAdditionalData(calendarEvent, approvals, processed, cancelled, rejected, accountingReady);
         }
 
         private enum VacationType
