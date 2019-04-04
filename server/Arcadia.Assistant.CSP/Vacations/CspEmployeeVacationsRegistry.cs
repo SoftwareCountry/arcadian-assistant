@@ -27,7 +27,7 @@
             this.cspVacationsRegistryActor = Context.ActorSelection(CspVacationsRegistryActorPath);
 
             Context.ActorOf(
-                EmployeeVacationApprovedAccountingReminderActor.CreateProps(employeeId, reminderConfiguration),
+                EmployeeVacationAccountingReadyReminderActor.CreateProps(employeeId, reminderConfiguration),
                 $"vacations-reminder-{employeeId}");
         }
 

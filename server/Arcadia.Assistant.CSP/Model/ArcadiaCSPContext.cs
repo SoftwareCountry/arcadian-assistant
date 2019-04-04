@@ -37,11 +37,13 @@ namespace Arcadia.Assistant.CSP.Model
         public virtual DbSet<MigrationHistory> MigrationHistory { get; set; }
         public virtual DbSet<NetwrixAuditErrors> NetwrixAuditErrors { get; set; }
         public virtual DbSet<Rooms> Rooms { get; set; }
+        public virtual DbSet<SickLeaves> SickLeaves { get; set; }
         public virtual DbSet<Team> Team { get; set; }
         public virtual DbSet<TeamHistory> TeamHistory { get; set; }
         public virtual DbSet<VacationApprovals> VacationApprovals { get; set; }
         public virtual DbSet<VacationCancellations> VacationCancellations { get; set; }
         public virtual DbSet<VacationProcesses> VacationProcesses { get; set; }
+        public virtual DbSet<VacationReadies> VacationReadies { get; set; }
         public virtual DbSet<Vacations> Vacations { get; set; }
         public virtual DbSet<Visa> Visa { get; set; }
         public virtual DbSet<VisaHistory> VisaHistory { get; set; }
@@ -829,6 +831,22 @@ namespace Arcadia.Assistant.CSP.Model
                 entity.Property(e => e.RoomNumber).HasMaxLength(20);
             });
 
+            modelBuilder.Entity<SickLeaves>(entity =>
+            {
+                entity.HasIndex(e => e.EmployeeId)
+                    .HasName("IX_EmployeeId");
+
+                entity.Property(e => e.End).HasColumnType("datetime");
+
+                entity.Property(e => e.Start).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Employee)
+                    .WithMany(p => p.SickLeaves)
+                    .HasForeignKey(d => d.EmployeeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_dbo.SickLeaves_dbo.Employee_EmployeeId");
+            });
+
             modelBuilder.Entity<Team>(entity =>
             {
                 entity.HasIndex(e => e.Id)
@@ -947,6 +965,27 @@ namespace Arcadia.Assistant.CSP.Model
                     .HasForeignKey(d => d.VacationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_dbo.VacationProcesses_dbo.Vacations_VacationId");
+            });
+
+            modelBuilder.Entity<VacationReadies>(entity =>
+            {
+                entity.HasIndex(e => e.ReadyById)
+                    .HasName("IX_ReadyById");
+
+                entity.HasIndex(e => e.VacationId)
+                    .HasName("IX_VacationId");
+
+                entity.HasOne(d => d.ReadyBy)
+                    .WithMany(p => p.VacationReadies)
+                    .HasForeignKey(d => d.ReadyById)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_dbo.VacationReadies_dbo.Employee_ReadyById");
+
+                entity.HasOne(d => d.Vacation)
+                    .WithMany(p => p.VacationReadies)
+                    .HasForeignKey(d => d.VacationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_dbo.VacationReadies_dbo.Vacations_VacationId");
             });
 
             modelBuilder.Entity<Vacations>(entity =>

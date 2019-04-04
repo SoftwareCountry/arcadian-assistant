@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+
     using Arcadia.Assistant.Calendar.Abstractions;
 
     public class CalendarEventWithAdditionalData
@@ -11,13 +12,15 @@
             IEnumerable<Approval> approvals,
             VacationProcessing processed,
             VacationCancellation cancelled,
-            VacationRejection rejected)
+            VacationRejection rejected,
+            VacationAccountingReady accountingReady)
         {
             this.CalendarEvent = calendarEvent;
             this.Approvals = approvals;
             this.Processed = processed;
             this.Cancelled = cancelled;
             this.Rejected = rejected;
+            this.AccountingReady = accountingReady;
         }
 
         public CalendarEvent CalendarEvent { get; }
@@ -28,7 +31,9 @@
 
         public VacationCancellation Cancelled { get; }
 
-        public VacationRejection Rejected { get; set; }
+        public VacationRejection Rejected { get; }
+
+        public VacationAccountingReady AccountingReady { get; }
 
         public class VacationProcessing
         {
@@ -68,6 +73,19 @@
             }
 
             public string RejectedBy { get; }
+
+            public DateTimeOffset Timestamp { get; }
+        }
+
+        public class VacationAccountingReady
+        {
+            public VacationAccountingReady(string readyBy, DateTimeOffset timestamp)
+            {
+                this.ReadyBy = readyBy;
+                this.Timestamp = timestamp;
+            }
+
+            public string ReadyBy { get; }
 
             public DateTimeOffset Timestamp { get; }
         }

@@ -21,7 +21,8 @@ class CalendarScreenImpl extends React.Component<CalendarScreenProps & Navigatio
     //----------------------------------------------------------------------------
     public static navigationOptions = {
         headerStyle: {
-            backgroundColor: Style.color.base
+            backgroundColor: Style.color.base,
+            height: 0,
         }
     };
 
