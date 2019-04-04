@@ -163,7 +163,7 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
 
         this.isAndroid7x = Platform.OS === 'android' &&
             (Platform.Version === 24 ||
-             Platform.Version === 25);
+                Platform.Version === 25);
     }
 
     public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelAnimatedNodeProps) {
@@ -203,26 +203,27 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
         const showStaffIcon = !!this.props.node.staffDepartmentId;
 
         return (
-            <Animated.View style={containerStyles}>
-                <Animated.View style={stickyContainerStyles}>
-                    <Animated.View style={this.scaleAnimationSupported() ? scaleContainerStyles : opacityContainerStyles}>
-                        <TouchableOpacity style={touchableStyles} onPress={this.onPressChief}>
+            <TouchableOpacity style={touchableStyles} onPress={this.onPressChief}>
+                <Animated.View style={containerStyles}>
+                    <Animated.View style={stickyContainerStyles}>
+                        <Animated.View
+                            style={this.scaleAnimationSupported() ? scaleContainerStyles : opacityContainerStyles}>
                             <Avatar photoUrl={photo} useDefaultForEmployeesList={showStaffIcon}/>
-                        </TouchableOpacity>
+                        </Animated.View>
+                    </Animated.View>
+                    <Animated.View style={contentStyles}>
+                        <View>
+                            <StyledText>{chiefName}</StyledText>
+                            <StyledText style={companyDepartmentsAnimatedNode.contentPosition}>
+                                {chiefPosition}
+                            </StyledText>
+                        </View>
+                        <StyledText style={companyDepartmentsAnimatedNode.contentDepartmentAbbreviation}>
+                            {this.props.node.abbreviation}
+                        </StyledText>
                     </Animated.View>
                 </Animated.View>
-                <Animated.View style={contentStyles}>
-                    <View>
-                        <StyledText>{chiefName}</StyledText>
-                        <StyledText style={companyDepartmentsAnimatedNode.contentPosition}>
-                            {chiefPosition}
-                        </StyledText>
-                    </View>
-                    <StyledText style={companyDepartmentsAnimatedNode.contentDepartmentAbbreviation}>
-                        {this.props.node.abbreviation}
-                    </StyledText>
-                </Animated.View>
-            </Animated.View>
+            </TouchableOpacity>
         );
     }
 
@@ -247,7 +248,7 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
             {
                 width: calculatedWidth,
                 height: height,
-                opacity: this.animatedContainerOpacity as any
+                opacity: this.animatedContainerOpacity as any,
             }
         ]);
 
@@ -279,9 +280,10 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
             Animations.contentAnimation(index, calculatedWidth, height, xCoordinate) as any
         ]);
 
-        const touchableStyles = StyleSheet.flatten([
-            rectSize
-        ]);
+        const touchableStyles = {
+            width: calculatedWidth,
+            height: height,
+        };
 
         return {
             containerStyles,
