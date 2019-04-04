@@ -20,7 +20,9 @@ export const layout = StyleSheet.create({
     },
     close: {
         flex: 1,
-        alignItems: 'flex-end'
+        alignItems: 'flex-end',
+        height: 60,
+        width: 60,
     },
     text: {
         flex: 1
@@ -67,7 +69,7 @@ export const buttons = StyleSheet.create({
         lineHeight: 50,
         color: 'rgba(255, 255, 255, 0.5)',
         paddingRight: 5,
-        paddingTop: 15
+        paddingTop: 15,
     },
     cancel: StyleSheet.flatten([defaultButtonStyle.border, {
         marginRight: 5

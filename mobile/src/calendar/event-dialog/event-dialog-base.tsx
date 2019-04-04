@@ -67,11 +67,9 @@ export class EventDialogBaseImpl extends Component<EventDialogBaseProps> {
                     {this.props.children}
                     {actionButtons}
                 </View>
-                <View style={layout.close}>
-                    <TouchableOpacity onPress={this.close}>
-                        <StyledText style={buttons.close}>˟</StyledText>
-                    </TouchableOpacity>
-                </View>
+                <TouchableOpacity style={layout.close} onPress={this.close}>
+                    <StyledText style={buttons.close}>˟</StyledText>
+                </TouchableOpacity>
             </View>
         );
     }
