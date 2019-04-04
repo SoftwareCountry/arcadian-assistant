@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Image, TouchableOpacity, View } from 'react-native';
+import { Image, TouchableOpacity } from 'react-native';
 import { AuthActions, startLogoutProcess } from '../reducers/auth/auth.action';
 import { connect } from 'react-redux';
 import { LogoutStyle } from './logout-view.styles';
@@ -20,10 +20,8 @@ const dispatchToProps = (dispatch: Dispatch<AuthActions>): LogoutDispatchProps =
 //============================================================================
 class LogoutViewImpl extends Component<LogoutDispatchProps> {
     public render() {
-        return <TouchableOpacity onPress={this.props.onLogoutClicked}>
-            <View style={LogoutStyle.container}>
-                <Image style={LogoutStyle.image} source={require('./logout-image.png')} resizeMethod={'resize'}/>
-            </View>
+        return <TouchableOpacity onPress={this.props.onLogoutClicked} style={LogoutStyle.container}>
+            <Image style={LogoutStyle.image} source={require('./logout-image.png')} resizeMethod={'resize'}/>
         </TouchableOpacity>;
     }
 }
