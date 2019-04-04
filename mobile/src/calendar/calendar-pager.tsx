@@ -43,7 +43,7 @@ export class CalendarPager extends Component<CalendarPagerProps, CalendarPagerSt
         disableBefore: undefined
     };
 
-    private readonly motionThreshold = 120;
+    private readonly motionThreshold = 50;
     private coordinates = new Animated.ValueXY({ x: 0, y: 0 });
     private canSwipe = true;
 
