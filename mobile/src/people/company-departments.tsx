@@ -19,6 +19,9 @@ import { openEmployeeDetails } from '../navigation/navigation.actions';
 import { Nullable } from 'types';
 import { NoResultView } from '../navigation/search/no-result-view';
 import { EmployeesList } from './employees-list';
+import { RefreshControl } from 'react-native';
+import Style from '../layout/style';
+import { loadAllEmployees } from '../reducers/organization/organization.action';
 
 //============================================================================
 interface CompanyDepartmentsStateProps {
@@ -34,6 +37,7 @@ interface CompanyDepartmentsStateProps {
 interface CompanyDepartmentsDispatchProps {
     selectCompanyDepartment: (departmentId: string) => void;
     onPressEmployee: (Employee: Employee) => void;
+    loadAllEmployees: () => void;
 }
 
 
@@ -42,6 +46,7 @@ type CompanyDepartmentsProps = CompanyDepartmentsStateProps & CompanyDepartments
 
 //============================================================================
 class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
+
     //----------------------------------------------------------------------------
     public shouldComponentUpdate(nextProps: CompanyDepartmentsProps) {
         return (
@@ -62,6 +67,7 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
             : <LoadingView/>;
     }
 
+    //----------------------------------------------------------------------------
     private renderDepartments() {
 
         if (this.props.filter) {
@@ -76,7 +82,13 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
         } = this.buildData();
 
         return employeesById ? (
-            <ScrollView overScrollMode={'auto'}>
+            <ScrollView overScrollMode={'auto'}
+                        refreshControl={
+                            <RefreshControl
+                                tintColor={Style.color.base}
+                                refreshing={false}
+                                onRefresh={this.onRefresh}/>
+                        }>
                 <CompanyDepartmentsLevel
                     departmentId={rootId}
                     departmentIdToChildren={departmentIdToChildren}
@@ -89,6 +101,12 @@ class CompanyDepartmentsImpl extends Component<CompanyDepartmentsProps> {
         ) : <LoadingView/>;
     }
 
+    //----------------------------------------------------------------------------
+    private onRefresh = () => {
+        this.props.loadAllEmployees();
+    };
+
+    //----------------------------------------------------------------------------
     private renderEmployees() {
         const employeesById = this.filterEmployees();
 
@@ -357,7 +375,8 @@ const dispatchToProps = (dispatch: Dispatch<Action>) => ({
     },
     onPressEmployee: (employee: Employee) => {
         dispatch(openEmployeeDetails(employee.employeeId));
-    }
+    },
+    loadAllEmployees: () => dispatch(loadAllEmployees()),
 });
 
 //----------------------------------------------------------------------------

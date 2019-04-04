@@ -23,26 +23,18 @@ export class FeedMessage extends React.Component<FeedMessageProps> {
         const photo = employee ? employee.photoUrl : undefined;
         const formattedDate = message.datePosted.format('MMMM D, YYYY');
 
-        const isDisabledClick = !this.props.employee;
-
-        const avatarContent = isDisabledClick ?
-            <Avatar photoUrl={photo}/> :
-            <TouchableOpacity onPress={this.onAvatarClicked} style={FeedStyle.touchableOpacityContainer}>
-                <Avatar photoUrl={photo}/>
-            </TouchableOpacity>;
-
         return (
             <View>
-                <View style={FeedStyle.layout}>
+                <TouchableOpacity onPress={this.onAvatarClicked} style={FeedStyle.layout}>
                     <View style={FeedStyle.imgContainer}>
-                        {avatarContent}
+                        <Avatar photoUrl={photo}/>
                     </View>
                     <View style={FeedStyle.info}>
                         <StyledText style={FeedStyle.title}>{this.props.message.title}</StyledText>
                         <StyledText style={FeedStyle.text}>{this.props.message.text}</StyledText>
                         <StyledText style={FeedStyle.date}>{formattedDate}</StyledText>
                     </View>
-                </View>
+                </TouchableOpacity>
             </View>
         );
     }

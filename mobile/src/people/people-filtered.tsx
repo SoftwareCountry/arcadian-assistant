@@ -8,7 +8,7 @@ import { PeopleDepartment } from './people-department';
 import { is, Map, Set } from 'immutable';
 import { CompanyDepartments } from './company-departments';
 import { Action, Dispatch } from 'redux';
-import { NavigationEventSubscription, NavigationScreenProps } from 'react-navigation';
+import { NavigationScreenProps } from 'react-navigation';
 import { loadAllEmployees } from '../reducers/organization/organization.action';
 import { Employee } from '../reducers/organization/employee.model';
 
@@ -34,20 +34,9 @@ interface PeopleCompanyDispatchProps {
 //============================================================================
 class PeopleCompanyFilteredImpl extends React.Component<PeopleProps & PeopleCompanyDispatchProps & NavigationScreenProps> {
 
-    private subscription?: NavigationEventSubscription;
-
     //----------------------------------------------------------------------------
     public componentDidMount() {
-        this.subscription = this.props.navigation.addListener('willFocus', () => {
-            this.props.loadAllEmployees();
-        });
-    }
-
-    //----------------------------------------------------------------------------
-    public componentWillUnmount(): void {
-        if (this.subscription) {
-            this.subscription.remove();
-        }
+        this.props.loadAllEmployees();
     }
 
     //----------------------------------------------------------------------------
@@ -110,7 +99,7 @@ function filterEmployees(employees: EmployeesStore, filter: string) {
             name.startsWith(lowerCasedFilter) ||
             position.startsWith(lowerCasedFilter);
     };
-    
+
     // filter employees
     const filteredEmployeesById: Map<string, Employee> = employees.employeesById.filter(employeesPredicate) as Map<string, Employee>;
     let filteredEmployeesByDep: Map<string, Set<string>> =
