@@ -2,7 +2,7 @@
  * Copyright (c) Arcadia, Inc. All rights reserved.
  ******************************************************************************/
 
-import React, { Component, Dispatch } from 'react';
+import React, { Component } from 'react';
 import { RootNavigator } from './tabbar/tab-navigator';
 import { AppState } from './reducers/app.reducer';
 import { connect } from 'react-redux';
@@ -11,9 +11,10 @@ import { WelcomeScreen } from './welcome-screen/welcome-screen';
 import { AuthState } from './reducers/auth/auth.reducer';
 import { SplashScreen } from './splash-screen/splash-screen';
 import { NavigationService } from './navigation/navigation.service';
-import { YellowBox } from 'react-native';
+import { Platform, StatusBar, YellowBox } from 'react-native';
 import Analytics from 'appcenter-analytics';
 import { getActiveRouteName } from './utils/navigation-state';
+import Style from './layout/style';
 
 //============================================================================
 interface AppStateProps {
@@ -30,6 +31,10 @@ export class App extends Component<AppStateProps & AppOwnProps> {
     //----------------------------------------------------------------------------
     public componentDidMount(): void {
         YellowBox.ignoreWarnings(['Deserialization']);
+        
+        if (Platform.OS === 'android') {
+            StatusBar.setBackgroundColor(Style.color.base);
+        }
     }
 
     //----------------------------------------------------------------------------
