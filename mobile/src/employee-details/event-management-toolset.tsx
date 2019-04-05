@@ -28,15 +28,15 @@ export class EventManagementToolset extends Component<EventManagementToolsetProp
         const verb = `${this.actionVerb(positiveAction)}`;
 
         Alert.alert(
-            `Are you sure you want to ${verb} the request?`,
+            `Do you want to ${verb} the request?`,
             undefined,
             [
                 {
-                    text: 'Cancel',
+                    text: 'No',
                     style: 'cancel',
                 },
                 {
-                    text: capitalizeFirstLetter(`${verb}`),
+                    text: 'Yes',
                     onPress: positiveAction.handler,
                 },
             ],
@@ -55,15 +55,15 @@ export class EventManagementToolset extends Component<EventManagementToolsetProp
         const verb = `${this.actionVerb(negativeAction)}`;
 
         Alert.alert(
-            `Are you sure you want to ${verb} the request?`,
+            `Do you want to ${verb} the request?`,
             undefined,
             [
                 {
-                    text: 'Cancel',
+                    text: 'No',
                     style: 'cancel',
                 },
                 {
-                    text: capitalizeFirstLetter(`${verb}`),
+                    text: 'Yes',
                     onPress: negativeAction.handler,
                 },
             ],

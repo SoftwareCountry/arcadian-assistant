@@ -4,12 +4,15 @@ import Style from '../layout/style';
 //----------------------------------------------------------------------------
 export const LogoutStyle = StyleSheet.create({
     container: {
-        alignItems: 'flex-end',
-        paddingRight: 10
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 35,
+        width: 45,
     },
     image: {
+        alignSelf: 'center',
         height: 25,
         width: 25,
-        tintColor: Style.color.white
+        tintColor: Style.color.white,
     }
 });

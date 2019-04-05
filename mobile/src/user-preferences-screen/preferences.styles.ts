@@ -5,8 +5,10 @@ export const preferencesStyles = StyleSheet.create({
         flex: 1,
     },
     settingsView: {
-        alignItems: 'flex-start',
-        paddingLeft: 10
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 35,
+        width: 45,
     },
     switchSettingContainer: {
         flex: 1,
@@ -34,7 +36,9 @@ export const preferencesStyles = StyleSheet.create({
     },
     icon: {
         color: 'white',
-        fontSize: 26,
+        fontSize: 23,
+        height: 25,
+        width: 25,
     }
 });
 

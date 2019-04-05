@@ -6,48 +6,58 @@ export const layout = StyleSheet.create({
         flex: 1,
         backgroundColor: '#18515E',
         alignSelf: 'stretch',
-        flexDirection: 'row'
+        flexDirection: 'row',
     },
     icon: {
-        flex: 3,
-        alignItems: 'center',
-        paddingTop: 25
+        flex: 2,
+        alignSelf: 'center',
+        padding: 5,
     },
     content: {
-        flex: 6,
-        paddingTop: 25,
-        alignSelf: 'stretch'
+        flex: 7,
+        flexDirection: 'column',
+        paddingTop: 10,
+        paddingBottom: 10,
+        alignSelf: 'stretch',
+        justifyContent: 'space-between',
     },
     close: {
         flex: 1,
-        alignItems: 'flex-end'
+        alignItems: 'center',
+        height: 60,
+        width: 60,
     },
     text: {
-        flex: 1
+        flex: 1,
     },
-    buttons: {
-        flexDirection: 'row',
-        paddingTop: 5,
-        paddingBottom: 15
-    }
 });
 
 export const content = StyleSheet.create({
     icon: {
         color: Style.color.white,
-        fontSize: 70
+        fontSize: 50
     },
     title: {
         color: Style.color.white,
         fontSize: 14,
-        paddingLeft: 10
+        paddingLeft: 10,
+        paddingRight: 10,
     },
     text: {
         color: Style.color.white,
-        fontSize: 10,
+        fontSize: 11,
+        paddingTop: 5,
+        paddingBottom: 5,
         paddingLeft: 10,
-        paddingTop: 13
-    }
+        paddingRight: 10,
+    },
+    buttons: {
+        flexDirection: 'row',
+        paddingTop: 5,
+        paddingBottom: 5,
+        paddingLeft: 10,
+        paddingRight: 10,
+    },
 });
 
 const defaultButtonStyle = StyleSheet.create({
@@ -67,7 +77,7 @@ export const buttons = StyleSheet.create({
         lineHeight: 50,
         color: 'rgba(255, 255, 255, 0.5)',
         paddingRight: 5,
-        paddingTop: 15
+        paddingTop: 15,
     },
     cancel: StyleSheet.flatten([defaultButtonStyle.border, {
         marginRight: 5
@@ -89,7 +99,10 @@ export const buttons = StyleSheet.create({
 
 export const switchDayoffTypeStyles = StyleSheet.create({
     container: {
+        marginTop: 5,
+        marginBottom: 5,
         flex: 1,
+        alignSelf: 'center',
     },
     intervalBoundaries: {
         flex: 1,
@@ -107,7 +120,7 @@ export const dayOffDialogStyles = StyleSheet.create({
     },
     labelStyle: {
         fontFamily: 'CenturyGothic',
-        fontSize: 14,
+        fontSize: 12,
         color: 'white',
     },
 });

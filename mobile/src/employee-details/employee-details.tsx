@@ -33,6 +33,7 @@ import { EventActionContainer, EventActionProvider } from './event-action-provid
 import { capitalizeFirstLetter, uppercase } from '../utils/string';
 import { endSearch } from '../reducers/search/search.action';
 import { SearchType } from '../navigation/search/search-view';
+import Style from '../layout/style';
 
 //============================================================================
 interface TileData {
@@ -202,7 +203,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                     <Chevron/>
                     <View style={layoutStyles.avatarContainer}>
                         <Avatar photoUrl={employee.photoUrl} imageStyle={{ borderWidth: 0 }}
-                                style={{ borderWidth: 3 }}/>
+                                style={{ borderWidth: 3, backgroundColor: Style.color.base }}/>
                     </View>
                 </View>
                 <View style={layoutStyles.content}>

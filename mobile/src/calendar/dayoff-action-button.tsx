@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { CalendarActionButton } from './calendar-action-button';
 import { IntervalModel } from '../reducers/calendar/calendar.model';
 import { CalendarEventsColor } from './styles';
+import { CalendarEventType } from '../reducers/calendar/calendar-event.model';
 
+//============================================================================
 interface DayoffActionButtonProps {
     interval?: IntervalModel;
     disabled: boolean;
@@ -10,12 +12,16 @@ interface DayoffActionButtonProps {
     edit: () => void;
 }
 
+//============================================================================
 interface DayoffCase {
-    disableCalendatButton: boolean;
+    disableCalendarButton: boolean;
     action: () => void;
 }
 
+//============================================================================
 export class DayoffActionButton extends Component<DayoffActionButtonProps> {
+
+    //----------------------------------------------------------------------------
     public render() {
         const disableCalendarAction = this.disableCalendarAction();
 
@@ -28,12 +34,16 @@ export class DayoffActionButton extends Component<DayoffActionButtonProps> {
         );
     }
 
+    //----------------------------------------------------------------------------
     public get title(): string {
-        return !this.props.interval
-            ? 'Dayoff / Workout'
-            : 'Edit Dayoff';
+        if (!this.props.interval) {
+            return 'Dayoff / Workout';
+        }
+
+        return this.props.interval.calendarEvent.type === CalendarEventType.Dayoff ? 'Edit Dayoff' : 'Edit Workout';
     }
 
+    //----------------------------------------------------------------------------
     public onDayoffAction = () => {
         const dayoffCase = this.dayoffCases();
 
@@ -44,20 +54,22 @@ export class DayoffActionButton extends Component<DayoffActionButtonProps> {
         dayoffCase.action();
     };
 
+    //----------------------------------------------------------------------------
     private disableCalendarAction() {
         const dayoffCase = this.dayoffCases();
-        return !dayoffCase || dayoffCase.disableCalendatButton;
+        return !dayoffCase || dayoffCase.disableCalendarButton;
     }
 
+    //----------------------------------------------------------------------------
     private dayoffCases(): DayoffCase | null {
         const { interval, process, edit } = this.props;
 
         if (!interval) {
-            return { disableCalendatButton: false, action: process };
+            return { disableCalendarButton: false, action: process };
         }
 
         if (interval && !interval.calendarEvent.isApproved) {
-            return { disableCalendatButton: false, action: edit };
+            return { disableCalendarButton: false, action: edit };
         }
 
         return null;
