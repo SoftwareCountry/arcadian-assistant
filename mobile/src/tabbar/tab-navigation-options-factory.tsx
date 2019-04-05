@@ -32,7 +32,7 @@ export class TabNavigationOptionsFactory {
     //----------------------------------------------------------------------------
     // noinspection JSMethodCanBeStatic
     private applicationIconSize(): number {
-        return Platform.OS === 'ios' ? Dimensions.get('window').width * 0.08 : Dimensions.get('window').width * 0.04;
+        return Platform.OS === 'ios' ? Dimensions.get('window').width * 0.06 : Dimensions.get('window').width * 0.06;
     }
 
     //----------------------------------------------------------------------------
