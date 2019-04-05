@@ -77,7 +77,7 @@ export class EventDialogBaseImpl extends Component<EventDialogBaseProps> {
     //----------------------------------------------------------------------------
     private renderActionButtons() {
         return (
-            <View style={layout.buttons}>
+            <View style={content.buttons}>
                 {this.renderCancelButton()}
                 {this.renderAcceptButton()}
                 {this.renderActivityIndicator()}
