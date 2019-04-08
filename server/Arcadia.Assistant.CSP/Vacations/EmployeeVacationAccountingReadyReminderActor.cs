@@ -184,7 +184,9 @@
                 ["endDate"] = @event.Dates.EndDate.ToString("dd/MM/yyyy")
             };
 
-            templateExpressionContext = new DictionaryMerge().Perform(templateExpressionContext, @event.AdditionalData);
+            templateExpressionContext = new DictionaryMerge().Perform(
+                templateExpressionContext,
+                @event.AdditionalData.ToDictionary(x => x.Key, x => x.Value));
 
             var content = new PushNotificationContent
             {
@@ -223,7 +225,9 @@
                 ["endDate"] = @event.Dates.EndDate.ToString("dd/MM/yyyy")
             };
 
-            templateExpressionContext = new DictionaryMerge().Perform(templateExpressionContext, @event.AdditionalData);
+            templateExpressionContext = new DictionaryMerge().Perform(
+                templateExpressionContext,
+                @event.AdditionalData.ToDictionary(x => x.Key, x => x.Value));
 
             var sender = this.reminderConfiguration.ReminderEmail.NotificationSender;
             var recipient = employeeMetadata.Email;

@@ -58,7 +58,9 @@
                         ["startDate"] = msg.Event.Dates.StartDate.ToString("dd/MM/yyyy")
                     };
 
-                    templateExpressionContext = new DictionaryMerge().Perform(templateExpressionContext, msg.Event.AdditionalData);
+                    templateExpressionContext = new DictionaryMerge().Perform(
+                        templateExpressionContext,
+                        msg.Event.AdditionalData.ToDictionary(x => x.Key, x => x.Value));
 
                     var templateExpressionParser = new TemplateExpressionParser();
 
