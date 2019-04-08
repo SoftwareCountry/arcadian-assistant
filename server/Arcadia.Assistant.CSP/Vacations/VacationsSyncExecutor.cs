@@ -337,13 +337,13 @@
                 status = VacationStatuses.Approved;
             }
 
-            Dictionary<string, string> additionalData = null;
+            List<CalendarEventAdditionalDataEntry> additionalData = null;
 
             if (cancelled != null && !string.IsNullOrWhiteSpace(cancelled.CancelReason))
             {
-                additionalData = new Dictionary<string, string>
+                additionalData = new List<CalendarEventAdditionalDataEntry>
                 {
-                    [VacationCancelReasonDataKey] = cancelled.CancelReason
+                    new CalendarEventAdditionalDataEntry(VacationCancelReasonDataKey, cancelled.CancelReason)
                 };
             }
 
