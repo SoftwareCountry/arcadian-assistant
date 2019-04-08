@@ -17,7 +17,7 @@
 
         public string EmployeeId { get; }
 
-        public IEnumerable<CalendarEventAdditionalDataEntry> AdditionalData { get; }
+        public CalendarEventAdditionalDataEntry[] AdditionalData { get; }
 
         public CalendarEvent(
             string eventId,
@@ -25,14 +25,14 @@
             DatesPeriod dates,
             string status,
             string employeeId,
-            IEnumerable<CalendarEventAdditionalDataEntry> additionalData = null)
+            CalendarEventAdditionalDataEntry[] additionalData = null)
         {
             this.EventId = eventId;
             this.Dates = dates;
             this.Status = status;
             this.Type = type;
             this.EmployeeId = employeeId;
-            this.AdditionalData = additionalData ?? new List<CalendarEventAdditionalDataEntry>();
+            this.AdditionalData = additionalData ?? new CalendarEventAdditionalDataEntry[0];
             this.IsPending = new CalendarEventStatuses().PendingForType(type).Contains(status);
         }
     }

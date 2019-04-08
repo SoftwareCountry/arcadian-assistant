@@ -337,11 +337,11 @@
                 status = VacationStatuses.Approved;
             }
 
-            List<CalendarEventAdditionalDataEntry> additionalData = null;
+            CalendarEventAdditionalDataEntry[] additionalData = null;
 
             if (cancelled != null && !string.IsNullOrWhiteSpace(cancelled.CancelReason))
             {
-                additionalData = new List<CalendarEventAdditionalDataEntry>
+                additionalData = new[]
                 {
                     new CalendarEventAdditionalDataEntry(VacationCancelReasonDataKey, cancelled.CancelReason)
                 };
