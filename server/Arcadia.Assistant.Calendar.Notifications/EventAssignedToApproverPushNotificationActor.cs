@@ -105,7 +105,9 @@
                 ["employee"] = message.Owner.Name
             };
 
-            templateExpressionContext = new DictionaryMerge().Perform(templateExpressionContext, message.Event.AdditionalData);
+            templateExpressionContext = new DictionaryMerge().Perform(
+                templateExpressionContext,
+                message.Event.AdditionalData.ToDictionary(x => x.Key, x => x.Value));
 
             var content = new PushNotificationContent
             {

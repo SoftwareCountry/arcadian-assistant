@@ -77,7 +77,9 @@
                         ["eventStatus"] = msg.Event.Status
                     };
 
-                    templateExpressionContext = new DictionaryMerge().Perform(templateExpressionContext, msg.Event.AdditionalData);
+                    templateExpressionContext = new DictionaryMerge().Perform(
+                        templateExpressionContext,
+                        msg.Event.AdditionalData.ToDictionary(x => x.Key, x => x.Value));
 
                     var sender = this.emailNotificationConfig.NotificationSender;
                     var recipient = msg.Owner.Email;

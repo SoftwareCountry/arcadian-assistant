@@ -17,7 +17,7 @@
 
         public string EmployeeId { get; }
 
-        public IReadOnlyDictionary<string, string> AdditionalData { get; }
+        public IEnumerable<CalendarEventAdditionalDataEntry> AdditionalData { get; }
 
         public CalendarEvent(
             string eventId,
@@ -25,14 +25,14 @@
             DatesPeriod dates,
             string status,
             string employeeId,
-            IReadOnlyDictionary<string, string> additionalData = null)
+            IEnumerable<CalendarEventAdditionalDataEntry> additionalData = null)
         {
             this.EventId = eventId;
             this.Dates = dates;
             this.Status = status;
             this.Type = type;
             this.EmployeeId = employeeId;
-            this.AdditionalData = additionalData ?? new Dictionary<string, string>();
+            this.AdditionalData = additionalData ?? new List<CalendarEventAdditionalDataEntry>();
             this.IsPending = new CalendarEventStatuses().PendingForType(type).Contains(status);
         }
     }
