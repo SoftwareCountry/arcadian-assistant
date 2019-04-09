@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
 
     using Akka.Actor;
+    using Akka.DI.Core;
     using Akka.Event;
 
     using Arcadia.Assistant.Calendar.Abstractions;
@@ -54,6 +55,11 @@
 
             Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);
             Context.System.EventStream.Subscribe<CalendarEventRecoverComplete>(this.Self);
+        }
+
+        public static Props CreateProps()
+        {
+            return Context.DI().Props<VacationAccountingReadyReminderActor>();
         }
 
         protected override void OnReceive(object message)

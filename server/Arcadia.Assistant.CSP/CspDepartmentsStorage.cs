@@ -30,13 +30,8 @@
             this.contextFactory = contextFactory;
             this.configuration = configuration;
 
-            Context.ActorOf(
-                Context.DI().Props<CspVacationsRegistry>(),
-                "csp-vacations-registry");
-
-            Context.ActorOf(
-                Context.DI().Props<VacationAccountingReadyReminderActor>(),
-                "csp-vacations-reminder");
+            Context.ActorOf(CspVacationsRegistry.CreateProps(), "csp-vacations-registry");
+            Context.ActorOf(VacationAccountingReadyReminderActor.CreateProps(), "csp-vacations-reminder");
         }
 
         protected override void OnReceive(object message)
