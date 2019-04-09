@@ -30,14 +30,15 @@ class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogPro
     //----------------------------------------------------------------------------
     public render() {
         const selectedSickLeave = this.selectedSickLeave();
+        const isEditable = selectedSickLeave ? !selectedSickLeave.calendarEvent.isCompleted : false;
         return <EventDialogBase
             title={'Hey! Hope you feel better'}
             text={this.text}
             icon={'sick_leave'}
             cancelLabel={'Prolong'}
-            disableCancel={!selectedSickLeave}
+            disableCancel={!isEditable}
             acceptLabel={'Complete'}
-            disableAccept={!selectedSickLeave}
+            disableAccept={!isEditable}
             onAcceptPress={this.acceptAction}
             onCancelPress={this.cancelAction}
             onClosePress={this.closeDialog}/>;

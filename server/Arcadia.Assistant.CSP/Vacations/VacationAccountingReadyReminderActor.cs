@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
 
     using Akka.Actor;
+    using Akka.DI.Core;
     using Akka.Event;
 
     using Arcadia.Assistant.Calendar.Abstractions;
@@ -19,7 +20,7 @@
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.UserPreferences;
 
-    public class EmployeeVacationAccountingReadyReminderActor : UntypedActor, ILogReceive
+    public class VacationAccountingReadyReminderActor : UntypedActor, ILogReceive
     {
         private const string UserPreferencesActorPath = "/user/user-preferences";
         private const string PushDevicesActorPath = "/user/push-notifications-devices";
@@ -27,7 +28,6 @@
 
         private const string VacationReminderPushNotificationType = "VacationReadyReminder";
 
-        private readonly string employeeId;
         private readonly AccountingReminderConfiguration reminderConfiguration;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
@@ -38,11 +38,8 @@
 
         private readonly Dictionary<string, CalendarEvent> vacationsToRemind = new Dictionary<string, CalendarEvent>();
 
-        public EmployeeVacationAccountingReadyReminderActor(
-            string employeeId,
-            AccountingReminderConfiguration reminderConfiguration)
+        public VacationAccountingReadyReminderActor(AccountingReminderConfiguration reminderConfiguration)
         {
-            this.employeeId = employeeId;
             this.reminderConfiguration = reminderConfiguration;
 
             this.userPreferencesActor = Context.ActorSelection(UserPreferencesActorPath);
@@ -60,11 +57,9 @@
             Context.System.EventStream.Subscribe<CalendarEventRecoverComplete>(this.Self);
         }
 
-        public static Props CreateProps(string employeeId, AccountingReminderConfiguration reminderConfiguration)
+        public static Props CreateProps()
         {
-            return Props.Create(() => new EmployeeVacationAccountingReadyReminderActor(
-                employeeId,
-                reminderConfiguration));
+            return Context.DI().Props<VacationAccountingReadyReminderActor>();
         }
 
         protected override void OnReceive(object message)
@@ -72,7 +67,6 @@
             switch (message)
             {
                 case CalendarEventChanged msg when
-                    msg.NewEvent.EmployeeId == this.employeeId &&
                     msg.NewEvent.Type == CalendarEventTypes.Vacation:
 
                     this.OnEventReceived(msg.NewEvent);
@@ -82,7 +76,6 @@
                     break;
 
                 case CalendarEventRecoverComplete msg when
-                    msg.Event.EmployeeId == this.employeeId &&
                     msg.Event.Type == CalendarEventTypes.Vacation:
 
                     this.OnEventReceived(msg.Event, true);
@@ -98,7 +91,7 @@
                 case RemindVacations.Success msg:
                     if (msg.Notifications.Any())
                     {
-                        this.logger.Debug($"Sending reminder notifications about approved vacations of employee {this.employeeId}");
+                        this.logger.Debug($"Sending reminder notifications about approved vacations of employee {msg.EmployeeId}");
                     }
 
                     foreach (var notification in msg.Notifications)
@@ -111,7 +104,7 @@
                 case RemindVacations.Error msg:
                     this.logger.Error(
                         "Error occured on send push reminder notifications about approved vacations " +
-                        $"of employee {this.employeeId}: {msg.Exception}");
+                        $"of employee {msg.EmployeeId}: {msg.Exception}");
                     break;
 
                 default:
@@ -142,28 +135,43 @@
 
         private void OnRemindVacations(IEnumerable<CalendarEvent> vacations)
         {
-            this.GetNotifications(vacations)
-                .PipeTo(
-                    this.Self,
-                    success: result => new RemindVacations.Success(result),
-                    failure: err => new RemindVacations.Error(err));
+            var vacationsByEmployee = vacations.GroupBy(v => v.EmployeeId);
+
+            foreach (var group in vacationsByEmployee)
+            {
+                this.GetNotifications(group.Key, group.ToArray())
+                    .PipeTo(
+                        this.Self,
+                        success: result => new RemindVacations.Success(group.Key, result),
+                        failure: err => new RemindVacations.Error(group.Key, err));
+            }
         }
 
-        private async Task<IEnumerable<object>> GetNotifications(IEnumerable<CalendarEvent> vacations)
+        private async Task<IEnumerable<object>> GetNotifications(string employeeId, IEnumerable<CalendarEvent> vacations)
         {
             var userPreferencesResponse = await this.userPreferencesActor.Ask<GetUserPreferencesMessage.Response>(
-                new GetUserPreferencesMessage(this.employeeId));
+                new GetUserPreferencesMessage(employeeId));
 
             var vacationsList = vacations.ToList();
 
-            var pushNotificationsTask = this.GetPushNotifications(userPreferencesResponse.UserPreferences, vacationsList);
-            var emailNotificationsTask = this.GetEmailNotifications(userPreferencesResponse.UserPreferences, vacationsList);
+            var pushNotificationsTask = this.GetPushNotifications(
+                employeeId,
+                userPreferencesResponse.UserPreferences,
+                vacationsList);
+
+            var emailNotificationsTask = this.GetEmailNotifications(
+                employeeId,
+                userPreferencesResponse.UserPreferences,
+                vacationsList);
 
             var result = await Task.WhenAll(pushNotificationsTask, emailNotificationsTask);
             return result.SelectMany(x => x);
         }
 
-        private async Task<IEnumerable<object>> GetPushNotifications(UserPreferences userPreferences, IEnumerable<CalendarEvent> vacations)
+        private async Task<IEnumerable<object>> GetPushNotifications(
+            string employeeId,
+            UserPreferences userPreferences,
+            IEnumerable<CalendarEvent> vacations)
         {
             if (!userPreferences.PushNotifications)
             {
@@ -171,12 +179,15 @@
             }
 
             var pushTokensResponse = await this.pushDevicesActor.Ask<GetDevicePushTokens.Success>(
-                new GetDevicePushTokens(this.employeeId));
+                new GetDevicePushTokens(employeeId));
 
-            return vacations.Select(e => this.CreatePushNotification(e, pushTokensResponse.DevicePushTokens));
+            return vacations.Select(e => this.CreatePushNotification(employeeId, e, pushTokensResponse.DevicePushTokens));
         }
 
-        private PushNotification CreatePushNotification(CalendarEvent @event, IEnumerable<DevicePushToken> deviceTokens)
+        private PushNotification CreatePushNotification(
+            string employeeId,
+            CalendarEvent @event,
+            IEnumerable<DevicePushToken> deviceTokens)
         {
             var templateExpressionContext = new Dictionary<string, string>
             {
@@ -195,7 +206,7 @@
                 CustomData = new
                 {
                     @event.EventId,
-                    EmployeeId = this.employeeId,
+                    EmployeeId = employeeId,
                     Type = VacationReminderPushNotificationType
                 }
             };
@@ -203,7 +214,10 @@
             return new PushNotification(content, deviceTokens.ToList());
         }
 
-        private async Task<IEnumerable<object>> GetEmailNotifications(UserPreferences userPreferences, IEnumerable<CalendarEvent> vacations)
+        private async Task<IEnumerable<object>> GetEmailNotifications(
+            string employeeId,
+            UserPreferences userPreferences,
+            IEnumerable<CalendarEvent> vacations)
         {
             if (!userPreferences.EmailNotifications)
             {
@@ -211,7 +225,7 @@
             }
 
             var employeeResponse = await this.organizationActor.Ask<EmployeesQuery.Response>(
-                EmployeesQuery.Create().WithId(this.employeeId));
+                EmployeesQuery.Create().WithId(employeeId));
             var employeeMetadata = employeeResponse.Employees.First().Metadata;
 
             return vacations.Select(e => this.CreateEmailNotification(e, employeeMetadata));
@@ -256,20 +270,26 @@
 
             public class Success
             {
-                public Success(IEnumerable<object> notifications)
+                public Success(string employeeId, IEnumerable<object> notifications)
                 {
+                    this.EmployeeId = employeeId;
                     this.Notifications = notifications;
                 }
+
+                public string EmployeeId { get; }
 
                 public IEnumerable<object> Notifications { get; }
             }
 
             public class Error
             {
-                public Error(Exception exception)
+                public Error(string employeeId, Exception exception)
                 {
+                    this.EmployeeId = employeeId;
                     this.Exception = exception;
                 }
+
+                public string EmployeeId { get; }
 
                 public Exception Exception { get; }
             }

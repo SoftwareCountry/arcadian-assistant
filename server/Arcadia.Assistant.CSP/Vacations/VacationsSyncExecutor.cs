@@ -312,30 +312,24 @@
                 .Select(vr => new CalendarEventWithAdditionalData.VacationAccountingReady(vr.ReadyById.ToString(), vr.ReadyAt))
                 .FirstOrDefault();
 
-            var isApproved = vacation.VacationApprovals.Any(va => va.Status == (int)VacationApprovalStatus.Approved && va.IsFinal);
+            var approved = vacation.VacationApprovals
+                .FirstOrDefault(va => va.Status == (int)VacationApprovalStatus.Approved && va.IsFinal);
 
-            var status = VacationStatuses.Requested;
+            var statuses = new[]
+            {
+                Tuple.Create(rejected?.Timestamp, VacationStatuses.Rejected),
+                Tuple.Create(cancelled?.Timestamp, VacationStatuses.Cancelled),
+                Tuple.Create(accountingReady?.Timestamp, VacationStatuses.AccountingReady),
+                Tuple.Create(processed?.Timestamp, VacationStatuses.Processed),
+                Tuple.Create(approved?.TimeStamp, VacationStatuses.Approved)
+            };
 
-            if (rejected != null)
-            {
-                status = VacationStatuses.Rejected;
-            }
-            else if (cancelled != null)
-            {
-                status = VacationStatuses.Cancelled;
-            }
-            else if (accountingReady != null)
-            {
-                status = VacationStatuses.AccountingReady;
-            }
-            else if (processed != null)
-            {
-                status = VacationStatuses.Processed;
-            }
-            else if (isApproved)
-            {
-                status = VacationStatuses.Approved;
-            }
+            var status = statuses
+                    .Where(x => x.Item1 != null)
+                    .OrderByDescending(x => x.Item1)
+                    .FirstOrDefault()
+                    ?.Item2;
+            status = status ?? VacationStatuses.Requested;
 
             CalendarEventAdditionalDataEntry[] additionalData = null;
 

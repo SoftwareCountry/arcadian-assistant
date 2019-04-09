@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
 
     using Akka.Actor;
+    using Akka.DI.Core;
     using Akka.Event;
 
     using Arcadia.Assistant.Calendar.Abstractions;
@@ -37,6 +38,11 @@
             this.calendarEventsApprovalsChecker = Context.ActorSelection(CalendarEventsApprovalsCheckerActorPath);
 
             this.Self.Tell(Initialize.Instance);
+        }
+
+        public static Props CreateProps()
+        {
+            return Context.DI().Props<CspVacationsRegistry>();
         }
 
         protected override void OnReceive(object message)

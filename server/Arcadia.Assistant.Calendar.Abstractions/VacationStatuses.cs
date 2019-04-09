@@ -18,6 +18,6 @@
 
         public static readonly string[] Pending = { Requested };
 
-        public static readonly string[] Actual = { Requested, Approved, AccountingReady, Processed };
+        public static readonly string[] Actual = { Requested, Approved, AccountingReady, AccountingReady, Processed };
     }
 }
