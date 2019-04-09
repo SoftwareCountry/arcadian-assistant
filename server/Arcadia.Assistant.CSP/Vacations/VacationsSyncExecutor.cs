@@ -312,29 +312,44 @@
                 .Select(vr => new CalendarEventWithAdditionalData.VacationAccountingReady(vr.ReadyById.ToString(), vr.ReadyAt))
                 .FirstOrDefault();
 
-            var isApproved = vacation.VacationApprovals.Any(va => va.Status == (int)VacationApprovalStatus.Approved && va.IsFinal);
+            var approved = vacation.VacationApprovals
+                .FirstOrDefault(va => va.Status == (int)VacationApprovalStatus.Approved && va.IsFinal);
 
-            var status = VacationStatuses.Requested;
+            var statusesByTimestamp = new Dictionary<DateTimeOffset, string>();
 
             if (rejected != null)
             {
-                status = VacationStatuses.Rejected;
+                statusesByTimestamp.Add(rejected.Timestamp, VacationStatuses.Rejected);
             }
-            else if (cancelled != null)
+
+            if (cancelled != null)
             {
-                status = VacationStatuses.Cancelled;
+                statusesByTimestamp.Add(cancelled.Timestamp, VacationStatuses.Cancelled);
             }
-            else if (accountingReady != null)
+
+            if (accountingReady != null)
             {
-                status = VacationStatuses.AccountingReady;
+                statusesByTimestamp.Add(accountingReady.Timestamp, VacationStatuses.AccountingReady);
             }
-            else if (processed != null)
+
+            if (processed != null)
             {
-                status = VacationStatuses.Processed;
+                statusesByTimestamp.Add(processed.Timestamp, VacationStatuses.Processed);
             }
-            else if (isApproved)
+
+            if (approved != null)
             {
-                status = VacationStatuses.Approved;
+                statusesByTimestamp.Add(approved.TimeStamp ?? DateTimeOffset.Now, VacationStatuses.Approved);
+            }
+
+            var status = VacationStatuses.Requested;
+
+            if (statusesByTimestamp.Count != 0)
+            {
+                status = statusesByTimestamp
+                    .OrderByDescending(x => x.Key)
+                    .First()
+                    .Value;
             }
 
             CalendarEventAdditionalDataEntry[] additionalData = null;
