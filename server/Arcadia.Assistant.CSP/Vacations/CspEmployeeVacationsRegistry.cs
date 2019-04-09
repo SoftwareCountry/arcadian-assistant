@@ -9,7 +9,6 @@
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
-    using Arcadia.Assistant.CSP.Configuration;
 
     public class CspEmployeeVacationsRegistry : UntypedActor, ILogReceive
     {
@@ -18,17 +17,11 @@
         private readonly string employeeId;
         private readonly ActorSelection cspVacationsRegistryActor;
 
-        public CspEmployeeVacationsRegistry(
-            AccountingReminderConfiguration reminderConfiguration,
-            string employeeId)
+        public CspEmployeeVacationsRegistry(string employeeId)
         {
             this.employeeId = employeeId;
 
             this.cspVacationsRegistryActor = Context.ActorSelection(CspVacationsRegistryActorPath);
-
-            Context.ActorOf(
-                EmployeeVacationAccountingReadyReminderActor.CreateProps(employeeId, reminderConfiguration),
-                $"vacations-reminder-{employeeId}");
         }
 
         protected override void OnReceive(object message)
@@ -60,6 +53,7 @@
                     break;
 
                 case CheckDatesAvailability msg:
+
                     this.CheckDatesAvailability(msg.Event)
                         .PipeTo(
                             this.Sender,
