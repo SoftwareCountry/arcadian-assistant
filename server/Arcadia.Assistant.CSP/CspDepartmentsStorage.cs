@@ -33,6 +33,10 @@
             Context.ActorOf(
                 Context.DI().Props<CspVacationsRegistry>(),
                 "csp-vacations-registry");
+
+            Context.ActorOf(
+                Context.DI().Props<VacationAccountingReadyReminderActor>(),
+                "csp-vacations-reminder");
         }
 
         protected override void OnReceive(object message)
