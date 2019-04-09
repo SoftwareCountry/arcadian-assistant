@@ -7,7 +7,8 @@
     using System.Threading.Tasks;
 
     using Akka.Actor;
-    using Arcadia.Assistant.Configuration.Configuration;
+    using Akka.DI.Core;
+
     using Arcadia.Assistant.CSP.Model;
     using Arcadia.Assistant.CSP.Vacations;
     using Arcadia.Assistant.Organization.Abstractions;
@@ -24,16 +25,14 @@
 
         public CspDepartmentsStorage(
             Func<ArcadiaCspContext> contextFactory,
-            CspConfiguration configuration,
-            VacationsSyncExecutor vacationsSyncExecutor,
-            IRefreshInformation refreshInformation)
+            CspConfiguration configuration)
         {
             this.contextFactory = contextFactory;
             this.configuration = configuration;
 
-            // It shouldn't be here, but there is no place for now where we can create specific CSP actor
-            var cspVacationsRegistryProps = Props.Create(() => new CspVacationsRegistry(vacationsSyncExecutor, refreshInformation));
-            Context.ActorOf(cspVacationsRegistryProps, "csp-vacations-registry");
+            Context.ActorOf(
+                Context.DI().Props<CspVacationsRegistry>(),
+                "csp-vacations-registry");
         }
 
         protected override void OnReceive(object message)
