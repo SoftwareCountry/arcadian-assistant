@@ -315,42 +315,21 @@
             var approved = vacation.VacationApprovals
                 .FirstOrDefault(va => va.Status == (int)VacationApprovalStatus.Approved && va.IsFinal);
 
-            var statusesByTimestamp = new Dictionary<DateTimeOffset, string>();
-
-            if (rejected != null)
+            var statuses = new[]
             {
-                statusesByTimestamp.Add(rejected.Timestamp, VacationStatuses.Rejected);
-            }
+                Tuple.Create(rejected?.Timestamp, VacationStatuses.Rejected),
+                Tuple.Create(cancelled?.Timestamp, VacationStatuses.Cancelled),
+                Tuple.Create(accountingReady?.Timestamp, VacationStatuses.AccountingReady),
+                Tuple.Create(processed?.Timestamp, VacationStatuses.Processed),
+                Tuple.Create(approved?.TimeStamp, VacationStatuses.Approved)
+            };
 
-            if (cancelled != null)
-            {
-                statusesByTimestamp.Add(cancelled.Timestamp, VacationStatuses.Cancelled);
-            }
-
-            if (accountingReady != null)
-            {
-                statusesByTimestamp.Add(accountingReady.Timestamp, VacationStatuses.AccountingReady);
-            }
-
-            if (processed != null)
-            {
-                statusesByTimestamp.Add(processed.Timestamp, VacationStatuses.Processed);
-            }
-
-            if (approved != null)
-            {
-                statusesByTimestamp.Add(approved.TimeStamp ?? DateTimeOffset.Now, VacationStatuses.Approved);
-            }
-
-            var status = VacationStatuses.Requested;
-
-            if (statusesByTimestamp.Count != 0)
-            {
-                status = statusesByTimestamp
-                    .OrderByDescending(x => x.Key)
-                    .First()
-                    .Value;
-            }
+            var status = statuses
+                    .Where(x => x.Item1 != null)
+                    .OrderByDescending(x => x.Item1)
+                    .FirstOrDefault()
+                    ?.Item2;
+            status = status ?? VacationStatuses.Requested;
 
             CalendarEventAdditionalDataEntry[] additionalData = null;
 
