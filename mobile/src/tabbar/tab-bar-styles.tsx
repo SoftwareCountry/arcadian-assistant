@@ -18,6 +18,14 @@ const tabBarStyles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 5,
     },
+    tabBarSelectedLabel: {
+        color: Style.color.white,
+        fontSize: 13,
+        fontFamily: 'CenturyGothicBold',
+        textAlign: 'center',
+        marginBottom: 5,
+        fontWeight: 'bold',
+    },
     tabImages: {
         color: Style.color.white,
     }
