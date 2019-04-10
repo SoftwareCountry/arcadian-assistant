@@ -26,7 +26,7 @@ interface EditDayoffEventDialogProps {
 class EditDayoffEventDialogImpl extends Component<EditDayoffEventDialogProps & EditDayoffEventDialogDispatchProps> {
     public render() {
         return <EventDialogBase
-            title={`Cancel your ${this.getDialogTypeTitle()}`}
+            title={`Cancel your ${this.getEventTitle()}`}
             text={this.text}
             icon={'dayoff'}
             cancelLabel={'Back'}
@@ -37,7 +37,7 @@ class EditDayoffEventDialogImpl extends Component<EditDayoffEventDialogProps & E
     }
 
     //----------------------------------------------------------------------------
-    private getDialogTypeTitle = (): string => {
+    private getEventTitle = (): string => {
         if (!this.props.selectedIntervals || !this.props.selectedIntervals || !this.props.selectedIntervals.dayoff) {
             console.error('Unexpected type for Dayoff dialog');
             return '';
@@ -72,7 +72,7 @@ class EditDayoffEventDialogImpl extends Component<EditDayoffEventDialogProps & E
         }
         const date = this.props.selectedIntervals.dayoff.calendarEvent.dates.startDate.format(eventDialogTextDateFormat);
 
-        return `Your ${this.getDialogTypeTitle()} starts on ${date}`;
+        return `Your ${this.getEventTitle()} starts on ${date}`;
     }
 }
 
