@@ -38,7 +38,7 @@ class TabBarTopCustomImpl extends React.Component<TabBarTopProps & TabBarTopCust
             case 'Department':
                 return department ? department.abbreviation : 'Department';
             case 'Room':
-                return employee ? `Room ${employee.roomNumber}` : 'Room';
+                return 'Room';
             case 'Company':
                 return 'Company';
             default:

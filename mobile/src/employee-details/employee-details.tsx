@@ -273,7 +273,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                 onPress: null
             },
             {
-                label: `Room ${employee.roomNumber}`,
+                label: `Room`,
                 icon: 'office',
                 style: StyleSheet.flatten([tileStyles.icon]),
                 size: 25,
