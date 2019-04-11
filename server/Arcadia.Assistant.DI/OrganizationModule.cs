@@ -1,5 +1,7 @@
 ﻿namespace Arcadia.Assistant.DI
 {
+    using Arcadia.Assistant.Calendar.Abstractions.EmployeeSickLeaves;
+
     using Autofac;
 
     using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
@@ -23,7 +25,8 @@
             builder.RegisterType<EmployeesActor>().AsSelf();
             builder.Register(ctx => new OrganizationActor(
                 this.refreshInformation,
-                ctx.Resolve<IEmployeeVacationsRegistryPropsFactory>()));
+                ctx.Resolve<IEmployeeVacationsRegistryPropsFactory>(),
+                ctx.Resolve<IEmployeeSickLeavesRegistryPropsFactory>()));
 
             builder.RegisterType<DepartmentsStorage>().AsSelf();
 
