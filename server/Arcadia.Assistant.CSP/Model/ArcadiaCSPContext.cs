@@ -37,6 +37,10 @@ namespace Arcadia.Assistant.CSP.Model
         public virtual DbSet<MigrationHistory> MigrationHistory { get; set; }
         public virtual DbSet<NetwrixAuditErrors> NetwrixAuditErrors { get; set; }
         public virtual DbSet<Rooms> Rooms { get; set; }
+        public virtual DbSet<SickLeaveAccepts> SickLeaveAccepts { get; set; }
+        public virtual DbSet<SickLeaveCancellations> SickLeaveCancellations { get; set; }
+        public virtual DbSet<SickLeaveCompletes> SickLeaveCompletes { get; set; }
+        public virtual DbSet<SickLeaveRejects> SickLeaveRejects { get; set; }
         public virtual DbSet<SickLeaves> SickLeaves { get; set; }
         public virtual DbSet<Team> Team { get; set; }
         public virtual DbSet<TeamHistory> TeamHistory { get; set; }
@@ -829,6 +833,90 @@ namespace Arcadia.Assistant.CSP.Model
                 entity.Property(e => e.Name).HasMaxLength(200);
 
                 entity.Property(e => e.RoomNumber).HasMaxLength(20);
+            });
+
+            modelBuilder.Entity<SickLeaveAccepts>(entity =>
+            {
+                entity.HasIndex(e => e.ById)
+                    .HasName("IX_ById");
+
+                entity.HasIndex(e => e.SickLeaveId)
+                    .HasName("IX_SickLeaveId");
+
+                entity.HasOne(d => d.By)
+                    .WithMany(p => p.SickLeaveAccepts)
+                    .HasForeignKey(d => d.ById)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_dbo.SickLeaveAccepts_dbo.Employee_ById");
+
+                entity.HasOne(d => d.SickLeave)
+                    .WithMany(p => p.SickLeaveAccepts)
+                    .HasForeignKey(d => d.SickLeaveId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_dbo.SickLeaveAccepts_dbo.SickLeaves_SickLeaveId");
+            });
+
+            modelBuilder.Entity<SickLeaveCancellations>(entity =>
+            {
+                entity.HasIndex(e => e.ById)
+                    .HasName("IX_ById");
+
+                entity.HasIndex(e => e.SickLeaveId)
+                    .HasName("IX_SickLeaveId");
+
+                entity.HasOne(d => d.By)
+                    .WithMany(p => p.SickLeaveCancellations)
+                    .HasForeignKey(d => d.ById)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_dbo.SickLeaveCancellations_dbo.Employee_ById");
+
+                entity.HasOne(d => d.SickLeave)
+                    .WithMany(p => p.SickLeaveCancellations)
+                    .HasForeignKey(d => d.SickLeaveId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_dbo.SickLeaveCancellations_dbo.SickLeaves_SickLeaveId");
+            });
+
+            modelBuilder.Entity<SickLeaveCompletes>(entity =>
+            {
+                entity.HasIndex(e => e.ById)
+                    .HasName("IX_ById");
+
+                entity.HasIndex(e => e.SickLeaveId)
+                    .HasName("IX_SickLeaveId");
+
+                entity.HasOne(d => d.By)
+                    .WithMany(p => p.SickLeaveCompletes)
+                    .HasForeignKey(d => d.ById)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_dbo.SickLeaveCompletes_dbo.Employee_ById");
+
+                entity.HasOne(d => d.SickLeave)
+                    .WithMany(p => p.SickLeaveCompletes)
+                    .HasForeignKey(d => d.SickLeaveId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_dbo.SickLeaveCompletes_dbo.SickLeaves_SickLeaveId");
+            });
+
+            modelBuilder.Entity<SickLeaveRejects>(entity =>
+            {
+                entity.HasIndex(e => e.ById)
+                    .HasName("IX_ById");
+
+                entity.HasIndex(e => e.SickLeaveId)
+                    .HasName("IX_SickLeaveId");
+
+                entity.HasOne(d => d.By)
+                    .WithMany(p => p.SickLeaveRejects)
+                    .HasForeignKey(d => d.ById)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_dbo.SickLeaveRejects_dbo.Employee_ById");
+
+                entity.HasOne(d => d.SickLeave)
+                    .WithMany(p => p.SickLeaveRejects)
+                    .HasForeignKey(d => d.SickLeaveId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_dbo.SickLeaveRejects_dbo.SickLeaves_SickLeaveId");
             });
 
             modelBuilder.Entity<SickLeaves>(entity =>
