@@ -25,6 +25,7 @@ import { Optional } from 'types';
 import { Employee } from './organization/employee.model';
 import { JwtTokenHandler } from '../auth/jwt-token-handler';
 import { DayModel, defaultDayModel } from './calendar/calendar.model';
+import { PinCodeStorage } from '../auth/pin-code-storage';
 
 //import { createLogger } from 'redux-logger';
 
@@ -127,14 +128,16 @@ const rootReducer = (state: AppState | undefined, action: Action) => {
 export interface DependenciesContainer extends NavigationDependenciesContainer {
     apiClient: SecuredApiClient;
     oauthProcess: OAuthProcess;
+    pinStorage: PinCodeStorage;
 }
 
 //----------------------------------------------------------------------------
-export const storeFactory = (oauthProcess: OAuthProcess, navigationService: NavigationService) => {
+export const storeFactory = (oauthProcess: OAuthProcess, navigationService: NavigationService, pinStorage: PinCodeStorage) => {
     const dependencies: DependenciesContainer = {
         apiClient: new SecuredApiClient(config.apiUrl, oauthProcess.jwtTokenHandler),
         oauthProcess: oauthProcess,
         navigationService: navigationService,
+        pinStorage: pinStorage,
     };
 
     const epicMiddleware = createEpicMiddleware({ dependencies });

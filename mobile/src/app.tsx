@@ -15,6 +15,20 @@ import { Platform, StatusBar, YellowBox } from 'react-native';
 import Analytics from 'appcenter-analytics';
 import { getActiveRouteName } from './utils/navigation-state';
 import Style from './layout/style';
+import { Action, Dispatch } from 'redux';
+import { DayModel } from './reducers/calendar/calendar.model';
+import {
+    nextCalendarPage,
+    prevCalendarPage,
+    resetCalendarPages,
+    selectCalendarDay
+} from './reducers/calendar/calendar.action';
+import { loadPin, loadRefreshToken } from './reducers/auth/auth.action';
+
+//============================================================================
+interface AppDispatchProps {
+    loadAuthState: () => void;
+}
 
 //============================================================================
 interface AppStateProps {
@@ -27,18 +41,20 @@ interface AppOwnProps {
 }
 
 //============================================================================
-export class App extends Component<AppStateProps & AppOwnProps> {
+export class App extends Component<AppStateProps & AppOwnProps & AppDispatchProps> {
     //----------------------------------------------------------------------------
     public componentDidMount(): void {
+        this.props.loadAuthState();
+
         YellowBox.ignoreWarnings(['Deserialization']);
-        
+
         if (Platform.OS === 'android') {
             StatusBar.setBackgroundColor(Style.color.base);
         }
     }
 
     //----------------------------------------------------------------------------
-    public shouldComponentUpdate(nextProps: Readonly<AppStateProps & AppOwnProps>, nextState: Readonly<{}>, nextContext: any): boolean {
+    public shouldComponentUpdate(nextProps: Readonly<AppStateProps & AppOwnProps & AppDispatchProps>, nextState: Readonly<{}>, nextContext: any): boolean {
         if (!this.props.authentication || !nextProps.authentication) {
             return true;
         }
@@ -57,12 +73,9 @@ export class App extends Component<AppStateProps & AppOwnProps> {
     public render() {
         const authentication = this.props.authentication;
 
-        if (!authentication || !authentication.authInfo) {
+        if (!authentication || !authentication.authInfo ||
+            !authentication.authInfo.isAuthenticated || !authentication.pinCode) {
             return <SplashScreen/>;
-        }
-
-        if (!authentication.authInfo.isAuthenticated) {
-            return <WelcomeScreen/>;
         }
 
         return (
@@ -89,5 +102,13 @@ const stateToProps = (state: AppState) => ({
     authentication: state.authentication,
 });
 
-export const AppWithNavigationState = connect(stateToProps)(App);
+//----------------------------------------------------------------------------
+const dispatchToProps = (dispatch: Dispatch<Action>): AppDispatchProps => ({
+    loadAuthState: () => {
+        dispatch(loadPin());
+        dispatch(loadRefreshToken());
+    },
+});
+
+export const AppWithNavigationState = connect(stateToProps, dispatchToProps)(App);
 

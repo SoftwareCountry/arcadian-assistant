@@ -6,10 +6,12 @@ import { storeFactory } from './reducers/app.reducer';
 import { AppWithNavigationState } from './app';
 import config from './config';
 import { NavigationService } from './navigation/navigation.service';
+import { PinCodeStorage } from './auth/pin-code-storage';
 
 export class Root extends Component<{}> {
-    private oauthProcess: OAuthProcess;
-    private navigationService: NavigationService;
+    private readonly oauthProcess: OAuthProcess;
+    private readonly navigationService: NavigationService;
+    private readonly pinStorage: PinCodeStorage;
 
     constructor(props: {}, ctx?: any) {
         super(props, ctx);
@@ -20,11 +22,12 @@ export class Root extends Component<{}> {
             config.oauth.redirectUri);
 
         this.navigationService = new NavigationService();
+        this.pinStorage = new PinCodeStorage();
     }
 
     public render() {
         return (
-            <Provider store={storeFactory(this.oauthProcess, this.navigationService)}>
+            <Provider store={storeFactory(this.oauthProcess, this.navigationService, this.pinStorage)}>
                 <AppWithNavigationState navigationService={this.navigationService}/>
             </Provider>
         );

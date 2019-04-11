@@ -26,6 +26,7 @@
     "lint": "tslint -p ."
   },
   "dependencies": {
+    "@haskkor/react-native-pincode": "^1.20.0",
     "appcenter": "^1.10.0",
     "appcenter-analytics": "^1.10.0",
     "appcenter-crashes": "^1.10.0",

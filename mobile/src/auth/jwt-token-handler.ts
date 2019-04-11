@@ -49,7 +49,7 @@ export class JwtTokenHandler {
             }
 
             await this.refresh();
-            return this.get(); 
+            return this.get();
         }
     }
 
@@ -82,11 +82,15 @@ export class JwtTokenHandler {
         return !!(await this.refreshTokenStorage.getRefreshToken());
     }
 
+    public async getRefreshToken() {
+        return (await this.refreshTokenStorage.getRefreshToken());
+    }
+
     private notifyAboutNewToken(token: Promise<JwtToken>) {
         token
             .then((x) => this.tokenSource.next(x))
             .catch(x => { console.warn(x); this.tokenSource.next(null); });
-    } 
+    }
 
     private async getExistingToken(): Promise<RefreshToken> {
         const oldRefreshToken = await this.refreshTokenStorage.getRefreshToken();
