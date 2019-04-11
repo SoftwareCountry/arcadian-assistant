@@ -36,7 +36,7 @@ class TabBarTopCustomImpl extends React.Component<TabBarTopProps & TabBarTopCust
 
         switch (param.route.key) {
             case 'Department':
-                return department ? department.abbreviation : 'Department';
+                return 'Department';
             case 'Room':
                 return 'Room';
             case 'Company':
