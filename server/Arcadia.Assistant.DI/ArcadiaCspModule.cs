@@ -1,5 +1,7 @@
 ﻿namespace Arcadia.Assistant.DI
 {
+    using Arcadia.Assistant.Calendar.Abstractions.EmployeeSickLeaves;
+
     using Microsoft.Extensions.Configuration;
 
     using Autofac;
@@ -7,6 +9,7 @@
     using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
     using Arcadia.Assistant.CSP;
     using Arcadia.Assistant.CSP.Configuration;
+    using Arcadia.Assistant.CSP.SickLeaves;
     using Arcadia.Assistant.CSP.Vacations;
     using Arcadia.Assistant.Organization.Abstractions;
 
@@ -36,12 +39,15 @@
             builder.RegisterType<ArcadiaVacationCreditRegistry>().As<VacationsCreditRegistry>();
             builder.RegisterType<EmployeesQueryExecutor>().AsSelf();
             builder.RegisterType<VacationsSyncExecutor>().AsSelf();
+            builder.RegisterType<SickLeavesSyncExecutor>().AsSelf();
             builder.RegisterType<VacationsEmailLoader>().AsSelf();
             builder.RegisterType<CspCalendarEventsApprovalsChecker>().As<CalendarEventsApprovalsChecker>();
             builder.RegisterType<VacationAccountingReadyReminderActor>().AsSelf();
             builder.RegisterType<CspVacationsRegistry>().AsSelf();
+            builder.RegisterType<CspSickLeavesRegistry>().AsSelf();
 
             builder.RegisterType<CspEmployeeVacationsRegistryPropsFactory>().As<IEmployeeVacationsRegistryPropsFactory>();
+            builder.RegisterType<CspEmployeeSickLeavesRegistryPropsFactory>().As<IEmployeeSickLeavesRegistryPropsFactory>();
         }
     }
 }
