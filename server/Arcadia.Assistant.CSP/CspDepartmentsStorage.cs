@@ -10,6 +10,7 @@
     using Akka.DI.Core;
 
     using Arcadia.Assistant.CSP.Model;
+    using Arcadia.Assistant.CSP.SickLeaves;
     using Arcadia.Assistant.CSP.Vacations;
     using Arcadia.Assistant.Organization.Abstractions;
 
@@ -32,6 +33,8 @@
 
             Context.ActorOf(CspVacationsRegistry.CreateProps(), "csp-vacations-registry");
             Context.ActorOf(VacationAccountingReadyReminderActor.CreateProps(), "csp-vacations-reminder");
+
+            Context.ActorOf(CspSickLeavesRegistry.CreateProps(), "csp-sick-leaves-registry");
         }
 
         protected override void OnReceive(object message)

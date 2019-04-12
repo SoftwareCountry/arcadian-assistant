@@ -4,6 +4,8 @@
 
     using Akka.Actor;
     using Akka.Event;
+
+    using Arcadia.Assistant.Calendar.Abstractions.EmployeeSickLeaves;
     using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
     using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
@@ -19,10 +21,11 @@
 
         public OrganizationActor(
             IRefreshInformation refreshInformation,
-            IEmployeeVacationsRegistryPropsFactory employeeVacationsRegistryPropsFactory)
+            IEmployeeVacationsRegistryPropsFactory employeeVacationsRegistryPropsFactory,
+            IEmployeeSickLeavesRegistryPropsFactory employeeSickLeavesRegistryPropsFactory)
         {
             this.employeesActor = Context.ActorOf(
-                EmployeesActor.GetProps(employeeVacationsRegistryPropsFactory),
+                EmployeesActor.GetProps(employeeVacationsRegistryPropsFactory, employeeSickLeavesRegistryPropsFactory),
                 "employees");
             this.departmentsActor = Context.ActorOf(DepartmentsActor.GetProps(this.employeesActor), "departments");
 
