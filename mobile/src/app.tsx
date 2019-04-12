@@ -7,7 +7,6 @@ import { RootNavigator } from './tabbar/tab-navigator';
 import { AppState } from './reducers/app.reducer';
 import { connect } from 'react-redux';
 import { NavigationContainerComponent } from 'react-navigation';
-import { WelcomeScreen } from './welcome-screen/welcome-screen';
 import { AuthState } from './reducers/auth/auth.reducer';
 import { SplashScreen } from './splash-screen/splash-screen';
 import { NavigationService } from './navigation/navigation.service';
@@ -16,13 +15,6 @@ import Analytics from 'appcenter-analytics';
 import { getActiveRouteName } from './utils/navigation-state';
 import Style from './layout/style';
 import { Action, Dispatch } from 'redux';
-import { DayModel } from './reducers/calendar/calendar.model';
-import {
-    nextCalendarPage,
-    prevCalendarPage,
-    resetCalendarPages,
-    selectCalendarDay
-} from './reducers/calendar/calendar.action';
 import { loadPin, loadRefreshToken } from './reducers/auth/auth.action';
 
 //============================================================================

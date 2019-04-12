@@ -9,8 +9,7 @@ import FingerprintScanner from 'react-native-fingerprint-scanner';
 import { FingerprintPopupIOS } from '../fingerprint-popup/fingerprint-popup.ios';
 import { AuthState } from '../reducers/auth/auth.reducer';
 import { AppState } from '../reducers/app.reducer';
-import Style from '../layout/style';
-import PINCode, { IProps as PinCodeProps } from '@haskkor/react-native-pincode';
+import ArcadiaPinCode from './pin-code';
 
 //============================================================================
 interface SplashScreenState {
@@ -160,14 +159,8 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
     private setPinCode(): JSX.Element {
         return (
             <View style={splashScreenStyles.container}>
-                <PINCode
+                <ArcadiaPinCode
                     status={'choose'}
-                    passwordLength={6}
-                    stylePinCodeColorTitle={Style.color.white}
-                    stylePinCodeColorSubtitle={Style.color.white}
-                    stylePinCodeColorTitleError={Style.color.pin.yellow}
-                    stylePinCodeColorSubtitleError={Style.color.pin.yellow}
-                    colorPasswordError={Style.color.pin.yellow}
                     storePin={(pin: string) => {
                         this.pinStore(pin);
                         this.onSuccess();
@@ -181,17 +174,9 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
     private askPinCode(storedPin: string): JSX.Element {
         return (
             <View style={splashScreenStyles.container}>
-                <PINCode
+                <ArcadiaPinCode
                     status={'enter'}
-                    passwordLength={6}
-                    stylePinCodeColorTitle={Style.color.white}
-                    stylePinCodeColorSubtitle={Style.color.white}
-                    stylePinCodeColorTitleError={Style.color.pin.yellow}
-                    stylePinCodeColorSubtitleError={Style.color.pin.yellow}
-                    colorPasswordError={Style.color.pin.yellow}
                     storedPin={storedPin}
-                    touchIDDisabled={true}
-                    disableLockScreen={true}
                     finishProcess={this.onSuccess}
                     onFail={this.onFail}
                 />
@@ -214,17 +199,9 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
 
         return (
             <View style={splashScreenStyles.container}>
-                <PINCode
+                <ArcadiaPinCode
                     status={'enter'}
-                    passwordLength={6}
-                    stylePinCodeColorTitle={Style.color.white}
-                    stylePinCodeColorSubtitle={Style.color.white}
-                    stylePinCodeColorTitleError={Style.color.pin.yellow}
-                    stylePinCodeColorSubtitleError={Style.color.pin.yellow}
-                    colorPasswordError={Style.color.pin.yellow}
                     storedPin={storedPin}
-                    touchIDDisabled={true}
-                    disableLockScreen={true}
                     finishProcess={this.onSuccess}
                     onFail={this.onFail}
                 />
