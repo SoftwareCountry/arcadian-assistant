@@ -34,11 +34,14 @@ class TabBarTopCustomImpl extends React.Component<TabBarTopProps & TabBarTopCust
     //----------------------------------------------------------------------------
     private getLabel = (param: TabLabelTextParam, employee: Nullable<Employee>, department: Nullable<Department>): string => {
 
+        let roomNumber = employee && employee.roomNumber ? employee.roomNumber : '';
+        let roomTitle: string = isNaN(Number(roomNumber)) ? roomNumber : `Room ${roomNumber}`;
+
         switch (param.route.key) {
             case 'Department':
-                return 'Department';
+                return department ? department.abbreviation : 'Department';
             case 'Room':
-                return 'Room';
+                return roomTitle;
             case 'Company':
                 return 'Company';
             default:
