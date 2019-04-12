@@ -105,7 +105,7 @@
                 foreach (var cancellation in newSickLeave.SickLeaveCancellations)
                 {
                     var existingCancellation = existingSickLeave.SickLeaveCancellations
-                        .FirstOrDefault(vc => vc.ById == cancellation.ById);
+                        .FirstOrDefault(c => c.ById == cancellation.ById);
 
                     if (existingCancellation == null)
                     {
@@ -116,10 +116,20 @@
                 foreach (var approval in newSickLeave.SickLeaveAccepts)
                 {
                     var existingApproval = existingSickLeave.SickLeaveAccepts
-                        .FirstOrDefault(va => va.ById == approval.ById);
+                        .FirstOrDefault(a => a.ById == approval.ById);
                     if (existingApproval == null)
                     {
                         existingSickLeave.SickLeaveAccepts.Add(approval);
+                    }
+                }
+
+                foreach (var rejection in newSickLeave.SickLeaveRejects)
+                {
+                    var existingRejection = existingSickLeave.SickLeaveRejects
+                        .FirstOrDefault(r => r.ById == rejection.ById);
+                    if (existingRejection == null)
+                    {
+                        existingSickLeave.SickLeaveRejects.Add(rejection);
                     }
                 }
 
