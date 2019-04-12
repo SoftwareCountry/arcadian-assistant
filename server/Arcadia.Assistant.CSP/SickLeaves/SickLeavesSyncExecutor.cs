@@ -14,6 +14,8 @@
 
     public class SickLeavesSyncExecutor
     {
+        private const string SickLeaveCalendarEventIdPart = "SickLeave";
+
         private readonly Func<ArcadiaCspContext> contextFactory;
 
         private readonly ILogger logger = LogManager.GetCurrentClassLogger();
@@ -196,7 +198,7 @@
         private Task<List<SickLeaves>> GetSickLeavesInternal(
             ArcadiaCspContext context,
             string employeeId = null,
-            string sickLeaveId = null,
+            string calendarEventId = null,
             bool trackChanges = true)
         {
             int? employeeDbId = null;
@@ -205,18 +207,16 @@
                 employeeDbId = tempEmployeeId;
             }
 
-            int? sickLeaveDbId = null;
-            if (int.TryParse(sickLeaveId, out var tempSickLeaveId))
-            {
-                sickLeaveDbId = tempSickLeaveId;
-            }
+            var sickLeaveDbId = calendarEventId == null
+                ? (int?)null
+                : this.GetSickLeaveIdFromCalendarEventId(calendarEventId);
 
             var sickLeaves = context.SickLeaves
                 .Include(v => v.SickLeaveAccepts)
                 .Include(v => v.SickLeaveCancellations)
                 .Include(v => v.SickLeaveCompletes)
                 .Include(v => v.SickLeaveRejects)
-                .Where(v => (employeeId == null || v.EmployeeId == employeeDbId) && (sickLeaveId == null || v.Id == sickLeaveDbId));
+                .Where(v => (employeeId == null || v.EmployeeId == employeeDbId) && (calendarEventId == null || v.Id == sickLeaveDbId));
 
             if (!trackChanges)
             {
@@ -313,7 +313,7 @@
             status = status ?? SickLeaveStatuses.Requested;
 
             var calendarEvent = new CalendarEvent(
-                sickLeave.Id.ToString(),
+                this.GetCalendarEventIdFromSickLeaveId(sickLeave.Id),
                 CalendarEventTypes.Sickleave,
                 new DatesPeriod(sickLeave.Start.Date, sickLeave.End.Date),
                 status,
@@ -324,6 +324,23 @@
                 .ToList();
 
             return new CalendarEventWithAdditionalData(calendarEvent, approvals, cancelled, rejected, completed);
+        }
+
+        private string GetCalendarEventIdFromSickLeaveId(int sickLeaveId)
+        {
+            return $"{SickLeaveCalendarEventIdPart}_{sickLeaveId}";
+        }
+
+        private int GetSickLeaveIdFromCalendarEventId(string calendarEventId)
+        {
+            var parts = calendarEventId.Split('_');
+
+            if (parts.Length != 2 || parts[0] != SickLeaveCalendarEventIdPart || !int.TryParse(parts[1], out var sickLeaveId))
+            {
+                throw new ArgumentException("Calendar event id has wrong format");
+            }
+
+            return sickLeaveId;
         }
     }
 }

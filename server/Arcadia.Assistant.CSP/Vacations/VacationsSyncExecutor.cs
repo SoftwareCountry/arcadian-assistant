@@ -15,6 +15,7 @@
     public class VacationsSyncExecutor
     {
         private const string VacationCancelReasonDataKey = "CancelReason";
+        private const string VacationCalendarEventIdPart = "Vacation";
 
         private readonly Func<ArcadiaCspContext> contextFactory;
 
@@ -203,7 +204,7 @@
         private Task<List<Vacations>> GetVacationsInternal(
             ArcadiaCspContext context,
             string employeeId = null,
-            string vacationId = null,
+            string calendarEventId = null,
             bool trackChanges = true)
         {
             int? employeeDbId = null;
@@ -213,19 +214,16 @@
                 employeeDbId = tempEmployeeId;
             }
 
-            int? vacationDbId = null;
-
-            if (int.TryParse(vacationId, out var tempVacationId))
-            {
-                vacationDbId = tempVacationId;
-            }
+            var vacationDbId = calendarEventId == null
+                ? (int?)null
+                : this.GetVacationIdFromCalendarEventId(calendarEventId);
 
             var vacations = context.Vacations
                 .Include(v => v.VacationApprovals)
                 .Include(v => v.VacationCancellations)
                 .Include(v => v.VacationProcesses)
                 .Include(v => v.VacationReadies)
-                .Where(v => (employeeId == null || v.EmployeeId == employeeDbId) && (vacationId == null || v.Id == vacationDbId));
+                .Where(v => (employeeId == null || v.EmployeeId == employeeDbId) && (calendarEventId == null || v.Id == vacationDbId));
 
             if (!trackChanges)
             {
@@ -342,7 +340,7 @@
             }
 
             var calendarEvent = new CalendarEvent(
-                vacation.Id.ToString(),
+                this.GetCalendarEventIdFromVacationId(vacation.Id),
                 CalendarEventTypes.Vacation,
                 new DatesPeriod(vacation.Start.Date, vacation.End.Date),
                 status,
@@ -355,6 +353,23 @@
                 .ToList();
 
             return new CalendarEventWithAdditionalData(calendarEvent, approvals, processed, cancelled, rejected, accountingReady);
+        }
+
+        private string GetCalendarEventIdFromVacationId(int vacationId)
+        {
+            return $"{VacationCalendarEventIdPart}_{vacationId}";
+        }
+
+        private int GetVacationIdFromCalendarEventId(string calendarEventId)
+        {
+            var parts = calendarEventId.Split('_');
+
+            if (parts.Length != 2 || parts[0] != VacationCalendarEventIdPart || !int.TryParse(parts[1], out var vacationId))
+            {
+                throw new ArgumentException("Calendar event id has wrong format");
+            }
+
+            return vacationId;
         }
 
         private enum VacationType
