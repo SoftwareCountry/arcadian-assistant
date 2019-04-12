@@ -431,22 +431,12 @@
                     "is not allowed for sick leave");
             }
 
-            await this.EnsureDatesAreNotIntersected(newEvent);
-
-            if (oldEvent.Dates != newEvent.Dates)
+            if (oldEvent.Dates.StartDate != newEvent.Dates.StartDate)
             {
-                if (!oldEvent.IsPending)
-                {
-                    throw new Exception($"Date change is not allowed in status {oldEvent.Status} for {oldEvent.Type}");
-                }
-
-                var approvals = await this.GetApprovals(oldEvent);
-
-                if (approvals.Count() != 0)
-                {
-                    throw new Exception($"Date change is not allowed when there is at least one user approval for {oldEvent.Type}");
-                }
+                throw new Exception("Start date cannot be changed");
             }
+
+            await this.EnsureDatesAreNotIntersected(newEvent);
         }
 
         private void EnsureApprovalAvailable(CalendarEvent @event)

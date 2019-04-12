@@ -160,11 +160,6 @@
             DateTimeOffset timestamp,
             CalendarEvent newEvent)
         {
-            if (oldEvent.Dates.StartDate != newEvent.Dates.StartDate)
-            {
-                throw new Exception("Start date cannot be changed");
-            }
-
             if (oldEvent.Dates.EndDate != newEvent.Dates.EndDate)
             {
                 this.Persist(new SickLeaveIsProlonged
