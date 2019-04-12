@@ -3,10 +3,12 @@ import { Employee } from '../../reducers/organization/employee.model';
 import { Department } from '../../reducers/organization/department.model';
 import { MaterialTopTabBar, TabBarTopProps, TabLabelTextParam } from 'react-navigation';
 import { connect } from 'react-redux';
-import { AppState } from '../../reducers/app.reducer';
+import { AppState, getEmployee } from '../../reducers/app.reducer';
 import { Nullable, Optional } from 'types';
-import { getEmployee } from '../../reducers/app.reducer';
 import { toNullable } from '../../types/types-utils';
+import { StyledText } from '../../override/styled-text';
+import tabBarStyles from '../../tabbar/tab-bar-styles';
+import { StyleSheet } from 'react-native';
 
 //============================================================================
 interface TabBarTopCustomProps {
@@ -32,21 +34,38 @@ class TabBarTopCustomImpl extends React.Component<TabBarTopProps & TabBarTopCust
     }
 
     //----------------------------------------------------------------------------
-    private getLabel = (param: TabLabelTextParam, employee: Nullable<Employee>, department: Nullable<Department>): string => {
+    private getLabel = (param: TabLabelTextParam, employee: Nullable<Employee>, department: Nullable<Department>): React.ReactNode | string => {
 
-        let roomNumber = employee && employee.roomNumber ? employee.roomNumber : '';
-        let roomTitle: string = isNaN(Number(roomNumber)) ? roomNumber : `Room ${roomNumber}`;
+        const roomNumber = employee && employee.roomNumber ? employee.roomNumber : '';
+        const roomTitle: string = isNaN(Number(roomNumber)) ? roomNumber : `Room ${roomNumber}`;
+        let label = '';
 
         switch (param.route.key) {
             case 'Department':
-                return department ? department.abbreviation : 'Department';
+                label = department ? department.abbreviation : 'Department';
+                break;
             case 'Room':
-                return roomTitle;
+                label = roomTitle;
+                break;
             case 'Company':
-                return 'Company';
+                label = 'Company';
+                break;
             default:
-                return '';
+                break;
         }
+
+        const style = StyleSheet.flatten([
+            tabBarStyles.tabBarLabel,
+            {
+                fontSize: 12,
+                marginBottom: 0,
+            },
+        ]);
+        return (
+            <StyledText numberOfLines={1} ellipsizeMode={'tail'} style={style}>
+                {label}
+            </StyledText>
+        );
     };
 }
 
