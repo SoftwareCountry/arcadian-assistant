@@ -10,7 +10,7 @@ import {
     UserLoggedIn, PinStore,
 } from './auth.action';
 import { refresh } from '../refresh/refresh.action';
-import { map } from 'rxjs/operators';
+import { ignoreElements, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { fromPromise } from 'rxjs/internal-compatibility';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
@@ -51,4 +51,5 @@ export const storePin$ = (action$: ActionsObservable<PinStore>, _: unknown, dep:
         tap(action => {
             return fromPromise(dep.pinStorage.setPin(action.pin));
         }),
+        ignoreElements(),
     );

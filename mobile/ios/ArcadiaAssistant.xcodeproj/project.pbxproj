@@ -39,7 +39,7 @@
 		AC1CD46A284D40858BC0A31F /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 64B3870ACAA84AEBAC42A0A6 /* EvilIcons.ttf */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
 		B51C360421ECA28C00855F9A /* libReactNativeFingerprintScanner.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B51C35FF21ECA26300855F9A /* libReactNativeFingerprintScanner.a */; };
-		B5D94A19225F5A75003780BB /* libRNCAsyncStorage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B5D94A13225F5A56003780BB /* libRNCAsyncStorage.a */; };
+		B5D94A19225F5A75003780BB /* libRNCAsyncStorage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B5D94A13225F5A56003780BB /* libRNCAsyncStorage.a */; settings = {ATTRIBUTES = (Required, ); }; };
 		B81EDAD9D1754E64B21BACD1 /* libReactNativeConfig.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 09C4D93509034784A9526BA8 /* libReactNativeConfig.a */; };
 		BFD0278726E44AD394BF2069 /* libAppCenterReactNativeAnalytics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9DDFF4ACAAB449E9E57B4AC /* libAppCenterReactNativeAnalytics.a */; };
 		C4A2203BDD7A4635B5BB0C9A /* libFastImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 44897A9692504A99BD0CCBD9 /* libFastImage.a */; };

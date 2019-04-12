@@ -27,7 +27,7 @@ import { JwtTokenHandler } from '../auth/jwt-token-handler';
 import { DayModel, defaultDayModel } from './calendar/calendar.model';
 import { PinCodeStorage } from '../auth/pin-code-storage';
 
-//import { createLogger } from 'redux-logger';
+// import logger from 'redux-logger';
 
 //============================================================================
 export interface AppState {
@@ -141,6 +141,7 @@ export const storeFactory = (oauthProcess: OAuthProcess, navigationService: Navi
     };
 
     const epicMiddleware = createEpicMiddleware({ dependencies });
+    // const store = createStore(rootReducer, {}, applyMiddleware(epicMiddleware, logger));
     const store = createStore(rootReducer, {}, applyMiddleware(epicMiddleware));
 
     epicMiddleware.run(rootEpic);

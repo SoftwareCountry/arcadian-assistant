@@ -55,18 +55,22 @@ export class App extends Component<AppStateProps & AppOwnProps & AppDispatchProp
 
     //----------------------------------------------------------------------------
     public shouldComponentUpdate(nextProps: Readonly<AppStateProps & AppOwnProps & AppDispatchProps>, nextState: Readonly<{}>, nextContext: any): boolean {
-        if (!this.props.authentication || !nextProps.authentication) {
+        const authentication = this.props.authentication;
+        const nextAuthentication = nextProps.authentication;
+
+        if (!authentication || !nextAuthentication) {
             return true;
         }
 
-        if (!this.props.authentication.authInfo || !nextProps.authentication.authInfo) {
+        if (!authentication.authInfo || !nextAuthentication.authInfo) {
             return true;
         }
 
-        const authInfo = this.props.authentication.authInfo;
-        const nextAuthInfo = nextProps.authentication.authInfo;
+        const authInfo = authentication.authInfo;
+        const nextAuthInfo = nextAuthentication.authInfo;
 
-        return authInfo.isAuthenticated !== nextAuthInfo.isAuthenticated;
+        return authInfo.isAuthenticated !== nextAuthInfo.isAuthenticated ||
+               authentication.pinCode !== nextAuthentication.pinCode;
     }
 
     //----------------------------------------------------------------------------
