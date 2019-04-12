@@ -165,6 +165,9 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
                     passwordLength={6}
                     stylePinCodeColorTitle={Style.color.white}
                     stylePinCodeColorSubtitle={Style.color.white}
+                    stylePinCodeColorTitleError={Style.color.pin.yellow}
+                    stylePinCodeColorSubtitleError={Style.color.pin.yellow}
+                    colorPasswordError={Style.color.pin.yellow}
                     storePin={(pin: string) => {
                         this.pinStore(pin);
                         this.onSuccess();
@@ -183,6 +186,9 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
                     passwordLength={6}
                     stylePinCodeColorTitle={Style.color.white}
                     stylePinCodeColorSubtitle={Style.color.white}
+                    stylePinCodeColorTitleError={Style.color.pin.yellow}
+                    stylePinCodeColorSubtitleError={Style.color.pin.yellow}
+                    colorPasswordError={Style.color.pin.yellow}
                     storedPin={storedPin}
                     touchIDDisabled={true}
                     disableLockScreen={true}
@@ -213,6 +219,9 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
                     passwordLength={6}
                     stylePinCodeColorTitle={Style.color.white}
                     stylePinCodeColorSubtitle={Style.color.white}
+                    stylePinCodeColorTitleError={Style.color.pin.yellow}
+                    stylePinCodeColorSubtitleError={Style.color.pin.yellow}
+                    colorPasswordError={Style.color.pin.yellow}
                     storedPin={storedPin}
                     touchIDDisabled={true}
                     disableLockScreen={true}
