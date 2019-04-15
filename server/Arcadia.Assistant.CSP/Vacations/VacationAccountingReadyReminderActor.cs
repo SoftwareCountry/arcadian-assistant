@@ -28,7 +28,7 @@
 
         private const string VacationReminderPushNotificationType = "VacationReadyReminder";
 
-        private readonly AccountingReminderConfiguration reminderConfiguration;
+        private readonly VacationsAccountingReminderConfiguration reminderConfiguration;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
@@ -38,7 +38,7 @@
 
         private readonly Dictionary<string, CalendarEvent> vacationsToRemind = new Dictionary<string, CalendarEvent>();
 
-        public VacationAccountingReadyReminderActor(AccountingReminderConfiguration reminderConfiguration)
+        public VacationAccountingReadyReminderActor(VacationsAccountingReminderConfiguration reminderConfiguration)
         {
             this.reminderConfiguration = reminderConfiguration;
 

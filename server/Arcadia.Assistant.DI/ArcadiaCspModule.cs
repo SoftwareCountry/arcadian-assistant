@@ -29,10 +29,10 @@
                 .Get<VacationsEmailLoaderConfiguration>();
             builder.RegisterInstance(vacationsEmailLoaderConfiguration).AsSelf();
 
-            var accountingReminderConfiguration = this.configuration
-                .GetSection("AccountingReminder")
-                .Get<AccountingReminderConfiguration>();
-            builder.RegisterInstance(accountingReminderConfiguration).AsSelf();
+            var vacationsAccountingReminderConfiguration = this.configuration
+                .GetSection("VacationsAccountingReminder")
+                .Get<VacationsAccountingReminderConfiguration>();
+            builder.RegisterInstance(vacationsAccountingReminderConfiguration).AsSelf();
 
             builder.RegisterType<CspDepartmentsStorage>().As<DepartmentsStorage>();
             builder.RegisterType<CspEmployeesInfoStorage>().As<EmployeesInfoStorage>();
