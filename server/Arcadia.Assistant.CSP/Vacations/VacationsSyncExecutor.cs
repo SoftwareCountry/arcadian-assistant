@@ -96,7 +96,6 @@
                     @event.EventId);
 
                 var existingVacation = existingVacations.FirstOrDefault();
-                var newVacation = this.CreateVacationFromCalendarEvent(@event, timestamp, updatedBy);
 
                 if (existingVacation == null)
                 {
@@ -105,37 +104,43 @@
 
                 this.EnsureVacationIsNotProcessed(existingVacation);
 
+                var newVacation = this.CreateVacationFromCalendarEvent(@event, timestamp, updatedBy);
                 existingVacation.Start = newVacation.Start.Date;
                 existingVacation.End = newVacation.End.Date;
 
-                foreach (var cancellation in newVacation.VacationCancellations)
+                var existingEvent = this.CreateCalendarEventFromVacation(existingVacation);
+
+                if (@event.Status != existingEvent.CalendarEvent.Status)
                 {
-                    var existingCancellation = existingVacation.VacationCancellations
-                        .FirstOrDefault(vc => vc.CancelledById == cancellation.CancelledById);
-
-                    if (existingCancellation == null)
+                    foreach (var cancellation in newVacation.VacationCancellations)
                     {
-                        existingVacation.VacationCancellations.Add(cancellation);
-                    }
-                }
+                        var existingCancellation = existingVacation.VacationCancellations
+                            .FirstOrDefault(vc => vc.CancelledById == cancellation.CancelledById);
 
-                foreach (var approval in newVacation.VacationApprovals)
-                {
-                    var existingApproval = existingVacation.VacationApprovals
-                        .FirstOrDefault(va => va.ApproverId == approval.ApproverId);
-
-                    if (existingApproval == null)
-                    {
-                        existingVacation.VacationApprovals.Add(approval);
-                    }
-                    else
-                    {
-                        existingApproval.Status = approval.Status;
-                        existingApproval.IsFinal = approval.IsFinal;
-
-                        if (existingApproval.TimeStamp == null)
+                        if (existingCancellation == null)
                         {
-                            existingApproval.TimeStamp = approval.TimeStamp;
+                            existingVacation.VacationCancellations.Add(cancellation);
+                        }
+                    }
+
+                    foreach (var approval in newVacation.VacationApprovals)
+                    {
+                        var existingApproval = existingVacation.VacationApprovals
+                            .FirstOrDefault(va => va.ApproverId == approval.ApproverId);
+
+                        if (existingApproval == null)
+                        {
+                            existingVacation.VacationApprovals.Add(approval);
+                        }
+                        else
+                        {
+                            existingApproval.Status = approval.Status;
+                            existingApproval.IsFinal = approval.IsFinal;
+
+                            if (existingApproval.TimeStamp == null)
+                            {
+                                existingApproval.TimeStamp = approval.TimeStamp;
+                            }
                         }
                     }
                 }
