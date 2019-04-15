@@ -15,12 +15,14 @@
     public class SickLeavesSyncExecutor
     {
         private readonly Func<ArcadiaCspContext> contextFactory;
+        private readonly CspCalendarEventIdParser calendarEventIdParser;
 
         private readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
-        public SickLeavesSyncExecutor(Func<ArcadiaCspContext> contextFactory)
+        public SickLeavesSyncExecutor(Func<ArcadiaCspContext> contextFactory, CspCalendarEventIdParser calendarEventIdParser)
         {
             this.contextFactory = contextFactory;
+            this.calendarEventIdParser = calendarEventIdParser;
         }
 
         public async Task<IReadOnlyCollection<CalendarEventWithAdditionalData>> GetSickLeaves()
@@ -196,7 +198,7 @@
         private Task<List<SickLeaves>> GetSickLeavesInternal(
             ArcadiaCspContext context,
             string employeeId = null,
-            string sickLeaveId = null,
+            string calendarEventId = null,
             bool trackChanges = true)
         {
             int? employeeDbId = null;
@@ -205,18 +207,16 @@
                 employeeDbId = tempEmployeeId;
             }
 
-            int? sickLeaveDbId = null;
-            if (int.TryParse(sickLeaveId, out var tempSickLeaveId))
-            {
-                sickLeaveDbId = tempSickLeaveId;
-            }
+            var sickLeaveDbId = calendarEventId == null
+                ? (int?)null
+                : this.calendarEventIdParser.GetCspIdFromCalendarEvent(calendarEventId, CalendarEventTypes.Sickleave);
 
             var sickLeaves = context.SickLeaves
                 .Include(v => v.SickLeaveAccepts)
                 .Include(v => v.SickLeaveCancellations)
                 .Include(v => v.SickLeaveCompletes)
                 .Include(v => v.SickLeaveRejects)
-                .Where(v => (employeeId == null || v.EmployeeId == employeeDbId) && (sickLeaveId == null || v.Id == sickLeaveDbId));
+                .Where(v => (employeeId == null || v.EmployeeId == employeeDbId) && (calendarEventId == null || v.Id == sickLeaveDbId));
 
             if (!trackChanges)
             {
@@ -313,7 +313,7 @@
             status = status ?? SickLeaveStatuses.Requested;
 
             var calendarEvent = new CalendarEvent(
-                sickLeave.Id.ToString(),
+                this.calendarEventIdParser.GetCalendarEventIdFromCspId(sickLeave.Id, CalendarEventTypes.Sickleave),
                 CalendarEventTypes.Sickleave,
                 new DatesPeriod(sickLeave.Start.Date, sickLeave.End.Date),
                 status,

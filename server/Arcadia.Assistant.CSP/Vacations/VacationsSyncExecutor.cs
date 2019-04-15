@@ -17,12 +17,14 @@
         private const string VacationCancelReasonDataKey = "CancelReason";
 
         private readonly Func<ArcadiaCspContext> contextFactory;
+        private readonly CspCalendarEventIdParser calendarEventIdParser;
 
         private readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
-        public VacationsSyncExecutor(Func<ArcadiaCspContext> contextFactory)
+        public VacationsSyncExecutor(Func<ArcadiaCspContext> contextFactory, CspCalendarEventIdParser calendarEventIdParser)
         {
             this.contextFactory = contextFactory;
+            this.calendarEventIdParser = calendarEventIdParser;
         }
 
         public async Task<IReadOnlyCollection<CalendarEventWithAdditionalData>> GetVacations()
@@ -203,7 +205,7 @@
         private Task<List<Vacations>> GetVacationsInternal(
             ArcadiaCspContext context,
             string employeeId = null,
-            string vacationId = null,
+            string calendarEventId = null,
             bool trackChanges = true)
         {
             int? employeeDbId = null;
@@ -213,19 +215,16 @@
                 employeeDbId = tempEmployeeId;
             }
 
-            int? vacationDbId = null;
-
-            if (int.TryParse(vacationId, out var tempVacationId))
-            {
-                vacationDbId = tempVacationId;
-            }
+            var vacationDbId = calendarEventId == null
+                ? (int?)null
+                : this.calendarEventIdParser.GetCspIdFromCalendarEvent(calendarEventId, CalendarEventTypes.Vacation);
 
             var vacations = context.Vacations
                 .Include(v => v.VacationApprovals)
                 .Include(v => v.VacationCancellations)
                 .Include(v => v.VacationProcesses)
                 .Include(v => v.VacationReadies)
-                .Where(v => (employeeId == null || v.EmployeeId == employeeDbId) && (vacationId == null || v.Id == vacationDbId));
+                .Where(v => (employeeId == null || v.EmployeeId == employeeDbId) && (calendarEventId == null || v.Id == vacationDbId));
 
             if (!trackChanges)
             {
@@ -342,7 +341,7 @@
             }
 
             var calendarEvent = new CalendarEvent(
-                vacation.Id.ToString(),
+                this.calendarEventIdParser.GetCalendarEventIdFromCspId(vacation.Id, CalendarEventTypes.Vacation),
                 CalendarEventTypes.Vacation,
                 new DatesPeriod(vacation.Start.Date, vacation.End.Date),
                 status,
