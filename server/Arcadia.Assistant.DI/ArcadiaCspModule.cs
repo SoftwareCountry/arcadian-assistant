@@ -45,6 +45,7 @@
             builder.RegisterType<VacationAccountingReadyReminderActor>().AsSelf();
             builder.RegisterType<CspVacationsRegistry>().AsSelf();
             builder.RegisterType<CspSickLeavesRegistry>().AsSelf();
+            builder.RegisterType<CspCalendarEventIdParser>().AsSelf();
 
             builder.RegisterType<CspEmployeeVacationsRegistryPropsFactory>().As<IEmployeeVacationsRegistryPropsFactory>();
             builder.RegisterType<CspEmployeeSickLeavesRegistryPropsFactory>().As<IEmployeeSickLeavesRegistryPropsFactory>();
