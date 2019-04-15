@@ -34,6 +34,11 @@
                 .Get<VacationsAccountingReminderConfiguration>();
             builder.RegisterInstance(vacationsAccountingReminderConfiguration).AsSelf();
 
+            var sickLeavesAccountingReminderConfiguration = this.configuration
+                .GetSection("SickLeavesAccountingReminder")
+                .Get<SickLeavesAccountingReminderConfiguration>();
+            builder.RegisterInstance(sickLeavesAccountingReminderConfiguration).AsSelf();
+
             builder.RegisterType<CspDepartmentsStorage>().As<DepartmentsStorage>();
             builder.RegisterType<CspEmployeesInfoStorage>().As<EmployeesInfoStorage>();
             builder.RegisterType<ArcadiaVacationCreditRegistry>().As<VacationsCreditRegistry>();
