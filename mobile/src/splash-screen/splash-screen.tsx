@@ -10,6 +10,7 @@ import { FingerprintPopupIOS } from '../fingerprint-popup/fingerprint-popup.ios'
 import { AuthState } from '../reducers/auth/auth.reducer';
 import { AppState } from '../reducers/app.reducer';
 import ArcadiaPinCode from './pin-code';
+import { PinResultStatus } from '@haskkor/react-native-pincode/dist/src/utils';
 
 //============================================================================
 interface SplashScreenState {
@@ -178,7 +179,7 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
                     status={'enter'}
                     storedPin={storedPin}
                     finishProcess={this.onSuccess}
-                    onFail={this.onFail}
+                    onClickButtonLockedPage={this.onLockedScreenClose}
                 />
             </View>
         );
@@ -203,7 +204,7 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
                     status={'enter'}
                     storedPin={storedPin}
                     finishProcess={this.onSuccess}
-                    onFail={this.onFail}
+                    onClickButtonLockedPage={this.onLockedScreenClose}
                 />
                 {fingerprintPopup}
             </View>
@@ -235,10 +236,8 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
     };
 
     //----------------------------------------------------------------------------
-    private onFail = (attempts: number) => {
-        if (attempts > 3) {
-            this.props.logout();
-        }
+    private onLockedScreenClose = () => {
+        this.props.logout();
     };
 
     //----------------------------------------------------------------------------
