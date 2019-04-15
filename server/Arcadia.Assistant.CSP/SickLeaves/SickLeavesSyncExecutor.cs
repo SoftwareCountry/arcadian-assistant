@@ -104,34 +104,41 @@
                 existingSickLeave.Start = newSickLeave.Start.Date;
                 existingSickLeave.End = newSickLeave.End.Date;
 
-                foreach (var cancellation in newSickLeave.SickLeaveCancellations)
-                {
-                    var existingCancellation = existingSickLeave.SickLeaveCancellations
-                        .FirstOrDefault(c => c.ById == cancellation.ById);
+                var existingEvent = this.CreateCalendarEventFromSickLeave(existingSickLeave);
 
-                    if (existingCancellation == null)
+                if (@event.Status != existingEvent.CalendarEvent.Status)
+                {
+                    foreach (var cancellation in newSickLeave.SickLeaveCancellations)
                     {
-                        existingSickLeave.SickLeaveCancellations.Add(cancellation);
+                        var existingCancellation = existingSickLeave.SickLeaveCancellations
+                            .FirstOrDefault(c => c.ById == cancellation.ById);
+
+                        if (existingCancellation == null)
+                        {
+                            existingSickLeave.SickLeaveCancellations.Add(cancellation);
+                        }
                     }
-                }
 
-                foreach (var approval in newSickLeave.SickLeaveAccepts)
-                {
-                    var existingApproval = existingSickLeave.SickLeaveAccepts
-                        .FirstOrDefault(a => a.ById == approval.ById);
-                    if (existingApproval == null)
+                    foreach (var approval in newSickLeave.SickLeaveAccepts)
                     {
-                        existingSickLeave.SickLeaveAccepts.Add(approval);
+                        var existingApproval = existingSickLeave.SickLeaveAccepts
+                            .FirstOrDefault(a => a.ById == approval.ById);
+
+                        if (existingApproval == null)
+                        {
+                            existingSickLeave.SickLeaveAccepts.Add(approval);
+                        }
                     }
-                }
 
-                foreach (var rejection in newSickLeave.SickLeaveRejects)
-                {
-                    var existingRejection = existingSickLeave.SickLeaveRejects
-                        .FirstOrDefault(r => r.ById == rejection.ById);
-                    if (existingRejection == null)
+                    foreach (var rejection in newSickLeave.SickLeaveRejects)
                     {
-                        existingSickLeave.SickLeaveRejects.Add(rejection);
+                        var existingRejection = existingSickLeave.SickLeaveRejects
+                            .FirstOrDefault(r => r.ById == rejection.ById);
+
+                        if (existingRejection == null)
+                        {
+                            existingSickLeave.SickLeaveRejects.Add(rejection);
+                        }
                     }
                 }
 
