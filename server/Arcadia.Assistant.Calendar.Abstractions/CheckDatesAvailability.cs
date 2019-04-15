@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations
+﻿namespace Arcadia.Assistant.Calendar.Abstractions
 {
     using System;
 

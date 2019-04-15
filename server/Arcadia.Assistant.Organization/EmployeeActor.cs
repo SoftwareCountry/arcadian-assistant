@@ -6,6 +6,7 @@
     using Akka.Persistence;
 
     using Arcadia.Assistant.Calendar;
+    using Arcadia.Assistant.Calendar.Abstractions.EmployeeSickLeaves;
     using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
     using Arcadia.Assistant.Calendar.PendingActions;
     using Arcadia.Assistant.Calendar.SickLeave;
@@ -33,7 +34,8 @@
             EmployeeStoredInformation storedInformation,
             IActorRef imageResizer,
             IActorRef vacationsCreditRegistry,
-            IEmployeeVacationsRegistryPropsFactory employeeVacationsRegistryPropsFactory)
+            IEmployeeVacationsRegistryPropsFactory employeeVacationsRegistryPropsFactory,
+            IEmployeeSickLeavesRegistryPropsFactory employeeSickLeavesRegistryPropsFactory)
         {
             this.employeeMetadata = storedInformation.Metadata;
             this.PersistenceId = $"employee-info-{Uri.EscapeDataString(this.employeeMetadata.EmployeeId)}";
@@ -51,14 +53,15 @@
                 vacationsCreditRegistry,
                 employeeVacationsRegistryPropsFactory);
 
-            var sickLeaveActorProps = EmployeeSickLeaveActor.CreateProps(this.employeeMetadata);
+            var sickLeaveActorProps = EmployeeSickLeaveActor.CreateProps(
+                this.employeeMetadata.EmployeeId,
+                employeeSickLeavesRegistryPropsFactory);
+
             var workHoursActorProps = EmployeeWorkHoursActor.CreateProps(this.employeeMetadata.EmployeeId);
 
             var vacationsActor = Context.ActorOf(vacationActorProps, "vacations");
 
-            var sickLeavesActor = Context.ActorOf(
-                persistenceSupervisorFactory.Get(sickLeaveActorProps),
-                "sick-leaves");
+            var sickLeavesActor = Context.ActorOf(sickLeaveActorProps, "sick-leaves");
 
             var workHoursActor = Context.ActorOf(
                 persistenceSupervisorFactory.Get(workHoursActorProps),
@@ -212,11 +215,13 @@
             EmployeeStoredInformation employeeStoredInformation,
             IActorRef imageResizer,
             IActorRef vacationsCreditRegistry,
-            IEmployeeVacationsRegistryPropsFactory employeeVacationsRegistryPropsFactory
+            IEmployeeVacationsRegistryPropsFactory employeeVacationsRegistryPropsFactory,
+            IEmployeeSickLeavesRegistryPropsFactory employeeSickLeavesRegistryPropsFactory
         ) => Props.Create(() => new EmployeeActor(
             employeeStoredInformation,
             imageResizer,
             vacationsCreditRegistry,
-            employeeVacationsRegistryPropsFactory));
+            employeeVacationsRegistryPropsFactory,
+            employeeSickLeavesRegistryPropsFactory));
     }
 }

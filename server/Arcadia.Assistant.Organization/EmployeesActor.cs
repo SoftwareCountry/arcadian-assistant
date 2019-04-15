@@ -7,6 +7,8 @@
     using Akka.Actor;
     using Akka.Event;
     using Akka.Routing;
+
+    using Arcadia.Assistant.Calendar.Abstractions.EmployeeSickLeaves;
     using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
     using Arcadia.Assistant.Images;
     using Arcadia.Assistant.Organization.Abstractions;
@@ -27,10 +29,13 @@
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
         private readonly IEmployeeVacationsRegistryPropsFactory employeeVacationsRegistryPropsFactory;
+        private readonly IEmployeeSickLeavesRegistryPropsFactory employeeSickLeavesRegistryPropsFactory;
 
         public IStash Stash { get; set; }
 
-        public EmployeesActor(IEmployeeVacationsRegistryPropsFactory employeeVacationsRegistryPropsFactory)
+        public EmployeesActor(
+            IEmployeeVacationsRegistryPropsFactory employeeVacationsRegistryPropsFactory,
+            IEmployeeSickLeavesRegistryPropsFactory employeeSickLeavesRegistryPropsFactory)
         {
             this.employeesInfoStorage = Context.ActorOf(EmployeesInfoStorage.GetProps, "employees-storage");
             this.logger.Info($"Image resizers pool size: {ResizersCount}");
@@ -41,6 +46,7 @@
             this.vacationsCreditRegistry = Context.ActorOf(VacationsCreditRegistry.GetProps, "vacations-credit-registry");
 
             this.employeeVacationsRegistryPropsFactory = employeeVacationsRegistryPropsFactory;
+            this.employeeSickLeavesRegistryPropsFactory = employeeSickLeavesRegistryPropsFactory;
         }
 
         protected override void OnReceive(object message)
@@ -130,7 +136,8 @@
                         employeeNewInfo,
                         this.imageResizer,
                         this.vacationsCreditRegistry,
-                        this.employeeVacationsRegistryPropsFactory);
+                        this.employeeVacationsRegistryPropsFactory,
+                        this.employeeSickLeavesRegistryPropsFactory);
                     employeeActor = Context.ActorOf(
                         persistenceSupervisorFactory.Get(employeeActorProps),
                         $"employee-{Uri.EscapeDataString(employeeId)}");
@@ -154,7 +161,13 @@
             }
         }
 
-        public static Props GetProps(IEmployeeVacationsRegistryPropsFactory employeeVacationsRegistryPropsFactory)
-            => Props.Create(() => new EmployeesActor(employeeVacationsRegistryPropsFactory));
+        public static Props GetProps(
+            IEmployeeVacationsRegistryPropsFactory employeeVacationsRegistryPropsFactory,
+            IEmployeeSickLeavesRegistryPropsFactory employeeSickLeavesRegistryPropsFactory)
+        {
+            return Props.Create(() => new EmployeesActor(
+                employeeVacationsRegistryPropsFactory,
+                employeeSickLeavesRegistryPropsFactory));
+        }
     }
 }
