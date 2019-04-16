@@ -48,7 +48,7 @@ async function logout(dependencies: DependenciesContainer, installId?: string) {
     }
     try {
         await dependencies.oauthProcess.logout();
-        await dependencies.pinStorage.setPin(null);
+        await dependencies.storage.setPin(null);
     } catch (e) {
         console.warn('Error during logout', e);
     }

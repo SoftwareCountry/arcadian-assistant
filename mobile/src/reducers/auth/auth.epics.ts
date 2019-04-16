@@ -39,7 +39,7 @@ export const loadRefreshToken$ = (action$: ActionsObservable<LoadRefreshToken>, 
 export const loadPin$ = (action$: ActionsObservable<PinLoad>, _: unknown, dep: DependenciesContainer) =>
     action$.ofType(AuthActionType.pinLoad).pipe(
         switchMap(_ => {
-            return fromPromise(dep.pinStorage.getPin());
+            return fromPromise(dep.storage.getPin());
         }),
         map(pin => {
             return pinLoaded(pin);
@@ -49,7 +49,7 @@ export const loadPin$ = (action$: ActionsObservable<PinLoad>, _: unknown, dep: D
 export const storePin$ = (action$: ActionsObservable<PinStore>, _: unknown, dep: DependenciesContainer) =>
     action$.ofType(AuthActionType.pinStore).pipe(
         tap(action => {
-            return fromPromise(dep.pinStorage.setPin(action.pin));
+            return fromPromise(dep.storage.setPin(action.pin));
         }),
         ignoreElements(),
     );

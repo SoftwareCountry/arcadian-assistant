@@ -23,9 +23,8 @@ import { notifications$ } from '../notifications/notification.epics';
 import { notificationsReducer, NotificationState } from '../notifications/notifications.reducer';
 import { Optional } from 'types';
 import { Employee } from './organization/employee.model';
-import { JwtTokenHandler } from '../auth/jwt-token-handler';
 import { DayModel, defaultDayModel } from './calendar/calendar.model';
-import { PinCodeStorage } from '../storage/pin-code-storage';
+import { Storage } from '../storage/storage';
 
 // import logger from 'redux-logger';
 
@@ -128,16 +127,16 @@ const rootReducer = (state: AppState | undefined, action: Action) => {
 export interface DependenciesContainer extends NavigationDependenciesContainer {
     apiClient: SecuredApiClient;
     oauthProcess: OAuthProcess;
-    pinStorage: PinCodeStorage;
+    storage: Storage;
 }
 
 //----------------------------------------------------------------------------
-export const storeFactory = (oauthProcess: OAuthProcess, navigationService: NavigationService, pinStorage: PinCodeStorage) => {
+export const storeFactory = (oauthProcess: OAuthProcess, navigationService: NavigationService, storage: Storage) => {
     const dependencies: DependenciesContainer = {
         apiClient: new SecuredApiClient(config.apiUrl, oauthProcess.jwtTokenHandler),
         oauthProcess: oauthProcess,
         navigationService: navigationService,
-        pinStorage: pinStorage,
+        storage: storage,
     };
 
     const epicMiddleware = createEpicMiddleware({ dependencies });

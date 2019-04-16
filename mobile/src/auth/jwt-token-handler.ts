@@ -3,7 +3,7 @@ import moment from 'moment';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { OauthError } from './oauth-error';
 import { RefreshToken } from './login-request';
-import { RefreshTokenStorage } from '../storage/refresh-token-storage';
+import { Storage } from '../storage/storage';
 
 export class NoJwtTokenError extends Error {
     constructor() {
@@ -35,7 +35,7 @@ export class JwtTokenHandler {
 
     constructor(
         private readonly accessCodeRequest: AccessCodeRequest,
-        private readonly refreshTokenStorage: RefreshTokenStorage
+        private readonly refreshTokenStorage: Storage
     ) {
     }
 
