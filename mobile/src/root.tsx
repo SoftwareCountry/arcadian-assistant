@@ -6,7 +6,7 @@ import { storeFactory } from './reducers/app.reducer';
 import { AppWithNavigationState } from './app';
 import config from './config';
 import { NavigationService } from './navigation/navigation.service';
-import { PinCodeStorage } from './auth/pin-code-storage';
+import { PinCodeStorage } from './storage/pin-code-storage';
 
 export class Root extends Component<{}> {
     private readonly oauthProcess: OAuthProcess;

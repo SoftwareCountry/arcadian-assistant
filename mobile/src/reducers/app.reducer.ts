@@ -25,7 +25,7 @@ import { Optional } from 'types';
 import { Employee } from './organization/employee.model';
 import { JwtTokenHandler } from '../auth/jwt-token-handler';
 import { DayModel, defaultDayModel } from './calendar/calendar.model';
-import { PinCodeStorage } from '../auth/pin-code-storage';
+import { PinCodeStorage } from '../storage/pin-code-storage';
 
 // import logger from 'redux-logger';
 

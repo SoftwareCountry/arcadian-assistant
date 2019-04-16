@@ -3,24 +3,26 @@
  ******************************************************************************/
 
 import SInfo from 'react-native-sensitive-info';
-import Storage from './storage';
+import { Nullable } from 'types';
 
 //============================================================================
-export class PinCodeStorage {
+export class Storage {
+    public static keychain = 'ArcadiaAssistant';
+    public static preferences = 'ArcadiaAssistantPreferences';
+
+    public static Key = {
+        pinCode: 'pin-code',
+        refreshToken: 'refresh-token',
+    };
+
     private static options = {
         keychainService: Storage.keychain,
         sharedPreferencesName: Storage.preferences,
     };
 
-    private pin: string | null = null;
-
     //----------------------------------------------------------------------------
-    public async getPin(): Promise<string | null> {
-        if (this.pin !== null) {
-            return this.pin;
-        }
-
-        return SInfo.getItem(Storage.Key.pinCode, PinCodeStorage.options)
+    public async get(key: string): Promise<Nullable<string>> {
+        return SInfo.getItem(key, Storage.options)
             .then(
                 (value) => {
                     if (!value) {
@@ -35,14 +37,11 @@ export class PinCodeStorage {
     }
 
     //----------------------------------------------------------------------------
-    public async setPin(pin: string | null) {
-
-        this.pin = pin;
-
-        if (!pin) {
-            await SInfo.deleteItem(Storage.Key.pinCode, PinCodeStorage.options);
+    public async set(key: string, value: Nullable<string>): Promise<null> {
+        if (!value) {
+            return await SInfo.deleteItem(key, Storage.options);
         } else {
-            await SInfo.setItem(Storage.Key.pinCode, pin, PinCodeStorage.options);
+            return await SInfo.setItem(key, value, Storage.options);
         }
     }
 }

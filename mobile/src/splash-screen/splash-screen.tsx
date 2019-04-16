@@ -10,7 +10,6 @@ import { FingerprintPopupIOS } from '../fingerprint-popup/fingerprint-popup.ios'
 import { AuthState } from '../reducers/auth/auth.reducer';
 import { AppState } from '../reducers/app.reducer';
 import ArcadiaPinCode from './pin-code';
-import { PinResultStatus } from '@haskkor/react-native-pincode/dist/src/utils';
 
 //============================================================================
 interface SplashScreenState {
@@ -120,8 +119,8 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
     private handleBiometry = (biometry?: string) => {
         const isSensorAvailable = !!biometry &&
             (biometry === Biometry.Android.fingerprint ||
-             biometry === Biometry.iOS.touchId ||
-             biometry === Biometry.iOS.faceId);
+                biometry === Biometry.iOS.touchId ||
+                biometry === Biometry.iOS.faceId);
 
         this.isSensorAvailable = isSensorAvailable;
 

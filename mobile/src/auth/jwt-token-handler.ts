@@ -1,10 +1,9 @@
 import { AccessCodeRequest } from './access-code-request';
 import moment from 'moment';
-import { map } from 'rxjs/operators';
-import { RefreshTokenStorage } from './refresh-token-storage';
-import { Observable, from, Subject, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { OauthError } from './oauth-error';
 import { RefreshToken } from './login-request';
+import { RefreshTokenStorage } from '../storage/refresh-token-storage';
 
 export class NoJwtTokenError extends Error {
     constructor() {
@@ -18,7 +17,8 @@ export class JwtToken {
     constructor(
         public readonly validUntil: moment.Moment,
         public readonly value: string
-    ) { }
+    ) {
+    }
 
     public get isExpired() {
         return moment().isSameOrAfter(this.validUntil);
@@ -36,7 +36,8 @@ export class JwtTokenHandler {
     constructor(
         private readonly accessCodeRequest: AccessCodeRequest,
         private readonly refreshTokenStorage: RefreshTokenStorage
-    ) { }
+    ) {
+    }
 
     // convert to observable?
     public async get(): Promise<JwtToken> {
@@ -58,12 +59,12 @@ export class JwtTokenHandler {
     }
 
     public async refresh() {
-       return this.reset(await this.getExistingToken());
+        return this.reset(await this.getExistingToken());
     }
 
     public reset(refreshToken: RefreshToken) {
         this.token = (async () => {
-            await this.refreshTokenStorage.storeToken(refreshToken.value);
+            await this.refreshTokenStorage.setRefreshToken(refreshToken.value);
             return this.getNewToken();
         })();
 
@@ -73,7 +74,7 @@ export class JwtTokenHandler {
     }
 
     public async clean() {
-        await this.refreshTokenStorage.storeToken(null);
+        await this.refreshTokenStorage.setRefreshToken(null);
         this.token = null;
         this.tokenSource.next(null);
     }
@@ -89,7 +90,10 @@ export class JwtTokenHandler {
     private notifyAboutNewToken(token: Promise<JwtToken>) {
         token
             .then((x) => this.tokenSource.next(x))
-            .catch(x => { console.warn(x); this.tokenSource.next(null); });
+            .catch(x => {
+                console.warn(x);
+                this.tokenSource.next(null);
+            });
     }
 
     private async getExistingToken(): Promise<RefreshToken> {
@@ -108,7 +112,7 @@ export class JwtTokenHandler {
         const accessCodeResponse = await this.accessCodeRequest.refresh(oldRefreshToken.value)
             .toPromise();
 
-        await this.refreshTokenStorage.storeToken(accessCodeResponse.refreshToken);
+        await this.refreshTokenStorage.setRefreshToken(accessCodeResponse.refreshToken);
 
         const expirationDate = moment.unix(+accessCodeResponse.expiresOn);
         const jwtToken = new JwtToken(expirationDate, accessCodeResponse.accessToken);

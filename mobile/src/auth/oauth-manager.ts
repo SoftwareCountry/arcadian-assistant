@@ -1,7 +1,7 @@
-import { createRefreshTokenStorage } from './refresh-token-storage';
 import { OAuthProcess } from './oauth-process';
 import { JwtTokenHandler } from './jwt-token-handler';
 import { AccessCodeRequest } from './access-code-request';
+import { RefreshTokenStorage } from '../storage/refresh-token-storage';
 
 export class OAuthManager {
 
@@ -10,9 +10,9 @@ export class OAuthManager {
 
         const authorizationUrl = `${endpoint}/oauth2/authorize`;
         const tokenUrl = `${endpoint}/oauth2/token`;
-        
 
-        const refreshTokenStorage = createRefreshTokenStorage();
+
+        const refreshTokenStorage = new RefreshTokenStorage();
 
         const accessCodeRequest = new AccessCodeRequest(clientId, redirectUri, tokenUrl);
         const jwtTokenHandler = new JwtTokenHandler(accessCodeRequest, refreshTokenStorage);
