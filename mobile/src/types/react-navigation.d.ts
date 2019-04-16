@@ -1048,7 +1048,7 @@ declare module 'react-navigation' {
         tabBarPosition: string;
         navigation: NavigationScreenProp<NavigationState>;
         jumpToIndex: (index: number) => void;
-        getLabelText: (r: TabLabelTextParam) => string;
+        getLabelText: (r: TabLabelTextParam) => React.ReactNode | string;
         getOnPress: (
             previousScene: NavigationRoute,
             scene: TabScene
