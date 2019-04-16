@@ -49,9 +49,9 @@
 		</dict>
 	</dict>
 	<key>NSFaceIDUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Entypo.ttf</string>
@@ -68,6 +68,7 @@
 		<string>CenturyGothic.ttf</string>
 		<string>aa-iconfont.ttf</string>
 		<string>aa-iconfont-bold.ttf</string>
+		<string>CenturyGothicBold.ttf</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
