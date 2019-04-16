@@ -97,22 +97,22 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
         if (authentication === undefined ||
             authentication.hasRefreshToken === undefined ||
             authentication.pinCode === undefined) {
-            return this.splash();
+            return this.renderSplash();
         }
 
         if (!authentication.hasRefreshToken) {
-            return this.login();
+            return this.renderLogin();
         }
 
         if (!authentication.pinCode) {
-            return this.setPinCode();
+            return this.renderChoosePinCode();
         }
 
         if (!this.isSensorAvailable) {
-            return this.askPinCode(authentication.pinCode);
+            return this.renderAskPinCode(authentication.pinCode);
         }
 
-        return this.askFingerprint(authentication.pinCode);
+        return this.renderFingerprint(authentication.pinCode);
     }
 
     //----------------------------------------------------------------------------
@@ -131,7 +131,7 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
     };
 
     //----------------------------------------------------------------------------
-    private splash(): JSX.Element {
+    private renderSplash(): JSX.Element {
         return (
             <View style={splashScreenStyles.container}>
                 <View style={splashScreenStyles.imageContainer}>
@@ -142,7 +142,7 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
     }
 
     //----------------------------------------------------------------------------
-    private login(): JSX.Element {
+    private renderLogin(): JSX.Element {
         return (
             <View style={splashScreenStyles.container}>
                 <Text style={splashScreenStyles.greeting}>Welcome to Arcadia Assistant</Text>
@@ -156,7 +156,7 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
     }
 
     //----------------------------------------------------------------------------
-    private setPinCode(): JSX.Element {
+    private renderChoosePinCode(): JSX.Element {
         return (
             <View style={splashScreenStyles.container}>
                 <ArcadiaPinCode
@@ -171,7 +171,7 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
     }
 
     //----------------------------------------------------------------------------
-    private askPinCode(storedPin: string): JSX.Element {
+    private renderAskPinCode(storedPin: string): JSX.Element {
         return (
             <View style={splashScreenStyles.container}>
                 <ArcadiaPinCode
@@ -185,7 +185,7 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
     }
 
     //----------------------------------------------------------------------------
-    private askFingerprint(storedPin: string): JSX.Element {
+    private renderFingerprint(storedPin: string): JSX.Element {
 
         const isIOS = Platform.OS === 'ios';
 
