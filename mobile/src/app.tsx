@@ -7,7 +7,6 @@ import { RootNavigator } from './tabbar/tab-navigator';
 import { AppState } from './reducers/app.reducer';
 import { connect } from 'react-redux';
 import { NavigationContainerComponent } from 'react-navigation';
-import { WelcomeScreen } from './welcome-screen/welcome-screen';
 import { AuthState } from './reducers/auth/auth.reducer';
 import { SplashScreen } from './splash-screen/splash-screen';
 import { NavigationService } from './navigation/navigation.service';
@@ -15,6 +14,13 @@ import { Platform, StatusBar, YellowBox } from 'react-native';
 import Analytics from 'appcenter-analytics';
 import { getActiveRouteName } from './utils/navigation-state';
 import Style from './layout/style';
+import { Action, Dispatch } from 'redux';
+import { loadPin, loadRefreshToken } from './reducers/auth/auth.action';
+
+//============================================================================
+interface AppDispatchProps {
+    loadAuthState: () => void;
+}
 
 //============================================================================
 interface AppStateProps {
@@ -27,42 +33,45 @@ interface AppOwnProps {
 }
 
 //============================================================================
-export class App extends Component<AppStateProps & AppOwnProps> {
+export class App extends Component<AppStateProps & AppOwnProps & AppDispatchProps> {
     //----------------------------------------------------------------------------
     public componentDidMount(): void {
+        this.props.loadAuthState();
+
         YellowBox.ignoreWarnings(['Deserialization']);
-        
+
         if (Platform.OS === 'android') {
             StatusBar.setBackgroundColor(Style.color.base);
         }
     }
 
     //----------------------------------------------------------------------------
-    public shouldComponentUpdate(nextProps: Readonly<AppStateProps & AppOwnProps>, nextState: Readonly<{}>, nextContext: any): boolean {
-        if (!this.props.authentication || !nextProps.authentication) {
+    public shouldComponentUpdate(nextProps: Readonly<AppStateProps & AppOwnProps & AppDispatchProps>, nextState: Readonly<{}>, nextContext: any): boolean {
+        const authentication = this.props.authentication;
+        const nextAuthentication = nextProps.authentication;
+
+        if (!authentication || !nextAuthentication) {
             return true;
         }
 
-        if (!this.props.authentication.authInfo || !nextProps.authentication.authInfo) {
+        if (!authentication.authInfo || !nextAuthentication.authInfo) {
             return true;
         }
 
-        const authInfo = this.props.authentication.authInfo;
-        const nextAuthInfo = nextProps.authentication.authInfo;
+        const authInfo = authentication.authInfo;
+        const nextAuthInfo = nextAuthentication.authInfo;
 
-        return authInfo.isAuthenticated !== nextAuthInfo.isAuthenticated;
+        return authInfo.isAuthenticated !== nextAuthInfo.isAuthenticated ||
+               authentication.pinCode !== nextAuthentication.pinCode;
     }
 
     //----------------------------------------------------------------------------
     public render() {
         const authentication = this.props.authentication;
 
-        if (!authentication || !authentication.authInfo) {
+        if (!authentication || !authentication.authInfo ||
+            !authentication.authInfo.isAuthenticated || !authentication.pinCode) {
             return <SplashScreen/>;
-        }
-
-        if (!authentication.authInfo.isAuthenticated) {
-            return <WelcomeScreen/>;
         }
 
         return (
@@ -89,5 +98,13 @@ const stateToProps = (state: AppState) => ({
     authentication: state.authentication,
 });
 
-export const AppWithNavigationState = connect(stateToProps)(App);
+//----------------------------------------------------------------------------
+const dispatchToProps = (dispatch: Dispatch<Action>): AppDispatchProps => ({
+    loadAuthState: () => {
+        dispatch(loadPin());
+        dispatch(loadRefreshToken());
+    },
+});
+
+export const AppWithNavigationState = connect(stateToProps, dispatchToProps)(App);
 

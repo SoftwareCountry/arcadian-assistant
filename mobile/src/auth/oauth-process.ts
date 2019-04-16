@@ -1,4 +1,4 @@
-import { LoginRequest } from './login-request';
+import { LoginRequest, RefreshToken } from './login-request';
 import { JwtTokenHandler } from './jwt-token-handler';
 
 export class OAuthProcess {
@@ -22,7 +22,7 @@ export class OAuthProcess {
         const isAuthenticated = await this.isAuthenticated();
 
         if (isAuthenticated) {
-            await this.jwtTokenHandler.refresh();           
+            await this.jwtTokenHandler.refresh();
         } else {
             await this.loginOnLoginPage();
         }
@@ -30,6 +30,10 @@ export class OAuthProcess {
 
     public async logout() {
         await this.jwtTokenHandler.clean();
+    }
+
+    public async getRefreshToken(): Promise<string | null> {
+        return await this.jwtTokenHandler.getRefreshToken();
     }
 
     private async loginOnLoginPage() {
@@ -43,6 +47,6 @@ export class OAuthProcess {
         } catch (e) {
             console.log('Error getting initial state, considering user unauthenticated', e);
             return false;
-        } 
+        }
     }
 }
