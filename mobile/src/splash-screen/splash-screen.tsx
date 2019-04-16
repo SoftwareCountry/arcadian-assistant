@@ -1,12 +1,15 @@
 import React from 'react';
-import { Image, Platform, View } from 'react-native';
+import { Image, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { splashScreenStyles } from './styles';
 import { FingerprintPopupAndroid } from '../fingerprint-popup/fingerprint-popup.android';
 import { Action, Dispatch } from 'redux';
-import { startLoginProcess, startLogoutProcess } from '../reducers/auth/auth.action';
+import { pinStore, startLoginProcess, startLogoutProcess } from '../reducers/auth/auth.action';
 import { connect } from 'react-redux';
 import FingerprintScanner from 'react-native-fingerprint-scanner';
 import { FingerprintPopupIOS } from '../fingerprint-popup/fingerprint-popup.ios';
+import { AuthState } from '../reducers/auth/auth.reducer';
+import { AppState } from '../reducers/app.reducer';
+import ArcadiaPinCode from './pin-code';
 
 //============================================================================
 interface SplashScreenState {
@@ -17,6 +20,13 @@ interface SplashScreenState {
 interface SplashScreenDispatchProps {
     login: () => void;
     logout: () => void;
+    storePin: (pin: string) => void;
+    onLoginClicked: () => void;
+}
+
+//============================================================================
+interface SplashScreenStateProps {
+    authentication: AuthState | undefined;
 }
 
 //----------------------------------------------------------------------------
@@ -31,28 +41,17 @@ const Biometry = {
 };
 
 //============================================================================
-class SplashScreenImpl extends React.Component<SplashScreenDispatchProps, SplashScreenState> {
+class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashScreenDispatchProps, SplashScreenState> {
+
     private isSensorAvailable = false;
 
     //----------------------------------------------------------------------------
-    constructor(props: SplashScreenDispatchProps) {
+    constructor(props: SplashScreenStateProps & SplashScreenDispatchProps) {
         super(props);
 
         this.state = {
             fingerprintPopupVisible: false,
         };
-    }
-
-    //----------------------------------------------------------------------------
-    public render() {
-        return (
-            <View style={splashScreenStyles.container}>
-                <View style={splashScreenStyles.imageContainer}>
-                    <Image source={require('./arcadia-logo.png')}/>
-                </View>
-                {this.fingerprintPopup()}
-            </View>
-        );
     }
 
     //----------------------------------------------------------------------------
@@ -67,6 +66,56 @@ class SplashScreenImpl extends React.Component<SplashScreenDispatchProps, Splash
     }
 
     //----------------------------------------------------------------------------
+    public shouldComponentUpdate(nextProps: Readonly<SplashScreenStateProps & SplashScreenDispatchProps>, nextState: Readonly<SplashScreenState>, nextContext: any): boolean {
+        if (this.state.fingerprintPopupVisible !== nextState.fingerprintPopupVisible) {
+            return true;
+        }
+
+        const authentication = this.props.authentication;
+        const nextAuthentication = nextProps.authentication;
+
+        if (!authentication || !nextAuthentication) {
+            return true;
+        }
+
+        if (authentication.hasRefreshToken !== nextAuthentication.hasRefreshToken) {
+            return true;
+        }
+
+        if (authentication.pinCode !== nextAuthentication.pinCode) {
+            return true;
+        }
+
+        return false;
+    }
+
+    //----------------------------------------------------------------------------
+    public render() {
+
+        const authentication = this.props.authentication;
+
+        if (authentication === undefined ||
+            authentication.hasRefreshToken === undefined ||
+            authentication.pinCode === undefined) {
+            return this.renderSplash();
+        }
+
+        if (!authentication.hasRefreshToken) {
+            return this.renderLogin();
+        }
+
+        if (!authentication.pinCode) {
+            return this.renderChoosePinCode();
+        }
+
+        if (!this.isSensorAvailable) {
+            return this.renderAskPinCode(authentication.pinCode);
+        }
+
+        return this.renderFingerprint(authentication.pinCode);
+    }
+
+    //----------------------------------------------------------------------------
     private handleBiometry = (biometry?: string) => {
         const isSensorAvailable = !!biometry &&
             (biometry === Biometry.Android.fingerprint ||
@@ -75,36 +124,90 @@ class SplashScreenImpl extends React.Component<SplashScreenDispatchProps, Splash
 
         this.isSensorAvailable = isSensorAvailable;
 
-        if (!isSensorAvailable) {
-            this.props.login();
-        } else {
-            this.setState({
-                ...this.state,
-                fingerprintPopupVisible: true,
-            });
-        }
+        this.setState({
+            ...this.state,
+            fingerprintPopupVisible: isSensorAvailable,
+        });
     };
 
     //----------------------------------------------------------------------------
-    private fingerprintPopup(): JSX.Element | null {
-        if (!this.isSensorAvailable) {
-            return null;
-        }
+    private renderSplash(): JSX.Element {
+        return (
+            <View style={splashScreenStyles.container}>
+                <View style={splashScreenStyles.imageContainer}>
+                    <Image source={require('./arcadia-logo.png')}/>
+                </View>
+            </View>
+        );
+    }
+
+    //----------------------------------------------------------------------------
+    private renderLogin(): JSX.Element {
+        return (
+            <View style={splashScreenStyles.container}>
+                <Text style={splashScreenStyles.greeting}>Welcome to Arcadia Assistant</Text>
+                <View style={splashScreenStyles.loginButtonContainer}>
+                    <TouchableOpacity onPress={this.props.onLoginClicked}>
+                        <Text style={splashScreenStyles.loginText}>Login</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        );
+    }
+
+    //----------------------------------------------------------------------------
+    private renderChoosePinCode(): JSX.Element {
+        return (
+            <View style={splashScreenStyles.container}>
+                <ArcadiaPinCode
+                    status={'choose'}
+                    storePin={(pin: string) => {
+                        this.pinStore(pin);
+                        this.onSuccess();
+                    }
+                    }/>
+            </View>
+        );
+    }
+
+    //----------------------------------------------------------------------------
+    private renderAskPinCode(storedPin: string): JSX.Element {
+        return (
+            <View style={splashScreenStyles.container}>
+                <ArcadiaPinCode
+                    status={'enter'}
+                    storedPin={storedPin}
+                    finishProcess={this.onSuccess}
+                    onClickButtonLockedPage={this.onLockedScreenClose}
+                />
+            </View>
+        );
+    }
+
+    //----------------------------------------------------------------------------
+    private renderFingerprint(storedPin: string): JSX.Element {
 
         const isIOS = Platform.OS === 'ios';
-        if (isIOS) {
-            return (
-                <FingerprintPopupIOS
-                    onPopupHidden={this.onPopupHidden}/>
-            );
-        } else {
-            return (
-                <FingerprintPopupAndroid
-                    isVisible={this.state.fingerprintPopupVisible}
-                    onPopupClose={this.onPopupClosed}
-                    onPopupHidden={this.onPopupHidden}/>
-            );
-        }
+
+        const fingerprintPopup = isIOS ?
+            <FingerprintPopupIOS
+                onPopupHidden={this.onPopupHidden}/> :
+            <FingerprintPopupAndroid
+                isVisible={this.state.fingerprintPopupVisible}
+                onPopupClose={this.onPopupClosed}
+                onPopupHidden={this.onPopupHidden}/>;
+
+        return (
+            <View style={splashScreenStyles.container}>
+                <ArcadiaPinCode
+                    status={'enter'}
+                    storedPin={storedPin}
+                    finishProcess={this.onSuccess}
+                    onClickButtonLockedPage={this.onLockedScreenClose}
+                />
+                {fingerprintPopup}
+            </View>
+        );
     }
 
     //----------------------------------------------------------------------------
@@ -122,12 +225,30 @@ class SplashScreenImpl extends React.Component<SplashScreenDispatchProps, Splash
         }
 
         if (success) {
-            this.props.login();
-        } else {
-            this.props.logout();
+            this.onSuccess();
         }
     };
+
+    //----------------------------------------------------------------------------
+    private onSuccess = () => {
+        this.props.login();
+    };
+
+    //----------------------------------------------------------------------------
+    private onLockedScreenClose = () => {
+        this.props.logout();
+    };
+
+    //----------------------------------------------------------------------------
+    private pinStore = (pin: string) => {
+        this.props.storePin(pin);
+    };
 }
+
+//----------------------------------------------------------------------------
+const stateToProps = (state: AppState) => ({
+    authentication: state.authentication,
+});
 
 //----------------------------------------------------------------------------
 const dispatchToProps = (dispatch: Dispatch<Action>) => {
@@ -138,7 +259,13 @@ const dispatchToProps = (dispatch: Dispatch<Action>) => {
         logout: () => {
             dispatch(startLogoutProcess(true));
         },
+        storePin: (pin: string) => {
+            dispatch(pinStore(pin));
+        },
+        onLoginClicked: () => {
+            dispatch(startLoginProcess());
+        }
     };
 };
 
-export const SplashScreen = connect(undefined, dispatchToProps)(SplashScreenImpl);
+export const SplashScreen = connect(stateToProps, dispatchToProps)(SplashScreenImpl);

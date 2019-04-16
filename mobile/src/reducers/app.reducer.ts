@@ -23,10 +23,10 @@ import { notifications$ } from '../notifications/notification.epics';
 import { notificationsReducer, NotificationState } from '../notifications/notifications.reducer';
 import { Optional } from 'types';
 import { Employee } from './organization/employee.model';
-import { JwtTokenHandler } from '../auth/jwt-token-handler';
 import { DayModel, defaultDayModel } from './calendar/calendar.model';
+import { Storage } from '../storage/storage';
 
-//import { createLogger } from 'redux-logger';
+// import logger from 'redux-logger';
 
 //============================================================================
 export interface AppState {
@@ -127,17 +127,20 @@ const rootReducer = (state: AppState | undefined, action: Action) => {
 export interface DependenciesContainer extends NavigationDependenciesContainer {
     apiClient: SecuredApiClient;
     oauthProcess: OAuthProcess;
+    storage: Storage;
 }
 
 //----------------------------------------------------------------------------
-export const storeFactory = (oauthProcess: OAuthProcess, navigationService: NavigationService) => {
+export const storeFactory = (oauthProcess: OAuthProcess, navigationService: NavigationService, storage: Storage) => {
     const dependencies: DependenciesContainer = {
         apiClient: new SecuredApiClient(config.apiUrl, oauthProcess.jwtTokenHandler),
         oauthProcess: oauthProcess,
         navigationService: navigationService,
+        storage: storage,
     };
 
     const epicMiddleware = createEpicMiddleware({ dependencies });
+    // const store = createStore(rootReducer, {}, applyMiddleware(epicMiddleware, logger));
     const store = createStore(rootReducer, {}, applyMiddleware(epicMiddleware));
 
     epicMiddleware.run(rootEpic);

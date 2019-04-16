@@ -12,7 +12,9 @@ export class TabNavigationOptionsFactory {
     public create(label: string, iconName: string): NavigationTabScreenOptions {
 
         return {
-            tabBarLabel: this.getTabBarLabel(label),
+            tabBarLabel: ({ tintColor, focused }) => {
+                return this.getTabBarLabel(label, focused);
+            },
             tabBarIcon: ({ tintColor, focused }) => {
                 if (focused) {
                     return <ApplicationIconBold
@@ -37,7 +39,7 @@ export class TabNavigationOptionsFactory {
 
     //----------------------------------------------------------------------------
     // noinspection JSMethodCanBeStatic
-    private getTabBarLabel(label: string) {
-        return <TabBarLabel label={label}/>;
+    private getTabBarLabel(label: string, isFocused: boolean) {
+        return <TabBarLabel label={label} isFocused={isFocused}/>;
     }
 }
