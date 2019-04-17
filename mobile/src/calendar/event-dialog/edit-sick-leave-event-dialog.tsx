@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base';
-import { AppState, getEmployee } from '../../reducers/app.reducer';
+import { AppState, getEmployee, getPermission } from '../../reducers/app.reducer';
 import { Action, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
@@ -10,6 +10,7 @@ import { CalendarEvent } from '../../reducers/calendar/calendar-event.model';
 import { completeSickLeave } from '../../reducers/calendar/sick-leave.action';
 import { Employee } from '../../reducers/organization/employee.model';
 import { Nullable, Optional } from 'types';
+import { Permission } from '../../reducers/user/user-employee-permissions.model';
 
 //============================================================================
 interface EditSickLeaveEventDialogDispatchProps {
@@ -22,6 +23,7 @@ interface EditSickLeaveEventDialogDispatchProps {
 interface EditSickLeaveEventDialogProps {
     intervals: Optional<ExtractedIntervals>;
     userEmployee: Optional<Employee>;
+    completeSickLeavePermission: Optional<Boolean>;
 }
 
 //============================================================================
@@ -31,6 +33,10 @@ class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogPro
     public render() {
         const selectedSickLeave = this.selectedSickLeave();
         const isEditable = selectedSickLeave ? !selectedSickLeave.calendarEvent.isCompleted : false;
+        let isDisabledForComplete = true;
+        if (this.props.completeSickLeavePermission === true) {
+            isDisabledForComplete = false;
+        }
         return <EventDialogBase
             title={'Hey! Hope you feel better'}
             text={this.text}
@@ -38,7 +44,7 @@ class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogPro
             cancelLabel={'Prolong'}
             disableCancel={!isEditable}
             acceptLabel={'Complete'}
-            disableAccept={!isEditable}
+            disableAccept={isDisabledForComplete}
             onAcceptPress={this.acceptAction}
             onCancelPress={this.cancelAction}
             onClosePress={this.closeDialog}/>;
@@ -107,6 +113,7 @@ const mapStateToProps = (state: AppState): EditSickLeaveEventDialogProps => {
     return {
         intervals: state.calendar ? state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection : undefined,
         userEmployee: getEmployee(state),
+        completeSickLeavePermission: getPermission(state, Permission.completeSickLeave)
     };
 };
 
