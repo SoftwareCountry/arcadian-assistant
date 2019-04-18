@@ -75,14 +75,13 @@ export default class ArcadiaPinCode extends React.Component<PinCodeProps> {
         if (!this.props.useLogoutButton) {
             return null;
         }
+
         return (
-            <View>
-                <TouchableOpacity onPress={this.onClickLogoutButton}>
-                    <Image style={pinCodeStyles.styleLockScreenLogoutImage}
-                           source={require('../../assets/logout-image.png')} resizeMethod={'resize'}/>
-                    <Text style={pinCodeStyles.styleLockScreenLogoutButtonText}>Log out</Text>
-                </TouchableOpacity>
-            </View>
+            <TouchableOpacity onPress={this.onClickLogoutButton}>
+                <Image style={pinCodeStyles.styleLockScreenLogoutImage}
+                       source={require('../../assets/logout-image.png')} resizeMethod={'resize'}/>
+                <Text style={pinCodeStyles.styleLockScreenLogoutButtonText}>Log out</Text>
+            </TouchableOpacity>
         );
     };
 
