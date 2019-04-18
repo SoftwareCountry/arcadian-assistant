@@ -91,7 +91,7 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
 
     //----------------------------------------------------------------------------
     public render() {
-        let splashContent = this.renderContent();
+        const splashContent = this.renderContent();
 
         return (
             <SafeAreaView style={splashScreenStyles.container}>
