@@ -6,7 +6,7 @@ import React from 'react';
 import Style from '../layout/style';
 import PINCode from '@haskkor/react-native-pincode';
 import AsyncStorage from '@react-native-community/async-storage';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { pinCodeStyles } from './styles';
 
 //----------------------------------------------------------------------------
@@ -78,6 +78,8 @@ export default class ArcadiaPinCode extends React.Component<PinCodeProps> {
         return (
             <View>
                 <TouchableOpacity onPress={this.onClickLogoutButton}>
+                    <Image style={pinCodeStyles.styleLockScreenLogoutImage}
+                           source={require('../../assets/logout-image.png')} resizeMethod={'resize'}/>
                     <Text style={pinCodeStyles.styleLockScreenLogoutButtonText}>Log out</Text>
                 </TouchableOpacity>
             </View>
