@@ -32,9 +32,9 @@ class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogPro
     //----------------------------------------------------------------------------
     public render() {
         const selectedSickLeave = this.selectedSickLeave();
-        const isEditable = selectedSickLeave ? !selectedSickLeave.calendarEvent.isCompleted : false;
+        const isCompleted = selectedSickLeave ? !selectedSickLeave.calendarEvent.isCompleted : false;
         let isDisabledForComplete = true;
-        if (this.props.completeSickLeavePermission === true && !isEditable) {
+        if (this.props.completeSickLeavePermission === true && !isCompleted) {
             isDisabledForComplete = false;
         }
         return <EventDialogBase
@@ -42,7 +42,7 @@ class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogPro
             text={this.text}
             icon={'sick_leave'}
             cancelLabel={'Prolong'}
-            disableCancel={!isEditable}
+            disableCancel={!isCompleted}
             acceptLabel={'Complete'}
             disableAccept={isDisabledForComplete}
             onAcceptPress={this.acceptAction}
