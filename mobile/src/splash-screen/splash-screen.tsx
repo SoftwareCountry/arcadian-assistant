@@ -186,7 +186,7 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
                 status={'enter'}
                 storedPin={storedPin}
                 finishProcess={this.onSuccess}
-                useLogoutButton={false}
+                useLogoutButton={true}
                 onClickLogoutButton={this.onLockedScreenClose}
             />
         );
