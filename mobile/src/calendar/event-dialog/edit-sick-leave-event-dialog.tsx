@@ -33,7 +33,7 @@ class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogPro
     public render() {
         const selectedSickLeave = this.selectedSickLeave();
         const isCompleted = selectedSickLeave ? !selectedSickLeave.calendarEvent.isCompleted : false;
-        const isDisabledForComplete = !(this.props.completeSickLeavePermission === true && !isCompleted);
+        const isDisabledForComplete = this.props.completeSickLeavePermission === false || isCompleted;
         return <EventDialogBase
             title={'Hey! Hope you feel better'}
             text={this.text}
