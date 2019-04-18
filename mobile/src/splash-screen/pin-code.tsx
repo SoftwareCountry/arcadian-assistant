@@ -4,22 +4,21 @@
 
 import React from 'react';
 import Style from '../layout/style';
-import PINCode from '@haskkor/react-native-pincode';
-import AsyncStorage from '@react-native-community/async-storage';
-import { colors } from '@haskkor/react-native-pincode/dist/src/design/colors';
+import PINCode, { resetPinCodeInternalStates } from '@haskkor/react-native-pincode';
 import { View } from 'react-native';
-import { grid } from '@haskkor/react-native-pincode/src/design/grid';
 import { pinCodeStyles } from './styles';
+import AsyncStorage from '@react-native-community/async-storage';
 
 //----------------------------------------------------------------------------
 const AsyncStorageKey = {
     pinLocked: 'pinLocked',
-    pinAttempts: 'pinAttempts',
 };
+
+export declare type PinCodeStatus = 'choose' | 'enter' | 'locked';
 
 //============================================================================
 interface PinCodeProps {
-    status: 'choose' | 'enter' | 'locked';
+    status: PinCodeStatus;
     storedPin?: string;
     finishProcess?: () => void;
     onFail?: (attempts: number) => void;
@@ -29,6 +28,8 @@ interface PinCodeProps {
 
 //============================================================================
 export default class ArcadiaPinCode extends React.Component<PinCodeProps> {
+
+    //----------------------------------------------------------------------------
     public render() {
         return (
             <View style={pinCodeStyles.container}>
@@ -63,19 +64,23 @@ export default class ArcadiaPinCode extends React.Component<PinCodeProps> {
                     onClickButtonLockedPage={() => {
 
                         // noinspection JSIgnoredPromiseFromCall
-                        AsyncStorage.multiRemove([
-                            AsyncStorageKey.pinLocked,
-                            AsyncStorageKey.pinAttempts,
-                        ]);
+                        resetPinCodeInternalStates(undefined, AsyncStorageKey.pinLocked);
 
                         if (this.props.onClickButtonLockedPage) {
                             this.props.onClickButtonLockedPage();
                         }
                     }}
                     timePinLockedAsyncStorageName={AsyncStorageKey.pinLocked}
-                    pinAttemptsAsyncStorageName={AsyncStorageKey.pinAttempts}
                 />
             </View>
         );
+    }
+
+    //----------------------------------------------------------------------------
+    public static isLocked(): Promise<boolean> {
+        return AsyncStorage.getItem(AsyncStorageKey.pinLocked).then(
+            (value) => { return !!value; },
+            (_) => { return false; }
+            );
     }
 }
