@@ -21,7 +21,7 @@ const dispatchToProps = (dispatch: Dispatch<AuthActions>): LogoutDispatchProps =
 class LogoutViewImpl extends Component<LogoutDispatchProps> {
     public render() {
         return <TouchableOpacity onPress={this.props.onLogoutClicked} style={LogoutStyle.container}>
-            <Image style={LogoutStyle.image} source={require('./logout-image.png')} resizeMethod={'resize'}/>
+            <Image style={LogoutStyle.image} source={require('../../assets/logout-image.png')} resizeMethod={'resize'}/>
         </TouchableOpacity>;
     }
 }

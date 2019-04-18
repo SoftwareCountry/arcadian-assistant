@@ -124,4 +124,19 @@ export const pinCodeStyles = StyleSheet.create({
         overflow: 'hidden',
         marginBottom: grid.unit * 2
     },
+    styleLockScreenLogoutImage: {
+        alignSelf: 'center',
+        height: 24,
+        width: 24,
+        tintColor: colors.base,
+        marginTop: 2,
+    },
+    styleLockScreenLogoutButtonText: {
+        fontFamily: 'CenturyGothic',
+        fontSize: 13,
+        color: colors.base,
+        textAlign: 'center',
+        fontWeight: '200',
+        marginTop: 8,
+    },
 });

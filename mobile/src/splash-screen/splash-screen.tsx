@@ -173,7 +173,9 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
                     this.pinStore(pin);
                     this.onSuccess();
                 }
-                }/>
+                }
+                useLogoutButton={true}
+                onClickLogoutButton={this.onLockedScreenClose}/>
         );
     }
 
@@ -184,7 +186,8 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
                 status={'enter'}
                 storedPin={storedPin}
                 finishProcess={this.onSuccess}
-                onClickButtonLockedPage={this.onLockedScreenClose}
+                useLogoutButton={true}
+                onClickLogoutButton={this.onLockedScreenClose}
             />
         );
     }
@@ -202,14 +205,11 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
                 onPopupClose={this.onPopupClosed}
                 onPopupHidden={this.onPopupHidden}/>;
 
+        const askPin = this.renderAskPinCode(storedPin);
+
         return (
             <View>
-                <ArcadiaPinCode
-                    status={'enter'}
-                    storedPin={storedPin}
-                    finishProcess={this.onSuccess}
-                    onClickButtonLockedPage={this.onLockedScreenClose}
-                />
+                {askPin}
                 {fingerprintPopup}
             </View>
         );
