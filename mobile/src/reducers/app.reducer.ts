@@ -42,7 +42,7 @@ export interface AppState {
 }
 
 //----------------------------------------------------------------------------
-export function getPermission(state: AppState, permission: Permission): Optional<Boolean> {
+export function hasPermission(permission: Permission, state: AppState): Optional<Boolean> {
     return state.userInfo ?
         state.userInfo.permissions.has(permission) :
         undefined;

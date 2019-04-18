@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base';
-import { AppState, getEmployee, getPermission } from '../../reducers/app.reducer';
+import { AppState, getEmployee, hasPermission } from '../../reducers/app.reducer';
 import { Action, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
@@ -113,7 +113,7 @@ const mapStateToProps = (state: AppState): EditSickLeaveEventDialogProps => {
     return {
         intervals: state.calendar ? state.calendar.calendarEvents.selectedIntervalsBySingleDaySelection : undefined,
         userEmployee: getEmployee(state),
-        completeSickLeavePermission: getPermission(state, Permission.completeSickLeave)
+        completeSickLeavePermission: hasPermission(Permission.completeSickLeave, state)
     };
 };
 
