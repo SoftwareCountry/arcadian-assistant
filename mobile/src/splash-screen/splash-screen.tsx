@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Platform, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { splashScreenStyles } from './styles';
 import { FingerprintPopupAndroid } from '../fingerprint-popup/fingerprint-popup.android';
 import { Action, Dispatch } from 'redux';
@@ -91,6 +91,17 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
 
     //----------------------------------------------------------------------------
     public render() {
+        let splashContent = this.renderContent();
+
+        return (
+            <SafeAreaView style={splashScreenStyles.container}>
+                {splashContent}
+            </SafeAreaView>
+        );
+    }
+
+    //----------------------------------------------------------------------------
+    private renderContent(): JSX.Element {
 
         const authentication = this.props.authentication;
 
@@ -133,10 +144,8 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
     //----------------------------------------------------------------------------
     private renderSplash(): JSX.Element {
         return (
-            <View style={splashScreenStyles.container}>
-                <View style={splashScreenStyles.imageContainer}>
-                    <Image source={require('./arcadia-logo.png')}/>
-                </View>
+            <View style={splashScreenStyles.imageContainer}>
+                <Image source={require('./arcadia-logo.png')}/>
             </View>
         );
     }
@@ -144,7 +153,7 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
     //----------------------------------------------------------------------------
     private renderLogin(): JSX.Element {
         return (
-            <View style={splashScreenStyles.container}>
+            <View>
                 <Text style={splashScreenStyles.greeting}>Welcome to Arcadia Assistant</Text>
                 <View style={splashScreenStyles.loginButtonContainer}>
                     <TouchableOpacity onPress={this.props.onLoginClicked}>
@@ -158,29 +167,19 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
     //----------------------------------------------------------------------------
     private renderChoosePinCode(): JSX.Element {
         return (
-            <View style={splashScreenStyles.container}>
-                <ArcadiaPinCode
-                    status={'choose'}
-                    storePin={(pin: string) => {
-                        this.pinStore(pin);
-                        this.onSuccess();
-                    }
-                    }/>
-            </View>
+            <Text style={splashScreenStyles.greeting}>Welcome to Arcadia Assistant</Text>
         );
     }
 
     //----------------------------------------------------------------------------
     private renderAskPinCode(storedPin: string): JSX.Element {
         return (
-            <View style={splashScreenStyles.container}>
-                <ArcadiaPinCode
-                    status={'enter'}
-                    storedPin={storedPin}
-                    finishProcess={this.onSuccess}
-                    onClickButtonLockedPage={this.onLockedScreenClose}
-                />
-            </View>
+            <ArcadiaPinCode
+                status={'enter'}
+                storedPin={storedPin}
+                finishProcess={this.onSuccess}
+                onClickButtonLockedPage={this.onLockedScreenClose}
+            />
         );
     }
 
@@ -198,7 +197,7 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
                 onPopupHidden={this.onPopupHidden}/>;
 
         return (
-            <View style={splashScreenStyles.container}>
+            <View>
                 <ArcadiaPinCode
                     status={'enter'}
                     storedPin={storedPin}
