@@ -124,4 +124,11 @@ export const pinCodeStyles = StyleSheet.create({
         overflow: 'hidden',
         marginBottom: grid.unit * 2
     },
+    styleLockScreenLogoutButtonText: {
+        fontFamily: 'CenturyGothic',
+        fontSize: 14,
+        color: colors.base,
+        lineHeight: 24,
+        textAlign: 'center'
+    },
 });
