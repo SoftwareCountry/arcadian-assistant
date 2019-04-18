@@ -167,7 +167,13 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
     //----------------------------------------------------------------------------
     private renderChoosePinCode(): JSX.Element {
         return (
-            <Text style={splashScreenStyles.greeting}>Welcome to Arcadia Assistant</Text>
+            <ArcadiaPinCode
+                status={'choose'}
+                storePin={(pin: string) => {
+                    this.pinStore(pin);
+                    this.onSuccess();
+                }
+                }/>
         );
     }
 
