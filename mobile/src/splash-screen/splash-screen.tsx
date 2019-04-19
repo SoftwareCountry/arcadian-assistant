@@ -122,11 +122,11 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
         }
 
         if (!authentication.pinCode) {
-            return this.renderChoosePinCode();
+            return this.renderPinCode('choose');
         }
 
         if (!this.isSensorAvailable || this.isLocked) {
-            return this.renderAskPinCode(authentication.pinCode);
+            return this.renderPinCode('enter', authentication.pinCode);
         }
 
         return this.renderFingerprint(authentication.pinCode);
@@ -169,16 +169,6 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
                 </View>
             </View>
         );
-    }
-
-    //----------------------------------------------------------------------------
-    private renderChoosePinCode(): JSX.Element {
-        return this.renderPinCode('choose');
-    }
-
-    //----------------------------------------------------------------------------
-    private renderAskPinCode(storedPin: string): JSX.Element {
-        return this.renderPinCode('enter', storedPin);
     }
 
     //----------------------------------------------------------------------------
