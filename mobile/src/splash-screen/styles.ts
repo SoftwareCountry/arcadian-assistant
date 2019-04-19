@@ -8,7 +8,7 @@ export const splashScreenStyles = StyleSheet.create({
         backgroundColor: Style.color.base,
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'stretch'
     },
     imageContainer: {
         width: '50%',
@@ -18,8 +18,10 @@ export const splashScreenStyles = StyleSheet.create({
     },
     greeting: {
         color: Style.color.white,
-        fontSize: 26,
+        fontSize: 32,
         textAlign: 'center',
+        paddingLeft: 16,
+        paddingRight: 16,
     },
     loginText: {
         color: Style.color.base,
@@ -29,6 +31,8 @@ export const splashScreenStyles = StyleSheet.create({
         paddingBottom: 5,
     },
     loginButtonContainer: {
+        width: '50%',
+        alignSelf: 'center',
         marginTop: 140,
         backgroundColor: Style.color.white,
         borderRadius: 4,
@@ -36,7 +40,10 @@ export const splashScreenStyles = StyleSheet.create({
         paddingRight: 32,
         paddingBottom: 8,
         paddingTop: 8,
-    }
+    },
+    fingerprintContainer : {
+        flex: 1,
+    },
 });
 
 export const pinCodeStyles = StyleSheet.create({
