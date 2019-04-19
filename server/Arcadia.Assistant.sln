@@ -65,9 +65,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.InboxEmai
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Patterns", "Arcadia.Assistant.Patterns\Arcadia.Assistant.Patterns.csproj", "{44B9A684-2DB5-41DE-8643-63D3432C1B8F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.ExternalStorages.Abstractions", "Arcadia.Assistant.ExternalStorages.Abstractions\Arcadia.Assistant.ExternalStorages.Abstractions.csproj", "{A7CF2A18-FAA6-42E2-9F51-71AA65F802D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.ExternalStorages.Abstractions", "Arcadia.Assistant.ExternalStorages.Abstractions\Arcadia.Assistant.ExternalStorages.Abstractions.csproj", "{A7CF2A18-FAA6-42E2-9F51-71AA65F802D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.ExternalStorages.Sharepoint", "Arcadia.Assistant.ExternalStorages.Sharepoint\Arcadia.Assistant.ExternalStorages.Sharepoint.csproj", "{D10AA152-0FBE-45E7-9569-61D5B4E42DF9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.ExternalStorages.SharepointOnline", "Arcadia.Assistant.ExternalStorages.SharepointOnline\Arcadia.Assistant.ExternalStorages.SharepointOnline.csproj", "{E4AC00A5-BCD7-4CED-A7E2-ABF31496D34B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -184,10 +184,10 @@ Global
 		{A7CF2A18-FAA6-42E2-9F51-71AA65F802D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7CF2A18-FAA6-42E2-9F51-71AA65F802D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7CF2A18-FAA6-42E2-9F51-71AA65F802D5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D10AA152-0FBE-45E7-9569-61D5B4E42DF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D10AA152-0FBE-45E7-9569-61D5B4E42DF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D10AA152-0FBE-45E7-9569-61D5B4E42DF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D10AA152-0FBE-45E7-9569-61D5B4E42DF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4AC00A5-BCD7-4CED-A7E2-ABF31496D34B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4AC00A5-BCD7-4CED-A7E2-ABF31496D34B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4AC00A5-BCD7-4CED-A7E2-ABF31496D34B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4AC00A5-BCD7-4CED-A7E2-ABF31496D34B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

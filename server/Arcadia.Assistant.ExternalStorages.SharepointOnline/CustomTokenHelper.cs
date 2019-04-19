@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.ExternalStorages.Sharepoint
+﻿namespace Arcadia.Assistant.ExternalStorages.SharepointOnline
 {
     public static partial class TokenHelper
     {
