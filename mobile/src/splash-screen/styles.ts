@@ -13,6 +13,7 @@ export const splashScreenStyles = StyleSheet.create({
     imageContainer: {
         width: '50%',
         height: '50%',
+        alignSelf: 'center',
         justifyContent: 'center',
         alignItems: 'center',
     },
