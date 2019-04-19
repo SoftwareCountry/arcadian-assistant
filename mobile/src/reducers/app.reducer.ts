@@ -25,6 +25,7 @@ import { Optional } from 'types';
 import { Employee } from './organization/employee.model';
 import { DayModel, defaultDayModel } from './calendar/calendar.model';
 import { Storage } from '../storage/storage';
+import { Permission } from './user/user-employee-permissions.model';
 
 // import logger from 'redux-logger';
 
@@ -38,6 +39,13 @@ export interface AppState {
     people?: PeopleState;
     authentication?: AuthState;
     notifications: NotificationState;
+}
+
+//----------------------------------------------------------------------------
+export function hasPermission(permission: Permission, state: AppState): Optional<Boolean> {
+    return state.userInfo ?
+        state.userInfo.permissions.has(permission) :
+        undefined;
 }
 
 //----------------------------------------------------------------------------

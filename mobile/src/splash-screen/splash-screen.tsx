@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Platform, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { splashScreenStyles } from './styles';
 import { FingerprintPopupAndroid } from '../fingerprint-popup/fingerprint-popup.android';
 import { Action, Dispatch } from 'redux';
@@ -9,7 +9,7 @@ import FingerprintScanner from 'react-native-fingerprint-scanner';
 import { FingerprintPopupIOS } from '../fingerprint-popup/fingerprint-popup.ios';
 import { AuthState } from '../reducers/auth/auth.reducer';
 import { AppState } from '../reducers/app.reducer';
-import ArcadiaPinCode from './pin-code';
+import ArcadiaPinCode, { PinCodeStatus } from './pin-code';
 
 //============================================================================
 interface SplashScreenState {
@@ -44,6 +44,7 @@ const Biometry = {
 class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashScreenDispatchProps, SplashScreenState> {
 
     private isSensorAvailable = false;
+    private isLocked = false;
 
     //----------------------------------------------------------------------------
     constructor(props: SplashScreenStateProps & SplashScreenDispatchProps) {
@@ -62,6 +63,11 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
             })
             .catch(() => {
                 this.handleBiometry();
+            });
+
+        ArcadiaPinCode.isLocked()
+            .then((locked) => {
+                this.isLocked = locked;
             });
     }
 
@@ -91,6 +97,17 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
 
     //----------------------------------------------------------------------------
     public render() {
+        const splashContent = this.renderContent();
+
+        return (
+            <SafeAreaView style={splashScreenStyles.container}>
+                {splashContent}
+            </SafeAreaView>
+        );
+    }
+
+    //----------------------------------------------------------------------------
+    private renderContent(): JSX.Element {
 
         const authentication = this.props.authentication;
 
@@ -105,11 +122,11 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
         }
 
         if (!authentication.pinCode) {
-            return this.renderChoosePinCode();
+            return this.renderPinCode('choose');
         }
 
-        if (!this.isSensorAvailable) {
-            return this.renderAskPinCode(authentication.pinCode);
+        if (!this.isSensorAvailable || this.isLocked) {
+            return this.renderPinCode('enter', authentication.pinCode);
         }
 
         return this.renderFingerprint(authentication.pinCode);
@@ -131,12 +148,11 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
     };
 
     //----------------------------------------------------------------------------
+    // noinspection JSMethodCanBeStatic
     private renderSplash(): JSX.Element {
         return (
-            <View style={splashScreenStyles.container}>
-                <View style={splashScreenStyles.imageContainer}>
-                    <Image source={require('./arcadia-logo.png')}/>
-                </View>
+            <View style={splashScreenStyles.imageContainer}>
+                <Image source={require('./arcadia-logo.png')}/>
             </View>
         );
     }
@@ -144,42 +160,13 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
     //----------------------------------------------------------------------------
     private renderLogin(): JSX.Element {
         return (
-            <View style={splashScreenStyles.container}>
+            <View>
                 <Text style={splashScreenStyles.greeting}>Welcome to Arcadia Assistant</Text>
                 <View style={splashScreenStyles.loginButtonContainer}>
                     <TouchableOpacity onPress={this.props.onLoginClicked}>
                         <Text style={splashScreenStyles.loginText}>Login</Text>
                     </TouchableOpacity>
                 </View>
-            </View>
-        );
-    }
-
-    //----------------------------------------------------------------------------
-    private renderChoosePinCode(): JSX.Element {
-        return (
-            <View style={splashScreenStyles.container}>
-                <ArcadiaPinCode
-                    status={'choose'}
-                    storePin={(pin: string) => {
-                        this.pinStore(pin);
-                        this.onSuccess();
-                    }
-                    }/>
-            </View>
-        );
-    }
-
-    //----------------------------------------------------------------------------
-    private renderAskPinCode(storedPin: string): JSX.Element {
-        return (
-            <View style={splashScreenStyles.container}>
-                <ArcadiaPinCode
-                    status={'enter'}
-                    storedPin={storedPin}
-                    finishProcess={this.onSuccess}
-                    onClickButtonLockedPage={this.onLockedScreenClose}
-                />
             </View>
         );
     }
@@ -197,17 +184,41 @@ class SplashScreenImpl extends React.Component<SplashScreenStateProps & SplashSc
                 onPopupClose={this.onPopupClosed}
                 onPopupHidden={this.onPopupHidden}/>;
 
+        const pinCode = this.renderPinCode('enter', storedPin);
+
         return (
-            <View style={splashScreenStyles.container}>
-                <ArcadiaPinCode
-                    status={'enter'}
-                    storedPin={storedPin}
-                    finishProcess={this.onSuccess}
-                    onClickButtonLockedPage={this.onLockedScreenClose}
-                />
+            <View style={splashScreenStyles.fingerprintContainer}>
+                {pinCode}
                 {fingerprintPopup}
             </View>
         );
+    }
+
+    //----------------------------------------------------------------------------
+    private renderPinCode(status: PinCodeStatus, storedPin?: string): JSX.Element {
+        if (status === 'choose') {
+            return (
+                <ArcadiaPinCode
+                    status={status}
+                    storePin={(pin: string) => {
+                        this.pinStore(pin);
+                        this.onSuccess();
+                    }
+                    }
+                    useLogoutButton={true}
+                    onClickLogoutButton={this.onLockedScreenClose}/>
+            );
+        } else {
+            return (
+                <ArcadiaPinCode
+                    status={status}
+                    storedPin={storedPin}
+                    finishProcess={this.onSuccess}
+                    useLogoutButton={true}
+                    onClickLogoutButton={this.onLockedScreenClose}
+                />
+            );
+        }
     }
 
     //----------------------------------------------------------------------------
