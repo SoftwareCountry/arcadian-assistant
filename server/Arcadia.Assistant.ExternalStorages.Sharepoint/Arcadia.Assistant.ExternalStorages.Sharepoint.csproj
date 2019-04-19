@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Arcadia.Assistant.ExternalStorages.Abstractions\Arcadia.Assistant.ExternalStorages.Abstractions.csproj" />
+  </ItemGroup>
+</Project>
