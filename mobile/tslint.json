@@ -3,10 +3,6 @@
     //typescript-specific
     "adjacent-overload-signatures": true,
     "member-access": true,
-    "member-ordering": [
-      true,
-      { "order": "instance-sandwich" }
-    ],
     "no-any": false,
     "no-inferrable-types": false,
     "no-internal-module": false,
