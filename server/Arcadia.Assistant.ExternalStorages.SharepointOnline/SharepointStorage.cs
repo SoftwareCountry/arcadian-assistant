@@ -19,6 +19,7 @@
         private readonly ISharepointAuthTokenService authTokenService;
         private readonly ISharepointFieldsMapper fieldsMapper;
         private readonly ISharepointConditionsCompiler conditionsCompiler;
+        private readonly IHttpClientFactory httpClientFactory;
 
         private string accessToken;
 
@@ -26,12 +27,14 @@
             string sharepointServerUrl,
             ISharepointAuthTokenService sharepointAuthTokenService,
             ISharepointFieldsMapper sharepointFieldsMapper,
-            ISharepointConditionsCompiler sharepointConditionsCompiler)
+            ISharepointConditionsCompiler sharepointConditionsCompiler,
+            IHttpClientFactory httpClientFactory)
         {
             this.serverUrl = sharepointServerUrl;
             this.authTokenService = sharepointAuthTokenService;
             this.fieldsMapper = sharepointFieldsMapper;
             this.conditionsCompiler = sharepointConditionsCompiler;
+            this.httpClientFactory = httpClientFactory;
         }
 
         public async Task<IEnumerable<StorageItem>> GetItems(string list, IEnumerable<ICondition> conditions, CancellationToken cancellationToken)
@@ -169,7 +172,7 @@
                 this.accessToken = await this.authTokenService.GetAccessToken(this.serverUrl, cancellationToken);
             }
 
-            using (var httpClient = new HttpClient())
+            using (var httpClient = this.httpClientFactory.CreateClient())
             {
                 request = request
                     .WithAcceptHeader("application/json;odata=nometadata")

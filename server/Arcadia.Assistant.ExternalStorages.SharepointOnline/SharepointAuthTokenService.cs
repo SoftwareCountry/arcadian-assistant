@@ -27,11 +27,13 @@
 
         private readonly string clientId;
         private readonly string clientSecret;
+        private readonly IHttpClientFactory httpClientFactory;
 
-        public SharepointAuthTokenService(string clientId, string clientSecret)
+        public SharepointAuthTokenService(string clientId, string clientSecret, IHttpClientFactory httpClientFactory)
         {
             this.clientId = clientId;
             this.clientSecret = clientSecret;
+            this.httpClientFactory = httpClientFactory;
         }
 
         public async Task<string> GetAccessToken(string sharepointUrl, CancellationToken cancellationToken)
@@ -53,7 +55,7 @@
 
         private async Task<string> GetRealm(string sharepointUrl, CancellationToken cancellationToken)
         {
-            using (var httpClient = new HttpClient())
+            using (var httpClient = this.httpClientFactory.CreateClient())
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, sharepointUrl + "/_vti_bin/client.svc");
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", string.Empty);
@@ -109,7 +111,7 @@
             string tokenResource,
             CancellationToken cancellationToken)
         {
-            using (var httpClient = new HttpClient())
+            using (var httpClient = this.httpClientFactory.CreateClient())
             {
                 var tokenUrl = await this.GetOAuth2Url(realm, cancellationToken);
 
@@ -159,7 +161,7 @@
 
         private async Task<JsonMetadataDocument> GetMetadataDocument(string realm, CancellationToken cancellationToken)
         {
-            using (var httpClient = new HttpClient())
+            using (var httpClient = this.httpClientFactory.CreateClient())
             {
                 var metadataEndpointUrl = $"{AcsMetadataEndpoint}?realm={realm}";
 
