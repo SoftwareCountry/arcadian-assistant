@@ -66,12 +66,13 @@
                 .Get<SharepointSettings>();
 
             builder
-                .Register(ctx =>
+                .RegisterInstance(new SharepointOnlineConfiguration
                 {
-                    var httpClientFactory = ctx.Resolve<IHttpClientFactory>();
-                    return new SharepointAuthTokenService(sharepointConfiguration.ClientId, sharepointConfiguration.ClientSecret, httpClientFactory);
+                    ServerUrl = sharepointConfiguration.ServerUrl,
+                    ClientId = sharepointConfiguration.ClientId,
+                    ClientSecret = sharepointConfiguration.ClientSecret
                 })
-                .As<ISharepointAuthTokenService>();
+                .As<ISharepointOnlineConfiguration>();
 
             builder
                 .Register(ctx =>
@@ -90,24 +91,9 @@
                 })
                 .As<ISharepointFieldsMapper>();
 
+            builder.RegisterType<SharepointAuthTokenService>().As<ISharepointAuthTokenService>();
             builder.RegisterType<SharepointConditionsCompiler>().As<ISharepointConditionsCompiler>();
-
-            builder
-                .Register(ctx =>
-                {
-                    var sharepointAuthTokenService = ctx.Resolve<ISharepointAuthTokenService>();
-                    var sharepointFieldsMapper = ctx.Resolve<ISharepointFieldsMapper>();
-                    var sharepointConditionsCompiler = ctx.Resolve<ISharepointConditionsCompiler>();
-                    var httpClientFactory = ctx.Resolve<IHttpClientFactory>();
-
-                    return new SharepointStorage(
-                        sharepointConfiguration.ServerUrl,
-                        sharepointAuthTokenService,
-                        sharepointFieldsMapper,
-                        sharepointConditionsCompiler,
-                        httpClientFactory);
-                })
-                .As<IExternalStorage>();
+            builder.RegisterType<SharepointStorage>().As<IExternalStorage>();
         }
     }
 }

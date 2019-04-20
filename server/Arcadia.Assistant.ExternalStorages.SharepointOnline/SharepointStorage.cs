@@ -15,7 +15,7 @@
 
     public class SharepointStorage : IExternalStorage
     {
-        private readonly string serverUrl;
+        private readonly ISharepointOnlineConfiguration configuration;
         private readonly ISharepointAuthTokenService authTokenService;
         private readonly ISharepointFieldsMapper fieldsMapper;
         private readonly ISharepointConditionsCompiler conditionsCompiler;
@@ -24,13 +24,13 @@
         private string accessToken;
 
         public SharepointStorage(
-            string sharepointServerUrl,
+            ISharepointOnlineConfiguration configuration,
             ISharepointAuthTokenService sharepointAuthTokenService,
             ISharepointFieldsMapper sharepointFieldsMapper,
             ISharepointConditionsCompiler sharepointConditionsCompiler,
             IHttpClientFactory httpClientFactory)
         {
-            this.serverUrl = sharepointServerUrl;
+            this.configuration = configuration;
             this.authTokenService = sharepointAuthTokenService;
             this.fieldsMapper = sharepointFieldsMapper;
             this.conditionsCompiler = sharepointConditionsCompiler;
@@ -133,7 +133,7 @@
 
         private string GetListUrl(string list)
         {
-            return $"{this.serverUrl}/_api/lists/GetByTitle('{list}')";
+            return $"{this.configuration.ServerUrl}/_api/lists/GetByTitle('{list}')";
         }
 
         private string GetListItemsUrl(string list, bool includeSelectPart = true)
@@ -169,7 +169,7 @@
             // To cache access token for several Sharepoint requests in bounds of one request to storage
             if (this.accessToken == null)
             {
-                this.accessToken = await this.authTokenService.GetAccessToken(this.serverUrl, cancellationToken);
+                this.accessToken = await this.authTokenService.GetAccessToken(this.configuration.ServerUrl, cancellationToken);
             }
 
             using (var httpClient = this.httpClientFactory.CreateClient())

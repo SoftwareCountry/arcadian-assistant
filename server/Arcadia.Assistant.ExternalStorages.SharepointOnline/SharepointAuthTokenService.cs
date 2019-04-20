@@ -25,14 +25,12 @@
         private const string OAuth2GrantType = "client_credentials";
         private const string OAuth2Protocol = "OAuth2";
 
-        private readonly string clientId;
-        private readonly string clientSecret;
+        private readonly ISharepointOnlineConfiguration configuration;
         private readonly IHttpClientFactory httpClientFactory;
 
-        public SharepointAuthTokenService(string clientId, string clientSecret, IHttpClientFactory httpClientFactory)
+        public SharepointAuthTokenService(ISharepointOnlineConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
-            this.clientId = clientId;
-            this.clientSecret = clientSecret;
+            this.configuration = configuration;
             this.httpClientFactory = httpClientFactory;
         }
 
@@ -41,13 +39,13 @@
             var realm = await this.GetRealm(sharepointUrl, cancellationToken);
             var hostName = new Uri(sharepointUrl).Authority;
 
-            var oauthClientId = this.GetFormattedPrincipal(this.clientId, null, realm);
+            var oauthClientId = this.GetFormattedPrincipal(this.configuration.ClientId, null, realm);
             var oauthResource = this.GetFormattedPrincipal(SharepointPrincipal, hostName, realm);
 
             var accessToken = await this.IssueToken(
                 realm,
                 oauthClientId,
-                this.clientSecret,
+                this.configuration.ClientSecret,
                 oauthResource,
                 cancellationToken);
             return accessToken;
@@ -120,16 +118,15 @@
                     "&client_id=" + HttpUtility.UrlEncode(tokenClientId) +
                     "&client_secret=" + HttpUtility.UrlEncode(tokenClientSecret) +
                     "&resource=" + HttpUtility.UrlEncode(tokenResource);
-                var requestBytes = Encoding.UTF8.GetBytes(requestData);
 
                 var request = new HttpRequestMessage(HttpMethod.Post, tokenUrl)
                 {
-                    Content = new ByteArrayContent(requestBytes)
+                    Content = new StringContent(requestData)
                 };
 
                 request.Content.Headers.Remove("Content-Type");
                 request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
-                request.Content.Headers.ContentLength = requestBytes.Length;
+                request.Content.Headers.ContentLength = requestData.Length;
 
                 var response = await httpClient.SendAsync(request, cancellationToken);
 
