@@ -2,21 +2,15 @@
 {
     using System;
     using System.Linq.Expressions;
-    using System.Reflection;
 
     using Arcadia.Assistant.ExternalStorages.Abstractions;
+    using Arcadia.Assistant.ExternalStorages.SharepointOnline.Helpers;
 
     public abstract class BaseSharepointCondition : ICondition
     {
         protected BaseSharepointCondition(Expression<Func<StorageItem, object>> property, object value)
         {
-            // ToDo: Fix this
-            var propertyInfo = ((MemberExpression)property.Body).Member;
-
-            if (propertyInfo.MemberType != MemberTypes.Property)
-            {
-                throw new ArgumentException("Should be a property expression", nameof(property));
-            }
+            new PropertyNameParser().EnsureExpressionIsProperty(property);
 
             this.Property = property;
             this.Value = value;
