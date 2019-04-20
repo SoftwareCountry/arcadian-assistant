@@ -1,13 +1,11 @@
 ﻿namespace Arcadia.Assistant.Configuration.Configuration
 {
-    using System.ComponentModel.DataAnnotations;
-
     public interface ISharepointSettings
     {
-        [Required]
+        string ServerUrl { get; }
+
         string ClientId { get; }
 
-        [Required]
         string ClientSecret { get; }
 
         string CalendarEventIdMapping { get; }
