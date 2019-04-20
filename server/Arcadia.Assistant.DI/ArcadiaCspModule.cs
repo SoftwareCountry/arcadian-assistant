@@ -1,17 +1,22 @@
 ﻿namespace Arcadia.Assistant.DI
 {
+    using System.Linq;
+
     using Arcadia.Assistant.Calendar.Abstractions.EmployeeSickLeaves;
-
-    using Microsoft.Extensions.Configuration;
-
-    using Autofac;
-
     using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
+    using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.CSP;
     using Arcadia.Assistant.CSP.Configuration;
     using Arcadia.Assistant.CSP.SickLeaves;
     using Arcadia.Assistant.CSP.Vacations;
+    using Arcadia.Assistant.ExternalStorages.Abstractions;
+    using Arcadia.Assistant.ExternalStorages.SharepointOnline;
+    using Arcadia.Assistant.ExternalStorages.SharepointOnline.Contracts;
     using Arcadia.Assistant.Organization.Abstractions;
+
+    using Autofac;
+
+    using Microsoft.Extensions.Configuration;
 
     public class ArcadiaCspModule : Module
     {
@@ -49,6 +54,39 @@
 
             builder.RegisterType<CspEmployeeVacationsRegistryPropsFactory>().As<IEmployeeVacationsRegistryPropsFactory>();
             builder.RegisterType<CspEmployeeSickLeavesRegistryPropsFactory>().As<IEmployeeSickLeavesRegistryPropsFactory>();
+
+            this.RegisterSharepoint(builder);
+        }
+
+        private void RegisterSharepoint(ContainerBuilder builder)
+        {
+            var sharepointConfiguration = this.configuration
+                .GetSection("Sharepoint")
+                .Get<SharepointSettings>();
+
+            builder
+                .Register(ctx => new SharepointAuthTokenService(sharepointConfiguration.ClientId, sharepointConfiguration.ClientSecret))
+                .As<ISharepointAuthTokenService>();
+
+            builder
+                .Register(ctx =>
+                {
+                    if (sharepointConfiguration.CalendarEventIdMapping == null)
+                    {
+                        return new SharepointFieldsMapper();
+                    }
+
+                    var mapping = SharepointFieldsMapper.DefaultMapping
+                        .Union(new[]
+                        {
+                            SharepointFieldsMapper.CreateMapping(x => x.CalendarEventId, sharepointConfiguration.CalendarEventIdMapping)
+                        });
+                    return new SharepointFieldsMapper(mapping.ToArray());
+                })
+                .As<ISharepointFieldsMapper>();
+
+            builder.RegisterType<SharepointConditionsCompiler>().As<ISharepointConditionsCompiler>();
+            builder.RegisterType<SharepointStorage>().As<IExternalStorage>();
         }
     }
 }
