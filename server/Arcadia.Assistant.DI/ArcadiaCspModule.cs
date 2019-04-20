@@ -1,6 +1,7 @@
 ﻿namespace Arcadia.Assistant.DI
 {
     using System.Linq;
+    using System.Net.Http;
 
     using Arcadia.Assistant.Calendar.Abstractions.EmployeeSickLeaves;
     using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
@@ -65,7 +66,11 @@
                 .Get<SharepointSettings>();
 
             builder
-                .Register(ctx => new SharepointAuthTokenService(sharepointConfiguration.ClientId, sharepointConfiguration.ClientSecret))
+                .Register(ctx =>
+                {
+                    var httpClientFactory = ctx.Resolve<IHttpClientFactory>();
+                    return new SharepointAuthTokenService(sharepointConfiguration.ClientId, sharepointConfiguration.ClientSecret, httpClientFactory);
+                })
                 .As<ISharepointAuthTokenService>();
 
             builder
@@ -86,7 +91,23 @@
                 .As<ISharepointFieldsMapper>();
 
             builder.RegisterType<SharepointConditionsCompiler>().As<ISharepointConditionsCompiler>();
-            builder.RegisterType<SharepointStorage>().As<IExternalStorage>();
+
+            builder
+                .Register(ctx =>
+                {
+                    var sharepointAuthTokenService = ctx.Resolve<ISharepointAuthTokenService>();
+                    var sharepointFieldsMapper = ctx.Resolve<ISharepointFieldsMapper>();
+                    var sharepointConditionsCompiler = ctx.Resolve<ISharepointConditionsCompiler>();
+                    var httpClientFactory = ctx.Resolve<IHttpClientFactory>();
+
+                    return new SharepointStorage(
+                        sharepointConfiguration.ServerUrl,
+                        sharepointAuthTokenService,
+                        sharepointFieldsMapper,
+                        sharepointConditionsCompiler,
+                        httpClientFactory);
+                })
+                .As<IExternalStorage>();
         }
     }
 }
