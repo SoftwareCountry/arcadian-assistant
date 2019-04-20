@@ -2,6 +2,9 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+  </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\Arcadia.Assistant.ExternalStorages.Abstractions\Arcadia.Assistant.ExternalStorages.Abstractions.csproj" />

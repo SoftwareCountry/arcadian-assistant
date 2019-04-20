@@ -3,43 +3,35 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
+    using System.Web;
 
     using Arcadia.Assistant.ExternalStorages.Abstractions;
     using Arcadia.Assistant.ExternalStorages.SharepointOnline.Conditions;
     using Arcadia.Assistant.ExternalStorages.SharepointOnline.Contracts;
 
-    using Microsoft.SharePoint.Client;
-
-    public class SharepointCamlBuilder : ISharepointCamlBuilder
+    public class SharepointConditionsCompiler : ISharepointConditionsCompiler
     {
         private readonly ISharepointFieldsMapper fieldsMapper;
 
-        public SharepointCamlBuilder(ISharepointFieldsMapper fieldsMapper)
+        public SharepointConditionsCompiler(ISharepointFieldsMapper fieldsMapper)
         {
             this.fieldsMapper = fieldsMapper;
         }
 
-        public CamlQuery GetCamlQuery(IEnumerable<ICondition> conditions = null)
+        public string CompileConditions(IEnumerable<ICondition> conditions = null)
         {
-            var camlQuery = CamlQuery.CreateAllItemsQuery();
-
             if (conditions == null)
             {
-                return camlQuery;
+                return null;
             }
 
-            var conditionsXml = conditions
-                .Select(this.GetConditionCamlXml)
-                .Aggregate(new StringBuilder(), (result, current) => result.AppendLine(current))
-                .ToString();
+            var compiledConditions = conditions
+                .Select(this.CompileCondition);
 
-            camlQuery.ViewXml = $"<View><Query><Where>{conditionsXml}</Where></Query></View>";
-
-            return camlQuery;
+            return $"$filter={HttpUtility.UrlEncode(string.Join(" and ", compiledConditions))}";
         }
 
-        private string GetConditionCamlXml(ICondition condition)
+        private string CompileCondition(ICondition condition)
         {
             switch (condition)
             {
@@ -54,7 +46,7 @@
         private string GetEqualCamlCondition(BaseSharepointCondition equalCondition)
         {
             var sharepointField = this.fieldsMapper.GetSharepointField(equalCondition.Property);
-            return $"<Eq><FieldRef Name='{sharepointField.Name}'/><Value Type='{sharepointField.ValueType}'>{equalCondition.Value}</Value></Eq>";
+            return $"{sharepointField} eq '{equalCondition.Value}'";
         }
     }
 }

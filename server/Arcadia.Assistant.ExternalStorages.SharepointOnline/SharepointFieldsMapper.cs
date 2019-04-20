@@ -7,27 +7,44 @@
 
     using Arcadia.Assistant.ExternalStorages.Abstractions;
     using Arcadia.Assistant.ExternalStorages.SharepointOnline.Contracts;
+    using Arcadia.Assistant.ExternalStorages.SharepointOnline.Helpers;
 
     public class SharepointFieldsMapper : ISharepointFieldsMapper
     {
-        private readonly Dictionary<string, SharepointField> fieldsByPropertyName;
-        private readonly Dictionary<string, Expression<Func<StorageItem, object>>> propertiesByFieldName;
+        private readonly Dictionary<string, string> fieldsByPropertyName;
+
+        public static IEnumerable<SharepointFieldMapping> DefaultMapping { get; } = new[]
+        {
+            CreateMapping(item => item.Id, "ID"),
+            CreateMapping(item => item.Title, "Title"),
+            CreateMapping(item => item.Description, "Description"),
+            CreateMapping(item => item.StartDate, "EventDate"),
+            CreateMapping(item => item.EndDate, "EndDate"),
+            CreateMapping(item => item.Category, "Category")
+        };
+
+        private static readonly SharepointFieldMapping CalendarEventIdMapping =
+            CreateMapping(item => item.CalendarEventId, "CalendarEventId");
+
+        private static SharepointFieldMapping[] DefaultMappingWithCalendarEventId { get; } = DefaultMapping.Union(new[] { CalendarEventIdMapping }).ToArray();
+
+        public SharepointFieldsMapper()
+            : this(DefaultMappingWithCalendarEventId)
+        {
+        }
 
         public SharepointFieldsMapper(params SharepointFieldMapping[] fields)
         {
             this.fieldsByPropertyName = fields
                 .ToDictionary(f => this.GetPropertyName(f.Property), f => f.Field);
-
-            this.propertiesByFieldName = fields
-                .ToDictionary(f => f.Field.Name, f => f.Property);
         }
 
-        public static SharepointFieldMapping CreateMapping(Expression<Func<StorageItem, object>> property, string fieldName, string fieldValueType)
+        public static SharepointFieldMapping CreateMapping(Expression<Func<StorageItem, object>> property, string fieldName)
         {
-            return new SharepointFieldMapping(property, new SharepointField(fieldName, fieldValueType));
+            return new SharepointFieldMapping(property, fieldName);
         }
 
-        public SharepointField GetSharepointField(Expression<Func<StorageItem, object>> property)
+        public string GetSharepointField(Expression<Func<StorageItem, object>> property)
         {
             var propertyName = this.GetPropertyName(property);
 
@@ -39,34 +56,14 @@
             throw new ArgumentException($"Mapping for property '{propertyName}' doesn't exist");
         }
 
-        public Expression<Func<StorageItem, object>> GetProperty(string fieldName)
-        {
-            if (this.propertiesByFieldName.TryGetValue(fieldName, out var property))
-            {
-                return property;
-            }
-
-            throw new ArgumentException($"Mapping for field name '{fieldName}' doesn't exist");
-        }
-
         private string GetPropertyName(Expression<Func<StorageItem, object>> property)
         {
-            switch (property.Body)
-            {
-                case MemberExpression member:
-                    return member.Member.Name;
-
-                case UnaryExpression unary when unary.Operand is MemberExpression operand:
-                    return operand.Member.Name;
-
-                default:
-                    throw new ArgumentException("Wrong expression type", nameof(property));
-            }
+            return new PropertyNameParser().GetName(property);
         }
 
         public struct SharepointFieldMapping
         {
-            public SharepointFieldMapping(Expression<Func<StorageItem, object>> property, SharepointField field)
+            public SharepointFieldMapping(Expression<Func<StorageItem, object>> property, string field)
             {
                 this.Property = property;
                 this.Field = field;
@@ -74,7 +71,7 @@
 
             public Expression<Func<StorageItem, object>> Property { get; }
 
-            public SharepointField Field { get; }
+            public string Field { get; }
         }
     }
 }
