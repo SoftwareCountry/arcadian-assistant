@@ -7,8 +7,6 @@
 
     public interface ISharepointFieldsMapper
     {
-        SharepointField GetSharepointField(Expression<Func<StorageItem, object>> property);
-
-        Expression<Func<StorageItem, object>> GetProperty(string sharepointFieldName);
+        string GetSharepointField(Expression<Func<StorageItem, object>> property);
     }
 }

@@ -10,8 +10,8 @@
 
         Task<StorageItem> AddItem(string list, StorageItem item, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task<StorageItem> UpdateItem(string list, StorageItem item, IEnumerable<ICondition> conditions, CancellationToken cancellationToken = default(CancellationToken));
+        Task UpdateItem(string list, StorageItem item, IEnumerable<ICondition> conditions = null, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task DeleteItem(string list, IEnumerable<ICondition> conditions, CancellationToken cancellationToken = default(CancellationToken));
+        Task DeleteItem(string list, IEnumerable<ICondition> conditions = null, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

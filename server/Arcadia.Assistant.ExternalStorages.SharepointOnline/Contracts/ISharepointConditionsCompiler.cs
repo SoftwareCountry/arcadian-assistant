@@ -4,10 +4,8 @@
 
     using Arcadia.Assistant.ExternalStorages.Abstractions;
 
-    using Microsoft.SharePoint.Client;
-
-    public interface ISharepointCamlBuilder
+    public interface ISharepointConditionsCompiler
     {
-        CamlQuery GetCamlQuery(IEnumerable<ICondition> conditions = null);
+        string CompileConditions(IEnumerable<ICondition> conditions = null);
     }
 }
