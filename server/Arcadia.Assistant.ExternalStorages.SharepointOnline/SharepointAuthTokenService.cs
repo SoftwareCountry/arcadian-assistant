@@ -8,7 +8,6 @@
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Runtime.Serialization;
-    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Web;

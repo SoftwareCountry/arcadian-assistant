@@ -4,7 +4,6 @@
     using System.Linq.Expressions;
 
     using Arcadia.Assistant.ExternalStorages.Abstractions;
-    using Arcadia.Assistant.ExternalStorages.SharepointOnline.Helpers;
 
     public abstract class BaseSharepointCondition : ICondition
     {

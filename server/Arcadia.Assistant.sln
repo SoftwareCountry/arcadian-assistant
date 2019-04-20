@@ -69,6 +69,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.ExternalS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.ExternalStorages.SharepointOnline", "Arcadia.Assistant.ExternalStorages.SharepointOnline\Arcadia.Assistant.ExternalStorages.SharepointOnline.csproj", "{E4AC00A5-BCD7-4CED-A7E2-ABF31496D34B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.ExternalStorages.SharepointOnline.Conditions", "Arcadia.Assistant.ExternalStorages.SharepointOnline.Conditions\Arcadia.Assistant.ExternalStorages.SharepointOnline.Conditions.csproj", "{0B239810-07F5-4B2E-93BC-14776A9D0A1D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -188,6 +190,10 @@ Global
 		{E4AC00A5-BCD7-4CED-A7E2-ABF31496D34B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4AC00A5-BCD7-4CED-A7E2-ABF31496D34B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4AC00A5-BCD7-4CED-A7E2-ABF31496D34B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B239810-07F5-4B2E-93BC-14776A9D0A1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B239810-07F5-4B2E-93BC-14776A9D0A1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B239810-07F5-4B2E-93BC-14776A9D0A1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B239810-07F5-4B2E-93BC-14776A9D0A1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

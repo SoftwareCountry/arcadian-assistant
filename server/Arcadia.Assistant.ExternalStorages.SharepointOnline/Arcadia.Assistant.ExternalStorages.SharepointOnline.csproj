@@ -9,5 +9,6 @@
   
   <ItemGroup>
     <ProjectReference Include="..\Arcadia.Assistant.ExternalStorages.Abstractions\Arcadia.Assistant.ExternalStorages.Abstractions.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.ExternalStorages.SharepointOnline.Conditions\Arcadia.Assistant.ExternalStorages.SharepointOnline.Conditions.csproj" />
   </ItemGroup>
 </Project>

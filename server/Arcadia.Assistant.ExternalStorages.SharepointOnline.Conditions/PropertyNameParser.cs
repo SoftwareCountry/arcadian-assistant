@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.ExternalStorages.SharepointOnline.Helpers
+﻿namespace Arcadia.Assistant.ExternalStorages.SharepointOnline.Conditions
 {
     using System;
     using System.Linq.Expressions;
@@ -6,7 +6,7 @@
 
     using Arcadia.Assistant.ExternalStorages.Abstractions;
 
-    internal class PropertyNameParser
+    public class PropertyNameParser
     {
         public void EnsureExpressionIsProperty(Expression<Func<StorageItem, object>> expression)
         {
