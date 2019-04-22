@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import moment from 'moment';
-import { Dimensions, FlatList, ListRenderItemInfo, View, ViewStyle } from 'react-native';
+import { Dimensions, FlatList, ListRenderItemInfo, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { Avatar } from '../people/avatar';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
@@ -10,6 +10,10 @@ import { CalendarEventIcon } from '../calendar/calendar-event-icon';
 import { Nullable } from 'types';
 import { EventActionContainer, EventActionProvider } from './event-action-provider';
 import { List } from 'immutable';
+import { Employee } from '../reducers/organization/employee.model';
+import { Action, Dispatch } from 'redux';
+import { openEmployeeDetails } from '../navigation/navigation.actions';
+import { connect } from 'react-redux';
 
 //============================================================================
 interface EmployeeDetailsEventsListProps {
@@ -19,7 +23,12 @@ interface EmployeeDetailsEventsListProps {
 }
 
 //============================================================================
-export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsListProps> {
+interface EmployeeDetailsEventsListDispatchProps {
+    onAvatarClicked: (employee: Employee) => void;
+}
+
+//============================================================================
+class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListProps & EmployeeDetailsEventsListDispatchProps> {
     private readonly eventDigitsDateFormat = 'DD/MM/YYYY';
 
     //----------------------------------------------------------------------------
@@ -86,11 +95,13 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
                         </View>
                         {
                             this.props.showUserAvatar ?
-                                <View style={avatarContainer}>
+                                <TouchableOpacity onPress={() => {
+                                    this.props.onAvatarClicked(action.employee);
+                                }} style={avatarContainer}>
                                     <Avatar photoUrl={action.employee.photoUrl}
                                             style={avatarOuterFrame as ViewStyle}
                                             imageStyle={avatarImage as ViewStyle}/>
-                                </View> :
+                                </TouchableOpacity> :
                                 null
                         }
                     </View>
@@ -161,3 +172,10 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
         }
     }
 }
+
+//----------------------------------------------------------------------------
+const mapDispatchToProps = (dispatch: Dispatch<Action>): EmployeeDetailsEventsListDispatchProps => ({
+    onAvatarClicked: (employee: Employee) => dispatch(openEmployeeDetails(employee.employeeId)),
+});
+
+export const EmployeeDetailsEventsList = connect(null, mapDispatchToProps)(EmployeeDetailsEventsListImpl);
