@@ -66,12 +66,12 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
         const {
             eventsContainer, eventRow, eventLeftIcons, eventTypeIconContainer,
             eventLeftIconsTiny, eventTypeIconContainerTiny, eventIcon, eventTextContainer,
-            eventTitle, eventDetails, avatarContainer, avatarOuterFrame,
-            avatarImage
+            eventTitle, eventDetails
         } = layoutStylesForEmployeeDetailsScreen;
 
         const leftIconsStyle = this.props.showUserAvatar ? eventLeftIcons : eventLeftIconsTiny;
         const typeIconContainerStyle = this.props.showUserAvatar ? eventTypeIconContainer : eventTypeIconContainerTiny;
+        const avatar = this.props.showUserAvatar ? this.avatar(action.employee) : null;
 
         const now = moment();
         const isOutdated = action.event.dates.endDate.isBefore(now, 'date');
@@ -85,6 +85,7 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
         ];
 
         const descriptionStatus = this.descriptionStatus(action.event);
+        const description = this.descriptionFromTo(action.event);
 
         return (
             <View style={eventsContainerFlattened} key={action.event.calendarEventId}>
@@ -94,27 +95,34 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
                             <CalendarEventIcon type={action.event.type} style={eventIcon as ViewStyle}/>
                         </View>
                         {
-                            this.props.showUserAvatar ?
-                                <TouchableOpacity onPress={() => {
-                                    this.props.onAvatarClicked(action.employee);
-                                }} style={avatarContainer}>
-                                    <Avatar photoUrl={action.employee.photoUrl}
-                                            style={avatarOuterFrame as ViewStyle}
-                                            imageStyle={avatarImage as ViewStyle}/>
-                                </TouchableOpacity> :
-                                null
+                            avatar
                         }
                     </View>
                     <View style={eventTextContainer}>
                         <StyledText style={eventTitle}>{action.employee.name}</StyledText>
                         <StyledText style={eventDetails}>{descriptionStatus}</StyledText>
-                        <StyledText style={eventDetails}>{this.descriptionFromTo(action.event)}</StyledText>
+                        <StyledText style={eventDetails}>{description}</StyledText>
                     </View>
                     <EventManagementToolset eventAction={action}/>
                 </View>
             </View>
         );
     };
+
+    //----------------------------------------------------------------------------
+    private avatar(employee: Employee): JSX.Element {
+        const {
+            avatarContainer, avatarOuterFrame, avatarImage
+        } = layoutStylesForEmployeeDetailsScreen;
+
+        return (
+            <TouchableOpacity onPress={() => {this.props.onAvatarClicked(employee); }} style={avatarContainer}>
+                <Avatar photoUrl={employee.photoUrl}
+                        style={avatarOuterFrame as ViewStyle}
+                        imageStyle={avatarImage as ViewStyle}/>
+            </TouchableOpacity>
+        );
+    }
 
     //----------------------------------------------------------------------------
     private descriptionFromTo(event: CalendarEvent): string {
