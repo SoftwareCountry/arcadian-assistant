@@ -131,7 +131,7 @@
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    throw new HttpRequestException("Access token response was failed");
+                    throw new HttpRequestException("Access token response has failed");
                 }
 
                 var responseContent = await response.Content.ReadAsStringAsync();

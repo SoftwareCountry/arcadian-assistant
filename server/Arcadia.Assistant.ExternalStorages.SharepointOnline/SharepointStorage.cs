@@ -61,9 +61,10 @@
             return this.ListItemToStorageItem(addedItem);
         }
 
-        public async Task UpdateItem(string list, StorageItem item, IEnumerable<ICondition> conditions, CancellationToken cancellationToken)
+        public async Task UpdateItem(string list, string itemId, StorageItem item, CancellationToken cancellationToken)
         {
-            var listItems = (await this.GetListItems(list, conditions, cancellationToken)).ToArray();
+            var idConditions = new[] { new EqualCondition(x => x.Id, itemId) };
+            var listItems = (await this.GetListItems(list, idConditions, cancellationToken)).ToArray();
 
             this.EnsureSingleItemReturned(listItems);
 
@@ -85,9 +86,10 @@
             await this.ExecuteSharepointRequest<SharepointListItem>(request, cancellationToken);
         }
 
-        public async Task DeleteItem(string list, IEnumerable<ICondition> conditions = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task DeleteItem(string list, string itemId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var listItems = (await this.GetListItems(list, conditions, cancellationToken)).ToArray();
+            var idConditions = new[] { new EqualCondition(x => x.Id, itemId) };
+            var listItems = (await this.GetListItems(list, idConditions, cancellationToken)).ToArray();
 
             this.EnsureSingleItemReturned(listItems);
 
