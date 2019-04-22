@@ -1,13 +1,11 @@
-﻿namespace Arcadia.Assistant.ExternalStorages.SharepointOnline.Conditions
+﻿namespace Arcadia.Assistant.ExternalStorages.Abstractions
 {
     using System;
     using System.Linq.Expressions;
 
-    using Arcadia.Assistant.ExternalStorages.Abstractions;
-
-    public abstract class BaseSharepointCondition : ICondition
+    public abstract class BaseCondition : ICondition
     {
-        protected BaseSharepointCondition(Expression<Func<StorageItem, object>> property, object value)
+        protected BaseCondition(Expression<Func<StorageItem, object>> property, object value)
         {
             new PropertyNameParser().EnsureExpressionIsProperty(property);
 
