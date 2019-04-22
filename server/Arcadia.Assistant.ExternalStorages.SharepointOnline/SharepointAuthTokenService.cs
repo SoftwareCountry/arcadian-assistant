@@ -25,12 +25,12 @@
         private const string OAuth2Protocol = "OAuth2";
 
         private readonly ISharepointOnlineConfiguration configuration;
-        private readonly IHttpClientFactory httpClientFactory;
+        private readonly HttpClient httpClient;
 
         public SharepointAuthTokenService(ISharepointOnlineConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
             this.configuration = configuration;
-            this.httpClientFactory = httpClientFactory;
+            this.httpClient = httpClientFactory.CreateClient();
         }
 
         public async Task<string> GetAccessToken(string sharepointUrl, CancellationToken cancellationToken)
@@ -50,31 +50,33 @@
             return accessToken;
         }
 
+        public void Dispose()
+        {
+            this.httpClient.Dispose();
+        }
+
         private async Task<string> GetRealm(string sharepointUrl, CancellationToken cancellationToken)
         {
-            using (var httpClient = this.httpClientFactory.CreateClient())
+            var request = new HttpRequestMessage(HttpMethod.Get, sharepointUrl + "/_vti_bin/client.svc");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", string.Empty);
+
+            var response = await this.httpClient.SendAsync(request, cancellationToken);
+
+            if (response.StatusCode != HttpStatusCode.Unauthorized || response.Headers.WwwAuthenticate == null)
             {
-                var request = new HttpRequestMessage(HttpMethod.Get, sharepointUrl + "/_vti_bin/client.svc");
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", string.Empty);
-
-                var response = await httpClient.SendAsync(request, cancellationToken);
-
-                if (response.StatusCode != HttpStatusCode.Unauthorized || response.Headers.WwwAuthenticate == null)
-                {
-                    throw new HttpRequestException("Not supported response to a realm request");
-                }
-
-                var wwwAuthenticateHeaderValue = response.Headers.WwwAuthenticate.ToString();
-
-                var realm = this.GetRealmFromHeader(wwwAuthenticateHeaderValue);
-
-                if (realm == null)
-                {
-                    throw new HttpRequestException("Not supported response to a realm request");
-                }
-
-                return realm;
+                throw new HttpRequestException("Not supported response to a realm request");
             }
+
+            var wwwAuthenticateHeaderValue = response.Headers.WwwAuthenticate.ToString();
+
+            var realm = this.GetRealmFromHeader(wwwAuthenticateHeaderValue);
+
+            if (realm == null)
+            {
+                throw new HttpRequestException("Not supported response to a realm request");
+            }
+
+            return realm;
         }
 
         private string GetRealmFromHeader(string headerValue)
@@ -108,37 +110,34 @@
             string tokenResource,
             CancellationToken cancellationToken)
         {
-            using (var httpClient = this.httpClientFactory.CreateClient())
+            var tokenUrl = await this.GetOAuth2Url(realm, cancellationToken);
+
+            var requestData =
+                "grant_type=" + HttpUtility.UrlEncode(OAuth2GrantType) +
+                "&client_id=" + HttpUtility.UrlEncode(tokenClientId) +
+                "&client_secret=" + HttpUtility.UrlEncode(tokenClientSecret) +
+                "&resource=" + HttpUtility.UrlEncode(tokenResource);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, tokenUrl)
             {
-                var tokenUrl = await this.GetOAuth2Url(realm, cancellationToken);
+                Content = new StringContent(requestData)
+            };
 
-                var requestData =
-                    "grant_type=" + HttpUtility.UrlEncode(OAuth2GrantType) +
-                    "&client_id=" + HttpUtility.UrlEncode(tokenClientId) +
-                    "&client_secret=" + HttpUtility.UrlEncode(tokenClientSecret) +
-                    "&resource=" + HttpUtility.UrlEncode(tokenResource);
+            request.Content.Headers.Remove("Content-Type");
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
+            request.Content.Headers.ContentLength = requestData.Length;
 
-                var request = new HttpRequestMessage(HttpMethod.Post, tokenUrl)
-                {
-                    Content = new StringContent(requestData)
-                };
+            var response = await this.httpClient.SendAsync(request, cancellationToken);
 
-                request.Content.Headers.Remove("Content-Type");
-                request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
-                request.Content.Headers.ContentLength = requestData.Length;
-
-                var response = await httpClient.SendAsync(request, cancellationToken);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new HttpRequestException("Access token response has failed");
-                }
-
-                var responseContent = await response.Content.ReadAsStringAsync();
-
-                var oauthResult = JsonConvert.DeserializeObject<OAuth2AccessTokenResponse>(responseContent);
-                return oauthResult.AccessToken;
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException("Access token response has failed");
             }
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            var oauthResult = JsonConvert.DeserializeObject<OAuth2AccessTokenResponse>(responseContent);
+            return oauthResult.AccessToken;
         }
 
         private async Task<string> GetOAuth2Url(string realm, CancellationToken cancellationToken)
@@ -157,21 +156,18 @@
 
         private async Task<JsonMetadataDocument> GetMetadataDocument(string realm, CancellationToken cancellationToken)
         {
-            using (var httpClient = this.httpClientFactory.CreateClient())
+            var metadataEndpointUrl = $"{AcsMetadataEndpoint}?realm={realm}";
+
+            var response = await this.httpClient.GetAsync(metadataEndpointUrl, cancellationToken);
+            var metadataString = await response.Content.ReadAsStringAsync();
+            var metadata = JsonConvert.DeserializeObject<JsonMetadataDocument>(metadataString);
+
+            if (metadata == null)
             {
-                var metadataEndpointUrl = $"{AcsMetadataEndpoint}?realm={realm}";
-
-                var response = await httpClient.GetAsync(metadataEndpointUrl, cancellationToken);
-                var metadataString = await response.Content.ReadAsStringAsync();
-                var metadata = JsonConvert.DeserializeObject<JsonMetadataDocument>(metadataString);
-
-                if (metadata == null)
-                {
-                    throw new Exception($"No metadata document found at the global endpoint {metadataEndpointUrl}");
-                }
-
-                return metadata;
+                throw new Exception($"No metadata document found at the global endpoint {metadataEndpointUrl}");
             }
+
+            return metadata;
         }
 
         private string GetFormattedPrincipal(string principalName, string hostName, string realm)
