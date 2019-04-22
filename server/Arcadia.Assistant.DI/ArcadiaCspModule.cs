@@ -77,7 +77,7 @@
             builder
                 .Register(ctx =>
                 {
-                    if (sharepointConfiguration.CalendarEventIdMapping == null)
+                    if (sharepointConfiguration.CalendarEventIdField == null)
                     {
                         return new SharepointFieldsMapper();
                     }
@@ -85,7 +85,7 @@
                     var mapping = SharepointFieldsMapper.DefaultMapping
                         .Union(new[]
                         {
-                            SharepointFieldsMapper.CreateMapping(x => x.CalendarEventId, sharepointConfiguration.CalendarEventIdMapping)
+                            SharepointFieldsMapper.CreateMapping(x => x.CalendarEventId, sharepointConfiguration.CalendarEventIdField)
                         });
                     return new SharepointFieldsMapper(mapping.ToArray());
                 })

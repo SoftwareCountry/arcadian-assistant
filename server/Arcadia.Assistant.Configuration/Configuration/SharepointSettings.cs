@@ -13,6 +13,6 @@
         [Required]
         public string ClientSecret { get; set; }
 
-        public string CalendarEventIdMapping { get; set; }
+        public string CalendarEventIdField { get; set; }
     }
 }

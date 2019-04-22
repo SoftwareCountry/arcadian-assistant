@@ -8,6 +8,6 @@
 
         string ClientSecret { get; }
 
-        string CalendarEventIdMapping { get; }
+        string CalendarEventIdField { get; }
     }
 }
