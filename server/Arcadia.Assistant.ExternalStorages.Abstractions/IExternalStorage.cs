@@ -1,10 +1,11 @@
 ﻿namespace Arcadia.Assistant.ExternalStorages.Abstractions
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
 
-    public interface IExternalStorage
+    public interface IExternalStorage : IDisposable
     {
         Task<IEnumerable<StorageItem>> GetItems(string list, IEnumerable<ICondition> conditions = null, CancellationToken cancellationToken = default(CancellationToken));
 

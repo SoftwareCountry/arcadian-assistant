@@ -19,8 +19,8 @@
         private readonly ISharepointAuthTokenService authTokenService;
         private readonly ISharepointFieldsMapper fieldsMapper;
         private readonly ISharepointConditionsCompiler conditionsCompiler;
-        private readonly IHttpClientFactory httpClientFactory;
 
+        private readonly HttpClient httpClient;
         private string accessToken;
 
         public SharepointStorage(
@@ -34,7 +34,8 @@
             this.authTokenService = sharepointAuthTokenService;
             this.fieldsMapper = sharepointFieldsMapper;
             this.conditionsCompiler = sharepointConditionsCompiler;
-            this.httpClientFactory = httpClientFactory;
+
+            this.httpClient = httpClientFactory.CreateClient();
         }
 
         public async Task<IEnumerable<StorageItem>> GetItems(string list, IEnumerable<ICondition> conditions, CancellationToken cancellationToken)
@@ -101,6 +102,11 @@
                 .WithXHttpMethodHeader("DELETE");
 
             await this.ExecuteSharepointRequest(request, cancellationToken);
+        }
+
+        public void Dispose()
+        {
+            this.httpClient.Dispose();
         }
 
         private async Task<IEnumerable<SharepointListItem>> GetListItems(
@@ -172,14 +178,11 @@
                 this.accessToken = await this.authTokenService.GetAccessToken(this.configuration.ServerUrl, cancellationToken);
             }
 
-            using (var httpClient = this.httpClientFactory.CreateClient())
-            {
-                request = request
-                    .WithAcceptHeader("application/json;odata=nometadata")
-                    .WithBearerAuthorizationHeader(this.accessToken);
+            request = request
+                .WithAcceptHeader("application/json;odata=nometadata")
+                .WithBearerAuthorizationHeader(this.accessToken);
 
-                return await httpClient.SendAsync(request.GetHttpRequest(), cancellationToken);
-            }
+            return await this.httpClient.SendAsync(request.GetHttpRequest(), cancellationToken);
         }
 
         private StorageItem ListItemToStorageItem(SharepointListItem item)
