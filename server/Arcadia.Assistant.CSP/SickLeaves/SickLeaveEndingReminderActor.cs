@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.CSP.Vacations
+﻿namespace Arcadia.Assistant.CSP.SickLeaves
 {
     using System;
     using System.Collections.Generic;
@@ -20,15 +20,15 @@
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
     using Arcadia.Assistant.UserPreferences;
 
-    public class VacationAccountingReadyReminderActor : UntypedActor, ILogReceive
+    public class SickLeaveEndingReminderActor : UntypedActor, ILogReceive
     {
         private const string UserPreferencesActorPath = "/user/user-preferences";
         private const string PushDevicesActorPath = "/user/push-notifications-devices";
         private const string OrganizationActorPath = "/user/organization";
 
-        private const string VacationReminderPushNotificationType = "VacationReadyReminder";
+        private const string SickLeaveReminderPushNotificationType = "SickLeaveEndingReminder";
 
-        private readonly VacationsAccountingReminderConfiguration reminderConfiguration;
+        private readonly SickLeavesAccountingReminderConfiguration reminderConfiguration;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
@@ -36,9 +36,9 @@
         private readonly ActorSelection pushDevicesActor;
         private readonly ActorSelection organizationActor;
 
-        private readonly Dictionary<string, CalendarEvent> vacationsToRemind = new Dictionary<string, CalendarEvent>();
+        private readonly Dictionary<string, CalendarEvent> sickLeavesToRemind = new Dictionary<string, CalendarEvent>();
 
-        public VacationAccountingReadyReminderActor(VacationsAccountingReminderConfiguration reminderConfiguration)
+        public SickLeaveEndingReminderActor(SickLeavesAccountingReminderConfiguration reminderConfiguration)
         {
             this.reminderConfiguration = reminderConfiguration;
 
@@ -50,7 +50,7 @@
                 this.GetInitialSchedulerDelay(),
                 TimeSpan.FromDays(1),
                 this.Self,
-                RemindVacations.Instance,
+                RemindSickLeaves.Instance,
                 this.Self);
 
             Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);
@@ -59,7 +59,7 @@
 
         public static Props CreateProps()
         {
-            return Context.DI().Props<VacationAccountingReadyReminderActor>();
+            return Context.DI().Props<SickLeaveEndingReminderActor>();
         }
 
         protected override void OnReceive(object message)
@@ -67,7 +67,7 @@
             switch (message)
             {
                 case CalendarEventChanged msg when
-                    msg.NewEvent.Type == CalendarEventTypes.Vacation:
+                    msg.NewEvent.Type == CalendarEventTypes.Sickleave:
 
                     this.OnEventReceived(msg.NewEvent);
                     break;
@@ -76,7 +76,7 @@
                     break;
 
                 case CalendarEventRecoverComplete msg when
-                    msg.Event.Type == CalendarEventTypes.Vacation:
+                    msg.Event.Type == CalendarEventTypes.Sickleave:
 
                     this.OnEventReceived(msg.Event, true);
                     break;
@@ -84,14 +84,14 @@
                 case CalendarEventRecoverComplete _:
                     break;
 
-                case RemindVacations _:
-                    this.OnRemindVacations(this.vacationsToRemind.Values);
+                case RemindSickLeaves _:
+                    this.OnRemindSickLeave(this.sickLeavesToRemind.Values);
                     break;
 
-                case RemindVacations.Success msg:
+                case RemindSickLeaves.Success msg:
                     if (msg.Notifications.Any())
                     {
-                        this.logger.Debug($"Sending reminder notifications about approved vacations of employee {msg.EmployeeId}");
+                        this.logger.Debug($"Sending reminder notifications about ending sick leaves of employee {msg.EmployeeId}");
                     }
 
                     foreach (var notification in msg.Notifications)
@@ -101,9 +101,9 @@
 
                     break;
 
-                case RemindVacations.Error msg:
+                case RemindSickLeaves.Error msg:
                     this.logger.Error(
-                        "Error occured on send reminder notifications about approved vacations " +
+                        "Error occured on send reminder notifications about ending sick leaves " +
                         $"of employee {msg.EmployeeId}: {msg.Exception}");
                     break;
 
@@ -115,54 +115,56 @@
 
         private void OnEventReceived(CalendarEvent @event, bool isRecovered = false)
         {
-            if (@event.Status != VacationStatuses.AccountingReady)
+            if (@event.Status != SickLeaveStatuses.Approved)
             {
-                if (this.vacationsToRemind.ContainsKey(@event.EventId))
+                if (this.sickLeavesToRemind.ContainsKey(@event.EventId))
                 {
-                    this.vacationsToRemind.Remove(@event.EventId);
+                    this.sickLeavesToRemind.Remove(@event.EventId);
                 }
 
                 return;
             }
 
-            this.vacationsToRemind.Add(@event.EventId, @event);
+            this.sickLeavesToRemind.Add(@event.EventId, @event);
 
             if (!isRecovered)
             {
-                this.OnRemindVacations(new[] { @event });
+                this.OnRemindSickLeave(new[] { @event });
             }
         }
 
-        private void OnRemindVacations(IEnumerable<CalendarEvent> vacations)
+        private void OnRemindSickLeave(IEnumerable<CalendarEvent> sickLeaves)
         {
-            var vacationsByEmployee = vacations.GroupBy(v => v.EmployeeId);
+            var sickLeavesByEmployee = sickLeaves.GroupBy(v => v.EmployeeId);
 
-            foreach (var group in vacationsByEmployee)
+            foreach (var group in sickLeavesByEmployee)
             {
                 this.GetNotifications(group.Key, group.ToArray())
                     .PipeTo(
                         this.Self,
-                        success: result => new RemindVacations.Success(group.Key, result),
-                        failure: err => new RemindVacations.Error(group.Key, err));
+                        success: result => new RemindSickLeaves.Success(group.Key, result),
+                        failure: err => new RemindSickLeaves.Error(group.Key, err));
             }
         }
 
-        private async Task<IEnumerable<object>> GetNotifications(string employeeId, IEnumerable<CalendarEvent> vacations)
+        private async Task<IEnumerable<object>> GetNotifications(string employeeId, IEnumerable<CalendarEvent> sickLeaves)
         {
             var userPreferencesResponse = await this.userPreferencesActor.Ask<GetUserPreferencesMessage.Response>(
                 new GetUserPreferencesMessage(employeeId));
 
-            var vacationsList = vacations.ToList();
+            var sickLeavesArray = sickLeaves
+                .Where(s => s.Dates.EndDate <= DateTime.Now.Date)
+                .ToArray();
 
             var pushNotificationsTask = this.GetPushNotifications(
                 employeeId,
                 userPreferencesResponse.UserPreferences,
-                vacationsList);
+                sickLeavesArray);
 
             var emailNotificationsTask = this.GetEmailNotifications(
                 employeeId,
                 userPreferencesResponse.UserPreferences,
-                vacationsList);
+                sickLeavesArray);
 
             var result = await Task.WhenAll(pushNotificationsTask, emailNotificationsTask);
             return result.SelectMany(x => x);
@@ -171,9 +173,9 @@
         private async Task<IEnumerable<object>> GetPushNotifications(
             string employeeId,
             UserPreferences userPreferences,
-            IEnumerable<CalendarEvent> vacations)
+            IReadOnlyCollection<CalendarEvent> sickLeaves)
         {
-            if (!userPreferences.PushNotifications)
+            if (!userPreferences.PushNotifications || sickLeaves.Count == 0)
             {
                 return Enumerable.Empty<PushNotification>();
             }
@@ -181,7 +183,7 @@
             var pushTokensResponse = await this.pushDevicesActor.Ask<GetDevicePushTokens.Success>(
                 new GetDevicePushTokens(employeeId));
 
-            return vacations.Select(e => this.CreatePushNotification(employeeId, e, pushTokensResponse.DevicePushTokens));
+            return sickLeaves.Select(e => this.CreatePushNotification(employeeId, e, pushTokensResponse.DevicePushTokens));
         }
 
         private PushNotification CreatePushNotification(
@@ -207,7 +209,7 @@
                 {
                     @event.EventId,
                     EmployeeId = employeeId,
-                    Type = VacationReminderPushNotificationType
+                    Type = SickLeaveReminderPushNotificationType
                 }
             };
 
@@ -217,9 +219,9 @@
         private async Task<IEnumerable<object>> GetEmailNotifications(
             string employeeId,
             UserPreferences userPreferences,
-            IEnumerable<CalendarEvent> vacations)
+            IReadOnlyCollection<CalendarEvent> sickLeaves)
         {
-            if (!userPreferences.EmailNotifications)
+            if (!userPreferences.EmailNotifications || sickLeaves.Count == 0)
             {
                 return Enumerable.Empty<EmailNotification>();
             }
@@ -228,7 +230,7 @@
                 EmployeesQuery.Create().WithId(employeeId));
             var employeeMetadata = employeeResponse.Employees.First().Metadata;
 
-            return vacations.Select(e => this.CreateEmailNotification(e, employeeMetadata));
+            return sickLeaves.Select(e => this.CreateEmailNotification(e, employeeMetadata));
         }
 
         private EmailNotification CreateEmailNotification(CalendarEvent @event, EmployeeMetadata employeeMetadata)
@@ -264,9 +266,9 @@
             return reminderDate - now;
         }
 
-        private class RemindVacations
+        private class RemindSickLeaves
         {
-            public static readonly RemindVacations Instance = new RemindVacations();
+            public static readonly RemindSickLeaves Instance = new RemindSickLeaves();
 
             public class Success
             {
