@@ -11,31 +11,23 @@
     using Arcadia.Assistant.ExternalStorages.SharepointOnline.Contracts;
     using Arcadia.Assistant.ExternalStorages.SharepointOnline.SharepointApiModels;
 
-    using Newtonsoft.Json;
-
     public class SharepointStorage : IExternalStorage
     {
         private readonly ISharepointOnlineConfiguration configuration;
-        private readonly ISharepointAuthTokenService authTokenService;
+        private readonly ISharepointRequestExecutor requestExecutor;
         private readonly ISharepointFieldsMapper fieldsMapper;
         private readonly ISharepointConditionsCompiler conditionsCompiler;
 
-        private readonly HttpClient httpClient;
-        private string accessToken;
-
         public SharepointStorage(
             ISharepointOnlineConfiguration configuration,
-            ISharepointAuthTokenService sharepointAuthTokenService,
+            ISharepointRequestExecutor requestExecutor,
             ISharepointFieldsMapper sharepointFieldsMapper,
-            ISharepointConditionsCompiler sharepointConditionsCompiler,
-            IHttpClientFactory httpClientFactory)
+            ISharepointConditionsCompiler sharepointConditionsCompiler)
         {
             this.configuration = configuration;
-            this.authTokenService = sharepointAuthTokenService;
+            this.requestExecutor = requestExecutor;
             this.fieldsMapper = sharepointFieldsMapper;
             this.conditionsCompiler = sharepointConditionsCompiler;
-
-            this.httpClient = httpClientFactory.CreateClient();
         }
 
         public async Task<IEnumerable<StorageItem>> GetItems(string list, IEnumerable<ICondition> conditions, CancellationToken cancellationToken)
@@ -56,7 +48,7 @@
                 .Create(HttpMethod.Post, this.GetListItemsUrl(list))
                 .WithContent(requestData);
 
-            var addedItem = await this.ExecuteSharepointRequest<SharepointListItem>(request, cancellationToken);
+            var addedItem = await this.requestExecutor.ExecuteSharepointRequest<SharepointListItem>(request, cancellationToken);
 
             return this.ListItemToStorageItem(addedItem);
         }
@@ -83,10 +75,10 @@
                 .WithIfMatchHeader()
                 .WithXHttpMethodHeader("MERGE");
 
-            await this.ExecuteSharepointRequest<SharepointListItem>(request, cancellationToken);
+            await this.requestExecutor.ExecuteSharepointRequest<SharepointListItem>(request, cancellationToken);
         }
 
-        public async Task DeleteItem(string list, string itemId, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task DeleteItem(string list, string itemId, CancellationToken cancellationToken)
         {
             var idConditions = new[] { new EqualCondition(x => x.Id, itemId) };
             var listItems = (await this.GetListItems(list, idConditions, cancellationToken)).ToArray();
@@ -103,12 +95,11 @@
                 .WithIfMatchHeader()
                 .WithXHttpMethodHeader("DELETE");
 
-            await this.ExecuteSharepointRequest(request, cancellationToken);
+            await this.requestExecutor.ExecuteSharepointRequest(request, cancellationToken);
         }
 
         public void Dispose()
         {
-            this.httpClient.Dispose();
         }
 
         private async Task<IEnumerable<SharepointListItem>> GetListItems(
@@ -126,7 +117,7 @@
             }
 
             var request = SharepointRequest.Create(HttpMethod.Get, itemsUrl);
-            var response = await this.ExecuteSharepointRequest<SharepointListItemsResponse>(request, cancellationToken);
+            var response = await this.requestExecutor.ExecuteSharepointRequest<SharepointListItemsResponse>(request, cancellationToken);
 
             return response.Value;
         }
@@ -135,7 +126,7 @@
         {
             var listUrl = $"{this.GetListUrl(list)}?$select=ListItemEntityTypeFullName";
             var request = SharepointRequest.Create(HttpMethod.Get, listUrl);
-            var response = await this.ExecuteSharepointRequest<SharepointListResponse>(request, cancellationToken);
+            var response = await this.requestExecutor.ExecuteSharepointRequest<SharepointListResponse>(request, cancellationToken);
             return response.ListItemEntityTypeFullName;
         }
 
@@ -157,34 +148,6 @@
             return !includeSelectPart
                 ? baseUrl
                 : $"{baseUrl}?{selectUrlPart}";
-        }
-
-        private async Task<T> ExecuteSharepointRequest<T>(SharepointRequest request, CancellationToken cancellationToken)
-        {
-            var response = await this.ExecuteSharepointRequest(request, cancellationToken);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new HttpRequestException($"Request failed with {response.StatusCode} status code");
-            }
-
-            var content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<T>(content);
-        }
-
-        private async Task<HttpResponseMessage> ExecuteSharepointRequest(SharepointRequest request, CancellationToken cancellationToken)
-        {
-            // To cache access token for several Sharepoint requests in bounds of one request to storage
-            if (this.accessToken == null)
-            {
-                this.accessToken = await this.authTokenService.GetAccessToken(this.configuration.ServerUrl, cancellationToken);
-            }
-
-            request = request
-                .WithAcceptHeader("application/json;odata=nometadata")
-                .WithBearerAuthorizationHeader(this.accessToken);
-
-            return await this.httpClient.SendAsync(request.GetHttpRequest(), cancellationToken);
         }
 
         private StorageItem ListItemToStorageItem(SharepointListItem item)
