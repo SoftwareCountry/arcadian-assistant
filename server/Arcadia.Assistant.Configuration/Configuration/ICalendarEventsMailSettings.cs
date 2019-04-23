@@ -4,6 +4,8 @@
     {
         EmailWithFixedRecipientNotification SickLeaveApproved { get; }
 
+        EmailWithFixedRecipientNotification SickLeaveProlonged { get; }
+
         EmailNotification EventAssignedToApprover { get; }
 
         EmailNotification EventStatusChanged { get; }
