@@ -125,7 +125,7 @@
                 return;
             }
 
-            this.sickLeavesToRemind.Add(@event.EventId, @event);
+            this.sickLeavesToRemind[@event.EventId] = @event;
 
             if (!isRecovered)
             {
