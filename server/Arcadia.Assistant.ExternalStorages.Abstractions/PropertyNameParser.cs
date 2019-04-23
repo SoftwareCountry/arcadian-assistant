@@ -1,10 +1,8 @@
-﻿namespace Arcadia.Assistant.ExternalStorages.SharepointOnline.Conditions
+﻿namespace Arcadia.Assistant.ExternalStorages.Abstractions
 {
     using System;
     using System.Linq.Expressions;
     using System.Reflection;
-
-    using Arcadia.Assistant.ExternalStorages.Abstractions;
 
     public class PropertyNameParser
     {

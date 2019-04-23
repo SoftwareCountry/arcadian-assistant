@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.ExternalStorages.SharepointOnline
+﻿namespace Arcadia.Assistant.ExternalStorages.SharepointOnline.Contracts
 {
     using System;
     using System.Collections.Generic;

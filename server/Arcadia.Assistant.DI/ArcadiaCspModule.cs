@@ -36,10 +36,15 @@
                 .Get<VacationsEmailLoaderConfiguration>();
             builder.RegisterInstance(vacationsEmailLoaderConfiguration).AsSelf();
 
-            var accountingReminderConfiguration = this.configuration
-                .GetSection("AccountingReminder")
-                .Get<AccountingReminderConfiguration>();
-            builder.RegisterInstance(accountingReminderConfiguration).AsSelf();
+            var vacationsAccountingReminderConfiguration = this.configuration
+                .GetSection("VacationsAccountingReminder")
+                .Get<VacationsAccountingReminderConfiguration>();
+            builder.RegisterInstance(vacationsAccountingReminderConfiguration).AsSelf();
+
+            var sickLeavesAccountingReminderConfiguration = this.configuration
+                .GetSection("SickLeavesAccountingReminder")
+                .Get<SickLeavesAccountingReminderConfiguration>();
+            builder.RegisterInstance(sickLeavesAccountingReminderConfiguration).AsSelf();
 
             builder.RegisterType<CspDepartmentsStorage>().As<DepartmentsStorage>();
             builder.RegisterType<CspEmployeesInfoStorage>().As<EmployeesInfoStorage>();
@@ -50,6 +55,7 @@
             builder.RegisterType<VacationsEmailLoader>().AsSelf();
             builder.RegisterType<CspCalendarEventsApprovalsChecker>().As<CalendarEventsApprovalsChecker>();
             builder.RegisterType<VacationAccountingReadyReminderActor>().AsSelf();
+            builder.RegisterType<SickLeaveEndingReminderActor>().AsSelf();
             builder.RegisterType<CspVacationsRegistry>().AsSelf();
             builder.RegisterType<CspSickLeavesRegistry>().AsSelf();
             builder.RegisterType<CspCalendarEventIdParser>().AsSelf();
@@ -79,7 +85,7 @@
             builder
                 .Register(ctx =>
                 {
-                    if (sharepointConfiguration.CalendarEventIdMapping == null)
+                    if (sharepointConfiguration.CalendarEventIdField == null)
                     {
                         return new SharepointFieldsMapper();
                     }
@@ -87,12 +93,13 @@
                     var mapping = SharepointFieldsMapper.DefaultMapping
                         .Union(new[]
                         {
-                            SharepointFieldsMapper.CreateMapping(x => x.CalendarEventId, sharepointConfiguration.CalendarEventIdMapping)
+                            SharepointFieldsMapper.CreateMapping(x => x.CalendarEventId, sharepointConfiguration.CalendarEventIdField)
                         });
                     return new SharepointFieldsMapper(mapping.ToArray());
                 })
                 .As<ISharepointFieldsMapper>();
 
+            builder.RegisterType<SharepointRequestExecutor>().As<ISharepointRequestExecutor>();
             builder.RegisterType<SharepointAuthTokenService>().As<ISharepointAuthTokenService>();
             builder.RegisterType<SharepointConditionsCompiler>().As<ISharepointConditionsCompiler>();
             builder.RegisterType<SharepointStorage>().As<IExternalStorage>();

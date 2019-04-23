@@ -11,7 +11,6 @@
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.ExternalStorages.Abstractions;
-    using Arcadia.Assistant.ExternalStorages.SharepointOnline.Conditions;
     using Arcadia.Assistant.Organization.Abstractions;
 
     public class SharepointStorageActor : UntypedActor, ILogReceive
@@ -116,8 +115,8 @@
             {
                 await externalStorage.UpdateItem(
                     Sdo822CalendarList,
-                    upsertItem,
-                    new[] { new SharepointEqualCondition(x => x.Id, existingItem.Id) });
+                    existingItem.Id,
+                    upsertItem);
             }
         }
 
@@ -131,7 +130,7 @@
             {
                 await externalStorage.DeleteItem(
                     Sdo822CalendarList,
-                    new[] { new SharepointEqualCondition(x => x.Id, existingItem.Id) });
+                    existingItem.Id);
             }
         }
 
@@ -139,7 +138,7 @@
         {
             var existingItems = await externalStorage.GetItems(
                 Sdo822CalendarList,
-                new[] { new SharepointEqualCondition(x => x.CalendarEventId, @event.EventId) });
+                new[] { new EqualCondition(x => x.CalendarEventId, @event.EventId) });
             return existingItems.SingleOrDefault();
         }
 

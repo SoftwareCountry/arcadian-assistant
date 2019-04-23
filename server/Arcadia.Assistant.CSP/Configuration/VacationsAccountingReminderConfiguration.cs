@@ -3,7 +3,7 @@
     using System.ComponentModel.DataAnnotations;
     using Arcadia.Assistant.Configuration.Configuration;
 
-    public class AccountingReminderConfiguration
+    public class VacationsAccountingReminderConfiguration
     {
         [Required]
         public string DailyRemindTime { get; set; }

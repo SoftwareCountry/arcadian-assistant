@@ -6,7 +6,6 @@
     using System.Web;
 
     using Arcadia.Assistant.ExternalStorages.Abstractions;
-    using Arcadia.Assistant.ExternalStorages.SharepointOnline.Conditions;
     using Arcadia.Assistant.ExternalStorages.SharepointOnline.Contracts;
 
     public class SharepointConditionsCompiler : ISharepointConditionsCompiler
@@ -35,7 +34,7 @@
         {
             switch (condition)
             {
-                case SharepointEqualCondition equalCondition:
+                case EqualCondition equalCondition:
                     return this.GetEqualCamlCondition(equalCondition);
 
                 default:
@@ -43,7 +42,7 @@
             }
         }
 
-        private string GetEqualCamlCondition(BaseSharepointCondition equalCondition)
+        private string GetEqualCamlCondition(BaseCondition equalCondition)
         {
             var sharepointField = this.fieldsMapper.GetSharepointField(equalCondition.Property);
             return $"{sharepointField} eq '{equalCondition.Value}'";

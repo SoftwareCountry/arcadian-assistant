@@ -24,7 +24,7 @@ interface EventDialogBaseOwnProps extends EventDialogBaseDefaultProps {
     title: string;
     text: string;
     cancelLabel?: string;
-    acceptLabel: string;
+    acceptLabel?: string;
     onCancelPress?: () => void;
     onAcceptPress: () => void;
     onClosePress: () => void;
