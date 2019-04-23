@@ -28,11 +28,8 @@ const notificationsHandler$ = (action$: ActionsObservable<LoadUserFinished>, sta
                 Push.setListener({
                     onPushNotificationReceived: notification => {
 
-                        console.log(`Notification: ${JSON.stringify(notification)}`);
-
                         const userInfo = state$.value.userInfo;
                         if (!userInfo || !userInfo.employeeId) {
-                            console.log(`Notification: no user info`);
                             return;
                         }
 
@@ -40,12 +37,10 @@ const notificationsHandler$ = (action$: ActionsObservable<LoadUserFinished>, sta
                         if (isAndroid && !!notification.message) {
                             // Android messages received in the background don't include a message. On Android, that fact can be used to
                             // check if the message was received in the background or foreground. For iOS the message is always present.
-                            console.log(`Notification: message received in foreground on Android`);
                             return;
                         }
 
                         if (!notification.customProperties) {
-                            console.log(`Notification: no custom payload`);
                             return;
                         }
 

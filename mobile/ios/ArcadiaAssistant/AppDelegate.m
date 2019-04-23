@@ -78,7 +78,6 @@
 - (void)application:(UIApplication *)application
 didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-    // Pass the device token to MSPush.
     [MSPush didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
 }
 
@@ -86,7 +85,6 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 - (void)application:(UIApplication *)application
 didFailToRegisterForRemoteNotificationsWithError:(nonnull NSError *)error
 {
-    // Pass the error to MSPush.
     [MSPush didFailToRegisterForRemoteNotificationsWithError:error];
 }
 
@@ -100,10 +98,7 @@ didFailToRegisterForRemoteNotificationsWithError:(nonnull NSError *)error
 didReceiveNotificationResponse:(UNNotificationResponse *)response
          withCompletionHandler:(void (^)(void))completionHandler API_AVAILABLE(ios(10.0))
 {
-    // Pass the notification payload to MSPush.
     [MSPush didReceiveRemoteNotification:response.notification.request.content.userInfo];
-    
-    // Complete handling the notification.
     completionHandler();
 }
 
