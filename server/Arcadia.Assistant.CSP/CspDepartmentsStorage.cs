@@ -33,6 +33,7 @@
 
             Context.ActorOf(CspVacationsRegistry.CreateProps(), "csp-vacations-registry");
             Context.ActorOf(VacationAccountingReadyReminderActor.CreateProps(), "csp-vacations-reminder");
+            Context.ActorOf(SickLeaveEndingReminderActor.CreateProps(), "csp-sick-leaves-reminder");
 
             Context.ActorOf(CspSickLeavesRegistry.CreateProps(), "csp-sick-leaves-registry");
         }

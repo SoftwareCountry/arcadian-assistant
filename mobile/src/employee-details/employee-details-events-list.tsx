@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import moment from 'moment';
-import { Dimensions, FlatList, ListRenderItemInfo, View, ViewStyle } from 'react-native';
+import { Dimensions, FlatList, ListRenderItemInfo, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { StyledText } from '../override/styled-text';
 import { Avatar } from '../people/avatar';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
@@ -10,6 +10,10 @@ import { CalendarEventIcon } from '../calendar/calendar-event-icon';
 import { Nullable } from 'types';
 import { EventActionContainer, EventActionProvider } from './event-action-provider';
 import { List } from 'immutable';
+import { Employee } from '../reducers/organization/employee.model';
+import { Action, Dispatch } from 'redux';
+import { openEmployeeDetails } from '../navigation/navigation.actions';
+import { connect } from 'react-redux';
 
 //============================================================================
 interface EmployeeDetailsEventsListProps {
@@ -19,7 +23,12 @@ interface EmployeeDetailsEventsListProps {
 }
 
 //============================================================================
-export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsListProps> {
+interface EmployeeDetailsEventsListDispatchProps {
+    onAvatarClicked: (employee: Employee) => void;
+}
+
+//============================================================================
+class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListProps & EmployeeDetailsEventsListDispatchProps> {
     private readonly eventDigitsDateFormat = 'DD/MM/YYYY';
 
     //----------------------------------------------------------------------------
@@ -57,12 +66,12 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
         const {
             eventsContainer, eventRow, eventLeftIcons, eventTypeIconContainer,
             eventLeftIconsTiny, eventTypeIconContainerTiny, eventIcon, eventTextContainer,
-            eventTitle, eventDetails, avatarContainer, avatarOuterFrame,
-            avatarImage
+            eventTitle, eventDetails
         } = layoutStylesForEmployeeDetailsScreen;
 
         const leftIconsStyle = this.props.showUserAvatar ? eventLeftIcons : eventLeftIconsTiny;
         const typeIconContainerStyle = this.props.showUserAvatar ? eventTypeIconContainer : eventTypeIconContainerTiny;
+        const avatar = this.props.showUserAvatar ? this.avatar(action.employee) : null;
 
         const now = moment();
         const isOutdated = action.event.dates.endDate.isBefore(now, 'date');
@@ -76,6 +85,7 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
         ];
 
         const descriptionStatus = this.descriptionStatus(action.event);
+        const description = this.descriptionFromTo(action.event);
 
         return (
             <View style={eventsContainerFlattened} key={action.event.calendarEventId}>
@@ -85,25 +95,34 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
                             <CalendarEventIcon type={action.event.type} style={eventIcon as ViewStyle}/>
                         </View>
                         {
-                            this.props.showUserAvatar ?
-                                <View style={avatarContainer}>
-                                    <Avatar photoUrl={action.employee.photoUrl}
-                                            style={avatarOuterFrame as ViewStyle}
-                                            imageStyle={avatarImage as ViewStyle}/>
-                                </View> :
-                                null
+                            avatar
                         }
                     </View>
                     <View style={eventTextContainer}>
                         <StyledText style={eventTitle}>{action.employee.name}</StyledText>
                         <StyledText style={eventDetails}>{descriptionStatus}</StyledText>
-                        <StyledText style={eventDetails}>{this.descriptionFromTo(action.event)}</StyledText>
+                        <StyledText style={eventDetails}>{description}</StyledText>
                     </View>
                     <EventManagementToolset eventAction={action}/>
                 </View>
             </View>
         );
     };
+
+    //----------------------------------------------------------------------------
+    private avatar(employee: Employee): JSX.Element {
+        const {
+            avatarContainer, avatarOuterFrame, avatarImage
+        } = layoutStylesForEmployeeDetailsScreen;
+
+        return (
+            <TouchableOpacity onPress={() => {this.props.onAvatarClicked(employee); }} style={avatarContainer}>
+                <Avatar photoUrl={employee.photoUrl}
+                        style={avatarOuterFrame as ViewStyle}
+                        imageStyle={avatarImage as ViewStyle}/>
+            </TouchableOpacity>
+        );
+    }
 
     //----------------------------------------------------------------------------
     private descriptionFromTo(event: CalendarEvent): string {
@@ -161,3 +180,10 @@ export class EmployeeDetailsEventsList extends Component<EmployeeDetailsEventsLi
         }
     }
 }
+
+//----------------------------------------------------------------------------
+const mapDispatchToProps = (dispatch: Dispatch<Action>): EmployeeDetailsEventsListDispatchProps => ({
+    onAvatarClicked: (employee: Employee) => dispatch(openEmployeeDetails(employee.employeeId)),
+});
+
+export const EmployeeDetailsEventsList = connect(null, mapDispatchToProps)(EmployeeDetailsEventsListImpl);

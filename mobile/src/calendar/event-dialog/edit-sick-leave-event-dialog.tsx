@@ -32,23 +32,36 @@ class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogPro
     //----------------------------------------------------------------------------
     public render() {
         const selectedSickLeave = this.selectedSickLeave();
+
         const isCompleted = selectedSickLeave ? !selectedSickLeave.calendarEvent.isCompleted : false;
         const isDisabledForComplete = this.props.completeSickLeavePermission === false || isCompleted;
-        return <EventDialogBase
-            title={'Hey! Hope you feel better'}
-            text={this.text}
-            icon={'sick_leave'}
-            cancelLabel={'Prolong'}
-            disableCancel={!isCompleted}
-            acceptLabel={'Complete'}
-            disableAccept={isDisabledForComplete}
-            onAcceptPress={this.acceptAction}
-            onCancelPress={this.cancelAction}
-            onClosePress={this.closeDialog}/>;
+
+        if (isDisabledForComplete) {
+            return <EventDialogBase
+                title={'Hey! Hope you feel better'}
+                text={this.text}
+                icon={'sick_leave'}
+                cancelLabel={'Back'}
+                onCancelPress={this.closeDialog}
+                acceptLabel={'Prolong'}
+                onAcceptPress={this.prolong}
+                onClosePress={this.closeDialog}/>;
+        } else {
+            return <EventDialogBase
+                title={'Hey! Hope you feel better'}
+                text={this.text}
+                icon={'sick_leave'}
+                cancelLabel={'Prolong'}
+                disableCancel={!isCompleted}
+                onCancelPress={this.prolong}
+                acceptLabel={'Complete'}
+                onAcceptPress={this.complete}
+                onClosePress={this.closeDialog}/>;
+        }
     }
 
     //----------------------------------------------------------------------------
-    private cancelAction = () => {
+    private prolong = () => {
         const selectedSickLeave = this.selectedSickLeave();
         if (!selectedSickLeave) {
             return;
@@ -58,7 +71,7 @@ class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogPro
     };
 
     //----------------------------------------------------------------------------
-    private acceptAction = () => {
+    private complete = () => {
         const selectedSickLeave = this.selectedSickLeave();
         if (!selectedSickLeave) {
             return;
