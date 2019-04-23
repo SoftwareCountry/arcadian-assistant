@@ -17,12 +17,14 @@ import { Platform } from 'react-native';
 import { loadPendingRequests } from '../reducers/calendar/pending-requests/pending-requests.action';
 import { loadCalendarEvents } from '../reducers/calendar/calendar.action';
 import { logError } from '../utils/analytics';
+import { LoadUserFinished } from '../reducers/user/user.action';
 
 //----------------------------------------------------------------------------
-const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>, state$: StateObservable<AppState>) =>
-    action$.ofType(AuthActionType.userLoggedIn).pipe(
+const notificationsHandler$ = (action$: ActionsObservable<LoadUserFinished>, state$: StateObservable<AppState>) =>
+    action$.ofType('LOAD-USER-FINISHED').pipe(
         switchMap(() => {
             return new Observable<Action>(observer => {
+                // noinspection JSIgnoredPromiseFromCall
                 Push.setListener({
                     onPushNotificationReceived: notification => {
                         if (!notification.customProperties) {
@@ -57,6 +59,7 @@ const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>, state$:
                 });
 
                 return () => {
+                    // noinspection JSIgnoredPromiseFromCall
                     Push.setListener(undefined);
                 };
             });
