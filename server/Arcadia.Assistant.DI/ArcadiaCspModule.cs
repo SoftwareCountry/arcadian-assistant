@@ -1,7 +1,6 @@
 ﻿namespace Arcadia.Assistant.DI
 {
     using System.Linq;
-    using System.Net.Http;
 
     using Arcadia.Assistant.Calendar.Abstractions.EmployeeSickLeaves;
     using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
@@ -72,6 +71,9 @@
             var sharepointConfiguration = this.configuration
                 .GetSection("Sharepoint")
                 .Get<SharepointSettings>();
+
+            builder.RegisterInstance(sharepointConfiguration)
+                .As<ISharepointDepartmentsCalendarsSettings>();
 
             builder
                 .RegisterInstance(new SharepointOnlineConfiguration
