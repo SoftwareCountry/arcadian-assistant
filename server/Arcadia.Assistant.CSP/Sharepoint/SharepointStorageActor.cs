@@ -106,14 +106,7 @@
             {
                 var existingItem = await this.GetSharepointItemForCalendarEvent(externalStorage, calendar, @event);
 
-                var upsertItem = new StorageItem
-                {
-                    Title = $"{employeeMetadata.Name} ({@event.Type})",
-                    StartDate = @event.Dates.StartDate,
-                    EndDate = @event.Dates.EndDate,
-                    Category = @event.Type,
-                    CalendarEventId = @event.EventId
-                };
+                var upsertItem = this.CalendarEventToStorageItem(@event, employeeMetadata);
 
                 if (existingItem == null)
                 {
@@ -160,6 +153,30 @@
                 calendar,
                 new[] { new EqualCondition(x => x.CalendarEventId, @event.EventId) });
             return existingItems.SingleOrDefault();
+        }
+
+        private StorageItem CalendarEventToStorageItem(CalendarEvent @event, EmployeeMetadata employeeMetadata)
+        {
+            var storageItem = new StorageItem
+            {
+                Title = $"{employeeMetadata.Name} ({@event.Type})",
+                StartDate = @event.Dates.StartDate,
+                EndDate = @event.Dates.EndDate,
+                Category = @event.Type,
+                CalendarEventId = @event.EventId
+            };
+
+            if (@event.Type == CalendarEventTypes.Workout)
+            {
+                storageItem.StartDate = storageItem.StartDate.AddHours(@event.Dates.StartWorkingHour);
+                storageItem.EndDate = storageItem.EndDate.AddHours(@event.Dates.FinishWorkingHour);
+            }
+            else if (@event.Type == CalendarEventTypes.Dayoff)
+            {
+                storageItem.AllDayEvent = true;
+            }
+
+            return storageItem;
         }
 
         private bool NeedToStoreCalendarEvent(CalendarEvent @event)
