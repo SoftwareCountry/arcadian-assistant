@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "AppDelegate.h"
+#import <UserNotifications/UserNotifications.h>
 #import <AppCenterReactNativeShared/AppCenterReactNativeShared.h>
 #import <AppCenterReactNativePush/AppCenterReactNativePush.h>
 #import <AppCenterReactNativeCrashes/AppCenterReactNativeCrashes.h>
@@ -16,12 +16,23 @@
 #import <React/RCTRootView.h>
 #import <React/RCTLinkingManager.h>
 
+#import "AppDelegate.h"
+
+@import AppCenterPush;
+@import AppCenterReactNativeShared;
+
+//============================================================================
+@interface AppDelegate (UNUserNotificationCenterDelegate) <UNUserNotificationCenterDelegate>
+@end
+
 //============================================================================
 @implementation AppDelegate
 
 //----------------------------------------------------------------------------
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    [UNUserNotificationCenter currentNotificationCenter].delegate = self;
+    
     NSString* appSecret = [ReactNativeConfig envFor:@"appCenterSecretId"];
     [AppCenterReactNativeShared setAppSecret:appSecret];
     [AppCenterReactNativeShared setStartAutomatically:YES];
@@ -61,6 +72,39 @@
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
     return [RCTLinkingManager application:application openURL:url options:options];
+}
+
+//----------------------------------------------------------------------------
+- (void)application:(UIApplication *)application
+didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+    // Pass the device token to MSPush.
+    [MSPush didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+}
+
+//----------------------------------------------------------------------------
+- (void)application:(UIApplication *)application
+didFailToRegisterForRemoteNotificationsWithError:(nonnull NSError *)error
+{
+    // Pass the error to MSPush.
+    [MSPush didFailToRegisterForRemoteNotificationsWithError:error];
+}
+
+@end
+
+//============================================================================
+@implementation AppDelegate (UNUserNotificationCenterDelegate)
+
+//----------------------------------------------------------------------------
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+didReceiveNotificationResponse:(UNNotificationResponse *)response
+         withCompletionHandler:(void (^)(void))completionHandler API_AVAILABLE(ios(10.0))
+{
+    // Pass the notification payload to MSPush.
+    [MSPush didReceiveRemoteNotification:response.notification.request.content.userInfo];
+    
+    // Complete handling the notification.
+    completionHandler();
 }
 
 @end

@@ -27,12 +27,24 @@ const notificationsHandler$ = (action$: ActionsObservable<LoadUserFinished>, sta
                 // noinspection JSIgnoredPromiseFromCall
                 Push.setListener({
                     onPushNotificationReceived: notification => {
+
+                        console.log(`Notification: ${JSON.stringify(notification)}`);
+
+                        if (notification.message !== null) {
+                            // Android messages received in the background don't include a message. On Android, that fact can be used to
+                            // check if the message was received in the background or foreground. For iOS the message is always present.
+                            console.log(`Notification: notification.message !== null`);
+                            return;
+                        }
+
                         if (!notification.customProperties) {
+                            console.log(`Notification: !notification.customProperties`);
                             return;
                         }
 
                         const userInfo = state$.value.userInfo;
                         if (!userInfo || !userInfo.employeeId) {
+                            console.log(`Notification: !userInfo || !userInfo.employeeId`);
                             return;
                         }
 
@@ -79,6 +91,7 @@ const getInstallId$ = (action$: ActionsObservable<UserLoggedIn>) => action$.pipe
 const notificationsRegister$ = (action$: ActionsObservable<NotificationAction>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
     ofType(NotificationActionType.installIdReceived),
     switchMap(action => {
+        console.log(`installId = ${action.installId}`);
         const deviceType = Platform.select({
             ios: 'Ios',
             android: 'Android',
