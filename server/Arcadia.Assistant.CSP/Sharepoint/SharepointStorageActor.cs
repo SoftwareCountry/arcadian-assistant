@@ -1,6 +1,7 @@
 ﻿namespace Arcadia.Assistant.CSP.Sharepoint
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -10,20 +11,26 @@
 
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.EventBus;
+    using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.ExternalStorages.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions;
+    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public class SharepointStorageActor : UntypedActor, ILogReceive
     {
-        private const string Sdo822CalendarList = "TestCalendar1";
+        private const string OrganizationActorPath = @"/user/organization";
 
         private readonly Func<IExternalStorage> externalStorageProvider;
+        private readonly ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings;
+        private readonly ActorSelection organizationActor;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
-        public SharepointStorageActor(Func<IExternalStorage> externalStorageProvider)
+        public SharepointStorageActor(Func<IExternalStorage> externalStorageProvider, ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings)
         {
             this.externalStorageProvider = externalStorageProvider;
+            this.departmentsCalendarsSettings = departmentsCalendarsSettings;
+            this.organizationActor = Context.ActorSelection(OrganizationActorPath);
 
             Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);
             Context.System.EventStream.Subscribe<CalendarEventRemoved>(this.Self);
@@ -39,7 +46,6 @@
             switch (message)
             {
                 case CalendarEventChanged msg:
-
                     if (this.NeedToStoreCalendarEvent(msg.NewEvent))
                     {
                         this.UpsertCalendarEvent(msg.NewEvent)
@@ -60,7 +66,6 @@
                     break;
 
                 case CalendarEventRemoved msg:
-
                     this.RemoveCalendarEvent(msg.Event)
                         .PipeTo(
                             this.Self,
@@ -92,52 +97,67 @@
 
         private async Task UpsertCalendarEvent(CalendarEvent @event)
         {
+            var employeeMetadata = await this.GetEmployeeMetadata(@event.EmployeeId);
+            var departmentCalendars = this.GetSharepointCalendarsByDepartment(employeeMetadata.DepartmentId);
+
             var externalStorage = this.externalStorageProvider();
 
-            var existingItem = await this.GetSharepointItemForCalendarEvent(externalStorage, @event);
+            var sharepointTasks = departmentCalendars.Select(async calendar =>
+            {
+                var existingItem = await this.GetSharepointItemForCalendarEvent(externalStorage, calendar, @event);
 
-            var upsertItem = new StorageItem
-            {
-                Title = $"{@event.EmployeeId} ({@event.Type})",
-                StartDate = @event.Dates.StartDate,
-                EndDate = @event.Dates.EndDate,
-                Category = @event.Type,
-                CalendarEventId = @event.EventId
-            };
+                var upsertItem = new StorageItem
+                {
+                    Title = $"{employeeMetadata.Name} ({@event.Type})",
+                    StartDate = @event.Dates.StartDate,
+                    EndDate = @event.Dates.EndDate,
+                    Category = @event.Type,
+                    CalendarEventId = @event.EventId
+                };
 
-            if (existingItem == null)
-            {
-                await externalStorage.AddItem(
-                    Sdo822CalendarList,
-                    upsertItem);
-            }
-            else
-            {
-                await externalStorage.UpdateItem(
-                    Sdo822CalendarList,
-                    existingItem.Id,
-                    upsertItem);
-            }
+                if (existingItem == null)
+                {
+                    await externalStorage.AddItem(
+                        calendar,
+                        upsertItem);
+                }
+                else
+                {
+                    await externalStorage.UpdateItem(
+                        calendar,
+                        upsertItem);
+                }
+            });
+
+            await Task.WhenAll(sharepointTasks);
         }
 
         private async Task RemoveCalendarEvent(CalendarEvent @event)
         {
+            var employeeMetadata = await this.GetEmployeeMetadata(@event.EmployeeId);
+            var departmentCalendars = this.GetSharepointCalendarsByDepartment(employeeMetadata.DepartmentId);
+
             var externalStorage = this.externalStorageProvider();
 
-            var existingItem = await this.GetSharepointItemForCalendarEvent(externalStorage, @event);
-
-            if (existingItem != null)
+            var sharepointTasks = departmentCalendars.Select(async calendar =>
             {
-                await externalStorage.DeleteItem(
-                    Sdo822CalendarList,
-                    existingItem.Id);
-            }
+                var existingItem = await this.GetSharepointItemForCalendarEvent(externalStorage, calendar, @event);
+
+                if (existingItem != null)
+                {
+                    await externalStorage.DeleteItem(
+                        calendar,
+                        existingItem.Id);
+                }
+            });
+
+            await Task.WhenAll(sharepointTasks);
         }
 
-        private async Task<StorageItem> GetSharepointItemForCalendarEvent(IExternalStorage externalStorage, CalendarEvent @event)
+        private async Task<StorageItem> GetSharepointItemForCalendarEvent(IExternalStorage externalStorage, string calendar, CalendarEvent @event)
         {
             var existingItems = await externalStorage.GetItems(
-                Sdo822CalendarList,
+                calendar,
                 new[] { new EqualCondition(x => x.CalendarEventId, @event.EventId) });
             return existingItems.SingleOrDefault();
         }
@@ -154,8 +174,17 @@
 
         private async Task<EmployeeMetadata> GetEmployeeMetadata(string employeeId)
         {
-            // ToDo
-            return null;
+            var employeeResponse = await this.organizationActor.Ask<EmployeesQuery.Response>(
+                EmployeesQuery.Create().WithId(employeeId));
+            return employeeResponse.Employees.First().Metadata;
+        }
+
+        private IEnumerable<string> GetSharepointCalendarsByDepartment(string departmentId)
+        {
+            return this.departmentsCalendarsSettings.DepartmentsCalendars
+                .Where(x => x.DepartmentId == departmentId)
+                .Select(x => x.Calendar)
+                .ToArray();
         }
 
         private class CalendarEventUpsertSuccess
