@@ -17,20 +17,30 @@ import { Platform } from 'react-native';
 import { loadPendingRequests } from '../reducers/calendar/pending-requests/pending-requests.action';
 import { loadCalendarEvents } from '../reducers/calendar/calendar.action';
 import { logError } from '../utils/analytics';
+import { LoadUserFinished } from '../reducers/user/user.action';
 
 //----------------------------------------------------------------------------
-const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>, state$: StateObservable<AppState>) =>
-    action$.ofType(AuthActionType.userLoggedIn).pipe(
+const notificationsHandler$ = (action$: ActionsObservable<LoadUserFinished>, state$: StateObservable<AppState>) =>
+    action$.ofType('LOAD-USER-FINISHED').pipe(
         switchMap(() => {
             return new Observable<Action>(observer => {
+                // noinspection JSIgnoredPromiseFromCall
                 Push.setListener({
                     onPushNotificationReceived: notification => {
-                        if (!notification.customProperties) {
-                            return;
-                        }
 
                         const userInfo = state$.value.userInfo;
                         if (!userInfo || !userInfo.employeeId) {
+                            return;
+                        }
+
+                        const isAndroid = Platform.OS === 'android';
+                        if (isAndroid && !!notification.message) {
+                            // Android messages received in the background don't include a message. On Android, that fact can be used to
+                            // check if the message was received in the background or foreground. For iOS the message is always present.
+                            return;
+                        }
+
+                        if (!notification.customProperties) {
                             return;
                         }
 
@@ -57,6 +67,7 @@ const notificationsHandler$ = (action$: ActionsObservable<UserLoggedIn>, state$:
                 });
 
                 return () => {
+                    // noinspection JSIgnoredPromiseFromCall
                     Push.setListener(undefined);
                 };
             });
@@ -76,6 +87,7 @@ const getInstallId$ = (action$: ActionsObservable<UserLoggedIn>) => action$.pipe
 const notificationsRegister$ = (action$: ActionsObservable<NotificationAction>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
     ofType(NotificationActionType.installIdReceived),
     switchMap(action => {
+        console.log(`installId = ${action.installId}`);
         const deviceType = Platform.select({
             ios: 'Ios',
             android: 'Android',
