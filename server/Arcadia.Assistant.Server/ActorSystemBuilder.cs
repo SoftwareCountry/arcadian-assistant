@@ -78,10 +78,11 @@
             IActorRef pushNotificationsDevices)
         {
             this.actorSystem.ActorOf(
-                Props.Create(() => new SickLeaveApprovedEmailNotificationActor(
+                Props.Create(() => new SickLeaveAccountingEmailNotificationActor(
                     calendarEventsMailSettings.SickLeaveApproved,
+                    calendarEventsMailSettings.SickLeaveProlonged,
                     organization)),
-                "sick-leave-email");
+                "sick-leave-accounting-email");
             this.actorSystem.ActorOf(
                 Props.Create(() => new EventAssignedToApproverEmailNotificationActor(
                     calendarEventsMailSettings.EventAssignedToApprover,
