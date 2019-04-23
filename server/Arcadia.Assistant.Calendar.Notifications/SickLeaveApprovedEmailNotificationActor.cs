@@ -55,7 +55,8 @@
                     var templateExpressionContext = new Dictionary<string, string>
                     {
                         ["employee"] = msg.Employee.Name,
-                        ["startDate"] = msg.Event.Dates.StartDate.ToString("dd/MM/yyyy")
+                        ["startDate"] = msg.Event.Dates.StartDate.ToString("dd/MM/yyyy"),
+                        ["endDate"] = msg.Event.Dates.EndDate.ToString("dd/MM/yyyy")
                     };
 
                     templateExpressionContext = new DictionaryMerge().Perform(
