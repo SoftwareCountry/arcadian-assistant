@@ -91,6 +91,7 @@
                 })
                 .As<ISharepointFieldsMapper>();
 
+            builder.RegisterType<SharepointRequestExecutor>().As<ISharepointRequestExecutor>();
             builder.RegisterType<SharepointAuthTokenService>().As<ISharepointAuthTokenService>();
             builder.RegisterType<SharepointConditionsCompiler>().As<ISharepointConditionsCompiler>();
             builder.RegisterType<SharepointStorage>().As<IExternalStorage>();
