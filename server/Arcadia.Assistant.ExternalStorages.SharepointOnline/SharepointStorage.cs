@@ -53,9 +53,9 @@
             return this.ListItemToStorageItem(addedItem);
         }
 
-        public async Task UpdateItem(string list, string itemId, StorageItem item, CancellationToken cancellationToken)
+        public async Task UpdateItem(string list, StorageItem item, CancellationToken cancellationToken)
         {
-            var idConditions = new[] { new EqualCondition(x => x.Id, itemId) };
+            var idConditions = new[] { new EqualCondition(x => x.Id, item.Id) };
             var listItems = (await this.GetListItems(list, idConditions, cancellationToken)).ToArray();
 
             this.EnsureSingleItemReturned(listItems);
