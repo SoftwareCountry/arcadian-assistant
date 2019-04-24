@@ -13,5 +13,7 @@
         public static readonly string[] All = { Requested, Approved, Cancelled, Rejected };
 
         public static readonly string[] Pending = { Requested };
+
+        public static readonly string[] Actual = { Requested, Approved };
     }
 }

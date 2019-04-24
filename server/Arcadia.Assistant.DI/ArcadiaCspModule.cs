@@ -1,13 +1,13 @@
 ﻿namespace Arcadia.Assistant.DI
 {
     using System.Linq;
-    using System.Net.Http;
 
     using Arcadia.Assistant.Calendar.Abstractions.EmployeeSickLeaves;
     using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
     using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.CSP;
     using Arcadia.Assistant.CSP.Configuration;
+    using Arcadia.Assistant.CSP.Sharepoint;
     using Arcadia.Assistant.CSP.SickLeaves;
     using Arcadia.Assistant.CSP.Vacations;
     using Arcadia.Assistant.ExternalStorages.Abstractions;
@@ -58,6 +58,7 @@
             builder.RegisterType<CspVacationsRegistry>().AsSelf();
             builder.RegisterType<CspSickLeavesRegistry>().AsSelf();
             builder.RegisterType<CspCalendarEventIdParser>().AsSelf();
+            builder.RegisterType<SharepointStorageActor>().AsSelf();
 
             builder.RegisterType<CspEmployeeVacationsRegistryPropsFactory>().As<IEmployeeVacationsRegistryPropsFactory>();
             builder.RegisterType<CspEmployeeSickLeavesRegistryPropsFactory>().As<IEmployeeSickLeavesRegistryPropsFactory>();
@@ -70,6 +71,9 @@
             var sharepointConfiguration = this.configuration
                 .GetSection("Sharepoint")
                 .Get<SharepointSettings>();
+
+            builder.RegisterInstance(sharepointConfiguration)
+                .As<ISharepointDepartmentsCalendarsSettings>();
 
             builder
                 .RegisterInstance(new SharepointOnlineConfiguration

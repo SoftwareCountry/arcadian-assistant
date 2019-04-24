@@ -8,6 +8,9 @@
         public EmailWithFixedRecipientNotification SickLeaveApproved { get; set; }
 
         [Required]
+        public EmailWithFixedRecipientNotification SickLeaveProlonged { get; set; }
+
+        [Required]
         public EmailNotification EventAssignedToApprover { get; set; }
 
         [Required]

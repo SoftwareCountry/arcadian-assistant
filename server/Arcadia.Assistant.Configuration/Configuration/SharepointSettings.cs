@@ -1,8 +1,9 @@
 ﻿namespace Arcadia.Assistant.Configuration.Configuration
 {
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
-    public class SharepointSettings : ISharepointSettings
+    public class SharepointSettings : ISharepointDepartmentsCalendarsSettings
     {
         [Required]
         public string ServerUrl { get; set; }
@@ -14,5 +15,8 @@
         public string ClientSecret { get; set; }
 
         public string CalendarEventIdField { get; set; }
+
+        [Required]
+        public IEnumerable<SharepointDepartmentCalendarMapping> DepartmentsCalendars { get; set; }
     }
 }

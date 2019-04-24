@@ -24,6 +24,9 @@
         [DataMember]
         public string Category { get; set; }
 
+        [DataMember(Name = "fAllDayEvent")]
+        public bool AllDayEvent { get; set; }
+
         [DataMember]
         public string CalendarEventId { get; set; }
     }
