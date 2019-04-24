@@ -7,9 +7,9 @@
     using System.Threading.Tasks;
 
     using Akka.Actor;
-    using Akka.DI.Core;
 
     using Arcadia.Assistant.CSP.Model;
+    using Arcadia.Assistant.CSP.Sharepoint;
     using Arcadia.Assistant.CSP.SickLeaves;
     using Arcadia.Assistant.CSP.Vacations;
     using Arcadia.Assistant.Organization.Abstractions;
@@ -33,9 +33,11 @@
 
             Context.ActorOf(CspVacationsRegistry.CreateProps(), "csp-vacations-registry");
             Context.ActorOf(VacationAccountingReadyReminderActor.CreateProps(), "csp-vacations-reminder");
-            Context.ActorOf(SickLeaveEndingReminderActor.CreateProps(), "csp-sick-leaves-reminder");
 
             Context.ActorOf(CspSickLeavesRegistry.CreateProps(), "csp-sick-leaves-registry");
+            Context.ActorOf(SickLeaveEndingReminderActor.CreateProps(), "csp-sick-leaves-reminder");
+
+            Context.ActorOf(SharepointStorageActor.CreateProps(), "csp-sharepoint-storage-actor");
         }
 
         protected override void OnReceive(object message)

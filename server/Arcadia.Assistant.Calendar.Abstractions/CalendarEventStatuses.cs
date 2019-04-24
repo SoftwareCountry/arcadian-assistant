@@ -4,23 +4,31 @@
 
     public class CalendarEventStatuses
     {
-        private static readonly IReadOnlyDictionary<string, string[]> StatusesByType = new Dictionary<string, string[]>()
-            {
-                { CalendarEventTypes.Dayoff, WorkHoursChangeStatuses.All },
-                { CalendarEventTypes.Workout, WorkHoursChangeStatuses.All },
-                { CalendarEventTypes.Sickleave, SickLeaveStatuses.All },
-                { CalendarEventTypes.Vacation, VacationStatuses.All }
-            };
+        private static readonly IReadOnlyDictionary<string, string[]> StatusesByType = new Dictionary<string, string[]>
+        {
+            { CalendarEventTypes.Dayoff, WorkHoursChangeStatuses.All },
+            { CalendarEventTypes.Workout, WorkHoursChangeStatuses.All },
+            { CalendarEventTypes.Sickleave, SickLeaveStatuses.All },
+            { CalendarEventTypes.Vacation, VacationStatuses.All }
+        };
 
-        private static readonly IReadOnlyDictionary<string, string[]> PendingStatusesByType = new Dictionary<string, string[]>()
-            {
-                { CalendarEventTypes.Dayoff, WorkHoursChangeStatuses.Pending },
-                { CalendarEventTypes.Workout, WorkHoursChangeStatuses.Pending },
-                { CalendarEventTypes.Sickleave, SickLeaveStatuses.Pending },
-                { CalendarEventTypes.Vacation, VacationStatuses.Pending }
-            };
+        private static readonly IReadOnlyDictionary<string, string[]> PendingStatusesByType = new Dictionary<string, string[]>
+        {
+            { CalendarEventTypes.Dayoff, WorkHoursChangeStatuses.Pending },
+            { CalendarEventTypes.Workout, WorkHoursChangeStatuses.Pending },
+            { CalendarEventTypes.Sickleave, SickLeaveStatuses.Pending },
+            { CalendarEventTypes.Vacation, VacationStatuses.Pending }
+        };
 
-        private static readonly IReadOnlyDictionary<string, string> ApprovedStatusByType = new Dictionary<string, string>()
+        private static readonly IReadOnlyDictionary<string, string[]> ActualStatusesByType = new Dictionary<string, string[]>
+        {
+            { CalendarEventTypes.Dayoff, WorkHoursChangeStatuses.Actual },
+            { CalendarEventTypes.Workout, WorkHoursChangeStatuses.Actual },
+            { CalendarEventTypes.Sickleave, SickLeaveStatuses.Actual },
+            { CalendarEventTypes.Vacation, VacationStatuses.Actual }
+        };
+
+        private static readonly IReadOnlyDictionary<string, string> ApprovedStatusByType = new Dictionary<string, string>
         {
             { CalendarEventTypes.Dayoff, WorkHoursChangeStatuses.Approved },
             { CalendarEventTypes.Workout, WorkHoursChangeStatuses.Approved },
@@ -28,7 +36,7 @@
             { CalendarEventTypes.Vacation, VacationStatuses.Approved }
         };
 
-        private static readonly IReadOnlyDictionary<string, string> RejectedStatusByType = new Dictionary<string, string>()
+        private static readonly IReadOnlyDictionary<string, string> RejectedStatusByType = new Dictionary<string, string>
         {
             { CalendarEventTypes.Dayoff, WorkHoursChangeStatuses.Rejected },
             { CalendarEventTypes.Workout, WorkHoursChangeStatuses.Rejected },
@@ -36,7 +44,7 @@
             { CalendarEventTypes.Vacation, VacationStatuses.Rejected }
         };
 
-        private static readonly IReadOnlyDictionary<string, string> CancelledStatusByType = new Dictionary<string, string>()
+        private static readonly IReadOnlyDictionary<string, string> CancelledStatusByType = new Dictionary<string, string>
         {
             { CalendarEventTypes.Dayoff, WorkHoursChangeStatuses.Cancelled },
             { CalendarEventTypes.Workout, WorkHoursChangeStatuses.Cancelled },
@@ -50,6 +58,7 @@
             {
                 return statuses;
             }
+
             return new string[0];
         }
 
@@ -59,6 +68,17 @@
             {
                 return statuses;
             }
+
+            return new string[0];
+        }
+
+        public string[] ActualForType(string type)
+        {
+            if (ActualStatusesByType.TryGetValue(type, out var statuses))
+            {
+                return statuses;
+            }
+
             return new string[0];
         }
 

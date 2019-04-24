@@ -16,6 +16,8 @@
 
         public string Category { get; set; }
 
+        public bool AllDayEvent { get; set; }
+
         public string CalendarEventId { get; set; }
     }
 }
