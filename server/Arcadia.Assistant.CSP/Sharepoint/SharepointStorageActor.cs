@@ -1,6 +1,7 @@
 ﻿namespace Arcadia.Assistant.CSP.Sharepoint
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -17,6 +18,7 @@
     {
         private readonly Func<IExternalStorage> externalStorageProvider;
         private readonly ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings;
+        private readonly IEqualityComparer<StorageItem> sharepointStorageItemComparer = new SharepointStorageItemComparer();
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
@@ -112,7 +114,7 @@
                         calendar,
                         upsertItem);
                 }
-                else if (!upsertItem.Equals(existingItem))
+                else if (!this.sharepointStorageItemComparer.Equals(upsertItem, existingItem))
                 {
                     await externalStorage.UpdateItem(
                         calendar,
