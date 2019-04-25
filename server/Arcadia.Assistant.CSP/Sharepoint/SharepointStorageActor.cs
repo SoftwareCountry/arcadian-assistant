@@ -162,7 +162,7 @@
                 CalendarEventId = @event.EventId
             };
 
-            if (@event.Type == CalendarEventTypes.Workout)
+            if (@event.Type == CalendarEventTypes.Workout || @event.Type == CalendarEventTypes.Dayoff)
             {
                 storageItem.StartDate = storageItem.StartDate.AddHours(@event.Dates.StartWorkingHour);
                 storageItem.EndDate = storageItem.EndDate.AddHours(@event.Dates.FinishWorkingHour);
