@@ -186,8 +186,8 @@
             var storageItem = new StorageItem
             {
                 Title = $"{employeeMetadata.Name} ({@event.Type})",
-                StartDate = @event.Dates.StartDate,
-                EndDate = @event.Dates.EndDate,
+                StartDate = @event.Dates.StartDate.ToUniversalTime(),
+                EndDate = @event.Dates.EndDate.ToUniversalTime(),
                 Category = @event.Type,
                 CalendarEventId = @event.EventId
             };
@@ -197,8 +197,11 @@
                 storageItem.StartDate = storageItem.StartDate.AddHours(@event.Dates.StartWorkingHour);
                 storageItem.EndDate = storageItem.EndDate.AddHours(@event.Dates.FinishWorkingHour);
             }
-            else if (@event.Type == CalendarEventTypes.Dayoff)
+            else
             {
+                // All day long Sharepoint feature couldn't be used here, because
+                // it leads to stupid time issues
+                storageItem.EndDate = storageItem.EndDate.AddDays(1);
             }
 
             return storageItem;
