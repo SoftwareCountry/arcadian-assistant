@@ -143,7 +143,7 @@
 
             var selectUrlPart =
                 $"$select={fieldNames.Id},{fieldNames.Title},{fieldNames.Description},{fieldNames.StartDate}," +
-                $"{fieldNames.EndDate},{fieldNames.Category},{fieldNames.CalendarEventId}";
+                $"{fieldNames.EndDate},{fieldNames.Category},{fieldNames.AllDayEvent},{fieldNames.CalendarEventId}";
 
             return !includeSelectPart
                 ? baseUrl
@@ -160,6 +160,7 @@
                 StartDate = item.EventDate,
                 EndDate = item.EndDate,
                 Category = item.Category,
+                AllDayEvent = item.AllDayEvent,
                 CalendarEventId = item.CalendarEventId
             };
         }
@@ -177,6 +178,7 @@
                 EventDate = item.StartDate.ToUniversalTime().ToString("O"),
                 EndDate = item.EndDate.ToUniversalTime().ToString("O"),
                 Category = item.Category,
+                AllDayEvent = item.AllDayEvent,
                 CalendarEventId = item.CalendarEventId
             };
         }
@@ -201,6 +203,7 @@
             string StartDate,
             string EndDate,
             string Category,
+            string AllDayEvent,
             string CalendarEventId
             ) GetFieldNames()
         {
@@ -210,8 +213,9 @@
             var startDateField = this.fieldsMapper.GetSharepointField(si => si.StartDate);
             var endDateField = this.fieldsMapper.GetSharepointField(si => si.EndDate);
             var categoryField = this.fieldsMapper.GetSharepointField(si => si.Category);
+            var allDayEvent = this.fieldsMapper.GetSharepointField(si => si.AllDayEvent);
             var calendarEventIdField = this.fieldsMapper.GetSharepointField(si => si.CalendarEventId);
-            return (idField, titleField, descriptionField, startDateField, endDateField, categoryField, calendarEventIdField);
+            return (idField, titleField, descriptionField, startDateField, endDateField, categoryField, allDayEvent, calendarEventIdField);
         }
     }
 }

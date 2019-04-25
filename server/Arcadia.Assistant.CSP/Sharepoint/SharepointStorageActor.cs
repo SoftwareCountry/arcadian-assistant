@@ -159,6 +159,7 @@
                 StartDate = @event.Dates.StartDate.ToUniversalTime(),
                 EndDate = @event.Dates.EndDate.ToUniversalTime(),
                 Category = @event.Type,
+                AllDayEvent = true,
                 CalendarEventId = @event.EventId
             };
 
