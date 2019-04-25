@@ -19,8 +19,7 @@
             CreateMapping(item => item.Description, "Description"),
             CreateMapping(item => item.StartDate, "EventDate"),
             CreateMapping(item => item.EndDate, "EndDate"),
-            CreateMapping(item => item.Category, "Category"),
-            CreateMapping(item => item.AllDayEvent, "fAllDayEvent")
+            CreateMapping(item => item.Category, "Category")
         };
 
         private static readonly SharepointFieldMapping CalendarEventIdMapping =

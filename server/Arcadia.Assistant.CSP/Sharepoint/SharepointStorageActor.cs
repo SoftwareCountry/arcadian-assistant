@@ -187,7 +187,6 @@
             }
             else if (@event.Type == CalendarEventTypes.Dayoff)
             {
-                storageItem.AllDayEvent = true;
             }
 
             return storageItem;
