@@ -32,6 +32,7 @@
             this.departmentsCalendarsSettings = departmentsCalendarsSettings;
             this.organizationActor = Context.ActorSelection(OrganizationActorPath);
 
+            Context.System.EventStream.Subscribe<CalendarEventRecoverComplete>(this.Self);
             Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);
             Context.System.EventStream.Subscribe<CalendarEventRemoved>(this.Self);
         }
@@ -45,32 +46,16 @@
         {
             switch (message)
             {
-                case CalendarEventChanged msg:
-                    if (this.NeedToStoreCalendarEvent(msg.NewEvent))
-                    {
-                        this.UpsertCalendarEvent(msg.NewEvent)
-                            .PipeTo(
-                                this.Self,
-                                success: () => new CalendarEventUpsertSuccess(msg.NewEvent),
-                                failure: err => new CalendarEventUpsertFailed(msg.NewEvent, err));
-                    }
-                    else
-                    {
-                        this.RemoveCalendarEvent(msg.NewEvent)
-                            .PipeTo(
-                                this.Self,
-                                success: () => new CalendarEventRemoveSuccess(msg.NewEvent),
-                                failure: err => new CalendarEventRemoveFailed(msg.NewEvent, err));
-                    }
+                case CalendarEventRecoverComplete msg:
+                    this.OnReceiveEventUpdate(msg.Event);
+                    break;
 
+                case CalendarEventChanged msg:
+                    this.OnReceiveEventUpdate(msg.NewEvent);
                     break;
 
                 case CalendarEventRemoved msg:
-                    this.RemoveCalendarEvent(msg.Event)
-                        .PipeTo(
-                            this.Self,
-                            success: () => new CalendarEventRemoveSuccess(msg.Event),
-                            failure: err => new CalendarEventRemoveFailed(msg.Event, err));
+                    this.OnReceiveEventRemove(msg.Event);
                     break;
 
                 case CalendarEventUpsertSuccess msg:
@@ -93,6 +78,35 @@
                     this.Unhandled(message);
                     break;
             }
+        }
+
+        private void OnReceiveEventUpdate(CalendarEvent @event)
+        {
+            if (this.NeedToStoreCalendarEvent(@event))
+            {
+                this.UpsertCalendarEvent(@event)
+                    .PipeTo(
+                        this.Self,
+                        success: () => new CalendarEventUpsertSuccess(@event),
+                        failure: err => new CalendarEventUpsertFailed(@event, err));
+            }
+            else
+            {
+                this.RemoveCalendarEvent(@event)
+                    .PipeTo(
+                        this.Self,
+                        success: () => new CalendarEventRemoveSuccess(@event),
+                        failure: err => new CalendarEventRemoveFailed(@event, err));
+            }
+        }
+
+        private void OnReceiveEventRemove(CalendarEvent @event)
+        {
+            this.RemoveCalendarEvent(@event)
+                .PipeTo(
+                    this.Self,
+                    success: () => new CalendarEventRemoveSuccess(@event),
+                    failure: err => new CalendarEventRemoveFailed(@event, err));
         }
 
         private async Task UpsertCalendarEvent(CalendarEvent @event)
