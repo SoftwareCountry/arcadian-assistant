@@ -1,7 +1,6 @@
 ﻿namespace Arcadia.Assistant.CSP.Sharepoint
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -112,7 +111,13 @@
         private async Task UpsertCalendarEvent(CalendarEvent @event)
         {
             var employeeMetadata = await this.GetEmployeeMetadata(@event.EmployeeId);
+
             var departmentCalendars = this.GetSharepointCalendarsByDepartment(employeeMetadata.DepartmentId);
+            if (departmentCalendars.Length == 0)
+            {
+                this.logger.Warning($"No Sharepoint calendar mapping is defined for department with id {employeeMetadata.DepartmentId}.");
+                return;
+            }
 
             var externalStorage = this.externalStorageProvider();
 
@@ -143,7 +148,13 @@
         private async Task RemoveCalendarEvent(CalendarEvent @event)
         {
             var employeeMetadata = await this.GetEmployeeMetadata(@event.EmployeeId);
+
             var departmentCalendars = this.GetSharepointCalendarsByDepartment(employeeMetadata.DepartmentId);
+            if (departmentCalendars.Length == 0)
+            {
+                this.logger.Warning($"No Sharepoint calendar mapping is defined for department with id {employeeMetadata.DepartmentId}.");
+                return;
+            }
 
             var externalStorage = this.externalStorageProvider();
 
@@ -210,7 +221,7 @@
             return employeeResponse.Employees.First().Metadata;
         }
 
-        private IEnumerable<string> GetSharepointCalendarsByDepartment(string departmentId)
+        private string[] GetSharepointCalendarsByDepartment(string departmentId)
         {
             return this.departmentsCalendarsSettings.DepartmentsCalendars
                 .Where(x => x.DepartmentId == departmentId)
