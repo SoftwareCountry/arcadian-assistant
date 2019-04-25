@@ -49,7 +49,7 @@
 
             if (equalCondition.Value is DateTime dateTimeValue)
             {
-                fieldValue = dateTimeValue.ToUniversalTime().ToString("O");
+                throw new NotImplementedException("Filter by datetime is not supported yet.");
             }
             else
             {
