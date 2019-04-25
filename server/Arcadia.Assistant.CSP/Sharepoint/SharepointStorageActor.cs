@@ -121,6 +121,7 @@
                 var existingItem = await this.GetSharepointItemForCalendarEvent(externalStorage, calendar, @event);
 
                 var upsertItem = this.CalendarEventToStorageItem(@event, employeeMetadata);
+                upsertItem.Id = existingItem?.Id;
 
                 if (existingItem == null)
                 {
@@ -128,7 +129,7 @@
                         calendar,
                         upsertItem);
                 }
-                else
+                else if (!upsertItem.Equals(existingItem))
                 {
                     await externalStorage.UpdateItem(
                         calendar,
