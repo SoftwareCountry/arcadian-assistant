@@ -58,6 +58,7 @@
             builder.RegisterType<CspVacationsRegistry>().AsSelf();
             builder.RegisterType<CspSickLeavesRegistry>().AsSelf();
             builder.RegisterType<CspCalendarEventIdParser>().AsSelf();
+            builder.RegisterType<SharepointActor>().AsSelf();
             builder.RegisterType<SharepointStorageActor>().AsSelf();
 
             builder.RegisterType<CspEmployeeVacationsRegistryPropsFactory>().As<IEmployeeVacationsRegistryPropsFactory>();

@@ -10,19 +10,15 @@
     using Akka.Event;
 
     using Arcadia.Assistant.Calendar.Abstractions;
-    using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.ExternalStorages.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions;
-    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public class SharepointStorageActor : UntypedActor, ILogReceive
     {
-        private const string OrganizationActorPath = @"/user/organization";
-
         private readonly Func<IExternalStorage> externalStorageProvider;
         private readonly ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings;
-        private readonly ActorSelection organizationActor;
+        private readonly IEqualityComparer<StorageItem> sharepointStorageItemComparer = new SharepointStorageItemComparer();
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
@@ -30,11 +26,6 @@
         {
             this.externalStorageProvider = externalStorageProvider;
             this.departmentsCalendarsSettings = departmentsCalendarsSettings;
-            this.organizationActor = Context.ActorSelection(OrganizationActorPath);
-
-            Context.System.EventStream.Subscribe<CalendarEventRecoverComplete>(this.Self);
-            Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);
-            Context.System.EventStream.Subscribe<CalendarEventRemoved>(this.Self);
         }
 
         public static Props CreateProps()
@@ -46,16 +37,12 @@
         {
             switch (message)
             {
-                case CalendarEventRecoverComplete msg:
-                    this.OnReceiveEventUpdate(msg.Event);
+                case StoreCalendarEventToSharepoint msg:
+                    this.OnReceiveEventUpdate(msg.Event, msg.EmployeeMetadata);
                     break;
 
-                case CalendarEventChanged msg:
-                    this.OnReceiveEventUpdate(msg.NewEvent);
-                    break;
-
-                case CalendarEventRemoved msg:
-                    this.OnReceiveEventRemove(msg.Event);
+                case RemoveCalendarEventFromSharepoint msg:
+                    this.OnReceiveEventRemove(msg.Event, msg.EmployeeMetadata);
                     break;
 
                 case CalendarEventUpsertSuccess msg:
@@ -80,11 +67,11 @@
             }
         }
 
-        private void OnReceiveEventUpdate(CalendarEvent @event)
+        private void OnReceiveEventUpdate(CalendarEvent @event, EmployeeMetadata employeeMetadata)
         {
             if (this.NeedToStoreCalendarEvent(@event))
             {
-                this.UpsertCalendarEvent(@event)
+                this.UpsertCalendarEvent(@event, employeeMetadata)
                     .PipeTo(
                         this.Self,
                         success: () => new CalendarEventUpsertSuccess(@event),
@@ -92,7 +79,7 @@
             }
             else
             {
-                this.RemoveCalendarEvent(@event)
+                this.RemoveCalendarEvent(@event, employeeMetadata)
                     .PipeTo(
                         this.Self,
                         success: () => new CalendarEventRemoveSuccess(@event),
@@ -100,27 +87,26 @@
             }
         }
 
-        private void OnReceiveEventRemove(CalendarEvent @event)
+        private void OnReceiveEventRemove(CalendarEvent @event, EmployeeMetadata employeeMetadata)
         {
-            this.RemoveCalendarEvent(@event)
+            this.RemoveCalendarEvent(@event, employeeMetadata)
                 .PipeTo(
                     this.Self,
                     success: () => new CalendarEventRemoveSuccess(@event),
                     failure: err => new CalendarEventRemoveFailed(@event, err));
         }
 
-        private async Task UpsertCalendarEvent(CalendarEvent @event)
+        private async Task UpsertCalendarEvent(CalendarEvent @event, EmployeeMetadata employeeMetadata)
         {
-            var employeeMetadata = await this.GetEmployeeMetadata(@event.EmployeeId);
-            var departmentCalendars = this.GetSharepointCalendarsByDepartment(employeeMetadata.DepartmentId);
-
             var externalStorage = this.externalStorageProvider();
+            var departmentCalendars = this.GetSharepointCalendarsByDepartment(employeeMetadata.DepartmentId);
 
             var sharepointTasks = departmentCalendars.Select(async calendar =>
             {
                 var existingItem = await this.GetSharepointItemForCalendarEvent(externalStorage, calendar, @event);
 
                 var upsertItem = this.CalendarEventToStorageItem(@event, employeeMetadata);
+                upsertItem.Id = existingItem?.Id;
 
                 if (existingItem == null)
                 {
@@ -128,7 +114,7 @@
                         calendar,
                         upsertItem);
                 }
-                else
+                else if (!this.sharepointStorageItemComparer.Equals(upsertItem, existingItem))
                 {
                     await externalStorage.UpdateItem(
                         calendar,
@@ -139,12 +125,10 @@
             await Task.WhenAll(sharepointTasks);
         }
 
-        private async Task RemoveCalendarEvent(CalendarEvent @event)
+        private async Task RemoveCalendarEvent(CalendarEvent @event, EmployeeMetadata employeeMetadata)
         {
-            var employeeMetadata = await this.GetEmployeeMetadata(@event.EmployeeId);
-            var departmentCalendars = this.GetSharepointCalendarsByDepartment(employeeMetadata.DepartmentId);
-
             var externalStorage = this.externalStorageProvider();
+            var departmentCalendars = this.GetSharepointCalendarsByDepartment(employeeMetadata.DepartmentId);
 
             var sharepointTasks = departmentCalendars.Select(async calendar =>
             {
@@ -171,24 +155,26 @@
 
         private StorageItem CalendarEventToStorageItem(CalendarEvent @event, EmployeeMetadata employeeMetadata)
         {
+            var startDate = new DateTime(@event.Dates.StartDate.Ticks, DateTimeKind.Utc);
+            var endDate = new DateTime(@event.Dates.EndDate.Ticks, DateTimeKind.Utc);
+            var totalHours = @event.Dates.FinishWorkingHour - @event.Dates.StartWorkingHour;
+
+            var longEventsTitle = $"{employeeMetadata.Name} ({@event.Type})";
+            var shortEventsTitle = $"{employeeMetadata.Name} ({@event.Type}: {totalHours} hours)";
+
+            var title = @event.Type == CalendarEventTypes.Vacation || @event.Type == CalendarEventTypes.Sickleave
+                ? longEventsTitle
+                : shortEventsTitle;
+
             var storageItem = new StorageItem
             {
-                Title = $"{employeeMetadata.Name} ({@event.Type})",
-                StartDate = @event.Dates.StartDate,
-                EndDate = @event.Dates.EndDate,
+                Title = title,
+                StartDate = startDate,
+                EndDate = endDate,
                 Category = @event.Type,
+                AllDayEvent = true,
                 CalendarEventId = @event.EventId
             };
-
-            if (@event.Type == CalendarEventTypes.Workout)
-            {
-                storageItem.StartDate = storageItem.StartDate.AddHours(@event.Dates.StartWorkingHour);
-                storageItem.EndDate = storageItem.EndDate.AddHours(@event.Dates.FinishWorkingHour);
-            }
-            else if (@event.Type == CalendarEventTypes.Dayoff)
-            {
-                storageItem.AllDayEvent = true;
-            }
 
             return storageItem;
         }
@@ -203,14 +189,7 @@
             return actualStatuses.Contains(@event.Status) && !pendingStatuses.Contains(@event.Status);
         }
 
-        private async Task<EmployeeMetadata> GetEmployeeMetadata(string employeeId)
-        {
-            var employeeResponse = await this.organizationActor.Ask<EmployeesQuery.Response>(
-                EmployeesQuery.Create().WithId(employeeId));
-            return employeeResponse.Employees.First().Metadata;
-        }
-
-        private IEnumerable<string> GetSharepointCalendarsByDepartment(string departmentId)
+        private string[] GetSharepointCalendarsByDepartment(string departmentId)
         {
             return this.departmentsCalendarsSettings.DepartmentsCalendars
                 .Where(x => x.DepartmentId == departmentId)
