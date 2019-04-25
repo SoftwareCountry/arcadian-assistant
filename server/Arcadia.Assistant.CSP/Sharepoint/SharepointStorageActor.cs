@@ -9,19 +9,14 @@
     using Akka.Event;
 
     using Arcadia.Assistant.Calendar.Abstractions;
-    using Arcadia.Assistant.Calendar.Abstractions.EventBus;
     using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.ExternalStorages.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions;
-    using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public class SharepointStorageActor : UntypedActor, ILogReceive
     {
-        private const string OrganizationActorPath = @"/user/organization";
-
         private readonly Func<IExternalStorage> externalStorageProvider;
         private readonly ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings;
-        private readonly ActorSelection organizationActor;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
@@ -29,11 +24,6 @@
         {
             this.externalStorageProvider = externalStorageProvider;
             this.departmentsCalendarsSettings = departmentsCalendarsSettings;
-            this.organizationActor = Context.ActorSelection(OrganizationActorPath);
-
-            Context.System.EventStream.Subscribe<CalendarEventRecoverComplete>(this.Self);
-            Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);
-            Context.System.EventStream.Subscribe<CalendarEventRemoved>(this.Self);
         }
 
         public static Props CreateProps()
@@ -45,16 +35,12 @@
         {
             switch (message)
             {
-                case CalendarEventRecoverComplete msg:
-                    this.OnReceiveEventUpdate(msg.Event);
+                case StoreCalendarEventToSharepoint msg:
+                    this.OnReceiveEventUpdate(msg.Event, msg.EmployeeMetadata);
                     break;
 
-                case CalendarEventChanged msg:
-                    this.OnReceiveEventUpdate(msg.NewEvent);
-                    break;
-
-                case CalendarEventRemoved msg:
-                    this.OnReceiveEventRemove(msg.Event);
+                case RemoveCalendarEventFromSharepoint msg:
+                    this.OnReceiveEventRemove(msg.Event, msg.EmployeeMetadata);
                     break;
 
                 case CalendarEventUpsertSuccess msg:
@@ -79,11 +65,11 @@
             }
         }
 
-        private void OnReceiveEventUpdate(CalendarEvent @event)
+        private void OnReceiveEventUpdate(CalendarEvent @event, EmployeeMetadata employeeMetadata)
         {
             if (this.NeedToStoreCalendarEvent(@event))
             {
-                this.UpsertCalendarEvent(@event)
+                this.UpsertCalendarEvent(@event, employeeMetadata)
                     .PipeTo(
                         this.Self,
                         success: () => new CalendarEventUpsertSuccess(@event),
@@ -91,7 +77,7 @@
             }
             else
             {
-                this.RemoveCalendarEvent(@event)
+                this.RemoveCalendarEvent(@event, employeeMetadata)
                     .PipeTo(
                         this.Self,
                         success: () => new CalendarEventRemoveSuccess(@event),
@@ -99,27 +85,19 @@
             }
         }
 
-        private void OnReceiveEventRemove(CalendarEvent @event)
+        private void OnReceiveEventRemove(CalendarEvent @event, EmployeeMetadata employeeMetadata)
         {
-            this.RemoveCalendarEvent(@event)
+            this.RemoveCalendarEvent(@event, employeeMetadata)
                 .PipeTo(
                     this.Self,
                     success: () => new CalendarEventRemoveSuccess(@event),
                     failure: err => new CalendarEventRemoveFailed(@event, err));
         }
 
-        private async Task UpsertCalendarEvent(CalendarEvent @event)
+        private async Task UpsertCalendarEvent(CalendarEvent @event, EmployeeMetadata employeeMetadata)
         {
-            var employeeMetadata = await this.GetEmployeeMetadata(@event.EmployeeId);
-
-            var departmentCalendars = this.GetSharepointCalendarsByDepartment(employeeMetadata.DepartmentId);
-            if (departmentCalendars.Length == 0)
-            {
-                this.logger.Warning($"No Sharepoint calendar mapping is defined for department with id {employeeMetadata.DepartmentId}.");
-                return;
-            }
-
             var externalStorage = this.externalStorageProvider();
+            var departmentCalendars = this.GetSharepointCalendarsByDepartment(employeeMetadata.DepartmentId);
 
             var sharepointTasks = departmentCalendars.Select(async calendar =>
             {
@@ -145,18 +123,10 @@
             await Task.WhenAll(sharepointTasks);
         }
 
-        private async Task RemoveCalendarEvent(CalendarEvent @event)
+        private async Task RemoveCalendarEvent(CalendarEvent @event, EmployeeMetadata employeeMetadata)
         {
-            var employeeMetadata = await this.GetEmployeeMetadata(@event.EmployeeId);
-
-            var departmentCalendars = this.GetSharepointCalendarsByDepartment(employeeMetadata.DepartmentId);
-            if (departmentCalendars.Length == 0)
-            {
-                this.logger.Warning($"No Sharepoint calendar mapping is defined for department with id {employeeMetadata.DepartmentId}.");
-                return;
-            }
-
             var externalStorage = this.externalStorageProvider();
+            var departmentCalendars = this.GetSharepointCalendarsByDepartment(employeeMetadata.DepartmentId);
 
             var sharepointTasks = departmentCalendars.Select(async calendar =>
             {
@@ -215,13 +185,6 @@
             var actualStatuses = calendarEventStatuses.ActualForType(@event.Type);
 
             return actualStatuses.Contains(@event.Status) && !pendingStatuses.Contains(@event.Status);
-        }
-
-        private async Task<EmployeeMetadata> GetEmployeeMetadata(string employeeId)
-        {
-            var employeeResponse = await this.organizationActor.Ask<EmployeesQuery.Response>(
-                EmployeesQuery.Create().WithId(employeeId));
-            return employeeResponse.Employees.First().Metadata;
         }
 
         private string[] GetSharepointCalendarsByDepartment(string departmentId)

@@ -37,7 +37,7 @@
             Context.ActorOf(CspSickLeavesRegistry.CreateProps(), "csp-sick-leaves-registry");
             Context.ActorOf(SickLeaveEndingReminderActor.CreateProps(), "csp-sick-leaves-reminder");
 
-            Context.ActorOf(SharepointStorageActor.CreateProps(), "csp-sharepoint-storage-actor");
+            Context.ActorOf(SharepointActor.CreateProps(), "csp-sharepoint-actor");
         }
 
         protected override void OnReceive(object message)
