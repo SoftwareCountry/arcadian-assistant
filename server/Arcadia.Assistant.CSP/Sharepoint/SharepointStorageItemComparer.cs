@@ -32,8 +32,8 @@
                 string.Equals(x.Id, y.Id) &&
                 string.Equals(x.Title, y.Title) &&
                 string.Equals(x.Description, y.Description) &&
-                x.StartDate.Equals(y.StartDate) &&
-                x.EndDate.Equals(y.EndDate) &&
+                x.StartDate.Date.Equals(y.StartDate.Date) &&
+                x.EndDate.Date.Equals(y.EndDate.Date) &&
                 string.Equals(x.Category, y.Category) &&
                 x.AllDayEvent == y.AllDayEvent &&
                 string.Equals(x.CalendarEventId, y.CalendarEventId);
