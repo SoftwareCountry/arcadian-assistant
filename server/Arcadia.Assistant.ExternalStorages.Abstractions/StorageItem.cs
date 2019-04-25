@@ -61,8 +61,8 @@
                 string.Equals(this.Id, other.Id) &&
                 string.Equals(this.Title, other.Title) &&
                 string.Equals(this.Description, other.Description) &&
-                this.StartDate.Equals(other.StartDate) &&
-                this.EndDate.Equals(other.EndDate) &&
+                this.StartDate.Date.Equals(other.StartDate.Date) &&
+                this.EndDate.Date.Equals(other.EndDate.Date) &&
                 string.Equals(this.Category, other.Category) &&
                 string.Equals(this.CalendarEventId, other.CalendarEventId);
         }

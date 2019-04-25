@@ -153,27 +153,26 @@
 
         private StorageItem CalendarEventToStorageItem(CalendarEvent @event, EmployeeMetadata employeeMetadata)
         {
+            var startDate = new DateTime(@event.Dates.StartDate.Ticks, DateTimeKind.Utc);
+            var endDate = new DateTime(@event.Dates.EndDate.Ticks, DateTimeKind.Utc);
+            var totalHours = @event.Dates.FinishWorkingHour - @event.Dates.StartWorkingHour;
+
+            var longEventsTitle = $"{employeeMetadata.Name} ({@event.Type})";
+            var shortEventsTitle = $"{employeeMetadata.Name} ({@event.Type}: {totalHours} hours)";
+
+            var title = @event.Type == CalendarEventTypes.Vacation || @event.Type == CalendarEventTypes.Sickleave
+                ? longEventsTitle
+                : shortEventsTitle;
+
             var storageItem = new StorageItem
             {
-                Title = $"{employeeMetadata.Name} ({@event.Type})",
-                StartDate = @event.Dates.StartDate.ToUniversalTime(),
-                EndDate = @event.Dates.EndDate.ToUniversalTime(),
+                Title = title,
+                StartDate = startDate,
+                EndDate = endDate,
                 Category = @event.Type,
                 AllDayEvent = true,
                 CalendarEventId = @event.EventId
             };
-
-            if (@event.Type == CalendarEventTypes.Workout || @event.Type == CalendarEventTypes.Dayoff)
-            {
-                storageItem.StartDate = storageItem.StartDate.AddHours(@event.Dates.StartWorkingHour);
-                storageItem.EndDate = storageItem.EndDate.AddHours(@event.Dates.FinishWorkingHour);
-            }
-            else
-            {
-                // All day long Sharepoint feature couldn't be used here, because
-                // it leads to stupid time issues
-                storageItem.EndDate = storageItem.EndDate.AddDays(1);
-            }
 
             return storageItem;
         }

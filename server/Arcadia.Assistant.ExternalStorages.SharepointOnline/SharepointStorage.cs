@@ -175,8 +175,8 @@
                 },
                 Title = item.Title,
                 Description = item.Description,
-                EventDate = item.StartDate.ToUniversalTime().ToString("O"),
-                EndDate = item.EndDate.ToUniversalTime().ToString("O"),
+                EventDate = item.StartDate.ToString("d"),
+                EndDate = item.EndDate.ToString("d"),
                 Category = item.Category,
                 AllDayEvent = item.AllDayEvent,
                 CalendarEventId = item.CalendarEventId
