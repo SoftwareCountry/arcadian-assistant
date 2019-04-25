@@ -45,7 +45,18 @@
         private string GetEqualCamlCondition(BaseCondition equalCondition)
         {
             var sharepointField = this.fieldsMapper.GetSharepointField(equalCondition.Property);
-            return $"{sharepointField} eq '{equalCondition.Value}'";
+            object fieldValue;
+
+            if (equalCondition.Value is DateTime dateTimeValue)
+            {
+                throw new NotImplementedException("Filter by datetime is not supported yet.");
+            }
+            else
+            {
+                fieldValue = equalCondition.Value;
+            }
+
+            return $"{sharepointField} eq '{fieldValue}'";
         }
     }
 }
