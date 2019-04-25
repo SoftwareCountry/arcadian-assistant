@@ -155,8 +155,6 @@
 
         private StorageItem CalendarEventToStorageItem(CalendarEvent @event, EmployeeMetadata employeeMetadata)
         {
-            var startDate = new DateTime(@event.Dates.StartDate.Ticks, DateTimeKind.Utc);
-            var endDate = new DateTime(@event.Dates.EndDate.Ticks, DateTimeKind.Utc);
             var totalHours = @event.Dates.FinishWorkingHour - @event.Dates.StartWorkingHour;
 
             var longEventsTitle = $"{employeeMetadata.Name} ({@event.Type})";
@@ -169,8 +167,8 @@
             var storageItem = new StorageItem
             {
                 Title = title,
-                StartDate = startDate,
-                EndDate = endDate,
+                StartDate = @event.Dates.StartDate,
+                EndDate = @event.Dates.EndDate,
                 Category = @event.Type,
                 AllDayEvent = true,
                 CalendarEventId = @event.EventId
