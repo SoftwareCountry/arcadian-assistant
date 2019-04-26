@@ -26,7 +26,7 @@
         private readonly ActorSelection organizationActor;
 
         private IActorRef originalSender;
-        private string userEmail;
+        private string userIdentity;
 
         public PermissionsActor(ActorSelection organizationActor, TimeSpan timeout)
         {
@@ -41,8 +41,8 @@
             {
                 case GetPermissions p:
                     this.originalSender = this.Sender;
-                    this.userEmail = p.User.Identity.Name;
-                    if (this.userEmail == null)
+                    this.userIdentity = p.User.Identity.Name;
+                    if (this.userIdentity == null)
                     {
                         Log.Debug("Passed user identity is null.");
                         this.ReplyAndStop();
@@ -61,12 +61,12 @@
                 switch (message)
                 {
                     case ReceiveTimeout _:
-                        Log.Debug($"Cannot get permissions for '${this.userEmail}' due to timeout");
+                        Log.Debug($"Cannot get permissions for '${this.userIdentity}' due to timeout");
                         this.ReplyAndStop();
                         break;
 
                     case EmployeesQuery.Response userEmployee when userEmployee.Employees.Count == 0:
-                        Log.Debug($"Cannot find an employee for '{this.userEmail}'");
+                        Log.Debug($"Cannot find an employee for '{this.userIdentity}'");
                         this.ReplyAndStop();
                         break;
 
@@ -85,7 +85,7 @@
                 }
             }
 
-            this.organizationActor.Tell(EmployeesQuery.Create().WithEmail(this.userEmail));
+            this.organizationActor.Tell(EmployeesQuery.Create().WithIdentity(this.userIdentity));
             return OnMessage;
         }
 

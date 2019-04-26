@@ -5,16 +5,19 @@
 
     public class EmployeeMetadata
     {
-        public EmployeeMetadata(string employeeId, string name, string email)
+        public EmployeeMetadata(string employeeId, string name, string identity, string email)
         {
             this.EmployeeId = employeeId;
             this.Name = name;
+            this.Identity = identity;
             this.Email = email;
         }
 
         public string EmployeeId { get; }
 
         public string Name { get; set; }
+
+        public string Identity { get; set; }
 
         public string Email { get; set; }
 
@@ -67,7 +70,8 @@
                 return null;
             }
 
-            if (toDate == null) { 
+            if (toDate == null)
+            {
                 toDate = DateTime.Now;
             }
 
