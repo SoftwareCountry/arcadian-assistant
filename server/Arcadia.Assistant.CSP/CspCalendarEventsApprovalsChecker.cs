@@ -130,7 +130,7 @@
 
         private async Task<EmployeeMetadata> GetEmployee(string employeeId)
         {
-            var allEmployees = await employeesActor.Ask<EmployeesInfoStorage.LoadAllEmployees.Response>(
+            var allEmployees = await this.employeesActor.Ask<EmployeesInfoStorage.LoadAllEmployees.Response>(
                 EmployeesInfoStorage.LoadAllEmployees.Instance
             );
 
@@ -141,7 +141,7 @@
 
         private async Task<List<DepartmentInfo>> GetDepartments()
         {
-            var allDepartmentsResponse = await departmentsActor.Ask<DepartmentsStorage.LoadAllDepartments.Response>(
+            var allDepartmentsResponse = await this.departmentsActor.Ask<DepartmentsStorage.LoadAllDepartments.Response>(
                 DepartmentsStorage.LoadAllDepartments.Instance
             );
             return allDepartmentsResponse.Departments.ToList();
