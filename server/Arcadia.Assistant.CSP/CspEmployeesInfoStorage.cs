@@ -56,7 +56,7 @@
                 var employees = await new CspEmployeeQuery(context)
                     .Get()
                     .Select(x => new EmployeeStoredInformation(
-                        new EmployeeMetadata(x.Id.ToString(), $"{x.LastName} {x.FirstName}".Trim(), x.Email)
+                        new EmployeeMetadata(x.Id.ToString(), $"{x.LastName} {x.FirstName}".Trim(), x.LoginName + "@arcadia.spb.ru", x.Email)
                         {
                             BirthDate = x.Birthday,
                             HireDate = x.HiringDate,

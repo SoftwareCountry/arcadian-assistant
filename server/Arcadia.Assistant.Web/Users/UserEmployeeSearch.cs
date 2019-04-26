@@ -26,7 +26,7 @@
                 return null;
             }
 
-            var query = EmployeesQuery.Create().WithEmail(user.Identity.Name);
+            var query = EmployeesQuery.Create().WithIdentity(user.Identity.Name);
             var employees = await this.employeesRegistry.SearchAsync(query, cancellationToken);
 
             return employees.SingleOrDefault();

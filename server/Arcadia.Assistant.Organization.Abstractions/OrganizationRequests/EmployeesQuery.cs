@@ -14,7 +14,7 @@
 
         public string Sid { get; private set; }
 
-        public string Email { get; private set; }
+        public string Identity { get; private set; }
 
         public string NameFilter { get; private set; }
 
@@ -57,10 +57,10 @@
             return obj;
         }
 
-        public EmployeesQuery WithEmail(string email)
+        public EmployeesQuery WithIdentity(string identity)
         {
             var obj = this.Clone();
-            obj.Email = email;
+            obj.Identity = identity;
             return obj;
         }
 
@@ -101,7 +101,7 @@
             newObj.BirthDate = this.BirthDate;
             newObj.HireDate = this.HireDate;
             newObj.Sid = this.Sid;
-            newObj.Email = this.Email;
+            newObj.Identity = this.Identity;
 
             return newObj;
         }
