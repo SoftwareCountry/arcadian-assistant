@@ -22,8 +22,8 @@
 
         public CspCalendarEventsApprovalsChecker(IMemoryCache memoryCache)
         {
-            this.departmentsActor = Context.ActorOf(CachedDepartmentsStorage.CreateProps(memoryCache));
-            this.employeesActor = Context.ActorOf(CachedEmployeesInfoStorage.CreateProps(memoryCache));
+            this.departmentsActor = Context.ActorOf(CachedDepartmentsStorage.CreateProps(memoryCache, enablePeriodicalRefresh: true));
+            this.employeesActor = Context.ActorOf(CachedEmployeesInfoStorage.CreateProps(memoryCache, enablePeriodicalRefresh: true));
         }
 
         protected override async Task<string> GetNextApprover(string employeeId, IEnumerable<string> existingApprovals, string eventType)

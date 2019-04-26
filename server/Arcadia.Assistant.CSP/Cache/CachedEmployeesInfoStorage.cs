@@ -19,23 +19,44 @@
         private readonly int cachePeriodInMinutes;
         private readonly ActorSelection employeesStorageActor;
 
-        public CachedEmployeesInfoStorage(IMemoryCache memoryCache, int cachePeriodInMinutes)
+        public CachedEmployeesInfoStorage(IMemoryCache memoryCache, int cachePeriodInMinutes, bool enablePeriodicalRefresh)
         {
             this.memoryCache = memoryCache;
             this.cachePeriodInMinutes = cachePeriodInMinutes;
             this.employeesStorageActor = Context.ActorSelection(EmployeesStorageActorPath);
+
+            if (enablePeriodicalRefresh)
+            {
+                var scheduleTimeSpan = TimeSpan.FromSeconds(cachePeriodInMinutes);
+
+                Context.System.Scheduler.ScheduleTellRepeatedly(
+                    TimeSpan.Zero,
+                    scheduleTimeSpan,
+                    this.Self,
+                    RefreshEmployees.Instance,
+                    this.Self);
+            }
         }
 
-        public static Props CreateProps(IMemoryCache memoryCache, int cachePeriodInMinutes = DefaultCachePeriodInMinutes)
+        public static Props CreateProps(IMemoryCache memoryCache, int cachePeriodInMinutes = DefaultCachePeriodInMinutes, bool enablePeriodicalRefresh = false)
         {
-            return Props.Create(() => new CachedEmployeesInfoStorage(memoryCache, cachePeriodInMinutes));
+            return Props.Create(() => new CachedEmployeesInfoStorage(memoryCache, cachePeriodInMinutes, enablePeriodicalRefresh));
         }
 
         protected override void OnReceive(object message)
         {
             switch (message)
             {
-                case EmployeesInfoStorage.LoadAllEmployees msg:
+                case RefreshEmployees _:
+                    this.GetEmployeesResponse().PipeTo(
+                        this.Self,
+                        success: () => RefreshEmployees.Success.Instance);
+                    break;
+
+                case RefreshEmployees.Success _:
+                    break;
+
+                case EmployeesInfoStorage.LoadAllEmployees _:
                     this.GetEmployeesResponse().PipeTo(this.Sender);
                     break;
 
@@ -73,6 +94,16 @@
         private void SetToCache(EmployeesInfoStorage.LoadAllEmployees.Response value)
         {
             this.memoryCache.Set(EmployeesResponseCacheKey, value, TimeSpan.FromMinutes(this.cachePeriodInMinutes));
+        }
+
+        private class RefreshEmployees
+        {
+            public static readonly RefreshEmployees Instance = new RefreshEmployees();
+
+            public class Success
+            {
+                public static readonly Success Instance = new Success();
+            }
         }
     }
 }
