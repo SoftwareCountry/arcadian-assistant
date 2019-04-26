@@ -8,22 +8,28 @@
     using Akka.Actor;
 
     using Arcadia.Assistant.Calendar.Abstractions;
+    using Arcadia.Assistant.CSP.Cache;
     using Arcadia.Assistant.Organization.Abstractions;
+
+    using Microsoft.Extensions.Caching.Memory;
 
     public class CspCalendarEventsApprovalsChecker : CalendarEventsApprovalsChecker
     {
-        private const string DepartmentsStorageActorPath = @"/user/organization/departments/departments-storage";
-        private const string EmployeesStorageActorPath = @"/user/organization/employees/employees-storage";
-
         private readonly Regex sdoDepartmentRegex = new Regex(@"SDO\..+\..+");
+
+        private readonly IActorRef departmentsActor;
+        private readonly IActorRef employeesActor;
+
+        public CspCalendarEventsApprovalsChecker(IMemoryCache memoryCache)
+        {
+            this.departmentsActor = Context.ActorOf(CachedDepartmentsStorage.CreateProps(memoryCache));
+            this.employeesActor = Context.ActorOf(CachedEmployeesInfoStorage.CreateProps(memoryCache));
+        }
 
         protected override async Task<string> GetNextApprover(string employeeId, IEnumerable<string> existingApprovals, string eventType)
         {
-            var employeesActor = Context.ActorSelection(EmployeesStorageActorPath);
-            var departmentsActor = Context.ActorSelection(DepartmentsStorageActorPath);
-
-            var allDepartments = await this.GetDepartments(departmentsActor);
-            var employeeMetadata = await this.GetEmployee(employeesActor, employeeId);
+            var allDepartments = await this.GetDepartments();
+            var employeeMetadata = await this.GetEmployee(employeeId);
 
             if (employeeMetadata == null)
             {
@@ -120,7 +126,7 @@
             return preliminaryApprover ?? finalApprover;
         }
 
-        private async Task<EmployeeMetadata> GetEmployee(ActorSelection employeesActor, string employeeId)
+        private async Task<EmployeeMetadata> GetEmployee(string employeeId)
         {
             var allEmployees = await employeesActor.Ask<EmployeesInfoStorage.LoadAllEmployees.Response>(
                 EmployeesInfoStorage.LoadAllEmployees.Instance
@@ -131,7 +137,7 @@
                 ?.Metadata;
         }
 
-        private async Task<List<DepartmentInfo>> GetDepartments(ActorSelection departmentsActor)
+        private async Task<List<DepartmentInfo>> GetDepartments()
         {
             var allDepartmentsResponse = await departmentsActor.Ask<DepartmentsStorage.LoadAllDepartments.Response>(
                 DepartmentsStorage.LoadAllDepartments.Instance
