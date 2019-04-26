@@ -110,7 +110,7 @@
                 return false;
             }
 
-            if ((query.Email != null) && !string.Equals(employee.Email, query.Email, StringComparison.InvariantCultureIgnoreCase))
+            if ((query.Identity != null) && !string.Equals(employee.Identity, query.Identity, StringComparison.InvariantCultureIgnoreCase))
             {
                 return false;
             }
