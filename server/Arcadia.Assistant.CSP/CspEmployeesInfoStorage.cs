@@ -53,7 +53,7 @@
 
         private async Task<LoadAllEmployees.Response> GetAllEmployeesInternal()
         {
-            var userIdentityDomain = $"@{this.cspConfiguration.UserIdentityDomain}";
+            var userIdentityDomain = this.cspConfiguration.UserIdentityDomain;
 
             using (var context = this.contextFactory())
             {
@@ -63,7 +63,7 @@
                         new EmployeeMetadata(
                             x.Id.ToString(),
                             $"{x.LastName} {x.FirstName}".Trim(),
-                            $"{x.LoginName}{userIdentityDomain}",
+                            $"{x.LoginName}@{userIdentityDomain}",
                             x.Email
                         )
                         {
