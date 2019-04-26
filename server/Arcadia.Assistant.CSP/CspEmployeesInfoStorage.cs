@@ -13,11 +13,13 @@
     public class CspEmployeesInfoStorage : EmployeesInfoStorage
     {
         private readonly Func<ArcadiaCspContext> contextFactory;
+        private readonly CspConfiguration cspConfiguration;
         private string lastErrorMessage;
 
-        public CspEmployeesInfoStorage(Func<ArcadiaCspContext> contextFactory)
+        public CspEmployeesInfoStorage(Func<ArcadiaCspContext> contextFactory, CspConfiguration cspConfiguration)
         {
             this.contextFactory = contextFactory;
+            this.cspConfiguration = cspConfiguration;
         }
 
         protected override void OnReceive(object message)
@@ -51,12 +53,19 @@
 
         private async Task<LoadAllEmployees.Response> GetAllEmployeesInternal()
         {
+            var userIdentityDomain = $"@{this.cspConfiguration.UserIdentityDomain}";
+
             using (var context = this.contextFactory())
             {
                 var employees = await new CspEmployeeQuery(context)
                     .Get()
                     .Select(x => new EmployeeStoredInformation(
-                        new EmployeeMetadata(x.Id.ToString(), $"{x.LastName} {x.FirstName}".Trim(), x.LoginName + "@arcadia.spb.ru", x.Email)
+                        new EmployeeMetadata(
+                            x.Id.ToString(),
+                            $"{x.LastName} {x.FirstName}".Trim(),
+                            $"{x.LoginName}{userIdentityDomain}",
+                            x.Email
+                        )
                         {
                             BirthDate = x.Birthday,
                             HireDate = x.HiringDate,
@@ -71,7 +80,8 @@
                                 : x.Gender == "F"
                                     ? Sex.Female
                                     : Sex.Undefined
-                        })
+                        }
+                    )
                     {
                         Photo = x.Image
                     })
