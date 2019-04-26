@@ -1,5 +1,6 @@
 ﻿namespace Arcadia.Assistant.CSP
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.RegularExpressions;
@@ -8,6 +9,7 @@
     using Akka.Actor;
 
     using Arcadia.Assistant.Calendar.Abstractions;
+    using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.CSP.Cache;
     using Arcadia.Assistant.Organization.Abstractions;
 
@@ -20,10 +22,10 @@
         private readonly IActorRef departmentsActor;
         private readonly IActorRef employeesActor;
 
-        public CspCalendarEventsApprovalsChecker(IMemoryCache memoryCache)
+        public CspCalendarEventsApprovalsChecker(IMemoryCache memoryCache, IRefreshInformation refreshInformation)
         {
-            this.departmentsActor = Context.ActorOf(CachedDepartmentsStorage.CreateProps(memoryCache, enablePeriodicalRefresh: true));
-            this.employeesActor = Context.ActorOf(CachedEmployeesInfoStorage.CreateProps(memoryCache, enablePeriodicalRefresh: true));
+            this.departmentsActor = Context.ActorOf(CachedDepartmentsStorage.CreateProps(memoryCache, TimeSpan.FromMinutes(refreshInformation.IntervalInMinutes), true));
+            this.employeesActor = Context.ActorOf(CachedEmployeesInfoStorage.CreateProps(memoryCache, TimeSpan.FromMinutes(refreshInformation.IntervalInMinutes), true));
         }
 
         protected override async Task<string> GetNextApprover(string employeeId, IEnumerable<string> existingApprovals, string eventType)

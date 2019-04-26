@@ -16,31 +16,30 @@
         private const string DepartmentsStorageActorPath = @"/user/organization/departments/departments-storage";
 
         private readonly IMemoryCache memoryCache;
-        private readonly int cachePeriodInMinutes;
+        private readonly TimeSpan cachePeriod;
         private readonly ActorSelection departmentsActor;
 
-        public CachedDepartmentsStorage(IMemoryCache memoryCache, int cachePeriodInMinutes, bool enablePeriodicalRefresh)
+        public CachedDepartmentsStorage(IMemoryCache memoryCache, TimeSpan cachePeriod, bool enablePeriodicalRefresh)
         {
             this.memoryCache = memoryCache;
-            this.cachePeriodInMinutes = cachePeriodInMinutes;
+            this.cachePeriod = cachePeriod;
             this.departmentsActor = Context.ActorSelection(DepartmentsStorageActorPath);
 
             if (enablePeriodicalRefresh)
             {
-                var scheduleTimeSpan = TimeSpan.FromSeconds(cachePeriodInMinutes);
-
                 Context.System.Scheduler.ScheduleTellRepeatedly(
                     TimeSpan.Zero,
-                    scheduleTimeSpan,
+                    cachePeriod,
                     this.Self,
                     RefreshDepartments.Instance,
                     this.Self);
             }
         }
 
-        public static Props CreateProps(IMemoryCache memoryCache, int cachePeriodInMinutes = DefaultCachePeriodInMinutes, bool enablePeriodicalRefresh = false)
+        public static Props CreateProps(IMemoryCache memoryCache, TimeSpan? cachePeriod = null, bool enablePeriodicalRefresh = false)
         {
-            return Props.Create(() => new CachedDepartmentsStorage(memoryCache, cachePeriodInMinutes, enablePeriodicalRefresh));
+            cachePeriod = cachePeriod ?? TimeSpan.FromMinutes(DefaultCachePeriodInMinutes);
+            return Props.Create(() => new CachedDepartmentsStorage(memoryCache, cachePeriod.Value, enablePeriodicalRefresh));
         }
 
         protected override void OnReceive(object message)
@@ -93,7 +92,7 @@
 
         private void SetToCache(DepartmentsStorage.LoadAllDepartments.Response value)
         {
-            this.memoryCache.Set(DepartmentsResponseCacheKey, value, TimeSpan.FromMinutes(this.cachePeriodInMinutes));
+            this.memoryCache.Set(DepartmentsResponseCacheKey, value, this.cachePeriod);
         }
 
         private class RefreshDepartments

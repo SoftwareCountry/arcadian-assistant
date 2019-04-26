@@ -16,31 +16,30 @@
         private const string EmployeesStorageActorPath = @"/user/organization/employees/employees-storage";
 
         private readonly IMemoryCache memoryCache;
-        private readonly int cachePeriodInMinutes;
+        private readonly TimeSpan cachePeriod;
         private readonly ActorSelection employeesStorageActor;
 
-        public CachedEmployeesInfoStorage(IMemoryCache memoryCache, int cachePeriodInMinutes, bool enablePeriodicalRefresh)
+        public CachedEmployeesInfoStorage(IMemoryCache memoryCache, TimeSpan cachePeriod, bool enablePeriodicalRefresh)
         {
             this.memoryCache = memoryCache;
-            this.cachePeriodInMinutes = cachePeriodInMinutes;
+            this.cachePeriod = cachePeriod;
             this.employeesStorageActor = Context.ActorSelection(EmployeesStorageActorPath);
 
             if (enablePeriodicalRefresh)
             {
-                var scheduleTimeSpan = TimeSpan.FromSeconds(cachePeriodInMinutes);
-
                 Context.System.Scheduler.ScheduleTellRepeatedly(
                     TimeSpan.Zero,
-                    scheduleTimeSpan,
+                    cachePeriod,
                     this.Self,
                     RefreshEmployees.Instance,
                     this.Self);
             }
         }
 
-        public static Props CreateProps(IMemoryCache memoryCache, int cachePeriodInMinutes = DefaultCachePeriodInMinutes, bool enablePeriodicalRefresh = false)
+        public static Props CreateProps(IMemoryCache memoryCache, TimeSpan? cachePeriod = null, bool enablePeriodicalRefresh = false)
         {
-            return Props.Create(() => new CachedEmployeesInfoStorage(memoryCache, cachePeriodInMinutes, enablePeriodicalRefresh));
+            cachePeriod = cachePeriod ?? TimeSpan.FromMinutes(DefaultCachePeriodInMinutes);
+            return Props.Create(() => new CachedEmployeesInfoStorage(memoryCache, cachePeriod.Value, enablePeriodicalRefresh));
         }
 
         protected override void OnReceive(object message)
@@ -93,7 +92,7 @@
 
         private void SetToCache(EmployeesInfoStorage.LoadAllEmployees.Response value)
         {
-            this.memoryCache.Set(EmployeesResponseCacheKey, value, TimeSpan.FromMinutes(this.cachePeriodInMinutes));
+            this.memoryCache.Set(EmployeesResponseCacheKey, value, this.cachePeriod);
         }
 
         private class RefreshEmployees
