@@ -36,6 +36,8 @@
             switch (message)
             {
                 case Refresh _:
+                    this.Become(this.OnRefreshReceive);
+
                     this.LoadValue().PipeTo(
                         this.Self,
                         success: value =>
@@ -44,12 +46,6 @@
                             return Refresh.Success.Instance;
                         },
                         failure: err => new Refresh.Failure(err));
-                    break;
-
-                case Refresh.Success _:
-                    break;
-
-                case Refresh.Failure _:
                     break;
 
                 default:
@@ -76,6 +72,30 @@
         protected void SetToCache(object value)
         {
             this.memoryCache.Set(this.CacheKey, value, this.cachePeriod);
+        }
+
+        private void OnRefreshReceive(object message)
+        {
+            switch (message)
+            {
+                case Refresh.Success _:
+                    this.BecomeDefault();
+                    break;
+
+                case Refresh.Failure _:
+                    this.BecomeDefault();
+                    break;
+
+                default:
+                    this.Stash.Stash();
+                    break;
+            }
+        }
+
+        private void BecomeDefault()
+        {
+            this.Stash.UnstashAll();
+            this.Become(this.OnReceive);
         }
 
         protected class Refresh
