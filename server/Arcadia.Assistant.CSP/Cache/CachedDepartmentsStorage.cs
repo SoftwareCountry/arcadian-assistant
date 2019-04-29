@@ -60,7 +60,7 @@
                     break;
 
                 default:
-                    this.departmentsActor.Anchor.Forward(message);
+                    this.departmentsActor.Tell(message, this.Sender);
                     break;
             }
         }

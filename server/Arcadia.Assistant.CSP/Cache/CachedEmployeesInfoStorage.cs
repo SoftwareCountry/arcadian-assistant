@@ -60,7 +60,7 @@
                     break;
 
                 default:
-                    this.employeesStorageActor.Anchor.Forward(message);
+                    this.employeesStorageActor.Tell(message, this.Sender);
                     break;
             }
         }
