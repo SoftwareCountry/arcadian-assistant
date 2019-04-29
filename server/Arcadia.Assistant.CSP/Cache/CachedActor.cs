@@ -4,6 +4,7 @@
     using System.Threading.Tasks;
 
     using Akka.Actor;
+    using Akka.Event;
 
     using Microsoft.Extensions.Caching.Memory;
 
@@ -11,6 +12,8 @@
     {
         private readonly IMemoryCache memoryCache;
         private readonly TimeSpan cachePeriod;
+
+        private readonly ILoggingAdapter logger = Context.GetLogger();
 
         protected CachedActor(IMemoryCache memoryCache, TimeSpan cachePeriod)
         {
@@ -82,7 +85,8 @@
                     this.BecomeDefault();
                     break;
 
-                case Refresh.Failure _:
+                case Refresh.Failure msg:
+                    this.logger.Warning($"Exception thrown on cache refresh in {this.Self.Path}: {msg.Exception}");
                     this.BecomeDefault();
                     break;
 
