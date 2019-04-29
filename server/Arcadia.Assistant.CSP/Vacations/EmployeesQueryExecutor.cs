@@ -12,10 +12,12 @@
     public class EmployeesQueryExecutor
     {
         private readonly Func<ArcadiaCspContext> contextFactory;
+        private readonly CspConfiguration cspConfiguration;
 
-        public EmployeesQueryExecutor(Func<ArcadiaCspContext> contextFactory)
+        public EmployeesQueryExecutor(Func<ArcadiaCspContext> contextFactory, CspConfiguration cspConfiguration)
         {
             this.contextFactory = contextFactory;
+            this.cspConfiguration = cspConfiguration;
         }
 
         public async Task<IEnumerable<CspEmployeeRecord>> Fetch()
@@ -28,7 +30,7 @@
         {
             using (var ctx = this.contextFactory())
             {
-                var arcEmployees = new CspEmployeeQuery(ctx)
+                var arcEmployees = new CspEmployeeQuery(ctx, this.cspConfiguration)
                     .Get()
                     .Where(x => x.Email != null);
                 return await arcEmployees.Select(

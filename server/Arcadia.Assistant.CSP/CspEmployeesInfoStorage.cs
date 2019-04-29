@@ -57,7 +57,7 @@
 
             using (var context = this.contextFactory())
             {
-                var employees = await new CspEmployeeQuery(context)
+                var employees = await new CspEmployeeQuery(context, this.cspConfiguration)
                     .Get()
                     .Select(x => new EmployeeStoredInformation(
                         new EmployeeMetadata(

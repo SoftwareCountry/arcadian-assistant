@@ -8,18 +8,22 @@
 
     public class CspEmployeeQuery
     {
-        private readonly ArcadiaCspContext ctx;
+        private const int ArcadyKhotinEmployeeId = 145;
 
-        public CspEmployeeQuery(ArcadiaCspContext ctx)
+        private readonly ArcadiaCspContext ctx;
+        private readonly CspConfiguration cspConfiguration;
+
+        public CspEmployeeQuery(ArcadiaCspContext ctx, CspConfiguration cspConfiguration)
         {
             this.ctx = ctx;
+            this.cspConfiguration = cspConfiguration;
         }
 
         public IQueryable<Employee> Get()
         {
             return this.ctx.Employee
                 .AsNoTracking()
-                .Where(x => x.FiringDate == null && !x.IsDelete && x.CompanyId == 154 || x.Id == 145); // Don't really know what these constants are about, just copied from ArcadianEmployee view
+                .Where(x => x.FiringDate == null && !x.IsDelete && x.CompanyId == this.cspConfiguration.CompanyId || x.Id == ArcadyKhotinEmployeeId);
         }
     }
 }
