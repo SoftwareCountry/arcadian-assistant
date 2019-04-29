@@ -12,7 +12,7 @@
 
         public override Task TokenValidated(TokenValidatedContext context)
         {
-            this.logger.Warn($"JWT token validated. User identity: {context.Principal.Identity.Name}");
+            this.logger.Trace($"JWT token validated. User identity: {context.Principal.Identity.Name}");
             return base.TokenValidated(context);
         }
 
