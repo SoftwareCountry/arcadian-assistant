@@ -9,9 +9,13 @@
 
     using Microsoft.AspNetCore.Authorization;
 
+    using NLog;
+
     public class UserIsEmployeeHandler : AuthorizationHandler<UserIsEmployeeRequirement>
     {
         private readonly IUserEmployeeSearch search;
+
+        private readonly ILogger logger = LogManager.GetLogger("Auth");
 
         public UserIsEmployeeHandler(IUserEmployeeSearch search)
         {
@@ -30,6 +34,10 @@
             if (employee != null)
             {
                 context.Succeed(requirement);
+            }
+            else
+            {
+                this.logger.Trace($"Employee not found in the database for the user with identity {context.User.Identity.Name}");
             }
         }
     }

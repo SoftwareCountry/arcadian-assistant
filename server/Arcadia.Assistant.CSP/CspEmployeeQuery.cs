@@ -8,18 +8,22 @@
 
     public class CspEmployeeQuery
     {
+        private const int ArcadyKhotinEmployeeId = 145;
+
         private readonly ArcadiaCspContext ctx;
+        private readonly CspConfiguration cspConfiguration;
 
-        public const string ArcadianEmployeeQuery = "SELECT * FROM dbo.ArcadianEmployee WHERE IsDelete <> 1";
-
-        public CspEmployeeQuery(ArcadiaCspContext ctx)
+        public CspEmployeeQuery(ArcadiaCspContext ctx, CspConfiguration cspConfiguration)
         {
             this.ctx = ctx;
+            this.cspConfiguration = cspConfiguration;
         }
 
         public IQueryable<Employee> Get()
         {
-            return this.ctx.Employee.FromSql(ArcadianEmployeeQuery);
+            return this.ctx.Employee
+                .AsNoTracking()
+                .Where(x => x.FiringDate == null && !x.IsDelete && x.CompanyId == this.cspConfiguration.CompanyId || x.Id == ArcadyKhotinEmployeeId);
         }
     }
 }
