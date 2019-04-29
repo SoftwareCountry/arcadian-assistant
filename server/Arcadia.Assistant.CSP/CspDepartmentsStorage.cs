@@ -90,7 +90,7 @@
         {
             using (var context = this.contextFactory())
             {
-                var arcEmployees = new CspEmployeeQuery(context).Get();
+                var arcEmployees = new CspEmployeeQuery(context, this.configuration).Get();
 
                 var allDepartments = await context
                     .Department
