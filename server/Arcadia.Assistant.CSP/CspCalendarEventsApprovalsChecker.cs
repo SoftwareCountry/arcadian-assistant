@@ -13,8 +13,6 @@
     using Arcadia.Assistant.CSP.Cache;
     using Arcadia.Assistant.Organization.Abstractions;
 
-    using Microsoft.Extensions.Caching.Memory;
-
     public class CspCalendarEventsApprovalsChecker : CalendarEventsApprovalsChecker
     {
         private readonly Regex sdoDepartmentRegex = new Regex(@"SDO\..+\..+");
@@ -22,7 +20,7 @@
         private readonly IActorRef departmentsActor;
         private readonly IActorRef employeesActor;
 
-        public CspCalendarEventsApprovalsChecker(IMemoryCache memoryCache, IRefreshInformation refreshInformation)
+        public CspCalendarEventsApprovalsChecker(MemoryCache memoryCache, IRefreshInformation refreshInformation)
         {
             this.departmentsActor = Context.ActorOf(CachedDepartmentsStorage.CreateProps(memoryCache, TimeSpan.FromMinutes(refreshInformation.IntervalInMinutes), true));
             this.employeesActor = Context.ActorOf(CachedEmployeesInfoStorage.CreateProps(memoryCache, TimeSpan.FromMinutes(refreshInformation.IntervalInMinutes), true));
