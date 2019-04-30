@@ -38,6 +38,7 @@
 
             var services = new ServiceCollection();
             services.AddHttpClient();
+            services.AddMemoryCache();
 
             var di = new DependencyInjection();
 
