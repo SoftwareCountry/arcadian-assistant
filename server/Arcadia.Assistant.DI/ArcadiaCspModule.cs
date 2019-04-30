@@ -6,6 +6,7 @@
     using Arcadia.Assistant.Calendar.Abstractions.EmployeeVacations;
     using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.CSP;
+    using Arcadia.Assistant.CSP.Cache;
     using Arcadia.Assistant.CSP.Configuration;
     using Arcadia.Assistant.CSP.Sharepoint;
     using Arcadia.Assistant.CSP.SickLeaves;
@@ -60,6 +61,7 @@
             builder.RegisterType<CspCalendarEventIdParser>().AsSelf();
             builder.RegisterType<SharepointActor>().AsSelf();
             builder.RegisterType<SharepointStorageActor>().AsSelf();
+            builder.RegisterType<MemoryCache>().AsSelf().SingleInstance();
 
             builder.RegisterType<CspEmployeeVacationsRegistryPropsFactory>().As<IEmployeeVacationsRegistryPropsFactory>();
             builder.RegisterType<CspEmployeeSickLeavesRegistryPropsFactory>().As<IEmployeeSickLeavesRegistryPropsFactory>();
