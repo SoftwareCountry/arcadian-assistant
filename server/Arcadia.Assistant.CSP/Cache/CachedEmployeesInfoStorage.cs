@@ -9,7 +9,7 @@
 
     using Microsoft.Extensions.Caching.Memory;
 
-    public class CachedEmployeesInfoStorage : UntypedActor, ILogReceive
+    public class CachedEmployeesInfoStorage : UntypedActor, ILogReceive, IWithUnboundedStash
     {
         private const int DefaultCachePeriodInMinutes = 10;
         private const string EmployeesResponseCacheKey = "AllEmployeesResponse";
@@ -36,6 +36,8 @@
             }
         }
 
+        public IStash Stash { get; set; }
+
         public static Props CreateProps(IMemoryCache memoryCache, TimeSpan? cachePeriod = null, bool enablePeriodicalRefresh = false)
         {
             cachePeriod = cachePeriod ?? TimeSpan.FromMinutes(DefaultCachePeriodInMinutes);
@@ -47,12 +49,11 @@
             switch (message)
             {
                 case RefreshEmployees _:
+                    this.Become(this.OnRefreshReceive);
+
                     this.GetEmployeesResponse().PipeTo(
                         this.Self,
                         success: () => RefreshEmployees.Success.Instance);
-                    break;
-
-                case RefreshEmployees.Success _:
                     break;
 
                 case EmployeesInfoStorage.LoadAllEmployees _:
@@ -63,6 +64,26 @@
                     this.employeesStorageActor.Tell(message, this.Sender);
                     break;
             }
+        }
+
+        private void OnRefreshReceive(object message)
+        {
+            switch (message)
+            {
+                case RefreshEmployees.Success _:
+                    this.BecomeDefault();
+                    break;
+
+                default:
+                    this.Stash.Stash();
+                    break;
+            }
+        }
+
+        private void BecomeDefault()
+        {
+            this.Stash.UnstashAll();
+            this.Become(this.OnReceive);
         }
 
         private async Task<EmployeesInfoStorage.LoadAllEmployees.Response> GetEmployeesResponse()

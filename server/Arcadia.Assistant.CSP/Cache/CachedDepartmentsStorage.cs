@@ -9,7 +9,7 @@
 
     using Microsoft.Extensions.Caching.Memory;
 
-    public class CachedDepartmentsStorage : UntypedActor, ILogReceive
+    public class CachedDepartmentsStorage : UntypedActor, ILogReceive, IWithUnboundedStash
     {
         private const int DefaultCachePeriodInMinutes = 10;
         private const string DepartmentsResponseCacheKey = "AllDepartmentsResponse";
@@ -36,6 +36,8 @@
             }
         }
 
+        public IStash Stash { get; set; }
+
         public static Props CreateProps(IMemoryCache memoryCache, TimeSpan? cachePeriod = null, bool enablePeriodicalRefresh = false)
         {
             cachePeriod = cachePeriod ?? TimeSpan.FromMinutes(DefaultCachePeriodInMinutes);
@@ -47,12 +49,11 @@
             switch (message)
             {
                 case RefreshDepartments _:
+                    this.Become(this.OnRefreshReceive);
+
                     this.GetDepartmentsResponse().PipeTo(
                         this.Self,
                         success: () => RefreshDepartments.Success.Instance);
-                    break;
-
-                case RefreshDepartments.Success _:
                     break;
 
                 case DepartmentsStorage.LoadAllDepartments _:
@@ -63,6 +64,26 @@
                     this.departmentsActor.Tell(message, this.Sender);
                     break;
             }
+        }
+
+        private void OnRefreshReceive(object message)
+        {
+            switch (message)
+            {
+                case RefreshDepartments.Success _:
+                    this.BecomeDefault();
+                    break;
+
+                default:
+                    this.Stash.Stash();
+                    break;
+            }
+        }
+
+        private void BecomeDefault()
+        {
+            this.Stash.UnstashAll();
+            this.Become(this.OnReceive);
         }
 
         private async Task<DepartmentsStorage.LoadAllDepartments.Response> GetDepartmentsResponse()
