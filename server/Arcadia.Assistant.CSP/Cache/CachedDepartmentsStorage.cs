@@ -7,18 +7,22 @@
 
     using Arcadia.Assistant.Organization.Abstractions;
 
+    using Microsoft.Extensions.Caching.Memory;
+
     public class CachedDepartmentsStorage : UntypedActor, ILogReceive, IWithUnboundedStash
     {
         private const int DefaultCachePeriodInMinutes = 10;
         private const string DepartmentsResponseCacheKey = "AllDepartmentsResponse";
         private const string DepartmentsStorageActorPath = @"/user/organization/departments/departments-storage";
 
-        private readonly MemoryCache memoryCache;
+        private readonly IMemoryCache memoryCache;
+        private readonly TimeSpan cachePeriod;
         private readonly ActorSelection departmentsActor;
 
-        public CachedDepartmentsStorage(MemoryCache memoryCache, TimeSpan cachePeriod, bool enablePeriodicalRefresh)
+        public CachedDepartmentsStorage(IMemoryCache memoryCache, TimeSpan cachePeriod, bool enablePeriodicalRefresh)
         {
             this.memoryCache = memoryCache;
+            this.cachePeriod = cachePeriod;
             this.departmentsActor = Context.ActorSelection(DepartmentsStorageActorPath);
 
             if (enablePeriodicalRefresh)
@@ -34,7 +38,7 @@
 
         public IStash Stash { get; set; }
 
-        public static Props CreateProps(MemoryCache memoryCache, TimeSpan? cachePeriod = null, bool enablePeriodicalRefresh = false)
+        public static Props CreateProps(IMemoryCache memoryCache, TimeSpan? cachePeriod = null, bool enablePeriodicalRefresh = false)
         {
             cachePeriod = cachePeriod ?? TimeSpan.FromMinutes(DefaultCachePeriodInMinutes);
             return Props.Create(() => new CachedDepartmentsStorage(memoryCache, cachePeriod.Value, enablePeriodicalRefresh));
@@ -109,7 +113,7 @@
 
         private void SetToCache(DepartmentsStorage.LoadAllDepartments.Response value)
         {
-            this.memoryCache.Set(DepartmentsResponseCacheKey, value);
+            this.memoryCache.Set(DepartmentsResponseCacheKey, value, this.cachePeriod);
         }
 
         private class RefreshDepartments

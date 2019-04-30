@@ -7,18 +7,22 @@
 
     using Arcadia.Assistant.Organization.Abstractions;
 
+    using Microsoft.Extensions.Caching.Memory;
+
     public class CachedEmployeesInfoStorage : UntypedActor, ILogReceive, IWithUnboundedStash
     {
         private const int DefaultCachePeriodInMinutes = 10;
         private const string EmployeesResponseCacheKey = "AllEmployeesResponse";
         private const string EmployeesStorageActorPath = @"/user/organization/employees/employees-storage";
 
-        private readonly MemoryCache memoryCache;
+        private readonly IMemoryCache memoryCache;
+        private readonly TimeSpan cachePeriod;
         private readonly ActorSelection employeesStorageActor;
 
-        public CachedEmployeesInfoStorage(MemoryCache memoryCache, TimeSpan cachePeriod, bool enablePeriodicalRefresh)
+        public CachedEmployeesInfoStorage(IMemoryCache memoryCache, TimeSpan cachePeriod, bool enablePeriodicalRefresh)
         {
             this.memoryCache = memoryCache;
+            this.cachePeriod = cachePeriod;
             this.employeesStorageActor = Context.ActorSelection(EmployeesStorageActorPath);
 
             if (enablePeriodicalRefresh)
@@ -34,7 +38,7 @@
 
         public IStash Stash { get; set; }
 
-        public static Props CreateProps(MemoryCache memoryCache, TimeSpan? cachePeriod = null, bool enablePeriodicalRefresh = false)
+        public static Props CreateProps(IMemoryCache memoryCache, TimeSpan? cachePeriod = null, bool enablePeriodicalRefresh = false)
         {
             cachePeriod = cachePeriod ?? TimeSpan.FromMinutes(DefaultCachePeriodInMinutes);
             return Props.Create(() => new CachedEmployeesInfoStorage(memoryCache, cachePeriod.Value, enablePeriodicalRefresh));
@@ -109,7 +113,7 @@
 
         private void SetToCache(EmployeesInfoStorage.LoadAllEmployees.Response value)
         {
-            this.memoryCache.Set(EmployeesResponseCacheKey, value);
+            this.memoryCache.Set(EmployeesResponseCacheKey, value, this.cachePeriod);
         }
 
         private class RefreshEmployees
