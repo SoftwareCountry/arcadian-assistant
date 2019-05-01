@@ -10,7 +10,7 @@
         {
             if (!this.storage.TryGetValue(cacheKey, out var temp))
             {
-                value = default;
+                value = default(T);
                 return false;
             }
 
