@@ -100,9 +100,9 @@ class AvatarImpl extends Component<AvatarProps, AvatarState> {
 
         const imgSize = (outerFrameStyle.width as number) - outerFrameStyle.borderWidth! * 2;
 
-        let borderWidth = outerFrameStyle.borderWidth! * 2;
+        let windowBorderWidth = outerFrameStyle.borderWidth! * 1.5;
         if (this.props.imageStyle && this.props.imageStyle.borderWidth !== undefined) {
-            borderWidth = this.props.imageStyle.borderWidth;
+            windowBorderWidth = this.props.imageStyle.borderWidth;
         }
 
         const imageStyle = StyleSheet.flatten([
@@ -118,10 +118,15 @@ class AvatarImpl extends Component<AvatarProps, AvatarState> {
         if (!this.props.photoUrl || this.state.loadingErrorOccurred) {
             const defaultImage = this.props.useDefaultForEmployeesList ? employeesListAvatarRect : arcadiaIcon;
 
-            return <Image source={defaultImage} style={imageStyle}/>;
-        }
+            const defaultImageStyle = StyleSheet.flatten([
+                imageStyle,
+                {
+                    borderWidth: windowBorderWidth,
+                },
+            ]) as ImageStyle;
 
-        const headers = { 'Authorization': `Bearer ${this.props.jwtToken}` };
+            return <Image source={defaultImage} style={defaultImageStyle}/>;
+        }
 
         const windowStyle: ViewStyle = {
             backgroundColor: 'transparent',
@@ -129,8 +134,10 @@ class AvatarImpl extends Component<AvatarProps, AvatarState> {
             width: imageStyle.width,
             height: imageStyle.height,
             borderRadius: imageStyle.borderRadius,
-            borderWidth: borderWidth,
+            borderWidth: windowBorderWidth,
         };
+
+        const headers = { 'Authorization': `Bearer ${this.props.jwtToken}` };
 
         return (
             <FastImage style={imageStyle}
