@@ -110,9 +110,13 @@
                 return false;
             }
 
-            if ((query.Identity != null) && !string.Equals(employee.Identity, query.Identity, StringComparison.InvariantCultureIgnoreCase))
+            if (query.Identity != null)
             {
-                return false;
+                if (!string.Equals(employee.Email, query.Identity, StringComparison.InvariantCultureIgnoreCase) &&
+                    !string.Equals(employee.LegacyIdentity, query.Identity, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return false;
+                }
             }
 
             if ((query.NameFilter != null) && !(employee.Name?.IndexOf(query.NameFilter, 0, StringComparison.InvariantCultureIgnoreCase) >= 0))

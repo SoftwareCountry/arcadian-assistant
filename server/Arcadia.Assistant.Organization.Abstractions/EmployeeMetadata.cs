@@ -5,11 +5,11 @@
 
     public class EmployeeMetadata
     {
-        public EmployeeMetadata(string employeeId, string name, string identity, string email)
+        public EmployeeMetadata(string employeeId, string name,  string legacyIdentity, string email)
         {
             this.EmployeeId = employeeId;
             this.Name = name;
-            this.Identity = identity;
+            this.LegacyIdentity = legacyIdentity;
             this.Email = email;
         }
 
@@ -17,7 +17,7 @@
 
         public string Name { get; set; }
 
-        public string Identity { get; set; }
+        public string LegacyIdentity { get; }
 
         public string Email { get; set; }
 
