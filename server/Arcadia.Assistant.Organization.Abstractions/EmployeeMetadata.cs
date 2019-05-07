@@ -1,15 +1,15 @@
 ﻿namespace Arcadia.Assistant.Organization.Abstractions
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
 
     public class EmployeeMetadata
     {
-        public EmployeeMetadata(string employeeId, string name,  string legacyIdentity, string email)
+        public EmployeeMetadata(string employeeId, string name, string email)
         {
             this.EmployeeId = employeeId;
             this.Name = name;
-            this.LegacyIdentity = legacyIdentity;
             this.Email = email;
         }
 
@@ -17,9 +17,9 @@
 
         public string Name { get; set; }
 
-        public string LegacyIdentity { get; }
-
         public string Email { get; set; }
+
+        public IEnumerable<string> IdentityAliases { get; set; }
 
         public string RoomNumber { get; set; }
 

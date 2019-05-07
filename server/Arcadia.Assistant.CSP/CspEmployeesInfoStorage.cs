@@ -63,10 +63,10 @@
                         new EmployeeMetadata(
                             x.Id.ToString(),
                             $"{x.LastName} {x.FirstName}".Trim(),
-                            $"{x.LoginName}@{userIdentityDomain}",
                             x.Email
                         )
                         {
+                            IdentityAliases = new[] { $"{x.LoginName}@{userIdentityDomain}" },
                             BirthDate = x.Birthday,
                             HireDate = x.HiringDate,
                             FireDate = x.FiringDate,

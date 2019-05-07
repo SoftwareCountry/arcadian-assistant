@@ -113,7 +113,7 @@
             if (query.Identity != null)
             {
                 if (!string.Equals(employee.Email, query.Identity, StringComparison.InvariantCultureIgnoreCase) &&
-                    !string.Equals(employee.LegacyIdentity, query.Identity, StringComparison.InvariantCultureIgnoreCase))
+                    employee.IdentityAliases?.Any(x => string.Equals(x, query.Identity, StringComparison.InvariantCultureIgnoreCase)) != true)
                 {
                     return false;
                 }
