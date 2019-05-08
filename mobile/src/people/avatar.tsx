@@ -5,6 +5,7 @@ import { AppState } from '../reducers/app.reducer';
 import { Nullable } from 'types';
 import FastImage from 'react-native-fast-image';
 import { avatarStyles } from './styles';
+import Style from '../layout/style';
 
 //============================================================================
 export interface AvatarOwnProps {
@@ -66,11 +67,12 @@ class AvatarImpl extends Component<AvatarProps, AvatarState> {
 
     //----------------------------------------------------------------------------
     public render() {
+
         if (!this.state.size) {
             return <View onLayout={this.onLayout} style={avatarStyles.container}/>;
         }
 
-        const outerFrameFlattenStyle = StyleSheet.flatten([
+        const outerFrameStyle = StyleSheet.flatten([
             avatarStyles.outerFrame,
             {
                 borderRadius: this.state.borderRadius,
@@ -81,25 +83,34 @@ class AvatarImpl extends Component<AvatarProps, AvatarState> {
             this.state.visible ? {} : { display: 'none' }
         ]);
 
+        const image = this.renderImage(outerFrameStyle);
+
         return (
-            <View onLayout={this.onLayout} style={avatarStyles.container}>
-                <View style={outerFrameFlattenStyle}>
-                    {this.renderImage(outerFrameFlattenStyle)}
+            <View onLayout={this.onLayout}
+                  style={avatarStyles.container}>
+                <View style={outerFrameStyle}>
+                    {image}
                 </View>
             </View>
         );
     }
 
     //----------------------------------------------------------------------------
-    private renderImage(containerStyle: ViewStyle) {
-        const imgSize = (containerStyle.width as number) - containerStyle.borderWidth! * 2;
-        const imageFlattenStyle = StyleSheet.flatten([
+    private renderImage(outerFrameStyle: ViewStyle) {
+
+        const imgSize = (outerFrameStyle.width as number) - outerFrameStyle.borderWidth! * 2;
+
+        let windowBorderWidth = outerFrameStyle.borderWidth! * 1.5;
+        if (this.props.imageStyle && this.props.imageStyle.borderWidth !== undefined) {
+            windowBorderWidth = this.props.imageStyle.borderWidth;
+        }
+
+        const imageStyle = StyleSheet.flatten([
             avatarStyles.image,
             {
                 width: imgSize,
                 height: imgSize,
                 borderRadius: imgSize * 0.5,
-                borderWidth: containerStyle.borderWidth! * 2 //by design it seems to be twice thicker than container border
             },
             this.props.imageStyle
         ]) as ImageStyle;
@@ -107,14 +118,35 @@ class AvatarImpl extends Component<AvatarProps, AvatarState> {
         if (!this.props.photoUrl || this.state.loadingErrorOccurred) {
             const defaultImage = this.props.useDefaultForEmployeesList ? employeesListAvatarRect : arcadiaIcon;
 
-            return <Image source={defaultImage} style={imageFlattenStyle}/>;
+            const defaultImageStyle = StyleSheet.flatten([
+                imageStyle,
+                {
+                    borderWidth: windowBorderWidth,
+                },
+            ]) as ImageStyle;
+
+            return <Image source={defaultImage} style={defaultImageStyle}/>;
         }
+
+        const windowStyle: ViewStyle = {
+            backgroundColor: 'transparent',
+            borderColor: imageStyle.borderColor,
+            width: imageStyle.width,
+            height: imageStyle.height,
+            borderRadius: imageStyle.borderRadius,
+            borderWidth: windowBorderWidth,
+        };
 
         const headers = { 'Authorization': `Bearer ${this.props.jwtToken}` };
 
-        return <FastImage style={imageFlattenStyle}
-                          source={{ uri: this.props.photoUrl, headers: headers }} onLoadEnd={this.onImageLoaded}
-                          onError={this.onImageLoadError}/>;
+        return (
+            <FastImage style={imageStyle}
+                       source={{ uri: this.props.photoUrl, headers: headers }}
+                       onLoadEnd={this.onImageLoaded}
+                       onError={this.onImageLoadError}>
+                <View style={windowStyle}/>
+            </FastImage>
+        );
     }
 
     //----------------------------------------------------------------------------
