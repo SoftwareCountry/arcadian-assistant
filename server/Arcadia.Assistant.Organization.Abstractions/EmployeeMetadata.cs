@@ -2,15 +2,19 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
 
     public class EmployeeMetadata
     {
-        public EmployeeMetadata(string employeeId, string name, string email)
+        public EmployeeMetadata(string employeeId, string name, string email, IEnumerable<string> identityAliases = null)
         {
             this.EmployeeId = employeeId;
             this.Name = name;
             this.Email = email;
+
+            if (identityAliases != null)
+            {
+                this.IdentityAliases.UnionWith(identityAliases);
+            }
         }
 
         public string EmployeeId { get; }
@@ -19,7 +23,7 @@
 
         public string Email { get; set; }
 
-        public IEnumerable<string> IdentityAliases { get; set; }
+        public ISet<string> IdentityAliases { get; } = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
 
         public string RoomNumber { get; set; }
 

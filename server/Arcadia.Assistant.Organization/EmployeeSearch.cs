@@ -110,13 +110,9 @@
                 return false;
             }
 
-            if (query.Identity != null)
+            if ((query.Identity != null) && !employee.IdentityAliases.Contains(query.Identity))
             {
-                if (!string.Equals(employee.Email, query.Identity, StringComparison.InvariantCultureIgnoreCase) &&
-                    employee.IdentityAliases?.Any(x => string.Equals(x, query.Identity, StringComparison.InvariantCultureIgnoreCase)) != true)
-                {
-                    return false;
-                }
+                return false;
             }
 
             if ((query.NameFilter != null) && !(employee.Name?.IndexOf(query.NameFilter, 0, StringComparison.InvariantCultureIgnoreCase) >= 0))
