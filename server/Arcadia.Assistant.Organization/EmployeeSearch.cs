@@ -110,7 +110,7 @@
                 return false;
             }
 
-            if ((query.Identity != null) && !string.Equals(employee.Identity, query.Identity, StringComparison.InvariantCultureIgnoreCase))
+            if ((query.Identity != null) && !employee.IdentityAliases.Contains(query.Identity))
             {
                 return false;
             }

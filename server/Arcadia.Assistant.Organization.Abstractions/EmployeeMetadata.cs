@@ -1,25 +1,29 @@
 ﻿namespace Arcadia.Assistant.Organization.Abstractions
 {
     using System;
-    using System.Diagnostics;
+    using System.Collections.Generic;
 
     public class EmployeeMetadata
     {
-        public EmployeeMetadata(string employeeId, string name, string identity, string email)
+        public EmployeeMetadata(string employeeId, string name, string email, IEnumerable<string> identityAliases = null)
         {
             this.EmployeeId = employeeId;
             this.Name = name;
-            this.Identity = identity;
             this.Email = email;
+
+            if (identityAliases != null)
+            {
+                this.IdentityAliases.UnionWith(identityAliases);
+            }
         }
 
         public string EmployeeId { get; }
 
         public string Name { get; set; }
 
-        public string Identity { get; set; }
-
         public string Email { get; set; }
+
+        public ISet<string> IdentityAliases { get; } = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
 
         public string RoomNumber { get; set; }
 
