@@ -63,8 +63,12 @@
                         new EmployeeMetadata(
                             x.Id.ToString(),
                             $"{x.LastName} {x.FirstName}".Trim(),
-                            $"{x.LoginName}@{userIdentityDomain}",
-                            x.Email
+                            x.Email,
+                            new[]
+                            {
+                                x.Email,
+                                $"{x.LoginName}@{userIdentityDomain}"
+                            }
                         )
                         {
                             BirthDate = x.Birthday,
