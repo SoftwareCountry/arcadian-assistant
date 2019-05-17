@@ -1,15 +1,15 @@
-using Microsoft.ServiceFabric.Services.Runtime;
-using System;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace Arcadia.Assistant.Web
 {
+    using System;
+    using System.Diagnostics;
+    using System.Threading;
+
+    using Microsoft.ServiceFabric.Services.Runtime;
+
     internal static class Program
     {
         /// <summary>
-        /// This is the entry point of the service host process.
+        ///     This is the entry point of the service host process.
         /// </summary>
         private static void Main()
         {
