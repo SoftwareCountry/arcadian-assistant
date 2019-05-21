@@ -32,6 +32,7 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Arcadia.Assistant.Organization\Arcadia.Assistant.Organization.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Web\Arcadia.Assistant.Web.csproj" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
