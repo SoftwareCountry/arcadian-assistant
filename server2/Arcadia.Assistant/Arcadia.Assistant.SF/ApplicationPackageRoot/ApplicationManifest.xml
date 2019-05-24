@@ -6,6 +6,7 @@
     <Parameter Name="Arcadia.Assistant.Organization_TargetReplicaSetSize" DefaultValue="3" />
     <Parameter Name="Arcadia.Assistant.Web_ASPNETCORE_ENVIRONMENT" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_InstanceCount" DefaultValue="-1" />
+    <Parameter Name="Arcadia.Assistant.Web_Port" DefaultValue="63601" />
   </Parameters>
   <!-- Import the ServiceManifest from the ServicePackage. The ServiceManifestName and ServiceManifestVersion 
        should match the Name and Version attributes of the ServiceManifest element defined in the 
@@ -17,6 +18,11 @@
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.WebPkg" ServiceManifestVersion="1.0.0" />
     <ConfigOverrides />
+    <ResourceOverrides>
+      <Endpoints>
+        <Endpoint Name="ServiceEndpoint" Port="[Arcadia.Assistant.Web_Port]" />
+      </Endpoints>
+    </ResourceOverrides>
     <EnvironmentOverrides CodePackageRef="code">
       <EnvironmentVariable Name="ASPNETCORE_ENVIRONMENT" Value="[Arcadia.Assistant.Web_ASPNETCORE_ENVIRONMENT]" />
     </EnvironmentOverrides>
