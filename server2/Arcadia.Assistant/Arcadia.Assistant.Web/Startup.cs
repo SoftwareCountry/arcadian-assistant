@@ -1,11 +1,17 @@
 ﻿namespace Arcadia.Assistant.Web
 {
+    using System;
+
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.ServiceFabric.Services.Client;
+    using Microsoft.ServiceFabric.Services.Remoting.Client;
+
+    using Organization.Contracts;
 
     public class Startup
     {
@@ -27,6 +33,11 @@
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddSingleton<IServiceProxyFactory>(new ServiceProxyFactory());
+            services.AddTransient(x => 
+                x.GetService<IServiceProxyFactory>()
+                    .CreateServiceProxy<IOrganization>(new Uri("fabric:/Arcadia.Assistant.SF/Arcadia.Assistant.Organization"), new ServicePartitionKey(0)));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

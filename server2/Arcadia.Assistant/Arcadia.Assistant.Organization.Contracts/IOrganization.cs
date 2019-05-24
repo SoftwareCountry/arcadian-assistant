@@ -5,12 +5,13 @@ using Microsoft.ServiceFabric.Services.Remoting.FabricTransport;
 
 namespace Arcadia.Assistant.Organization.Contracts
 {
+    using System.Threading;
     using System.Threading.Tasks;
 
     using Microsoft.ServiceFabric.Services.Remoting;
 
     public interface IOrganization : IService
     {
-        Task<string> HelloWorldAsync();
+        Task<EmployeeMetadata> FindByIdAsync(string employeeId, CancellationToken cancellationToken);
     }
 }

@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Organizat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Organization", "Arcadia.Assistant.Organization\Arcadia.Assistant.Organization.csproj", "{2D76AE9B-BCEE-40A3-BB5C-61E34624EBC2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.CSP", "Arcadia.Assistant.CSP\Arcadia.Assistant.CSP.csproj", "{493E9E0F-4D9F-4283-A00D-937E9CD23C13}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -35,6 +37,10 @@ Global
 		{2D76AE9B-BCEE-40A3-BB5C-61E34624EBC2}.Debug|x64.Build.0 = Debug|Any CPU
 		{2D76AE9B-BCEE-40A3-BB5C-61E34624EBC2}.Release|x64.ActiveCfg = Release|Any CPU
 		{2D76AE9B-BCEE-40A3-BB5C-61E34624EBC2}.Release|x64.Build.0 = Release|Any CPU
+		{493E9E0F-4D9F-4283-A00D-937E9CD23C13}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{493E9E0F-4D9F-4283-A00D-937E9CD23C13}.Debug|x64.Build.0 = Debug|Any CPU
+		{493E9E0F-4D9F-4283-A00D-937E9CD23C13}.Release|x64.ActiveCfg = Release|Any CPU
+		{493E9E0F-4D9F-4283-A00D-937E9CD23C13}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
