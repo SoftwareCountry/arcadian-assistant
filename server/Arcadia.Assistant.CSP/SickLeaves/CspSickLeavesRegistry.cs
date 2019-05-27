@@ -107,8 +107,13 @@
 
                     if (msg.NextApprover != null)
                     {
+                        this.logger.Debug($"Next event approver is {msg.NextApprover}. Event is pending and will be added to pending actions.");
                         Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(msg.Event, msg.NextApprover));
                         Context.System.EventStream.Publish(new CalendarEventAssignedToApprover(msg.Event, msg.NextApprover));
+                    }
+                    else
+                    {
+                        this.logger.Debug("There is no next event approver, event is not pending and won't be added to pending actions.");
                     }
 
                     break;
@@ -122,11 +127,13 @@
 
                     if (msg.NextApprover != null)
                     {
+                        this.logger.Debug($"Next event approver is {msg.NextApprover}. Event is pending and will be added to pending actions.");
                         Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(msg.Event, msg.NextApprover));
                         Context.System.EventStream.Publish(new CalendarEventAssignedToApprover(msg.Event, msg.NextApprover));
                     }
                     else
                     {
+                        this.logger.Debug("There is no next event approver, event is not pending and will be removed from current approver pending actions.");
                         Context.System.EventStream.Publish(new CalendarEventRemovedFromPendingActions(msg.Event));
                     }
 
@@ -329,6 +336,7 @@
 
                 if (!newEvent.IsPending)
                 {
+                    this.logger.Debug("Event is not pending and will be removed from current approver pending actions.");
                     Context.System.EventStream.Publish(new CalendarEventRemovedFromPendingActions(newEvent));
                 }
             }
