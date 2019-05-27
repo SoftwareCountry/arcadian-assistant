@@ -35,8 +35,6 @@
 
         protected override void OnReceive(object message)
         {
-            this.logger.Debug($"Pending actions actor for employee {this.employeeId}. Message received: {message.GetType().FullName}");
-
             switch (message)
             {
                 case GetEmployeePendingActions _:
@@ -55,8 +53,7 @@
                     this.RemovedFromPendingActions(msg.Event);
                     break;
 
-                case CalendarEventRemovedFromPendingActions msg:
-                    this.logger.Debug($"No actions made for event {msg.Event.EventId}");
+                case CalendarEventRemovedFromPendingActions _:
                     break;
 
                 case CalendarEventChanged msg when msg.NewEvent.IsPending && this.HasPendingAction(msg.NewEvent.EventId):
@@ -67,24 +64,21 @@
                     this.RemovedFromPendingActions(msg.NewEvent);
                     break;
 
-                case CalendarEventChanged msg:
-                    this.logger.Debug($"No actions made for event {msg.NewEvent.EventId}");
+                case CalendarEventChanged _:
                     break;
 
                 case CalendarEventApprovalsChanged msg when !msg.Event.IsPending && this.HasPendingAction(msg.Event.EventId):
                     this.RemovedFromPendingActions(msg.Event);
                     break;
 
-                case CalendarEventApprovalsChanged msg:
-                    this.logger.Debug($"No actions made for event {msg.Event.EventId}");
+                case CalendarEventApprovalsChanged _:
                     break;
 
                 case CalendarEventRemoved msg when this.HasPendingAction(msg.Event.EventId):
                     this.RemovedFromPendingActions(msg.Event);
                     break;
 
-                case CalendarEventRemoved msg:
-                    this.logger.Debug($"No actions made for event {msg.Event.EventId}");
+                case CalendarEventRemoved _:
                     break;
 
                 default:
@@ -95,17 +89,15 @@
 
         private void AddPendingAction(CalendarEvent @event)
         {
-            this.logger.Debug($"Pending action added for event {@event.EventId}");
-
+            this.logger.Debug($"Employee {this.employeeId}. Pending action added for event {@event.EventId}.");
             this.pendingActionEvents[@event.EventId] = @event;
         }
 
         private void RemovedFromPendingActions(CalendarEvent @event)
         {
-            this.logger.Debug($"Pending action removed for event {@event.EventId}");
-
             if (this.pendingActionEvents.ContainsKey(@event.EventId))
             {
+                this.logger.Debug($"Employee {this.employeeId}. Pending action removed for event {@event.EventId}");
                 this.pendingActionEvents.Remove(@event.EventId);
             }
         }
