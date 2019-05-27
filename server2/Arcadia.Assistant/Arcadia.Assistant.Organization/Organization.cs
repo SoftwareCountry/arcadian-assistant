@@ -8,6 +8,8 @@ namespace Arcadia.Assistant.Organization
 
     using Contracts;
 
+    using CSP.Model;
+
     using Microsoft.ServiceFabric.Data.Collections;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
@@ -18,9 +20,12 @@ namespace Arcadia.Assistant.Organization
     /// </summary>
     public class Organization : StatefulService, IOrganization
     {
-        public Organization(StatefulServiceContext context)
+        private readonly Func<ArcadiaCspContext> cspContextFactory;
+
+        public Organization(StatefulServiceContext context, Func<ArcadiaCspContext> cspContextFactory)
             : base(context)
         {
+            this.cspContextFactory = cspContextFactory;
         }
 
         /// <summary>
@@ -36,9 +41,13 @@ namespace Arcadia.Assistant.Organization
             return this.CreateServiceRemotingReplicaListeners();
         }
 
-        public Task<EmployeeMetadata> FindByIdAsync(string employeeId, CancellationToken cancellationToken)
+        public async Task<EmployeeMetadata> FindByIdAsync(string employeeId, CancellationToken cancellationToken)
         {
-            return Task.FromResult(new EmployeeMetadata(employeeId, "John Doe", "john.doe@aaa.com"));
+            using (var db = this.cspContextFactory())
+            {
+                var employee = await db.Employee.FindAsync(int.Parse(employeeId));
+                return new EmployeeMetadata(employeeId, employee.LastName, employee.Email);
+            }
         }
     }
 }

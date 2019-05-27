@@ -7,6 +7,8 @@ namespace Arcadia.Assistant.Organization
     using Autofac;
     using Autofac.Integration.ServiceFabric;
 
+    using CSP;
+
     using Microsoft.ServiceFabric.Services.Runtime;
 
     internal static class Program
@@ -26,6 +28,7 @@ namespace Arcadia.Assistant.Organization
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterStatefulService<Organization>("Arcadia.Assistant.OrganizationType");
+                builder.RegisterModule(new CspModule("<>"));
 
                 using (builder.Build())
                 {
