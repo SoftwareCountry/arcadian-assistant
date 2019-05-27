@@ -60,6 +60,8 @@
                     msg.Event.EmployeeId == this.employeeId &&
                     msg.Event.IsPending:
 
+                    this.logger.Debug($"Recover complete for event {msg.Event.EventId}. Event is pending and will be added to pending actions.");
+
                     this.GetRecoveryCompleteApprover(msg.Event)
                         .PipeTo(
                             this.Self,
@@ -68,10 +70,12 @@
 
                     break;
 
-                case CalendarEventRecoverComplete _:
+                case CalendarEventRecoverComplete msg:
+                    this.logger.Debug($"Recover complete for event {msg.Event.EventId}. Event is not pending and won't be added to pending actions.");
                     break;
 
                 case RecoveryCompleteSuccess msg:
+                    this.logger.Debug($"Event {msg.Event.EventId}. Next approver is {msg.NextApprover}. Event is pending and will be added to pending actions.");
                     Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(msg.Event, msg.NextApprover));
                     break;
 
@@ -113,6 +117,8 @@
                     break;
 
                 case InsertSickLeave msg:
+                    this.logger.Debug($"Event {msg.Event.EventId} is created.");
+
                     this.InsertSickLeave(msg)
                         .PipeTo(
                             this.Self,

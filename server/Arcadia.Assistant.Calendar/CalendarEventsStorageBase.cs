@@ -41,6 +41,7 @@
             switch (message)
             {
                 case RecoveryCompleteSuccess msg:
+                    this.logger.Debug($"Event {msg.Event.EventId}. Next approver is {msg.NextApprover}. Event is pending and will be added to pending actions.");
                     Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(msg.Event, msg.NextApprover));
                     break;
 
@@ -66,6 +67,8 @@
 
                 //insert
                 case UpsertCalendarEvent cmd when !this.EventsById.ContainsKey(cmd.Event.EventId):
+                    this.logger.Debug($"Event {cmd.Event.EventId} is created.");
+
                     try
                     {
                         if (cmd.Event.Status != this.GetInitialStatus())
@@ -223,6 +226,8 @@
         {
             foreach (var @event in pendingEvents)
             {
+                this.logger.Debug($"Recover complete for event {@event.EventId}. Event is pending and will be added to pending actions.");
+
                 var approvals = this.ApprovalsByEvent[@event.EventId];
 
                 this.GetNextApproverId(@event, approvals)
