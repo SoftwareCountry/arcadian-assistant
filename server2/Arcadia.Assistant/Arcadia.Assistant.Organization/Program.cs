@@ -4,6 +4,9 @@ namespace Arcadia.Assistant.Organization
     using System.Diagnostics;
     using System.Threading;
 
+    using Autofac;
+    using Autofac.Integration.ServiceFabric;
+
     using Microsoft.ServiceFabric.Services.Runtime;
 
     internal static class Program
@@ -20,13 +23,17 @@ namespace Arcadia.Assistant.Organization
                 // When Service Fabric creates an instance of this service type,
                 // an instance of the class is created in this host process.
 
-                ServiceRuntime.RegisterServiceAsync("Arcadia.Assistant.OrganizationType",
-                    context => new Organization(context)).GetAwaiter().GetResult();
+                var builder = new ContainerBuilder();
+                builder.RegisterServiceFabricSupport();
+                builder.RegisterStatefulService<Organization>("Arcadia.Assistant.OrganizationType");
 
-                ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(Organization).Name);
+                using (builder.Build())
+                {
+                    ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(Organization).Name);
 
-                // Prevents this host process from terminating so services keep running.
-                Thread.Sleep(Timeout.Infinite);
+                    // Prevents this host process from terminating so services keep running.
+                    Thread.Sleep(Timeout.Infinite);
+                }
             }
             catch (Exception e)
             {

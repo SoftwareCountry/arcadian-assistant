@@ -16,7 +16,7 @@ namespace Arcadia.Assistant.Organization
     /// <summary>
     ///     An instance of this class is created for each service replica by the Service Fabric runtime.
     /// </summary>
-    internal sealed class Organization : StatefulService, IOrganization
+    public class Organization : StatefulService, IOrganization
     {
         public Organization(StatefulServiceContext context)
             : base(context)
