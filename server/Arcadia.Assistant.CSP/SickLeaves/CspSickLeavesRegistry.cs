@@ -37,14 +37,7 @@
             this.refreshInformation = refreshInformation;
             this.calendarEventsApprovalsChecker = Context.ActorSelection(CalendarEventsApprovalsCheckerActorPath);
 
-            // CRUTCH, CRUTCH, CRUUUUUUUUTCH
-            // Events recovery complete message was broadcast before an actor that should have been receiving them was created.
-            // So, 30 seconds delay is added to fix this.
-            Context.System.Scheduler.ScheduleTellOnce(
-                TimeSpan.FromSeconds(30),
-                this.Self,
-                Initialize.Instance,
-                this.Self);
+            this.Self.Tell(Initialize.Instance);
         }
 
         public static Props CreateProps()
@@ -68,12 +61,28 @@
                     var eventsById = msg.Events.ToDictionary(x => x.CalendarEvent.EventId);
                     this.databaseSickLeavesCache = new DatabaseSickLeavesCache(eventsById);
 
-                    foreach (var @event in msg.Events.Where(e => this.IsCalendarEventActual(e.CalendarEvent)))
+                    var pendingEvents = msg.Events
+                        .Where(e => this.IsCalendarEventActual(e.CalendarEvent))
+                        .ToArray();
+
+                    // CRUTCH, CRUTCH, CRUUUUUUUUTCH
+                    // Events recovery complete message was broadcast before an actor that should have been receiving them was created.
+                    // So, 30 seconds delay is added to fix this.
+                    Context.System.Scheduler.ScheduleTellOnce(
+                        TimeSpan.FromSeconds(30),
+                        this.Self,
+                        new Initialize.RecoveryComplete(pendingEvents),
+                        this.Self);
+
+                    this.ScheduleNextDatabaseRefresh();
+
+                    break;
+                    
+                case Initialize.RecoveryComplete msg:
+                    foreach (var @event in msg.Events)
                     {
                         Context.System.EventStream.Publish(new CalendarEventRecoverComplete(@event.CalendarEvent));
                     }
-
-                    this.ScheduleNextDatabaseRefresh();
 
                     break;
 
@@ -487,6 +496,16 @@
             public class Success
             {
                 public Success(IEnumerable<CalendarEventWithAdditionalData> events)
+                {
+                    this.Events = events;
+                }
+
+                public IEnumerable<CalendarEventWithAdditionalData> Events { get; }
+            }
+
+            public class RecoveryComplete
+            {
+                public RecoveryComplete(IEnumerable<CalendarEventWithAdditionalData> events)
                 {
                     this.Events = events;
                 }
