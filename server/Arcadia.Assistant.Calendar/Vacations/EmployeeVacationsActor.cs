@@ -103,7 +103,11 @@
                     break;
 
                 case CalendarEventRecoverComplete msg:
-                    this.logger.Debug($"Recover complete for event {msg.Event.EventId}. Event is not pending and won't be added to pending actions.");
+                    if (msg.Event.EmployeeId == this.employeeId)
+                    {
+                        this.logger.Debug($"Recover complete for event {msg.Event.EventId}. Event is not pending and won't be added to pending actions.");
+                    }
+
                     break;
 
                 case RecoveryCompleteSuccess msg:

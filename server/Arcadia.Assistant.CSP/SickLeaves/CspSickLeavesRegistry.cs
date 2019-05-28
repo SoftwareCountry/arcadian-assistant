@@ -37,7 +37,14 @@
             this.refreshInformation = refreshInformation;
             this.calendarEventsApprovalsChecker = Context.ActorSelection(CalendarEventsApprovalsCheckerActorPath);
 
-            this.Self.Tell(Initialize.Instance);
+            // CRUTCH, CRUTCH, CRUUUUUUUUTCH
+            // Events recovery complete message was broadcast before an actor that should have been receiving them was created.
+            // So, 30 seconds delay is added to fix this.
+            Context.System.Scheduler.ScheduleTellOnce(
+                TimeSpan.FromSeconds(30),
+                this.Self,
+                Initialize.Instance,
+                this.Self);
         }
 
         public static Props CreateProps()
