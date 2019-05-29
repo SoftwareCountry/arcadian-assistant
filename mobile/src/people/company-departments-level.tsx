@@ -51,7 +51,7 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
         const { selection, departmentId, onSelectedNode, onPressEmployee, employeesById } = this.props;
 
         const selectedDepartmentId = selection[departmentId];
-        const chiefs = nodes ? nodes.filter(node => !!node.chiefId)
+        const chiefs = nodes.filter(node => !!node.chiefId)
             .map(node => {
                 if (!employeesById) {
                     return null;
@@ -59,7 +59,7 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
                 return employeesById.get(node.chiefId!);
             })
             .filter(chief => !!chief)
-            .map(chief => chief!) : [];
+            .map(chief => chief!);
 
         return (
             <CompanyDepartmentsLevelNodes
