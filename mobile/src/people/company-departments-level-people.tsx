@@ -6,25 +6,38 @@ import { CompanyDepartmentsLevelPeopleTouchable } from './company-departments-le
 import { employeesAZComparer } from './employee-comparer';
 import { Avatar } from './avatar';
 import { Employee } from '../reducers/organization/employee.model';
+import { Optional } from 'types';
 
+//============================================================================
 interface CompanyDepartmentsLevelPeopleProps {
+    chief: Optional<Employee>;
     employees: Employee[];
     onPressEmployee: (employee: Employee) => void;
 }
 
+//============================================================================
 export class CompanyDepartmentsLevelPeople extends Component<CompanyDepartmentsLevelPeopleProps> {
+
+    //----------------------------------------------------------------------------
     public shouldComponentUpdate(nextProps: CompanyDepartmentsLevelPeopleProps) {
         return !this.areEmployeesEqual(this.props.employees, nextProps.employees)
             || this.props.onPressEmployee !== nextProps.onPressEmployee;
     }
 
+    //----------------------------------------------------------------------------
     public render() {
-        const employees: Employee[] = this.props.employees.sort(employeesAZComparer);
+        const { employees, chief } = this.props;
+
+        let employeesToRender: Employee[] = employees.sort(employeesAZComparer);
+
+        if (chief) {
+            employeesToRender = employeesToRender.filter(employee => employee.employeeId !== chief.employeeId);
+        }
 
         return (
             <FlatList
                 style={companyDepartmentLevelPeople.list}
-                data={employees}
+                data={employeesToRender}
                 keyExtractor={this.keyExtractor}
                 renderItem={this.renderItem}
                 scrollEnabled={true}
@@ -33,6 +46,7 @@ export class CompanyDepartmentsLevelPeople extends Component<CompanyDepartmentsL
         );
     }
 
+    //----------------------------------------------------------------------------
     private areEmployeesEqual(a: Employee[], b: Employee[]) {
         if (a === b) {
             return true;
@@ -55,8 +69,10 @@ export class CompanyDepartmentsLevelPeople extends Component<CompanyDepartmentsL
         return true;
     }
 
+    //----------------------------------------------------------------------------
     private keyExtractor = (item: Employee): string => item.employeeId;
 
+    //----------------------------------------------------------------------------
     private renderItem = ({ item }: { item: Employee }) => {
         return (
             <CompanyDepartmentsLevelPeopleTouchable onPress={this.props.onPressEmployee} employee={item}>
