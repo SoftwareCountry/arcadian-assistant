@@ -213,7 +213,7 @@ export class CompanyDepartmentsLevelAnimatedNode extends Component<CompanyDepart
                     </Animated.View>
                     <Animated.View style={contentStyles}>
                         <View>
-                            <StyledText>{chiefName}</StyledText>
+                            <StyledText style={companyDepartmentsAnimatedNode.name}>{chiefName}</StyledText>
                             <StyledText style={companyDepartmentsAnimatedNode.contentPosition}>
                                 {chiefPosition}
                             </StyledText>

@@ -76,12 +76,12 @@ export class CompanyDepartmentsLevelPeople extends Component<CompanyDepartmentsL
     private renderItem = ({ item }: { item: Employee }) => {
         return (
             <CompanyDepartmentsLevelPeopleTouchable onPress={this.props.onPressEmployee} employee={item}>
-                <View style={companyDepartmentLevelPeople.listItemAvator}>
+                <View style={companyDepartmentLevelPeople.listItemAvatar}>
                     <Avatar photoUrl={item.photoUrl}/>
                 </View>
                 <View style={companyDepartmentLevelPeople.listItemContent}>
                     <StyledText style={companyDepartmentLevelPeople.listItemName}>
-                        {`${item.name}, `}
+                        {item.name}
                     </StyledText>
                     <StyledText style={companyDepartmentLevelPeople.listItemPosition}>
                         {item.position}

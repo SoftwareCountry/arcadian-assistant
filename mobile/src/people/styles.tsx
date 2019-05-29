@@ -41,7 +41,7 @@ export const employeesListItemStyles = StyleSheet.create({
     },
     baseText: {
         fontFamily: 'Helvetica-Light',
-        fontSize: 9,
+        fontSize: 10,
         paddingTop: 2
     },
     name: {
@@ -94,8 +94,13 @@ export const companyDepartmentsAnimatedNode = StyleSheet.create({
         marginTop: contentMargin,
         marginBottom: contentMargin
     },
+    name: {
+        fontFamily: 'Helvetica-Light',
+        fontSize: 15,
+    },
     contentPosition: {
-        fontSize: 10
+        fontFamily: 'Helvetica-Light',
+        fontSize: 10,
     },
     contentDepartmentAbbreviation: {
         fontSize: 9,
@@ -116,21 +121,23 @@ export const companyDepartmentLevelPeople = StyleSheet.create({
         marginTop: screenHeight * 0.005,
         marginBottom: screenHeight * 0.005
     },
-    listItemAvator: {
-        flex: 1
+    listItemAvatar: {
+        flex: 1,
+        marginLeft: contentMargin,
     },
     listItemContent: {
-        marginLeft: contentMargin * 0.7,
+        marginLeft: contentMargin,
         flex: 5,
-        flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'flex-start',
+        alignSelf: 'center',
     },
     listItemName: {
-        fontSize: 11,
-        fontWeight: '600'
+        fontFamily: 'Helvetica-Light',
+        fontSize: 15,
     },
     listItemPosition: {
-        fontSize: 11
+        fontFamily: 'Helvetica-Light',
+        fontSize: 10
     }
 });
 
