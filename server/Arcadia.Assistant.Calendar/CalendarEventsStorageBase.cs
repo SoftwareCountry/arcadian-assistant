@@ -67,8 +67,6 @@
 
                 //insert
                 case UpsertCalendarEvent cmd when !this.EventsById.ContainsKey(cmd.Event.EventId):
-                    this.logger.Debug($"Event {cmd.Event.EventId} is created.");
-
                     try
                     {
                         if (cmd.Event.Status != this.GetInitialStatus())
@@ -96,16 +94,21 @@
                     break;
 
                 case InsertCalendarEventSuccess msg:
+                    this.logger.Debug($"Event {msg.Event.EventId} is created.");
 
                     var insertResult = msg.Event;
 
                     if (msg.NextApprover != null)
                     {
+                        this.logger.Debug($"Event {msg.Event.EventId}. Next approver is {msg.NextApprover}. Event will be added to pending actions.");
+
                         Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(msg.Event, msg.NextApprover));
                         Context.System.EventStream.Publish(new CalendarEventAssignedToApprover(msg.Event, msg.NextApprover));
                     }
                     else
                     {
+                        this.logger.Debug($"Event {msg.Event.EventId}. There is no next approver, event won't be added to pending actions.");
+
                         insertResult = this.CompleteCalendarEvent(msg.Event, msg.CreatedBy, msg.Timestamp);
                     }
 
@@ -145,7 +148,7 @@
 
                             if (!ev.IsPending)
                             {
-                                this.logger.Debug("Event is not pending and will be removed from current approver pending actions.");
+                                this.logger.Debug($"Event {cmd.Event.EventId} is not pending and will be removed from current approver pending actions.");
                                 Context.System.EventStream.Publish(new CalendarEventRemovedFromPendingActions(ev));
                             }
 
@@ -185,7 +188,7 @@
                 case ApproveCalendarEventSuccess msg:
                     if (msg.NextApprover != null)
                     {
-                        this.logger.Debug($"Next event approver is {msg.NextApprover}. Event is pending and will be added to pending actions.");
+                        this.logger.Debug($"Event {msg.Event.EventId}. Next approver is {msg.NextApprover}. Event will be added to pending actions.");
 
                         Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(msg.Event, msg.Approvals.ToList()));
 
@@ -194,7 +197,7 @@
                     }
                     else
                     {
-                        this.logger.Debug("There is no next event approver, event is not pending and will be removed from current approver pending actions.");
+                        this.logger.Debug($"Event {msg.Event.EventId}. There is no next approver, event will be removed from current approver pending actions.");
 
                         var approveResult = this.CompleteCalendarEvent(msg.Event, msg.UpdatedBy, msg.Timestamp);
 
