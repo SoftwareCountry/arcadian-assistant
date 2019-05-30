@@ -28,7 +28,7 @@ export class CompanyDepartmentsLevelPeople extends Component<CompanyDepartmentsL
     public render() {
         const { employees, chief } = this.props;
 
-        let employeesToRender: Employee[] = employees.sort(employeesAZComparer);
+        let employeesToRender = employees.slice().sort(employeesAZComparer);
 
         if (chief) {
             employeesToRender = employeesToRender.filter(employee => employee.employeeId !== chief.employeeId);
