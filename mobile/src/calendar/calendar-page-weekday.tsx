@@ -69,6 +69,7 @@ export class WeekDayCircle extends Component<WeekDayCircleProps> {
             {
                 color: this.getColorFor(day),
                 fontWeight: day.today ? 'bold' : 'normal',
+                lineHeight: day.today ? 14 : 12,
                 fontSize: day.today ? 14 : 12,
             }
         ]);
