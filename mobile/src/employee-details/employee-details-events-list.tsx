@@ -128,10 +128,14 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
     private descriptionFromTo(event: CalendarEvent): string {
         let description: string;
 
+        const startDate = event.dates.startDate.format(this.eventDigitsDateFormat);
+        const endDate = event.dates.endDate.format(this.eventDigitsDateFormat);
+        const hours = this.props.hoursToIntervalTitle(event.dates.startWorkingHour, event.dates.finishWorkingHour);
+
         if (event.isWorkout || event.isDayoff) {
-            description = `on ${event.dates.startDate.format(this.eventDigitsDateFormat)} (${this.props.hoursToIntervalTitle(event.dates.startWorkingHour, event.dates.finishWorkingHour)})`;
+            description = `on ${startDate} (${hours})`;
         } else {
-            description = `from ${event.dates.startDate.format(this.eventDigitsDateFormat)} to ${event.dates.endDate.format(this.eventDigitsDateFormat)}`;
+            description = `from ${startDate} to ${endDate}`;
         }
 
         return description;
