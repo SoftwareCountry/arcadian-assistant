@@ -6,6 +6,7 @@ import { OnSelectedDayCallback } from './calendar-page';
 import { StyledText } from '../override/styled-text';
 import Style from '../layout/style';
 import { State, TapGestureHandler, TapGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
+import business from 'moment-business';
 
 //============================================================================
 export const WeekDay = (props: { hide: boolean, children: any[] }) =>
@@ -66,9 +67,7 @@ export class WeekDayCircle extends Component<WeekDayCircleProps> {
         const circleTextStyle = StyleSheet.flatten([
             calendarStyles.weekDayNumber,
             {
-                color: day.belongsToCurrentMonth ?
-                    this.isSelectedDay(day) ? Style.color.white : this.props.customTextColor :
-                    '#dadada',
+                color: this.getColorFor(day),
                 fontWeight: day.today ? 'bold' : 'normal',
                 fontSize: day.today ? 14 : 12,
             }
@@ -87,11 +86,31 @@ export class WeekDayCircle extends Component<WeekDayCircleProps> {
 
     //----------------------------------------------------------------------------
     private isSelectedDay(day: DayModel) {
-        return (
-            this.props.selectedDay &&
-            this.props.selectedDay.date &&
-            this.props.selectedDay.date.isSame(day.date, 'day')
-        );
+        const { selectedDay } = this.props;
+
+        return selectedDay && selectedDay.date && selectedDay.date.isSame(day.date, 'day');
+    }
+
+    //----------------------------------------------------------------------------
+    private getColorFor(day: DayModel) {
+        const { customTextColor } = this.props;
+
+        if (day.belongsToCurrentMonth) {
+
+            if (this.isSelectedDay(day)) {
+                return Style.color.white;
+            }
+
+            if (business.isWeekendDay(day.date)) {
+                return Style.color.gray;
+            }
+
+            if (customTextColor) {
+                return customTextColor;
+            }
+        }
+
+        return '#dadada';
     }
 }
 
@@ -115,10 +134,11 @@ export class WeekDayTouchable extends Component<WeekDayTouchableProps> {
 
     //----------------------------------------------------------------------------
     private onTapHandlerStateChange = (event: TapGestureHandlerStateChangeEvent) => {
-        if (this.props.disabled || event.nativeEvent.state !== State.ACTIVE) {
+        const { disabled, day, onSelectedDay } = this.props;
+        if (disabled || event.nativeEvent.state !== State.ACTIVE) {
             return;
         }
 
-        this.props.onSelectedDay(this.props.day);
+        onSelectedDay(day);
     };
 }
