@@ -1,3 +1,7 @@
+/******************************************************************************
+ * Copyright (c) Arcadia, Inc. All rights reserved.
+ ******************************************************************************/
+
 import React, { Component } from 'react';
 import moment from 'moment';
 import { Dimensions, FlatList, ListRenderItemInfo, TouchableOpacity, View, ViewStyle } from 'react-native';
@@ -116,10 +120,14 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
         } = layoutStylesForEmployeeDetailsScreen;
 
         return (
-            <TouchableOpacity onPress={() => {this.props.onAvatarClicked(employee); }} style={avatarContainer}>
+            <TouchableOpacity
+                onPress={() => { this.props.onAvatarClicked(employee); }}
+                style={avatarContainer}>
+
                 <Avatar photoUrl={employee.photoUrl}
                         style={avatarOuterFrame as ViewStyle}
                         imageStyle={avatarImage as ViewStyle}/>
+                        
             </TouchableOpacity>
         );
     }
