@@ -29,6 +29,7 @@ namespace Arcadia.Assistant.Organization
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterStatefulService<Organization>("Arcadia.Assistant.OrganizationType");
                 builder.RegisterModule(new CspModule("<>"));
+                builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
 
                 using (builder.Build())
                 {

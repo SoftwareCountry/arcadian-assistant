@@ -7,19 +7,19 @@
     <ServerGarbageCollection>True</ServerGarbageCollection>
     <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
     <TargetLatestRuntimePatch>False</TargetLatestRuntimePatch>
+    <UpdateServiceFabricManifestEnabled>True</UpdateServiceFabricManifestEnabled>
+    <ServicePackagePath>PackageRoot</ServicePackagePath>
+    <ServicePackagePrefix>$(MSBuildProjectName)</ServicePackagePrefix>
+    <FabActUtilWorkingDir>$(BaseIntermediateOutputPath)\FabActUtilTemp</FabActUtilWorkingDir>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac.ServiceFabric" Version="2.2.0" />
     <PackageReference Include="Microsoft.ServiceFabric.Actors" Version="3.3.658" />
-    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="3.3.658" />
-    <PackageReference Include="Microsoft.ServiceFabric.Services.Remoting" Version="3.3.658" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0006" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Arcadia.Assistant.Avatars.Contracts\Arcadia.Assistant.Avatars.Contracts.csproj" />
-    <ProjectReference Include="..\Arcadia.Assistant.CSP\Arcadia.Assistant.CSP.csproj" />
-    <ProjectReference Include="..\Arcadia.Assistant.Organization.Contracts\Arcadia.Assistant.Organization.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

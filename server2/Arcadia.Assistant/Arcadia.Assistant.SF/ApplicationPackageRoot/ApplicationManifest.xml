@@ -7,10 +7,16 @@
     <Parameter Name="Arcadia.Assistant.Web_ASPNETCORE_ENVIRONMENT" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.Web_Port" DefaultValue="63601" />
+    <Parameter Name="AvatarActorService_PartitionCount" DefaultValue="10" />
+    <Parameter Name="AvatarActorService_MinReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="AvatarActorService_TargetReplicaSetSize" DefaultValue="3" />
   </Parameters>
   <!-- Import the ServiceManifest from the ServicePackage. The ServiceManifestName and ServiceManifestVersion 
        should match the Name and Version attributes of the ServiceManifest element defined in the 
        ServiceManifest.xml file. -->
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.AvatarsPkg" ServiceManifestVersion="1.0.0" />
+  </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.OrganizationPkg" ServiceManifestVersion="1.0.0" />
     <ConfigOverrides />
@@ -42,6 +48,11 @@
       <StatelessService ServiceTypeName="Arcadia.Assistant.WebType" InstanceCount="[Arcadia.Assistant.Web_InstanceCount]">
         <SingletonPartition />
       </StatelessService>
+    </Service>
+    <Service Name="AvatarActorService" GeneratedIdRef="c6504821-7171-4fe7-9446-c4e383903f37|Volatile">
+      <StatefulService ServiceTypeName="AvatarActorServiceType" TargetReplicaSetSize="[AvatarActorService_TargetReplicaSetSize]" MinReplicaSetSize="[AvatarActorService_MinReplicaSetSize]">
+        <UniformInt64Partition PartitionCount="[AvatarActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+      </StatefulService>
     </Service>
   </DefaultServices>
 </ApplicationManifest>

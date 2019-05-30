@@ -6,5 +6,8 @@
     <Parameter Name="Arcadia.Assistant.Organization_TargetReplicaSetSize" Value="1" />
     <Parameter Name="Arcadia.Assistant.Web_ASPNETCORE_ENVIRONMENT" Value="Development" />
     <Parameter Name="Arcadia.Assistant.Web_InstanceCount" Value="1" />
+    <Parameter Name="AvatarActorService_PartitionCount" Value="1" />
+    <Parameter Name="AvatarActorService_TargetReplicaSetSize" Value="1" />
+    <Parameter Name="AvatarActorService_MinReplicaSetSize" Value="1" />
   </Parameters>
 </Application>
