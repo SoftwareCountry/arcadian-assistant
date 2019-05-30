@@ -99,7 +99,6 @@ export const calendarStyles = StyleSheet.create({
         zIndex: weekDayCircleZIndex
     },
     weekDayNumber: {
-        fontSize: 12,
         lineHeight: 14,
         color: 'rgba(0, 0, 0, 0.8678)'
     },

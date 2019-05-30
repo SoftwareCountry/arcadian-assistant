@@ -68,7 +68,9 @@ export class WeekDayCircle extends Component<WeekDayCircleProps> {
             {
                 color: day.belongsToCurrentMonth ?
                     this.isSelectedDay(day) ? Style.color.white : this.props.customTextColor :
-                    '#dadada'
+                    '#dadada',
+                fontWeight: day.today ? 'bold' : 'normal',
+                fontSize: day.today ? 14 : 12,
             }
         ]);
 
