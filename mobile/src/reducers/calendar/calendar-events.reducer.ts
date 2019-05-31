@@ -20,7 +20,7 @@ import { Optional } from 'types';
 import { resetCalendarPagesReducer } from './reset-calendar-pages.reducer';
 import { Approval } from './approval.model';
 import { ApprovalAction, ApprovalActionType } from './approval.action';
-import { applyLocale } from '../../locale/locale';
+import { applyCalendarLocale } from '../../locale/locale';
 
 export interface IntervalsSubState {
     intervals: Optional<ReadOnlyIntervalsModel>;
@@ -53,8 +53,8 @@ export interface CalendarEventsState extends IntervalsSubState, DisableCalendarD
 
 const createInitState = (): CalendarEventsState => {
 
-    applyLocale();
-    
+    applyCalendarLocale();
+
     const date = moment();
     const [
         prevPage,

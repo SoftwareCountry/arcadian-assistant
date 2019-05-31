@@ -7,7 +7,7 @@ import * as moment from 'moment';
 import 'moment/locale/en-gb';
 
 //----------------------------------------------------------------------------
-export function applyLocale() {
+export function applyCalendarLocale() {
     const defaultLocale = 'en-gb';
 
     const deviceLocale = getDeviceLocale();
