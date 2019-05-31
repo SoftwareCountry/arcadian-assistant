@@ -10,6 +10,7 @@
         [Required]
         public EmailWithFixedRecipientNotification SickLeaveProlongedAccounting { get; set; }
 
+        [Required]
         public EmailWithFixedRecipientNotification SickLeaveCancelledAccounting { get; set; }
 
         [Required]
@@ -17,6 +18,9 @@
 
         [Required]
         public EmailNotification SickLeaveProlongedManager { get; set; }
+
+        [Required]
+        public EmailNotification SickLeaveCancelledManager { get; set; }
 
         [Required]
         public EmailNotification EventAssignedToApprover { get; set; }

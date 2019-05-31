@@ -12,6 +12,8 @@
 
         EmailNotification SickLeaveProlongedManager { get; }
 
+        EmailNotification SickLeaveCancelledManager { get; }
+
         EmailNotification EventAssignedToApprover { get; }
 
         EmailNotification EventStatusChanged { get; }
