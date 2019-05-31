@@ -6,6 +6,10 @@
 
         EmailWithFixedRecipientNotification SickLeaveProlongedAccounting { get; }
 
+        EmailNotification SickLeaveCreatedManager { get; }
+
+        EmailNotification SickLeaveProlongedManager { get; }
+
         EmailNotification EventAssignedToApprover { get; }
 
         EmailNotification EventStatusChanged { get; }
