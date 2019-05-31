@@ -79,8 +79,8 @@
         {
             this.actorSystem.ActorOf(
                 Props.Create(() => new SickLeaveAccountingEmailNotificationActor(
-                    calendarEventsMailSettings.SickLeaveApproved,
-                    calendarEventsMailSettings.SickLeaveProlonged,
+                    calendarEventsMailSettings.SickLeaveCreatedAccounting,
+                    calendarEventsMailSettings.SickLeaveProlongedAccounting,
                     organization)),
                 "sick-leave-accounting-email");
             this.actorSystem.ActorOf(

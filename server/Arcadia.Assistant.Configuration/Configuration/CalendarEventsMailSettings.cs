@@ -5,10 +5,10 @@
     public class CalendarEventsMailSettings : ICalendarEventsMailSettings
     {
         [Required]
-        public EmailWithFixedRecipientNotification SickLeaveApproved { get; set; }
+        public EmailWithFixedRecipientNotification SickLeaveCreatedAccounting { get; set; }
 
         [Required]
-        public EmailWithFixedRecipientNotification SickLeaveProlonged { get; set; }
+        public EmailWithFixedRecipientNotification SickLeaveProlongedAccounting { get; set; }
 
         [Required]
         public EmailNotification EventAssignedToApprover { get; set; }
