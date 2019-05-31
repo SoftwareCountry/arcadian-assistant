@@ -144,6 +144,16 @@
                     else
                     {
                         this.logger.Debug($"Sick leave {msg.Data.Event.EventId}. There is no next approver, sick leave won't be added to pending actions.");
+
+                        // If sick leave doesn't require approval and has been approved automatically,
+                        // we imply, for simplicity, that it was changed from the same sick leave, but with initial status
+                        var oldEvent = new CalendarEvent(
+                            msg.Data.Event.EventId,
+                            msg.Data.Event.Type,
+                            msg.Data.Event.Dates,
+                            SickLeaveStatuses.Requested,
+                            msg.Data.Event.EmployeeId);
+                        Context.System.EventStream.Publish(new CalendarEventChanged(oldEvent, msg.Data.Event.EmployeeId, DateTimeOffset.Now, msg.Data.Event));
                     }
 
                     this.Sender.Tell(new UpsertCalendarEvent.Success(msg.Data.Event));
