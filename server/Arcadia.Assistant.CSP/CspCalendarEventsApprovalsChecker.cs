@@ -28,6 +28,12 @@
 
         protected override async Task<string> GetNextApprover(string employeeId, IEnumerable<string> existingApprovals, string eventType)
         {
+            // No approval required for sick leaves
+            if (eventType == CalendarEventTypes.Sickleave)
+            {
+                return null;
+            }
+
             var allDepartments = await this.GetDepartments();
             var employeeMetadata = await this.GetEmployee(employeeId);
 
