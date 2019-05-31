@@ -2,6 +2,10 @@
 {
     public static class CalendarEventPushNotificationTypes
     {
+        public const string SickLeaveCreatedManager = "SickLeaveCreatedManager";
+
+        public const string SickLeaveProlongedManager = "SickLeaveProlongedManager";
+
         public const string EventAssignedToApprover = "EventAssignedToApprover";
 
         public const string EventStatusChanged = "EventStatusChanged";

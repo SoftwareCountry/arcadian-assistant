@@ -88,8 +88,16 @@
                     calendarEventsMailSettings.SickLeaveCreatedManager,
                     calendarEventsMailSettings.SickLeaveProlongedManager,
                     organization,
-                    userPreferences),
-                    "sick-leave-manager-email"));
+                    userPreferences)),
+                    "sick-leave-manager-email");
+            this.actorSystem.ActorOf(
+                Props.Create(() => new SickLeaveManagerPushNotificationActor(
+                    calendarEventsPushSettings.SickLeaveCreatedManager,
+                    calendarEventsPushSettings.SickLeaveProlongedManager,
+                    organization,
+                    userPreferences,
+                    pushNotificationsDevices)),
+                "sick-leave-manager-push");
             this.actorSystem.ActorOf(
                 Props.Create(() => new EventAssignedToApproverEmailNotificationActor(
                     calendarEventsMailSettings.EventAssignedToApprover,
