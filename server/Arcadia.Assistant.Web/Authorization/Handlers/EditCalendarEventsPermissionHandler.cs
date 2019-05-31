@@ -79,7 +79,14 @@
 
             if (statusChanged && existingEvent.Status == approvedStatus && updatedEvent.Status == cancelledStatus)
             {
-                return employeePermissions.HasFlag(EmployeePermissionsEntry.CancelApprovedCalendarEvents);
+                var permissionExists = employeePermissions.HasFlag(EmployeePermissionsEntry.CancelApprovedCalendarEvents);
+
+                if (!permissionExists && existingEvent.Type == CalendarEventTypes.Sickleave)
+                {
+                    permissionExists = employeePermissions.HasFlag(EmployeePermissionsEntry.CancelApprovedSickLeaves);
+                }
+
+                return permissionExists;
             }
 
             return true;
@@ -98,7 +105,7 @@
 
             return true;
         }
-        
+
         private static bool StatusChanged(CalendarEvent existingEvent, CalendarEventsModel updatedEvent)
         {
             return existingEvent.Status != updatedEvent.Status;
