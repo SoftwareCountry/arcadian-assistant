@@ -7,7 +7,7 @@ import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base'
 import { AppState, getEmployee, getEndDay, getStartDay } from '../../reducers/app.reducer';
 import { Action, Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { closeEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
+import { closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import {
     DayModel,
     isIntersectingAnotherVacation,
@@ -17,6 +17,7 @@ import { Employee } from '../../reducers/organization/employee.model';
 import { confirmVacation } from '../../reducers/calendar/vacation.action';
 import { Moment } from 'moment';
 import { Optional } from 'types';
+import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
 
 //============================================================================
 interface ClaimVacationEventDialogDispatchProps {
