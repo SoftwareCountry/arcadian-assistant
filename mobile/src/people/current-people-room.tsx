@@ -66,8 +66,8 @@ class CurrentPeopleRoomImpl extends React.Component<CurrentPeopleRoomProps & Cur
     //----------------------------------------------------------------------------
     private static getTitle(navigationOptionsContainer: NavigationOptionsContainer): string {
         const navigation = navigationOptionsContainer.navigation;
-        const roomNumber = navigation.getParam('roomNumber', undefined);
-        return roomNumber ? `Room ${roomNumber}` : '';
+        const roomNumber = navigation.getParam('roomNumber', '<?>');
+        return `Room ${roomNumber}`;
     }
 }
 

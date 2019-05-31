@@ -36,23 +36,7 @@ class TabBarTopCustomImpl extends React.Component<TabBarTopProps & TabBarTopCust
     //----------------------------------------------------------------------------
     private getLabel = (param: TabLabelTextParam, employee: Nullable<Employee>, department: Nullable<Department>): React.ReactNode | string => {
 
-        const roomNumber = employee && employee.roomNumber ? employee.roomNumber : '';
-        const roomTitle: string = isNaN(Number(roomNumber)) ? roomNumber : `Room ${roomNumber}`;
-        let label = '';
-
-        switch (param.route.key) {
-            case 'Department':
-                label = department ? department.abbreviation : 'Department';
-                break;
-            case 'Room':
-                label = roomTitle;
-                break;
-            case 'Company':
-                label = 'Company';
-                break;
-            default:
-                break;
-        }
+        let label = this.getLabelText(param.route.key, employee, department);
 
         const style = StyleSheet.flatten([
             tabBarStyles.tabBarLabel,
@@ -67,6 +51,20 @@ class TabBarTopCustomImpl extends React.Component<TabBarTopProps & TabBarTopCust
             </StyledText>
         );
     };
+
+    //----------------------------------------------------------------------------
+    private getLabelText(key: string, employee: Nullable<Employee>, department: Nullable<Department>): string {
+        switch (key) {
+            case 'Department':
+                return department ? department.abbreviation : 'Department';
+            case 'Room':
+                return employee ? employee.getRoomTitle() : 'Room <?>';
+            case 'Company':
+                return 'Company';
+            default:
+                return '';
+        }
+    }
 }
 
 //----------------------------------------------------------------------------

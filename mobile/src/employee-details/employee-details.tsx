@@ -255,9 +255,6 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
     //----------------------------------------------------------------------------
     private getTiles(employee: Employee) {
-        let roomNumber = employee && employee.roomNumber ? employee.roomNumber : '';
-        let roomTitle: string = isNaN(Number(roomNumber)) ? roomNumber : `Room ${roomNumber}`;
-
         const tilesData: TileData[] = [
             {
                 label: employee.birthDate.format('MMMM D'),
@@ -276,7 +273,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                 onPress: null
             },
             {
-                label: roomTitle,
+                label: employee.getRoomTitle(),
                 icon: 'office',
                 style: StyleSheet.flatten([tileStyles.icon]),
                 size: 25,

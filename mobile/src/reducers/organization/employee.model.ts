@@ -99,16 +99,26 @@ export class Employee {
         return hasher.value;
     }
 
+    //----------------------------------------------------------------------------
     public getSurname(): string {
         const names = this.name.split(' ');
 
         return names.length > 0 ? names[0] : this.name;
     }
 
+    //----------------------------------------------------------------------------
     public getName(): string {
         const names = this.name.split(' ');
 
         return names.length > 1 ? names[1] : this.name;
     }
 
+    //----------------------------------------------------------------------------
+    public getRoomTitle(): string {
+        if (!this.roomNumber) {
+            return 'Room <?>';
+        }
+
+        return isNaN(Number(this.roomNumber)) ? this.roomNumber : `Room ${this.roomNumber}`;
+    }
 }
