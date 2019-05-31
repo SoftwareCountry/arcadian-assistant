@@ -29,7 +29,7 @@ interface EmployeeDetailsEventsListDispatchProps {
 
 //============================================================================
 class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListProps & EmployeeDetailsEventsListDispatchProps> {
-    private readonly eventDigitsDateFormat = 'DD/MM/YYYY';
+    private readonly eventDigitsDateFormat = 'ddd DD/MM/YYYY';
 
     //----------------------------------------------------------------------------
     public render() {
