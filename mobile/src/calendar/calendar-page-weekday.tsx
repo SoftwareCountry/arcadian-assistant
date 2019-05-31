@@ -15,12 +15,7 @@ export const WeekDay = (props: { hide: boolean, children: any[] }) =>
         : <View style={calendarStyles.weekDay}>{props.children}</View>;
 
 //============================================================================
-interface WeekDayCircleDefaultProps {
-    customTextColor?: string;
-}
-
-//============================================================================
-interface WeekDayCircleProps extends WeekDayCircleDefaultProps {
+interface WeekDayCircleProps {
     weekHeight: number;
     day: DayModel;
     selectedDay: DayModel;
@@ -28,10 +23,6 @@ interface WeekDayCircleProps extends WeekDayCircleDefaultProps {
 
 //============================================================================
 export class WeekDayCircle extends Component<WeekDayCircleProps> {
-    //----------------------------------------------------------------------------
-    public static defaultProps: WeekDayCircleDefaultProps = {
-        customTextColor: Style.color.black
-    };
 
     //----------------------------------------------------------------------------
     public render() {
@@ -94,7 +85,6 @@ export class WeekDayCircle extends Component<WeekDayCircleProps> {
 
     //----------------------------------------------------------------------------
     private getColorFor(day: DayModel) {
-        const { customTextColor } = this.props;
 
         if (day.belongsToCurrentMonth) {
 
@@ -106,9 +96,7 @@ export class WeekDayCircle extends Component<WeekDayCircleProps> {
                 return Style.color.gray;
             }
 
-            if (customTextColor) {
-                return customTextColor;
-            }
+            return Style.color.black;
         }
 
         return '#dadada';
@@ -124,6 +112,7 @@ interface WeekDayTouchableProps {
 
 //============================================================================
 export class WeekDayTouchable extends Component<WeekDayTouchableProps> {
+
     //----------------------------------------------------------------------------
     public render() {
         return (
