@@ -6,6 +6,8 @@
 
         EmailWithFixedRecipientNotification SickLeaveProlongedAccounting { get; }
 
+        EmailWithFixedRecipientNotification SickLeaveCancelledAccounting { get; }
+
         EmailNotification SickLeaveCreatedManager { get; }
 
         EmailNotification SickLeaveProlongedManager { get; }
