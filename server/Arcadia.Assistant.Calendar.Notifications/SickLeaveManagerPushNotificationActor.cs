@@ -22,6 +22,7 @@
     {
         private readonly IPushNotification createdPushNotificationConfig;
         private readonly IPushNotification prolongedPushNotificationConfig;
+        private readonly IPushNotification cancelledPushNotificationConfig;
         private readonly IActorRef organizationActor;
         private readonly IActorRef userPreferencesActor;
         private readonly IActorRef pushDevicesActor;
@@ -31,12 +32,14 @@
         public SickLeaveManagerPushNotificationActor(
             IPushNotification createdPushNotificationConfig,
             IPushNotification prolongedPushNotificationConfig,
+            IPushNotification cancelledPushNotificationConfig,
             IActorRef organizationActor,
             IActorRef userPreferencesActor,
             IActorRef pushDevicesActor)
         {
             this.createdPushNotificationConfig = createdPushNotificationConfig;
             this.prolongedPushNotificationConfig = prolongedPushNotificationConfig;
+            this.cancelledPushNotificationConfig = cancelledPushNotificationConfig;
             this.organizationActor = organizationActor;
             this.userPreferencesActor = userPreferencesActor;
             this.pushDevicesActor = pushDevicesActor;
@@ -52,7 +55,7 @@
                 case CalendarEventCreated msg when
                     msg.Event.Type == CalendarEventTypes.Sickleave:
 
-                    this.GetAdditionalData(msg.Event, false, msg.Event.EmployeeId)
+                    this.GetAdditionalData(msg.Event, NotificationType.Created, msg.Event.EmployeeId)
                         .PipeTo(this.Self);
                     break;
 
@@ -62,7 +65,15 @@
                     msg.OldEvent.Status == SickLeaveStatuses.Approved &&
                     msg.OldEvent.Dates.EndDate != msg.NewEvent.Dates.EndDate:
 
-                    this.GetAdditionalData(msg.NewEvent, true, msg.NewEvent.EmployeeId)
+                    this.GetAdditionalData(msg.NewEvent, NotificationType.Prolonged, msg.NewEvent.EmployeeId)
+                        .PipeTo(this.Self);
+                    break;
+
+                case CalendarEventChanged msg when
+                    msg.NewEvent.Type == CalendarEventTypes.Sickleave &&
+                    msg.NewEvent.Status == SickLeaveStatuses.Cancelled:
+
+                    this.GetAdditionalData(msg.NewEvent, NotificationType.Cancelled, msg.NewEvent.EmployeeId)
                         .PipeTo(this.Self);
                     break;
 
@@ -72,11 +83,18 @@
                 case CalendarEventWithAdditionalData msg when
                     msg.ManagerUserPreferences?.PushNotifications == true:
 
-                    this.logger.Debug($"Sending a sick leave {(msg.IsProlonged ? "prolonged" : "created")} push notification to manager {msg.Manager?.EmployeeId} for user {msg.Event.EmployeeId}");
+                    var notificationAction = msg.NotificationType == NotificationType.Created
+                        ? "created"
+                        : msg.NotificationType == NotificationType.Prolonged
+                            ? "prolonged"
+                            : "cancelled";
+                    this.logger.Debug($"Sending a sick leave {notificationAction} push notification to manager {msg.Manager?.EmployeeId} for user {msg.Event.EmployeeId}");
 
-                    var notificationConfiguration = msg.IsProlonged
-                        ? this.prolongedPushNotificationConfig
-                        : this.createdPushNotificationConfig;
+                    var notificationConfiguration = msg.NotificationType == NotificationType.Created
+                        ? this.createdPushNotificationConfig
+                        : msg.NotificationType == NotificationType.Prolonged
+                            ? this.prolongedPushNotificationConfig
+                            : this.cancelledPushNotificationConfig;
 
                     this.SendNotification(msg, notificationConfiguration);
 
@@ -112,17 +130,19 @@
                     message.Event.EventId,
                     message.Owner.EmployeeId,
                     ManagerId = message.Manager.EmployeeId,
-                    Type = message.IsProlonged
-                        ? CalendarEventPushNotificationTypes.SickLeaveProlongedManager
-                        : CalendarEventPushNotificationTypes.SickLeaveCreatedManager
+                    Type = message.NotificationType == NotificationType.Created
+                        ? CalendarEventPushNotificationTypes.SickLeaveCreatedManager
+                        : message.NotificationType == NotificationType.Prolonged
+                            ? CalendarEventPushNotificationTypes.SickLeaveProlongedManager
+                            : CalendarEventPushNotificationTypes.SickLeaveCancelledManager
                 }
             };
 
             Context.System.EventStream.Publish(new NotificationEventBusMessage(
-                new PushNotification(content, message.ManagerPushTokens)));
+                        new PushNotification(content, message.ManagerPushTokens)));
         }
 
-        private async Task<CalendarEventWithAdditionalData> GetAdditionalData(CalendarEvent @event, bool isProlonged, string ownerEmployeeId)
+        private async Task<CalendarEventWithAdditionalData> GetAdditionalData(CalendarEvent @event, NotificationType notificationType, string ownerEmployeeId)
         {
             var ownerTask = this.GetEmployee(ownerEmployeeId);
             var departmentsTask = this.GetDepartments();
@@ -137,7 +157,7 @@
 
             if (ownDepartment.IsHeadDepartment && isEmployeeChief)
             {
-                return new CalendarEventWithAdditionalData(@event, isProlonged, owner);
+                return new CalendarEventWithAdditionalData(@event, notificationType, owner);
             }
 
             var managerEmployeeId = !isEmployeeChief ? ownDepartment.ChiefId : parentDepartment?.ChiefId;
@@ -151,7 +171,7 @@
             var managerPreferences = managerPreferencesTask.Result;
             var managerPushTokens = managerPushTokensTask.Result;
 
-            return new CalendarEventWithAdditionalData(@event, isProlonged, owner, manager, managerPreferences, managerPushTokens);
+            return new CalendarEventWithAdditionalData(@event, notificationType, owner, manager, managerPreferences, managerPushTokens);
         }
 
         private async Task<EmployeeMetadata> GetEmployee(string employeeId)
@@ -189,14 +209,14 @@
         {
             public CalendarEventWithAdditionalData(
                 CalendarEvent @event,
-                bool isProlonged,
+                NotificationType notificationType,
                 EmployeeMetadata owner,
                 EmployeeMetadata manager = null,
                 UserPreferences managerUserPreferences = null,
                 IEnumerable<DevicePushToken> managerPushTokens = null)
             {
                 this.Event = @event;
-                this.IsProlonged = isProlonged;
+                this.NotificationType = notificationType;
                 this.Owner = owner;
                 this.Manager = manager;
                 this.ManagerUserPreferences = managerUserPreferences;
@@ -205,7 +225,7 @@
 
             public CalendarEvent Event { get; }
 
-            public bool IsProlonged { get; }
+            public NotificationType NotificationType { get; }
 
             public EmployeeMetadata Owner { get; }
 
@@ -214,6 +234,13 @@
             public UserPreferences ManagerUserPreferences { get; }
 
             public IEnumerable<DevicePushToken> ManagerPushTokens { get; }
+        }
+
+        private enum NotificationType
+        {
+            Created,
+            Prolonged,
+            Cancelled
         }
     }
 }
