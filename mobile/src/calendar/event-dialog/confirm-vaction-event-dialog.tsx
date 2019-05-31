@@ -20,6 +20,7 @@ import { Optional } from 'types';
 
 //============================================================================
 interface ClaimVacationEventDialogDispatchProps {
+    back: () => void;
     confirmVacation: (employeeId: string, startDate: Moment, endDate: Moment) => void;
     closeDialog: () => void;
 }
@@ -48,10 +49,15 @@ class ConfirmVacationEventDialogImpl extends Component<ClaimVacationEventDialogP
             cancelLabel={'Back'}
             acceptLabel={'Confirm'}
             onAcceptPress={this.acceptAction}
-            onCancelPress={this.closeDialog}
+            onCancelPress={this.cancelAction}
             onClosePress={this.closeDialog}
             disableAccept={disableAccept}/>;
     }
+
+    //----------------------------------------------------------------------------
+    private cancelAction = () => {
+        this.props.back();
+    };
 
     //----------------------------------------------------------------------------
     private acceptAction = () => {
@@ -83,6 +89,9 @@ const mapStateToProps = (state: AppState): ClaimVacationEventDialogProps => ({
 
 //============================================================================
 const mapDispatchToProps = (dispatch: Dispatch<Action>): ClaimVacationEventDialogDispatchProps => ({
+    back: () => {
+        dispatch(openEventDialog(EventDialogType.RequestVacation));
+    },
     confirmVacation: (employeeId: string, startDate: Moment, endDate: Moment) => {
         dispatch(confirmVacation(employeeId, startDate, endDate));
     },

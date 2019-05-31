@@ -17,6 +17,7 @@ import { RadioButton, RadioGroup } from '../../common/radio-buttons-group.compon
 import { Optional } from 'types';
 
 interface ChooseTypeDayoffEventDialogDispatchProps {
+    cancelDialog: () => void;
     confirmChosenType: (isWorkout: boolean) => void;
     closeDialog: () => void;
 }
@@ -68,7 +69,7 @@ class ChooseTypeDayoffEventDialogImpl extends Component<ChooseTypeDayoffEventDia
                 cancelLabel={'Back'}
                 acceptLabel={'Confirm'}
                 onAcceptPress={this.onAcceptClick}
-                onCancelPress={this.onCloseClick}
+                onCancelPress={this.onCancelClick}
                 onClosePress={this.onCloseClick}>
                 <View style={dayOffDialogStyles.container}>
                     <RadioGroup flexDirection={'row'}
@@ -88,6 +89,10 @@ class ChooseTypeDayoffEventDialogImpl extends Component<ChooseTypeDayoffEventDia
         });
     };
 
+    private onCancelClick = () => {
+        this.props.cancelDialog();
+    };
+
     private onAcceptClick = () => {
         this.props.confirmChosenType(this.state.selectedHoursCreditType === HoursCreditType.Workout);
     };
@@ -102,6 +107,9 @@ const mapStateToProps = (state: AppState): ChooseTypeDayoffEventDialogProps => (
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ChooseTypeDayoffEventDialogDispatchProps => ({
+    cancelDialog: () => {
+        dispatch(openEventDialog(EventDialogType.ProcessDayoff));
+    },
     confirmChosenType: (isWorkout: boolean) => {
         dispatch(chosenTypeDayoff(isWorkout));
         dispatch(openEventDialog(EventDialogType.ConfirmDayoffStartDate));
