@@ -84,6 +84,13 @@
                     organization)),
                 "sick-leave-accounting-email");
             this.actorSystem.ActorOf(
+                Props.Create(() => new SickLeaveManagerEmailNotificationActor(
+                    calendarEventsMailSettings.SickLeaveCreatedManager,
+                    calendarEventsMailSettings.SickLeaveProlongedManager,
+                    organization,
+                    userPreferences),
+                    "sick-leave-manager-email"));
+            this.actorSystem.ActorOf(
                 Props.Create(() => new EventAssignedToApproverEmailNotificationActor(
                     calendarEventsMailSettings.EventAssignedToApprover,
                     organization,
