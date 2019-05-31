@@ -2,9 +2,18 @@ import React, { Component } from 'react';
 import { CalendarActionButton } from './calendar-action-button';
 import { IntervalModel } from '../reducers/calendar/calendar.model';
 import { CalendarEventsColor } from './styles';
+import { Approval } from '../reducers/calendar/approval.model';
+import { connect } from 'react-redux';
+import { AppState } from '../reducers/app.reducer';
+import { Set } from 'immutable';
 
 //============================================================================
-interface VacationActionButtonProps {
+interface VacationActionButtonStateProps {
+    approvals: Set<Approval>;
+}
+
+//============================================================================
+interface VacationActionButtonOwnProps {
     interval?: IntervalModel;
     disabled: boolean;
     request: () => void;
@@ -12,7 +21,8 @@ interface VacationActionButtonProps {
 }
 
 //============================================================================
-export class VacationActionButton extends Component<VacationActionButtonProps> {
+class VacationActionButtonImpl extends Component<VacationActionButtonOwnProps & VacationActionButtonStateProps> {
+
     //----------------------------------------------------------------------------
     public render() {
         const disableActionButton = this.disableCalendarAction();
@@ -48,9 +58,41 @@ export class VacationActionButton extends Component<VacationActionButtonProps> {
 
         return !!interval &&
             (interval.calendarEvent.isCompleted ||
-             interval.calendarEvent.isApproved ||
-             interval.calendarEvent.isAccountingReady ||
-             interval.calendarEvent.isProcessed);
+                interval.calendarEvent.isApproved ||
+                interval.calendarEvent.isAccountingReady ||
+                interval.calendarEvent.isProcessed ||
+                this.isPartiallyApproved());
+    }
+
+    //----------------------------------------------------------------------------
+    private isPartiallyApproved(): boolean {
+        const { interval, approvals } = this.props;
+
+        if (!interval || !approvals) {
+            return false;
+        }
+
+        return approvals.size === 1;
     }
 }
+
+//----------------------------------------------------------------------------
+function getApprovals(state: AppState, ownProps: VacationActionButtonOwnProps): Set<Approval> {
+    const { calendar } = state;
+    const { interval } = ownProps;
+
+    if (!calendar || !interval) {
+        return Set<Approval>();
+    }
+
+    return calendar.calendarEvents.approvals.get(interval.calendarEvent.calendarEventId, Set<Approval>());
+}
+
+//----------------------------------------------------------------------------
+const stateToProps = (state: AppState, ownProps: VacationActionButtonOwnProps): VacationActionButtonStateProps => ({
+    approvals: getApprovals(state, ownProps),
+});
+
+//----------------------------------------------------------------------------
+export const VacationActionButton = connect(stateToProps)(VacationActionButtonImpl);
 
