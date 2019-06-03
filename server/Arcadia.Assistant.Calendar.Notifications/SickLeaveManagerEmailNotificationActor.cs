@@ -110,6 +110,7 @@
             var templateExpressionContext = new Dictionary<string, string>
             {
                 ["employee"] = message.Owner.Name,
+                ["employeeId"] = message.Owner.EmployeeId,
                 ["startDate"] = message.Event.Dates.StartDate.ToString("dd/MM/yyyy"),
                 ["endDate"] = message.Event.Dates.EndDate.ToString("dd/MM/yyyy")
             };

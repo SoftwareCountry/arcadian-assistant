@@ -79,16 +79,16 @@
         {
             this.actorSystem.ActorOf(
                 Props.Create(() => new SickLeaveAccountingEmailNotificationActor(
-                    calendarEventsMailSettings.SickLeaveCreatedAccounting,
-                    calendarEventsMailSettings.SickLeaveProlongedAccounting,
-                    calendarEventsMailSettings.SickLeaveCancelledAccounting,
+                    calendarEventsMailSettings.SickLeaveCreated,
+                    calendarEventsMailSettings.SickLeaveProlonged,
+                    calendarEventsMailSettings.SickLeaveCancelled,
                     organization)),
                 "sick-leave-accounting-email");
             this.actorSystem.ActorOf(
                 Props.Create(() => new SickLeaveManagerEmailNotificationActor(
-                    calendarEventsMailSettings.SickLeaveCreatedManager,
-                    calendarEventsMailSettings.SickLeaveProlongedManager,
-                    calendarEventsMailSettings.SickLeaveCancelledManager,
+                    calendarEventsMailSettings.SickLeaveCreated,
+                    calendarEventsMailSettings.SickLeaveProlonged,
+                    calendarEventsMailSettings.SickLeaveCancelled,
                     organization,
                     userPreferences)),
                     "sick-leave-manager-email");

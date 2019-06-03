@@ -5,13 +5,13 @@
     public class CalendarEventsMailSettings : ICalendarEventsMailSettings
     {
         [Required]
-        public EmailWithFixedRecipientNotification SickLeaveCreatedAccounting { get; set; }
+        public EmailWithFixedRecipientNotification SickLeaveCreated { get; set; }
 
         [Required]
-        public EmailWithFixedRecipientNotification SickLeaveProlongedAccounting { get; set; }
+        public EmailWithFixedRecipientNotification SickLeaveProlonged { get; set; }
 
         [Required]
-        public EmailWithFixedRecipientNotification SickLeaveCancelledAccounting { get; set; }
+        public EmailWithFixedRecipientNotification SickLeaveCancelled { get; set; }
 
         [Required]
         public EmailNotification SickLeaveCreatedManager { get; set; }
