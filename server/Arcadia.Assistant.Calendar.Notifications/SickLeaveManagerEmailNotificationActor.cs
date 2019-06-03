@@ -123,7 +123,7 @@
 
             var sender = notificationConfiguration.NotificationSender;
             var recipient = message.Manager?.Email;
-            var subject = notificationConfiguration.Subject;
+            var subject = templateExpressionParser.Parse(notificationConfiguration.Subject, templateExpressionContext);
             var body = templateExpressionParser.Parse(notificationConfiguration.Body, templateExpressionContext);
 
             Context.System.EventStream.Publish(
