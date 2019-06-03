@@ -2,9 +2,11 @@
 {
     public interface ICalendarEventsMailSettings
     {
-        EmailWithFixedRecipientNotification SickLeaveApproved { get; }
+        EmailWithFixedRecipientNotification SickLeaveCreated { get; }
 
         EmailWithFixedRecipientNotification SickLeaveProlonged { get; }
+
+        EmailWithFixedRecipientNotification SickLeaveCancelled { get; }
 
         EmailNotification EventAssignedToApprover { get; }
 

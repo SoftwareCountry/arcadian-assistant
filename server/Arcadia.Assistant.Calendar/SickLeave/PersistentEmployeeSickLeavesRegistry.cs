@@ -20,9 +20,6 @@
         private readonly Dictionary<string, CalendarEvent> eventsById =
             new Dictionary<string, CalendarEvent>();
 
-        private readonly Dictionary<string, List<Approval>> approvalsByEvent =
-            new Dictionary<string, List<Approval>>();
-
         public PersistentEmployeeSickLeavesRegistry(string employeeId)
         {
             this.employeeId = employeeId;
@@ -48,15 +45,6 @@
                     this.Sender.Tell(new GetCalendarEvent.Response.Found(this.eventsById[msg.EventId]));
                     break;
 
-                case GetCalendarEventApprovals msg:
-                    if (!this.approvalsByEvent.TryGetValue(msg.Event.EventId, out var approvals))
-                    {
-                        this.Sender.Tell(new GetCalendarEventApprovals.ErrorResponse($"Event with event id {msg.Event.EventId} is not found"));
-                    }
-
-                    this.Sender.Tell(new GetCalendarEventApprovals.SuccessResponse(approvals));
-                    break;
-
                 case InsertSickLeave msg when msg.Event.EventId == null:
                     this.Sender.Tell(new InsertSickLeave.Error(new ArgumentNullException(nameof(msg.Event.EventId))));
                     break;
@@ -67,18 +55,6 @@
 
                 case UpdateSickLeave cmd:
                     this.UpdateSickLeave(cmd.OldEvent, cmd.UpdatedBy, cmd.Timestamp, cmd.NewEvent);
-                    break;
-
-                case ApproveSickLeave msg:
-                    try
-                    {
-                        this.ApproveSickLeave(msg);
-                    }
-                    catch (Exception ex)
-                    {
-                        this.Sender.Tell(new ApproveCalendarEvent.ErrorResponse(ex.ToString()));
-                    }
-
                     break;
 
                 case CheckDatesAvailability msg:
@@ -110,18 +86,6 @@
 
                 case SickLeaveIsProlonged ev:
                     this.OnSickLeaveProlonged(ev);
-                    break;
-
-                case SickLeaveIsRejected ev:
-                    this.OnSickLeaveRejected(ev);
-                    break;
-
-                case SickLeaveIsApproved ev:
-                    this.OnSickLeaveApproved(ev);
-                    break;
-
-                case UserGrantedCalendarEventApproval ev:
-                    this.OnSuccessfulApprove(ev);
                     break;
 
                 case RecoveryCompleted _:
@@ -192,62 +156,10 @@
                             UserId = updatedBy
                         }, this.OnSickLeaveCompleted);
                         break;
-
-                    case SickLeaveStatuses.Approved:
-                        this.Persist(new SickLeaveIsApproved
-                        {
-                            EventId = newEvent.EventId,
-                            TimeStamp = timestamp,
-                            UserId = updatedBy
-                        }, this.OnSickLeaveApproved);
-                        break;
-
-                    case SickLeaveStatuses.Rejected:
-                        this.Persist(new SickLeaveIsRejected
-                        {
-                            EventId = newEvent.EventId,
-                            TimeStamp = timestamp,
-                            UserId = updatedBy
-                        }, this.OnSickLeaveRejected);
-                        break;
                 }
             }
 
             this.Sender.Tell(new UpdateSickLeave.Success(newEvent, oldEvent, updatedBy, timestamp));
-        }
-
-        private void ApproveSickLeave(ApproveSickLeave message)
-        {
-            if (!this.eventsById.ContainsKey(message.Event.EventId))
-            {
-                throw new Exception($"Sick leave with id {message.Event.EventId} is not found");
-            }
-
-            var calendarEvent = this.eventsById[message.Event.EventId];
-            var approvals = this.approvalsByEvent[message.Event.EventId];
-
-            if (approvals.Any(a => a.ApprovedBy == message.ApprovedBy))
-            {
-                this.Sender.Tell(Abstractions.EmployeeSickLeaves.ApproveSickLeave.Success.Instance);
-                return;
-            }
-
-            this.Persist(new UserGrantedCalendarEventApproval
-            {
-                EventId = message.Event.EventId,
-                TimeStamp = message.Timestamp,
-                UserId = message.ApprovedBy
-            }, ev =>
-            {
-                this.OnSuccessfulApprove(ev);
-                this.Sender.Tell(new ApproveSickLeave.Success(calendarEvent, approvals.ToList(), message.ApprovedBy, message.Timestamp));
-            });
-        }
-
-        private void OnSuccessfulApprove(UserGrantedCalendarEventApproval message)
-        {
-            var approvals = this.approvalsByEvent[message.EventId];
-            approvals.Add(new Approval(message.TimeStamp, message.UserId));
         }
 
         private void OnSickLeaveRequested(SickLeaveIsRequested message)
@@ -260,8 +172,6 @@
                 datesPeriod,
                 SickLeaveStatuses.Requested,
                 this.employeeId);
-
-            this.approvalsByEvent[message.EventId] = new List<Approval>();
         }
 
         private void OnSickLeaveCompleted(SickLeaveIsCompleted message)
@@ -293,27 +203,6 @@
         }
 
         private void OnSickLeaveCancelled(SickLeaveIsCancelled message)
-        {
-            if (this.eventsById.ContainsKey(message.EventId))
-            {
-                this.eventsById.Remove(message.EventId);
-            }
-        }
-
-        private void OnSickLeaveApproved(SickLeaveIsApproved message)
-        {
-            if (this.eventsById.TryGetValue(message.EventId, out var calendarEvent))
-            {
-                this.eventsById[message.EventId] = new CalendarEvent(
-                    message.EventId,
-                    calendarEvent.Type,
-                    calendarEvent.Dates,
-                    SickLeaveStatuses.Approved,
-                    this.employeeId);
-            }
-        }
-
-        private void OnSickLeaveRejected(SickLeaveIsRejected message)
         {
             if (this.eventsById.ContainsKey(message.EventId))
             {

@@ -24,7 +24,6 @@
         {
             var createdEvents = new List<CalendarEventWithAdditionalData>();
             var updatedEvents = new List<CalendarEventWithAdditionalData>();
-            var approvalsUpdatedEvents = new List<CalendarEventWithAdditionalData>();
 
             foreach (var @event in values.Values)
             {
@@ -32,41 +31,16 @@
                 {
                     if (@event.CalendarEvent.Status == VacationStatuses.Requested)
                     {
-                        if (!@event.Approvals.Any())
-                        {
-                            createdEvents.Add(@event);
-                        }
-                        else
-                        {
-                            approvalsUpdatedEvents.Add(@event);
-                        }
+                        createdEvents.Add(@event);
                     }
                     else
                     {
                         updatedEvents.Add(@event);
                     }
                 }
-                else
+                else if (cacheEvent.CalendarEvent.Status != @event.CalendarEvent.Status || cacheEvent.CalendarEvent.Dates != @event.CalendarEvent.Dates)
                 {
-                    if (cacheEvent.CalendarEvent.Status != @event.CalendarEvent.Status || cacheEvent.CalendarEvent.Dates != @event.CalendarEvent.Dates)
-                    {
-                        updatedEvents.Add(@event);
-                    }
-                    else
-                    {
-                        var cacheApprovals = cacheEvent.Approvals
-                            .Select(x => x.ApprovedBy)
-                            .OrderBy(x => x);
-
-                        var databaseApprovals = @event.Approvals
-                            .Select(x => x.ApprovedBy)
-                            .OrderBy(x => x);
-
-                        if (!cacheApprovals.SequenceEqual(databaseApprovals))
-                        {
-                            approvalsUpdatedEvents.Add(@event);
-                        }
-                    }
+                    updatedEvents.Add(@event);
                 }
             }
 
@@ -75,14 +49,13 @@
                 .Select(x => x.Value)
                 .ToList();
 
-            return new Diff(createdEvents, updatedEvents, approvalsUpdatedEvents, removedEvents);
+            return new Diff(createdEvents, updatedEvents, removedEvents);
         }
 
         public void Update(Diff difference)
         {
             var updatedEvents = difference.Created
-                .Union(difference.Updated)
-                .Union(difference.ApprovalsUpdated);
+                .Union(difference.Updated);
 
             foreach (var @event in updatedEvents)
             {
@@ -103,20 +76,16 @@
             public Diff(
                 IEnumerable<CalendarEventWithAdditionalData> created,
                 IEnumerable<CalendarEventWithAdditionalData> updated,
-                IEnumerable<CalendarEventWithAdditionalData> approvalsUpdated,
                 IEnumerable<CalendarEventWithAdditionalData> removed)
             {
                 this.Created = created;
                 this.Updated = updated;
-                this.ApprovalsUpdated = approvalsUpdated;
                 this.Removed = removed;
             }
 
             public IEnumerable<CalendarEventWithAdditionalData> Created { get; }
 
             public IEnumerable<CalendarEventWithAdditionalData> Updated { get; }
-
-            public IEnumerable<CalendarEventWithAdditionalData> ApprovalsUpdated { get; }
 
             public IEnumerable<CalendarEventWithAdditionalData> Removed { get; }
         }

@@ -32,7 +32,6 @@
         {
             { CalendarEventTypes.Dayoff, WorkHoursChangeStatuses.Approved },
             { CalendarEventTypes.Workout, WorkHoursChangeStatuses.Approved },
-            { CalendarEventTypes.Sickleave, SickLeaveStatuses.Approved },
             { CalendarEventTypes.Vacation, VacationStatuses.Approved }
         };
 
@@ -40,7 +39,6 @@
         {
             { CalendarEventTypes.Dayoff, WorkHoursChangeStatuses.Rejected },
             { CalendarEventTypes.Workout, WorkHoursChangeStatuses.Rejected },
-            { CalendarEventTypes.Sickleave, SickLeaveStatuses.Rejected },
             { CalendarEventTypes.Vacation, VacationStatuses.Rejected }
         };
 

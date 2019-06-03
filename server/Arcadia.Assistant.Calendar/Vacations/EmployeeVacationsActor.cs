@@ -183,6 +183,16 @@
                     else
                     {
                         this.logger.Debug($"Vacation {msg.Data.Event.EventId}. There is no next approver, vacation won't be added to pending actions.");
+
+                        // If vacation doesn't require approval and has been approved automatically,
+                        // we imply, for simplicity, that it was changed from the same vacation, but with initial status
+                        var oldEvent = new CalendarEvent(
+                            msg.Data.Event.EventId,
+                            msg.Data.Event.Type,
+                            msg.Data.Event.Dates,
+                            VacationStatuses.Requested,
+                            msg.Data.Event.EmployeeId);
+                        Context.System.EventStream.Publish(new CalendarEventChanged(oldEvent, msg.Data.Event.EmployeeId, DateTimeOffset.Now, msg.Data.Event));
                     }
 
                     this.Sender.Tell(new UpsertCalendarEvent.Success(msg.Data.Event));
