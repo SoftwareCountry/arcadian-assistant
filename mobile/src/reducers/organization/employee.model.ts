@@ -115,8 +115,13 @@ export class Employee {
 }
 
 //----------------------------------------------------------------------------
-export function getRoomTitle(employee: Nullable<Employee>): string {
+export function getRoomTitle(employee: Nullable<Employee>, roomNumber?: string): string {
     if (!employee || !employee.roomNumber) {
+
+        if (roomNumber) {
+            return `Room ${roomNumber}`;
+        }
+
         return 'Room <?>';
     }
 
