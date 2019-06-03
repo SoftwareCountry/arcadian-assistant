@@ -40,29 +40,26 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
         [CalendarEventStatus.Approved]: 'preparing documents',
         [CalendarEventStatus.AccountingReady]: 'documents are ready to sign',
         [CalendarEventStatus.Completed]: 'completed',
-        [CalendarEventStatus.Processed]: 'all set',
+        [CalendarEventStatus.Processed]: 'confirmed',
         [CalendarEventStatus.Cancelled]: 'cancelled',
         [CalendarEventStatus.Rejected]: 'rejected',
-        [CalendarEventStatus.Completed]: '',
     };
 
     private readonly dayoffWorkoutDescriptions: CalendarEventStatusDescriptions = {
         [CalendarEventStatus.Requested]: 'waiting for approvals',
-        [CalendarEventStatus.Approved]: 'all set',
+        [CalendarEventStatus.Approved]: 'confirmed',
         [CalendarEventStatus.Cancelled]: 'cancelled',
         [CalendarEventStatus.Rejected]: 'rejected',
         [CalendarEventStatus.AccountingReady]: '',
         [CalendarEventStatus.Completed]: '',
         [CalendarEventStatus.Processed]: '',
-        [CalendarEventStatus.Completed]: '',
     };
 
     private readonly sickleaveDescriptions: CalendarEventStatusDescriptions = {
-        [CalendarEventStatus.Approved]: 'all set',
+        [CalendarEventStatus.Approved]: 'confirmed',
         [CalendarEventStatus.Completed]: 'completed',
         [CalendarEventStatus.Cancelled]: 'cancelled',
         [CalendarEventStatus.Rejected]: 'rejected',
-        [CalendarEventStatus.Completed]: 'completed',
         [CalendarEventStatus.Processed]: '',
         [CalendarEventStatus.AccountingReady]: '',
         [CalendarEventStatus.Requested]: '',
