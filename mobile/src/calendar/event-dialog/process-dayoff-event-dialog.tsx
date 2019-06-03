@@ -24,7 +24,7 @@ interface ProcessDayoffEventDialogProps {
 class ProcessDayoffEventDialogImpl extends Component<ProcessDayoffEventDialogProps & ProcessDayoffEventDialogDispatchProps> {
     public render() {
         return <EventDialogBase
-            title={'Select date to process your dayoff'}
+            title={'Select date to process your dayoff/workout'}
             text={this.text}
             icon={'dayoff'}
             cancelLabel={'Back'}
@@ -47,7 +47,7 @@ class ProcessDayoffEventDialogImpl extends Component<ProcessDayoffEventDialogPro
     };
 
     public get text(): string {
-        return `Your dayoff starts on ${this.props.startDay.date.format(eventDialogTextDateFormat)}`;
+        return `Your dayoff/workout starts on ${this.props.startDay.date.format(eventDialogTextDateFormat)}`;
     }
 }
 

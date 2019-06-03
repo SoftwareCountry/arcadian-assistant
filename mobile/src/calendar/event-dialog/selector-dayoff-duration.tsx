@@ -5,16 +5,21 @@ import { switchDayoffTypeStyles } from './styles';
 import { CalendarEventsColor } from '../styles';
 import { IntervalType } from '../../reducers/calendar/calendar.model';
 
+//============================================================================
 interface SelectorDayoffDurationProps {
     onIntervalTypeSelected: (selectedType: IntervalType) => void;
     isWorkout: boolean;
 }
 
+//============================================================================
 interface SelectorDayoffDurationState {
     containerHeight: number;
 }
 
+//============================================================================
 export class SelectorDayoffDuration extends Component<SelectorDayoffDurationProps, SelectorDayoffDurationState> {
+
+    //----------------------------------------------------------------------------
     constructor(props: SelectorDayoffDurationProps) {
         super(props);
         this.state = {
@@ -22,6 +27,7 @@ export class SelectorDayoffDuration extends Component<SelectorDayoffDurationProp
         };
     }
 
+    //----------------------------------------------------------------------------
     public render() {
         const boundaryColor = this.props.isWorkout
             ? CalendarEventsColor.workout
@@ -32,6 +38,15 @@ export class SelectorDayoffDuration extends Component<SelectorDayoffDurationProp
                 {
                     this.state.containerHeight !== 0 ?
                         <View style={switchDayoffTypeStyles.intervalBoundaries}>
+                            <TouchableOpacity onPress={this.onFullDaySelected}>
+                                <IntervalBoundary
+                                    color={boundaryColor}
+                                    boundary={'full'}
+                                    size={this.state.containerHeight}
+                                    style={switchDayoffTypeStyles.intervalBoundary as ViewStyle}
+                                    circleStyle={switchDayoffTypeStyles.intervalBoundary as ViewStyle}/>
+                            </TouchableOpacity>
+
                             <TouchableOpacity onPress={this.onFirstHalfSelected}>
                                 <IntervalBoundary
                                     color={boundaryColor}
@@ -49,15 +64,6 @@ export class SelectorDayoffDuration extends Component<SelectorDayoffDurationProp
                                     style={switchDayoffTypeStyles.intervalBoundary as ViewStyle}
                                     circleStyle={switchDayoffTypeStyles.intervalBoundary as ViewStyle}/>
                             </TouchableOpacity>
-
-                            <TouchableOpacity onPress={this.onFullDaySelected}>
-                                <IntervalBoundary
-                                    color={boundaryColor}
-                                    boundary={'full'}
-                                    size={this.state.containerHeight}
-                                    style={switchDayoffTypeStyles.intervalBoundary as ViewStyle}
-                                    circleStyle={switchDayoffTypeStyles.intervalBoundary as ViewStyle}/>
-                            </TouchableOpacity>
                         </View>
                         : null
                 }
@@ -65,18 +71,22 @@ export class SelectorDayoffDuration extends Component<SelectorDayoffDurationProp
         );
     }
 
+    //----------------------------------------------------------------------------
     private onContainerLayout = (e: LayoutChangeEvent) => {
         this.setState({ containerHeight: e.nativeEvent.layout.height });
     };
 
+    //----------------------------------------------------------------------------
     private onFirstHalfSelected = () => {
         this.props.onIntervalTypeSelected(IntervalType.IntervalLeftBoundary);
     };
 
+    //----------------------------------------------------------------------------
     private onSecondHalfSelected = () => {
         this.props.onIntervalTypeSelected(IntervalType.IntervalRightBoundary);
     };
 
+    //----------------------------------------------------------------------------
     private onFullDaySelected = () => {
         this.props.onIntervalTypeSelected(IntervalType.IntervalFullBoundary);
     };
