@@ -98,6 +98,18 @@
                 return this.NotFound();
             }
 
+            var requestedEvent = await this.GetCalendarEventOrDefaultAsync(employee.Calendar.CalendarActor, eventId, token);
+            if (requestedEvent == null)
+            {
+                return this.NotFound();
+            }
+
+            // Sick leave approve is not allowed
+            if (requestedEvent.Type == CalendarEventTypes.Sickleave)
+            {
+                return this.BadRequest(this.ModelState);
+            }
+
             var approver = await this.GetEmployeeOrDefaultAsync(model.ApproverId, token);
             if (approver == null)
             {
@@ -108,12 +120,6 @@
             if (!editCalendarEventAuthResult.Succeeded)
             {
                 return this.Forbid();
-            }
-
-            var requestedEvent = await this.GetCalendarEventOrDefaultAsync(employee.Calendar.CalendarActor, eventId, token);
-            if (requestedEvent == null)
-            {
-                return this.NotFound();
             }
 
             var canApproveOnBehalfAuthResult = await this.authorizationService.AuthorizeAsync(this.User, approver, new CanApproveOnBehalfRequirement());
