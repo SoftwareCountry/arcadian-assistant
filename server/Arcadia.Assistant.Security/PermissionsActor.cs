@@ -196,8 +196,7 @@
             EmployeePermissionsEntry.ReadEmployeeInfo |
             EmployeePermissionsEntry.ReadEmployeePhone |
             EmployeePermissionsEntry.ReadEmployeeDayoffsCounter |
-            EmployeePermissionsEntry.ReadEmployeeVacationsCounter |
-            EmployeePermissionsEntry.CancelApprovedSickLeaves;
+            EmployeePermissionsEntry.ReadEmployeeVacationsCounter;
 
         private static readonly EmployeePermissionsEntry SupervisedPermissions =
             EmployeePermissionsEntry.CreateCalendarEvents |
