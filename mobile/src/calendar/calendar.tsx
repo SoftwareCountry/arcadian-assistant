@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { AppState } from '../reducers/app.reducer';
+import { AppState, getEmployee } from '../reducers/app.reducer';
 import { OnSelectedDayCallback } from './calendar-page';
 import { CalendarPager } from './calendar-pager';
 import {
+    loadCalendarEvents,
     nextCalendarPage,
     prevCalendarPage,
     resetCalendarPages,
@@ -16,12 +17,14 @@ import {
     ReadOnlyIntervalsModel
 } from '../reducers/calendar/calendar.model';
 import { Action, Dispatch } from 'redux';
-import { Nullable } from 'types';
+import { Nullable, Optional } from 'types';
 import { none } from '../types/types-utils';
-import { NavigationEventPayload, NavigationEventSubscription, NavigationScreenProps } from 'react-navigation';
+import { NavigationEventSubscription, NavigationScreenProps } from 'react-navigation';
+import { Employee } from '../reducers/organization/employee.model';
 
 //============================================================================
 interface CalendarProps {
+    employee: Optional<Employee>;
     pages: Nullable<CalendarPageModel[]>;
     intervals?: ReadOnlyIntervalsModel;
     selection?: CalendarSelection;
@@ -34,49 +37,70 @@ interface CalendarDispatchProps {
     nextCalendarPage: () => void;
     prevCalendarPage: () => void;
     resetCalendarPages: () => void;
+    loadCalendarEvents: (employee: Employee) => void;
 }
 
 //============================================================================
 class CalendarImpl extends Component<CalendarProps & CalendarDispatchProps & NavigationScreenProps> {
 
-    private subscription?: NavigationEventSubscription;
+    private refocusSubscription?: NavigationEventSubscription;
+    private willFocusSubscription?: NavigationEventSubscription;
 
+    //----------------------------------------------------------------------------
     public componentDidMount() {
-        this.subscription = this.props.navigation.addListener('refocus', (payload: NavigationEventPayload) => {
+        const { employee } = this.props;
+
+        this.refocusSubscription = this.props.navigation.addListener('refocus', () => {
             this.props.resetCalendarPages();
+        });
+
+        this.willFocusSubscription = this.props.navigation.addListener('willFocus', () => {
+            if (employee) {
+                this.props.loadCalendarEvents(employee);
+            }
         });
     }
 
+    //----------------------------------------------------------------------------
     public componentWillUnmount(): void {
-        if (this.subscription) {
-            this.subscription.remove();
+        if (this.refocusSubscription) {
+            this.refocusSubscription.remove();
+        }
+
+        if (this.willFocusSubscription) {
+            this.willFocusSubscription.remove();
         }
     }
 
+    //----------------------------------------------------------------------------
     public render() {
+        const { pages, intervals, selection, disableCalendarDaysBefore } = this.props;
 
-        if (none(this.props.pages)) {
+        if (none(pages)) {
             return null;
         }
 
         return <CalendarPager
             onSelectedDay={this.onSelectedDay}
-            pages={this.props.pages}
-            intervals={this.props.intervals}
-            selection={this.props.selection}
+            pages={pages}
+            intervals={intervals}
+            selection={selection}
             onNextPage={this.onNextPage}
             onPrevPage={this.onPrevPage}
-            disableBefore={this.props.disableCalendarDaysBefore}/>;
+            disableBefore={disableCalendarDaysBefore}/>;
     }
 
+    //----------------------------------------------------------------------------
     private onSelectedDay: OnSelectedDayCallback = (day) => {
         this.props.selectCalendarDay(day);
     };
 
+    //----------------------------------------------------------------------------
     private onNextPage = () => {
         this.props.nextCalendarPage();
     };
 
+    //----------------------------------------------------------------------------
     private onPrevPage = () => {
         this.props.prevCalendarPage();
     };
@@ -84,6 +108,7 @@ class CalendarImpl extends Component<CalendarProps & CalendarDispatchProps & Nav
 
 //----------------------------------------------------------------------------
 const stateToProps = (state: AppState): CalendarProps => ({
+    employee: getEmployee(state),
     pages: state.calendar ? state.calendar.calendarEvents.pages : null,
     intervals: state.calendar && state.calendar.calendarEvents.intervals ? state.calendar.calendarEvents.intervals : undefined,
     selection: state.calendar ? state.calendar.calendarEvents.selection : undefined,
@@ -104,6 +129,9 @@ const dispatchToProps = (dispatch: Dispatch<Action>): CalendarDispatchProps => (
     resetCalendarPages: () => {
         dispatch(resetCalendarPages());
     },
+    loadCalendarEvents: (employee: Employee) => {
+        dispatch(loadCalendarEvents(employee.employeeId));
+    }
 });
 
 //----------------------------------------------------------------------------
