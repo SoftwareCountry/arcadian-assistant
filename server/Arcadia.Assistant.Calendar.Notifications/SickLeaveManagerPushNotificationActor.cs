@@ -61,8 +61,8 @@
 
                 case CalendarEventChanged msg when
                     msg.NewEvent.Type == CalendarEventTypes.Sickleave &&
-                    msg.NewEvent.Status == SickLeaveStatuses.Approved &&
-                    msg.OldEvent.Status == SickLeaveStatuses.Approved &&
+                    msg.NewEvent.Status == SickLeaveStatuses.Requested &&
+                    msg.OldEvent.Status == SickLeaveStatuses.Requested &&
                     msg.OldEvent.Dates.EndDate != msg.NewEvent.Dates.EndDate:
 
                     this.GetAdditionalData(msg.NewEvent, NotificationType.Prolonged, msg.NewEvent.EmployeeId)

@@ -115,7 +115,7 @@
 
         private void OnEventReceived(CalendarEvent @event, bool isRecovered = false)
         {
-            if (@event.Status != SickLeaveStatuses.Approved)
+            if (@event.Status != SickLeaveStatuses.Requested)
             {
                 if (this.sickLeavesToRemind.ContainsKey(@event.EventId))
                 {
