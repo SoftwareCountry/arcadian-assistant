@@ -1,5 +1,5 @@
 import React from 'react';
-import { Employee } from '../../reducers/organization/employee.model';
+import { Employee, getRoomTitle } from '../../reducers/organization/employee.model';
 import { Department } from '../../reducers/organization/department.model';
 import { MaterialTopTabBar, TabBarTopProps, TabLabelTextParam } from 'react-navigation';
 import { connect } from 'react-redux';
@@ -58,7 +58,7 @@ class TabBarTopCustomImpl extends React.Component<TabBarTopProps & TabBarTopCust
             case 'Department':
                 return department ? department.abbreviation : 'Department';
             case 'Room':
-                return employee ? employee.getRoomTitle() : 'Room <?>';
+                return getRoomTitle(employee);
             case 'Company':
                 return 'Company';
             default:

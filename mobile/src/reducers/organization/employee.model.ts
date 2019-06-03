@@ -112,13 +112,13 @@ export class Employee {
 
         return names.length > 1 ? names[1] : this.name;
     }
+}
 
-    //----------------------------------------------------------------------------
-    public getRoomTitle(): string {
-        if (!this.roomNumber) {
-            return 'Room <?>';
-        }
-
-        return isNaN(Number(this.roomNumber)) ? this.roomNumber : `Room ${this.roomNumber}`;
+//----------------------------------------------------------------------------
+export function getRoomTitle(employee: Nullable<Employee>): string {
+    if (!employee || !employee.roomNumber) {
+        return 'Room <?>';
     }
+
+    return isNaN(Number(employee.roomNumber)) ? employee.roomNumber : `Room ${employee.roomNumber}`;
 }

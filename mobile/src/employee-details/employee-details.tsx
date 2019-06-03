@@ -14,7 +14,7 @@ import { AppState } from '../reducers/app.reducer';
 import { Department } from '../reducers/organization/department.model';
 
 import { StyledText } from '../override/styled-text';
-import { Employee, EmployeeId } from '../reducers/organization/employee.model';
+import { Employee, EmployeeId, getRoomTitle } from '../reducers/organization/employee.model';
 import { ApplicationIcon } from '../override/application-icon';
 import { calendarEventSetNewStatus, loadCalendarEvents } from '../reducers/calendar/calendar.action';
 import { CalendarEvent, CalendarEventId, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
@@ -273,7 +273,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                 onPress: null
             },
             {
-                label: employee.getRoomTitle(),
+                label: getRoomTitle(employee),
                 icon: 'office',
                 style: StyleSheet.flatten([tileStyles.icon]),
                 size: 25,
