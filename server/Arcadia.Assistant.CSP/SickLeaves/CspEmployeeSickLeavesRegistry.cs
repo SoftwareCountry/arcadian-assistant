@@ -36,19 +36,11 @@
                     this.cspSickLeavesRegistryActor.Tell(new CspSickLeavesRegistry.GetEmployeeCalendarEvent(this.employeeId, msg.EventId), this.Sender);
                     break;
 
-                case GetCalendarEventApprovals msg:
-                    this.cspSickLeavesRegistryActor.Tell(msg, this.Sender);
-                    break;
-
                 case InsertSickLeave msg:
                     this.cspSickLeavesRegistryActor.Tell(msg, this.Sender);
                     break;
 
                 case UpdateSickLeave msg:
-                    this.cspSickLeavesRegistryActor.Tell(msg, this.Sender);
-                    break;
-
-                case ApproveSickLeave msg:
                     this.cspSickLeavesRegistryActor.Tell(msg, this.Sender);
                     break;
 
