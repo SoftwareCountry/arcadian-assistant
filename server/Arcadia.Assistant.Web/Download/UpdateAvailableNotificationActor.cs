@@ -11,9 +11,11 @@
     using Arcadia.Assistant.Notifications;
     using Arcadia.Assistant.Notifications.Push;
     using Arcadia.Assistant.Server.Interop;
+    using Arcadia.Assistant.Web.Configuration;
 
     public class UpdateAvailableNotificationActor : UntypedActor, ILogReceive
     {
+        private readonly IUpdateNotificationSettings updateNotificationSettings;
         private const string UpdateAvailablePushNotificationType = "UpdateAvailable";
 
         private readonly ActorSelection pushNotificationsDevicesActor;
@@ -27,8 +29,11 @@
                 [ApplicationTypeEnum.Ios] = PushDeviceTypes.Ios
             };
 
-        public UpdateAvailableNotificationActor(ActorPathsBuilder actorPathsBuilder)
+        public UpdateAvailableNotificationActor(
+            ActorPathsBuilder actorPathsBuilder,
+            IUpdateNotificationSettings updateNotificationSettings)
         {
+            this.updateNotificationSettings = updateNotificationSettings;
             this.pushNotificationsDevicesActor = Context.ActorSelection(actorPathsBuilder.Get(WellKnownActorPaths.PushNotificationsDevices));
 
             Context.System.EventStream.Subscribe<UpdateAvailable>(this.Self);
@@ -77,8 +82,8 @@
         {
             var content = new PushNotificationContent
             {
-                Title = "Update available",
-                Body = "New application version is available.",
+                Title = this.updateNotificationSettings.NotificationTitle,
+                Body = this.updateNotificationSettings.NotificationBody,
                 CustomData = new
                 {
                     Type = UpdateAvailablePushNotificationType

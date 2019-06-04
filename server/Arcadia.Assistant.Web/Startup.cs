@@ -139,6 +139,8 @@
             builder.RegisterInstance(appSettings.Security).As<ISecuritySettings>();
             builder.RegisterInstance(appSettings.ServiceEndpointsAuthentication).As<IServiceEndpointsAuthenticationSettings>();
             builder.RegisterInstance(appSettings.DownloadApplication).As<IDownloadApplicationSettings>();
+            builder.RegisterInstance(appSettings.UpdateNotification).As<IUpdateNotificationSettings>();
+
             builder.RegisterInstance(actorSystem).As<IActorRefFactory>().As<ActorSystem>();
             builder.RegisterInstance(pathsBuilder).AsSelf();
 
