@@ -165,10 +165,7 @@
             IHostingEnvironment env,
             ISecuritySettings securitySettings,
             ILifetimeScope container,
-            ActorSystem actorSystem,
-            IHttpClientFactory httpClientFactory,
-            IDownloadApplicationSettings downloadApplicationSettings
-            )
+            ActorSystem actorSystem)
         {
             if (env.IsDevelopment())
             {
@@ -178,9 +175,7 @@
             // ReSharper disable once ObjectCreationAsStatement
             new AutoFacDependencyResolver(container, actorSystem);
 
-            actorSystem.ActorOf(
-                Props.Create(() => new DownloadActor(downloadApplicationSettings, httpClientFactory, env)),
-                WellKnownActorPaths.DownloadApplicationBuilds);
+            actorSystem.ActorOf(actorSystem.DI().Props<DownloadActor>(), WellKnownActorPaths.DownloadApplicationBuilds);
 
             app.UseAkkaTimeoutExceptionHandler();
             app.UseAuthentication();

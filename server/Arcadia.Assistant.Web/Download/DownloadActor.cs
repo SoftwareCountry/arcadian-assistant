@@ -7,6 +7,7 @@
     using Akka.Actor;
     using Akka.Event;
 
+    using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.Web.Configuration;
 
     using Microsoft.AspNetCore.Hosting;
@@ -21,7 +22,8 @@
         public DownloadActor(
             IDownloadApplicationSettings downloadApplicationSettings,
             IHttpClientFactory httpClientFactory,
-            IHostingEnvironment hostingEnvironment)
+            IHostingEnvironment hostingEnvironment,
+            ActorPathsBuilder actorPathsBuilder)
         {
             this.androidDownloadBuildActor = Context.ActorOf(
                 Props.Create(() => new DownloadApplicationActor(
@@ -29,7 +31,9 @@
                     httpClientFactory,
                     hostingEnvironment,
                     downloadApplicationSettings.AndroidGetBuildsUrl,
-                    downloadApplicationSettings.AndroidGetBuildDownloadLinkTemplateUrl)),
+                    downloadApplicationSettings.AndroidGetBuildDownloadLinkTemplateUrl,
+                    ApplicationTypeEnum.Android,
+                    actorPathsBuilder)),
                 "download-android-build");
 
             this.iosDownloadBuildActor = Context.ActorOf(
@@ -38,7 +42,9 @@
                     httpClientFactory,
                     hostingEnvironment,
                     downloadApplicationSettings.IosGetBuildsUrl,
-                    downloadApplicationSettings.IosGetBuildDownloadLinkTemplateUrl)),
+                    downloadApplicationSettings.IosGetBuildDownloadLinkTemplateUrl,
+                    ApplicationTypeEnum.Ios,
+                    actorPathsBuilder)),
                 "download-ios-build");
 
             Context.System.Scheduler.ScheduleTellRepeatedly(
