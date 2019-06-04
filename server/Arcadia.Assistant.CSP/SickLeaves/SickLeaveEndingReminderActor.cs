@@ -115,7 +115,7 @@
 
         private void OnEventReceived(CalendarEvent @event, bool isRecovered = false)
         {
-            if (@event.Status != SickLeaveStatuses.Approved)
+            if (@event.Status != SickLeaveStatuses.Requested)
             {
                 if (this.sickLeavesToRemind.ContainsKey(@event.EventId))
                 {
@@ -180,8 +180,8 @@
                 return Enumerable.Empty<PushNotification>();
             }
 
-            var pushTokensResponse = await this.pushDevicesActor.Ask<GetDevicePushTokens.Success>(
-                new GetDevicePushTokens(employeeId));
+            var pushTokensResponse = await this.pushDevicesActor.Ask<GetDevicePushTokensByEmployee.Success>(
+                new GetDevicePushTokensByEmployee(employeeId));
 
             return sickLeaves.Select(e => this.CreatePushNotification(employeeId, e, pushTokensResponse.DevicePushTokens));
         }

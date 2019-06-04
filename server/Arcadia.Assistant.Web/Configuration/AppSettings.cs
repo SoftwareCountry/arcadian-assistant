@@ -27,6 +27,9 @@
         [Required]
         public DownloadApplicationSettings DownloadApplication { get; set; }
 
+        [Required]
+        public UpdateNotificationSettings UpdateNotification { get; set; }
+
         public string Akka { get; set; }
     }
 }

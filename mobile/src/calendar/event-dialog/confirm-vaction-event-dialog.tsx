@@ -7,7 +7,7 @@ import { EventDialogBase, eventDialogTextDateFormat } from './event-dialog-base'
 import { AppState, getEmployee, getEndDay, getStartDay } from '../../reducers/app.reducer';
 import { Action, Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { closeEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
+import { closeEventDialog, openEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
 import {
     DayModel,
     isIntersectingAnotherVacation,
@@ -17,9 +17,11 @@ import { Employee } from '../../reducers/organization/employee.model';
 import { confirmVacation } from '../../reducers/calendar/vacation.action';
 import { Moment } from 'moment';
 import { Optional } from 'types';
+import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
 
 //============================================================================
 interface ClaimVacationEventDialogDispatchProps {
+    back: () => void;
     confirmVacation: (employeeId: string, startDate: Moment, endDate: Moment) => void;
     closeDialog: () => void;
 }
@@ -48,10 +50,15 @@ class ConfirmVacationEventDialogImpl extends Component<ClaimVacationEventDialogP
             cancelLabel={'Back'}
             acceptLabel={'Confirm'}
             onAcceptPress={this.acceptAction}
-            onCancelPress={this.closeDialog}
+            onCancelPress={this.cancelAction}
             onClosePress={this.closeDialog}
             disableAccept={disableAccept}/>;
     }
+
+    //----------------------------------------------------------------------------
+    private cancelAction = () => {
+        this.props.back();
+    };
 
     //----------------------------------------------------------------------------
     private acceptAction = () => {
@@ -83,6 +90,9 @@ const mapStateToProps = (state: AppState): ClaimVacationEventDialogProps => ({
 
 //============================================================================
 const mapDispatchToProps = (dispatch: Dispatch<Action>): ClaimVacationEventDialogDispatchProps => ({
+    back: () => {
+        dispatch(openEventDialog(EventDialogType.RequestVacation));
+    },
     confirmVacation: (employeeId: string, startDate: Moment, endDate: Moment) => {
         dispatch(confirmVacation(employeeId, startDate, endDate));
     },

@@ -114,6 +114,19 @@
 
                     Context.System.EventStream.Publish(new CalendarEventCreated(insertResult, msg.CreatedBy, msg.Timestamp));
 
+                    if (!insertResult.IsPending)
+                    {
+                        // If event doesn't require approval and has been approved automatically,
+                        // we imply, for simplicity, that it was changed from the same event, but with initial status
+                        var oldEvent = new CalendarEvent(
+                            insertResult.EventId,
+                            insertResult.Type,
+                            insertResult.Dates,
+                            WorkHoursChangeStatuses.Requested,
+                            insertResult.EmployeeId);
+                        Context.System.EventStream.Publish(new CalendarEventChanged(oldEvent, insertResult.EmployeeId, DateTimeOffset.Now, insertResult));
+                    }
+
                     this.Sender.Tell(new UpsertCalendarEvent.Success(insertResult));
 
                     break;

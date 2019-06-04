@@ -80,13 +80,13 @@
         }
 
         private async
-            Task<(GetUserPreferencesMessage.Response, GetDevicePushTokens.Success)>
+            Task<(GetUserPreferencesMessage.Response, GetDevicePushTokensByEmployee.Success)>
             GetAdditionalData(CalendarEventChanged message)
         {
             var ownerPreferencesTask = this.userPreferencesActor.Ask<GetUserPreferencesMessage.Response>(
                 new GetUserPreferencesMessage(message.NewEvent.EmployeeId));
-            var ownerPushTokensTask = this.pushDevicesActor.Ask<GetDevicePushTokens.Success>(
-                new GetDevicePushTokens(message.NewEvent.EmployeeId));
+            var ownerPushTokensTask = this.pushDevicesActor.Ask<GetDevicePushTokensByEmployee.Success>(
+                new GetDevicePushTokensByEmployee(message.NewEvent.EmployeeId));
 
             await Task.WhenAll(ownerPreferencesTask, ownerPushTokensTask);
             return (ownerPreferencesTask.Result, ownerPushTokensTask.Result);

@@ -2,6 +2,12 @@
 {
     public interface ICalendarEventsPushSettings
     {
+        PushNotification SickLeaveCreatedManager { get; }
+
+        PushNotification SickLeaveProlongedManager { get; }
+
+        PushNotification SickLeaveCancelledManager { get; }
+
         PushNotification EventAssignedToApprover { get; }
 
         PushNotification EventStatusChanged { get; }

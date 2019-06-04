@@ -48,10 +48,7 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
         hidePrevNextMonthDays: true
     };
 
-    private readonly weekdaysNames = moment()
-        .locale('en')
-        .localeData()
-        .weekdaysShort()
+    private readonly weekdaysNames = moment.weekdays(true)
         .map(x => x.substring(0, 2).toUpperCase());
 
     //----------------------------------------------------------------------------
@@ -209,8 +206,7 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
 
         return <WeekDayCircle day={day}
                               selectedDay={this.props.selection.single.day}
-                              weekHeight={this.state.weekHeight}
-                              customTextColor={this.getDayTextColor(intervalModels)}/>;
+                              weekHeight={this.state.weekHeight}/>;
     }
 
     //----------------------------------------------------------------------------

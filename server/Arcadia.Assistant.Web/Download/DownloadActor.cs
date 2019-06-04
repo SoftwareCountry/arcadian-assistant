@@ -1,17 +1,16 @@
 ﻿namespace Arcadia.Assistant.Web.Download
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
-
-    using Microsoft.AspNetCore.Hosting;
 
     using Akka.Actor;
     using Akka.Event;
 
+    using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.Web.Configuration;
+
+    using Microsoft.AspNetCore.Hosting;
 
     public class DownloadActor : UntypedActor, ILogReceive, IWithUnboundedStash
     {
@@ -23,24 +22,29 @@
         public DownloadActor(
             IDownloadApplicationSettings downloadApplicationSettings,
             IHttpClientFactory httpClientFactory,
-            IHostingEnvironment hostingEnvironment)
-        {            
+            IHostingEnvironment hostingEnvironment,
+            ActorPathsBuilder actorPathsBuilder)
+        {
             this.androidDownloadBuildActor = Context.ActorOf(
                 Props.Create(() => new DownloadApplicationActor(
                     downloadApplicationSettings,
                     httpClientFactory,
                     hostingEnvironment,
                     downloadApplicationSettings.AndroidGetBuildsUrl,
-                    downloadApplicationSettings.AndroidGetBuildDownloadLinkTemplateUrl)),
+                    downloadApplicationSettings.AndroidGetBuildDownloadLinkTemplateUrl,
+                    ApplicationTypeEnum.Android,
+                    actorPathsBuilder)),
                 "download-android-build");
-                
+
             this.iosDownloadBuildActor = Context.ActorOf(
                 Props.Create(() => new DownloadApplicationActor(
                     downloadApplicationSettings,
                     httpClientFactory,
                     hostingEnvironment,
                     downloadApplicationSettings.IosGetBuildsUrl,
-                    downloadApplicationSettings.IosGetBuildDownloadLinkTemplateUrl)),
+                    downloadApplicationSettings.IosGetBuildDownloadLinkTemplateUrl,
+                    ApplicationTypeEnum.Ios,
+                    actorPathsBuilder)),
                 "download-ios-build");
 
             Context.System.Scheduler.ScheduleTellRepeatedly(
@@ -78,44 +82,41 @@
             {
                 case RefreshApplicationBuildsStart _:
                     var androidDownloadTask = this.androidDownloadBuildActor
-                        .Ask<DownloadApplicationBuild.Response>(DownloadApplicationBuild.Instance);
+                        .Ask<DownloadApplicationBuild.Response>(DownloadApplicationBuild.Instance)
+                        .PipeTo(
+                            this.Self,
+                            success: result => this.GetApplicationBuildResult(result, ApplicationTypeEnum.Android),
+                            failure: err => new RefreshApplicationBuildError(err));
+
                     var iosDownloadTask = this.iosDownloadBuildActor
-                        .Ask<DownloadApplicationBuild.Response>(DownloadApplicationBuild.Instance);
+                        .Ask<DownloadApplicationBuild.Response>(DownloadApplicationBuild.Instance)
+                        .PipeTo(
+                            this.Self,
+                            success: result => this.GetApplicationBuildResult(result, ApplicationTypeEnum.Ios),
+                            failure: err => new RefreshApplicationBuildError(err));
 
-                    Task.WhenAll(androidDownloadTask, iosDownloadTask).PipeTo(
-                        this.Self,
-                        success: result =>
-                        {
-                            var resultExceptions = result
-                                .OfType<DownloadApplicationBuild.Error>()
-                                .Select(x => x.Exception)
-                                .ToList();
-
-                            if (resultExceptions.Count != 0)
-                            {
-                                var aggregateException = new AggregateException(resultExceptions);
-                                return new RefreshApplicationBuildsFinishError(aggregateException);
-                            }
-
-                            return RefreshApplicationBuildsFinishSuccess.Instance;
-                        },
-                        failure: err => new RefreshApplicationBuildsFinishError(err));
+                    Task.WhenAll(androidDownloadTask, iosDownloadTask)
+                        .PipeTo(
+                            this.Self,
+                            success: () => RefreshApplicationBuildsFinish.Instance);
 
                     break;
 
-                case RefreshApplicationBuildsFinishSuccess _:
-                    this.Stash.UnstashAll();
-                    this.UnbecomeStacked();
+                case RefreshApplicationBuildSuccess msg:
+                    if (msg.UpdateAvailable)
+                    {
+                        Context.System.EventStream.Publish(new UpdateAvailable(msg.ApplicationType));
+                    }
 
                     break;
 
+                case RefreshApplicationBuildError msg:
+                    this.logger.Warning(msg.Exception.ToString());
+                    break;
 
-                case RefreshApplicationBuildsFinishError msg:
-                    this.logger.Warning(msg.Exception.Message);
-
+                case RefreshApplicationBuildsFinish _:
                     this.Stash.UnstashAll();
                     this.UnbecomeStacked();
-
                     break;
 
                 default:
@@ -128,11 +129,11 @@
         {
             switch (message.ApplicationType)
             {
-                case GetLatestApplicationBuildPath.ApplicationTypeEnum.Android:
+                case ApplicationTypeEnum.Android:
                     this.androidDownloadBuildActor.Tell(message, this.Sender);
                     break;
 
-                case GetLatestApplicationBuildPath.ApplicationTypeEnum.Ios:
+                case ApplicationTypeEnum.Ios:
                     this.iosDownloadBuildActor.Tell(message, this.Sender);
                     break;
 
@@ -140,6 +141,18 @@
                     this.logger.Warning("Not supported application type");
                     break;
             }
+        }
+
+        private object GetApplicationBuildResult(DownloadApplicationBuild.Response message, ApplicationTypeEnum applicationType)
+        {
+            if (message is DownloadApplicationBuild.Error error)
+            {
+                return new RefreshApplicationBuildError(error.Exception);
+            }
+
+            return new RefreshApplicationBuildSuccess(
+                applicationType,
+                ((DownloadApplicationBuild.Success)message).UpdateAvailable);
         }
 
         private class RefreshApplicationBuilds
@@ -152,19 +165,32 @@
             public static readonly RefreshApplicationBuildsStart Instance = new RefreshApplicationBuildsStart();
         }
 
-        public class RefreshApplicationBuildsFinishSuccess
+        public class RefreshApplicationBuildSuccess
         {
-            public static readonly RefreshApplicationBuildsFinishSuccess Instance = new RefreshApplicationBuildsFinishSuccess();
+            public RefreshApplicationBuildSuccess(ApplicationTypeEnum applicationType, bool updateAvailable)
+            {
+                this.ApplicationType = applicationType;
+                this.UpdateAvailable = updateAvailable;
+            }
+
+            public ApplicationTypeEnum ApplicationType { get; }
+
+            public bool UpdateAvailable { get; }
         }
 
-        public class RefreshApplicationBuildsFinishError
+        public class RefreshApplicationBuildError
         {
-            public RefreshApplicationBuildsFinishError(Exception exception)
+            public RefreshApplicationBuildError(Exception exception)
             {
                 this.Exception = exception;
             }
 
             public Exception Exception { get; }
+        }
+
+        public class RefreshApplicationBuildsFinish
+        {
+            public static readonly RefreshApplicationBuildsFinish Instance = new RefreshApplicationBuildsFinish();
         }
     }
 }

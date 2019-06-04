@@ -8,15 +8,18 @@
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
 
-    using Microsoft.AspNetCore.Hosting;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Serialization;
-
     using Akka.Actor;
     using Akka.Event;
 
+    using Arcadia.Assistant.ApplicationBuilds;
+    using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.Web.Configuration;
     using Arcadia.Assistant.Web.Download.AppCenter;
+
+    using Microsoft.AspNetCore.Hosting;
+
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Serialization;
 
     public class DownloadApplicationActor : UntypedActor, ILogReceive
     {
@@ -25,10 +28,13 @@
         private readonly IHostingEnvironment hostingEnvironment;
         private readonly string getBuildsUrl;
         private readonly string getBuildDownloadLinkTemplateUrl;
+        private readonly ApplicationTypeEnum applicationType;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
-        private int latestBuildNumber;
+        private readonly ActorSelection applicationBuildsActor;
+
+        private bool initialized;
         private string latestBuildPath;
 
         public DownloadApplicationActor(
@@ -36,13 +42,18 @@
             IHttpClientFactory httpClientFactory,
             IHostingEnvironment hostingEnvironment,
             string getBuildsUrl,
-            string getBuildDownloadLinkTemplateUrl)
+            string getBuildDownloadLinkTemplateUrl,
+            ApplicationTypeEnum applicationType,
+            ActorPathsBuilder actorPathsBuilder)
         {
             this.getBuildsUrl = getBuildsUrl;
             this.getBuildDownloadLinkTemplateUrl = getBuildDownloadLinkTemplateUrl;
             this.hostingEnvironment = hostingEnvironment;
             this.downloadApplicationSettings = downloadApplicationSettings;
             this.httpClientFactory = httpClientFactory;
+            this.applicationType = applicationType;
+
+            this.applicationBuildsActor = Context.ActorSelection(actorPathsBuilder.Get(WellKnownActorPaths.ApplicationBuilds));
         }
 
         protected override void OnReceive(object message)
@@ -57,7 +68,7 @@
                     this.DownloadBuild()
                         .PipeTo(
                             this.Sender,
-                            success: () => DownloadApplicationBuild.Success.Instance,
+                            success: result => new DownloadApplicationBuild.Success(result.UpdateAvailable),
                             failure: err => new DownloadApplicationBuild.Error(err));
                     break;
 
@@ -72,18 +83,21 @@
             this.Sender.Tell(new GetLatestApplicationBuildPath.Response(this.latestBuildPath));
         }
 
-        private async Task DownloadBuild()
+        private async Task<DownloadBuildResult> DownloadBuild()
         {
             var latestBuild = await this.GetLatestBuild();
+
             if (latestBuild == null)
             {
                 this.logger.Warning($"No builds found for url {this.getBuildsUrl}");
-                return;
+                return DownloadBuildResult.NoUpdate;
             }
 
-            if (this.latestBuildNumber == latestBuild.Id)
+            var latestBuildNumber = await this.GetLatestStoredBuildNumber();
+
+            if (this.initialized && latestBuildNumber == latestBuild.Id)
             {
-                return;
+                return DownloadBuildResult.NoUpdate;
             }
 
             var buildDownloadModel = await this.GetBuildDownloadModel(latestBuild);
@@ -93,8 +107,21 @@
                 var buildFileStream = await client.GetStreamAsync(buildDownloadModel.Uri);
                 var newBuildPath = await this.SaveBuildFile(buildFileStream, buildDownloadModel);
 
-                this.latestBuildNumber = latestBuild.Id;
                 this.latestBuildPath = newBuildPath;
+
+                if (latestBuildNumber != latestBuild.Id)
+                {
+                    this.applicationBuildsActor.Tell(new SetApplicationBuildNumber(this.applicationType.ToString(), latestBuild.Id));
+                }
+
+                if (this.initialized && latestBuildNumber != latestBuild.Id)
+                {
+                    return DownloadBuildResult.Update;
+                }
+
+                this.initialized = true;
+
+                return DownloadBuildResult.NoUpdate;
             }
         }
 
@@ -112,9 +139,16 @@
             }
         }
 
+        private async Task<int?> GetLatestStoredBuildNumber()
+        {
+            var latestBuildNumberResponse = await this.applicationBuildsActor.Ask<GetApplicationBuildNumber.Response>(
+                new GetApplicationBuildNumber(this.applicationType.ToString()));
+            return latestBuildNumberResponse.BuildNumber;
+        }
+
         private async Task<AppCenterBuildDownloadModel> GetBuildDownloadModel(AppCenterBuildModel build)
         {
-            var getBuildUrl = getBuildDownloadLinkTemplateUrl.Replace("{buildId}", build.Id.ToString());
+            var getBuildUrl = this.getBuildDownloadLinkTemplateUrl.Replace("{buildId}", build.Id.ToString());
 
             using (var response = await this.SendAppCenterRequest(getBuildUrl))
             {
@@ -182,6 +216,20 @@
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
             return JsonConvert.DeserializeObject<T>(message, serializerSettings);
+        }
+
+        private class DownloadBuildResult
+        {
+            public static readonly DownloadBuildResult Update = new DownloadBuildResult(true);
+
+            public static readonly DownloadBuildResult NoUpdate = new DownloadBuildResult(false);
+
+            private DownloadBuildResult(bool updateAvailable)
+            {
+                this.UpdateAvailable = updateAvailable;
+            }
+
+            public bool UpdateAvailable { get; }
         }
     }
 }

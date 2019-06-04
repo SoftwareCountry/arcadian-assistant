@@ -31,11 +31,6 @@
             hasPermissions &= CheckIfRejected(existingEvent, updatedEvent, employeePermissions);
             hasPermissions &= CheckIfCancelled(existingEvent, updatedEvent, employeePermissions);
 
-            if (updatedEvent.Type == CalendarEventTypes.Sickleave)
-            {
-                hasPermissions &= CheckSickLeave(existingEvent, updatedEvent, employeePermissions);
-            }
-
             if (hasPermissions)
             {
                 context.Succeed(requirement);
@@ -85,20 +80,6 @@
             return true;
         }
 
-        private static bool CheckSickLeave(CalendarEvent existingEvent, CalendarEventsModel updatedEvent, EmployeePermissionsEntry employeePermissions)
-        {
-            var statusChanged = StatusChanged(existingEvent, updatedEvent);
-
-            if (!statusChanged
-                && updatedEvent.Status == SickLeaveStatuses.Approved
-                && updatedEvent.Dates != existingEvent.Dates)
-            {
-                return employeePermissions.HasFlag(EmployeePermissionsEntry.ProlongSickLeave);
-            }
-
-            return true;
-        }
-        
         private static bool StatusChanged(CalendarEvent existingEvent, CalendarEventsModel updatedEvent)
         {
             return existingEvent.Status != updatedEvent.Status;

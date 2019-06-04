@@ -4,7 +4,7 @@ import { Dimensions, FlatList, ListRenderItemInfo, TouchableOpacity, View, ViewS
 import { StyledText } from '../override/styled-text';
 import { Avatar } from '../people/avatar';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
-import { CalendarEvent, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
+import { CalendarEvent, CalendarEventStatus, CalendarEventType } from '../reducers/calendar/calendar-event.model';
 import { EventManagementToolset } from './event-management-toolset';
 import { CalendarEventIcon } from '../calendar/calendar-event-icon';
 import { Nullable } from 'types';
@@ -14,6 +14,9 @@ import { Employee } from '../reducers/organization/employee.model';
 import { Action, Dispatch } from 'redux';
 import { openEmployeeDetails } from '../navigation/navigation.actions';
 import { connect } from 'react-redux';
+
+//============================================================================
+type CalendarEventStatusDescriptions = { [key in CalendarEventStatus]: string };
 
 //============================================================================
 interface EmployeeDetailsEventsListProps {
@@ -29,7 +32,38 @@ interface EmployeeDetailsEventsListDispatchProps {
 
 //============================================================================
 class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListProps & EmployeeDetailsEventsListDispatchProps> {
-    private readonly eventDigitsDateFormat = 'DD/MM/YYYY';
+
+    private readonly eventDigitsDateFormat = 'ddd DD/MM/YYYY';
+
+    private readonly vacationDescriptions: CalendarEventStatusDescriptions = {
+        [CalendarEventStatus.Requested]: 'waiting for approvals',
+        [CalendarEventStatus.Approved]: 'preparing documents',
+        [CalendarEventStatus.AccountingReady]: 'documents are ready to sign',
+        [CalendarEventStatus.Completed]: 'completed',
+        [CalendarEventStatus.Processed]: 'confirmed',
+        [CalendarEventStatus.Cancelled]: 'cancelled',
+        [CalendarEventStatus.Rejected]: 'rejected',
+    };
+
+    private readonly dayoffWorkoutDescriptions: CalendarEventStatusDescriptions = {
+        [CalendarEventStatus.Requested]: 'waiting for approvals',
+        [CalendarEventStatus.Approved]: 'confirmed',
+        [CalendarEventStatus.Cancelled]: 'cancelled',
+        [CalendarEventStatus.Rejected]: 'rejected',
+        [CalendarEventStatus.AccountingReady]: '',
+        [CalendarEventStatus.Completed]: '',
+        [CalendarEventStatus.Processed]: '',
+    };
+
+    private readonly sickleaveDescriptions: CalendarEventStatusDescriptions = {
+        [CalendarEventStatus.Approved]: 'confirmed',
+        [CalendarEventStatus.Completed]: 'completed',
+        [CalendarEventStatus.Cancelled]: 'cancelled',
+        [CalendarEventStatus.Rejected]: 'rejected',
+        [CalendarEventStatus.Processed]: '',
+        [CalendarEventStatus.AccountingReady]: '',
+        [CalendarEventStatus.Requested]: '',
+    };
 
     //----------------------------------------------------------------------------
     public render() {
@@ -84,8 +118,8 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
             }
         ];
 
-        const descriptionStatus = this.descriptionStatus(action.event);
-        const description = this.descriptionFromTo(action.event);
+        const eventPeriodDescription = this.periodDescription(action.event);
+        const eventStatusDescription = this.statusDescription(action.event);
 
         return (
             <View style={eventsContainerFlattened} key={action.event.calendarEventId}>
@@ -100,8 +134,8 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
                     </View>
                     <View style={eventTextContainer}>
                         <StyledText style={eventTitle}>{action.employee.name}</StyledText>
-                        <StyledText style={eventDetails}>{descriptionStatus}</StyledText>
-                        <StyledText style={eventDetails}>{description}</StyledText>
+                        <StyledText style={eventDetails}>{eventStatusDescription}</StyledText>
+                        <StyledText style={eventDetails}>{eventPeriodDescription}</StyledText>
                     </View>
                     <EventManagementToolset eventAction={action}/>
                 </View>
@@ -116,7 +150,9 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
         } = layoutStylesForEmployeeDetailsScreen;
 
         return (
-            <TouchableOpacity onPress={() => {this.props.onAvatarClicked(employee); }} style={avatarContainer}>
+            <TouchableOpacity onPress={() => {
+                this.props.onAvatarClicked(employee);
+            }} style={avatarContainer}>
                 <Avatar photoUrl={employee.photoUrl}
                         style={avatarOuterFrame as ViewStyle}
                         imageStyle={avatarImage as ViewStyle}/>
@@ -125,7 +161,7 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
     }
 
     //----------------------------------------------------------------------------
-    private descriptionFromTo(event: CalendarEvent): string {
+    private periodDescription(event: CalendarEvent): string {
         let description: string;
 
         if (event.isWorkout || event.isDayoff) {
@@ -138,28 +174,20 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
     }
 
     //----------------------------------------------------------------------------
-    private descriptionStatus(event: CalendarEvent): string {
-        let description = '';
+    private statusDescription(event: CalendarEvent): string {
 
-        switch (this.preprocessStatus(event)) {
-            case CalendarEventStatus.Requested:
-                description = `requests ${event.type.toLowerCase()}`;
-                break;
-            case CalendarEventStatus.Approved:
-                const prefix = event.dates.endDate.isAfter(moment(), 'date') ? 'has coming ' : 'on ';
-                description = prefix + event.type.toLowerCase();
-                break;
-            case CalendarEventStatus.AccountingReady:
-                description = `has ${event.type.toLowerCase()} documents ready`;
-                break;
-            case CalendarEventStatus.Completed:
-                description = `has completed ${event.type.toLowerCase()}`;
-                break;
-            default:
-                break;
+        const status = this.preprocessStatus(event);
+
+        switch (event.type) {
+            case CalendarEventType.Vacation:
+                return `Vacation: ${this.vacationDescriptions[status]}`;
+            case CalendarEventType.Sickleave:
+                return `Sickleave: ${this.sickleaveDescriptions[status]}`;
+            case CalendarEventType.Dayoff:
+                return `Dayoff: ${this.dayoffWorkoutDescriptions[status]}`;
+            case CalendarEventType.Workout:
+                return `Workout: ${this.dayoffWorkoutDescriptions[status]}`;
         }
-
-        return description;
     }
 
     //----------------------------------------------------------------------------
