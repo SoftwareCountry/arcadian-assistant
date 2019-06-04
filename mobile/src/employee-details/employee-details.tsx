@@ -4,13 +4,13 @@
 
 import React, { Component } from 'react';
 import { connect, MapStateToProps } from 'react-redux';
-import { Map, Set } from 'immutable';
+import { List, Map, Set } from 'immutable';
 import { Linking, StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 import { contactStyles, contentStyles, eventStyles, layoutStyles, tileStyles } from '../profile/styles';
 import { Chevron } from '../profile/chevron';
 import { Avatar } from '../people/avatar';
-import { AppState } from '../reducers/app.reducer';
+import { AppState, getEmployees, getRequests } from '../reducers/app.reducer';
 import { Department } from '../reducers/organization/department.model';
 
 import { StyledText } from '../override/styled-text';
@@ -25,7 +25,7 @@ import { HoursCreditCounter, VacationDaysCounter } from '../reducers/calendar/da
 import { ConvertHoursCreditToDays } from '../reducers/calendar/convert-hours-credit-to-days';
 import { Action, Dispatch } from 'redux';
 import { openCompany, openDepartment, openRoom } from '../navigation/navigation.actions';
-import { Nullable } from 'types';
+import { Nullable, Optional } from 'types';
 import { IntervalTypeConverter } from '../reducers/calendar/interval-type-converter';
 import { approve } from '../reducers/calendar/approval.action';
 import { Approval } from '../reducers/calendar/approval.model';
@@ -34,6 +34,9 @@ import { capitalizeFirstLetter, uppercase } from '../utils/string';
 import { endSearch } from '../reducers/search/search.action';
 import { SearchType } from '../navigation/search/search-view';
 import Style from '../layout/style';
+import { equals } from '../utils/equitable';
+import { EmployeesStore } from '../reducers/organization/employees.reducer';
+import { LoadingView } from '../navigation/loading';
 
 //============================================================================
 interface TileData {
@@ -50,12 +53,14 @@ interface EmployeeDetailsOwnProps {
     employee: Employee;
     department: Department;
     layoutStylesChevronPlaceholder: ViewStyle;
-    requests?: Map<Employee, CalendarEvent[]>;
+    showRequests: boolean;
 }
 
 //============================================================================
 interface EmployeeDetailsStateProps {
-    events: Map<EmployeeId, CalendarEvent[]>;
+    events?: Map<EmployeeId, CalendarEvent[]>;
+    requests?: Map<Employee, CalendarEvent[]>;
+    employees?: EmployeesStore;
     approvals: Map<CalendarEventId, Set<Approval>>;
     hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => Nullable<string>;
     userEmployeePermissions: Nullable<Map<string, UserEmployeePermissions>>;
@@ -65,17 +70,24 @@ interface EmployeeDetailsStateProps {
 type EmployeeDetailsProps = EmployeeDetailsOwnProps & EmployeeDetailsStateProps;
 
 //----------------------------------------------------------------------------
-const mapStateToProps: MapStateToProps<EmployeeDetailsProps, EmployeeDetailsOwnProps, AppState> = (state: AppState, ownProps: EmployeeDetailsOwnProps): EmployeeDetailsProps => ({
-    employee: ownProps.employee,
-    department: ownProps.department,
-    layoutStylesChevronPlaceholder: ownProps.layoutStylesChevronPlaceholder,
-    requests: ownProps.requests,
-    events: state.calendar ? state.calendar.calendarEvents.events : Map(),
-    approvals: state.calendar ? state.calendar.calendarEvents.approvals : Map<CalendarEventId, Set<Approval>>(),
-    hoursToIntervalTitle: state.calendar ? state.calendar.pendingRequests.hoursToIntervalTitle : IntervalTypeConverter.hoursToIntervalTitle,
-    userEmployeePermissions: state.userInfo ? state.userInfo.permissions : null,
-    userId: state.userInfo ? state.userInfo.employeeId : null,
-});
+const mapStateToProps: MapStateToProps<EmployeeDetailsProps, EmployeeDetailsOwnProps, AppState> = (state: AppState, ownProps: EmployeeDetailsOwnProps): EmployeeDetailsProps => {
+
+    const employees = getEmployees(state);
+
+    return {
+        employee: ownProps.employee,
+        department: ownProps.department,
+        layoutStylesChevronPlaceholder: ownProps.layoutStylesChevronPlaceholder,
+        showRequests: ownProps.showRequests,
+        events: state.calendar ? state.calendar.calendarEvents.events : undefined,
+        employees: employees,
+        requests: getRequests(state, employees),
+        approvals: state.calendar ? state.calendar.calendarEvents.approvals : Map<CalendarEventId, Set<Approval>>(),
+        hoursToIntervalTitle: state.calendar ? state.calendar.pendingRequests.hoursToIntervalTitle : IntervalTypeConverter.hoursToIntervalTitle,
+        userEmployeePermissions: state.userInfo ? state.userInfo.permissions : null,
+        userId: state.userInfo ? state.userInfo.employeeId : null,
+    };
+};
 
 //============================================================================
 interface EmployeeDetailsDispatchProps {
@@ -121,54 +133,95 @@ const TileSeparator = () => <View style={tileStyles.separator}/>;
 
 //============================================================================
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
+
     //----------------------------------------------------------------------------
-    public shouldComponentUpdate(nextProps: EmployeeDetailsProps & EmployeeDetailsDispatchProps) {
+    private permissionsAreDifferent(nextProps: EmployeeDetailsProps & EmployeeDetailsDispatchProps): boolean {
+        const permissions = this.props.userEmployeePermissions;
+        const nextPermissions = nextProps.userEmployeePermissions;
+
+        if (!equals(permissions, nextPermissions)) {
+            return true;
+        }
+
+        const employeeId = this.props.employee.employeeId;
+        const nextEmployeeId = nextProps.employee.employeeId;
+
+        const userPermissions = permissions ? permissions.get(employeeId, null) : null;
+        const nextUserPermissions = nextPermissions ? nextPermissions.get(nextEmployeeId, null) : null;
+
+        // noinspection RedundantIfStatementJS
+        if (!equals(userPermissions, nextUserPermissions)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    //----------------------------------------------------------------------------
+    private eventsAreDifferent(nextProps: EmployeeDetailsProps & EmployeeDetailsDispatchProps): boolean {
         const events = this.props.events;
         const nextEvents = nextProps.events;
 
+        const employeeId = this.props.employee.employeeId;
+        const nextEmployeeId = nextProps.employee.employeeId;
+
+        const employeeEvents = List.of(events ? events.get(employeeId, null) : null);
+        const nextEmployeeEvents = List.of(nextEvents ? nextEvents.get(nextEmployeeId, null) : null);
+
+        // noinspection RedundantIfStatementJS
+        if (!equals(employeeEvents, nextEmployeeEvents)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    //----------------------------------------------------------------------------
+    private requestsAreDifferent(nextProps: EmployeeDetailsProps & EmployeeDetailsDispatchProps): boolean {
+        const requests = this.props.requests;
+        const nextRequests = nextProps.requests;
+
+        // noinspection RedundantIfStatementJS
+        if (!equals(requests, nextRequests)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    //----------------------------------------------------------------------------
+    private approvalsAreDifferent(nextProps: EmployeeDetailsProps & EmployeeDetailsDispatchProps): boolean {
+        const approvals = this.props.approvals;
+        const nextApprovals = nextProps.approvals;
+
+        // noinspection RedundantIfStatementJS
+        if (!equals(approvals, nextApprovals)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    //----------------------------------------------------------------------------
+    public shouldComponentUpdate(nextProps: EmployeeDetailsProps & EmployeeDetailsDispatchProps) {
         if (this.props.employee !== nextProps.employee) {
             return true;
         }
 
-        const userEmployeePermissions = this.props.userEmployeePermissions;
-        const nextUserEmployeePermissions = nextProps.userEmployeePermissions;
-
-        if (userEmployeePermissions !== nextUserEmployeePermissions) {
+        if (this.permissionsAreDifferent(nextProps)) {
             return true;
         }
 
-        if (userEmployeePermissions &&
-            nextUserEmployeePermissions &&
-            !userEmployeePermissions.equals(nextUserEmployeePermissions)) {
-
-            const permissions = userEmployeePermissions.get(this.props.employee.employeeId, null);
-            const nextPermissions = nextUserEmployeePermissions.get(nextProps.employee.employeeId, null);
-
-            if (!permissions || !permissions.equals(nextPermissions)) {
-                return true;
-            }
-        }
-
-        if (!events.equals(nextEvents)) {
-            const calendarEvents = events.get(this.props.employee.employeeId);
-            const nextCalendarEvents = nextEvents.get(nextProps.employee.employeeId);
-
-            if (calendarEvents !== nextCalendarEvents) {
-                return true;
-            }
-        }
-
-        const requests = this.props.requests;
-        const nextRequests = nextProps.requests;
-
-        if (nextRequests && !nextRequests.equals(requests)) {
+        if (this.eventsAreDifferent(nextProps)) {
             return true;
         }
 
-        const approvals = this.props.approvals;
-        const nextApprovals = nextProps.approvals;
+        if (this.requestsAreDifferent(nextProps)) {
+            return true;
+        }
 
-        if (!approvals.equals(nextApprovals)) {
+        // noinspection RedundantIfStatementJS
+        if (this.approvalsAreDifferent(nextProps)) {
             return true;
         }
 
@@ -189,13 +242,6 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             return null;
         }
 
-        const permissions = userEmployeePermissions.get(employee.employeeId, null);
-
-        const tiles = this.getTiles(employee);
-        const contacts = this.getContacts(employee);
-
-        let events = this.props.events.get(employee.employeeId, null);
-
         return (
             <View style={layoutStyles.container}>
                 <View style={this.props.layoutStylesChevronPlaceholder}/>
@@ -207,12 +253,15 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                     </View>
                 </View>
                 <View style={layoutStyles.content}>
+
                     <StyledText style={contentStyles.name}>
                         {employee.name}
                     </StyledText>
+
                     <StyledText style={contentStyles.position}>
                         {uppercase(employee.position)}
                     </StyledText>
+
                     <TouchableOpacity onPress={this.openDepartment}>
                         <StyledText style={contentStyles.department}>
                             {uppercase(department.abbreviation)}
@@ -220,12 +269,14 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                     </TouchableOpacity>
 
                     <View style={contentStyles.infoContainer}>
-                        {tiles}
+                        {this.getTiles(employee)}
                     </View>
 
                     <View style={contentStyles.contactsContainer}>
                         <View>
-                            {contacts}
+                            {
+                                this.getContacts(employee)
+                            }
                             {
                                 this.renderDaysCounters(employee)
                             }
@@ -233,10 +284,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                     </View>
 
                     {
-                        this.renderPendingRequests(permissions)
-                    }
-                    {
-                        this.renderEmployeeEvents(events, permissions)
+                        this.renderEventsAndRequests()
                     }
 
                 </View>
@@ -399,7 +447,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
     }
 
     //----------------------------------------------------------------------------
-    private renderEmployeeEvents(events: Nullable<CalendarEvent[]>, userPermissions: Nullable<UserEmployeePermissions>) {
+    private renderEmployeeEvents(events: Optional<CalendarEvent[]>, userPermissions: Nullable<UserEmployeePermissions>) {
         if (!events || !events.length || !this.props.userId || !this.props.employee || !userPermissions) {
             return null;
         }
@@ -417,15 +465,15 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
     }
 
     //----------------------------------------------------------------------------
-    private renderPendingRequests(userPermissions: Nullable<UserEmployeePermissions>) {
-        if (!this.props.requests || !this.props.requests.size || !this.props.userId || !userPermissions) {
+    private renderPendingRequests(requests: Optional<Map<Employee, CalendarEvent[]>>, userPermissions: Nullable<UserEmployeePermissions>) {
+        if (!requests || !requests.size || !this.props.userId || !userPermissions) {
             return null;
         }
 
         const provider = new EventActionProvider(this.props.userId, this.props.eventSetStatus, this.props.eventApprove);
 
         const actions: EventActionContainer[] =
-            this.props.requests.reduce<EventActionContainer[]>(
+            requests.reduce<EventActionContainer[]>(
                 (acc, events, employee) => acc.concat(provider.getRequestActions(events, employee, this.props.approvals)),
                 []
             );
@@ -437,6 +485,38 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                 hoursToIntervalTitle={this.props.hoursToIntervalTitle}
                 showUserAvatar={true}/>
         </View>;
+    }
+
+    //----------------------------------------------------------------------------
+    private renderEventsAndRequests() {
+
+        const { employee, userEmployeePermissions } = this.props;
+
+        if (!userEmployeePermissions) {
+            return null;
+        }
+
+        const permissions = userEmployeePermissions.get(employee.employeeId, null);
+
+        const events = this.props.events ? this.props.events.get(employee.employeeId, undefined) : undefined;
+        const requests = this.props.requests;
+
+        const loadingEvents = !events;
+        const loadingRequests = !requests;
+        const showRequests = this.props.showRequests;
+
+        if (loadingEvents || (showRequests && loadingRequests)) {
+            return <LoadingView/>;
+        } else {
+            return <View>
+                {
+                    this.renderPendingRequests(requests, permissions)
+                }
+                {
+                    this.renderEmployeeEvents(events, permissions)
+                }
+            </View>;
+        }
     }
 
     //----------------------------------------------------------------------------

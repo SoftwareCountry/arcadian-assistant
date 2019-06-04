@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Department } from '../reducers/organization/department.model';
-import { AppState, getEmployee } from '../reducers/app.reducer';
+import { AppState, getDepartment, getEmployee, getEmployees } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
 import { LayoutChangeEvent, RefreshControl, SafeAreaView, StyleSheet, View, ViewStyle } from 'react-native';
 import { Employee } from '../reducers/organization/employee.model';
@@ -9,8 +9,6 @@ import { EmployeeDetails } from '../employee-details/employee-details';
 import { refresh } from '../reducers/refresh/refresh.action';
 import { loadPendingRequests } from '../reducers/calendar/pending-requests/pending-requests.action';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
-import { Map } from 'immutable';
-import { CalendarEvent } from '../reducers/calendar/calendar-event.model';
 import { LogoutView } from '../navigation/logout-view';
 import { LoadingView } from '../navigation/loading';
 import Style from '../layout/style';
@@ -19,13 +17,13 @@ import { Action, Dispatch } from 'redux';
 import { Optional } from 'types';
 import { SettingsView } from '../user-preferences-screen/settings-view';
 import { employeeDetailsStyles } from '../employee-details/styles';
+import { equals } from '../utils/equitable';
 
 //============================================================================
 interface ProfileScreenProps {
     employees: Optional<EmployeesStore>;
     employee: Optional<Employee>;
     department: Optional<Department>;
-    requests: Optional<Map<string, CalendarEvent[]>>;
 }
 
 //============================================================================
@@ -71,54 +69,20 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
 
     //----------------------------------------------------------------------------
     public shouldComponentUpdate(nextProps: ProfileScreenProps & AuthDispatchProps, nextState: ProfileScreenState) {
-
         if (this.state.width !== nextState.width || this.state.height !== nextState.height) {
-            return true;
-        }
-
-        if (!this.props.requests && !nextProps.requests) {
-            return false;
-        }
-
-        if (!this.props.requests || !nextProps.requests) {
             return true;
         }
 
         const employee = this.props.employee;
         const nextEmployee = nextProps.employee;
-        if (nextEmployee && !nextEmployee.equals(employee)) {
+        if (!equals(employee, nextEmployee)) {
             return true;
-        }
-
-        const requests = this.props.requests;
-        const nextRequests = nextProps.requests;
-        if (!requests.equals(nextRequests)) {
-            return true;
-        }
-
-        if (!this.props.employees && !nextProps.employees) {
-            return false;
-        }
-
-        if (!this.props.employees || !nextProps.employees) {
-            return true;
-        }
-
-        const employees = this.props.employees.employeesById;
-        const nextEmployees = nextProps.employees.employeesById;
-        if (!employees.equals(nextEmployees)) {
-            const newEmployeesSubset = nextEmployees.filter(element => {
-                return !employees.has(element.employeeId);
-            });
-
-            if (requests.keySeq().some(key => newEmployeesSubset.has(key))) {
-                return true;
-            }
         }
 
         const department = this.props.department;
         const nextDepartment = nextProps.department;
-        if (nextDepartment && !nextDepartment.equals(department)) {
+        // noinspection RedundantIfStatementJS
+        if (!equals(department, nextDepartment)) {
             return true;
         }
 
@@ -156,16 +120,10 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
         const employee = this.props.employee;
         const employees = this.props.employees;
         const department = this.props.department;
+
         if (!employee || !employees || !department) {
             return <LoadingView/>;
         }
-
-        const requests = this.props.requests;
-        const employeesToRequests = requests ? requests
-            .filter((event, employeeId) => {
-                return employees.employeesById.get(employeeId) !== undefined;
-            })
-            .mapKeys(employeeId => employees.employeesById.get(employeeId)!) : undefined;
 
         return (
             <ScrollView refreshControl={<RefreshControl tintColor={Style.color.white}
@@ -177,7 +135,7 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
                     department={department}
                     employee={employee}
                     layoutStylesChevronPlaceholder={layoutStyles.chevronPlaceholder as ViewStyle}
-                    requests={employeesToRequests}
+                    showRequests={true}
                 />
 
             </ScrollView>
@@ -199,30 +157,12 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
 }
 
 //----------------------------------------------------------------------------
-function getEmployeesStore(state: AppState): Optional<EmployeesStore> {
-    return state.organization ? state.organization.employees : undefined;
-}
-
-//----------------------------------------------------------------------------
-function getDepartment(state: AppState, employee: Optional<Employee>): Optional<Department> {
-    if (!state.organization || !employee) {
-        return undefined;
-    }
-
-    const departments = state.organization.departments;
-    return departments && employee ?
-        departments.find((d) => d.departmentId === employee.departmentId) :
-        undefined;
-}
-
-//----------------------------------------------------------------------------
 const stateToProps = (state: AppState): ProfileScreenProps => {
     const employee = getEmployee(state);
     return {
-        employees: getEmployeesStore(state),
+        employees: getEmployees(state),
         employee: employee,
         department: getDepartment(state, employee),
-        requests: state.calendar ? state.calendar.pendingRequests.requests : undefined,
     };
 };
 

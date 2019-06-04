@@ -11,17 +11,17 @@ import { ApprovalAction, ApprovalActionType } from '../approval.action';
 
 //============================================================================
 export interface PendingRequestsState {
-    requests: Map<string, CalendarEvent[]>;
+    requests?: Map<string, CalendarEvent[]>;
     hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => Nullable<string>;
 }
 
-//============================================================================
+//----------------------------------------------------------------------------
 const initState: PendingRequestsState = {
-    requests: Map<string, CalendarEvent[]>(),
+    requests: undefined,
     hoursToIntervalTitle: IntervalTypeConverter.hoursToIntervalTitle,
 };
 
-//============================================================================
+//----------------------------------------------------------------------------
 export const pendingRequestsReducer = (state: PendingRequestsState = initState, action: PendingRequestsActions | ApprovalAction): PendingRequestsState => {
     switch (action.type) {
         case 'LOAD-PENDING-REQUESTS-FINISHED':
@@ -29,15 +29,20 @@ export const pendingRequestsReducer = (state: PendingRequestsState = initState, 
                 ...state,
                 requests: action.requests,
             };
+
         case ApprovalActionType.approveFinished:
+
+            const requests = state.requests ?
+                state.requests
+                    .map(events => events.filter(event => event.calendarEventId !== action.approval.eventId))
+                    .filter(events => events.length > 0) :
+                undefined;
+
             return {
                 ...state,
-                requests: state.requests
-                    .map(events =>
-                        events.filter(event => event.calendarEventId !== action.approval.eventId)
-                    )
-                    .filter(events => events.length > 0),
+                requests: requests,
             };
+
         default:
             return state;
     }

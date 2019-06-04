@@ -22,10 +22,14 @@ import { navigationEpics$ } from '../navigation/navigation.epics';
 import { notifications$ } from '../notifications/notification.epics';
 import { notificationsReducer, NotificationState } from '../notifications/notifications.reducer';
 import { Optional } from 'types';
-import { Employee } from './organization/employee.model';
+import { Employee, EmployeeId } from './organization/employee.model';
 import { DayModel, defaultDayModel } from './calendar/calendar.model';
 import { Storage } from '../storage/storage';
 import { Permission } from './user/user-employee-permissions.model';
+import { Map } from 'immutable';
+import { CalendarEvent } from './calendar/calendar-event.model';
+import { EmployeesStore } from './organization/employees.reducer';
+import { Department } from './organization/department.model';
 
 // import logger from 'redux-logger';
 
@@ -97,6 +101,37 @@ export function getEndDay(state: AppState): DayModel {
     }
 
     return selection.interval.endDay;
+}
+
+//----------------------------------------------------------------------------
+export function getRequests(state: AppState, employees: Optional<EmployeesStore>): Optional<Map<Employee, CalendarEvent[]>> {
+    if (!employees) {
+        return undefined;
+    }
+
+    const requests = state.calendar ? state.calendar.pendingRequests.requests : undefined;
+    return requests ?
+        requests
+            .filter((event, employeeId) => { return employees.employeesById.get(employeeId) !== undefined; })
+            .mapKeys(employeeId => employees.employeesById.get(employeeId)!) :
+        undefined;
+}
+
+//----------------------------------------------------------------------------
+export function getEmployees(state: AppState): Optional<EmployeesStore> {
+    return state.organization ? state.organization.employees : undefined;
+}
+
+//----------------------------------------------------------------------------
+export function getDepartment(state: AppState, employee: Optional<Employee>): Optional<Department> {
+    if (!state.organization || !employee) {
+        return undefined;
+    }
+
+    const departments = state.organization.departments;
+    return departments && employee ?
+        departments.find((d) => d.departmentId === employee.departmentId) :
+        undefined;
 }
 
 //----------------------------------------------------------------------------
