@@ -47,7 +47,7 @@
                     this.GetDevicesPushTokensByApplication(msg.ApplicationType)
                         .PipeTo(
                             this.Self,
-                            success: result => new UpdateAvailableWithAdditionalData(result),
+                            success: result => new UpdateAvailableWithAdditionalData(msg.ApplicationType, result),
                             failure: err => new UpdateAvailableError(err));
                     break;
 
@@ -74,6 +74,8 @@
 
         private void SendUpdateNotification(UpdateAvailableWithAdditionalData message)
         {
+            this.logger.Debug($"Sending push notification about update available for {message.ApplicationType} application");
+
             var pushNotification = this.CreatePushNotification(message.DevicesPushTokens);
             Context.System.EventStream.Publish(new NotificationEventBusMessage(pushNotification));
         }
@@ -95,10 +97,13 @@
 
         private class UpdateAvailableWithAdditionalData
         {
-            public UpdateAvailableWithAdditionalData(IEnumerable<DevicePushToken> devicesPushTokens)
+            public UpdateAvailableWithAdditionalData(ApplicationTypeEnum applicationType, IEnumerable<DevicePushToken> devicesPushTokens)
             {
+                this.ApplicationType = applicationType;
                 this.DevicesPushTokens = devicesPushTokens;
             }
+
+            public ApplicationTypeEnum ApplicationType { get; }
 
             public IEnumerable<DevicePushToken> DevicesPushTokens { get; }
         }
