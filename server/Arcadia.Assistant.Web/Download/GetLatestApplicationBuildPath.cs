@@ -9,12 +9,6 @@
 
         public ApplicationTypeEnum ApplicationType { get; }
 
-        public enum ApplicationTypeEnum
-        {
-            Android,
-            Ios
-        }
-
         public class Response
         {
             public Response(string path)

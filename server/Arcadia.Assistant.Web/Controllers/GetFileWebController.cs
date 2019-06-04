@@ -20,11 +20,11 @@
         private readonly IActorRefFactory actorSystem;
         private readonly ITimeoutSettings timeoutSettings;
 
-        private readonly Dictionary<DeviceType, GetLatestApplicationBuildPath.ApplicationTypeEnum> buildTypeByDeviceType =
-            new Dictionary<DeviceType, GetLatestApplicationBuildPath.ApplicationTypeEnum>
+        private readonly Dictionary<DeviceType, ApplicationTypeEnum> buildTypeByDeviceType =
+            new Dictionary<DeviceType, ApplicationTypeEnum>
             {
-                [DeviceType.Android] = GetLatestApplicationBuildPath.ApplicationTypeEnum.Android,
-                [DeviceType.Ios] = GetLatestApplicationBuildPath.ApplicationTypeEnum.Ios
+                [DeviceType.Android] = ApplicationTypeEnum.Android,
+                [DeviceType.Ios] = ApplicationTypeEnum.Ios
             };
 
         private readonly Dictionary<DeviceType, string> fileContentTypeByDeviceType = new Dictionary<DeviceType, string>

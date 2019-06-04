@@ -200,8 +200,8 @@
 
         private async Task<DevicePushToken[]> GetDevicePushTokens(string managerEmployeeId)
         {
-            var pushTokensResponse = await this.pushDevicesActor.Ask<GetDevicePushTokens.Success>(
-                new GetDevicePushTokens(managerEmployeeId));
+            var pushTokensResponse = await this.pushDevicesActor.Ask<GetDevicePushTokensByEmployee.Success>(
+                new GetDevicePushTokensByEmployee(managerEmployeeId));
             return pushTokensResponse.DevicePushTokens.ToArray();
         }
 
