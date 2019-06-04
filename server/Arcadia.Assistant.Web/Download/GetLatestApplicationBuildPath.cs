@@ -1,6 +1,6 @@
 ﻿namespace Arcadia.Assistant.Web.Download
 {
-    public partial class GetLatestApplicationBuildPath
+    public class GetLatestApplicationBuildPath
     {
         public GetLatestApplicationBuildPath(ApplicationTypeEnum applicationTypeEnum)
         {
