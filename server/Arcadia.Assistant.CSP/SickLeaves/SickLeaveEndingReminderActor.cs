@@ -180,8 +180,8 @@
                 return Enumerable.Empty<PushNotification>();
             }
 
-            var pushTokensResponse = await this.pushDevicesActor.Ask<GetDevicePushTokens.Success>(
-                new GetDevicePushTokens(employeeId));
+            var pushTokensResponse = await this.pushDevicesActor.Ask<GetDevicePushTokensByEmployee.Success>(
+                new GetDevicePushTokensByEmployee(employeeId));
 
             return sickLeaves.Select(e => this.CreatePushNotification(employeeId, e, pushTokensResponse.DevicePushTokens));
         }

@@ -25,7 +25,7 @@
         {
             switch (message)
             {
-                case GetDevicePushTokens msg:
+                case GetDevicePushTokensByEmployee msg:
                     this.GetDeviceTokens(msg);
                     break;
 
@@ -61,13 +61,13 @@
             }
         }
 
-        private void GetDeviceTokens(GetDevicePushTokens message)
+        private void GetDeviceTokens(GetDevicePushTokensByEmployee message)
         {
             this.deviceTokensByEmployeeId.TryGetValue(message.EmployeeId, out var deviceTokens);
 
             var devicePushTokens = deviceTokens?.Select(token => new DevicePushToken(token, this.deviceTypeByToken[token]));
 
-            this.Sender.Tell(new GetDevicePushTokens.Success(devicePushTokens ?? Enumerable.Empty<DevicePushToken>()));
+            this.Sender.Tell(new GetDevicePushTokensByEmployee.Success(devicePushTokens ?? Enumerable.Empty<DevicePushToken>()));
         }
 
         private void GetDeviceTokensByApplication(GetDevicePushTokensByApplication message)
