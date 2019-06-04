@@ -1,7 +1,13 @@
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { CancelVacation, ConfirmClaimVacation, ConfirmVacationChange } from './vacation.action';
 import { ActionsObservable, StateObservable } from 'redux-observable';
-import { CalendarEvent, CalendarEventStatus, CalendarEventType, DatesInterval } from './calendar-event.model';
+import {
+    CalendarEvent,
+    CalendarEventStatus,
+    CalendarEventType,
+    DatesInterval,
+    VacationStatus
+} from './calendar-event.model';
 import { getEventsAndPendingRequests } from './calendar.epics';
 import { flatMap } from 'rxjs/operators';
 import { openEventDialog, stopEventDialogProgress } from './event-dialog/event-dialog.action';
@@ -23,7 +29,7 @@ export const vacationSavedEpic$ = (action$: ActionsObservable<ConfirmClaimVacati
             calendarEvents.dates.startWorkingHour = 0;
             calendarEvents.dates.finishWorkingHour = 8;
 
-            calendarEvents.status = CalendarEventStatus.Requested;
+            calendarEvents.status = VacationStatus.Requested;
 
             return deps.apiClient.post(
                 `/employees/${x.employeeId}/events`,
@@ -41,7 +47,7 @@ export const vacationCanceledEpic$ = (action$: ActionsObservable<CancelVacation>
         flatMap(x => {
             const requestBody = { ...x.calendarEvent };
 
-            requestBody.status = CalendarEventStatus.Cancelled;
+            requestBody.status = VacationStatus.Cancelled;
 
             return deps.apiClient.put(
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,

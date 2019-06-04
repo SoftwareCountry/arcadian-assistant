@@ -8,15 +8,38 @@ export enum CalendarEventType {
     Workout = 'Workout',
 }
 
-export enum CalendarEventStatus {
+export enum GeneralCalendarEventStatus {
     Requested = 'Requested',
-    Completed = 'Completed',
+    Cancelled = 'Cancelled',
+    Approved = 'Approved',
+    Rejected = 'Rejected',
+}
+
+export enum VacationStatus {
+    Requested = 'Requested',
     Cancelled = 'Cancelled',
     Approved = 'Approved',
     Rejected = 'Rejected',
     AccountingReady = 'AccountingReady',
     Processed = 'Processed',
 }
+
+export enum SickleaveStatus {
+    Requested = 'Requested',
+    Cancelled = 'Cancelled',
+    Approved = 'Approved',
+    Rejected = 'Rejected',
+    Completed = 'Completed',
+}
+
+export enum DayoffWorkoutStatus {
+    Requested = 'Requested',
+    Cancelled = 'Cancelled',
+    Approved = 'Approved',
+    Rejected = 'Rejected',
+}
+
+export type CalendarEventStatus = GeneralCalendarEventStatus | VacationStatus | SickleaveStatus | DayoffWorkoutStatus;
 
 export class DatesInterval {
     private static dateFormat = 'L';
@@ -72,30 +95,30 @@ export class CalendarEvent {
 
     @dataMember()
     @required()
-    public status: CalendarEventStatus = CalendarEventStatus.Requested;
+    public status: CalendarEventStatus = GeneralCalendarEventStatus.Requested;
 
     public get isRequested(): boolean {
-        return this.status === CalendarEventStatus.Requested;
+        return this.status === GeneralCalendarEventStatus.Requested;
     }
 
     public get isCompleted(): boolean {
-        return this.status === CalendarEventStatus.Completed;
+        return this.type === CalendarEventType.Sickleave && this.status === SickleaveStatus.Completed;
     }
 
     public get isCancelled(): boolean {
-        return this.status === CalendarEventStatus.Cancelled;
+        return this.status === GeneralCalendarEventStatus.Cancelled;
     }
 
     public get isApproved(): boolean {
-        return this.status === CalendarEventStatus.Approved;
+        return this.status === GeneralCalendarEventStatus.Approved;
     }
 
     public get isAccountingReady(): boolean {
-        return this.status === CalendarEventStatus.AccountingReady;
+        return this.type === CalendarEventType.Vacation && this.status === VacationStatus.AccountingReady;
     }
 
     public get isProcessed(): boolean {
-        return this.status === CalendarEventStatus.Processed;
+        return this.type === CalendarEventType.Vacation && this.status === VacationStatus.Processed;
     }
 
     public get isSickLeave(): boolean {

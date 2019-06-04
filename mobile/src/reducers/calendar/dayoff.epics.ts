@@ -1,7 +1,13 @@
 import { ActionsObservable, StateObservable } from 'redux-observable';
 import { CancelDayoff, ConfirmProcessDayoff } from './dayoff.action';
 import { AppState, DependenciesContainer } from '../app.reducer';
-import { CalendarEvent, CalendarEventStatus, CalendarEventType, DatesInterval } from './calendar-event.model';
+import {
+    CalendarEvent,
+    CalendarEventStatus,
+    CalendarEventType, GeneralCalendarEventStatus,
+    DatesInterval,
+    DayoffWorkoutStatus
+} from './calendar-event.model';
 import { IntervalTypeConverter } from './interval-type-converter';
 import { getEventsAndPendingRequests } from './calendar.epics';
 import { flatMap } from 'rxjs/operators';
@@ -29,7 +35,7 @@ export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff
                 calendarEvents.dates.finishWorkingHour = hours.finishHour;
             }
 
-            calendarEvents.status = CalendarEventStatus.Requested;
+            calendarEvents.status = DayoffWorkoutStatus.Requested;
 
             let next: Action[] | undefined;
             if (!x.isWorkout) {
@@ -52,7 +58,7 @@ export const dayoffCanceledEpic$ = (action$: ActionsObservable<CancelDayoff>, _:
         flatMap(x => {
             const requestBody = { ...x.calendarEvent };
 
-            requestBody.status = CalendarEventStatus.Cancelled;
+            requestBody.status = DayoffWorkoutStatus.Cancelled;
 
             return deps.apiClient.put(
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
