@@ -102,11 +102,16 @@
 
                     break;
 
-                case RefreshApplicationBuildSuccess _:
+                case RefreshApplicationBuildSuccess msg:
+                    if (msg.UpdateAvailable)
+                    {
+                        Context.System.EventStream.Publish(new UpdateAvailable(msg.ApplicationType));
+                    }
+
                     break;
 
                 case RefreshApplicationBuildError msg:
-                    this.logger.Warning(msg.Exception.Message);
+                    this.logger.Warning(msg.Exception.ToString());
                     break;
 
                 case RefreshApplicationBuildsFinish _:
