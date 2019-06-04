@@ -143,6 +143,7 @@
             builder.RegisterInstance(pathsBuilder).AsSelf();
 
             builder.RegisterType<DownloadActor>().AsSelf();
+            builder.RegisterType<UpdateAvailableNotificationActor>().AsSelf();
 
             builder.RegisterType<EmployeesRegistry>().As<IEmployeesRegistry>();
             builder.RegisterType<UserEmployeeSearch>().As<IUserEmployeeSearch>();
@@ -176,6 +177,7 @@
             new AutoFacDependencyResolver(container, actorSystem);
 
             actorSystem.ActorOf(actorSystem.DI().Props<DownloadActor>(), WellKnownActorPaths.DownloadApplicationBuilds);
+            actorSystem.ActorOf(actorSystem.DI().Props<UpdateAvailableNotificationActor>(), "update-available-notification");
 
             app.UseAkkaTimeoutExceptionHandler();
             app.UseAuthentication();
