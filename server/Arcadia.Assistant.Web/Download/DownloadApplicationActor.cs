@@ -28,7 +28,7 @@
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
-        private int latestBuildNumber;
+        private int? latestBuildNumber;
         private string latestBuildPath;
 
         public DownloadApplicationActor(
@@ -57,7 +57,7 @@
                     this.DownloadBuild()
                         .PipeTo(
                             this.Sender,
-                            success: () => DownloadApplicationBuild.Success.Instance,
+                            success: result => new DownloadApplicationBuild.Success(result),
                             failure: err => new DownloadApplicationBuild.Error(err));
                     break;
 
@@ -72,18 +72,18 @@
             this.Sender.Tell(new GetLatestApplicationBuildPath.Response(this.latestBuildPath));
         }
 
-        private async Task DownloadBuild()
+        private async Task<bool> DownloadBuild()
         {
             var latestBuild = await this.GetLatestBuild();
             if (latestBuild == null)
             {
                 this.logger.Warning($"No builds found for url {this.getBuildsUrl}");
-                return;
+                return false;
             }
 
             if (this.latestBuildNumber == latestBuild.Id)
             {
-                return;
+                return false;
             }
 
             var buildDownloadModel = await this.GetBuildDownloadModel(latestBuild);
@@ -95,6 +95,8 @@
 
                 this.latestBuildNumber = latestBuild.Id;
                 this.latestBuildPath = newBuildPath;
+
+                return true;
             }
         }
 

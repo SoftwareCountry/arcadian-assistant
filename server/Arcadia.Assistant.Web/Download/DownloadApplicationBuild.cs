@@ -12,7 +12,12 @@
 
         public class Success : Response
         {
-            public static readonly Success Instance = new Success();
+            public Success(bool updateAvailable)
+            {
+                this.UpdateAvailable = updateAvailable;
+            }
+
+            public bool UpdateAvailable { get; }
         }
 
         public class Error : Response
