@@ -29,6 +29,10 @@
                     this.GetDeviceTokens(msg);
                     break;
 
+                case GetDevicePushTokensByApplication msg:
+                    this.GetDeviceTokensByApplication(msg);
+                    break;
+
                 case RegisterPushNotificationsDevice msg:
                     this.RegisterDevice(msg);
                     break;
@@ -66,6 +70,18 @@
             this.Sender.Tell(new GetDevicePushTokens.Success(devicePushTokens ?? Enumerable.Empty<DevicePushToken>()));
         }
 
+        private void GetDeviceTokensByApplication(GetDevicePushTokensByApplication message)
+        {
+            var allDeviceTokens = this.deviceTokensByEmployeeId.Values.SelectMany(x => x);
+
+            var applicationDeviceTokens = allDeviceTokens
+                .Where(token => this.deviceTypeByToken[token] == message.DeviceType)
+                .Select(token => new DevicePushToken(token, message.DeviceType))
+                .ToArray();
+
+            this.Sender.Tell(new GetDevicePushTokensByApplication.Response(applicationDeviceTokens));
+        }
+
         private void RegisterDevice(RegisterPushNotificationsDevice message)
         {
             if (!PushDeviceTypes.IsKnownType(message.DeviceType))
@@ -95,7 +111,6 @@
                 message.DeviceId);
 
             this.Persist(@event, this.OnEmployeeDeviceRemoved);
-
         }
 
         private void OnEmployeeDeviceRegistered(EmployeeDeviceRegistered @event)
