@@ -128,11 +128,11 @@
         {
             switch (message.ApplicationType)
             {
-                case GetLatestApplicationBuildPath.ApplicationTypeEnum.Android:
+                case ApplicationTypeEnum.Android:
                     this.androidDownloadBuildActor.Tell(message, this.Sender);
                     break;
 
-                case GetLatestApplicationBuildPath.ApplicationTypeEnum.Ios:
+                case ApplicationTypeEnum.Ios:
                     this.iosDownloadBuildActor.Tell(message, this.Sender);
                     break;
 
