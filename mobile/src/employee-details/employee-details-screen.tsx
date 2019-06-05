@@ -27,7 +27,6 @@ interface EmployeeDetailsProps {
 interface EmployeeDetailsDispatchProps {
     refresh: () => void;
     loadEmployee: (employeeId: EmployeeId) => void;
-    loadCalendarEvents: (employeeId: EmployeeId) => void;
 }
 
 //============================================================================
@@ -54,7 +53,6 @@ class EmployeeDetailsScreenImpl extends Component<EmployeeDetailsProps & Employe
         const employeeId: EmployeeId | undefined = this.props.navigation.getParam('employeeId', undefined);
         if (employeeId) {
             this.props.loadEmployee(employeeId);
-            this.props.loadCalendarEvents(employeeId);
         }
     }
 
@@ -153,7 +151,6 @@ const stateToProps = (state: AppState): EmployeeDetailsProps => ({
 const dispatchToProps = (dispatch: Dispatch<Action>): EmployeeDetailsDispatchProps => ({
     refresh: () => dispatch(refresh()),
     loadEmployee: employeeId => dispatch(loadEmployees([employeeId])),
-    loadCalendarEvents: employeeId => dispatch(loadCalendarEvents(employeeId)),
 });
 
 export const EmployeeDetailsScreen = connect(stateToProps, dispatchToProps)(EmployeeDetailsScreenImpl);

@@ -65,11 +65,6 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
     }
 
     //----------------------------------------------------------------------------
-    public componentDidMount() {
-        this.props.loadPendingRequests();
-    }
-
-    //----------------------------------------------------------------------------
     public shouldComponentUpdate(nextProps: ProfileScreenProps & AuthDispatchProps, nextState: ProfileScreenState) {
         if (this.state.width !== nextState.width || this.state.height !== nextState.height) {
             return true;
