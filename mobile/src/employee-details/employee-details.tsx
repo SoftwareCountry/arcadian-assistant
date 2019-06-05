@@ -9,7 +9,14 @@ import { ActivityIndicator, Linking, StyleProp, StyleSheet, TouchableOpacity, Vi
 import { contactStyles, contentStyles, eventStyles, layoutStyles, tileStyles } from '../profile/styles';
 import { Chevron } from '../profile/chevron';
 import { Avatar } from '../people/avatar';
-import { AppState, getEmployees, getRequests } from '../reducers/app.reducer';
+import {
+    AppState,
+    getEmployees,
+    getCalendarEvents,
+    getRequests,
+    areEventsLoading,
+    areRequestsLoading
+} from '../reducers/app.reducer';
 import { Department } from '../reducers/organization/department.model';
 import { StyledText } from '../override/styled-text';
 import { Employee, EmployeeId } from '../reducers/organization/employee.model';
@@ -56,7 +63,9 @@ interface EmployeeDetailsOwnProps {
 //============================================================================
 interface EmployeeDetailsStateProps {
     events?: Map<EmployeeId, CalendarEvent[]>;
+    eventsAreLoading: boolean;
     requests?: Map<Employee, CalendarEvent[]>;
+    requestsAreLoading: boolean;
     employees?: EmployeesStore;
     approvals: Map<CalendarEventId, Set<Approval>>;
     hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => Nullable<string>;
@@ -85,6 +94,14 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
     //----------------------------------------------------------------------------
     public shouldComponentUpdate(nextProps: EmployeeDetailsProps & EmployeeDetailsDispatchProps) {
+        if (this.props.eventsAreLoading !== nextProps.eventsAreLoading) {
+            return true;
+        }
+
+        if (this.props.requestsAreLoading !== nextProps.requestsAreLoading) {
+            return true;
+        }
+
         if (this.props.employee !== nextProps.employee) {
             return true;
         }
@@ -450,8 +467,8 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         const events = this.props.events ? this.props.events.get(employee.employeeId, undefined) : undefined;
         const requests = this.props.requests;
 
-        const loadingEvents = !events;
-        const loadingRequests = !requests;
+        const loadingEvents = this.props.eventsAreLoading;
+        const loadingRequests = this.props.requestsAreLoading;
         const showRequests = this.props.showRequests ? this.props.showRequests : false;
 
         if (loadingEvents || (showRequests && loadingRequests)) {
@@ -461,13 +478,17 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                 </View>
             );
         } else {
+
+            const requestsList = showRequests ? this.renderPendingRequests(requests, permissions) : null;
+            const eventsList = this.renderEmployeeEvents(events, permissions);
+
             return (
                 <View>
                     {
-                        this.renderPendingRequests(requests, permissions)
+                        requestsList
                     }
                     {
-                        this.renderEmployeeEvents(events, permissions)
+                        eventsList
                     }
                 </View>
             );
@@ -507,9 +528,11 @@ const stateToProps: MapStateToProps<EmployeeDetailsProps, EmployeeDetailsOwnProp
         department: ownProps.department,
         layoutStylesChevronPlaceholder: ownProps.layoutStylesChevronPlaceholder,
         showRequests: ownProps.showRequests,
-        events: state.calendar ? state.calendar.calendarEvents.events : undefined,
+        events: getCalendarEvents(state),
+        eventsAreLoading: areEventsLoading(state),
         employees: employees,
         requests: getRequests(state, employees),
+        requestsAreLoading: areRequestsLoading(state),
         approvals: state.calendar ? state.calendar.calendarEvents.approvals : Map<CalendarEventId, Set<Approval>>(),
         hoursToIntervalTitle: state.calendar ? state.calendar.pendingRequests.hoursToIntervalTitle : IntervalTypeConverter.hoursToIntervalTitle,
         userEmployeePermissions: state.userInfo ? state.userInfo.permissions : null,

@@ -118,6 +118,21 @@ export function getRequests(state: AppState, employees: Optional<EmployeesStore>
 }
 
 //----------------------------------------------------------------------------
+export function areRequestsLoading(state: AppState): boolean {
+    return state.calendar ? state.calendar.pendingRequests.requestsAreLoading : true;
+}
+
+//----------------------------------------------------------------------------
+export function getCalendarEvents(state: AppState): Optional<Map<EmployeeId, CalendarEvent[]>> {
+    return state.calendar ? state.calendar.calendarEvents.events : undefined;
+}
+
+//----------------------------------------------------------------------------
+export function areEventsLoading(state: AppState): boolean {
+    return state.calendar ? state.calendar.calendarEvents.eventsAreLoading : true;
+}
+
+//----------------------------------------------------------------------------
 export function getEmployees(state: AppState): Optional<EmployeesStore> {
     return state.organization ? state.organization.employees : undefined;
 }

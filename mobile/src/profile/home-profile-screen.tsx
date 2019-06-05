@@ -3,7 +3,7 @@ import { Department } from '../reducers/organization/department.model';
 import { AppState, getDepartment, getEmployee, getEmployees } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
 import { LayoutChangeEvent, RefreshControl, SafeAreaView, StyleSheet, View, ViewStyle } from 'react-native';
-import { Employee } from '../reducers/organization/employee.model';
+import { Employee, EmployeeId } from '../reducers/organization/employee.model';
 import { layoutStyles } from './styles';
 import { EmployeeDetails } from '../employee-details/employee-details';
 import { refresh } from '../reducers/refresh/refresh.action';
@@ -18,6 +18,7 @@ import { Optional } from 'types';
 import { SettingsView } from '../user-preferences-screen/settings-view';
 import { employeeDetailsStyles } from '../employee-details/styles';
 import { equals } from '../utils/equitable';
+import { loadCalendarEvents } from '../reducers/calendar/calendar.action';
 
 //============================================================================
 interface ProfileScreenProps {
@@ -30,6 +31,7 @@ interface ProfileScreenProps {
 interface AuthDispatchProps {
     refresh: () => void;
     loadPendingRequests: () => void;
+    loadCalendarEvents: (employeeId: EmployeeId) => void;
 }
 
 //============================================================================
@@ -93,10 +95,18 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
     public render() {
         return <SafeAreaView style={Style.view.safeArea} onLayout={this.onLayout}>
             <NavigationEvents
-                onWillFocus={this.props.loadPendingRequests}
+                onWillFocus={(_) => {
+                    this.props.loadPendingRequests();
+
+                    const { employee } = this.props;
+                    if (employee) {
+                        this.props.loadCalendarEvents(employee.employeeId);
+                    }
+                }}
             />
 
             <View style={employeeDetailsStyles.container}>
+
                 <View style={[
                     employeeDetailsStyles.topHalfView,
                     {
@@ -110,7 +120,9 @@ class ProfileScreenImpl extends Component<ProfileScreenProps & AuthDispatchProps
                         width: this.state.width,
                         height: this.state.height / 2
                     }]}/>
+
                 {this.renderEmployeeDetails()}
+
             </View>
         </SafeAreaView>;
     }
@@ -170,6 +182,7 @@ const stateToProps = (state: AppState): ProfileScreenProps => {
 const dispatchToProps = (dispatch: Dispatch<Action>): AuthDispatchProps => ({
     refresh: () => dispatch(refresh()),
     loadPendingRequests: () => dispatch(loadPendingRequests()),
+    loadCalendarEvents: employeeId => dispatch(loadCalendarEvents(employeeId)),
 });
 
 //----------------------------------------------------------------------------

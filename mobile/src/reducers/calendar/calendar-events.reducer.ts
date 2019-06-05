@@ -42,9 +42,10 @@ export interface SelectionSubState {
 
 //============================================================================
 export interface EventsMapSubState {
-    events?: Map<string, CalendarEvent[]>;
+    eventsAreLoading: boolean;
+    events: Map<string, CalendarEvent[]>;
     approvals: Map<CalendarEventId, Set<Approval>>;
-    userEmployeeId: Optional<string>;
+    userEmployeeId?: string;
 }
 
 //============================================================================
@@ -90,7 +91,8 @@ const createInitState = (): CalendarEventsState => {
     return {
         pages: [prevPage, currentPage, nextPage],
         intervals: undefined,
-        events: undefined,
+        eventsAreLoading: true,
+        events: Map(),
         approvals: Map(),
         userEmployeeId: undefined,
         disableCalendarDaysBefore: undefined,
@@ -113,7 +115,7 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
         case 'LOAD-CALENDAR-EVENTS':
             return {
                 ...state,
-                events: undefined,
+                eventsAreLoading: true,
             };
 
         case 'LOAD-CALENDAR-EVENTS-FINISHED':
@@ -128,7 +130,8 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
 
             newState = {
                 ...state,
-                events: events
+                events: events,
+                eventsAreLoading: false,
             };
 
             if (action.employeeId === state.userEmployeeId) {
