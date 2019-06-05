@@ -6,13 +6,11 @@ import React, { Component } from 'react';
 import { connect, MapStateToProps } from 'react-redux';
 import { List, Map, Set } from 'immutable';
 import { ActivityIndicator, Linking, StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
-
 import { contactStyles, contentStyles, eventStyles, layoutStyles, tileStyles } from '../profile/styles';
 import { Chevron } from '../profile/chevron';
 import { Avatar } from '../people/avatar';
 import { AppState, getEmployees, getRequests } from '../reducers/app.reducer';
 import { Department } from '../reducers/organization/department.model';
-
 import { StyledText } from '../override/styled-text';
 import { Employee, EmployeeId } from '../reducers/organization/employee.model';
 import { ApplicationIcon } from '../override/application-icon';
@@ -68,26 +66,6 @@ interface EmployeeDetailsStateProps {
 
 type EmployeeDetailsProps = EmployeeDetailsOwnProps & EmployeeDetailsStateProps;
 
-//----------------------------------------------------------------------------
-const mapStateToProps: MapStateToProps<EmployeeDetailsProps, EmployeeDetailsOwnProps, AppState> = (state: AppState, ownProps: EmployeeDetailsOwnProps): EmployeeDetailsProps => {
-
-    const employees = getEmployees(state);
-
-    return {
-        employee: ownProps.employee,
-        department: ownProps.department,
-        layoutStylesChevronPlaceholder: ownProps.layoutStylesChevronPlaceholder,
-        showRequests: ownProps.showRequests,
-        events: state.calendar ? state.calendar.calendarEvents.events : undefined,
-        employees: employees,
-        requests: getRequests(state, employees),
-        approvals: state.calendar ? state.calendar.calendarEvents.approvals : Map<CalendarEventId, Set<Approval>>(),
-        hoursToIntervalTitle: state.calendar ? state.calendar.pendingRequests.hoursToIntervalTitle : IntervalTypeConverter.hoursToIntervalTitle,
-        userEmployeePermissions: state.userInfo ? state.userInfo.permissions : null,
-        userId: state.userInfo ? state.userInfo.employeeId : null,
-    };
-};
-
 //============================================================================
 interface EmployeeDetailsDispatchProps {
     loadCalendarEvents: (employeeId: string) => void;
@@ -100,106 +78,10 @@ interface EmployeeDetailsDispatchProps {
 }
 
 //----------------------------------------------------------------------------
-const mapDispatchToProps = (dispatch: Dispatch<Action>): EmployeeDetailsDispatchProps => ({
-    loadCalendarEvents: (employeeId: string) => {
-        dispatch(loadCalendarEvents(employeeId));
-    },
-    loadUserEmployeePermissions: (employeeId: string) => {
-        dispatch(loadUserEmployeePermissions(employeeId));
-    },
-    eventSetStatus: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => {
-        dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status));
-    },
-    eventApprove: (approverId: EmployeeId, employeeId: EmployeeId, calendarEvent: CalendarEvent) => {
-        dispatch(approve(approverId, employeeId, calendarEvent.calendarEventId));
-    },
-    openCompany: (departmentId: string) => {
-        dispatch(openCompany(departmentId));
-        dispatch(endSearch(SearchType.People));
-    },
-    openDepartment: (departmentId: string, departmentAbbreviation: string) => {
-        dispatch(openDepartment(departmentId, departmentAbbreviation));
-        dispatch(endSearch(SearchType.People));
-    },
-    openRoom: (departmentId: string) => {
-        dispatch(openRoom(departmentId));
-        dispatch(endSearch(SearchType.People));
-    }
-});
-
-//----------------------------------------------------------------------------
 const TileSeparator = () => <View style={tileStyles.separator}/>;
 
 //============================================================================
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
-
-    //----------------------------------------------------------------------------
-    private permissionsAreDifferent(nextProps: EmployeeDetailsProps & EmployeeDetailsDispatchProps): boolean {
-        const permissions = this.props.userEmployeePermissions;
-        const nextPermissions = nextProps.userEmployeePermissions;
-
-        if (!equals(permissions, nextPermissions)) {
-            return true;
-        }
-
-        const employeeId = this.props.employee.employeeId;
-        const nextEmployeeId = nextProps.employee.employeeId;
-
-        const userPermissions = permissions ? permissions.get(employeeId, null) : null;
-        const nextUserPermissions = nextPermissions ? nextPermissions.get(nextEmployeeId, null) : null;
-
-        // noinspection RedundantIfStatementJS
-        if (!equals(userPermissions, nextUserPermissions)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    //----------------------------------------------------------------------------
-    private eventsAreDifferent(nextProps: EmployeeDetailsProps & EmployeeDetailsDispatchProps): boolean {
-        const events = this.props.events;
-        const nextEvents = nextProps.events;
-
-        const employeeId = this.props.employee.employeeId;
-        const nextEmployeeId = nextProps.employee.employeeId;
-
-        const employeeEvents = List.of(events ? events.get(employeeId, null) : null);
-        const nextEmployeeEvents = List.of(nextEvents ? nextEvents.get(nextEmployeeId, null) : null);
-
-        // noinspection RedundantIfStatementJS
-        if (!equals(employeeEvents, nextEmployeeEvents)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    //----------------------------------------------------------------------------
-    private requestsAreDifferent(nextProps: EmployeeDetailsProps & EmployeeDetailsDispatchProps): boolean {
-        const requests = this.props.requests;
-        const nextRequests = nextProps.requests;
-
-        // noinspection RedundantIfStatementJS
-        if (!equals(requests, nextRequests)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    //----------------------------------------------------------------------------
-    private approvalsAreDifferent(nextProps: EmployeeDetailsProps & EmployeeDetailsDispatchProps): boolean {
-        const approvals = this.props.approvals;
-        const nextApprovals = nextProps.approvals;
-
-        // noinspection RedundantIfStatementJS
-        if (!equals(approvals, nextApprovals)) {
-            return true;
-        }
-
-        return false;
-    }
 
     //----------------------------------------------------------------------------
     public shouldComponentUpdate(nextProps: EmployeeDetailsProps & EmployeeDetailsDispatchProps) {
@@ -299,6 +181,74 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             return tileStyles.tile;
         }
     };
+
+    //----------------------------------------------------------------------------
+    private permissionsAreDifferent(nextProps: EmployeeDetailsProps & EmployeeDetailsDispatchProps): boolean {
+        const permissions = this.props.userEmployeePermissions;
+        const nextPermissions = nextProps.userEmployeePermissions;
+
+        if (!equals(permissions, nextPermissions)) {
+            return true;
+        }
+
+        const employeeId = this.props.employee.employeeId;
+        const nextEmployeeId = nextProps.employee.employeeId;
+
+        const userPermissions = permissions ? permissions.get(employeeId, null) : null;
+        const nextUserPermissions = nextPermissions ? nextPermissions.get(nextEmployeeId, null) : null;
+
+        // noinspection RedundantIfStatementJS
+        if (!equals(userPermissions, nextUserPermissions)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    //----------------------------------------------------------------------------
+    private eventsAreDifferent(nextProps: EmployeeDetailsProps & EmployeeDetailsDispatchProps): boolean {
+        const events = this.props.events;
+        const nextEvents = nextProps.events;
+
+        const employeeId = this.props.employee.employeeId;
+        const nextEmployeeId = nextProps.employee.employeeId;
+
+        const employeeEvents = List.of(events ? events.get(employeeId, null) : null);
+        const nextEmployeeEvents = List.of(nextEvents ? nextEvents.get(nextEmployeeId, null) : null);
+
+        // noinspection RedundantIfStatementJS
+        if (!equals(employeeEvents, nextEmployeeEvents)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    //----------------------------------------------------------------------------
+    private requestsAreDifferent(nextProps: EmployeeDetailsProps & EmployeeDetailsDispatchProps): boolean {
+        const requests = this.props.requests;
+        const nextRequests = nextProps.requests;
+
+        // noinspection RedundantIfStatementJS
+        if (!equals(requests, nextRequests)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    //----------------------------------------------------------------------------
+    private approvalsAreDifferent(nextProps: EmployeeDetailsProps & EmployeeDetailsDispatchProps): boolean {
+        const approvals = this.props.approvals;
+        const nextApprovals = nextProps.approvals;
+
+        // noinspection RedundantIfStatementJS
+        if (!equals(approvals, nextApprovals)) {
+            return true;
+        }
+
+        return false;
+    }
 
     //----------------------------------------------------------------------------
     private getTiles(employee: Employee) {
@@ -547,4 +497,52 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
     };
 }
 
-export const EmployeeDetails = connect(mapStateToProps, mapDispatchToProps)(EmployeeDetailsImpl);
+//----------------------------------------------------------------------------
+const stateToProps: MapStateToProps<EmployeeDetailsProps, EmployeeDetailsOwnProps, AppState> = (state: AppState, ownProps: EmployeeDetailsOwnProps): EmployeeDetailsProps => {
+
+    const employees = getEmployees(state);
+
+    return {
+        employee: ownProps.employee,
+        department: ownProps.department,
+        layoutStylesChevronPlaceholder: ownProps.layoutStylesChevronPlaceholder,
+        showRequests: ownProps.showRequests,
+        events: state.calendar ? state.calendar.calendarEvents.events : undefined,
+        employees: employees,
+        requests: getRequests(state, employees),
+        approvals: state.calendar ? state.calendar.calendarEvents.approvals : Map<CalendarEventId, Set<Approval>>(),
+        hoursToIntervalTitle: state.calendar ? state.calendar.pendingRequests.hoursToIntervalTitle : IntervalTypeConverter.hoursToIntervalTitle,
+        userEmployeePermissions: state.userInfo ? state.userInfo.permissions : null,
+        userId: state.userInfo ? state.userInfo.employeeId : null,
+    };
+};
+
+//----------------------------------------------------------------------------
+const dispatchToProps = (dispatch: Dispatch<Action>): EmployeeDetailsDispatchProps => ({
+    loadCalendarEvents: (employeeId: string) => {
+        dispatch(loadCalendarEvents(employeeId));
+    },
+    loadUserEmployeePermissions: (employeeId: string) => {
+        dispatch(loadUserEmployeePermissions(employeeId));
+    },
+    eventSetStatus: (employeeId: string, calendarEvent: CalendarEvent, status: CalendarEventStatus) => {
+        dispatch(calendarEventSetNewStatus(employeeId, calendarEvent, status));
+    },
+    eventApprove: (approverId: EmployeeId, employeeId: EmployeeId, calendarEvent: CalendarEvent) => {
+        dispatch(approve(approverId, employeeId, calendarEvent.calendarEventId));
+    },
+    openCompany: (departmentId: string) => {
+        dispatch(openCompany(departmentId));
+        dispatch(endSearch(SearchType.People));
+    },
+    openDepartment: (departmentId: string, departmentAbbreviation: string) => {
+        dispatch(openDepartment(departmentId, departmentAbbreviation));
+        dispatch(endSearch(SearchType.People));
+    },
+    openRoom: (departmentId: string) => {
+        dispatch(openRoom(departmentId));
+        dispatch(endSearch(SearchType.People));
+    }
+});
+
+export const EmployeeDetails = connect(stateToProps, dispatchToProps)(EmployeeDetailsImpl);
