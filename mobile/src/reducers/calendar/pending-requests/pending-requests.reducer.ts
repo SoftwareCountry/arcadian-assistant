@@ -24,6 +24,12 @@ const initState: PendingRequestsState = {
 //----------------------------------------------------------------------------
 export const pendingRequestsReducer = (state: PendingRequestsState = initState, action: PendingRequestsActions | ApprovalAction): PendingRequestsState => {
     switch (action.type) {
+        case 'LOAD-PENDING-REQUESTS':
+            return {
+                ...state,
+                requests: undefined,
+            };
+
         case 'LOAD-PENDING-REQUESTS-FINISHED':
             return {
                 ...state,

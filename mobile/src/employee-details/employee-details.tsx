@@ -5,7 +5,7 @@
 import React, { Component } from 'react';
 import { connect, MapStateToProps } from 'react-redux';
 import { List, Map, Set } from 'immutable';
-import { Linking, StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { ActivityIndicator, Linking, StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 import { contactStyles, contentStyles, eventStyles, layoutStyles, tileStyles } from '../profile/styles';
 import { Chevron } from '../profile/chevron';
@@ -36,7 +36,6 @@ import { SearchType } from '../navigation/search/search-view';
 import Style from '../layout/style';
 import { equals } from '../utils/equitable';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
-import { LoadingView } from '../navigation/loading';
 
 //============================================================================
 interface TileData {
@@ -53,7 +52,7 @@ interface EmployeeDetailsOwnProps {
     employee: Employee;
     department: Department;
     layoutStylesChevronPlaceholder: ViewStyle;
-    showRequests: boolean;
+    showRequests?: boolean;
 }
 
 //============================================================================
@@ -503,19 +502,25 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
         const loadingEvents = !events;
         const loadingRequests = !requests;
-        const showRequests = this.props.showRequests;
+        const showRequests = this.props.showRequests ? this.props.showRequests : false;
 
         if (loadingEvents || (showRequests && loadingRequests)) {
-            return <LoadingView/>;
+            return (
+                <View style={eventStyles.loadingContainer}>
+                    <ActivityIndicator color={Style.color.base}/>
+                </View>
+            );
         } else {
-            return <View>
-                {
-                    this.renderPendingRequests(requests, permissions)
-                }
-                {
-                    this.renderEmployeeEvents(events, permissions)
-                }
-            </View>;
+            return (
+                <View>
+                    {
+                        this.renderPendingRequests(requests, permissions)
+                    }
+                    {
+                        this.renderEmployeeEvents(events, permissions)
+                    }
+                </View>
+            );
         }
     }
 

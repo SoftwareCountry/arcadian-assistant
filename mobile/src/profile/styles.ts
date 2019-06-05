@@ -166,5 +166,12 @@ export const eventStyles = StyleSheet.create({
         marginTop: 12,
         padding: 5,
     },
+    loadingContainer : {
+        height: 40,
+        marginBottom: 20,
+        backgroundColor: 'transparent',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 });
 

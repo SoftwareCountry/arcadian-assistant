@@ -115,7 +115,8 @@ export const disableSelectIntervalsBySingleDaySelection = (disable: boolean): Di
 });
 
 export type CalendarActions =
-    LoadCalendarEventsFinished
+    LoadCalendarEvents
+    | LoadCalendarEventsFinished
     | SelectCalendarDay
     | NextCalendarPage
     | PrevCalendarPage

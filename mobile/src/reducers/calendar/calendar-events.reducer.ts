@@ -110,6 +110,12 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
         case 'LOAD-USER-FINISHED':
             return { ...state, userEmployeeId: action.userEmployeeId };
 
+        case 'LOAD-CALENDAR-EVENTS':
+            return {
+                ...state,
+                events: undefined,
+            };
+
         case 'LOAD-CALENDAR-EVENTS-FINISHED':
             let newState: CalendarEventsState;
             let { events } = state;
