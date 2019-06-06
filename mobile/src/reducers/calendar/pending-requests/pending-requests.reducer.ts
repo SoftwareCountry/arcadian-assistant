@@ -39,6 +39,12 @@ export const pendingRequestsReducer = (state: PendingRequestsState = initState, 
                 requestsAreLoading: false,
             };
 
+        case 'LOAD-PENDING-REQUESTS-FAILED':
+            return {
+                ...state,
+                requestsAreLoading: false,
+            };
+
         case ApprovalActionType.approveFinished:
 
             const requests = state.requests

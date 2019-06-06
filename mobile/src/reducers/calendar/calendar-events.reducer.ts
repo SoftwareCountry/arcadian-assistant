@@ -146,6 +146,12 @@ export const calendarEventsReducer: Reducer<CalendarEventsState> = (state = init
 
             return newState;
 
+        case 'LOAD-CALENDAR-EVENTS-FAILED':
+            return {
+                ...state,
+                eventsAreLoading: false,
+            };
+
         case 'SELECT-CALENDAR-DAY':
             const singleDayState = singleDaySelectionReducer(state, action);
             const intervalState = intervalSelectionReducer(state, action);
