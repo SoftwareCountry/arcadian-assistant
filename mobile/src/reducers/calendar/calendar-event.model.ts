@@ -40,7 +40,7 @@ export enum DayoffWorkoutStatus {
 export type CalendarEventStatus = GeneralCalendarEventStatus | VacationStatus | SickleaveStatus | DayoffWorkoutStatus;
 
 export class DatesInterval {
-    private static dateFormat = 'L';
+    private static dateFormat = 'MM/DD/YYYY';
 
     @dataMember({
         customDeserializer: (value: string) => moment(value)
