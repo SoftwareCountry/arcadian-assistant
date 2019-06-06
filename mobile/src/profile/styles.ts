@@ -98,37 +98,6 @@ export const contentStyles = StyleSheet.create({
     }
 });
 
-export const tileStyles = StyleSheet.create({
-    container: {
-        width: '25%'
-    },
-    tile: {
-        backgroundColor: 'rgba(47, 175, 204, 0.2)',
-        paddingBottom: 8,
-        paddingTop: 10,
-        flexDirection: 'column',
-        height: 66
-    },
-    iconContainer: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    icon: {
-        color: '#18515E',
-    },
-    text: {
-        fontSize: 11,
-        textAlign: 'center',
-        color: '#18515E',
-        paddingTop: 2
-    },
-    separator: {
-        flexBasis: 1,
-        backgroundColor: Style.color.white
-    }
-});
-
 export const contactStyles = StyleSheet.create({
     container: {
         flexDirection: 'row',

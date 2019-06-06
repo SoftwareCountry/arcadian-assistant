@@ -5,17 +5,17 @@
 import React, { Component } from 'react';
 import { connect, MapStateToProps } from 'react-redux';
 import { List, Map, Set } from 'immutable';
-import { ActivityIndicator, Linking, StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
-import { contactStyles, contentStyles, eventStyles, layoutStyles, tileStyles } from '../profile/styles';
+import { ActivityIndicator, Linking, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { contactStyles, contentStyles, eventStyles, layoutStyles } from '../profile/styles';
 import { Chevron } from '../profile/chevron';
 import { Avatar } from '../people/avatar';
 import {
     AppState,
-    getEmployees,
-    getCalendarEvents,
-    getRequests,
     areEventsLoading,
-    areRequestsLoading
+    areRequestsLoading,
+    getCalendarEvents,
+    getEmployees,
+    getRequests
 } from '../reducers/app.reducer';
 import { Department } from '../reducers/organization/department.model';
 import { StyledText } from '../override/styled-text';
@@ -41,16 +41,8 @@ import { SearchType } from '../navigation/search/search-view';
 import Style from '../layout/style';
 import { equals } from '../utils/equitable';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
-
-//============================================================================
-interface TileData {
-    label: string;
-    icon: string;
-    style: ViewStyle;
-    size: number;
-    payload: Nullable<string>;
-    onPress: Nullable<() => void>;
-}
+import { EmployeeDetailsTile, TileData } from './employee-details-tile';
+import { employeeDetailsTileStyles } from './styles';
 
 //============================================================================
 interface EmployeeDetailsOwnProps {
@@ -85,9 +77,6 @@ interface EmployeeDetailsDispatchProps {
     openDepartment: (departmentId: string, departmentAbbreviation: string) => void;
     openRoom: (departmentId: string) => void;
 }
-
-//----------------------------------------------------------------------------
-const TileSeparator = () => <View style={tileStyles.separator}/>;
 
 //============================================================================
 export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & EmployeeDetailsDispatchProps> {
@@ -191,15 +180,6 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
     }
 
     //----------------------------------------------------------------------------
-    private tileStyle = (transparent: boolean): StyleProp<ViewStyle> => {
-        if (transparent) {
-            return [tileStyles.tile, { backgroundColor: 'transparent' }];
-        } else {
-            return tileStyles.tile;
-        }
-    };
-
-    //----------------------------------------------------------------------------
     private permissionsAreDifferent(nextProps: EmployeeDetailsProps & EmployeeDetailsDispatchProps): boolean {
         const permissions = this.props.userEmployeePermissions;
         const nextPermissions = nextProps.userEmployeePermissions;
@@ -276,7 +256,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             {
                 label: employee.birthDate.format('MMMM D'),
                 icon: 'birthday',
-                style: StyleSheet.flatten([tileStyles.icon]),
+                style: StyleSheet.flatten([employeeDetailsTileStyles.icon]),
                 size: 30,
                 payload: null,
                 onPress: null
@@ -284,7 +264,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             {
                 label: employee.hireDate.format('DD MMM YYYY'),
                 icon: 'handshake',
-                style: StyleSheet.flatten([tileStyles.icon]),
+                style: StyleSheet.flatten([employeeDetailsTileStyles.icon]),
                 size: 20,
                 payload: null,
                 onPress: null
@@ -292,7 +272,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             {
                 label: roomTitle,
                 icon: 'office',
-                style: StyleSheet.flatten([tileStyles.icon]),
+                style: StyleSheet.flatten([employeeDetailsTileStyles.icon]),
                 size: 25,
                 payload: employee.roomNumber,
                 onPress: this.openRoom
@@ -300,7 +280,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             {
                 label: 'Company',
                 icon: 'org_structure',
-                style: StyleSheet.flatten([tileStyles.icon]),
+                style: StyleSheet.flatten([employeeDetailsTileStyles.icon]),
                 size: 28,
                 payload: employee.departmentId,
                 onPress: this.openCompany
@@ -310,27 +290,10 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
         return tilesData.map((tile, index) => (
             <React.Fragment key={tile.label}>
-                <View style={tileStyles.container}>
-                    {
-                        tile.payload !== null ?
-                            <TouchableOpacity onPress={tile.onPress ? tile.onPress : undefined}>
-                                <View style={this.tileStyle(tile.onPress === null)}>
-                                    <View style={tileStyles.iconContainer}>
-                                        <ApplicationIcon name={tile.icon} size={tile.size} style={tile.style}/>
-                                    </View>
-                                    <StyledText style={tileStyles.text}>{tile.label}</StyledText>
-                                </View></TouchableOpacity>
-                            : <View style={this.tileStyle(tile.onPress === null)}>
-                                <View style={tileStyles.iconContainer}>
-                                    <ApplicationIcon name={tile.icon} size={tile.size} style={tile.style}/>
-                                </View>
-                                <StyledText style={tileStyles.text}>{tile.label}</StyledText>
-                            </View>
-                    }
-                </View>
-                {
-                    lastIndex !== index ? <TileSeparator key={`${tile.label}-${index}`}/> : null
-                }
+
+                <EmployeeDetailsTile data={tile}/>
+                <EmployeeDetailsTile.Separator show={lastIndex !== index} key={`${tile.label}-${index}`}/>
+
             </React.Fragment>
         ));
     }
