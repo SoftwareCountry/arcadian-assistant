@@ -108,6 +108,10 @@ export class CalendarEvent {
     }
 
     public get isApproved(): boolean {
+        if (this.type === CalendarEventType.Sickleave) {
+            return this.status === SickleaveStatus.Requested;
+        }
+
         return this.status === GeneralCalendarEventStatus.Approved;
     }
 
