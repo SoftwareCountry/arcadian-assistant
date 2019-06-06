@@ -56,11 +56,9 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
     };
 
     private readonly sickleaveDescriptions: { [key in SickleaveStatus]: string } = {
-        [SickleaveStatus.Approved]: 'confirmed',
         [SickleaveStatus.Completed]: 'completed',
         [SickleaveStatus.Cancelled]: 'cancelled',
-        [SickleaveStatus.Rejected]: 'rejected',
-        [SickleaveStatus.Requested]: '',
+        [SickleaveStatus.Requested]: 'confirmed',
     };
 
     //----------------------------------------------------------------------------

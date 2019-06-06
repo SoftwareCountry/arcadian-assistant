@@ -27,8 +27,6 @@ export enum VacationStatus {
 export enum SickleaveStatus {
     Requested = 'Requested',
     Cancelled = 'Cancelled',
-    Approved = 'Approved',
-    Rejected = 'Rejected',
     Completed = 'Completed',
 }
 
