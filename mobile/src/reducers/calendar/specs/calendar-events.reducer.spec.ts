@@ -8,7 +8,13 @@ import {
     selectCalendarDay,
     selectIntervalsBySingleDaySelection
 } from '../calendar.action';
-import { CalendarEvent, CalendarEventStatus, CalendarEventType, DatesInterval } from '../calendar-event.model';
+import {
+    CalendarEvent,
+    CalendarEventStatus,
+    CalendarEventType,
+    DatesInterval,
+    SickleaveStatus
+} from '../calendar-event.model';
 import moment from 'moment';
 import { DayModel } from '../calendar.model';
 import { CalendarEvents } from '../calendar-events.model';
@@ -31,8 +37,8 @@ describe('calendar events reducer', () => {
             calendarEvent.dates = new DatesInterval();
             calendarEvent.dates.startDate = moment();
             calendarEvent.dates.endDate = moment(calendarEvent.dates.startDate);
-            calendarEvent.status = CalendarEventStatus.Requested;
             calendarEvent.type = CalendarEventType.Sickleave;
+            calendarEvent.status = SickleaveStatus.Requested;
 
             const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employeeId);
             state = calendarEventsReducer(state, action);
@@ -252,8 +258,8 @@ describe('calendar events reducer', () => {
 
             calendarEvent.dates.endDate.add(2, 'days');
 
-            calendarEvent.status = CalendarEventStatus.Requested;
             calendarEvent.type = CalendarEventType.Sickleave;
+            calendarEvent.status = SickleaveStatus.Requested;
 
             const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employeeId);
             state = calendarEventsReducer(state, action);
@@ -301,8 +307,8 @@ describe('calendar events reducer', () => {
 
             calendarEvent.dates.endDate.add(2, 'days');
 
-            calendarEvent.status = CalendarEventStatus.Requested;
             calendarEvent.type = CalendarEventType.Sickleave;
+            calendarEvent.status = SickleaveStatus.Requested;
 
             const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employeeId);
             state = calendarEventsReducer(state, action);

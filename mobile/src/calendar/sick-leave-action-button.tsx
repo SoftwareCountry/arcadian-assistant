@@ -46,15 +46,11 @@ export class SickLeaveActionButton extends Component<SickLeaveActionButtonProps>
     };
 
     private disableCalendarAction(): boolean {
-        const { interval, allIntervals } = this.props;
-
-        const disableWhenRequested = !interval
-            && allIntervals
-            && allIntervals.metadata.calendarEvents.some(x => x.isSickLeave && x.isRequested);
+        const { interval } = this.props;
 
         const disableWhenCompleted = !!interval && interval.calendarEvent.isCompleted;
 
-        return disableWhenRequested || disableWhenCompleted;
+        return disableWhenCompleted;
     }
 }
 
