@@ -2,7 +2,12 @@
  * Copyright (c) Arcadia, Inc. All rights reserved.
  ******************************************************************************/
 
-import { CalendarEvent, CalendarEventId, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
+import {
+    CalendarEvent,
+    CalendarEventId,
+    CalendarEventStatus,
+    GeneralCalendarEventStatus
+} from '../reducers/calendar/calendar-event.model';
 import { Employee, EmployeeId } from '../reducers/organization/employee.model';
 import { Permission, UserEmployeePermissions } from '../reducers/user/user-employee-permissions.model';
 import { Map, Set } from 'immutable';
@@ -87,7 +92,7 @@ export class EventActionProvider {
                            approvals: Map<CalendarEventId, Set<Approval>>): Optional<EventAction> {
 
         switch (event.status) {
-            case CalendarEventStatus.Requested:
+            case GeneralCalendarEventStatus.Requested:
                 const permissionApprove = permissions.has(Permission.approveCalendarEvents);
                 const approvedByMe = this.approvedByMe(event, approvals);
 
@@ -109,7 +114,7 @@ export class EventActionProvider {
                            permissions: UserEmployeePermissions): Optional<EventAction> {
 
         switch (event.status) {
-            case CalendarEventStatus.Requested:
+            case GeneralCalendarEventStatus.Requested:
                 const isOwnEvent = this.userId === employee.employeeId;
                 if (isOwnEvent) {
                     if (permissions.has(Permission.cancelPendingCalendarEvents)) {
@@ -122,7 +127,7 @@ export class EventActionProvider {
                 }
                 break;
 
-            case CalendarEventStatus.Approved:
+            case GeneralCalendarEventStatus.Approved:
                 if (permissions.has(Permission.cancelApprovedCalendarEvents)) {
                     return this.cancelAction(event, employee);
                 }
@@ -148,7 +153,7 @@ export class EventActionProvider {
     private rejectAction(event: CalendarEvent,
                          employee: Employee): EventAction {
         return {
-            handler: () => this.eventSetStatus(employee.employeeId, event, CalendarEventStatus.Rejected),
+            handler: () => this.eventSetStatus(employee.employeeId, event, GeneralCalendarEventStatus.Rejected),
             type: EventActionType.reject,
         };
     }
@@ -157,7 +162,7 @@ export class EventActionProvider {
     private cancelAction(event: CalendarEvent,
                          employee: Employee): EventAction {
         return {
-            handler: () => this.eventSetStatus(employee.employeeId, event, CalendarEventStatus.Cancelled),
+            handler: () => this.eventSetStatus(employee.employeeId, event, GeneralCalendarEventStatus.Cancelled),
             type: EventActionType.cancel,
         };
     }

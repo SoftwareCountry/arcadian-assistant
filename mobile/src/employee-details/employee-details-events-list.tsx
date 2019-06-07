@@ -4,7 +4,14 @@ import { Dimensions, FlatList, ListRenderItemInfo, TouchableOpacity, View, ViewS
 import { StyledText } from '../override/styled-text';
 import { Avatar } from '../people/avatar';
 import { layoutStylesForEmployeeDetailsScreen } from './styles';
-import { CalendarEvent, CalendarEventStatus, CalendarEventType } from '../reducers/calendar/calendar-event.model';
+import {
+    CalendarEvent,
+    CalendarEventStatus,
+    CalendarEventType,
+    DayoffWorkoutStatus,
+    SickleaveStatus,
+    VacationStatus
+} from '../reducers/calendar/calendar-event.model';
 import { EventManagementToolset } from './event-management-toolset';
 import { CalendarEventIcon } from '../calendar/calendar-event-icon';
 import { Nullable } from 'types';
@@ -14,9 +21,6 @@ import { Employee } from '../reducers/organization/employee.model';
 import { Action, Dispatch } from 'redux';
 import { openEmployeeDetails } from '../navigation/navigation.actions';
 import { connect } from 'react-redux';
-
-//============================================================================
-type CalendarEventStatusDescriptions = { [key in CalendarEventStatus]: string };
 
 //============================================================================
 interface EmployeeDetailsEventsListProps {
@@ -35,34 +39,26 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
 
     private readonly eventDigitsDateFormat = 'ddd DD/MM/YYYY';
 
-    private readonly vacationDescriptions: CalendarEventStatusDescriptions = {
-        [CalendarEventStatus.Requested]: 'waiting for approvals',
-        [CalendarEventStatus.Approved]: 'preparing documents',
-        [CalendarEventStatus.AccountingReady]: 'documents are ready to sign',
-        [CalendarEventStatus.Completed]: 'completed',
-        [CalendarEventStatus.Processed]: 'confirmed',
-        [CalendarEventStatus.Cancelled]: 'cancelled',
-        [CalendarEventStatus.Rejected]: 'rejected',
+    private readonly vacationDescriptions: { [key in VacationStatus]: string } = {
+        [VacationStatus.Requested]: 'waiting for approvals',
+        [VacationStatus.Approved]: 'preparing documents',
+        [VacationStatus.AccountingReady]: 'documents are ready to sign',
+        [VacationStatus.Processed]: 'confirmed',
+        [VacationStatus.Cancelled]: 'cancelled',
+        [VacationStatus.Rejected]: 'rejected',
     };
 
-    private readonly dayoffWorkoutDescriptions: CalendarEventStatusDescriptions = {
-        [CalendarEventStatus.Requested]: 'waiting for approvals',
-        [CalendarEventStatus.Approved]: 'confirmed',
-        [CalendarEventStatus.Cancelled]: 'cancelled',
-        [CalendarEventStatus.Rejected]: 'rejected',
-        [CalendarEventStatus.AccountingReady]: '',
-        [CalendarEventStatus.Completed]: '',
-        [CalendarEventStatus.Processed]: '',
+    private readonly dayoffWorkoutDescriptions: { [key in DayoffWorkoutStatus]: string } = {
+        [DayoffWorkoutStatus.Requested]: 'waiting for approvals',
+        [DayoffWorkoutStatus.Approved]: 'confirmed',
+        [DayoffWorkoutStatus.Cancelled]: 'cancelled',
+        [DayoffWorkoutStatus.Rejected]: 'rejected',
     };
 
-    private readonly sickleaveDescriptions: CalendarEventStatusDescriptions = {
-        [CalendarEventStatus.Approved]: 'confirmed',
-        [CalendarEventStatus.Completed]: 'completed',
-        [CalendarEventStatus.Cancelled]: 'cancelled',
-        [CalendarEventStatus.Rejected]: 'rejected',
-        [CalendarEventStatus.Processed]: '',
-        [CalendarEventStatus.AccountingReady]: '',
-        [CalendarEventStatus.Requested]: '',
+    private readonly sickleaveDescriptions: { [key in SickleaveStatus]: string } = {
+        [SickleaveStatus.Completed]: 'completed',
+        [SickleaveStatus.Cancelled]: 'cancelled',
+        [SickleaveStatus.Requested]: 'confirmed',
     };
 
     //----------------------------------------------------------------------------
@@ -180,13 +176,13 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
 
         switch (event.type) {
             case CalendarEventType.Vacation:
-                return `Vacation: ${this.vacationDescriptions[status]}`;
+                return `Vacation: ${this.vacationDescriptions[status as VacationStatus]}`;
             case CalendarEventType.Sickleave:
-                return `Sickleave: ${this.sickleaveDescriptions[status]}`;
+                return `Sickleave: ${this.sickleaveDescriptions[status as SickleaveStatus]}`;
             case CalendarEventType.Dayoff:
-                return `Dayoff: ${this.dayoffWorkoutDescriptions[status]}`;
+                return `Dayoff: ${this.dayoffWorkoutDescriptions[status as DayoffWorkoutStatus]}`;
             case CalendarEventType.Workout:
-                return `Workout: ${this.dayoffWorkoutDescriptions[status]}`;
+                return `Workout: ${this.dayoffWorkoutDescriptions[status as DayoffWorkoutStatus]}`;
         }
     }
 
@@ -198,11 +194,11 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
         }
 
         switch (event.status) {
-            case CalendarEventStatus.Requested:
-            case CalendarEventStatus.Approved:
-                return CalendarEventStatus.Requested;
-            case CalendarEventStatus.Processed:
-                return CalendarEventStatus.Approved;
+            case VacationStatus.Requested:
+            case VacationStatus.Approved:
+                return VacationStatus.Requested;
+            case VacationStatus.Processed:
+                return VacationStatus.Approved;
             default:
                 return event.status;
         }
