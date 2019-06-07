@@ -137,6 +137,70 @@ export const employeeDetailsTileStyles = StyleSheet.create({
     }
 });
 
+export const employeeDetailsContactStyles = StyleSheet.create({
+    container: {
+        flexDirection: 'row',
+        height: 60,
+        alignItems: 'center'
+    },
+    iconContainer: {
+        width: 50,
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    icon: {
+        color: '#18515E',
+    },
+    textContainer: {
+        paddingLeft: 20,
+        flexDirection: 'column'
+    },
+    text: {
+        fontSize: 14,
+        lineHeight: 17,
+        color: '#333'
+    },
+    title: {
+        paddingBottom: 3,
+        fontSize: 10,
+        lineHeight: 12,
+        color: 'rgba(0, 0, 0, 0.7)'
+    }
+});
+
+export const employeeDetailsDaysCounterStyles = StyleSheet.create({
+    container: {
+        flexDirection: 'row',
+        height: 60,
+        alignItems: 'center'
+    },
+    iconContainer: {
+        width: 50,
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    icon: {
+        color: '#18515E',
+    },
+    textContainer: {
+        paddingLeft: 20,
+        flexDirection: 'column'
+    },
+    text: {
+        fontSize: 14,
+        lineHeight: 17,
+        color: '#333'
+    },
+    title: {
+        paddingBottom: 3,
+        fontSize: 10,
+        lineHeight: 12,
+        color: 'rgba(0, 0, 0, 0.7)'
+    }
+});
+
 export const layoutStylesForEventManagementToolset = StyleSheet.create({
     toolsetContainer: {
         marginLeft: 20,

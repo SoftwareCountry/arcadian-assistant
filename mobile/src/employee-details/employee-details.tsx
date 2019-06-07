@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 import { connect, MapStateToProps } from 'react-redux';
 import { List, Map, Set } from 'immutable';
 import { ActivityIndicator, Linking, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
-import { contactStyles, contentStyles, eventStyles, layoutStyles } from '../profile/styles';
+import { contentStyles, eventStyles, layoutStyles } from '../profile/styles';
 import { Chevron } from '../profile/chevron';
 import { Avatar } from '../people/avatar';
 import {
@@ -20,7 +20,6 @@ import {
 import { Department } from '../reducers/organization/department.model';
 import { StyledText } from '../override/styled-text';
 import { Employee, EmployeeId } from '../reducers/organization/employee.model';
-import { ApplicationIcon } from '../override/application-icon';
 import { calendarEventSetNewStatus, loadCalendarEvents } from '../reducers/calendar/calendar.action';
 import { CalendarEvent, CalendarEventId, CalendarEventStatus } from '../reducers/calendar/calendar-event.model';
 import { EmployeeDetailsEventsList } from './employee-details-events-list';
@@ -43,6 +42,8 @@ import { equals } from '../utils/equitable';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { EmployeeDetailsTile, TileData } from './employee-details-tile';
 import { employeeDetailsTileStyles } from './styles';
+import { ContactData, EmployeeDetailsContact } from './employee-details-contact';
+import { DaysCounterData, EmployeeDetailsDaysCounter } from './employee-details-days-counter';
 
 //============================================================================
 interface EmployeeDetailsOwnProps {
@@ -91,7 +92,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             return true;
         }
 
-        if (this.props.employee !== nextProps.employee) {
+        if (!equals(this.props.employee, nextProps.employee)) {
             return true;
         }
 
@@ -156,13 +157,13 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                     </TouchableOpacity>
 
                     <View style={contentStyles.infoContainer}>
-                        {this.getTiles(employee)}
+                        {this.renderTiles(employee)}
                     </View>
 
                     <View style={contentStyles.contactsContainer}>
                         <View>
                             {
-                                this.getContacts(employee)
+                                this.renderContacts(employee)
                             }
                             {
                                 this.renderDaysCounters(employee)
@@ -248,7 +249,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
     }
 
     //----------------------------------------------------------------------------
-    private getTiles(employee: Employee) {
+    private renderTiles(employee: Employee) {
         let roomNumber = employee && employee.roomNumber ? employee.roomNumber : '';
         let roomTitle: string = isNaN(Number(roomNumber)) ? roomNumber : `Room ${roomNumber}`;
 
@@ -299,8 +300,8 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
     }
 
     //----------------------------------------------------------------------------
-    private getContacts(employee: Employee) {
-        const contactsData = [
+    private renderContacts(employee: Employee) {
+        const contactsData: ContactData[] = [
             {
                 icon: 'phone',
                 text: employee.mobilePhone,
@@ -317,19 +318,11 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             }
         ];
 
-        return contactsData.filter(c => c.text && c.text.length > 0).map((contact) => (
-            <TouchableOpacity key={contact.title} onPress={this.openLink(`${contact.prefix}${contact.text}`)}>
-                <View style={contactStyles.container}>
-                    <View style={contactStyles.iconContainer}>
-                        <ApplicationIcon name={contact.icon} size={contact.size} style={contactStyles.icon}/>
-                    </View>
-                    <View style={contactStyles.textContainer}>
-                        <StyledText style={contactStyles.title}>{contact.title}</StyledText>
-                        <StyledText style={contactStyles.text}>{contact.text}</StyledText>
-                    </View>
-                </View>
-            </TouchableOpacity>
-        ));
+        return contactsData
+            .filter(c => c.text && c.text.length > 0)
+            .map((contact) => (
+                <EmployeeDetailsContact data={contact} onPress={this.openLink(`${contact.prefix}${contact.text}`)}/>
+            ));
     }
 
     //----------------------------------------------------------------------------
@@ -344,34 +337,28 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
 
         const daysConverter = new ConvertHoursCreditToDays();
         const calculatedDays = daysConverter.convert(hoursCredit);
+        const days = calculatedDays.days ? calculatedDays.days : null;
+        const rest = calculatedDays.rest ? calculatedDays.rest : null;
+        const hoursCreditCounter = new HoursCreditCounter(hoursCredit, days, rest);
 
-        const hoursCreditCounter = new HoursCreditCounter(
-            hoursCredit,
-            calculatedDays.days ? calculatedDays.days : null,
-            calculatedDays.rest ? calculatedDays.rest : null);
-        const vacationTitle = 'vacation';
-        const dayoffTitle = 'dayoff';
+        const daysCounterData: DaysCounterData[] = [
+            {
+                icon: 'vacation',
+                iconSize: 35,
+                title: 'Days of vacation left:',
+                text: allVacationDaysCounter.toString(),
+            },
+            {
+                icon: 'dayoff',
+                iconSize: 35,
+                title: capitalizeFirstLetter(hoursCreditCounter.title.join(' ')),
+                text: hoursCreditCounter.toString(),
+            },
+        ];
 
         return [
-            <View key={vacationTitle} style={contactStyles.container}>
-                <View style={contactStyles.iconContainer}>
-                    <ApplicationIcon name={vacationTitle} size={35} style={contactStyles.icon}/>
-                </View>
-                <View style={contactStyles.textContainer}>
-                    <StyledText style={contactStyles.title}>{'Days of vacation left:'}</StyledText>
-                    <StyledText style={contactStyles.text}>{allVacationDaysCounter.toString()}</StyledText>
-                </View>
-            </View>,
-            <View key={dayoffTitle} style={contactStyles.container}>
-                <View style={contactStyles.iconContainer}>
-                    <ApplicationIcon name={dayoffTitle} size={35} style={contactStyles.icon}/>
-                </View>
-                <View style={contactStyles.textContainer}>
-                    <StyledText
-                        style={contactStyles.title}>{capitalizeFirstLetter(hoursCreditCounter.title.join(' '))}</StyledText>
-                    <StyledText style={contactStyles.text}>{hoursCreditCounter.toString()}</StyledText>
-                </View>
-            </View>
+            <EmployeeDetailsDaysCounter data={daysCounterData[0]}/>,
+            <EmployeeDetailsDaysCounter data={daysCounterData[1]}/>,
         ];
     }
 
