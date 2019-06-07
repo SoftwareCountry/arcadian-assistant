@@ -52,7 +52,7 @@
     "indent": [ true, 4 ],
     "linebreak-style": [ false ],
     "max-classes-per-file": [ false ],
-    "max-file-line-count": [ true, 500 ],
+    "max-file-line-count": [ true, 1000 ],
     "max-line-length": [ true, 300 ],
     "no-default-export": false,
     "no-mergeable-namespace": false,

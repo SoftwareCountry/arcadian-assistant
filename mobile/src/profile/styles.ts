@@ -98,73 +98,17 @@ export const contentStyles = StyleSheet.create({
     }
 });
 
-export const tileStyles = StyleSheet.create({
-    container: {
-        width: '25%'
-    },
-    tile: {
-        backgroundColor: 'rgba(47, 175, 204, 0.2)',
-        paddingBottom: 8,
-        paddingTop: 10,
-        flexDirection: 'column',
-        height: 66
-    },
-    iconContainer: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    icon: {
-        color: '#18515E',
-    },
-    text: {
-        fontSize: 11,
-        textAlign: 'center',
-        color: '#18515E',
-        paddingTop: 2
-    },
-    separator: {
-        flexBasis: 1,
-        backgroundColor: Style.color.white
-    }
-});
-
-export const contactStyles = StyleSheet.create({
-    container: {
-        flexDirection: 'row',
-        height: 60,
-        alignItems: 'center'
-    },
-    iconContainer: {
-        width: 50,
-        height: 40,
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    icon: {
-        color: '#18515E',
-    },
-    textContainer: {
-        paddingLeft: 20,
-        flexDirection: 'column'
-    },
-    text: {
-        fontSize: 14,
-        lineHeight: 17,
-        color: '#333'
-    },
-    title: {
-        paddingBottom: 3,
-        fontSize: 10,
-        lineHeight: 12,
-        color: 'rgba(0, 0, 0, 0.7)'
-    }
-});
-
 export const eventStyles = StyleSheet.create({
     container: {
         marginTop: 12,
         padding: 5,
+    },
+    loadingContainer : {
+        height: 40,
+        marginBottom: 20,
+        backgroundColor: 'transparent',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
 

@@ -15,6 +15,8 @@ import { Map, Set } from 'immutable';
 import { EmployeeId } from '../reducers/organization/employee.model';
 import { EmployeeMap } from '../reducers/organization/employees.reducer';
 import { loadEmployees } from '../reducers/organization/organization.action';
+import { loadCalendarEvents } from '../reducers/calendar/calendar.action';
+import { equals } from '../utils/equitable';
 
 //============================================================================
 interface EmployeeDetailsProps {
@@ -61,13 +63,14 @@ class EmployeeDetailsScreenImpl extends Component<EmployeeDetailsProps & Employe
             return true;
         }
 
-        if (!this.props.departments.equals(nextProps.departments)) {
+        if (!equals(this.props.departments, nextProps.departments)) {
             return true;
         }
 
         const employee = this.props.navigation.getParam('employee', undefined);
         const nextEmployee = nextProps.navigation.getParam('employee', undefined);
-        if (nextEmployee && !nextEmployee.equals(employee)) {
+        // noinspection RedundantIfStatementJS
+        if (!equals(employee, nextEmployee)) {
             return true;
         }
 
