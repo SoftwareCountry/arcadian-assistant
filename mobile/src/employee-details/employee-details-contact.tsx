@@ -33,7 +33,7 @@ export class EmployeeDetailsContact extends Component<EmployeeDetailsContactProp
         const contact = this.props.data;
 
         return (
-            <TouchableOpacity key={contact.title} onPress={this.props.onPress ? this.props.onPress : undefined}>
+            <TouchableOpacity onPress={this.props.onPress ? this.props.onPress : undefined}>
 
                 <View style={employeeDetailsContactStyles.container}>
 

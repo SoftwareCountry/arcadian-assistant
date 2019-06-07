@@ -31,7 +31,7 @@ export class EmployeeDetailsDaysCounter extends Component<EmployeeDetailsDaysCou
         const data = this.props.data;
 
         return (
-            <View key={data.title} style={employeeDetailsDaysCounterStyles.container}>
+            <View style={employeeDetailsDaysCounterStyles.container}>
 
                 <View style={employeeDetailsDaysCounterStyles.iconContainer}>
                     <ApplicationIcon name={data.icon} size={data.iconSize} style={employeeDetailsDaysCounterStyles.icon}/>

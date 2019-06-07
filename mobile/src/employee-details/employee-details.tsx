@@ -143,21 +143,29 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                 <View style={layoutStyles.content}>
 
                     <StyledText style={contentStyles.name}>
-                        {employee.name}
+                        {
+                            employee.name
+                        }
                     </StyledText>
 
                     <StyledText style={contentStyles.position}>
-                        {uppercase(employee.position)}
+                        {
+                            uppercase(employee.position)
+                        }
                     </StyledText>
 
                     <TouchableOpacity onPress={this.openDepartment}>
                         <StyledText style={contentStyles.department}>
-                            {uppercase(department.abbreviation)}
+                            {
+                                uppercase(department.abbreviation)
+                            }
                         </StyledText>
                     </TouchableOpacity>
 
                     <View style={contentStyles.infoContainer}>
-                        {this.renderTiles(employee)}
+                        {
+                            this.renderTiles(employee)
+                        }
                     </View>
 
                     <View style={contentStyles.contactsContainer}>
@@ -321,7 +329,10 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         return contactsData
             .filter(c => c.text && c.text.length > 0)
             .map((contact) => (
-                <EmployeeDetailsContact data={contact} onPress={this.openLink(`${contact.prefix}${contact.text}`)}/>
+                <EmployeeDetailsContact
+                    key={contact.title}
+                    data={contact}
+                    onPress={this.openLink(`${contact.prefix}${contact.text}`)}/>
             ));
     }
 
@@ -356,10 +367,10 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
             },
         ];
 
-        return [
-            <EmployeeDetailsDaysCounter data={daysCounterData[0]}/>,
-            <EmployeeDetailsDaysCounter data={daysCounterData[1]}/>,
-        ];
+        return daysCounterData
+            .map((counter) => (
+                <EmployeeDetailsDaysCounter key={counter.icon} data={counter}/>
+            ));
     }
 
     //----------------------------------------------------------------------------
