@@ -24,6 +24,8 @@
             var options = optionsBuilder.Options;
 
             builder.Register(x => new ArcadiaCspContext(options)).InstancePerDependency();
+            builder.Register(x => new CspConfiguration() { CompanyId = 154 }).SingleInstance();
+            builder.RegisterType<CspEmployeeQuery>().InstancePerDependency();
         }
     }
 }

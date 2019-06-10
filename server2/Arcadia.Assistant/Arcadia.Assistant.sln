@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.CSP", "Ar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Avatars", "Arcadia.Assistant.Avatars\Arcadia.Assistant.Avatars.csproj", "{137B9BB9-CFB5-4448-B930-DBE5DFE8D198}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Avatars.Contracts", "Arcadia.Assistant.Avatars.Contracts\Arcadia.Assistant.Avatars.Contracts.csproj", "{BF24FE61-7804-4415-913B-B8714633B8DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Avatars.Contracts", "Arcadia.Assistant.Avatars.Contracts\Arcadia.Assistant.Avatars.Contracts.csproj", "{BF24FE61-7804-4415-913B-B8714633B8DF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Avatars.Manager", "Arcadia.Assistant.Avatars.Manager\Arcadia.Assistant.Avatars.Manager.csproj", "{5D2D5D76-743D-4CE4-BA71-B5F0793FB330}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +55,10 @@ Global
 		{BF24FE61-7804-4415-913B-B8714633B8DF}.Debug|x64.Build.0 = Debug|x64
 		{BF24FE61-7804-4415-913B-B8714633B8DF}.Release|x64.ActiveCfg = Release|Any CPU
 		{BF24FE61-7804-4415-913B-B8714633B8DF}.Release|x64.Build.0 = Release|Any CPU
+		{5D2D5D76-743D-4CE4-BA71-B5F0793FB330}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5D2D5D76-743D-4CE4-BA71-B5F0793FB330}.Debug|x64.Build.0 = Debug|Any CPU
+		{5D2D5D76-743D-4CE4-BA71-B5F0793FB330}.Release|x64.ActiveCfg = Release|Any CPU
+		{5D2D5D76-743D-4CE4-BA71-B5F0793FB330}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -3,6 +3,7 @@ namespace Arcadia.Assistant.Organization
     using System;
     using System.Collections.Generic;
     using System.Fabric;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -56,6 +57,11 @@ namespace Arcadia.Assistant.Organization
                 var resizedPhoto = await photoActor.GetPhoto(cancellationToken);
                 return new EmployeeMetadata(employeeId, employee.LastName, employee.Email);
             }
+        }
+
+        public Task<EmployeeMetadata[]> FindEmployees()
+        {
+            throw new NotImplementedException();
         }
     }
 }
