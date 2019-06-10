@@ -48,8 +48,7 @@ const notificationsHandler$ = (action$: ActionsObservable<LoadUserFinished>, sta
                                 if (!url) {
                                     logError('Unexpected notification payload', notification.customProperties);
                                 } else {
-                                    // noinspection JSIgnoredPromiseFromCall
-                                    Linking.openURL(url);
+                                    Linking.openURL(url).catch(err => console.error(err));
                                 }
                                 break;
                             case NotificationType.EventAssignedToApprover:
