@@ -48,6 +48,7 @@ const notificationsHandler$ = (action$: ActionsObservable<LoadUserFinished>, sta
                                 if (!url) {
                                     logError('Unexpected notification payload', notification.customProperties);
                                 } else {
+                                    // noinspection JSIgnoredPromiseFromCall
                                     Linking.openURL(url);
                                 }
                                 break;
@@ -104,11 +105,11 @@ const notificationsRegister$ = (action$: ActionsObservable<NotificationAction>, 
             android: 'Android',
         });
         return deps.apiClient.post(`/push/device`,
-            {
-                devicePushToken: action.installId,
-                deviceType,
-            },
-            { 'Content-Type': 'application/json' }).pipe(
+                                   {
+                                            devicePushToken: action.installId,
+                                            deviceType,
+                                   },
+                                   { 'Content-Type': 'application/json' }).pipe(
             retryDelayed(),
             handleHttpErrors(true, 'Push Notifications will not be received. Please contact administrator'),
         );
