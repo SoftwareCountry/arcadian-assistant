@@ -165,7 +165,6 @@
                 .ToList();
             this.Sender.Tell(new GetCalendarEvents.Response(msg.EmployeeId, employeeSickLeaves));
 
-            this.Become(this.OnDataUpdate);
             this.UpdateDatabaseSickLeavesCache(msg.Events.ToList());
 
             this.ScheduleNextDatabaseRefresh();
