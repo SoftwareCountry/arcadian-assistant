@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Avatars.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Avatars.Manager", "Arcadia.Assistant.Avatars.Manager\Arcadia.Assistant.Avatars.Manager.csproj", "{5D2D5D76-743D-4CE4-BA71-B5F0793FB330}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Avatars", "Avatars", "{B9EE598B-6E11-4317-9D82-11F334CFBA10}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -62,6 +64,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{137B9BB9-CFB5-4448-B930-DBE5DFE8D198} = {B9EE598B-6E11-4317-9D82-11F334CFBA10}
+		{BF24FE61-7804-4415-913B-B8714633B8DF} = {B9EE598B-6E11-4317-9D82-11F334CFBA10}
+		{5D2D5D76-743D-4CE4-BA71-B5F0793FB330} = {B9EE598B-6E11-4317-9D82-11F334CFBA10}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C376673D-F593-42B1-8093-D1F667D586B1}
