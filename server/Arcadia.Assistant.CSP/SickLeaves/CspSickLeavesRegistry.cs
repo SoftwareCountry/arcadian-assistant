@@ -15,7 +15,7 @@
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
     using Arcadia.Assistant.Configuration.Configuration;
 
-    public class CspSickLeavesRegistry : UntypedActor, ILogReceive
+    public class CspSickLeavesRegistry : UntypedActor, ILogReceive, IWithUnboundedStash
     {
         private readonly SickLeavesSyncExecutor sickLeavesSyncExecutor;
         private readonly IRefreshInformation refreshInformation;
@@ -32,7 +32,7 @@
             this.sickLeavesSyncExecutor = sickLeavesSyncExecutor;
             this.refreshInformation = refreshInformation;
 
-            this.Self.Tell(Initialize.Instance);
+            this.Self.Tell(RefreshDatabase.Instance);
         }
 
         public static Props CreateProps()
@@ -40,58 +40,20 @@
             return Context.DI().Props<CspSickLeavesRegistry>();
         }
 
+        public IStash Stash { get; set; }
+
         protected override void OnReceive(object message)
         {
             switch (message)
             {
-                case Initialize _:
-                    this.GetSickLeaves(false)
-                        .PipeTo(
-                            this.Self,
-                            success: result => new Initialize.Success(result),
-                            failure: err => new Initialize.Error(err));
-                    break;
-
-                case Initialize.Success msg:
-                    var eventsById = msg.Events.ToDictionary(x => x.CalendarEvent.EventId);
-                    this.databaseSickLeavesCache = new DatabaseSickLeavesCache(eventsById);
-
-                    foreach (var @event in msg.Events.Where(e => this.IsCalendarEventActual(e.CalendarEvent)))
-                    {
-                        Context.System.EventStream.Publish(new CalendarEventRecoverComplete(@event.CalendarEvent));
-                    }
-
-                    this.ScheduleNextDatabaseRefresh();
-
-                    break;
-
-                case Initialize.Error msg:
-                    this.logger.Error(msg.Exception, "Error occured on sick leaves recover");
-
-                    Context.System.Scheduler.ScheduleTellOnce(
-                        TimeSpan.FromMinutes(this.refreshInformation.IntervalInMinutes),
-                        this.Self,
-                        Initialize.Instance,
-                        this.Self);
-
-                    break;
-
                 case RefreshDatabase _:
+                    this.Become(this.OnDataUpdate);
+
                     this.GetSickLeaves(false)
                         .PipeTo(
                             this.Self,
                             success: result => new RefreshDatabase.Success(result),
                             failure: err => new RefreshDatabase.Error(err));
-                    break;
-
-                case RefreshDatabase.Success msg:
-                    this.UpdateDatabaseSickLeavesCache(msg.Events.ToList());
-                    this.ScheduleNextDatabaseRefresh();
-                    break;
-
-                case RefreshDatabase.Error msg:
-                    this.logger.Error(msg.Exception, "Error occured on refresh sick leaves from CSP database");
-                    this.ScheduleNextDatabaseRefresh();
                     break;
 
                 case GetEmployeeCalendarEvents msg:
@@ -157,6 +119,44 @@
             }
         }
 
+        private void OnDataUpdate(object message)
+        {
+            switch (message)
+            {
+                case RefreshDatabase.Success msg:
+                    if (this.databaseSickLeavesCache == null)
+                    {
+                        var eventsById = msg.Events.ToDictionary(x => x.CalendarEvent.EventId);
+                        this.databaseSickLeavesCache = new DatabaseSickLeavesCache(eventsById);
+                        this.BecomeOnReceive();
+                    }
+                    else
+                    {
+                        this.UpdateDatabaseSickLeavesCache(msg.Events.ToList());
+                    }
+
+                    this.ScheduleNextDatabaseRefresh();
+
+                    break;
+
+                case RefreshDatabase.Error msg:
+                    this.logger.Error(msg.Exception, "Error occured on refresh sick leaves from CSP database");
+                    this.ScheduleNextDatabaseRefresh();
+                    this.BecomeOnReceive();
+                    break;
+
+                default:
+                    this.Stash.Stash();
+                    break;
+            }
+        }
+
+        private void BecomeOnReceive()
+        {
+            this.Become(this.OnReceive);
+            this.Stash.UnstashAll();
+        }
+
         private void FinishGetCalendarEvents(GetEmployeeCalendarEventsSuccess msg)
         {
             var employeeSickLeaves = msg.Events
@@ -165,6 +165,7 @@
                 .ToList();
             this.Sender.Tell(new GetCalendarEvents.Response(msg.EmployeeId, employeeSickLeaves));
 
+            this.Become(this.OnDataUpdate);
             this.UpdateDatabaseSickLeavesCache(msg.Events.ToList());
 
             this.ScheduleNextDatabaseRefresh();
@@ -298,31 +299,6 @@
             public string EmployeeId { get; }
 
             public string EventId { get; }
-        }
-
-        private class Initialize
-        {
-            public static readonly Initialize Instance = new Initialize();
-
-            public class Success
-            {
-                public Success(IEnumerable<CalendarEventWithAdditionalData> events)
-                {
-                    this.Events = events;
-                }
-
-                public IEnumerable<CalendarEventWithAdditionalData> Events { get; }
-            }
-
-            public class Error
-            {
-                public Error(Exception exception)
-                {
-                    this.Exception = exception;
-                }
-
-                public Exception Exception { get; }
-            }
         }
 
         private class RefreshDatabase
