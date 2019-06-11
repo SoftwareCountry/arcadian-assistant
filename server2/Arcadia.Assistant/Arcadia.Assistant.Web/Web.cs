@@ -4,6 +4,8 @@ namespace Arcadia.Assistant.Web
     using System.Fabric;
     using System.IO;
 
+    using Autofac.Extensions.DependencyInjection;
+
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
@@ -38,6 +40,7 @@ namespace Arcadia.Assistant.Web
                             .ConfigureServices(
                                 services => services
                                     .AddSingleton(serviceContext))
+                            .ConfigureServices(services => services.AddAutofac())
                             .UseContentRoot(Directory.GetCurrentDirectory())
                             .UseStartup<Startup>()
                             .UseServiceFabricIntegration(listener, ServiceFabricIntegrationOptions.None)

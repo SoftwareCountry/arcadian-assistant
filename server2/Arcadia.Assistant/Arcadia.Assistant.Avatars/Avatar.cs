@@ -59,6 +59,7 @@ namespace Arcadia.Assistant.Avatars
 
         public async Task<Photo> GetPhoto(CancellationToken cancellationToken)
         {
+            var states = await this.StateManager.GetStateNamesAsync(cancellationToken);
             var bytes = await this.StateManager.TryGetStateAsync<byte[]>(ImageBytesKey, cancellationToken);
             if (!bytes.HasValue)
             {
@@ -104,6 +105,8 @@ namespace Arcadia.Assistant.Avatars
 
             await this.StateManager.AddOrUpdateStateAsync(ImageBytesKey, smallImage, (key, old) => smallImage);
             await this.StateManager.AddOrUpdateStateAsync(ImageHashKey, newHash, (key, old) => newHash);
+
+            await this.SaveStateAsync();
         }
     }
 }

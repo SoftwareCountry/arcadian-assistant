@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using System.Reflection;
 
+    using Autofac;
+
     using Configuration;
 
     using Microsoft.AspNetCore.Builder;
@@ -12,6 +14,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.ServiceFabric.Actors.Client;
     using Microsoft.ServiceFabric.AspNetCore.Configuration;
     using Microsoft.ServiceFabric.Services.Client;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
@@ -48,8 +51,6 @@
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddSingleton(this.AppSettings);
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddOpenApiDocument((document, x) =>
@@ -72,14 +73,19 @@
 
                 document.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("bearer"));
             });
+        }
 
-            services.AddSingleton<IServiceProxyFactory>(new ServiceProxyFactory());
-            services.AddTransient(x => 
-                x.GetService<IServiceProxyFactory>()
-                    .CreateServiceProxy<IOrganization>(new Uri("fabric:/Arcadia.Assistant.SF/Arcadia.Assistant.Organization"), new ServicePartitionKey(0)));
+        // ReSharper disable once UnusedMember.Global
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            builder.RegisterInstance(this.AppSettings);
+            builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
+            builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
+            builder.RegisterModule(new OrganizationModule());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        // ReSharper disable once UnusedMember.Global
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, AppSettings appSettings)
         {
             if (env.IsDevelopment())

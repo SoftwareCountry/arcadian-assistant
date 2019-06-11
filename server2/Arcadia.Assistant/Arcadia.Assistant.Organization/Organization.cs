@@ -14,7 +14,6 @@ namespace Arcadia.Assistant.Organization
     using CSP.Model;
 
     using Microsoft.ServiceFabric.Actors;
-    using Microsoft.ServiceFabric.Actors.Client;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
@@ -25,13 +24,11 @@ namespace Arcadia.Assistant.Organization
     public class Organization : StatefulService, IOrganization
     {
         private readonly Func<ArcadiaCspContext> cspContextFactory;
-        private readonly IActorProxyFactory actorProxyFactory;
 
-        public Organization(StatefulServiceContext context, Func<ArcadiaCspContext> cspContextFactory, IActorProxyFactory actorProxyFactory)
+        public Organization(StatefulServiceContext context, Func<ArcadiaCspContext> cspContextFactory)
             : base(context)
         {
             this.cspContextFactory = cspContextFactory;
-            this.actorProxyFactory = actorProxyFactory;
         }
 
         /// <summary>
@@ -52,9 +49,6 @@ namespace Arcadia.Assistant.Organization
             using (var db = this.cspContextFactory())
             {
                 var employee = await db.Employee.FindAsync(int.Parse(employeeId));
-                var photoActor = this.actorProxyFactory.CreateActorProxy<IAvatar>(new ActorId(employeeId), "Arcadia.Assistant.SF", "AvatarActorService");
-                await photoActor.SetSource(employee.Image);
-                var resizedPhoto = await photoActor.GetPhoto(cancellationToken);
                 return new EmployeeMetadata(employeeId, employee.LastName, employee.Email);
             }
         }

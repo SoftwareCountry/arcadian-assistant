@@ -63,7 +63,7 @@ namespace Arcadia.Assistant.Avatars.Manager
                         foreach (var employee in employees)
                         {
                             cancellationToken.ThrowIfCancellationRequested();
-                            var actor = this.actorProxyFactory.CreateActorProxy<IAvatar>(new ActorId(employee.Id), serviceName: "AvatarActorService");
+                            var actor = this.actorProxyFactory.CreateActorProxy<IAvatar>(new ActorId(employee.Id.ToString()), serviceName: AvatarsServiceMetadata.ServiceName);
                             await actor.SetSource(employee.Image);
                         }
                     }

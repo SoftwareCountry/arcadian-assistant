@@ -14,6 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.9.2" />
     <PackageReference Include="Microsoft.ServiceFabric.Services.Remoting" Version="3.3.664" />
   </ItemGroup>
 
