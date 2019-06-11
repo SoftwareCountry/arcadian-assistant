@@ -7,7 +7,6 @@
     using Akka.Actor;
 
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
-    using Arcadia.Assistant.Web.Authorization;
     using Arcadia.Assistant.Web.Configuration;
     using Arcadia.Assistant.Web.Employees;
 
@@ -15,7 +14,7 @@
     using Microsoft.AspNetCore.Mvc;
 
     [Route("api/photo/employee")]
-    [Authorize(Policies.UserIsEmployee)]
+    [Authorize]
     public class EmployeePhotoController : Controller
     {
         private readonly IEmployeesRegistry employeesRegistry;
