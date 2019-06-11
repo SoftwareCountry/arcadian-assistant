@@ -102,6 +102,8 @@
             newObj.HireDate = this.HireDate;
             newObj.Sid = this.Sid;
             newObj.Identity = this.Identity;
+            newObj.NameFilter = this.NameFilter;
+            newObj.DirectSupervisorId = this.DirectSupervisorId;
 
             return newObj;
         }
