@@ -92,6 +92,8 @@
                     msg.Event.EmployeeId == this.employeeId &&
                     msg.Event.IsPending:
 
+                    this.logger.Debug($"Recover complete for event {msg.Event.EventId}. Event is pending and will be added to pending actions.");
+
                     this.GetRecoveryCompleteApprover(msg.Event)
                         .PipeTo(
                             this.Self,
@@ -100,10 +102,16 @@
 
                     break;
 
-                case CalendarEventRecoverComplete _:
+                case CalendarEventRecoverComplete msg:
+                    if (msg.Event.EmployeeId == this.employeeId)
+                    {
+                        this.logger.Debug($"Recover complete for event {msg.Event.EventId}. Event is not pending and won't be added to pending actions.");
+                    }
+
                     break;
 
                 case RecoveryCompleteSuccess msg:
+                    this.logger.Debug($"Event {msg.Event.EventId}. Next approver is {msg.NextApprover}. Event is pending and will be added to pending actions.");
                     Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(msg.Event, msg.NextApprover));
                     break;
 
@@ -161,12 +169,30 @@
                     break;
 
                 case InsertVacationSuccess msg:
+                    this.logger.Debug($"Vacation {msg.Data.Event.EventId} is created.");
+
                     Context.System.EventStream.Publish(new CalendarEventCreated(msg.Data.Event, msg.Data.CreatedBy, msg.Data.Timestamp));
 
                     if (msg.Data.NextApprover != null)
                     {
+                        this.logger.Debug($"Vacation {msg.Data.Event.EventId}. Next approver is {msg.Data.NextApprover}. Vacation will be added to pending actions.");
+
                         Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(msg.Data.Event, msg.Data.NextApprover));
                         Context.System.EventStream.Publish(new CalendarEventAssignedToApprover(msg.Data.Event, msg.Data.NextApprover));
+                    }
+                    else
+                    {
+                        this.logger.Debug($"Vacation {msg.Data.Event.EventId}. There is no next approver, vacation won't be added to pending actions.");
+
+                        // If vacation doesn't require approval and has been approved automatically,
+                        // we imply, for simplicity, that it was changed from the same vacation, but with initial status
+                        var oldEvent = new CalendarEvent(
+                            msg.Data.Event.EventId,
+                            msg.Data.Event.Type,
+                            msg.Data.Event.Dates,
+                            VacationStatuses.Requested,
+                            msg.Data.Event.EmployeeId);
+                        Context.System.EventStream.Publish(new CalendarEventChanged(oldEvent, msg.Data.Event.EmployeeId, DateTimeOffset.Now, msg.Data.Event));
                     }
 
                     this.Sender.Tell(new UpsertCalendarEvent.Success(msg.Data.Event));
@@ -187,6 +213,8 @@
                     break;
 
                 case UpdateVacation.Success msg:
+                    this.logger.Debug($"Vacation {msg.NewEvent.EventId} is changed.");
+
                     Context.System.EventStream.Publish(new CalendarEventChanged(
                         msg.OldEvent,
                         msg.UpdatedBy,
@@ -195,6 +223,8 @@
 
                     if (!msg.NewEvent.IsPending)
                     {
+                        this.logger.Debug($"Vacation {msg.NewEvent.EventId} is not pending and will be removed from current approver pending actions.");
+
                         Context.System.EventStream.Publish(new CalendarEventRemovedFromPendingActions(msg.NewEvent));
                     }
 
@@ -251,8 +281,12 @@
                 case ApproveVacationSuccess msg:
                     if (msg.Data.NewEvent != null)
                     {
+                        this.logger.Debug($"Approval is granted for vacation {msg.Data.NewEvent.EventId}.");
+
                         if (msg.Data.NextApprover != null)
                         {
+                            this.logger.Debug($"Vacation {msg.Data.NewEvent.EventId}. Next approver is {msg.Data.NextApprover}. Vacation will be added to pending actions.");
+
                             Context.System.EventStream.Publish(new CalendarEventApprovalsChanged(msg.Data.NewEvent, msg.Data.Approvals.ToList()));
 
                             Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(msg.Data.NewEvent, msg.Data.NextApprover));
@@ -260,6 +294,8 @@
                         }
                         else
                         {
+                            this.logger.Debug($"Vacation {msg.Data.NewEvent.EventId}. There is no next approver, vacation will be removed from current approver pending actions.");
+
                             Context.System.EventStream.Publish(
                                 new CalendarEventChanged(
                                     msg.Data.OldEvent,

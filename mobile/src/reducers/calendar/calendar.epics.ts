@@ -11,6 +11,7 @@ import {
     disableCalendarSelection,
     loadCalendarEvents,
     LoadCalendarEvents,
+    loadCalendarEventsFailed,
     LoadCalendarEventsFinished,
     loadCalendarEventsFinished,
     SelectCalendarDay,
@@ -18,20 +19,66 @@ import {
 } from './calendar.action';
 import { CalendarEvent } from './calendar-event.model';
 import { closeEventDialog } from './event-dialog/event-dialog.action';
-import { AppState } from 'react-native';
-import { DependenciesContainer } from '../app.reducer';
+import { AppState, DependenciesContainer } from '../app.reducer';
 import { CalendarEvents } from './calendar-events.model';
-import { handleHttpErrors } from '../../errors/error.operators';
+import { handleHttpErrors, handleHttpErrorsWithDefaultValue } from '../../errors/error.operators';
 import { flatMap, groupBy, map, mergeAll, mergeMap, switchMap } from 'rxjs/operators';
 import { from, Observable, of } from 'rxjs';
 import { loadPendingRequests } from './pending-requests/pending-requests.action';
 import { Action } from 'redux';
 import { loadApprovals } from './approval.action';
+import { EmployeeId } from '../organization/employee.model';
 
 //----------------------------------------------------------------------------
 export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType('LOAD-USER-EMPLOYEE-FINISHED').pipe(
         map(action => loadCalendarEvents(action.employee.employeeId)),
+    );
+
+interface CalendarEventsHolder {
+    events?: CalendarEvents;
+    employeeId: EmployeeId;
+    next?: Action[];
+    success: boolean;
+}
+
+//----------------------------------------------------------------------------
+export const loadCalendarEventsEpic$ = (action$: ActionsObservable<LoadCalendarEvents>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
+    action$.ofType('LOAD-CALENDAR-EVENTS').pipe(
+        groupBy(action => action.employeeId),
+        map(groupedAction$ => {
+                return groupedAction$.pipe(
+                    switchMap(action =>
+                        deps.apiClient.getJSON(`/employees/${groupedAction$.key}/events`)
+                            .pipe(
+                                map(obj => deserializeArray(obj as any, CalendarEvent)),
+                                map(calendarEvents => new CalendarEvents(calendarEvents)),
+                                map(calendarEvents => {
+                                    return {
+                                        events: calendarEvents,
+                                        employeeId: groupedAction$.key,
+                                        next: action.next,
+                                        success: true
+                                    };
+                                }),
+                                handleHttpErrorsWithDefaultValue(of({
+                                    employeeId: groupedAction$.key,
+                                    next: action.next,
+                                    success: false
+                                })),
+                            )
+                    ),
+                );
+            }
+        ),
+        mergeAll(),
+        map((result: CalendarEventsHolder) => {
+            if (result.success) {
+                return loadCalendarEventsFinished(result.events!, result.employeeId, result.next);
+            }
+
+            return loadCalendarEventsFailed(result.employeeId, result.next);
+        }),
     );
 
 //----------------------------------------------------------------------------
@@ -45,29 +92,6 @@ export const loadCalendarEventsFinishedEpic$ = (action$: ActionsObservable<LoadC
             }
             return of(closeEventDialog(), loadApprovalsAction);
         }),
-    );
-
-//----------------------------------------------------------------------------
-export const loadCalendarEventsEpic$ = (action$: ActionsObservable<LoadCalendarEvents>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
-    action$.ofType('LOAD-CALENDAR-EVENTS').pipe(
-        groupBy(action => action.employeeId),
-        map(groupedAction$ =>
-            groupedAction$.pipe(
-                switchMap(action =>
-                    deps.apiClient.getJSON(`/employees/${groupedAction$.key}/events`)
-                        .pipe(
-                            handleHttpErrors(),
-                            map(obj => deserializeArray(obj as any, CalendarEvent)),
-                            map(calendarEvents => new CalendarEvents(calendarEvents)),
-                            map(calendarEvents => {
-                                return { events: calendarEvents, employeeId: groupedAction$.key, next: action.next };
-                            })
-                        )
-                ),
-            )
-        ),
-        mergeAll(),
-        map(result => loadCalendarEventsFinished(result.events, result.employeeId, result.next)),
     );
 
 //----------------------------------------------------------------------------

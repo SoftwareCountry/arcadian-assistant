@@ -84,7 +84,7 @@
         }
 
         private async
-            Task<(GetUserPreferencesMessage.Response, GetDevicePushTokens.Success, EmployeesQuery.Response)>
+            Task<(GetUserPreferencesMessage.Response, GetDevicePushTokensByEmployee.Success, EmployeesQuery.Response)>
             GetAdditionalData(CalendarEventApprovalsChanged message)
         {
             var lastApproval = message.Approvals
@@ -93,8 +93,8 @@
 
             var ownerPreferencesTask = this.userPreferencesActor.Ask<GetUserPreferencesMessage.Response>(
                 new GetUserPreferencesMessage(message.Event.EmployeeId));
-            var ownerPushTokensTask = this.pushDevicesActor.Ask<GetDevicePushTokens.Success>(
-                new GetDevicePushTokens(message.Event.EmployeeId));
+            var ownerPushTokensTask = this.pushDevicesActor.Ask<GetDevicePushTokensByEmployee.Success>(
+                new GetDevicePushTokensByEmployee(message.Event.EmployeeId));
             var approverEmployeeTask = this.organizationActor.Ask<EmployeesQuery.Response>(
                 EmployeesQuery.Create().WithId(lastApproval.ApprovedBy));
 

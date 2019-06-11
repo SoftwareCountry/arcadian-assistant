@@ -18,10 +18,8 @@ namespace Arcadia.Assistant.CSP.Model
             EmployeeTeam = new HashSet<EmployeeTeam>();
             ForeignPassport = new HashSet<ForeignPassport>();
             ForeignPassportHistory = new HashSet<ForeignPassportHistory>();
-            SickLeaveAccepts = new HashSet<SickLeaveAccepts>();
             SickLeaveCancellations = new HashSet<SickLeaveCancellations>();
             SickLeaveCompletes = new HashSet<SickLeaveCompletes>();
-            SickLeaveRejects = new HashSet<SickLeaveRejects>();
             SickLeaves = new HashSet<SickLeaves>();
             Team = new HashSet<Team>();
             TeamHistory = new HashSet<TeamHistory>();
@@ -95,10 +93,8 @@ namespace Arcadia.Assistant.CSP.Model
         public ICollection<EmployeeTeam> EmployeeTeam { get; set; }
         public ICollection<ForeignPassport> ForeignPassport { get; set; }
         public ICollection<ForeignPassportHistory> ForeignPassportHistory { get; set; }
-        public ICollection<SickLeaveAccepts> SickLeaveAccepts { get; set; }
         public ICollection<SickLeaveCancellations> SickLeaveCancellations { get; set; }
         public ICollection<SickLeaveCompletes> SickLeaveCompletes { get; set; }
-        public ICollection<SickLeaveRejects> SickLeaveRejects { get; set; }
         public ICollection<SickLeaves> SickLeaves { get; set; }
         public ICollection<Team> Team { get; set; }
         public ICollection<TeamHistory> TeamHistory { get; set; }

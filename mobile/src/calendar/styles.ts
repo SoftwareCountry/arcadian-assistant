@@ -1,5 +1,5 @@
 import { PixelRatio, StyleSheet } from 'react-native';
-import { CalendarEventStatus, CalendarEventType } from '../reducers/calendar/calendar-event.model';
+import { CalendarEventStatus, CalendarEventType, VacationStatus } from '../reducers/calendar/calendar-event.model';
 import Style from '../layout/style';
 
 const daysCounterTitleColor = '#18515E';
@@ -99,7 +99,6 @@ export const calendarStyles = StyleSheet.create({
         zIndex: weekDayCircleZIndex
     },
     weekDayNumber: {
-        fontSize: 12,
         lineHeight: 14,
         color: 'rgba(0, 0, 0, 0.8678)'
     },
@@ -154,7 +153,7 @@ export class CalendarEventsColor {
         }
 
         if (type === CalendarEventType.Vacation &&
-            status === CalendarEventStatus.Processed) {
+            status === VacationStatus.Processed) {
             return this.processedOpacity;
         }
 

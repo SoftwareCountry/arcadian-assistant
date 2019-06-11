@@ -3,7 +3,7 @@ import { NavigationScreenConfig, NavigationScreenProps, NavigationStackScreenOpt
 import { defaultState, EmployeesStore } from '../reducers/organization/employees.reducer';
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
-import { Employee } from '../reducers/organization/employee.model';
+import { Employee, getRoomTitle } from '../reducers/organization/employee.model';
 import { PeopleRoom } from './people-room';
 import { Action, Dispatch } from 'redux';
 import { loadEmployeesForRoom } from '../reducers/organization/organization.action';
@@ -13,6 +13,7 @@ import {
     NavigationOptionsContainer,
     navigationOptionsWithTitle
 } from '../navigation/navigation-header-with-dynamic-title';
+import { Optional } from 'types';
 
 //============================================================================
 interface CurrentPeopleRoomProps {
@@ -65,9 +66,8 @@ class CurrentPeopleRoomImpl extends React.Component<CurrentPeopleRoomProps & Cur
 
     //----------------------------------------------------------------------------
     private static getTitle(navigationOptionsContainer: NavigationOptionsContainer): string {
-        const navigation = navigationOptionsContainer.navigation;
-        const roomNumber = navigation.getParam('roomNumber', undefined);
-        return roomNumber ? `Room ${roomNumber}` : '';
+        const roomNumber: Optional<string> = navigationOptionsContainer.navigation.getParam('roomNumber', undefined);
+        return getRoomTitle(null, roomNumber);
     }
 }
 

@@ -8,6 +8,7 @@ const color = {
     red: '#FF0000',
     black: '#000000',
     green: '#00FF00',
+    gray: '#A9A9A9',
     transparent: 'transparent',
     pin: {
         yellow: '#F6CE46',

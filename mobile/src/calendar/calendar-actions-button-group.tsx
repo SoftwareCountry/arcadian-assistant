@@ -94,7 +94,7 @@ const dispatchToProps = (dispatch: Dispatch<Action>): ActionButtonsGroupDispatch
     },
     vacationActions: {
         request: () => {
-            dispatch(openEventDialog(EventDialogType.ConfirmStartDateVacation));
+            dispatch(openEventDialog(EventDialogType.RequestVacation));
         },
         edit: () => {
             dispatch(openEventDialog(EventDialogType.EditVacation));
@@ -102,7 +102,7 @@ const dispatchToProps = (dispatch: Dispatch<Action>): ActionButtonsGroupDispatch
     },
     dayoff: {
         process: () => {
-            dispatch(openEventDialog(EventDialogType.ChooseTypeDayoff));
+            dispatch(openEventDialog(EventDialogType.ProcessDayoff));
         },
         edit: () => {
             dispatch(openEventDialog(EventDialogType.EditDayoff));

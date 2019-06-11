@@ -17,21 +17,25 @@
 
     public class SickLeaveAccountingEmailNotificationActor : UntypedActor
     {
-        private readonly IEmailWithFixedRecipientNotification approvedEmailNotificationConfig;
+        private readonly IEmailWithFixedRecipientNotification createdEmailNotificationConfig;
         private readonly IEmailWithFixedRecipientNotification prolongedEmailNotificationConfig;
+        private readonly IEmailWithFixedRecipientNotification cancelledEmailNotificationConfig;
         private readonly IActorRef organizationActor;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
         public SickLeaveAccountingEmailNotificationActor(
-            IEmailWithFixedRecipientNotification approvedEmailNotificationConfig,
+            IEmailWithFixedRecipientNotification createdEmailNotificationConfig,
             IEmailWithFixedRecipientNotification prolongedEmailNotificationConfig,
+            IEmailWithFixedRecipientNotification cancelledEmailNotificationConfig,
             IActorRef organizationActor)
         {
-            this.approvedEmailNotificationConfig = approvedEmailNotificationConfig;
+            this.createdEmailNotificationConfig = createdEmailNotificationConfig;
             this.prolongedEmailNotificationConfig = prolongedEmailNotificationConfig;
+            this.cancelledEmailNotificationConfig = cancelledEmailNotificationConfig;
             this.organizationActor = organizationActor;
 
+            Context.System.EventStream.Subscribe<CalendarEventCreated>(this.Self);
             Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);
         }
 
@@ -39,21 +43,34 @@
         {
             switch (message)
             {
-                case CalendarEventChanged msg
-                    when msg.NewEvent.Type == CalendarEventTypes.Sickleave &&
-                    msg.NewEvent.Status == SickLeaveStatuses.Approved:
+                case CalendarEventCreated msg when
+                    msg.Event.Type == CalendarEventTypes.Sickleave:
 
-                    var isProlonged = msg.OldEvent.Status == SickLeaveStatuses.Approved;
-                    var dateChanged = msg.OldEvent.Dates.EndDate != msg.NewEvent.Dates.EndDate;
+                    this.organizationActor
+                        .Ask<EmployeesQuery.Response>(EmployeesQuery.Create().WithId(msg.Event.EmployeeId))
+                        .ContinueWith(task => new CalendarEventChangedWithAdditionalData(msg.Event, NotificationType.Created, task.Result.Employees.FirstOrDefault()?.Metadata))
+                        .PipeTo(this.Self);
+                    break;
 
-                    if (isProlonged && !dateChanged)
-                    {
-                        return;
-                    }
+                case CalendarEventChanged msg when
+                    msg.NewEvent.Type == CalendarEventTypes.Sickleave &&
+                    msg.NewEvent.Status == SickLeaveStatuses.Requested &&
+                    msg.OldEvent.Status == SickLeaveStatuses.Requested &&
+                    msg.OldEvent.Dates.EndDate != msg.NewEvent.Dates.EndDate:
 
                     this.organizationActor
                         .Ask<EmployeesQuery.Response>(EmployeesQuery.Create().WithId(msg.NewEvent.EmployeeId))
-                        .ContinueWith(task => new CalendarEventChangedWithAdditionalData(msg.NewEvent, isProlonged, task.Result.Employees.FirstOrDefault()?.Metadata))
+                        .ContinueWith(task => new CalendarEventChangedWithAdditionalData(msg.NewEvent, NotificationType.Prolonged, task.Result.Employees.FirstOrDefault()?.Metadata))
+                        .PipeTo(this.Self);
+                    break;
+
+                case CalendarEventChanged msg when
+                    msg.NewEvent.Type == CalendarEventTypes.Sickleave &&
+                    msg.NewEvent.Status == SickLeaveStatuses.Cancelled:
+
+                    this.organizationActor
+                        .Ask<EmployeesQuery.Response>(EmployeesQuery.Create().WithId(msg.NewEvent.EmployeeId))
+                        .ContinueWith(task => new CalendarEventChangedWithAdditionalData(msg.NewEvent, NotificationType.Cancelled, task.Result.Employees.FirstOrDefault()?.Metadata))
                         .PipeTo(this.Self);
                     break;
 
@@ -61,11 +78,18 @@
                     break;
 
                 case CalendarEventChangedWithAdditionalData msg:
-                    this.logger.Debug($"Sending a sick leave {(msg.IsProlonged ? "prolonged" : "approved")} accounting email notification for user {msg.Event.EmployeeId}");
+                    var notificationAction = msg.NotificationType == NotificationType.Created
+                        ? "created"
+                        : msg.NotificationType == NotificationType.Prolonged
+                            ? "prolonged"
+                            : "cancelled";
+                    this.logger.Debug($"Sending a sick leave {notificationAction} accounting email notification for user {msg.Event.EmployeeId}");
 
-                    var notificationConfiguration = msg.IsProlonged
-                        ? this.prolongedEmailNotificationConfig
-                        : this.approvedEmailNotificationConfig;
+                    var notificationConfiguration = msg.NotificationType == NotificationType.Created
+                        ? this.createdEmailNotificationConfig
+                        : msg.NotificationType == NotificationType.Prolonged
+                            ? this.prolongedEmailNotificationConfig
+                            : this.cancelledEmailNotificationConfig;
 
                     this.SendNotification(msg, notificationConfiguration);
 
@@ -77,19 +101,19 @@
             }
         }
 
-        private void SendNotification(CalendarEventChangedWithAdditionalData msg, IEmailWithFixedRecipientNotification notificationConfiguration)
+        private void SendNotification(CalendarEventChangedWithAdditionalData message, IEmailWithFixedRecipientNotification notificationConfiguration)
         {
             var templateExpressionContext = new Dictionary<string, string>
             {
-                ["employee"] = msg.Employee.Name,
-                ["employeeId"] = msg.Employee.EmployeeId,
-                ["startDate"] = msg.Event.Dates.StartDate.ToString("dd/MM/yyyy"),
-                ["endDate"] = msg.Event.Dates.EndDate.ToString("dd/MM/yyyy")
+                ["employee"] = message.Employee.Name,
+                ["employeeId"] = message.Employee.EmployeeId,
+                ["startDate"] = message.Event.Dates.StartDate.ToString("dd/MM/yyyy"),
+                ["endDate"] = message.Event.Dates.EndDate.ToString("dd/MM/yyyy")
             };
 
             templateExpressionContext = new DictionaryMerge().Perform(
                 templateExpressionContext,
-                msg.Event.AdditionalData.ToDictionary(x => x.Key, x => x.Value));
+                message.Event.AdditionalData.ToDictionary(x => x.Key, x => x.Value));
 
             var templateExpressionParser = new TemplateExpressionParser();
 
@@ -105,18 +129,25 @@
 
         private class CalendarEventChangedWithAdditionalData
         {
-            public CalendarEventChangedWithAdditionalData(CalendarEvent @event, bool isProlonged, EmployeeMetadata employee)
+            public CalendarEventChangedWithAdditionalData(CalendarEvent @event, NotificationType notificationType, EmployeeMetadata employee)
             {
                 this.Event = @event;
-                this.IsProlonged = isProlonged;
+                this.NotificationType = notificationType;
                 this.Employee = employee;
             }
 
             public CalendarEvent Event { get; }
 
-            public bool IsProlonged { get; }
+            public NotificationType NotificationType { get; }
 
             public EmployeeMetadata Employee { get; }
+        }
+
+        private enum NotificationType
+        {
+            Created,
+            Prolonged,
+            Cancelled
         }
     }
 }

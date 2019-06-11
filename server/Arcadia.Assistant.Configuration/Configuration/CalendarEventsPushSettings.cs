@@ -5,6 +5,15 @@
     public class CalendarEventsPushSettings : ICalendarEventsPushSettings
     {
         [Required]
+        public PushNotification SickLeaveCreatedManager { get; set; }
+
+        [Required]
+        public PushNotification SickLeaveProlongedManager { get; set; }
+
+        [Required]
+        public PushNotification SickLeaveCancelledManager { get; set; }
+
+        [Required]
         public PushNotification EventAssignedToApprover { get; set; }
 
         [Required]

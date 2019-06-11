@@ -83,15 +83,15 @@
         }
 
         private async
-            Task<(EmployeesQuery.Response, GetUserPreferencesMessage.Response, GetDevicePushTokens.Success)>
+            Task<(EmployeesQuery.Response, GetUserPreferencesMessage.Response, GetDevicePushTokensByEmployee.Success)>
             GetAdditionalData(CalendarEventAssignedToApprover message)
         {
             var ownerEmployeeTask = this.organizationActor.Ask<EmployeesQuery.Response>(
                 EmployeesQuery.Create().WithId(message.Event.EmployeeId));
             var approverPreferencesTask = this.userPreferencesActor.Ask<GetUserPreferencesMessage.Response>(
                 new GetUserPreferencesMessage(message.ApproverId));
-            var approverPushTokensTask = this.pushDevicesActor.Ask<GetDevicePushTokens.Success>(
-                new GetDevicePushTokens(message.ApproverId));
+            var approverPushTokensTask = this.pushDevicesActor.Ask<GetDevicePushTokensByEmployee.Success>(
+                new GetDevicePushTokensByEmployee(message.ApproverId));
 
             await Task.WhenAll(ownerEmployeeTask, approverPreferencesTask, approverPushTokensTask);
             return (ownerEmployeeTask.Result, approverPreferencesTask.Result, approverPushTokensTask.Result);

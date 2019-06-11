@@ -1,5 +1,6 @@
 ﻿namespace Arcadia.Assistant.Images
 {
+    using System;
     using System.IO;
     using System.Runtime.ExceptionServices;
 
@@ -20,6 +21,12 @@
                     using (var image = Image.Load(cmd.Bytes))
                     using (var output = new MemoryStream())
                     {
+                        if (image.Width != image.Height)
+                        {
+                            var squareLength = Math.Min(image.Width, image.Height);
+                            image.Mutate(x => x.Crop(squareLength, squareLength));
+                        }
+
                         image
                             .Mutate(x => x.Resize(cmd.Width, cmd.Height));
 

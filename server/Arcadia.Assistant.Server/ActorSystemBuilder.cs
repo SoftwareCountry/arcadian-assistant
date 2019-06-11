@@ -2,6 +2,8 @@
 {
     using Akka.Actor;
     using Akka.DI.Core;
+
+    using Arcadia.Assistant.ApplicationBuilds;
     using Arcadia.Assistant.Calendar;
     using Arcadia.Assistant.Calendar.Notifications;
     using Arcadia.Assistant.Configuration.Configuration;
@@ -36,6 +38,8 @@
             var health = this.actorSystem.ActorOf(this.actorSystem.DI().Props<HealthChecker>(), WellKnownActorPaths.Health);
             var helpdesk = this.actorSystem.ActorOf(Props.Create(() => new HelpdeskActor()), WellKnownActorPaths.Helpdesk);
             var feeds = this.actorSystem.ActorOf(Props.Create(() => new SharedFeedsActor(organization)), WellKnownActorPaths.SharedFeeds);
+
+            this.actorSystem.ActorOf(Props.Create(() => new ApplicationBuildsActor()), WellKnownActorPaths.ApplicationBuilds);
 
             var persistenceSupervisorFactory = new PersistenceSupervisorFactory();
 
@@ -79,10 +83,28 @@
         {
             this.actorSystem.ActorOf(
                 Props.Create(() => new SickLeaveAccountingEmailNotificationActor(
-                    calendarEventsMailSettings.SickLeaveApproved,
+                    calendarEventsMailSettings.SickLeaveCreated,
                     calendarEventsMailSettings.SickLeaveProlonged,
+                    calendarEventsMailSettings.SickLeaveCancelled,
                     organization)),
                 "sick-leave-accounting-email");
+            this.actorSystem.ActorOf(
+                Props.Create(() => new SickLeaveManagerEmailNotificationActor(
+                    calendarEventsMailSettings.SickLeaveCreated,
+                    calendarEventsMailSettings.SickLeaveProlonged,
+                    calendarEventsMailSettings.SickLeaveCancelled,
+                    organization,
+                    userPreferences)),
+                    "sick-leave-manager-email");
+            this.actorSystem.ActorOf(
+                Props.Create(() => new SickLeaveManagerPushNotificationActor(
+                    calendarEventsPushSettings.SickLeaveCreatedManager,
+                    calendarEventsPushSettings.SickLeaveProlongedManager,
+                    calendarEventsPushSettings.SickLeaveCancelledManager,
+                    organization,
+                    userPreferences,
+                    pushNotificationsDevices)),
+                "sick-leave-manager-push");
             this.actorSystem.ActorOf(
                 Props.Create(() => new EventAssignedToApproverEmailNotificationActor(
                     calendarEventsMailSettings.EventAssignedToApprover,

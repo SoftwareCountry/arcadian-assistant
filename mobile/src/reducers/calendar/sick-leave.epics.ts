@@ -6,7 +6,13 @@ import {
     ConfirmProlongSickLeave
 } from './sick-leave.action';
 import { AppState, DependenciesContainer } from '../app.reducer';
-import { CalendarEvent, CalendarEventStatus, CalendarEventType, DatesInterval } from './calendar-event.model';
+import {
+    CalendarEvent,
+    CalendarEventStatus,
+    CalendarEventType,
+    GeneralCalendarEventStatus,
+    DatesInterval, SickleaveStatus
+} from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
 import { getEventsAndPendingRequests } from './calendar.epics';
 import { flatMap, map } from 'rxjs/operators';
@@ -28,7 +34,7 @@ export const sickLeaveSavedEpic$ = (action$: ActionsObservable<ConfirmClaimSickL
             calendarEvents.dates.startWorkingHour = 0;
             calendarEvents.dates.finishWorkingHour = 8;
 
-            calendarEvents.status = CalendarEventStatus.Requested;
+            calendarEvents.status = SickleaveStatus.Requested;
 
             return deps.apiClient.post(
                 `/employees/${x.employeeId}/events`,
@@ -48,7 +54,7 @@ export const sickLeaveCompletedEpic$ = (action$: ActionsObservable<CompleteSickL
 
             const requestBody = { ...x.calendarEvent };
 
-            requestBody.status = CalendarEventStatus.Completed;
+            requestBody.status = SickleaveStatus.Completed;
 
             return deps.apiClient.put(
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
@@ -88,7 +94,7 @@ export const sickLeaveCanceledEpic$ = (action$: ActionsObservable<CancelSickLeav
 
             const requestBody = { ...x.calendarEvent };
 
-            requestBody.status = CalendarEventStatus.Cancelled;
+            requestBody.status = SickleaveStatus.Cancelled;
 
             return deps.apiClient.put(
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,

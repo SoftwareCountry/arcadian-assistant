@@ -2,9 +2,9 @@
 {
     using System.Collections.Generic;
 
-    public class GetDevicePushTokens
+    public class GetDevicePushTokensByEmployee
     {
-        public GetDevicePushTokens(string employeeId)
+        public GetDevicePushTokensByEmployee(string employeeId)
         {
             this.EmployeeId = employeeId;
         }

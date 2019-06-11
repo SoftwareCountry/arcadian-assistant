@@ -139,10 +139,13 @@
             builder.RegisterInstance(appSettings.Security).As<ISecuritySettings>();
             builder.RegisterInstance(appSettings.ServiceEndpointsAuthentication).As<IServiceEndpointsAuthenticationSettings>();
             builder.RegisterInstance(appSettings.DownloadApplication).As<IDownloadApplicationSettings>();
+            builder.RegisterInstance(appSettings.UpdateNotification).As<IUpdateNotificationSettings>();
+
             builder.RegisterInstance(actorSystem).As<IActorRefFactory>().As<ActorSystem>();
             builder.RegisterInstance(pathsBuilder).AsSelf();
 
             builder.RegisterType<DownloadActor>().AsSelf();
+            builder.RegisterType<UpdateAvailableNotificationActor>().AsSelf();
 
             builder.RegisterType<EmployeesRegistry>().As<IEmployeesRegistry>();
             builder.RegisterType<UserEmployeeSearch>().As<IUserEmployeeSearch>();
@@ -165,10 +168,7 @@
             IHostingEnvironment env,
             ISecuritySettings securitySettings,
             ILifetimeScope container,
-            ActorSystem actorSystem,
-            IHttpClientFactory httpClientFactory,
-            IDownloadApplicationSettings downloadApplicationSettings
-            )
+            ActorSystem actorSystem)
         {
             if (env.IsDevelopment())
             {
@@ -178,9 +178,8 @@
             // ReSharper disable once ObjectCreationAsStatement
             new AutoFacDependencyResolver(container, actorSystem);
 
-            actorSystem.ActorOf(
-                Props.Create(() => new DownloadActor(downloadApplicationSettings, httpClientFactory, env)),
-                WellKnownActorPaths.DownloadApplicationBuilds);
+            actorSystem.ActorOf(actorSystem.DI().Props<DownloadActor>(), WellKnownActorPaths.DownloadApplicationBuilds);
+            actorSystem.ActorOf(actorSystem.DI().Props<UpdateAvailableNotificationActor>(), "update-available-notification");
 
             app.UseAkkaTimeoutExceptionHandler();
             app.UseAuthentication();

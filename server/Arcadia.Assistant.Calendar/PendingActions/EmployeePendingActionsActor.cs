@@ -12,6 +12,8 @@
 
     public class EmployeePendingActionsActor : UntypedActor, ILogReceive
     {
+        private readonly ILoggingAdapter logger = Context.GetLogger();
+
         private readonly string employeeId;
         private readonly Dictionary<string, CalendarEvent> pendingActionEvents = new Dictionary<string, CalendarEvent>();
 
@@ -87,6 +89,7 @@
 
         private void AddPendingAction(CalendarEvent @event)
         {
+            this.logger.Debug($"Employee {this.employeeId}. Pending action added for event {@event.EventId}.");
             this.pendingActionEvents[@event.EventId] = @event;
         }
 
@@ -94,6 +97,7 @@
         {
             if (this.pendingActionEvents.ContainsKey(@event.EventId))
             {
+                this.logger.Debug($"Employee {this.employeeId}. Pending action removed for event {@event.EventId}");
                 this.pendingActionEvents.Remove(@event.EventId);
             }
         }
