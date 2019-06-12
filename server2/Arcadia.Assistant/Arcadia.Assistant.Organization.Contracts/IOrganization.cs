@@ -14,6 +14,6 @@ namespace Arcadia.Assistant.Organization.Contracts
     {
         Task<EmployeeMetadata> FindByIdAsync(string employeeId, CancellationToken cancellationToken);
 
-        Task<EmployeeMetadata[]> FindEmployees();
+        Task<EmployeeMetadata[]> FindEmployeesAsync(EmployeesQuery employeesQuery, CancellationToken cancellationToken);
     }
 }

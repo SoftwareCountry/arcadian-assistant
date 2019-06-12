@@ -1,5 +1,6 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -28,6 +29,22 @@
         {
             var employees = await this.organization.FindByIdAsync(employeeId, token);
             return this.Ok(employees);
+        }
+
+        [Route("")]
+        [HttpGet]
+        [ProducesResponseType(typeof(EmployeeModel[]), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> FilterEmployees(
+            [FromQuery] string departmentId,
+            [FromQuery] string roomNumber,
+            [FromQuery] string name,
+            CancellationToken token)
+        {
+            var query = EmployeesQuery.Create().ForDepartment(departmentId).ForRoom(roomNumber).WithNameFilter(name);
+            var employees = await this.organization.FindEmployeesAsync(query, token);
+
+            return this.Ok(employees.Select(EmployeeModel.FromMetadata).ToArray());
         }
     }
 }

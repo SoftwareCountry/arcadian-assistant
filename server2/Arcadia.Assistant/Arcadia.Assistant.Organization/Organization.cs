@@ -7,13 +7,13 @@ namespace Arcadia.Assistant.Organization
     using System.Threading;
     using System.Threading.Tasks;
 
-    using Avatars.Contracts;
+    using Autofac.Features.OwnedInstances;
 
     using Contracts;
 
-    using CSP.Model;
+    using CSP;
 
-    using Microsoft.ServiceFabric.Actors;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
@@ -23,12 +23,12 @@ namespace Arcadia.Assistant.Organization
     /// </summary>
     public class Organization : StatefulService, IOrganization
     {
-        private readonly Func<ArcadiaCspContext> cspContextFactory;
+        private readonly Func<Owned<CspEmployeeQuery>> cspEmployeeQuery;
 
-        public Organization(StatefulServiceContext context, Func<ArcadiaCspContext> cspContextFactory)
+        public Organization(StatefulServiceContext context, Func<Owned<CspEmployeeQuery>> cspEmployeeQuery)
             : base(context)
         {
-            this.cspContextFactory = cspContextFactory;
+            this.cspEmployeeQuery = cspEmployeeQuery;
         }
 
         /// <summary>
@@ -46,16 +46,65 @@ namespace Arcadia.Assistant.Organization
 
         public async Task<EmployeeMetadata> FindByIdAsync(string employeeId, CancellationToken cancellationToken)
         {
-            using (var db = this.cspContextFactory())
+            using (var query = this.cspEmployeeQuery())
             {
-                var employee = await db.Employee.FindAsync(int.Parse(employeeId));
+                if (!int.TryParse(employeeId, out var id))
+                {
+                    return null;
+                }
+
+                var employee = await query.Value.Get().FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken);
+                if (employee == null)
+                {
+                    return null;
+                }
+
                 return new EmployeeMetadata(employeeId, employee.LastName, employee.Email);
             }
         }
 
-        public Task<EmployeeMetadata[]> FindEmployees()
+        public async Task<EmployeeMetadata[]> FindEmployeesAsync(EmployeesQuery employeesQuery, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            using (var db = this.cspEmployeeQuery())
+            {
+                var query = db.Value.Get();
+
+                if (employeesQuery.RoomNumber != null)
+                {
+                    query = query.Where(x => x.RoomNumber.Trim() == employeesQuery.RoomNumber.Trim());
+                }
+
+                if (employeesQuery.DepartmentId != null)
+                {
+                    query = query.Where(x => x.DepartmentId.ToString() == employeesQuery.DepartmentId);
+                }
+
+                if (employeesQuery.NameFilter != null)
+                {
+                    query = query.Where(x => x.LastName.Contains(employeesQuery.NameFilter, StringComparison.InvariantCultureIgnoreCase) 
+                        || x.FirstName.Contains(employeesQuery.NameFilter, StringComparison.InvariantCultureIgnoreCase));
+                }
+
+                var userIdentityDomain = "arcadia.sbb.ru"; //TODO: hardcode
+
+                var employees = await query.Select(x => 
+                    new EmployeeMetadata(
+                        x.Id.ToString(),
+                        $"{x.LastName} {x.FirstName}".Trim(),
+                        x.Email,
+                        new [] { x.Email, $"{x.LoginName}@{userIdentityDomain}" })
+                    {
+                        BirthDate = x.Birthday,
+                        HireDate = x.HiringDate,
+                        FireDate = x.FiringDate,
+                        MobilePhone = x.MobilePhone,
+                        RoomNumber = x.RoomNumber != null ? x.RoomNumber.Trim() : null,
+
+                    }) 
+                    .ToArrayAsync(cancellationToken);
+
+                return employees;
+            }
         }
     }
 }
