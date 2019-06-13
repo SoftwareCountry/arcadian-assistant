@@ -15,7 +15,6 @@ import { Map, Set } from 'immutable';
 import { EmployeeId } from '../reducers/organization/employee.model';
 import { EmployeeMap } from '../reducers/organization/employees.reducer';
 import { loadEmployees } from '../reducers/organization/organization.action';
-import { loadCalendarEvents } from '../reducers/calendar/calendar.action';
 import { equals } from '../utils/equitable';
 
 //============================================================================

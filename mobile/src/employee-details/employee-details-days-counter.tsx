@@ -3,7 +3,6 @@
  ******************************************************************************/
 
 import React, { Component } from 'react';
-import { Employee } from '../reducers/organization/employee.model';
 import { View } from 'react-native';
 import { ApplicationIcon } from '../override/application-icon';
 import { StyledText } from '../override/styled-text';
@@ -34,7 +33,8 @@ export class EmployeeDetailsDaysCounter extends Component<EmployeeDetailsDaysCou
             <View style={employeeDetailsDaysCounterStyles.container}>
 
                 <View style={employeeDetailsDaysCounterStyles.iconContainer}>
-                    <ApplicationIcon name={data.icon} size={data.iconSize} style={employeeDetailsDaysCounterStyles.icon}/>
+                    <ApplicationIcon name={data.icon} size={data.iconSize}
+                                     style={employeeDetailsDaysCounterStyles.icon}/>
                 </View>
 
                 <View style={employeeDetailsDaysCounterStyles.textContainer}>

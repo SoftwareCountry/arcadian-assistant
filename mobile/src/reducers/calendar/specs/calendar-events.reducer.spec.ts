@@ -8,13 +8,7 @@ import {
     selectCalendarDay,
     selectIntervalsBySingleDaySelection
 } from '../calendar.action';
-import {
-    CalendarEvent,
-    CalendarEventStatus,
-    CalendarEventType,
-    DatesInterval,
-    SickLeaveStatus
-} from '../calendar-event.model';
+import { CalendarEvent, CalendarEventType, DatesInterval, SickLeaveStatus } from '../calendar-event.model';
 import moment from 'moment';
 import { DayModel } from '../calendar.model';
 import { CalendarEvents } from '../calendar-events.model';

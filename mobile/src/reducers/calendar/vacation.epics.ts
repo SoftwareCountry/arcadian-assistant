@@ -1,13 +1,7 @@
 import { AppState, DependenciesContainer } from '../app.reducer';
 import { CancelVacation, ConfirmClaimVacation, ConfirmVacationChange } from './vacation.action';
 import { ActionsObservable, StateObservable } from 'redux-observable';
-import {
-    CalendarEvent,
-    CalendarEventStatus,
-    CalendarEventType,
-    DatesInterval,
-    VacationStatus
-} from './calendar-event.model';
+import { CalendarEvent, CalendarEventType, DatesInterval, VacationStatus } from './calendar-event.model';
 import { getEventsAndPendingRequests } from './calendar.epics';
 import { flatMap } from 'rxjs/operators';
 import { openEventDialog, stopEventDialogProgress } from './event-dialog/event-dialog.action';

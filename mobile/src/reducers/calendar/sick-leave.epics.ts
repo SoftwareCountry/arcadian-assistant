@@ -6,13 +6,7 @@ import {
     ConfirmProlongSickLeave
 } from './sick-leave.action';
 import { AppState, DependenciesContainer } from '../app.reducer';
-import {
-    CalendarEvent,
-    CalendarEventStatus,
-    CalendarEventType,
-    GeneralCalendarEventStatus,
-    DatesInterval, SickLeaveStatus
-} from './calendar-event.model';
+import { CalendarEvent, CalendarEventType, DatesInterval, SickLeaveStatus } from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
 import { getEventsAndPendingRequests } from './calendar.epics';
 import { flatMap, map } from 'rxjs/operators';

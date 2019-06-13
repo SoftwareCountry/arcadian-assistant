@@ -1,13 +1,7 @@
 import { ActionsObservable } from 'redux-observable';
 import moment from 'moment';
 import { DayModel } from '../calendar.model';
-import {
-    CalendarEvent,
-    CalendarEventStatus,
-    CalendarEventType,
-    DatesInterval,
-    SickLeaveStatus
-} from '../calendar-event.model';
+import { CalendarEvent, CalendarEventType, DatesInterval, SickLeaveStatus } from '../calendar-event.model';
 import { CalendarEvents } from '../calendar-events.model';
 import { intervalsBySingleDaySelectionEpic$ } from '../calendar.epics';
 import {
