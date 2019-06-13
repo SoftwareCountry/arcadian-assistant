@@ -8,16 +8,16 @@
     public class DepartmentMetadata
     {
         [DataMember]
-        public string DepartmentId { get; }
+        public string DepartmentId { get; set; }
 
         [DataMember]
-        public string Abbreviation { get; }
+        public string Abbreviation { get; set; }
 
         [DataMember]
-        public string Name { get; }
+        public string Name { get; set; }
 
         [DataMember]
-        public string ParentDepartmentId { get; }
+        public string ParentDepartmentId { get; set; }
 
         [DataMember]
         public string ChiefId { get; set; }
