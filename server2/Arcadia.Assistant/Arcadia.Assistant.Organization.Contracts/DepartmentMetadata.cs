@@ -1,23 +1,33 @@
 ﻿namespace Arcadia.Assistant.Organization.Contracts
 {
     using System.Diagnostics;
+    using System.Runtime.Serialization;
 
+    [DataContract]
     [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
-    public class DepartmentInfo
+    public class DepartmentMetadata
     {
+        [DataMember]
         public string DepartmentId { get; }
 
+        [DataMember]
         public string Abbreviation { get; }
 
+        [DataMember]
         public string Name { get; }
 
+        [DataMember]
         public string ParentDepartmentId { get; }
 
+        [DataMember]
         public string ChiefId { get; set; }
+
+        [DataMember]
+        public int PeopleCount { get; set; }
 
         public bool IsHeadDepartment => this.ParentDepartmentId == null;
 
-        public DepartmentInfo(string departmentId, string name, string abbreviation, string parentDepartmentId = null)
+        public DepartmentMetadata(string departmentId, string name, string abbreviation, string parentDepartmentId = null)
         {
             this.DepartmentId = departmentId;
             this.Name = name;

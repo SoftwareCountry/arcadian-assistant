@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac.ServiceFabric" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
     <PackageReference Include="Microsoft.ServiceFabric.Actors" Version="3.3.664" />
     <PackageReference Include="Microsoft.ServiceFabric.Services" Version="3.3.664" />
     <PackageReference Include="Microsoft.ServiceFabric.Services.Remoting" Version="3.3.664" />

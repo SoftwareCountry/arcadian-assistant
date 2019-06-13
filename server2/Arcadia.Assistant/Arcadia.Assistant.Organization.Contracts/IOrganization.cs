@@ -12,8 +12,14 @@ namespace Arcadia.Assistant.Organization.Contracts
 
     public interface IOrganization : IService
     {
-        Task<EmployeeMetadata> FindByIdAsync(string employeeId, CancellationToken cancellationToken);
+        Task<EmployeeMetadata> FindEmployeeAsync(string employeeId, CancellationToken cancellationToken);
 
         Task<EmployeeMetadata[]> FindEmployeesAsync(EmployeesQuery employeesQuery, CancellationToken cancellationToken);
+
+        Task<DepartmentMetadata> GetDepartmentAsync(string departmentId, CancellationToken cancellationToken);
+
+        Task<DepartmentMetadata[]> GetDepartmentsAsync(CancellationToken cancellationToken);
+
+        Task<EmployeeMetadata> FindEmployeeSupervisor(string employeeId, CancellationToken cancellationToken);
     }
 }

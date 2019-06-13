@@ -27,7 +27,7 @@
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(string employeeId, CancellationToken token)
         {
-            var employees = await this.organization.FindByIdAsync(employeeId, token);
+            var employees = await this.organization.FindEmployeeAsync(employeeId, token);
             return this.Ok(employees);
         }
 

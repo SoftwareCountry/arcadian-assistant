@@ -14,6 +14,7 @@ namespace Arcadia.Assistant.Organization
     using CSP;
 
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
@@ -24,11 +25,16 @@ namespace Arcadia.Assistant.Organization
     public class Organization : StatefulService, IOrganization
     {
         private readonly Func<Owned<CspEmployeeQuery>> cspEmployeeQuery;
+        private readonly CspConfiguration cspConfiguration;
+        private readonly Func<Owned<OrganizationDepartmentsQuery>> allDepartmentsQuery;
+        private readonly ILogger logger = new LoggerFactory().CreateLogger<Organization>();
 
-        public Organization(StatefulServiceContext context, Func<Owned<CspEmployeeQuery>> cspEmployeeQuery)
+        public Organization(StatefulServiceContext context, Func<Owned<CspEmployeeQuery>> cspEmployeeQuery, CspConfiguration cspConfiguration, Func<Owned<OrganizationDepartmentsQuery>> allDepartmentsQuery)
             : base(context)
         {
             this.cspEmployeeQuery = cspEmployeeQuery;
+            this.cspConfiguration = cspConfiguration;
+            this.allDepartmentsQuery = allDepartmentsQuery;
         }
 
         /// <summary>
@@ -44,7 +50,7 @@ namespace Arcadia.Assistant.Organization
             return this.CreateServiceRemotingReplicaListeners();
         }
 
-        public async Task<EmployeeMetadata> FindByIdAsync(string employeeId, CancellationToken cancellationToken)
+        public async Task<EmployeeMetadata> FindEmployeeAsync(string employeeId, CancellationToken cancellationToken)
         {
             using (var query = this.cspEmployeeQuery())
             {
@@ -85,7 +91,7 @@ namespace Arcadia.Assistant.Organization
                         || x.FirstName.Contains(employeesQuery.NameFilter, StringComparison.InvariantCultureIgnoreCase));
                 }
 
-                var userIdentityDomain = "arcadia.sbb.ru"; //TODO: hardcode
+                var userIdentityDomain = this.cspConfiguration.UserIdentityDomain;
 
                 var employees = await query.Select(x => 
                     new EmployeeMetadata(
@@ -105,6 +111,26 @@ namespace Arcadia.Assistant.Organization
 
                 return employees;
             }
+        }
+
+        public Task<DepartmentMetadata> GetDepartmentAsync(string departmentId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<DepartmentMetadata[]> GetDepartmentsAsync(CancellationToken cancellationToken)
+        {
+            this.logger.LogDebug("test message");
+            using (var departmentsQuery = this.allDepartmentsQuery())
+            {
+                var departments = await departmentsQuery.Value.LoadAllAsync(cancellationToken);
+                return departments.ToArray();
+            }
+        }
+
+        public Task<EmployeeMetadata> FindEmployeeSupervisor(string employeeId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }
