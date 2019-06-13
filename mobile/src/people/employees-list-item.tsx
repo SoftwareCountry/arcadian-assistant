@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { Avatar } from '../people/avatar';
+import { Avatar } from './avatar';
 import { Employee } from '../reducers/organization/employee.model';
 import { employeesListItemStyles as styles } from './styles';
 import { StyledText } from '../override/styled-text';
