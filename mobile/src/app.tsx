@@ -3,7 +3,7 @@
  ******************************************************************************/
 
 import React, { Component } from 'react';
-import { RootNavigator } from './tabbar/tab-navigator';
+import { RootNavigator } from './tab-bar/tab-navigator';
 import { AppState } from './reducers/app.reducer';
 import { connect } from 'react-redux';
 import { NavigationContainerComponent } from 'react-navigation';

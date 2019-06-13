@@ -10,7 +10,7 @@ const glyphMap = {
     'envelope': 0xE005,
     'feeds': 0xE006,
     'handshake': 0xE007,
-    'helpdesk': 0xE008,
+    'help_desk': 0xE008,
     'office': 0xE009,
     'org_structure': 0xE00A,
     'people': 0xE00B,
@@ -27,7 +27,7 @@ export const ApplicationIcon = createIconSet(glyphMap, 'aa-iconfont');
 const glyphMapBold = {
     'calendar': 0xE001,
     'feeds': 0xE002,
-    'helpdesk': 0xE003,
+    'help_desk': 0xE003,
     'people': 0xE004,
     'profile': 0xE005
 };

@@ -8,7 +8,7 @@ import { PeopleScreen } from '../people/people-screen';
 
 const navOptionsFactory = new TabNavigationOptionsFactory();
 
-const tabbarModel: NavigationRouteConfigMap = {
+const tabBarModel: NavigationRouteConfigMap = {
 
     News: {
         screen: FeedsScreen,
@@ -32,4 +32,4 @@ const tabbarModel: NavigationRouteConfigMap = {
     }
 };
 
-export default tabbarModel;
+export default tabBarModel;

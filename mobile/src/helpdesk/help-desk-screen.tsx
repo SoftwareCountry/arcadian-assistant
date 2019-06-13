@@ -3,27 +3,27 @@ import { ActivityIndicator, Button, ScrollView } from 'react-native';
 import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
 import { mapBackButtonDispatchToProps, WithBackButtonProps } from '../layout/back-button-dispatcher';
-import { loadTicketTemplates } from '../reducers/helpdesk/tickets.actions';
+import { loadTicketTemplates } from '../reducers/help-desk/tickets.actions';
 import { Action, Dispatch } from 'redux';
 
-interface HelpdeskScreenProps {
+interface HelpDeskScreenProps {
     ticketTemplatesAreLoaded: boolean;
 }
 
-interface HelpdeskScreenDispatchProps extends WithBackButtonProps {
+interface HelpDeskScreenDispatchProps extends WithBackButtonProps {
     requestTicketTemplates: () => void;
 }
 
-const mapStateToProps = (state: AppState): HelpdeskScreenProps => ({
-    ticketTemplatesAreLoaded: !!state.helpdesk && !!state.helpdesk.ticketTemplates,
+const mapStateToProps = (state: AppState): HelpDeskScreenProps => ({
+    ticketTemplatesAreLoaded: !!state.helpDesk && !!state.helpDesk.ticketTemplates,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<Action>): HelpdeskScreenDispatchProps => ({
+const mapDispatchToProps = (dispatch: Dispatch<Action>): HelpDeskScreenDispatchProps => ({
     ...mapBackButtonDispatchToProps(dispatch),
     requestTicketTemplates: () => dispatch(loadTicketTemplates()),
 });
 
-class HelpdeskScreenImpl extends Component<HelpdeskScreenProps & HelpdeskScreenDispatchProps> {
+class HelpDeskScreenImpl extends Component<HelpDeskScreenProps & HelpDeskScreenDispatchProps> {
     public componentDidMount() {
         this.props.requestTicketTemplates();
     }
@@ -39,4 +39,4 @@ class HelpdeskScreenImpl extends Component<HelpdeskScreenProps & HelpdeskScreenD
     }
 }
 
-export const HelpdeskScreen = connect(mapStateToProps, mapDispatchToProps)(HelpdeskScreenImpl);
+export const HelpDeskScreen = connect(mapStateToProps, mapDispatchToProps)(HelpDeskScreenImpl);

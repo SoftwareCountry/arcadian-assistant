@@ -3,7 +3,7 @@
  ******************************************************************************/
 
 import { Action, applyMiddleware, combineReducers, createStore } from 'redux';
-import { helpdeskEpics, helpdeskReducer, HelpdeskState } from './helpdesk/helpdesk.reducer';
+import { helpDeskEpics, helpDeskReducer, HelpDeskState } from './help-desk/help-desk.reducer';
 import { combineEpics, createEpicMiddleware } from 'redux-observable';
 import { organizationEpics, organizationReducer, OrganizationState } from './organization/organization.reducer';
 import { userInfoReducer, UserInfoState } from './user/user-info.reducer';
@@ -35,7 +35,7 @@ import { Department } from './organization/department.model';
 
 //============================================================================
 export interface AppState {
-    helpdesk?: HelpdeskState;
+    helpDesk?: HelpDeskState;
     organization?: OrganizationState;
     userInfo?: UserInfoState;
     feeds?: FeedsState;
@@ -151,7 +151,7 @@ export function getDepartment(state: AppState, employee: Optional<Employee>): Op
 
 //----------------------------------------------------------------------------
 const rootEpic = combineEpics(
-    helpdeskEpics as any,
+    helpDeskEpics as any,
     organizationEpics as any,
     userEpics as any,
     feedsEpics as any,
@@ -163,7 +163,7 @@ const rootEpic = combineEpics(
 
 //----------------------------------------------------------------------------
 const reducers = combineReducers<AppState>({
-    helpdesk: helpdeskReducer,
+    helpDesk: helpDeskReducer,
     organization: organizationReducer,
     userInfo: userInfoReducer,
     feeds: feedsReducer,
