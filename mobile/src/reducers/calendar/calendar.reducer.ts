@@ -22,7 +22,7 @@ import {
     sickLeaveSavedEpic$
 } from './sick-leave.epics';
 import { vacationCanceledEpic$, vacationChangedEpic$, vacationSavedEpic$ } from './vacation.epics';
-import { dayoffCanceledEpic$, dayoffSavedEpic$ } from './dayoff.epics';
+import { dayOffCanceledEpic$, dayOffSavedEpic$ } from './dayoff.epics';
 import { loadPendingRequestsEpic$ } from './pending-requests/pending-requests.epics';
 import { pendingRequestsReducer, PendingRequestsState } from './pending-requests/pending-requests.reducer';
 import { approve$, loadApprovals$ } from './approval.epics';
@@ -46,8 +46,8 @@ export const calendarEpics = combineEpics(
     vacationSavedEpic$,
     vacationCanceledEpic$,
     vacationChangedEpic$,
-    dayoffSavedEpic$,
-    dayoffCanceledEpic$,
+    dayOffSavedEpic$,
+    dayOffCanceledEpic$,
     intervalsBySingleDaySelectionEpic$,
     openEventDialogEpic$,
     closeEventDialogEpic$,

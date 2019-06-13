@@ -97,7 +97,7 @@ export const buttons = StyleSheet.create({
     }
 });
 
-export const switchDayoffTypeStyles = StyleSheet.create({
+export const switchDayOffTypeStyles = StyleSheet.create({
     container: {
         marginTop: 5,
         marginBottom: 5,

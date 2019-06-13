@@ -113,7 +113,7 @@ export class CalendarEventsColor {
     public static defaultColor = Style.color.black;
     public static vacation = '#2F80ED';
     public static sickLeave = '#F2C94C';
-    public static dayoff = '#EB5757';
+    public static dayOff = '#EB5757';
     public static workout = '#219653';
 
     private static noOpacity = '';
@@ -132,7 +132,7 @@ export class CalendarEventsColor {
                 break;
 
             case CalendarEventType.DayOff:
-                color = CalendarEventsColor.dayoff;
+                color = CalendarEventsColor.dayOff;
                 break;
 
             case CalendarEventType.Workout:

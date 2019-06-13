@@ -10,10 +10,10 @@ interface CalendarEventIconProps {
 
 export class CalendarEventIcon extends Component<CalendarEventIconProps> {
     private readonly eventTypeToGlyphIcon: { [key in CalendarEventType]: string } = {
-        [CalendarEventType.DayOff]: 'dayoff',
+        [CalendarEventType.DayOff]: 'day_off',
         [CalendarEventType.Vacation]: 'vacation',
         [CalendarEventType.SickLeave]: 'sick_leave',
-        [CalendarEventType.Workout]: 'dayoff'
+        [CalendarEventType.Workout]: 'day_off'
     };
 
     public render() {

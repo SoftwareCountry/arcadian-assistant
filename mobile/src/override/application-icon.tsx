@@ -5,7 +5,7 @@ const glyphMap = {
     'approve-tick': 0xE011,
     'birthday': 0xE001,
     'calendar': 0xE002,
-    'dayoff': 0xE004,
+    'day_off': 0xE004,
     'employees': 0xE012,
     'envelope': 0xE005,
     'feeds': 0xE006,

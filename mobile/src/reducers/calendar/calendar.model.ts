@@ -135,13 +135,13 @@ export interface CalendarSelection {
 //============================================================================
 export class ExtractedIntervals {
     public readonly vacation: Optional<IntervalModel> = undefined;
-    public readonly dayoff: Optional<IntervalModel> = undefined;
+    public readonly dayOff: Optional<IntervalModel> = undefined;
     public readonly sickLeave: Optional<IntervalModel> = undefined;
 
     constructor(intervals: Optional<IntervalModel[]>) {
         if (intervals) {
             this.vacation = intervals.find(x => x.calendarEvent.type === CalendarEventType.Vacation);
-            this.dayoff = intervals.find(x => x.calendarEvent.type === CalendarEventType.DayOff || x.calendarEvent.type === CalendarEventType.Workout);
+            this.dayOff = intervals.find(x => x.calendarEvent.type === CalendarEventType.DayOff || x.calendarEvent.type === CalendarEventType.Workout);
             this.sickLeave = intervals.find(x => x.calendarEvent.type === CalendarEventType.SickLeave);
         }
     }

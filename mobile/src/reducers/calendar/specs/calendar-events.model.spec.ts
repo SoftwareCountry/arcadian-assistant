@@ -268,9 +268,9 @@ describe('CalendarEvents', () => {
         expect(intervalsModel.metadata.calendarEvents.find(x => x === event3)).toBe(event3);
     });
 
-    describe('dayoff', () => {
+    describe('dayOff', () => {
 
-        const testDayoff = (testedEventType: CalendarEventType.DayOff | CalendarEventType.Workout) => {
+        const testDayOff = (testedEventType: CalendarEventType.DayOff | CalendarEventType.Workout) => {
             describe(testedEventType, () => {
                 it('should return interval left boundary, if interval [startWorkingHour, finishWorkingHour] is between [0, 4]', () => {
                     const date1 = moment({ day: 1, month: 0, year: 2018 });
@@ -354,8 +354,8 @@ describe('CalendarEvents', () => {
                 });
             });
 
-            testDayoff(CalendarEventType.DayOff);
-            testDayoff(CalendarEventType.Workout);
+            testDayOff(CalendarEventType.DayOff);
+            testDayOff(CalendarEventType.Workout);
         };
     });
 });

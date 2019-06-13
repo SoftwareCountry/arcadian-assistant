@@ -29,7 +29,7 @@ export const eventDialogReducer = (state: EventDialogState = initState, action: 
                 chosenHoursCreditType: HoursCreditType.DaysOff
             };
         }
-        case 'CHOSEN-TYPE-DAYOFF': {
+        case 'CHOSEN-TYPE-DAY-OFF': {
             return {
                 ...state,
                 chosenHoursCreditType: action.isWorkout ? HoursCreditType.Workout : HoursCreditType.DaysOff

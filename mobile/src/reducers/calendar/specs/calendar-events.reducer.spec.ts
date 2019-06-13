@@ -337,7 +337,7 @@ describe('calendar events reducer', () => {
         it('should not return intervals', () => {
             expect(state.selectedIntervalsBySingleDaySelection.sickLeave).toBeUndefined();
             expect(state.selectedIntervalsBySingleDaySelection.vacation).toBeUndefined();
-            expect(state.selectedIntervalsBySingleDaySelection.dayoff).toBeUndefined();
+            expect(state.selectedIntervalsBySingleDaySelection.dayOff).toBeUndefined();
         });
     });
 });

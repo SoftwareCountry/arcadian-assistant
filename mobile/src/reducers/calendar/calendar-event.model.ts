@@ -135,7 +135,7 @@ export class CalendarEvent {
         return this.type === CalendarEventType.Workout;
     }
 
-    public get isDayoff(): boolean {
+    public get isDayOff(): boolean {
         return this.type === CalendarEventType.DayOff;
     }
 }

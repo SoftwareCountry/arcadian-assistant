@@ -5,7 +5,7 @@ import { CalendarEventsColor } from './styles';
 import { CalendarEventType } from '../reducers/calendar/calendar-event.model';
 
 //============================================================================
-interface DayoffActionButtonProps {
+interface DayOffActionButtonProps {
     interval?: IntervalModel;
     disabled: boolean;
     process: () => void;
@@ -13,13 +13,13 @@ interface DayoffActionButtonProps {
 }
 
 //============================================================================
-interface DayoffCase {
+interface DayOffCase {
     disableCalendarButton: boolean;
     action: () => void;
 }
 
 //============================================================================
-export class DayoffActionButton extends Component<DayoffActionButtonProps> {
+export class DayOffActionButton extends Component<DayOffActionButtonProps> {
 
     //----------------------------------------------------------------------------
     public render() {
@@ -28,8 +28,8 @@ export class DayoffActionButton extends Component<DayoffActionButtonProps> {
         return (
             <CalendarActionButton
                 title={this.title}
-                borderColor={CalendarEventsColor.dayoff}
-                onPress={this.onDayoffAction}
+                borderColor={CalendarEventsColor.dayOff}
+                onPress={this.onDayOffAction}
                 disabled={this.props.disabled || disableCalendarAction}/>
         );
     }
@@ -37,31 +37,31 @@ export class DayoffActionButton extends Component<DayoffActionButtonProps> {
     //----------------------------------------------------------------------------
     public get title(): string {
         if (!this.props.interval) {
-            return 'Dayoff / Workout';
+            return 'Day off / Workout';
         }
 
-        return this.props.interval.calendarEvent.type === CalendarEventType.DayOff ? 'Edit Dayoff' : 'Edit Workout';
+        return this.props.interval.calendarEvent.type === CalendarEventType.DayOff ? 'Edit Day off' : 'Edit Workout';
     }
 
     //----------------------------------------------------------------------------
-    public onDayoffAction = () => {
-        const dayoffCase = this.dayoffCases();
+    public onDayOffAction = () => {
+        const dayOffCase = this.dayOffCases();
 
-        if (!dayoffCase) {
+        if (!dayOffCase) {
             return;
         }
 
-        dayoffCase.action();
+        dayOffCase.action();
     };
 
     //----------------------------------------------------------------------------
     private disableCalendarAction() {
-        const dayoffCase = this.dayoffCases();
-        return !dayoffCase || dayoffCase.disableCalendarButton;
+        const dayOffCase = this.dayOffCases();
+        return !dayOffCase || dayOffCase.disableCalendarButton;
     }
 
     //----------------------------------------------------------------------------
-    private dayoffCases(): DayoffCase | null {
+    private dayOffCases(): DayOffCase | null {
         const { interval, process, edit } = this.props;
 
         if (!interval) {

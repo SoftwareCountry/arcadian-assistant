@@ -18,7 +18,7 @@ import { EventDialogType } from './event-dialog-type.model';
 import { from, of } from 'rxjs';
 import { VacationActions } from '../vacation.action';
 import { SickLeaveActions } from '../sick-leave.action';
-import { DayoffActions } from '../dayoff.action';
+import { DayOffActions } from '../dayoff.action';
 import { flatMap, map } from 'rxjs/operators';
 
 export const openEventDialogEpic$ = (action$: ActionsObservable<OpenEventDialog>) =>
@@ -56,13 +56,13 @@ export const openEventDialogEpic$ = (action$: ActionsObservable<OpenEventDialog>
                 case EventDialogType.ChangeVacationEndDate:
                     return [calendarSelectionMode(CalendarSelectionModeType.Interval, CalendarEventsColor.vacation)];
 
-                case EventDialogType.ProcessDayoff:
+                case EventDialogType.ProcessDayOff:
                     return calendarSelectionMode(CalendarSelectionModeType.SingleDay);
 
-                case EventDialogType.ConfirmDayoffStartDate:
+                case EventDialogType.ConfirmDayOffStartDate:
                     return disableCalendarSelection(true);
 
-                case EventDialogType.EditDayoff:
+                case EventDialogType.EditDayOff:
                     return [disableCalendarSelection(true)];
 
                 default:
@@ -83,13 +83,13 @@ export const closeEventDialogEpic$ = (action$: ActionsObservable<EventDialogActi
             stopEventDialogProgress()
         )));
 
-export const startEventDialogProgressEpic$ = (action$: ActionsObservable<VacationActions | SickLeaveActions | DayoffActions>) =>
+export const startEventDialogProgressEpic$ = (action$: ActionsObservable<VacationActions | SickLeaveActions | DayOffActions>) =>
     action$.ofType(
         'CANCEL-SICK-LEAVE',
         'CANCEL-VACATION',
-        'CANCEL-DAYOFF',
+        'CANCEL-DAY-OFF',
         'CONFIRM-VACATION-CHANGE',
-        'CONFIRM-PROCESS-DAYOFF',
+        'CONFIRM-PROCESS-DAY-OFF',
         'CONFIRM-CLAIM-SICK-LEAVE',
         'CONFIRM-VACATION',
         'CONFIRM-PROLONG-SICK-LEAVE',

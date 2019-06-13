@@ -1,5 +1,5 @@
 import { EventDialogType } from './event-dialog-type.model';
-import { ChosenTypeDayoff } from '../dayoff.action';
+import { ChosenTypeDayOff } from '../dayoff.action';
 import { Action } from 'redux';
 
 export interface OpenEventDialog extends Action {
@@ -33,6 +33,6 @@ export const stopEventDialogProgress = (): StopEventDialogProgress => ({ type: '
 export type EventDialogActions =
     OpenEventDialog
     | CloseEventDialog
-    | ChosenTypeDayoff
+    | ChosenTypeDayOff
     | StartEventDialogProgress
     | StopEventDialogProgress;

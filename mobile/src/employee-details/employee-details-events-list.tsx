@@ -52,7 +52,7 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
         [VacationStatus.Rejected]: 'rejected',
     };
 
-    private readonly dayoffWorkoutDescriptions: { [key in DayOffWorkoutStatus]: string } = {
+    private readonly dayOffWorkoutDescriptions: { [key in DayOffWorkoutStatus]: string } = {
         [DayOffWorkoutStatus.Requested]: 'waiting for approvals',
         [DayOffWorkoutStatus.Approved]: 'confirmed',
         [DayOffWorkoutStatus.Cancelled]: 'cancelled',
@@ -170,7 +170,7 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
         const endDate = event.dates.endDate.format(this.eventDigitsDateFormat);
         const hours = this.props.hoursToIntervalTitle(event.dates.startWorkingHour, event.dates.finishWorkingHour);
 
-        if (event.isWorkout || event.isDayoff) {
+        if (event.isWorkout || event.isDayOff) {
             description = `on ${startDate} (${hours})`;
         } else {
             description = `from ${startDate} to ${endDate}`;
@@ -190,9 +190,9 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
             case CalendarEventType.SickLeave:
                 return `Sick leave: ${this.sickLeaveDescriptions[status as SickLeaveStatus]}`;
             case CalendarEventType.DayOff:
-                return `Dayoff: ${this.dayoffWorkoutDescriptions[status as DayOffWorkoutStatus]}`;
+                return `Day off: ${this.dayOffWorkoutDescriptions[status as DayOffWorkoutStatus]}`;
             case CalendarEventType.Workout:
-                return `Workout: ${this.dayoffWorkoutDescriptions[status as DayOffWorkoutStatus]}`;
+                return `Workout: ${this.dayOffWorkoutDescriptions[status as DayOffWorkoutStatus]}`;
         }
     }
 

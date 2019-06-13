@@ -9,17 +9,17 @@ import { Action, Dispatch } from 'redux';
 import { closeEventDialog } from '../../reducers/calendar/event-dialog/event-dialog.action';
 
 //============================================================================
-interface DayoffRequestedDialogDispatchProps {
+interface DayOffRequestedDialogDispatchProps {
     closeDialog: () => void;
 }
 
 //============================================================================
-class DayoffRequestedDialogImpl extends Component<DayoffRequestedDialogDispatchProps> {
+class DayOffRequestedDialogImpl extends Component<DayOffRequestedDialogDispatchProps> {
     public render() {
         return <EventDialogBase
-            title={'Dayoff requested'}
-            text={'Your dayoff request will be shortly reviewed by your supervisor'}
-            icon={'dayoff'}
+            title={'Day off requested'}
+            text={'Your day off request will be shortly reviewed by your supervisor'}
+            icon={'day_off'}
             acceptLabel={'Ok'}
             onAcceptPress={this.props.closeDialog}
             onClosePress={this.props.closeDialog}/>;
@@ -27,10 +27,10 @@ class DayoffRequestedDialogImpl extends Component<DayoffRequestedDialogDispatchP
 }
 
 //----------------------------------------------------------------------------
-const mapDispatchToProps = (dispatch: Dispatch<Action>): DayoffRequestedDialogDispatchProps => ({
+const mapDispatchToProps = (dispatch: Dispatch<Action>): DayOffRequestedDialogDispatchProps => ({
     closeDialog: () => {
         dispatch(closeEventDialog());
     },
 });
 
-export const DayoffRequestedDialog = connect(undefined, mapDispatchToProps)(DayoffRequestedDialogImpl);
+export const DayOffRequestedDialog = connect(undefined, mapDispatchToProps)(DayOffRequestedDialogImpl);

@@ -357,7 +357,7 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
                 text: allVacationDaysCounter.toString(),
             },
             {
-                icon: 'dayoff',
+                icon: 'day_off',
                 iconSize: 35,
                 title: capitalizeFirstLetter(hoursCreditCounter.title.join(' ')),
                 text: hoursCreditCounter.toString(),

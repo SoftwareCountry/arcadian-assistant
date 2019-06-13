@@ -1,26 +1,26 @@
 import React, { Component } from 'react';
 import { LayoutChangeEvent, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { IntervalBoundary } from '../calendar-page-interval-boundary';
-import { switchDayoffTypeStyles } from './styles';
+import { switchDayOffTypeStyles } from './styles';
 import { CalendarEventsColor } from '../styles';
 import { IntervalType } from '../../reducers/calendar/calendar.model';
 
 //============================================================================
-interface SelectorDayoffDurationProps {
+interface SelectorDayOffDurationProps {
     onIntervalTypeSelected: (selectedType: IntervalType) => void;
     isWorkout: boolean;
 }
 
 //============================================================================
-interface SelectorDayoffDurationState {
+interface SelectorDayOffDurationState {
     containerHeight: number;
 }
 
 //============================================================================
-export class SelectorDayoffDuration extends Component<SelectorDayoffDurationProps, SelectorDayoffDurationState> {
+export class SelectorDayOffDuration extends Component<SelectorDayOffDurationProps, SelectorDayOffDurationState> {
 
     //----------------------------------------------------------------------------
-    constructor(props: SelectorDayoffDurationProps) {
+    constructor(props: SelectorDayOffDurationProps) {
         super(props);
         this.state = {
             containerHeight: 0
@@ -31,20 +31,20 @@ export class SelectorDayoffDuration extends Component<SelectorDayoffDurationProp
     public render() {
         const boundaryColor = this.props.isWorkout
             ? CalendarEventsColor.workout
-            : CalendarEventsColor.dayoff;
+            : CalendarEventsColor.dayOff;
 
         return (
-            <View style={switchDayoffTypeStyles.container} onLayout={this.onContainerLayout}>
+            <View style={switchDayOffTypeStyles.container} onLayout={this.onContainerLayout}>
                 {
                     this.state.containerHeight !== 0 ?
-                        <View style={switchDayoffTypeStyles.intervalBoundaries}>
+                        <View style={switchDayOffTypeStyles.intervalBoundaries}>
                             <TouchableOpacity onPress={this.onFullDaySelected}>
                                 <IntervalBoundary
                                     color={boundaryColor}
                                     boundary={'full'}
                                     size={this.state.containerHeight}
-                                    style={switchDayoffTypeStyles.intervalBoundary as ViewStyle}
-                                    circleStyle={switchDayoffTypeStyles.intervalBoundary as ViewStyle}/>
+                                    style={switchDayOffTypeStyles.intervalBoundary as ViewStyle}
+                                    circleStyle={switchDayOffTypeStyles.intervalBoundary as ViewStyle}/>
                             </TouchableOpacity>
 
                             <TouchableOpacity onPress={this.onFirstHalfSelected}>
@@ -52,8 +52,8 @@ export class SelectorDayoffDuration extends Component<SelectorDayoffDurationProp
                                     color={boundaryColor}
                                     boundary={'left'}
                                     size={this.state.containerHeight}
-                                    style={switchDayoffTypeStyles.intervalBoundary as ViewStyle}
-                                    circleStyle={switchDayoffTypeStyles.intervalBoundary as ViewStyle}/>
+                                    style={switchDayOffTypeStyles.intervalBoundary as ViewStyle}
+                                    circleStyle={switchDayOffTypeStyles.intervalBoundary as ViewStyle}/>
                             </TouchableOpacity>
 
                             <TouchableOpacity onPress={this.onSecondHalfSelected}>
@@ -61,8 +61,8 @@ export class SelectorDayoffDuration extends Component<SelectorDayoffDurationProp
                                     color={boundaryColor}
                                     boundary={'right'}
                                     size={this.state.containerHeight}
-                                    style={switchDayoffTypeStyles.intervalBoundary as ViewStyle}
-                                    circleStyle={switchDayoffTypeStyles.intervalBoundary as ViewStyle}/>
+                                    style={switchDayOffTypeStyles.intervalBoundary as ViewStyle}
+                                    circleStyle={switchDayOffTypeStyles.intervalBoundary as ViewStyle}/>
                             </TouchableOpacity>
                         </View>
                         : null

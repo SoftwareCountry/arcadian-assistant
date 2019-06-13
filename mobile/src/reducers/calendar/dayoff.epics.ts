@@ -1,13 +1,7 @@
 import { ActionsObservable, StateObservable } from 'redux-observable';
-import { CancelDayoff, ConfirmProcessDayoff } from './dayoff.action';
+import { CancelDayOff, ConfirmProcessDayOff } from './dayoff.action';
 import { AppState, DependenciesContainer } from '../app.reducer';
-import {
-    CalendarEvent,
-    CalendarEventStatus,
-    CalendarEventType, GeneralCalendarEventStatus,
-    DatesInterval,
-    DayOffWorkoutStatus
-} from './calendar-event.model';
+import { CalendarEvent, CalendarEventType, DatesInterval, DayOffWorkoutStatus } from './calendar-event.model';
 import { IntervalTypeConverter } from './interval-type-converter';
 import { getEventsAndPendingRequests } from './calendar.epics';
 import { flatMap } from 'rxjs/operators';
@@ -17,8 +11,8 @@ import { Action } from 'redux';
 import { handleHttpErrorsWithDefaultValue } from '../../errors/error.operators';
 import { of } from 'rxjs';
 
-export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
-    action$.ofType('CONFIRM-PROCESS-DAYOFF').pipe(
+export const dayOffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayOff>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
+    action$.ofType('CONFIRM-PROCESS-DAY-OFF').pipe(
         flatMap(x => {
             const calendarEvents = new CalendarEvent();
 
@@ -39,7 +33,7 @@ export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff
 
             let next: Action[] | undefined;
             if (!x.isWorkout) {
-                next = [stopEventDialogProgress(), openEventDialog(EventDialogType.DayoffRequested)];
+                next = [stopEventDialogProgress(), openEventDialog(EventDialogType.DayOffRequested)];
             }
 
             return deps.apiClient.post(
@@ -53,8 +47,8 @@ export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff
         }),
     );
 
-export const dayoffCanceledEpic$ = (action$: ActionsObservable<CancelDayoff>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
-    action$.ofType('CANCEL-DAYOFF').pipe(
+export const dayOffCanceledEpic$ = (action$: ActionsObservable<CancelDayOff>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
+    action$.ofType('CANCEL-DAY-OFF').pipe(
         flatMap(x => {
             const requestBody = { ...x.calendarEvent };
 
