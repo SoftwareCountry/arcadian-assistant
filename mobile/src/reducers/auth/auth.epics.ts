@@ -6,12 +6,16 @@ import { ActionsObservable } from 'redux-observable';
 import { DependenciesContainer } from '../app.reducer';
 import {
     AuthActionType,
-    jwtTokenSet, PinLoad, LoadRefreshToken, pinLoaded, refreshTokenLoaded,
-    UserLoggedIn, PinStore,
+    jwtTokenSet,
+    LoadRefreshToken,
+    PinLoad,
+    pinLoaded,
+    PinStore,
+    refreshTokenLoaded,
+    UserLoggedIn,
 } from './auth.action';
 import { refresh } from '../refresh/refresh.action';
 import { ignoreElements, map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
 import { fromPromise } from 'rxjs/internal-compatibility';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
 import { tap } from 'rxjs/internal/operators/tap';

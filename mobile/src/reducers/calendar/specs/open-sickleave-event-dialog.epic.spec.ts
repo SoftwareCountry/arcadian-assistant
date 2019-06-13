@@ -9,7 +9,7 @@ import { Action } from 'redux';
 import { filter } from 'rxjs/operators';
 
 describe('openEventDialogEpic', () => {
-    describe('when claim sickleave', () => {
+    describe('when claim sick leave', () => {
         it('should select single day selection mode', (done) => {
             const action$ = ActionsObservable.of(openEventDialog(EventDialogType.ClaimSickLeave));
 
@@ -20,7 +20,7 @@ describe('openEventDialogEpic', () => {
         });
     });
 
-    describe('when confirm start date sickleave', () => {
+    describe('when confirm start date sick leave', () => {
         it('should select interval selection mode', (done) => {
             const action$ = ActionsObservable.of(openEventDialog(EventDialogType.ConfirmStartDateSickLeave));
 
@@ -31,7 +31,7 @@ describe('openEventDialogEpic', () => {
         });
     });
 
-    describe('when edit sickleave', () => {
+    describe('when edit sick leave', () => {
         let action$: ActionsObservable<OpenEventDialog>;
 
         beforeEach(() => {
@@ -57,7 +57,7 @@ describe('openEventDialogEpic', () => {
         });
     });
 
-    describe('when prolong sickleave', () => {
+    describe('when prolong sick leave', () => {
         it('should select interval selection mode', (done) => {
             const action$ = ActionsObservable.of(openEventDialog(EventDialogType.ProlongSickLeave));
 

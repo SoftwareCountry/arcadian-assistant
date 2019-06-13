@@ -7,7 +7,6 @@ import { Alert, TouchableOpacity, View } from 'react-native';
 import { ApplicationIcon } from '../override/application-icon';
 import { layoutStylesForEventManagementToolset } from './styles';
 import { EventAction, EventActionContainer, EventActionType } from './event-action-provider';
-import { capitalizeFirstLetter } from '../utils/string';
 
 //============================================================================
 interface EventManagementToolsetProps {

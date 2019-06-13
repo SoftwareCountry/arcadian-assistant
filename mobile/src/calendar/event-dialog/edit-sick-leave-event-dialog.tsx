@@ -98,11 +98,11 @@ class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogPro
 
     //----------------------------------------------------------------------------
     private getSickLeaveStartDate(): Nullable<string> {
-        if (!this.props.intervals || !this.props.intervals.sickleave) {
+        if (!this.props.intervals || !this.props.intervals.sickLeave) {
             return null;
         }
 
-        return this.props.intervals.sickleave.calendarEvent.dates.startDate.format(eventDialogTextDateFormat);
+        return this.props.intervals.sickLeave.calendarEvent.dates.startDate.format(eventDialogTextDateFormat);
     }
 
     //----------------------------------------------------------------------------
@@ -110,11 +110,11 @@ class EditSickLeaveEventDialogImpl extends Component<EditSickLeaveEventDialogPro
         const { userEmployee, intervals } = this.props;
 
         // noinspection RedundantIfStatementJS
-        if (!userEmployee || !intervals || !intervals.sickleave) {
+        if (!userEmployee || !intervals || !intervals.sickLeave) {
             return undefined;
         }
 
-        return { userEmployee: userEmployee, calendarEvent: intervals.sickleave.calendarEvent };
+        return { userEmployee: userEmployee, calendarEvent: intervals.sickLeave.calendarEvent };
     };
 }
 

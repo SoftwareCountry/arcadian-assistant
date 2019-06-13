@@ -1,7 +1,7 @@
 import { createAppContainer, createBottomTabNavigator, TabNavigatorConfig } from 'react-navigation';
 import React from 'react';
 import tabBarStyles from './tab-bar-styles';
-import tabbarModel from './tab-bar-model';
+import tabBarModel from './tab-bar-model';
 
 const tabNavigatorConfig: TabNavigatorConfig = {
     tabBarPosition: 'bottom',
@@ -18,6 +18,6 @@ const tabNavigatorConfig: TabNavigatorConfig = {
 };
 
 export const RootNavigator = createAppContainer(createBottomTabNavigator(
-    tabbarModel,
+    tabBarModel,
     tabNavigatorConfig,
 ));

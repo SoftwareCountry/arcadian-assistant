@@ -1,4 +1,4 @@
-import { LoginRequest, RefreshToken } from './login-request';
+import { LoginRequest } from './login-request';
 import { JwtTokenHandler } from './jwt-token-handler';
 
 export class OAuthProcess {
@@ -12,7 +12,7 @@ export class OAuthProcess {
         tokenUrl: string,
         redirectUri: string,
         public readonly jwtTokenHandler: JwtTokenHandler //TODO: public so far
-        ) {
+    ) {
 
         this.loginRequest = new LoginRequest(clientId, redirectUri, authorizationUrl, tokenUrl);
     }

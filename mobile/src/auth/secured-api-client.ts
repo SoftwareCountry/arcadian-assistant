@@ -5,7 +5,7 @@
 import { ajax } from 'rxjs/ajax';
 import { flatMap, map } from 'rxjs/operators';
 import { JwtTokenHandler } from './jwt-token-handler';
-import { of, from } from 'rxjs';
+import { from } from 'rxjs';
 
 //============================================================================
 export class SecuredApiClient {
@@ -44,8 +44,8 @@ export class SecuredApiClient {
         const jwtToken = this.jwtTokenHandler.get();
         return from(jwtToken).pipe(
             map(x => ({
-            ...headers,
-            'Authorization': `Bearer ${x.value}`
-        })));
+                ...headers,
+                'Authorization': `Bearer ${x.value}`
+            })));
     }
 }

@@ -17,13 +17,13 @@ export const confirmVacation = (employeeId: string, startDate: Moment, endDate: 
 });
 
 export interface CancelVacation extends Action {
-    type: 'CANCEL-VACACTION';
+    type: 'CANCEL-VACATION';
     employeeId: string;
     calendarEvent: CalendarEvent;
 }
 
 export const cancelVacation = (employeeId: string, calendarEvent: CalendarEvent): CancelVacation => ({
-    type: 'CANCEL-VACACTION',
+    type: 'CANCEL-VACATION',
     calendarEvent,
     employeeId
 });

@@ -42,15 +42,15 @@ export class ProlongSickLeaveEventDialogImpl extends Component<ProlongSickLeaveE
     }
 
     public get text(): string {
-        if (!this.props.intervalsBySingleDaySelection || !this.props.intervalsBySingleDaySelection.sickleave ||
+        if (!this.props.intervalsBySingleDaySelection || !this.props.intervalsBySingleDaySelection.sickLeave ||
             !this.props.intervalSelection || !this.props.intervalSelection.endDay) {
             return '';
         }
 
-        const { intervalsBySingleDaySelection: { sickleave } } = this.props;
+        const { intervalsBySingleDaySelection: { sickLeave } } = this.props;
 
-        const startDate = sickleave
-            ? sickleave.calendarEvent.dates.startDate.format(eventDialogTextDateFormat)
+        const startDate = sickLeave
+            ? sickLeave.calendarEvent.dates.startDate.format(eventDialogTextDateFormat)
             : '';
 
         const endDate = this.isProlongEndDateValid()
@@ -66,14 +66,14 @@ export class ProlongSickLeaveEventDialogImpl extends Component<ProlongSickLeaveE
 
     private onAcceptClick = () => {
         if (!this.props.userEmployee || !this.props.intervalsBySingleDaySelection ||
-            !this.props.intervalsBySingleDaySelection.sickleave || !this.props.intervalSelection ||
+            !this.props.intervalsBySingleDaySelection.sickLeave || !this.props.intervalSelection ||
             !this.props.intervalSelection.endDay || !this.props.intervalSelection.endDay.date) {
             return;
         }
 
         this.props.confirmProlong(
             this.props.userEmployee.employeeId,
-            this.props.intervalsBySingleDaySelection.sickleave.calendarEvent,
+            this.props.intervalsBySingleDaySelection.sickLeave.calendarEvent,
             this.props.intervalSelection.endDay.date);
     };
 
@@ -83,7 +83,7 @@ export class ProlongSickLeaveEventDialogImpl extends Component<ProlongSickLeaveE
 
     private isProlongEndDateValid(): boolean {
         if (!this.props.userEmployee || !this.props.intervalsBySingleDaySelection ||
-            !this.props.intervalsBySingleDaySelection.sickleave || !this.props.intervalSelection ||
+            !this.props.intervalsBySingleDaySelection.sickLeave || !this.props.intervalSelection ||
             !this.props.intervalSelection.endDay || !this.props.intervalSelection.endDay.date) {
             return false;
         }
@@ -96,7 +96,7 @@ export class ProlongSickLeaveEventDialogImpl extends Component<ProlongSickLeaveE
             return false;
         }
 
-        return selectedEndDate.isAfter(this.props.intervalsBySingleDaySelection.sickleave.calendarEvent.dates.endDate, 'days');
+        return selectedEndDate.isAfter(this.props.intervalsBySingleDaySelection.sickLeave.calendarEvent.dates.endDate, 'days');
     }
 }
 

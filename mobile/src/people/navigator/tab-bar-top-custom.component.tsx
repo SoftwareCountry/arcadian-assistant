@@ -7,7 +7,7 @@ import { AppState, getEmployee } from '../../reducers/app.reducer';
 import { Nullable, Optional } from 'types';
 import { toNullable } from '../../types/types-utils';
 import { StyledText } from '../../override/styled-text';
-import tabBarStyles from '../../tabbar/tab-bar-styles';
+import tabBarStyles from '../../tab-bar/tab-bar-styles';
 import { StyleSheet } from 'react-native';
 
 //============================================================================

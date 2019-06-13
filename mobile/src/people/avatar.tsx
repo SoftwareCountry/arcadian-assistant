@@ -5,7 +5,6 @@ import { AppState } from '../reducers/app.reducer';
 import { Nullable } from 'types';
 import FastImage from 'react-native-fast-image';
 import { avatarStyles } from './styles';
-import Style from '../layout/style';
 
 //============================================================================
 export interface AvatarOwnProps {

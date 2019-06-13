@@ -71,4 +71,4 @@ export class CalendarActionButton extends Component<CalendarActionButtonProps, C
     };
 }
 
-export const CalendarActionButtonSeparator = () => <View style={calendarActionsStyles.separator}></View>;
+export const CalendarActionButtonSeparator = () => <View style={calendarActionsStyles.separator}/>;

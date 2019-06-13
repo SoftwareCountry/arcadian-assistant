@@ -58,7 +58,7 @@ export class HoursCreditCounter implements DaysCounter {
             [HoursCreditType.DaysOff]: 'available'
         };
 
-        return ['daysoff', phrases[this.type]];
+        return ['days off', phrases[this.type]];
     }
 
     private get type(): HoursCreditType {
