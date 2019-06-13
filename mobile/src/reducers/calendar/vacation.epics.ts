@@ -43,7 +43,7 @@ export const vacationSavedEpic$ = (action$: ActionsObservable<ConfirmClaimVacati
     );
 
 export const vacationCanceledEpic$ = (action$: ActionsObservable<CancelVacation>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
-    action$.ofType('CANCEL-VACACTION').pipe(
+    action$.ofType('CANCEL-VACATION').pipe(
         flatMap(x => {
             const requestBody = { ...x.calendarEvent };
 

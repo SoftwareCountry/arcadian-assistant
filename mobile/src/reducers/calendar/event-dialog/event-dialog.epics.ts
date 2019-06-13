@@ -86,13 +86,12 @@ export const closeEventDialogEpic$ = (action$: ActionsObservable<EventDialogActi
 export const startEventDialogProgressEpic$ = (action$: ActionsObservable<VacationActions | SickLeaveActions | DayoffActions>) =>
     action$.ofType(
         'CANCEL-SICK-LEAVE',
-        'CANCEL-VACACTION',
+        'CANCEL-VACATION',
+        'CANCEL-DAYOFF',
         'CONFIRM-VACATION-CHANGE',
         'CONFIRM-PROCESS-DAYOFF',
         'CONFIRM-CLAIM-SICK-LEAVE',
         'CONFIRM-VACATION',
-        'CANCEL-DAYOFF',
-        'CANCEL-VACACTION',
         'CONFIRM-PROLONG-SICK-LEAVE',
         'COMPLETE-SICK-LEAVE'
     ).pipe(
