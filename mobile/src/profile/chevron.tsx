@@ -30,7 +30,7 @@ export class Chevron extends Component<ChevronProps, ChevronState> {
 
         return (
             <View style={chevronStyles.container} onLayout={this.onLayout}>
-                <View style={rectangleStyles}></View>
+                <View style={rectangleStyles}/>
             </View>
         );
     }

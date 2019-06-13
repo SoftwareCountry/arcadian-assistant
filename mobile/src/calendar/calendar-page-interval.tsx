@@ -19,8 +19,8 @@ export class HalfInterval extends Component<HalfIntervalProps> {
 
         return (
             <View style={containerStyles}>
-                <View style={circleStyles}></View>
-                <View style={intervalStyles}></View>
+                <View style={circleStyles}/>
+                <View style={intervalStyles}/>
             </View>
         );
     }

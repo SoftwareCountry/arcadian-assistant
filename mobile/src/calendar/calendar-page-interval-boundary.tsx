@@ -85,7 +85,7 @@ export class IntervalBoundary extends Component<IntervalBoundaryProps> {
 
         return (
             <View style={circleStyles}>
-                <View style={fullStyles}></View>
+                <View style={fullStyles}/>
             </View>
         );
     }
@@ -122,8 +122,8 @@ export class IntervalBoundary extends Component<IntervalBoundaryProps> {
 
         return (
             <View style={circleStyles}>
-                <View style={leftHalfStyles}></View>
-                <View style={rightHalfStyles}></View>
+                <View style={leftHalfStyles}/>
+                <View style={rightHalfStyles}/>
             </View>
         );
     }
