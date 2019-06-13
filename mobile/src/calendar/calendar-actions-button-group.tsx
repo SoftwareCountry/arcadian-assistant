@@ -63,7 +63,7 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & A
 
                 <SickLeaveActionButton
                     allIntervals={allIntervals}
-                    interval={intervalsBySingleDaySelection.sickleave}
+                    interval={intervalsBySingleDaySelection.sickLeave}
                     disabled={this.props.disableActionButtons}
                     {...this.props.sickLeaveActions} />
                 <CalendarActionButtonSeparator/>

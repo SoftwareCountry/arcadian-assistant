@@ -127,11 +127,11 @@ export class CalendarEventsColor {
                 color = CalendarEventsColor.vacation;
                 break;
 
-            case CalendarEventType.Sickleave:
+            case CalendarEventType.SickLeave:
                 color = CalendarEventsColor.sickLeave;
                 break;
 
-            case CalendarEventType.Dayoff:
+            case CalendarEventType.DayOff:
                 color = CalendarEventsColor.dayoff;
                 break;
 

@@ -11,7 +11,7 @@ import {
     CalendarEventStatus,
     CalendarEventType,
     GeneralCalendarEventStatus,
-    DatesInterval, SickleaveStatus
+    DatesInterval, SickLeaveStatus
 } from './calendar-event.model';
 import { deserialize } from 'santee-dcts';
 import { getEventsAndPendingRequests } from './calendar.epics';
@@ -26,7 +26,7 @@ export const sickLeaveSavedEpic$ = (action$: ActionsObservable<ConfirmClaimSickL
         flatMap(x => {
             const calendarEvents = new CalendarEvent();
 
-            calendarEvents.type = CalendarEventType.Sickleave;
+            calendarEvents.type = CalendarEventType.SickLeave;
 
             calendarEvents.dates = new DatesInterval();
             calendarEvents.dates.startDate = x.startDate;
@@ -34,7 +34,7 @@ export const sickLeaveSavedEpic$ = (action$: ActionsObservable<ConfirmClaimSickL
             calendarEvents.dates.startWorkingHour = 0;
             calendarEvents.dates.finishWorkingHour = 8;
 
-            calendarEvents.status = SickleaveStatus.Requested;
+            calendarEvents.status = SickLeaveStatus.Requested;
 
             return deps.apiClient.post(
                 `/employees/${x.employeeId}/events`,
@@ -54,7 +54,7 @@ export const sickLeaveCompletedEpic$ = (action$: ActionsObservable<CompleteSickL
 
             const requestBody = { ...x.calendarEvent };
 
-            requestBody.status = SickleaveStatus.Completed;
+            requestBody.status = SickLeaveStatus.Completed;
 
             return deps.apiClient.put(
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,
@@ -94,7 +94,7 @@ export const sickLeaveCanceledEpic$ = (action$: ActionsObservable<CancelSickLeav
 
             const requestBody = { ...x.calendarEvent };
 
-            requestBody.status = SickleaveStatus.Cancelled;
+            requestBody.status = SickLeaveStatus.Cancelled;
 
             return deps.apiClient.put(
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,

@@ -28,7 +28,7 @@ export class CalendarEvents {
         for (let calendarEvent of this.calendarEvents) {
             const start = moment(calendarEvent.dates.startDate);
 
-            if (calendarEvent.type === CalendarEventType.Dayoff || calendarEvent.type === CalendarEventType.Workout) {
+            if (calendarEvent.type === CalendarEventType.DayOff || calendarEvent.type === CalendarEventType.Workout) {
                 this.buildIntervalBoundary(start, intervalsModel, calendarEvent);
                 continue;
             }

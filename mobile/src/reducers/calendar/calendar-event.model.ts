@@ -3,8 +3,8 @@ import moment, { Moment } from 'moment';
 
 export enum CalendarEventType {
     Vacation = 'Vacation',
-    Sickleave = 'Sickleave',
-    Dayoff = 'Dayoff',
+    SickLeave = 'Sickleave',
+    DayOff = 'Dayoff',
     Workout = 'Workout',
 }
 
@@ -24,20 +24,20 @@ export enum VacationStatus {
     Processed = 'Processed',
 }
 
-export enum SickleaveStatus {
+export enum SickLeaveStatus {
     Requested = 'Requested',
     Cancelled = 'Cancelled',
     Completed = 'Completed',
 }
 
-export enum DayoffWorkoutStatus {
+export enum DayOffWorkoutStatus {
     Requested = 'Requested',
     Cancelled = 'Cancelled',
     Approved = 'Approved',
     Rejected = 'Rejected',
 }
 
-export type CalendarEventStatus = GeneralCalendarEventStatus | VacationStatus | SickleaveStatus | DayoffWorkoutStatus;
+export type CalendarEventStatus = GeneralCalendarEventStatus | VacationStatus | SickLeaveStatus | DayOffWorkoutStatus;
 
 export class DatesInterval {
     private static dateFormat = 'MM/DD/YYYY';
@@ -100,7 +100,7 @@ export class CalendarEvent {
     }
 
     public get isCompleted(): boolean {
-        return this.type === CalendarEventType.Sickleave && this.status === SickleaveStatus.Completed;
+        return this.type === CalendarEventType.SickLeave && this.status === SickLeaveStatus.Completed;
     }
 
     public get isCancelled(): boolean {
@@ -108,8 +108,8 @@ export class CalendarEvent {
     }
 
     public get isApproved(): boolean {
-        if (this.type === CalendarEventType.Sickleave) {
-            return this.status === SickleaveStatus.Requested;
+        if (this.type === CalendarEventType.SickLeave) {
+            return this.status === SickLeaveStatus.Requested;
         }
 
         return this.status === GeneralCalendarEventStatus.Approved;
@@ -124,7 +124,7 @@ export class CalendarEvent {
     }
 
     public get isSickLeave(): boolean {
-        return this.type === CalendarEventType.Sickleave;
+        return this.type === CalendarEventType.SickLeave;
     }
 
     public get isVacation(): boolean {
@@ -136,6 +136,6 @@ export class CalendarEvent {
     }
 
     public get isDayoff(): boolean {
-        return this.type === CalendarEventType.Dayoff;
+        return this.type === CalendarEventType.DayOff;
     }
 }

@@ -6,7 +6,7 @@ import {
     CalendarEventStatus,
     CalendarEventType, GeneralCalendarEventStatus,
     DatesInterval,
-    DayoffWorkoutStatus
+    DayOffWorkoutStatus
 } from './calendar-event.model';
 import { IntervalTypeConverter } from './interval-type-converter';
 import { getEventsAndPendingRequests } from './calendar.epics';
@@ -22,7 +22,7 @@ export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff
         flatMap(x => {
             const calendarEvents = new CalendarEvent();
 
-            calendarEvents.type = x.isWorkout ? CalendarEventType.Workout : CalendarEventType.Dayoff;
+            calendarEvents.type = x.isWorkout ? CalendarEventType.Workout : CalendarEventType.DayOff;
 
             calendarEvents.dates = new DatesInterval();
             calendarEvents.dates.startDate = x.date;
@@ -35,7 +35,7 @@ export const dayoffSavedEpic$ = (action$: ActionsObservable<ConfirmProcessDayoff
                 calendarEvents.dates.finishWorkingHour = hours.finishHour;
             }
 
-            calendarEvents.status = DayoffWorkoutStatus.Requested;
+            calendarEvents.status = DayOffWorkoutStatus.Requested;
 
             let next: Action[] | undefined;
             if (!x.isWorkout) {
@@ -58,7 +58,7 @@ export const dayoffCanceledEpic$ = (action$: ActionsObservable<CancelDayoff>, _:
         flatMap(x => {
             const requestBody = { ...x.calendarEvent };
 
-            requestBody.status = DayoffWorkoutStatus.Cancelled;
+            requestBody.status = DayOffWorkoutStatus.Cancelled;
 
             return deps.apiClient.put(
                 `/employees/${x.employeeId}/events/${x.calendarEvent.calendarEventId}`,

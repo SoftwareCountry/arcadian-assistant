@@ -107,7 +107,7 @@ describe('CalendarEvents', () => {
 
         const event2 = new CalendarEvent();
         event2.calendarEventId = '1';
-        event2.type = CalendarEventType.Sickleave;
+        event2.type = CalendarEventType.SickLeave;
         event2.dates = new DatesInterval();
         event2.dates.startDate = moment(date2);
         event2.dates.endDate = moment(date2);
@@ -134,7 +134,7 @@ describe('CalendarEvents', () => {
         expect(intervals![0].calendarEvent.dates.startDate).toBe(event1.dates.startDate);
         expect(intervals![0].calendarEvent.dates.endDate).toBe(event1.dates.endDate);
         expect(intervals![1].intervalType).toBe(IntervalType.StartInterval);
-        expect(intervals![1].calendarEvent.type).toBe(CalendarEventType.Sickleave);
+        expect(intervals![1].calendarEvent.type).toBe(CalendarEventType.SickLeave);
         expect(intervals![1].calendarEvent.dates.startDate).toBe(event2.dates.startDate);
         expect(intervals![1].calendarEvent.dates.endDate).toBe(event2.dates.endDate);
 
@@ -147,7 +147,7 @@ describe('CalendarEvents', () => {
         expect(intervals![0].calendarEvent.dates.startDate).toBe(event1.dates.startDate);
         expect(intervals![0].calendarEvent.dates.endDate).toBe(event1.dates.endDate);
         expect(intervals![1].intervalType).toBe(IntervalType.Interval);
-        expect(intervals![1].calendarEvent.type).toBe(CalendarEventType.Sickleave);
+        expect(intervals![1].calendarEvent.type).toBe(CalendarEventType.SickLeave);
         expect(intervals![1].calendarEvent.dates.startDate).toBe(event2.dates.startDate);
         expect(intervals![1].calendarEvent.dates.endDate).toBe(event2.dates.endDate);
 
@@ -156,7 +156,7 @@ describe('CalendarEvents', () => {
         expect(intervals).toBeDefined();
         expect(intervals!.length).toBe(1);
         expect(intervals![0].intervalType).toBe(IntervalType.EndInterval);
-        expect(intervals![0].calendarEvent.type).toBe(CalendarEventType.Sickleave);
+        expect(intervals![0].calendarEvent.type).toBe(CalendarEventType.SickLeave);
         expect(intervals![0].calendarEvent.dates.startDate).toBe(event2.dates.startDate);
         expect(intervals![0].calendarEvent.dates.endDate).toBe(event2.dates.endDate);
     });
@@ -182,7 +182,7 @@ describe('CalendarEvents', () => {
 
         const event2 = new CalendarEvent();
         event2.calendarEventId = '2';
-        event2.type = CalendarEventType.Sickleave;
+        event2.type = CalendarEventType.SickLeave;
         event2.dates = new DatesInterval();
         event2.dates.startDate = moment(date2);
         event2.dates.endDate = moment(date2);
@@ -244,7 +244,7 @@ describe('CalendarEvents', () => {
 
         const event2 = new CalendarEvent();
         event2.calendarEventId = '2';
-        event2.type = CalendarEventType.Sickleave;
+        event2.type = CalendarEventType.SickLeave;
         event2.dates = new DatesInterval();
         event2.dates.startDate = moment(date2);
         event2.dates.endDate = moment(date2);
@@ -254,7 +254,7 @@ describe('CalendarEvents', () => {
 
         const event3 = new CalendarEvent();
         event3.calendarEventId = '3';
-        event3.type = CalendarEventType.Sickleave;
+        event3.type = CalendarEventType.SickLeave;
         event3.dates = new DatesInterval();
         event3.dates.startDate = moment(date3);
         event3.dates.endDate = moment(date3);
@@ -270,7 +270,7 @@ describe('CalendarEvents', () => {
 
     describe('dayoff', () => {
 
-        const testDayoff = (testedEventType: CalendarEventType.Dayoff | CalendarEventType.Workout) => {
+        const testDayoff = (testedEventType: CalendarEventType.DayOff | CalendarEventType.Workout) => {
             describe(testedEventType, () => {
                 it('should return interval left boundary, if interval [startWorkingHour, finishWorkingHour] is between [0, 4]', () => {
                     const date1 = moment({ day: 1, month: 0, year: 2018 });
@@ -354,7 +354,7 @@ describe('CalendarEvents', () => {
                 });
             });
 
-            testDayoff(CalendarEventType.Dayoff);
+            testDayoff(CalendarEventType.DayOff);
             testDayoff(CalendarEventType.Workout);
         };
     });

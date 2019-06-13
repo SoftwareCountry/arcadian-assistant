@@ -40,7 +40,7 @@ export class DayoffActionButton extends Component<DayoffActionButtonProps> {
             return 'Dayoff / Workout';
         }
 
-        return this.props.interval.calendarEvent.type === CalendarEventType.Dayoff ? 'Edit Dayoff' : 'Edit Workout';
+        return this.props.interval.calendarEvent.type === CalendarEventType.DayOff ? 'Edit Dayoff' : 'Edit Workout';
     }
 
     //----------------------------------------------------------------------------

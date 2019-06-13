@@ -43,7 +43,7 @@ class EditDayoffEventDialogImpl extends Component<EditDayoffEventDialogProps & E
             return '';
         }
 
-        return this.props.selectedIntervals.dayoff.calendarEvent.type === CalendarEventType.Dayoff ? 'dayoff' : 'workout';
+        return this.props.selectedIntervals.dayoff.calendarEvent.type === CalendarEventType.DayOff ? 'dayoff' : 'workout';
     };
 
     //----------------------------------------------------------------------------
