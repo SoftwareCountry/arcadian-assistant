@@ -63,12 +63,12 @@ export class DatesInterval {
     public finishWorkingHour: number = 8;
 
     public toJSON(): Object {
-        const overrided: { [key in keyof DatesInterval]?: any } = {
+        const overridden: { [key in keyof DatesInterval]?: any } = {
             startDate: moment.isMoment(this.startDate) ? this.startDate.format(DatesInterval.dateFormat) : null,
             endDate: moment.isMoment(this.endDate) ? this.endDate.format(DatesInterval.dateFormat) : null,
         };
 
-        const serialized = Object.assign({}, this, overrided);
+        const serialized = Object.assign({}, this, overridden);
 
         return serialized;
     }

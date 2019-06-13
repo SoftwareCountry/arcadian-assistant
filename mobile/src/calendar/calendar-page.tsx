@@ -101,7 +101,7 @@ export class CalendarPage extends PureComponent<CalendarPageDefaultProps & Calen
 
     //----------------------------------------------------------------------------
     private onWeeksLayout = (e: LayoutChangeEvent) => {
-        // invoke once to reduce perfomance load
+        // invoke once to reduce performance load
         if (!this.state.weekHeight) {
             this.setState({
                 weekHeight: PixelRatio.roundToNearestPixel(e.nativeEvent.layout.height)

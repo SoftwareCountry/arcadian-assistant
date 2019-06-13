@@ -11,7 +11,7 @@ describe('when calendar pages state initialized', () => {
         initState = createCalendarPagesInitState(currentDate);
     });
 
-    it('should return three pages (previos, current, next)', () => {
+    it('should return three pages (previous, current, next)', () => {
         expect(initState.length).toBe(3);
     });
 
