@@ -63,14 +63,6 @@
                     (x.ParentDepartmentId == null) || (x.Id == x.ParentDepartmentId) ? null : x.ParentDepartmentId.ToString())
                 { ChiefId = (x.ChiefId == null) || !chiefsGroup.Any() ? null : x.ChiefId.ToString() };
 
-        private readonly Expression<Func<DepartmentInfo, IEnumerable<Employee>, DepartmentInfoWithPeopleCount>> countEmployees =
-            (d, employees) =>
-                new DepartmentInfoWithPeopleCount()
-                {
-                    Info = d,
-                    PeopleCount = employees.Count()
-                };
-
         protected override async Task<LoadAllDepartments.Response> GetAllDepartments()
         {
             try
@@ -92,11 +84,24 @@
             {
                 var arcEmployees = new CspEmployeeQuery(context, this.configuration).Get();
 
+                var employeeCounts = arcEmployees
+                    .Where(x => x.DepartmentId != null)
+                    .GroupBy(x => x.DepartmentId)
+                    .Select(x => new { DepartmentId = x.Key, Count = x.Count() });
+
                 var allDepartments = await context
                     .Department
                     .Where(x => (x.IsDelete != true) && (x.CompanyId == this.configuration.CompanyId))
                     .GroupJoin(arcEmployees, d => d.ChiefId, e => e.Id, this.mapDepartment)
-                    .GroupJoin(arcEmployees, d => d.DepartmentId, e => e.DepartmentId.ToString(), this.countEmployees)
+                    .GroupJoin(
+                        employeeCounts,
+                        d => d.DepartmentId,
+                        counts => counts.DepartmentId.ToString(),
+                        (d, c) => new DepartmentInfoWithPeopleCount()
+                        {
+                            Info = d,
+                            PeopleCount = c.Select(x => x.Count).DefaultIfEmpty(0).First()
+                        })
                     .ToListAsync();
 
                 var head = allDepartments.FirstOrDefault(x => x.Info.IsHeadDepartment && (x.Info.Abbreviation == this.configuration.HeadDepartmentAbbreviation));
