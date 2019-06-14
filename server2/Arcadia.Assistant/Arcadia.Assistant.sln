@@ -21,6 +21,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Avatars.M
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Avatars", "Avatars", "{B9EE598B-6E11-4317-9D82-11F334CFBA10}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Employees", "Arcadia.Assistant.Employees\Arcadia.Assistant.Employees.csproj", "{287D4A21-F212-4C65-A2A0-8806DA0846A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Employees.Contracts", "Arcadia.Assistant.Employees.Contracts\Arcadia.Assistant.Employees.Contracts.csproj", "{D773B729-E46C-432D-92B5-3EA7F352FBFD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -61,6 +65,14 @@ Global
 		{5D2D5D76-743D-4CE4-BA71-B5F0793FB330}.Debug|x64.Build.0 = Debug|Any CPU
 		{5D2D5D76-743D-4CE4-BA71-B5F0793FB330}.Release|x64.ActiveCfg = Release|Any CPU
 		{5D2D5D76-743D-4CE4-BA71-B5F0793FB330}.Release|x64.Build.0 = Release|Any CPU
+		{287D4A21-F212-4C65-A2A0-8806DA0846A9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{287D4A21-F212-4C65-A2A0-8806DA0846A9}.Debug|x64.Build.0 = Debug|Any CPU
+		{287D4A21-F212-4C65-A2A0-8806DA0846A9}.Release|x64.ActiveCfg = Release|Any CPU
+		{287D4A21-F212-4C65-A2A0-8806DA0846A9}.Release|x64.Build.0 = Release|Any CPU
+		{D773B729-E46C-432D-92B5-3EA7F352FBFD}.Debug|x64.ActiveCfg = Debug|x64
+		{D773B729-E46C-432D-92B5-3EA7F352FBFD}.Debug|x64.Build.0 = Debug|x64
+		{D773B729-E46C-432D-92B5-3EA7F352FBFD}.Release|x64.ActiveCfg = Release|Any CPU
+		{D773B729-E46C-432D-92B5-3EA7F352FBFD}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,4 @@
-namespace Arcadia.Assistant.Organization
+namespace Arcadia.Assistant.Employees
 {
     using System;
     using System.Diagnostics;
@@ -9,9 +9,8 @@ namespace Arcadia.Assistant.Organization
 
     using CSP;
 
-    using Employees.Contracts;
-
-    using Microsoft.ServiceFabric.Services.Remoting.Client;
+    using Microsoft.ServiceFabric.Actors.Client;
+    using Microsoft.ServiceFabric.Services.Runtime;
 
     internal static class Program
     {
@@ -29,15 +28,12 @@ namespace Arcadia.Assistant.Organization
 
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
-                builder.RegisterStatefulService<Organization>("Arcadia.Assistant.OrganizationType");
-                builder.RegisterModule(new CspModule("<>"));
-                builder.RegisterType<OrganizationDepartmentsQuery>();
-                builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
-                builder.RegisterModule(new EmployeesModule());
+                builder.RegisterStatelessService<Employees>("Arcadia.Assistant.EmployeesType");
+                builder.RegisterModule(new CspModule(@"<>"));
 
                 using (builder.Build())
                 {
-                    ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(Organization).Name);
+                    ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(Employees).Name);
 
                     // Prevents this host process from terminating so services keep running.
                     Thread.Sleep(Timeout.Infinite);

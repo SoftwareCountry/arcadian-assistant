@@ -3,7 +3,7 @@
     using System;
     using System.Runtime.Serialization;
 
-    using Organization.Contracts;
+    using Employees.Contracts;
 
     [DataContract]
     public class EmployeeModel

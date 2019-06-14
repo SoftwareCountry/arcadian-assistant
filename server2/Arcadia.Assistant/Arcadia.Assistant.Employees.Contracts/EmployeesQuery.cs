@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.Organization.Contracts
+﻿namespace Arcadia.Assistant.Employees.Contracts
 {
     using System.Runtime.Serialization;
 

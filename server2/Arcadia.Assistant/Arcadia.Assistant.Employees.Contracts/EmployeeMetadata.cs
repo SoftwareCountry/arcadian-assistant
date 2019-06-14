@@ -1,8 +1,10 @@
-﻿namespace Arcadia.Assistant.Organization.Contracts
+﻿namespace Arcadia.Assistant.Employees.Contracts
 {
     using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
+
+    public enum Sex { Male, Female, Undefined }
 
     [DataContract]
     [KnownType(typeof(HashSet<string>))]
@@ -43,9 +45,6 @@
 
         [DataMember]
         public string DepartmentId { get; set; }
-
-        [DataMember]
-        public string Sid { get; set; }
 
         [DataMember]
         public DateTime HireDate { get; set; }

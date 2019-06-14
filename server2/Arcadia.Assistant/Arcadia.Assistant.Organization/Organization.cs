@@ -11,7 +11,7 @@ namespace Arcadia.Assistant.Organization
 
     using Contracts;
 
-    using CSP;
+    using Employees.Contracts;
 
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
@@ -24,17 +24,15 @@ namespace Arcadia.Assistant.Organization
     /// </summary>
     public class Organization : StatefulService, IOrganization
     {
-        private readonly Func<Owned<CspEmployeeQuery>> cspEmployeeQuery;
-        private readonly CspConfiguration cspConfiguration;
         private readonly Func<Owned<OrganizationDepartmentsQuery>> allDepartmentsQuery;
+        private readonly IEmployees employees;
         private readonly ILogger logger = new LoggerFactory().CreateLogger<Organization>();
 
-        public Organization(StatefulServiceContext context, Func<Owned<CspEmployeeQuery>> cspEmployeeQuery, CspConfiguration cspConfiguration, Func<Owned<OrganizationDepartmentsQuery>> allDepartmentsQuery)
+        public Organization(StatefulServiceContext context, Func<Owned<OrganizationDepartmentsQuery>> allDepartmentsQuery, IEmployees employees)
             : base(context)
         {
-            this.cspEmployeeQuery = cspEmployeeQuery;
-            this.cspConfiguration = cspConfiguration;
             this.allDepartmentsQuery = allDepartmentsQuery;
+            this.employees = employees;
         }
 
         /// <summary>
@@ -50,77 +48,14 @@ namespace Arcadia.Assistant.Organization
             return this.CreateServiceRemotingReplicaListeners();
         }
 
-        public async Task<EmployeeMetadata> FindEmployeeAsync(string employeeId, CancellationToken cancellationToken)
+        public async Task<DepartmentMetadata> GetDepartmentAsync(string departmentId, CancellationToken cancellationToken)
         {
-            using (var query = this.cspEmployeeQuery())
-            {
-                if (!int.TryParse(employeeId, out var id))
-                {
-                    return null;
-                }
-
-                var employee = await query.Value.Get().FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken);
-                if (employee == null)
-                {
-                    return null;
-                }
-
-                return new EmployeeMetadata(employeeId, employee.LastName, employee.Email);
-            }
-        }
-
-        public async Task<EmployeeMetadata[]> FindEmployeesAsync(EmployeesQuery employeesQuery, CancellationToken cancellationToken)
-        {
-            using (var db = this.cspEmployeeQuery())
-            {
-                var query = db.Value.Get();
-
-                if (employeesQuery.RoomNumber != null)
-                {
-                    query = query.Where(x => x.RoomNumber.Trim() == employeesQuery.RoomNumber.Trim());
-                }
-
-                if (employeesQuery.DepartmentId != null)
-                {
-                    query = query.Where(x => x.DepartmentId.ToString() == employeesQuery.DepartmentId);
-                }
-
-                if (employeesQuery.NameFilter != null)
-                {
-                    query = query.Where(x => x.LastName.Contains(employeesQuery.NameFilter, StringComparison.InvariantCultureIgnoreCase) 
-                        || x.FirstName.Contains(employeesQuery.NameFilter, StringComparison.InvariantCultureIgnoreCase));
-                }
-
-                var userIdentityDomain = this.cspConfiguration.UserIdentityDomain;
-
-                var employees = await query.Select(x => 
-                    new EmployeeMetadata(
-                        x.Id.ToString(),
-                        $"{x.LastName} {x.FirstName}".Trim(),
-                        x.Email,
-                        new [] { x.Email, $"{x.LoginName}@{userIdentityDomain}" })
-                    {
-                        BirthDate = x.Birthday,
-                        HireDate = x.HiringDate,
-                        FireDate = x.FiringDate,
-                        MobilePhone = x.MobilePhone,
-                        RoomNumber = x.RoomNumber != null ? x.RoomNumber.Trim() : null,
-
-                    }) 
-                    .ToArrayAsync(cancellationToken);
-
-                return employees;
-            }
-        }
-
-        public Task<DepartmentMetadata> GetDepartmentAsync(string departmentId, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
+            var allDepartments = await this.GetDepartmentsAsync(cancellationToken);
+            return allDepartments.FirstOrDefault(x => StringComparer.InvariantCultureIgnoreCase.Equals(x.DepartmentId, departmentId));
         }
 
         public async Task<DepartmentMetadata[]> GetDepartmentsAsync(CancellationToken cancellationToken)
         {
-            this.logger.LogDebug("test message");
             using (var departmentsQuery = this.allDepartmentsQuery())
             {
                 var departments = await departmentsQuery.Value.LoadAllAsync(cancellationToken);
@@ -128,9 +63,44 @@ namespace Arcadia.Assistant.Organization
             }
         }
 
-        public Task<EmployeeMetadata> FindEmployeeSupervisor(string employeeId, CancellationToken cancellationToken)
+        public async Task<EmployeeMetadata> FindEmployeeSupervisorAsync(string employeeId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var target = await this.employees.FindEmployeeAsync(employeeId, cancellationToken);
+            if (target == null)
+            {
+                return null;
+            }
+
+            var departments = await this.GetDepartmentsAsync(cancellationToken);
+
+            var candidateDepartment = target.DepartmentId;
+            var candidate = target;
+
+            while (true)
+            {
+                var department = departments.FirstOrDefault(x => x.DepartmentId == candidateDepartment);
+                if (department == null)
+                {
+                    // if supposed supervisor department is not found, we have no choice but to finish search
+                    return candidate;
+                }
+
+                var chief = await this.employees.FindEmployeeAsync(department.ChiefId, cancellationToken);
+
+                if (chief != null && chief.EmployeeId != candidate.EmployeeId || department.IsHeadDepartment)
+                {
+                    // we found the boss
+                    return chief;
+                }
+
+                if (chief != null)
+                {
+                    candidate = chief;
+                }
+
+                //we go one level up
+                candidateDepartment = department.ParentDepartmentId;
+            }
         }
     }
 }

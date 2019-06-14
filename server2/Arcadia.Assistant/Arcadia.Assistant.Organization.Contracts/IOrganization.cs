@@ -8,18 +8,16 @@ namespace Arcadia.Assistant.Organization.Contracts
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Employees.Contracts;
+
     using Microsoft.ServiceFabric.Services.Remoting;
 
     public interface IOrganization : IService
     {
-        Task<EmployeeMetadata> FindEmployeeAsync(string employeeId, CancellationToken cancellationToken);
-
-        Task<EmployeeMetadata[]> FindEmployeesAsync(EmployeesQuery employeesQuery, CancellationToken cancellationToken);
-
         Task<DepartmentMetadata> GetDepartmentAsync(string departmentId, CancellationToken cancellationToken);
 
         Task<DepartmentMetadata[]> GetDepartmentsAsync(CancellationToken cancellationToken);
 
-        Task<EmployeeMetadata> FindEmployeeSupervisor(string employeeId, CancellationToken cancellationToken);
+        Task<EmployeeMetadata> FindEmployeeSupervisorAsync(string employeeId, CancellationToken cancellationToken);
     }
 }

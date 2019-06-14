@@ -14,7 +14,7 @@ namespace Arcadia.Assistant.Web.Controllers
     [Route("/api/departments")]
     public class DepartmentsController : Controller
     {
-        private IOrganization organization;
+        private readonly IOrganization organization;
 
         public DepartmentsController(IOrganization organization)
         {
@@ -33,9 +33,16 @@ namespace Arcadia.Assistant.Web.Controllers
         [Route("{departmentId}")]
         [HttpGet]
         [ProducesResponseType(typeof(DepartmentMetadata), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(string departmentId, CancellationToken token)
         {
-            return this.NotFound();
+            var department = await this.organization.GetDepartmentAsync(departmentId, token);
+            if (department == null)
+            {
+                return this.NotFound();
+            }
+
+            return this.Ok(department);
         }
     }
 }

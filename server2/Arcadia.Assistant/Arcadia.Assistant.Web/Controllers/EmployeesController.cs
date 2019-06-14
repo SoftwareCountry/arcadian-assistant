@@ -4,21 +4,21 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Employees.Contracts;
+
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     using Models;
 
-    using Organization.Contracts;
-
     [Route("api/employees")]
     public class EmployeesController : Controller
     {
-        private readonly IOrganization organization;
+        private readonly IEmployees employees;
 
-        public EmployeesController(IOrganization organization)
+        public EmployeesController(IEmployees employees)
         {
-            this.organization = organization;
+            this.employees = employees;
         }
 
         [Route("{employeeId}")]
@@ -27,8 +27,13 @@
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(string employeeId, CancellationToken token)
         {
-            var employees = await this.organization.FindEmployeeAsync(employeeId, token);
-            return this.Ok(employees);
+            var employee = await this.employees.FindEmployeeAsync(employeeId, token);
+            if (employee == null)
+            {
+                return this.NotFound();
+            }
+
+            return this.Ok(employee);
         }
 
         [Route("")]
@@ -42,9 +47,9 @@
             CancellationToken token)
         {
             var query = EmployeesQuery.Create().ForDepartment(departmentId).ForRoom(roomNumber).WithNameFilter(name);
-            var employees = await this.organization.FindEmployeesAsync(query, token);
+            var employeesList = await this.employees.FindEmployeesAsync(query, token);
 
-            return this.Ok(employees.Select(EmployeeModel.FromMetadata).ToArray());
+            return this.Ok(employeesList.Select(EmployeeModel.FromMetadata).ToArray());
         }
     }
 }

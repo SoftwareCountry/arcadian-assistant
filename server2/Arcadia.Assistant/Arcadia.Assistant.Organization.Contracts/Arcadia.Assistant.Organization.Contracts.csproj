@@ -18,4 +18,8 @@
     <PackageReference Include="Microsoft.ServiceFabric.Services.Remoting" Version="3.3.664" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Arcadia.Assistant.Employees.Contracts\Arcadia.Assistant.Employees.Contracts.csproj" />
+  </ItemGroup>
+
 </Project>

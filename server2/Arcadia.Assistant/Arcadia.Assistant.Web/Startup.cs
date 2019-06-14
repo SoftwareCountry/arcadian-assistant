@@ -8,6 +8,8 @@
 
     using Configuration;
 
+    using Employees.Contracts;
+
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
@@ -82,6 +84,7 @@
             builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
             builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
             builder.RegisterModule(new OrganizationModule());
+            builder.RegisterModule(new EmployeesModule());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
