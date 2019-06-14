@@ -9,9 +9,6 @@ namespace Arcadia.Assistant.Employees
 
     using CSP;
 
-    using Microsoft.ServiceFabric.Actors.Client;
-    using Microsoft.ServiceFabric.Services.Runtime;
-
     internal static class Program
     {
         /// <summary>

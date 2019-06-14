@@ -99,8 +99,6 @@ namespace Arcadia.Assistant.Employees
                         || x.FirstName.Contains(employeesQuery.NameFilter, StringComparison.InvariantCultureIgnoreCase));
                 }
 
-                var userIdentityDomain = this.cspConfiguration.UserIdentityDomain;
-
                 var employees = await query.Select(this.mapToMetadata).ToArrayAsync(cancellationToken);
 
                 return employees;
