@@ -2,6 +2,7 @@ namespace Arcadia.Assistant.Organization
 {
     using System;
     using System.Diagnostics;
+    using System.Fabric;
     using System.Threading;
 
     using Autofac;
@@ -27,10 +28,13 @@ namespace Arcadia.Assistant.Organization
                 // When Service Fabric creates an instance of this service type,
                 // an instance of the class is created in this host process.
 
+                var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
+                var connectionString = configurationPackage.Settings.Sections["Csp"].Parameters["ConnectionString"].Value;
+
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterStatefulService<Organization>("Arcadia.Assistant.OrganizationType");
-                builder.RegisterModule(new CspModule("<>"));
+                builder.RegisterModule(new CspModule(connectionString));
                 builder.RegisterType<OrganizationDepartmentsQuery>();
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
                 builder.RegisterModule(new EmployeesModule());

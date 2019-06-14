@@ -6,4 +6,8 @@
     <Parameter Name="MyParameter" Value="Value1" />
   </Section>
   -->
+
+  <Section Name="Csp">
+    <Parameter Name="ConnectionString" Value="" />
+  </Section>
 </Settings>

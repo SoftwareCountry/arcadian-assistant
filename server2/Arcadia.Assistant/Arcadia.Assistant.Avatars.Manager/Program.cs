@@ -28,9 +28,12 @@ namespace Arcadia.Assistant.Avatars.Manager
                 // When Service Fabric creates an instance of this service type,
                 // an instance of the class is created in this host process.
 
+                var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
+                var connectionString = configurationPackage.Settings.Sections["Csp"].Parameters["ConnectionString"].Value;
+
                 var builder = new ContainerBuilder();
 
-                builder.RegisterModule(new CspModule(@""));
+                builder.RegisterModule(new CspModule(connectionString));
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
 
