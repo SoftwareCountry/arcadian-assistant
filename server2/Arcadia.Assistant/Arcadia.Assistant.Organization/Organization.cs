@@ -31,7 +31,7 @@ namespace Arcadia.Assistant.Organization
         public Organization(StatefulServiceContext context, Func<Owned<OrganizationDepartmentsQuery>> allDepartmentsQuery, IEmployees employees)
             : base(context)
         {
-            this.organizationDepartments = new CachedOrganizationDepartments(this.StateManager, allDepartmentsQuery);
+            this.organizationDepartments = new CachedOrganizationDepartments(this.StateManager, allDepartmentsQuery, this.logger);
             this.supervisorSearch = new SupervisorSearch(employees, this.organizationDepartments);
         }
 
