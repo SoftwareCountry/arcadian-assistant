@@ -38,7 +38,6 @@
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional:false, reloadOnChange:true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddUserSecrets(Assembly.GetExecutingAssembly())
                 .AddServiceFabricConfiguration()
                 .AddEnvironmentVariables();
             this.AppSettings = builder.Build().Get<AppSettings>();
@@ -60,7 +59,7 @@
 
             services.AddOpenApiDocument((document, x) =>
             {
-                var settings = x.GetService<AppSettings>().Security;
+                var settings = x.GetService<AppSettings>().Config.Security;
                 document.AddSecurity("bearer", new List<string>(), new OpenApiSecurityScheme()
                 {
                     Type = OpenApiSecuritySchemeType.OAuth2,
@@ -86,8 +85,8 @@
                 })
                 .AddJwtBearer(jwtOptions =>
                 {
-                    jwtOptions.Audience = this.AppSettings.Security.ClientId;
-                    jwtOptions.MetadataAddress = this.AppSettings.Security.OpenIdConfigurationUrl;
+                    jwtOptions.Audience = this.AppSettings.Config.Security.ClientId;
+                    jwtOptions.MetadataAddress = this.AppSettings.Config.Security.OpenIdConfigurationUrl;
                     jwtOptions.Events = new JwtBearerEvents();
                 });
 
@@ -126,7 +125,7 @@
             {
                 settings.OAuth2Client = new OAuth2ClientSettings()
                 {
-                    ClientId = appSettings.Security.ClientId
+                    ClientId = appSettings.Config.Security.ClientId
                 };
             });
 

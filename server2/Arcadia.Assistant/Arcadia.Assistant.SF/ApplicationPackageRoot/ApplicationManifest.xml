@@ -10,6 +10,10 @@
     <Parameter Name="Arcadia.Assistant.Web_ASPNETCORE_ENVIRONMENT" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.Web_Port" DefaultValue="63601" />
+    <Parameter Name="Arcadia.Assistant.Web_Security_ClientId" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Web_Security_AuthorizationUrl" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Web_Security_TokenUrl" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Web_Security_OpenIdConfigurationUrl" DefaultValue="" />
     <Parameter Name="AvatarActorService_PartitionCount" DefaultValue="10" />
     <Parameter Name="AvatarActorService_MinReplicaSetSize" DefaultValue="3" />
     <Parameter Name="AvatarActorService_TargetReplicaSetSize" DefaultValue="3" />
@@ -63,7 +67,18 @@
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.WebPkg" ServiceManifestVersion="1.0.0" />
-    <ConfigOverrides />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Security">
+            <Parameter Name="ClientId" Value="[Arcadia.Assistant.Web_Security_ClientId]" />
+            <Parameter Name="AuthorizationUrl" Value="[Arcadia.Assistant.Web_Security_AuthorizationUrl]" />
+            <Parameter Name="TokenUrl" Value="[Arcadia.Assistant.Web_Security_TokenUrl]" />
+            <Parameter Name="OpenIdConfigurationUrl" Value="[Arcadia.Assistant.Web_Security_OpenIdConfigurationUrl]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
     <ResourceOverrides>
       <Endpoints>
         <Endpoint Name="ServiceEndpoint" Port="[Arcadia.Assistant.Web_Port]" />

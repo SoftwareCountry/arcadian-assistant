@@ -1,10 +1,12 @@
 ﻿namespace Arcadia.Assistant.Web.Configuration
 {
-    using System.ComponentModel.DataAnnotations;
-
     public class AppSettings
     {
-        [Required]
-        public SecuritySettings Security { get; set; }
+        public ConfigPackageSettings Config { get; set; }
+
+        public class ConfigPackageSettings
+        {
+            public SecuritySettings Security { get; set; }
+        }
     }
 }
