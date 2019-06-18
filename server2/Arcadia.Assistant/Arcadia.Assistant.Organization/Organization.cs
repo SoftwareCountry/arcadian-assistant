@@ -51,6 +51,13 @@ namespace Arcadia.Assistant.Organization
             return this.supervisorSearch.FindAsync(employeeId, cancellationToken);
         }
 
+        public async Task<DepartmentMetadata[]> GetSupervisedDepartmentsAsync(string employeeId, CancellationToken cancellationToken)
+        {
+            var allDepartments = await this.GetDepartmentsAsync(cancellationToken);
+            var supervisedDepartmentsSearch = new SupervisedDepartmentsSearch(allDepartments);
+            return supervisedDepartmentsSearch.FindFor(employeeId);
+        }
+
         /// <summary>
         ///     Optional override to create listeners (e.g., HTTP, Service Remoting, WCF, etc.) for this service replica to handle
         ///     client or user requests.

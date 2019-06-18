@@ -44,7 +44,7 @@
                 return permissions | employeePermissions;
             }
 
-            if (this.DepartmentPermissions.TryGetValue(objectEmployee.EmployeeId, out var departmentPermissions))
+            if (this.DepartmentPermissions.TryGetValue(objectEmployee.DepartmentId, out var departmentPermissions))
             {
                 return permissions | departmentPermissions;
             }

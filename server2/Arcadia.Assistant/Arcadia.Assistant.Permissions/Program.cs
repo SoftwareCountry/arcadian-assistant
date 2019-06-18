@@ -4,7 +4,15 @@ namespace Arcadia.Assistant.Permissions
     using System.Diagnostics;
     using System.Threading;
 
+    using Autofac;
+    using Autofac.Integration.ServiceFabric;
+
+    using Employees.Contracts;
+
+    using Microsoft.ServiceFabric.Services.Remoting.Client;
     using Microsoft.ServiceFabric.Services.Runtime;
+
+    using Organization.Contracts;
 
     internal static class Program
     {
@@ -19,14 +27,20 @@ namespace Arcadia.Assistant.Permissions
                 // Registering a service maps a service type name to a .NET type.
                 // When Service Fabric creates an instance of this service type,
                 // an instance of the class is created in this host process.
+                var builder = new ContainerBuilder();
+                builder.RegisterServiceFabricSupport();
+                builder.RegisterStatelessService<Permissions>("Arcadia.Assistant.PermissionsType");
+                builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
+                builder.RegisterModule(new EmployeesModule());
+                builder.RegisterModule(new OrganizationModule());
 
-                ServiceRuntime.RegisterServiceAsync("Arcadia.Assistant.PermissionsType",
-                    context => new Permissions(context)).GetAwaiter().GetResult();
+                using (builder.Build())
+                {
+                    ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(Permissions).Name);
 
-                ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(Permissions).Name);
-
-                // Prevents this host process from terminating so services keep running.
-                Thread.Sleep(Timeout.Infinite);
+                    // Prevents this host process from terminating so services keep running.
+                    Thread.Sleep(Timeout.Infinite);
+                }
             }
             catch (Exception e)
             {

@@ -50,37 +50,11 @@
                 return new DepartmentMetadata[0];
             }
 
-            var processedIds = new HashSet<string>
-                { head.DepartmentId };
-            var tree = new DepartmentsTreeNode(head, head.PeopleCount, this.CreateTree(allDepartments, head.DepartmentId, processedIds));
-
+            var treeBuilder = new DepartmentsTreeBuilder(allDepartments);
+            var tree = treeBuilder.Build(head.DepartmentId);
             var departments = tree.AsEnumerable().Where(x => x.CountAllEmployees() != 0).Select(x => x.DepartmentInfo).ToList();
 
             return departments;
-        }
-
-        /// <param name="departmentId">Node for which descandants are requested</param>
-        /// <param name="processedIds">a hashset with processed department ids to prevent stackoverflow</param>
-        /// <param name="allDepartments">all possible departments</param>
-        private List<DepartmentsTreeNode> CreateTree(
-            IReadOnlyCollection<DepartmentMetadata> allDepartments,
-            string departmentId,
-            HashSet<string> processedIds)
-        {
-            var childrenDepartments = allDepartments
-                .Where(x => x.ParentDepartmentId == departmentId && !processedIds.Contains(x.DepartmentId))
-                .ToList();
-
-            processedIds.UnionWith(childrenDepartments.Select(x => x.DepartmentId));
-
-            var children = new List<DepartmentsTreeNode>();
-            foreach (var department in childrenDepartments)
-            {
-                var child = new DepartmentsTreeNode(department, department.PeopleCount, this.CreateTree(allDepartments, department.DepartmentId, processedIds));
-                children.Add(child);
-            }
-
-            return children;
         }
     }
 }
