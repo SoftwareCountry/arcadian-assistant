@@ -39,8 +39,7 @@ namespace Arcadia.Assistant.Employees
                 new EmployeeMetadata(
                     x.Id.ToString(),
                     $"{x.LastName} {x.FirstName}".Trim(),
-                    x.Email,
-                    new[] { x.Email, $"{x.LoginName}@{this.cspConfiguration.UserIdentityDomain}" })
+                    x.Email)
                 {
                     BirthDate = x.Birthday,
                     HireDate = x.HiringDate,

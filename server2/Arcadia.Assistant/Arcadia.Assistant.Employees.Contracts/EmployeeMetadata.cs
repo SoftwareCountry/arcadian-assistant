@@ -1,25 +1,18 @@
 ﻿namespace Arcadia.Assistant.Employees.Contracts
 {
     using System;
-    using System.Collections.Generic;
     using System.Runtime.Serialization;
 
     public enum Sex { Male, Female, Undefined }
 
     [DataContract]
-    [KnownType(typeof(HashSet<string>))]
     public class EmployeeMetadata
     {
-        public EmployeeMetadata(string employeeId, string name, string email, IEnumerable<string> identityAliases = null)
+        public EmployeeMetadata(string employeeId, string name, string email)
         {
             this.EmployeeId = employeeId;
             this.Name = name;
             this.Email = email;
-
-            if (identityAliases != null)
-            {
-                this.IdentityAliases.UnionWith(identityAliases);
-            }
         }
 
         [DataMember]
@@ -30,9 +23,6 @@
 
         [DataMember]
         public string Email { get; set; }
-
-        [DataMember]
-        public ISet<string> IdentityAliases { get; private set; } = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
 
         [DataMember]
         public string RoomNumber { get; set; }
