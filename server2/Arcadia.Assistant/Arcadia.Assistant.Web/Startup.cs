@@ -10,6 +10,7 @@
 
     using Employees.Contracts;
 
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
@@ -75,6 +76,20 @@
 
                 document.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("bearer"));
             });
+
+            services
+                .AddAuthentication(options =>
+                {
+                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(jwtOptions =>
+                {
+                    jwtOptions.Audience = this.AppSettings.Security.ClientId;
+                    jwtOptions.MetadataAddress = this.AppSettings.Security.OpenIdConfigurationUrl;
+                    jwtOptions.Events = new JwtBearerEvents();
+                });
+
+            //services.AddAuthorization();
         }
 
         // ReSharper disable once UnusedMember.Global
@@ -111,6 +126,8 @@
                     ClientId = appSettings.Security.ClientId
                 };
             });
+
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {

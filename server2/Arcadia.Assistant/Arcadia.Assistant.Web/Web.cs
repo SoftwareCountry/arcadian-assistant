@@ -8,6 +8,8 @@ namespace Arcadia.Assistant.Web
 
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Logging.Configuration;
     using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
@@ -41,6 +43,13 @@ namespace Arcadia.Assistant.Web
                                 services => services
                                     .AddSingleton(serviceContext))
                             .ConfigureServices(services => services.AddAutofac())
+                            .ConfigureLogging((hosingContext, logging) =>
+                            {
+                                logging.AddConfiguration(hosingContext.Configuration.GetSection("Logging"));
+                                logging.AddConsole();
+                                logging.AddDebug();
+                                logging.AddEventSourceLogger();
+                            })
                             .UseContentRoot(Directory.GetCurrentDirectory())
                             .UseStartup<Startup>()
                             .UseServiceFabricIntegration(listener, ServiceFabricIntegrationOptions.None)

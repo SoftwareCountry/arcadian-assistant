@@ -72,7 +72,7 @@ namespace Arcadia.Assistant.Avatars.Manager
                         ServiceEventSource.Current.ServiceMessage(this.Context, "Error occured {0}", e);
                     }
 
-                    await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
+                    await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
                 }
             }
         }

@@ -95,14 +95,40 @@ namespace Arcadia.Assistant.Employees
 
                 if (employeesQuery.NameFilter != null)
                 {
-                    query = query.Where(x => x.LastName.Contains(employeesQuery.NameFilter, StringComparison.InvariantCultureIgnoreCase)
-                        || x.FirstName.Contains(employeesQuery.NameFilter, StringComparison.InvariantCultureIgnoreCase));
+                    var pattern = $"%{employeesQuery.NameFilter}%";
+                    query = query.Where(x => EF.Functions.Like(x.LastName, pattern) 
+                        || EF.Functions.Like(x.FirstName, pattern));
+                }
+
+                if (employeesQuery.Identity != null)
+                {
+                    var email = employeesQuery.Identity;
+                    var loginName = this.ExtractLoginName(employeesQuery);
+                    if (loginName == null)
+                    {
+                        query = query.Where(x => EF.Functions.Like(x.Email, email));
+                    }
+                    else
+                    {
+                        query = query.Where(x => EF.Functions.Like(x.Email, email) || EF.Functions.Like(x.LoginName, loginName));
+                    }                    
                 }
 
                 var employees = await query.Select(this.mapToMetadata).ToArrayAsync(cancellationToken);
 
                 return employees;
             }
+        }
+
+        private string ExtractLoginName(EmployeesQuery employeesQuery)
+        {
+            var domain = "@" + this.cspConfiguration.UserIdentityDomain;
+            if (employeesQuery.Identity.EndsWith(domain, StringComparison.OrdinalIgnoreCase))
+            {
+                return employeesQuery.Identity.Substring(0, employeesQuery.Identity.LastIndexOf(domain, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return null;
         }
     }
 }
