@@ -24,7 +24,7 @@
 
     using NSwag;
     using NSwag.AspNetCore;
-    using NSwag.SwaggerGeneration.Processors.Security;
+    using NSwag.Generation.Processors.Security;
 
     using Organization.Contracts;
 
@@ -59,11 +59,11 @@
             services.AddOpenApiDocument((document, x) =>
             {
                 var settings = x.GetService<AppSettings>().Security;
-                document.AddSecurity("bearer", new List<string>(), new SwaggerSecurityScheme()
+                document.AddSecurity("bearer", new List<string>(), new OpenApiSecurityScheme()
                 {
-                    Type = SwaggerSecuritySchemeType.OAuth2,
+                    Type = OpenApiSecuritySchemeType.OAuth2,
                     Description = "Oauth",
-                    Flow = SwaggerOAuth2Flow.Implicit,
+                    Flow = OpenApiOAuth2Flow.Implicit,
                     Flows = new OpenApiOAuthFlows()
                     {
                         Implicit = new OpenApiOAuthFlow()
@@ -118,7 +118,7 @@
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
-            app.UseSwagger();
+            app.UseOpenApi();
             app.UseSwaggerUi3((settings) =>
             {
                 settings.OAuth2Client = new OAuth2ClientSettings()
