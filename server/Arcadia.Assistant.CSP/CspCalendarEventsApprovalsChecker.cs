@@ -23,7 +23,11 @@
             this.employeesActor = Context.ActorOf(CachedEmployeesInfoStorage.CreateProps(memoryCache, TimeSpan.FromMinutes(refreshInformation.IntervalInMinutes), true));
         }
 
-        protected override async Task<string> GetNextApprover(string employeeId, IEnumerable<string> existingApprovals, string eventType)
+        protected override async Task<string> GetNextApprover(
+            string employeeId,
+            IEnumerable<string> existingApprovals,
+            string eventType,
+            IEnumerable<string> skippedApprovers)
         {
             // No approval required for sick leaves
             if (eventType == CalendarEventTypes.Sickleave)
@@ -39,18 +43,17 @@
                 return null;
             }
 
-            return this.GetNextApproverOnlyHeadStrategy(employeeMetadata, allDepartments, existingApprovals);
+            return this.GetNextApproverOnlyHeadStrategy(employeeMetadata, allDepartments, existingApprovals, skippedApprovers);
         }
 
         private string GetNextApproverOnlyHeadStrategy(
             EmployeeMetadata employee,
             List<DepartmentInfo> departments,
-            IEnumerable<string> existingApprovals)
+            IEnumerable<string> existingApprovals,
+            IEnumerable<string> skippedApprovers)
         {
             var ownDepartment = departments.First(d => d.DepartmentId == employee.DepartmentId);
             var isEmployeeChief = ownDepartment.ChiefId == employee.EmployeeId;
-            var parentDepartment = departments.First(d => d.DepartmentId == ownDepartment.ParentDepartmentId);
-            var parentDepartments = this.GetParentDepartments(ownDepartment, departments);
 
             if (ownDepartment.IsHeadDepartment && isEmployeeChief)
             {
@@ -58,14 +61,19 @@
                 return null;
             }
 
-            var nextApprover = !isEmployeeChief ? ownDepartment.ChiefId : parentDepartment?.ChiefId;
-            var acceptedApprovers = parentDepartments
-                .Select(d => d.ChiefId)
-                .Append(nextApprover);
+            var parentDepartments = this.GetParentDepartments(ownDepartment, departments);
+            var allDepartments = !isEmployeeChief
+                ? parentDepartments.Prepend(ownDepartment)
+                : parentDepartments;
 
-            return existingApprovals.Intersect(acceptedApprovers).Count() != 0
+            var acceptedApprovers = allDepartments
+                .Select(d => d.ChiefId)
+                .Except(skippedApprovers ?? Enumerable.Empty<string>())
+                .ToArray();
+
+            return existingApprovals.Intersect(acceptedApprovers).Any()
                 ? null
-                : nextApprover;
+                : acceptedApprovers.FirstOrDefault();
         }
 
         private async Task<EmployeeMetadata> GetEmployee(string employeeId)
