@@ -17,13 +17,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Avatars",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Avatars.Contracts", "Arcadia.Assistant.Avatars.Contracts\Arcadia.Assistant.Avatars.Contracts.csproj", "{BF24FE61-7804-4415-913B-B8714633B8DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Avatars.Manager", "Arcadia.Assistant.Avatars.Manager\Arcadia.Assistant.Avatars.Manager.csproj", "{5D2D5D76-743D-4CE4-BA71-B5F0793FB330}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Avatars.Manager", "Arcadia.Assistant.Avatars.Manager\Arcadia.Assistant.Avatars.Manager.csproj", "{5D2D5D76-743D-4CE4-BA71-B5F0793FB330}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Avatars", "Avatars", "{B9EE598B-6E11-4317-9D82-11F334CFBA10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Employees", "Arcadia.Assistant.Employees\Arcadia.Assistant.Employees.csproj", "{287D4A21-F212-4C65-A2A0-8806DA0846A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Employees", "Arcadia.Assistant.Employees\Arcadia.Assistant.Employees.csproj", "{287D4A21-F212-4C65-A2A0-8806DA0846A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Employees.Contracts", "Arcadia.Assistant.Employees.Contracts\Arcadia.Assistant.Employees.Contracts.csproj", "{D773B729-E46C-432D-92B5-3EA7F352FBFD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Employees.Contracts", "Arcadia.Assistant.Employees.Contracts\Arcadia.Assistant.Employees.Contracts.csproj", "{D773B729-E46C-432D-92B5-3EA7F352FBFD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Permissions", "Arcadia.Assistant.Permissions\Arcadia.Assistant.Permissions.csproj", "{F4578998-0B4F-49BF-A485-6A11A3D7D837}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Permissions.Contracts", "Arcadia.Assistant.Permissions.Contracts\Arcadia.Assistant.Permissions.Contracts.csproj", "{900D57EF-6192-4825-9DED-6A81840BB8DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +77,14 @@ Global
 		{D773B729-E46C-432D-92B5-3EA7F352FBFD}.Debug|x64.Build.0 = Debug|x64
 		{D773B729-E46C-432D-92B5-3EA7F352FBFD}.Release|x64.ActiveCfg = Release|Any CPU
 		{D773B729-E46C-432D-92B5-3EA7F352FBFD}.Release|x64.Build.0 = Release|Any CPU
+		{F4578998-0B4F-49BF-A485-6A11A3D7D837}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F4578998-0B4F-49BF-A485-6A11A3D7D837}.Debug|x64.Build.0 = Debug|Any CPU
+		{F4578998-0B4F-49BF-A485-6A11A3D7D837}.Release|x64.ActiveCfg = Release|Any CPU
+		{F4578998-0B4F-49BF-A485-6A11A3D7D837}.Release|x64.Build.0 = Release|Any CPU
+		{900D57EF-6192-4825-9DED-6A81840BB8DA}.Debug|x64.ActiveCfg = Debug|x64
+		{900D57EF-6192-4825-9DED-6A81840BB8DA}.Debug|x64.Build.0 = Debug|x64
+		{900D57EF-6192-4825-9DED-6A81840BB8DA}.Release|x64.ActiveCfg = Release|Any CPU
+		{900D57EF-6192-4825-9DED-6A81840BB8DA}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
