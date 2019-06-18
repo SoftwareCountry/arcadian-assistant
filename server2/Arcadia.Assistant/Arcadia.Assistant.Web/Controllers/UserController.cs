@@ -1,6 +1,7 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
     using System.Linq;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -12,15 +13,19 @@
 
     using Models;
 
+    using Permissions.Contracts;
+
     [Route("api/user")]
     [Authorize]
     public class UserController : Controller
     {
         private readonly IEmployees employees;
+        private readonly IPermissions permissions;
 
-        public UserController(IEmployees employees)
+        public UserController(IEmployees employees, IPermissions permissions)
         {
             this.employees = employees;
+            this.permissions = permissions;
         }
 
         [HttpGet]
@@ -42,14 +47,22 @@
             });
         }
 
-        [Route("permissions/{employeeId}")]
+        [Route("permissions/{objectEmployeeId}")]
         [HttpGet]
         [ProducesResponseType(typeof(UserEmployeePermissionsModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetPermissions(string employeeId, CancellationToken token)
+        public async Task<IActionResult> GetPermissions(string objectEmployeeId, CancellationToken token)
         {
-            return null;
+            var objectEmployee = await this.employees.FindEmployeeAsync(objectEmployeeId, token);
+            if (objectEmployee == null)
+            {
+                return this.NotFound();
+            }
+
+            var allPermissions = await this.permissions.GetPermissionsAsync(this.User.Identity.Name, token);
+            var employeePermissions = allPermissions.GetPermissions(objectEmployee);
+            return this.Ok(new UserEmployeePermissionsModel(objectEmployeeId, employeePermissions));
         }
     }
 }

@@ -28,6 +28,8 @@
 
     using Organization.Contracts;
 
+    using Permissions.Contracts;
+
     public class Startup
     {
         public Startup(IHostingEnvironment env)
@@ -100,6 +102,7 @@
             builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
             builder.RegisterModule(new OrganizationModule());
             builder.RegisterModule(new EmployeesModule());
+            builder.RegisterModule(new PermissionsModule());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
