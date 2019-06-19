@@ -62,6 +62,7 @@
             builder.RegisterType<SharepointActor>().AsSelf();
             builder.RegisterType<SharepointStorageActor>().AsSelf();
             builder.RegisterType<MemoryCache>().AsSelf().SingleInstance();
+            builder.RegisterType<VacationsPendingActionsRefreshActor>().AsSelf();
 
             builder.RegisterType<CspEmployeeVacationsRegistryPropsFactory>().As<IEmployeeVacationsRegistryPropsFactory>();
             builder.RegisterType<CspEmployeeSickLeavesRegistryPropsFactory>().As<IEmployeeSickLeavesRegistryPropsFactory>();

@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
 
     using Akka.Actor;
@@ -15,8 +14,6 @@
 
     public class CspCalendarEventsApprovalsChecker : CalendarEventsApprovalsChecker
     {
-        private readonly Regex sdoDepartmentRegex = new Regex(@"SDO\..+\..+");
-
         private readonly IActorRef departmentsActor;
         private readonly IActorRef employeesActor;
 
@@ -26,7 +23,11 @@
             this.employeesActor = Context.ActorOf(CachedEmployeesInfoStorage.CreateProps(memoryCache, TimeSpan.FromMinutes(refreshInformation.IntervalInMinutes), true));
         }
 
-        protected override async Task<string> GetNextApprover(string employeeId, IEnumerable<string> existingApprovals, string eventType)
+        protected override async Task<string> GetNextApprover(
+            string employeeId,
+            IEnumerable<string> existingApprovals,
+            string eventType,
+            IEnumerable<string> skippedApprovers)
         {
             // No approval required for sick leaves
             if (eventType == CalendarEventTypes.Sickleave)
@@ -42,25 +43,22 @@
                 return null;
             }
 
-            switch (eventType)
-            {
-                case CalendarEventTypes.Vacation:
-                    return this.GetNextApproverHierarchyStrategy(employeeMetadata, allDepartments, existingApprovals);
-
-                default:
-                    return this.GetNextApproverOnlyHeadStrategy(employeeMetadata, allDepartments, existingApprovals);
-            }
+            return this.GetNextApproverOnlyHeadStrategy(employeeMetadata, allDepartments, existingApprovals, skippedApprovers);
         }
 
         private string GetNextApproverOnlyHeadStrategy(
             EmployeeMetadata employee,
             List<DepartmentInfo> departments,
-            IEnumerable<string> existingApprovals)
+            IEnumerable<string> existingApprovals,
+            IEnumerable<string> skippedApprovers)
         {
+            if (existingApprovals.Any())
+            {
+                return null;
+            }
+
             var ownDepartment = departments.First(d => d.DepartmentId == employee.DepartmentId);
             var isEmployeeChief = ownDepartment.ChiefId == employee.EmployeeId;
-            var parentDepartment = departments.First(d => d.DepartmentId == ownDepartment.ParentDepartmentId);
-            var parentDepartments = this.GetParentDepartments(ownDepartment, departments);
 
             if (ownDepartment.IsHeadDepartment && isEmployeeChief)
             {
@@ -68,68 +66,19 @@
                 return null;
             }
 
-            var existingApprovalsList = existingApprovals.ToList();
-            var nextApprover = !isEmployeeChief ? ownDepartment.ChiefId : parentDepartment?.ChiefId;
-            var acceptedApprovers = parentDepartments.Select(d => d.ChiefId);
-
-            return existingApprovalsList.Contains(nextApprover) || existingApprovalsList.Intersect(acceptedApprovers).Count() != 0
-                ? null
-                : nextApprover;
-        }
-
-        private string GetNextApproverHierarchyStrategy(
-            EmployeeMetadata employee,
-            List<DepartmentInfo> departments,
-            IEnumerable<string> existingApprovals)
-        {
-            var ownDepartment = departments.First(d => d.DepartmentId == employee.DepartmentId);
-            var isEmployeeChief = ownDepartment.ChiefId == employee.EmployeeId;
-            var parentDepartment = departments.FirstOrDefault(d => d.DepartmentId == ownDepartment.ParentDepartmentId);
             var parentDepartments = this.GetParentDepartments(ownDepartment, departments);
+            var allDepartments = !isEmployeeChief
+                ? parentDepartments.Prepend(ownDepartment)
+                : parentDepartments;
 
-            string finalApprover = null;
-            string preliminaryApprover = null;
+            var acceptedApprovers = allDepartments
+                .Select(d => d.ChiefId)
+                .ToArray();
 
-            if (this.sdoDepartmentRegex.Match(ownDepartment.Name).Success)
-            {
-                if (!isEmployeeChief)
-                {
-                    preliminaryApprover = ownDepartment.ChiefId;
-                }
+            var availableApprovers = acceptedApprovers
+                .Except(skippedApprovers ?? Enumerable.Empty<string>());
 
-                finalApprover = parentDepartment?.ChiefId;
-            }
-            else if (ownDepartment.IsHeadDepartment && isEmployeeChief)
-            {
-                // No approvals required for Director General
-            }
-            else
-            {
-                if (!isEmployeeChief)
-                {
-                    finalApprover = ownDepartment.ChiefId;
-                }
-                else
-                {
-                    finalApprover = parentDepartment?.ChiefId;
-                }
-            }
-
-            var existingApprovalsList = existingApprovals.ToList();
-            var acceptedFinalApprovers = parentDepartments.Select(d => d.ChiefId);
-
-            if (existingApprovalsList.Contains(finalApprover) ||
-                existingApprovalsList.Intersect(acceptedFinalApprovers).Count() != 0)
-            {
-                return null;
-            }
-
-            if (existingApprovalsList.Contains(preliminaryApprover))
-            {
-                return finalApprover;
-            }
-
-            return preliminaryApprover ?? finalApprover;
+            return availableApprovers.FirstOrDefault();
         }
 
         private async Task<EmployeeMetadata> GetEmployee(string employeeId)
