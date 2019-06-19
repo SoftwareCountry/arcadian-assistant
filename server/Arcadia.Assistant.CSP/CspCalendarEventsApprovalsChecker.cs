@@ -52,6 +52,11 @@
             IEnumerable<string> existingApprovals,
             IEnumerable<string> skippedApprovers)
         {
+            if (existingApprovals.Any())
+            {
+                return null;
+            }
+
             var ownDepartment = departments.First(d => d.DepartmentId == employee.DepartmentId);
             var isEmployeeChief = ownDepartment.ChiefId == employee.EmployeeId;
 
@@ -70,14 +75,10 @@
                 .Select(d => d.ChiefId)
                 .ToArray();
 
-            var approved = existingApprovals.Intersect(acceptedApprovers).Any();
-
             var availableApprovers = acceptedApprovers
                 .Except(skippedApprovers ?? Enumerable.Empty<string>());
 
-            return approved
-                ? null
-                : availableApprovers.FirstOrDefault();
+            return availableApprovers.FirstOrDefault();
         }
 
         private async Task<EmployeeMetadata> GetEmployee(string employeeId)
