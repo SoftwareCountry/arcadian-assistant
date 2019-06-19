@@ -72,31 +72,43 @@
                     this.logger.Warning($"An error occured while updating pending actions for event {msg.Event.EventId}. {msg.Exception}");
                     break;
 
-                case CalendarEventAddedToPendingActions msg:
+                case CalendarEventAddedToPendingActions msg when msg.Event.Type == CalendarEventTypes.Vacation:
                     this.AddApprover(msg.Event, msg.ApproverId);
                     break;
 
-                case CalendarEventRemovedFromPendingActions msg:
+                case CalendarEventAddedToPendingActions _:
+                    break;
+
+                case CalendarEventRemovedFromPendingActions msg when msg.Event.Type == CalendarEventTypes.Vacation:
                     this.RemoveEvent(msg.Event.EventId);
                     break;
 
-                case CalendarEventChanged msg when !msg.NewEvent.IsPending:
+                case CalendarEventRemovedFromPendingActions _:
+                    break;
+
+                case CalendarEventChanged msg when !msg.NewEvent.IsPending && msg.NewEvent.Type == CalendarEventTypes.Vacation:
                     this.RemoveEvent(msg.NewEvent.EventId);
                     break;
 
-                case CalendarEventChanged msg:
+                case CalendarEventChanged msg when msg.NewEvent.Type == CalendarEventTypes.Vacation:
                     this.eventsById[msg.NewEvent.EventId] = msg.NewEvent;
                     break;
 
-                case CalendarEventApprovalsChanged msg when !msg.Event.IsPending:
+                case CalendarEventChanged _:
+                    break;
+
+                case CalendarEventApprovalsChanged msg when !msg.Event.IsPending && msg.Event.Type == CalendarEventTypes.Vacation:
                     this.RemoveEvent(msg.Event.EventId);
                     break;
 
                 case CalendarEventApprovalsChanged _:
                     break;
 
-                case CalendarEventRemoved msg:
+                case CalendarEventRemoved msg when msg.Event.Type == CalendarEventTypes.Vacation:
                     this.RemoveEvent(msg.Event.EventId);
+                    break;
+
+                case CalendarEventRemoved _:
                     break;
 
                 default:
