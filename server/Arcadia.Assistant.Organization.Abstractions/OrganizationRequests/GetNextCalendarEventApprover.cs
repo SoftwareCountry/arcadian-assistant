@@ -4,16 +4,23 @@
 
     public class GetNextCalendarEventApprover
     {
-        public GetNextCalendarEventApprover(string employeeId, IEnumerable<string> existingApprovals, string eventType)
+        public GetNextCalendarEventApprover(
+            string employeeId,
+            IEnumerable<string> existingApprovals,
+            string eventType,
+            IEnumerable<string> skippedApprovers = null)
         {
             this.EmployeeId = employeeId;
             this.ExistingApprovals = existingApprovals;
             this.EventType = eventType;
+            this.SkippedApprovers = skippedApprovers;
         }
 
         public string EmployeeId { get; }
 
         public IEnumerable<string> ExistingApprovals { get; }
+
+        public IEnumerable<string> SkippedApprovers { get; }
 
         public string EventType { get; }
 

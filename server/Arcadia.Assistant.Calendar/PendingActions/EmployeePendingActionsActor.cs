@@ -42,40 +42,45 @@
                     break;
 
                 case CalendarEventAddedToPendingActions msg when msg.ApproverId == this.employeeId:
-                    this.AddPendingAction(msg.Event);
+                    this.AddToPendingActions(msg.Event);
                     break;
 
-                case CalendarEventAddedToPendingActions msg:
-                    this.RemovedFromPendingActions(msg.Event);
+                case CalendarEventAddedToPendingActions _:
                     break;
 
                 case CalendarEventRemovedFromPendingActions msg when this.HasPendingAction(msg.Event.EventId):
-                    this.RemovedFromPendingActions(msg.Event);
+                    this.RemoveFromPendingActions(msg.Event);
                     break;
 
                 case CalendarEventRemovedFromPendingActions _:
                     break;
 
                 case CalendarEventChanged msg when msg.NewEvent.IsPending && this.HasPendingAction(msg.NewEvent.EventId):
-                    this.AddPendingAction(msg.NewEvent);
+                    this.AddToPendingActions(msg.NewEvent);
                     break;
 
                 case CalendarEventChanged msg when !msg.NewEvent.IsPending && this.HasPendingAction(msg.NewEvent.EventId):
-                    this.RemovedFromPendingActions(msg.NewEvent);
+                    this.RemoveFromPendingActions(msg.NewEvent);
                     break;
 
                 case CalendarEventChanged _:
                     break;
 
+                case CalendarEventApprovalsChanged msg
+                    when msg.Event.IsPending && msg.Approvals.Any(a => a.ApprovedBy == this.employeeId) && this.HasPendingAction(msg.Event.EventId):
+
+                    this.RemoveFromPendingActions(msg.Event);
+                    break;
+
                 case CalendarEventApprovalsChanged msg when !msg.Event.IsPending && this.HasPendingAction(msg.Event.EventId):
-                    this.RemovedFromPendingActions(msg.Event);
+                    this.RemoveFromPendingActions(msg.Event);
                     break;
 
                 case CalendarEventApprovalsChanged _:
                     break;
 
                 case CalendarEventRemoved msg when this.HasPendingAction(msg.Event.EventId):
-                    this.RemovedFromPendingActions(msg.Event);
+                    this.RemoveFromPendingActions(msg.Event);
                     break;
 
                 case CalendarEventRemoved _:
@@ -87,13 +92,13 @@
             }
         }
 
-        private void AddPendingAction(CalendarEvent @event)
+        private void AddToPendingActions(CalendarEvent @event)
         {
             this.logger.Debug($"Employee {this.employeeId}. Pending action added for event {@event.EventId}.");
             this.pendingActionEvents[@event.EventId] = @event;
         }
 
-        private void RemovedFromPendingActions(CalendarEvent @event)
+        private void RemoveFromPendingActions(CalendarEvent @event)
         {
             if (this.pendingActionEvents.ContainsKey(@event.EventId))
             {
