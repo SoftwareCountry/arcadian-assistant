@@ -11,20 +11,24 @@
 
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.EventBus;
+    using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
     public class VacationsPendingActionsRefreshActor : UntypedActor, ILogReceive
     {
         private const string CalendarEventsApprovalsCheckerActorPath = @"/user/calendar-events-approvals";
 
+        private readonly AppSettings settings;
         private readonly ActorSelection calendarEventsApprovalsChecker;
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
         private readonly Dictionary<string, CalendarEvent> eventsById = new Dictionary<string, CalendarEvent>();
         private readonly Dictionary<string, List<string>> approversByEvent = new Dictionary<string, List<string>>();
+        private readonly Dictionary<string, ICancelable> refreshSchedulesByEvent = new Dictionary<string, ICancelable>();
 
-        public VacationsPendingActionsRefreshActor()
+        public VacationsPendingActionsRefreshActor(AppSettings settings)
         {
+            this.settings = settings;
             this.calendarEventsApprovalsChecker = Context.ActorSelection(CalendarEventsApprovalsCheckerActorPath);
 
             Context.System.EventStream.Subscribe<CalendarEventAddedToPendingActions>(this.Self);
@@ -32,13 +36,6 @@
             Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);
             Context.System.EventStream.Subscribe<CalendarEventApprovalsChanged>(this.Self);
             Context.System.EventStream.Subscribe<CalendarEventRemoved>(this.Self);
-
-            Context.System.Scheduler.ScheduleTellRepeatedly(
-                TimeSpan.FromMinutes(1),
-                TimeSpan.FromMinutes(1),
-                this.Self,
-                RefreshPendingActions.Instance,
-                this.Self);
         }
 
         public static Props CreateProps()
@@ -50,19 +47,19 @@
         {
             switch (message)
             {
-                case RefreshPendingActions _:
-                    foreach (var @event in this.eventsById.Values)
-                    {
-                        this.GetNextApproverId(@event, this.approversByEvent[@event.EventId])
+                case RefreshPendingActions msg:
+                    var @event = this.eventsById[msg.EventId];
+                    var approvers = this.approversByEvent[@event.EventId];
+
+                    this.GetNextApproverId(@event, approvers)
                             .PipeTo(
                                 this.Self,
-                                success: result => new RefreshEventPendingActionsSuccess(@event, result),
-                                failure: error => new RefreshEventPendingActionsFailure(@event, error));
-                    }
+                                success: result => new RefreshPendingActionsSuccess(@event, result),
+                                failure: error => new RefreshPendingActionsFailure(@event, error));
 
                     break;
 
-                case RefreshEventPendingActionsSuccess msg:
+                case RefreshPendingActionsSuccess msg:
                     if (msg.NextApprover != null)
                     {
                         Context.System.EventStream.Publish(new CalendarEventAddedToPendingActions(msg.Event, msg.NextApprover));
@@ -71,7 +68,7 @@
 
                     break;
 
-                case RefreshEventPendingActionsFailure msg:
+                case RefreshPendingActionsFailure msg:
                     this.logger.Warning($"An error occured while updating pending actions for event {msg.Event.EventId}. {msg.Exception}");
                     break;
 
@@ -113,6 +110,14 @@
             if (!this.approversByEvent.ContainsKey(@event.EventId))
             {
                 this.approversByEvent[@event.EventId] = new List<string>();
+
+                var schedule = Context.System.Scheduler.ScheduleTellRepeatedlyCancelable(
+                    this.settings.VacationsPendingActionsRefresh,
+                    this.settings.VacationsPendingActionsRefresh,
+                    this.Self,
+                    new RefreshPendingActions(@event.EventId),
+                    this.Self);
+                this.refreshSchedulesByEvent[@event.EventId] = schedule;
             }
 
             this.eventsById[@event.EventId] = @event;
@@ -129,6 +134,12 @@
             if (this.approversByEvent.ContainsKey(eventId))
             {
                 this.approversByEvent.Remove(eventId);
+            }
+
+            if (this.refreshSchedulesByEvent.ContainsKey(eventId))
+            {
+                this.refreshSchedulesByEvent[eventId].Cancel();
+                this.refreshSchedulesByEvent.Remove(eventId);
             }
         }
 
@@ -153,12 +164,17 @@
 
         private class RefreshPendingActions
         {
-            public static readonly RefreshPendingActions Instance = new RefreshPendingActions();
+            public RefreshPendingActions(string eventId)
+            {
+                this.EventId = eventId;
+            }
+
+            public string EventId { get; }
         }
 
-        public class RefreshEventPendingActionsSuccess
+        private class RefreshPendingActionsSuccess
         {
-            public RefreshEventPendingActionsSuccess(CalendarEvent @event, string nextApprover)
+            public RefreshPendingActionsSuccess(CalendarEvent @event, string nextApprover)
             {
                 this.Event = @event;
                 this.NextApprover = nextApprover;
@@ -169,9 +185,9 @@
             public string NextApprover { get; }
         }
 
-        public class RefreshEventPendingActionsFailure
+        private class RefreshPendingActionsFailure
         {
-            public RefreshEventPendingActionsFailure(CalendarEvent @event, Exception exception)
+            public RefreshPendingActionsFailure(CalendarEvent @event, Exception exception)
             {
                 this.Event = @event;
                 this.Exception = exception;
