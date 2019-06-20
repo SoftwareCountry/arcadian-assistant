@@ -13,18 +13,18 @@
 
     public class EmployeePhotoController : Controller
     {
-        private readonly IActorProxyFactory actorProxyFactory;
+        private readonly IAvatars avatars;
 
-        public EmployeePhotoController(IActorProxyFactory actorProxyFactory)
+        public EmployeePhotoController(IAvatars avatars)
         {
-            this.actorProxyFactory = actorProxyFactory;
+            this.avatars = avatars;
         }
 
         [Route("{employeeId}")]
         [HttpGet]
         public async Task<IActionResult> GetImage(string employeeId, CancellationToken token)
         {
-            var actor = this.actorProxyFactory.CreateActorProxy<IAvatar>(new ActorId(employeeId), serviceName: AvatarsServiceMetadata.ServiceName);
+            var actor = this.avatars.Get(employeeId);
             var photo = await actor.GetPhoto(token);
             if (photo == null)
             {

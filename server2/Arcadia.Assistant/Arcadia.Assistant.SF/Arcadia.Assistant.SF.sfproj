@@ -34,6 +34,7 @@
     <ProjectReference Include="..\Arcadia.Assistant.Employees\Arcadia.Assistant.Employees.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Organization\Arcadia.Assistant.Organization.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Permissions\Arcadia.Assistant.Permissions.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.UserPreferences\Arcadia.Assistant.UserPreferences.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Web\Arcadia.Assistant.Web.csproj" />
   </ItemGroup>
   <ItemGroup>

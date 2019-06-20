@@ -10,6 +10,8 @@ namespace Arcadia.Assistant.Avatars.Manager
     using Autofac;
     using Autofac.Integration.ServiceFabric;
 
+    using Contracts;
+
     using CSP;
 
     using Microsoft.ServiceFabric.Actors.Client;
@@ -36,6 +38,7 @@ namespace Arcadia.Assistant.Avatars.Manager
                 builder.RegisterModule(new CspModule(connectionString));
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
+                builder.RegisterModule(new AvatarsModule());
 
                 builder.RegisterStatelessService<Manager>("Arcadia.Assistant.Avatars.ManagerType");
 

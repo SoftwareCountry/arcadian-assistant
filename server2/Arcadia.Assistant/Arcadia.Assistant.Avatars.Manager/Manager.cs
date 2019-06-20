@@ -24,14 +24,14 @@ namespace Arcadia.Assistant.Avatars.Manager
     /// </summary>
     public class Manager : StatelessService
     {
-        private readonly IActorProxyFactory actorProxyFactory;
         private readonly Func<Owned<CspEmployeeQuery>> employeeQuery;
+        private readonly IAvatars avatars;
 
-        public Manager(StatelessServiceContext context, Func<Owned<CspEmployeeQuery>> employeeQuery, IActorProxyFactory actorProxyFactory)
+        public Manager(StatelessServiceContext context, Func<Owned<CspEmployeeQuery>> employeeQuery, IAvatars avatars)
             : base(context)
         {
             this.employeeQuery = employeeQuery;
-            this.actorProxyFactory = actorProxyFactory;
+            this.avatars = avatars;
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace Arcadia.Assistant.Avatars.Manager
                         foreach (var employee in employees)
                         {
                             cancellationToken.ThrowIfCancellationRequested();
-                            var actor = this.actorProxyFactory.CreateActorProxy<IAvatar>(new ActorId(employee.Id.ToString()), serviceName: AvatarsServiceMetadata.ServiceName);
+                            var actor = this.avatars.Get(employee.Id.ToString());
                             await actor.SetSource(employee.Image);
                         }
                     }

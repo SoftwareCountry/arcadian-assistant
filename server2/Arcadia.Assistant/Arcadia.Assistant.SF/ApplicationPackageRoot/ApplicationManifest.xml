@@ -18,10 +18,16 @@
     <Parameter Name="AvatarActorService_MinReplicaSetSize" DefaultValue="3" />
     <Parameter Name="AvatarActorService_TargetReplicaSetSize" DefaultValue="3" />
     <Parameter Name="Arcadia.Assistant.Csp_ConnectionString" DefaultValue="" />
+    <Parameter Name="UserPreferencesActorService_PartitionCount" DefaultValue="10" />
+    <Parameter Name="UserPreferencesActorService_MinReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="UserPreferencesActorService_TargetReplicaSetSize" DefaultValue="3" />
   </Parameters>
   <!-- Import the ServiceManifest from the ServicePackage. The ServiceManifestName and ServiceManifestVersion 
        should match the Name and Version attributes of the ServiceManifest element defined in the 
        ServiceManifest.xml file. -->
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.UserPreferencesPkg" ServiceManifestVersion="1.0.0" />
+  </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.PermissionsPkg" ServiceManifestVersion="1.0.0" />
     <ConfigOverrides />
@@ -122,6 +128,11 @@
     <Service Name="AvatarActorService" GeneratedIdRef="c6504821-7171-4fe7-9446-c4e383903f37|Volatile">
       <StatefulService ServiceTypeName="AvatarActorServiceType" TargetReplicaSetSize="[AvatarActorService_TargetReplicaSetSize]" MinReplicaSetSize="[AvatarActorService_MinReplicaSetSize]">
         <UniformInt64Partition PartitionCount="[AvatarActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+      </StatefulService>
+    </Service>
+    <Service Name="UserPreferencesActorService" GeneratedIdRef="bd611c39-89a4-4ad4-9846-19dceb20ca15|Persisted">
+      <StatefulService ServiceTypeName="UserPreferencesActorServiceType" TargetReplicaSetSize="[UserPreferencesActorService_TargetReplicaSetSize]" MinReplicaSetSize="[UserPreferencesActorService_MinReplicaSetSize]">
+        <UniformInt64Partition PartitionCount="[UserPreferencesActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
       </StatefulService>
     </Service>
   </DefaultServices>

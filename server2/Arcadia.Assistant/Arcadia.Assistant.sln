@@ -25,9 +25,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Employees
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Employees.Contracts", "Arcadia.Assistant.Employees.Contracts\Arcadia.Assistant.Employees.Contracts.csproj", "{D773B729-E46C-432D-92B5-3EA7F352FBFD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Permissions", "Arcadia.Assistant.Permissions\Arcadia.Assistant.Permissions.csproj", "{F4578998-0B4F-49BF-A485-6A11A3D7D837}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Permissions", "Arcadia.Assistant.Permissions\Arcadia.Assistant.Permissions.csproj", "{F4578998-0B4F-49BF-A485-6A11A3D7D837}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Permissions.Contracts", "Arcadia.Assistant.Permissions.Contracts\Arcadia.Assistant.Permissions.Contracts.csproj", "{900D57EF-6192-4825-9DED-6A81840BB8DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Permissions.Contracts", "Arcadia.Assistant.Permissions.Contracts\Arcadia.Assistant.Permissions.Contracts.csproj", "{900D57EF-6192-4825-9DED-6A81840BB8DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.UserPreferences", "Arcadia.Assistant.UserPreferences\Arcadia.Assistant.UserPreferences.csproj", "{C9DF5143-8E11-4731-B76E-B187B0A95444}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.UserPreferences.Contracts", "Arcadia.Assistant.UserPreferences.Contracts\Arcadia.Assistant.UserPreferences.Contracts.csproj", "{1877FF11-485D-490B-9409-1AA57C8EBB3D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -85,6 +89,14 @@ Global
 		{900D57EF-6192-4825-9DED-6A81840BB8DA}.Debug|x64.Build.0 = Debug|x64
 		{900D57EF-6192-4825-9DED-6A81840BB8DA}.Release|x64.ActiveCfg = Release|Any CPU
 		{900D57EF-6192-4825-9DED-6A81840BB8DA}.Release|x64.Build.0 = Release|Any CPU
+		{C9DF5143-8E11-4731-B76E-B187B0A95444}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C9DF5143-8E11-4731-B76E-B187B0A95444}.Debug|x64.Build.0 = Debug|Any CPU
+		{C9DF5143-8E11-4731-B76E-B187B0A95444}.Release|x64.ActiveCfg = Release|Any CPU
+		{C9DF5143-8E11-4731-B76E-B187B0A95444}.Release|x64.Build.0 = Release|Any CPU
+		{1877FF11-485D-490B-9409-1AA57C8EBB3D}.Debug|x64.ActiveCfg = Debug|x64
+		{1877FF11-485D-490B-9409-1AA57C8EBB3D}.Debug|x64.Build.0 = Debug|x64
+		{1877FF11-485D-490B-9409-1AA57C8EBB3D}.Release|x64.ActiveCfg = Release|Any CPU
+		{1877FF11-485D-490B-9409-1AA57C8EBB3D}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

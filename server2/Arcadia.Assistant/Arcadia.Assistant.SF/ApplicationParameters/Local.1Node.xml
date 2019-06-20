@@ -12,5 +12,8 @@
     <Parameter Name="AvatarActorService_PartitionCount" Value="1" />
     <Parameter Name="AvatarActorService_TargetReplicaSetSize" Value="1" />
     <Parameter Name="AvatarActorService_MinReplicaSetSize" Value="1" />
+    <Parameter Name="UserPreferencesActorService_PartitionCount" Value="1" />
+    <Parameter Name="UserPreferencesActorService_TargetReplicaSetSize" Value="1" />
+    <Parameter Name="UserPreferencesActorService_MinReplicaSetSize" Value="1" />
   </Parameters>
 </Application>
