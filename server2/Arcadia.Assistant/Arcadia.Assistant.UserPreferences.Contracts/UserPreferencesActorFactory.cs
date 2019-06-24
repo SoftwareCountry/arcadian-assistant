@@ -3,7 +3,7 @@
     using Microsoft.ServiceFabric.Actors;
     using Microsoft.ServiceFabric.Actors.Client;
 
-    public class UserPreferencesActorFactory : IUsersPreferences
+    public class UserPreferencesActorFactory : IUsersPreferencesStorage
     {
         private readonly IActorProxyFactory actorProxyFactory;
 
@@ -12,9 +12,9 @@
             this.actorProxyFactory = actorProxyFactory;
         }
 
-        public IUserPreferences Get(string userId)
+        public IUserPreferencesStorage ForUser(string userId)
         {
-            var actor = this.actorProxyFactory.CreateActorProxy<IUserPreferences>(new ActorId(userId), serviceName: "UserPreferencesActorService");
+            var actor = this.actorProxyFactory.CreateActorProxy<IUserPreferencesStorage>(new ActorId(userId), serviceName: "UserPreferencesStorageActorService");
             return actor;
         }
     }

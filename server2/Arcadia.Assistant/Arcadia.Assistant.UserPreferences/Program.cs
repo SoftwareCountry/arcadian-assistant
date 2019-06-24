@@ -21,7 +21,7 @@ namespace Arcadia.Assistant.UserPreferences
                 // are automatically populated when you build this project.
                 // For more information, see https://aka.ms/servicefabricactorsplatform
 
-                ActorRuntime.RegisterActorAsync<UserPreferences> (
+                ActorRuntime.RegisterActorAsync<UserPreferencesStorage> (
                    (context, actorType) => new ActorService(context, actorType)).GetAwaiter().GetResult();
 
                 Thread.Sleep(Timeout.Infinite);

@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ServiceManifest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="Arcadia.Assistant.UserPreferencesPkg" Version="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <ServiceTypes>
-    <StatefulServiceType ServiceTypeName="UserPreferencesActorServiceType" HasPersistedState="true">
+    <StatefulServiceType ServiceTypeName="UserPreferencesStorageActorServiceType" HasPersistedState="true">
       <Extensions>
-        <Extension Name="__GeneratedServiceType__" GeneratedId="bd611c39-89a4-4ad4-9846-19dceb20ca15|Persisted">
+        <Extension Name="__GeneratedServiceType__" GeneratedId="60586cd7-62d3-471e-a869-517daf5adc18|Persisted">
           <GeneratedNames xmlns="http://schemas.microsoft.com/2015/03/fabact-no-schema">
-            <DefaultService Name="UserPreferencesActorService" />
-            <ReplicatorEndpoint Name="UserPreferencesActorServiceReplicatorEndpoint" />
-            <ReplicatorConfigSection Name="UserPreferencesActorServiceReplicatorConfig" />
-            <ReplicatorSecurityConfigSection Name="UserPreferencesActorServiceReplicatorSecurityConfig" />
-            <StoreConfigSection Name="UserPreferencesActorServiceLocalStoreConfig" />
-            <ServiceEndpointV2_1 Name="UserPreferencesActorServiceEndpointV2_1" />
+            <DefaultService Name="UserPreferencesStorageActorService" />
+            <ReplicatorEndpoint Name="UserPreferencesStorageActorServiceReplicatorEndpoint" />
+            <ReplicatorConfigSection Name="UserPreferencesStorageActorServiceReplicatorConfig" />
+            <ReplicatorSecurityConfigSection Name="UserPreferencesStorageActorServiceReplicatorSecurityConfig" />
+            <StoreConfigSection Name="UserPreferencesStorageActorServiceLocalStoreConfig" />
+            <ServiceEndpointV2_1 Name="UserPreferencesStorageActorServiceEndpointV2_1" />
           </GeneratedNames>
         </Extension>
       </Extensions>
@@ -27,7 +27,8 @@
   <Resources>
     <Endpoints>
       <Endpoint Name="UserPreferencesActorServiceEndpointV2_1" />
-      <Endpoint Name="UserPreferencesActorServiceReplicatorEndpoint" />
+      <Endpoint Name="UserPreferencesStorageActorServiceEndpointV2_1" />
+      <Endpoint Name="UserPreferencesStorageActorServiceReplicatorEndpoint" />
     </Endpoints>
   </Resources>
   <!-- The content will be generated during build -->

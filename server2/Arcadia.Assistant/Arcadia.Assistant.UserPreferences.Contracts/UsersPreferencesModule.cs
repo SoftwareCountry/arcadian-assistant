@@ -6,7 +6,7 @@
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<UserPreferencesActorFactory>().As<IUsersPreferences>();
+            builder.RegisterType<UserPreferencesActorFactory>().As<IUsersPreferencesStorage>();
         }
     }
 }
