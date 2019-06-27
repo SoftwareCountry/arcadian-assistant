@@ -91,6 +91,13 @@ export class EventActionProvider {
                            permissions: UserEmployeePermissions,
                            approvals: Map<CalendarEventId, Set<Approval>>): Optional<EventAction> {
 
+        // Only the event creator should be able to cancel the sick leave. See:
+        // https://github.com/SoftwareCountry/arcadian-assistant/issues/712
+        const isOwnEvent = this.userId === employee.employeeId;
+        if (event.isSickLeave && !isOwnEvent) {
+            return undefined;
+        }
+
         switch (event.status) {
             case GeneralCalendarEventStatus.Requested:
                 const permissionApprove = permissions.has(Permission.approveCalendarEvents);
@@ -113,9 +120,15 @@ export class EventActionProvider {
                            employee: Employee,
                            permissions: UserEmployeePermissions): Optional<EventAction> {
 
+        // Only the event creator should be able to cancel the sick leave. See:
+        // https://github.com/SoftwareCountry/arcadian-assistant/issues/712
+        const isOwnEvent = this.userId === employee.employeeId;
+        if (event.isSickLeave && !isOwnEvent) {
+            return undefined;
+        }
+
         switch (event.status) {
             case GeneralCalendarEventStatus.Requested:
-                const isOwnEvent = this.userId === employee.employeeId;
                 if (isOwnEvent) {
                     if (permissions.has(Permission.cancelPendingCalendarEvents)) {
                         return this.cancelAction(event, employee);
