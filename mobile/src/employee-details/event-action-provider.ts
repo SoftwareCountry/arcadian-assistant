@@ -93,7 +93,7 @@ export class EventActionProvider {
 
         // Only the event creator should be able to cancel the sick leave. See:
         // https://github.com/SoftwareCountry/arcadian-assistant/issues/712
-        const isOwnEvent = this.userId === employee.employeeId;
+        const isOwnEvent = this.isCurrentUser(employee);
         if (event.isSickLeave && !isOwnEvent) {
             return undefined;
         }
@@ -122,7 +122,7 @@ export class EventActionProvider {
 
         // Only the event creator should be able to cancel the sick leave. See:
         // https://github.com/SoftwareCountry/arcadian-assistant/issues/712
-        const isOwnEvent = this.userId === employee.employeeId;
+        const isOwnEvent = this.isCurrentUser(employee);
         if (event.isSickLeave && !isOwnEvent) {
             return undefined;
         }
@@ -151,6 +151,11 @@ export class EventActionProvider {
         }
 
         return undefined;
+    }
+
+    //----------------------------------------------------------------------------
+    private isCurrentUser(employee: Employee) {
+        return this.userId === employee.employeeId;
     }
 
     //----------------------------------------------------------------------------
