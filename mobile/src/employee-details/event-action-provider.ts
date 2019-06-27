@@ -6,7 +6,8 @@ import {
     CalendarEvent,
     CalendarEventId,
     CalendarEventStatus,
-    GeneralCalendarEventStatus
+    GeneralCalendarEventStatus,
+    SickLeaveStatus
 } from '../reducers/calendar/calendar-event.model';
 import { Employee, EmployeeId } from '../reducers/organization/employee.model';
 import { Permission, UserEmployeePermissions } from '../reducers/user/user-employee-permissions.model';
@@ -91,10 +92,8 @@ export class EventActionProvider {
                            permissions: UserEmployeePermissions,
                            approvals: Map<CalendarEventId, Set<Approval>>): Optional<EventAction> {
 
-        // Only the event creator should be able to cancel the sick leave. See:
-        // https://github.com/SoftwareCountry/arcadian-assistant/issues/712
-        const isOwnEvent = this.isCurrentUser(employee);
-        if (event.isSickLeave && !isOwnEvent) {
+        // Sick leaves don't need an approval
+        if (event.isSickLeave) {
             return undefined;
         }
 
@@ -120,11 +119,21 @@ export class EventActionProvider {
                            employee: Employee,
                            permissions: UserEmployeePermissions): Optional<EventAction> {
 
-        // Only the event creator should be able to cancel the sick leave. See:
-        // https://github.com/SoftwareCountry/arcadian-assistant/issues/712
         const isOwnEvent = this.isCurrentUser(employee);
-        if (event.isSickLeave && !isOwnEvent) {
-            return undefined;
+
+        // Sick leaves have a special flow because they don't need an approval
+        if (event.isSickLeave) {
+            if (!isOwnEvent) {
+                // Only the event creator should be able to cancel the sick leave. See:
+                // https://github.com/SoftwareCountry/arcadian-assistant/issues/712
+                return undefined;
+            }
+
+            if (event.status === SickLeaveStatus.Completed || event.status === SickLeaveStatus.Cancelled) {
+                return undefined;
+            }
+
+            return this.cancelAction(event, employee);
         }
 
         switch (event.status) {
