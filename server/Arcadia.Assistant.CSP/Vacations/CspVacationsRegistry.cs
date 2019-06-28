@@ -63,6 +63,7 @@
                     break;
 
                 case GetEmployeeCalendarEvents msg:
+                    this.logger.Debug("GetEmployeeCalendarEvents message received in CSP vacations registry");
                     this.GetVacations()
                         .PipeTo(
                             this.Self,
@@ -374,7 +375,10 @@
 
         private async Task<IEnumerable<CalendarEventWithAdditionalData>> GetVacations()
         {
+            this.logger.Debug("Started loading of vacations from CSP database");
             var vacations = await this.vacationsSyncExecutor.GetVacations();
+            this.logger.Debug("Vacations from CSP database loaded");
+
             return vacations;
         }
 

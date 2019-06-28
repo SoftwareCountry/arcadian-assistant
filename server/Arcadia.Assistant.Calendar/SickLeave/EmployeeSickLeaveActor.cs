@@ -44,6 +44,7 @@
             switch (message)
             {
                 case GetCalendarEvents msg:
+                    this.logger.Debug("GetCalendarEvents message received in employee sick leave actor");
                     this.sickLeavesRegistry.Forward(msg);
                     break;
 
