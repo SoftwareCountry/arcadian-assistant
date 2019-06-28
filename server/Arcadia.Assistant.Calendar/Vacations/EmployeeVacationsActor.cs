@@ -127,6 +127,7 @@
                     break;
 
                 case GetCalendarEvents msg:
+                    this.logger.Debug("GetCalendarEvents message received in employee vacations actor");
                     this.vacationsRegistry.Forward(msg);
                     break;
 

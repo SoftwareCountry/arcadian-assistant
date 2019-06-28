@@ -50,6 +50,7 @@
                     break;
 
                 case GetCalendarEvents _:
+                    this.logger.Debug("GetCalendarEvents message received in employee work hours actor");
                     this.Sender.Tell(new GetCalendarEvents.Response(this.EmployeeId, this.EventsById.Values.ToList()));
                     break;
 

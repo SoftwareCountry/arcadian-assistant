@@ -57,6 +57,7 @@
                     break;
 
                 case GetEmployeeCalendarEvents msg:
+                    this.logger.Debug("GetEmployeeCalendarEvents message received in CSP sick leaves registry");
                     this.GetSickLeaves(false)
                         .PipeTo(
                             this.Self,
@@ -239,7 +240,9 @@
 
         private async Task<IEnumerable<CalendarEventWithAdditionalData>> GetSickLeaves(bool onlyActual = true)
         {
+            this.logger.Debug("Started loading of sick leaves from CSP database");
             var sickLeaves = await this.sickLeavesSyncExecutor.GetSickLeaves();
+            this.logger.Debug("Sick leaves from CSP database loaded");
 
             if (onlyActual)
             {

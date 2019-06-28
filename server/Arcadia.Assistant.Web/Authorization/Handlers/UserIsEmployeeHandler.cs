@@ -24,6 +24,8 @@
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsEmployeeRequirement requirement)
         {
+            this.logger.Trace($"User is employee authorization check started for user {context.User.Identity.Name}");
+
             var email = context.User.FindFirstValue(ClaimTypes.Name);
             if (email == null)
             {
@@ -31,6 +33,8 @@
             }
 
             var employee = await this.search.FindOrDefaultAsync(context.User, CancellationToken.None);
+            this.logger.Trace($"Employee is loaded from the database for user {context.User.Identity.Name}");
+
             if (employee != null)
             {
                 context.Succeed(requirement);
