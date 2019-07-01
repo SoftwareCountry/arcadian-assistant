@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace Arcadia.Assistant.Web.Controllers
+﻿namespace Arcadia.Assistant.Web.Controllers
 {
     using System.Linq;
     using System.Threading;
@@ -10,6 +8,7 @@ namespace Arcadia.Assistant.Web.Controllers
 
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
 
     using Models;
 
@@ -34,7 +33,7 @@ namespace Arcadia.Assistant.Web.Controllers
         public async Task<IActionResult> GetUserPreferences(CancellationToken cancellationToken)
         {
             var employee = (await this.employees
-                .FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(this.User.Identity.Name), cancellationToken))
+                    .FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(this.User.Identity.Name), cancellationToken))
                 .FirstOrDefault();
 
             if (employee == null)
@@ -43,7 +42,7 @@ namespace Arcadia.Assistant.Web.Controllers
             }
 
             var userPreferences = await this.usersPreferencesStorage.ForEmployee(employee.EmployeeId).Get(cancellationToken);
-            var model = new UserPreferencesModel()
+            var model = new UserPreferencesModel
             {
                 EmailNotifications = userPreferences.EmailNotifications,
                 PushNotifications = userPreferences.PushNotifications
@@ -64,14 +63,14 @@ namespace Arcadia.Assistant.Web.Controllers
             }
 
             var employee = (await this.employees
-                    .FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(this.User.Identity.Name), CancellationToken.None)).FirstOrDefault();
+                .FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(this.User.Identity.Name), CancellationToken.None)).FirstOrDefault();
 
             if (employee == null)
             {
                 return this.NotFound();
             }
 
-            await this.usersPreferencesStorage.ForEmployee(employee.EmployeeId).Set(new UserPreferences()
+            await this.usersPreferencesStorage.ForEmployee(employee.EmployeeId).Set(new UserPreferences
             {
                 EmailNotifications = userPreferencesModel.EmailNotifications,
                 PushNotifications = userPreferencesModel.PushNotifications
