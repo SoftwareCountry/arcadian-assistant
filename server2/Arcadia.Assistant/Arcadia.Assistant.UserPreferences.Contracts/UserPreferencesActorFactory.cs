@@ -12,9 +12,9 @@
             this.actorProxyFactory = actorProxyFactory;
         }
 
-        public IUserPreferencesStorage ForUser(string userId)
+        public IUserPreferencesStorage ForEmployee(string employeeId)
         {
-            var actor = this.actorProxyFactory.CreateActorProxy<IUserPreferencesStorage>(new ActorId(userId), serviceName: "UserPreferencesStorageActorService");
+            var actor = this.actorProxyFactory.CreateActorProxy<IUserPreferencesStorage>(new ActorId("employee-" + employeeId), serviceName: "UserPreferencesStorageActorService");
             return actor;
         }
     }

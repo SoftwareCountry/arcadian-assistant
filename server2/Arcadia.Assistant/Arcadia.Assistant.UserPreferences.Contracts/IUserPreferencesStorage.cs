@@ -4,6 +4,7 @@ using Microsoft.ServiceFabric.Services.Remoting;
 [assembly: FabricTransportActorRemotingProvider(RemotingListenerVersion = RemotingListenerVersion.V2_1, RemotingClientVersion = RemotingClientVersion.V2_1)]
 namespace Arcadia.Assistant.UserPreferences.Contracts
 {
+    using System.Threading;
     using System.Threading.Tasks;
 
     using Microsoft.ServiceFabric.Actors;
@@ -14,8 +15,8 @@ namespace Arcadia.Assistant.UserPreferences.Contracts
     /// </summary>
     public interface IUserPreferencesStorage : IActor
     {
-        Task<UserPreferences> Get();
+        Task<UserPreferences> Get(CancellationToken cancellationToken);
 
-        Task Set(UserPreferences userPreferences);
+        Task Set(UserPreferences userPreferences, CancellationToken cancellationToken);
     }
 }

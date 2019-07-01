@@ -2,6 +2,6 @@
 {
     public interface IUsersPreferencesStorage
     {
-        IUserPreferencesStorage ForUser(string userId);
+        IUserPreferencesStorage ForEmployee(string employeeId);
     }
 }

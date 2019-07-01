@@ -1,5 +1,6 @@
 namespace Arcadia.Assistant.UserPreferences
 {
+    using System.Threading;
     using System.Threading.Tasks;
 
     using Contracts;
@@ -18,6 +19,8 @@ namespace Arcadia.Assistant.UserPreferences
     [StatePersistence(StatePersistence.Persisted)]
     internal class UserPreferencesStorage : Actor, IUserPreferencesStorage
     {
+        private const string StateKey = "preferences";
+
         /// <summary>
         ///     Initializes a new instance of UserPreferences
         /// </summary>
@@ -28,14 +31,16 @@ namespace Arcadia.Assistant.UserPreferences
         {
         }
 
-        public Task<UserPreferences> Get()
+        public async Task<UserPreferences> Get(CancellationToken cancellationToken)
         {
-            return Task.FromResult(new UserPreferences());
+            var state = await this.StateManager.GetOrAddStateAsync(StateKey, this.DefaultPreferences(), cancellationToken);
+            return state;
         }
 
-        public Task Set(UserPreferences userPreferences)
+        public async Task Set(UserPreferences userPreferences, CancellationToken cancellationToken)
         {
-            return Task.CompletedTask;
+            await this.StateManager.SetStateAsync(StateKey, userPreferences, cancellationToken);
+            await this.StateManager.SaveStateAsync(cancellationToken);
         }
 
         /// <summary>
@@ -52,6 +57,15 @@ namespace Arcadia.Assistant.UserPreferences
             // For more information, see https://aka.ms/servicefabricactorsstateserialization
 
             return this.StateManager.TryAddStateAsync("count", 0);
+        }
+
+        private UserPreferences DefaultPreferences()
+        {
+            return new UserPreferences()
+            {
+                EmailNotifications = true,
+                PushNotifications = true
+            };
         }
     }
 }
