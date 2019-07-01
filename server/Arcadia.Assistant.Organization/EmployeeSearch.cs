@@ -130,6 +130,11 @@
                 return false;
             }
 
+            if ((query.IsWorking == true && employee.FireDate != null) || (query.IsWorking == false && employee.FireDate == null))
+            {
+                return false;
+            }
+
             return true;
         }
     }

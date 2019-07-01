@@ -21,7 +21,9 @@
 
         protected override EmployeesQuery GetEmployeesQuery(DateTime date)
         {
-            return EmployeesQuery.Create().WithHireDate(new DateQuery() { Day = date.Day, Month = date.Month });
+            return EmployeesQuery.Create()
+                .WithHireDate(new DateQuery { Day = date.Day, Month = date.Month })
+                .WorkingOnly();
         }
 
         protected override Message GetDateMessageForEmployee(EmployeeMetadata employee, DateTime date)
