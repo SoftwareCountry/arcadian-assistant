@@ -1,16 +1,18 @@
-using System;
-using System.Diagnostics;
-using System.Fabric;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.ServiceFabric.Services.Runtime;
-
 namespace Arcadia.Assistant.Dayoffs
 {
+    using System;
+    using System.Diagnostics;
+    using System.Threading;
+
+    using Autofac;
+    using Autofac.Integration.ServiceFabric;
+
+    using Microsoft.ServiceFabric.Services.Runtime;
+
     internal static class Program
     {
         /// <summary>
-        /// This is the entry point of the service host process.
+        ///     This is the entry point of the service host process.
         /// </summary>
         private static void Main()
         {
@@ -28,6 +30,18 @@ namespace Arcadia.Assistant.Dayoffs
 
                 // Prevents this host process from terminating so services keep running.
                 Thread.Sleep(Timeout.Infinite);
+
+                var builder = new ContainerBuilder();
+                builder.RegisterServiceFabricSupport();
+                builder.RegisterStatelessService<Dayoffs>("Arcadia.Assistant.DayoffsType");
+
+                using (builder.Build())
+                {
+                    ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(Dayoffs).Name);
+
+                    // Prevents this host process from terminating so services keep running.
+                    Thread.Sleep(Timeout.Infinite);
+                }
             }
             catch (Exception e)
             {

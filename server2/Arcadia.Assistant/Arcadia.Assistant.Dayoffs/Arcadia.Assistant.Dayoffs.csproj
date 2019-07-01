@@ -10,7 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="3.3.644" />
+    <PackageReference Include="Autofac.ServiceFabric" Version="2.2.0" />
+    <PackageReference Include="Microsoft.ServiceFabric.Actors" Version="3.4.639" />
+    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="3.4.639" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Arcadia.Assistant.Dayoffs.Contracts\Arcadia.Assistant.Dayoffs.Contracts.csproj" />
   </ItemGroup>
 
 </Project>
