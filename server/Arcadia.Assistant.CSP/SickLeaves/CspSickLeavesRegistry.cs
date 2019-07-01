@@ -129,7 +129,6 @@
                     {
                         var eventsById = msg.Events.ToDictionary(x => x.CalendarEvent.EventId);
                         this.databaseSickLeavesCache = new DatabaseSickLeavesCache(eventsById);
-                        this.BecomeOnReceive();
                     }
                     else
                     {
@@ -137,6 +136,7 @@
                     }
 
                     this.ScheduleNextDatabaseRefresh();
+                    this.BecomeOnReceive();
 
                     break;
 
