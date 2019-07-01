@@ -6,7 +6,8 @@ import {
     CalendarEvent,
     CalendarEventId,
     CalendarEventStatus,
-    GeneralCalendarEventStatus
+    GeneralCalendarEventStatus,
+    SickLeaveStatus
 } from '../reducers/calendar/calendar-event.model';
 import { Employee, EmployeeId } from '../reducers/organization/employee.model';
 import { Permission, UserEmployeePermissions } from '../reducers/user/user-employee-permissions.model';
@@ -91,6 +92,11 @@ export class EventActionProvider {
                            permissions: UserEmployeePermissions,
                            approvals: Map<CalendarEventId, Set<Approval>>): Optional<EventAction> {
 
+        // Sick leaves don't need an approval
+        if (event.isSickLeave) {
+            return undefined;
+        }
+
         switch (event.status) {
             case GeneralCalendarEventStatus.Requested:
                 const permissionApprove = permissions.has(Permission.approveCalendarEvents);
@@ -113,9 +119,25 @@ export class EventActionProvider {
                            employee: Employee,
                            permissions: UserEmployeePermissions): Optional<EventAction> {
 
+        const isOwnEvent = this.isCurrentUser(employee);
+
+        // Sick leaves have a special flow because they don't need an approval
+        if (event.isSickLeave) {
+            if (!isOwnEvent) {
+                // Only the event creator should be able to cancel the sick leave. See:
+                // https://github.com/SoftwareCountry/arcadian-assistant/issues/712
+                return undefined;
+            }
+
+            if (event.status === SickLeaveStatus.Completed || event.status === SickLeaveStatus.Cancelled) {
+                return undefined;
+            }
+
+            return this.cancelAction(event, employee);
+        }
+
         switch (event.status) {
             case GeneralCalendarEventStatus.Requested:
-                const isOwnEvent = this.userId === employee.employeeId;
                 if (isOwnEvent) {
                     if (permissions.has(Permission.cancelPendingCalendarEvents)) {
                         return this.cancelAction(event, employee);
@@ -138,6 +160,11 @@ export class EventActionProvider {
         }
 
         return undefined;
+    }
+
+    //----------------------------------------------------------------------------
+    private isCurrentUser(employee: Employee) {
+        return this.userId === employee.employeeId;
     }
 
     //----------------------------------------------------------------------------
