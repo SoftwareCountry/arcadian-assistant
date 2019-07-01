@@ -1,8 +1,6 @@
 ﻿namespace Arcadia.Assistant.Organization.Abstractions.OrganizationRequests
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
 
     public class EmployeesQuery
     {
@@ -23,6 +21,8 @@
         public DateQuery BirthDate { get; private set; }
 
         public DateQuery HireDate { get; private set; }
+
+        public bool? IsWorking { get; private set; }
 
         public static EmployeesQuery Create()
         {
@@ -71,10 +71,10 @@
             return obj;
         }
 
-        public EmployeesQuery WithBirthDate(DateQuery bithDateQuery)
+        public EmployeesQuery WithBirthDate(DateQuery birthDateQuery)
         {
             var obj = this.Clone();
-            obj.BirthDate = bithDateQuery;
+            obj.BirthDate = birthDateQuery;
             return obj;
         }
 
@@ -82,6 +82,13 @@
         {
             var obj = this.Clone();
             obj.HireDate = hireDateQuery;
+            return obj;
+        }
+
+        public EmployeesQuery WorkingOnly()
+        {
+            var obj = this.Clone();
+            obj.IsWorking = true;
             return obj;
         }
 
@@ -94,16 +101,19 @@
 
         private EmployeesQuery Clone()
         {
-            var newObj = new EmployeesQuery();
-            newObj.DepartmentId = this.DepartmentId;
-            newObj.EmployeeId = this.EmployeeId;
-            newObj.RoomNumber = this.RoomNumber;
-            newObj.BirthDate = this.BirthDate;
-            newObj.HireDate = this.HireDate;
-            newObj.Sid = this.Sid;
-            newObj.Identity = this.Identity;
-            newObj.NameFilter = this.NameFilter;
-            newObj.DirectSupervisorId = this.DirectSupervisorId;
+            var newObj = new EmployeesQuery
+            {
+                DepartmentId = this.DepartmentId,
+                EmployeeId = this.EmployeeId,
+                RoomNumber = this.RoomNumber,
+                BirthDate = this.BirthDate,
+                HireDate = this.HireDate,
+                Sid = this.Sid,
+                Identity = this.Identity,
+                NameFilter = this.NameFilter,
+                DirectSupervisorId = this.DirectSupervisorId,
+                IsWorking = this.IsWorking
+            };
 
             return newObj;
         }
