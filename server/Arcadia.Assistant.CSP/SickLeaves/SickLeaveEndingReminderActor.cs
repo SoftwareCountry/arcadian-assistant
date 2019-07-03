@@ -54,6 +54,7 @@
                 this.Self);
 
             Context.System.EventStream.Subscribe<CalendarEventCreated>(this.Self);
+            Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);
             Context.System.EventStream.Subscribe<CalendarEventRecoverComplete>(this.Self);
         }
 
@@ -73,6 +74,15 @@
                     break;
 
                 case CalendarEventCreated _:
+                    break;
+
+                case CalendarEventChanged msg when
+                    msg.NewEvent.Type == CalendarEventTypes.Sickleave:
+
+                    this.OnEventReceived(msg.NewEvent);
+                    break;
+
+                case CalendarEventChanged _:
                     break;
 
                 case CalendarEventRecoverComplete msg when
