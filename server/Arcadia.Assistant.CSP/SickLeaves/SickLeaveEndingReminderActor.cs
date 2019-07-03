@@ -163,7 +163,7 @@
                 new GetUserPreferencesMessage(employeeId));
 
             var sickLeavesArray = sickLeaves
-                .Where(s => s.Dates.EndDate <= DateTime.Now.Date)
+                .Where(s => s.Dates.EndDate < DateTime.Now.Date)
                 .ToArray();
 
             var pushNotificationsTask = this.GetPushNotifications(
