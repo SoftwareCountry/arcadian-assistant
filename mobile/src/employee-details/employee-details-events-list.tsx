@@ -182,7 +182,7 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
     //----------------------------------------------------------------------------
     private statusDescription(event: CalendarEvent): string {
 
-        const status = this.preprocessStatus(event);
+        const status = event.status;
 
         switch (event.type) {
             case CalendarEventType.Vacation:
@@ -193,24 +193,6 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
                 return `Day off: ${this.dayOffWorkoutDescriptions[status as DayOffWorkoutStatus]}`;
             case CalendarEventType.Workout:
                 return `Workout: ${this.dayOffWorkoutDescriptions[status as DayOffWorkoutStatus]}`;
-        }
-    }
-
-    //----------------------------------------------------------------------------
-    // noinspection JSMethodCanBeStatic
-    private preprocessStatus(event: CalendarEvent): CalendarEventStatus {
-        if (!event.isVacation) {
-            return event.status;
-        }
-
-        switch (event.status) {
-            case VacationStatus.Requested:
-            case VacationStatus.Approved:
-                return VacationStatus.Requested;
-            case VacationStatus.Processed:
-                return VacationStatus.Approved;
-            default:
-                return event.status;
         }
     }
 }
