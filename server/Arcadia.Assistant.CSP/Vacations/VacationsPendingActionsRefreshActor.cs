@@ -124,10 +124,8 @@
                 this.approversByEvent[@event.EventId] = new List<string>();
 
                 var schedule = Context.System.Scheduler.ScheduleTellRepeatedlyCancelable(
-                    //this.settings.VacationsPendingActionsRefresh,
-                    //this.settings.VacationsPendingActionsRefresh,
-                    TimeSpan.FromMinutes(1),
-                    TimeSpan.FromMinutes(1),
+                    this.settings.VacationsPendingActionsRefresh,
+                    this.settings.VacationsPendingActionsRefresh,
                     this.Self,
                     new RefreshPendingActions(@event.EventId),
                     this.Self);
