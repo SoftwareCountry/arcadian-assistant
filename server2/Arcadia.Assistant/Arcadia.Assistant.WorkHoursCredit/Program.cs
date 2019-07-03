@@ -1,4 +1,4 @@
-namespace Arcadia.Assistant.Dayoffs
+namespace Arcadia.Assistant.WorkHoursCredit
 {
     using System;
     using System.Diagnostics;
@@ -23,21 +23,21 @@ namespace Arcadia.Assistant.Dayoffs
                 // When Service Fabric creates an instance of this service type,
                 // an instance of the class is created in this host process.
 
-                ServiceRuntime.RegisterServiceAsync("Arcadia.Assistant.DayoffsType",
-                    context => new Dayoffs(context)).GetAwaiter().GetResult();
+                ServiceRuntime.RegisterServiceAsync("Arcadia.Assistant.WorkHoursCreditType",
+                    context => new WorkHoursCredit(context)).GetAwaiter().GetResult();
 
-                ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(Dayoffs).Name);
+                ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(WorkHoursCredit).Name);
 
                 // Prevents this host process from terminating so services keep running.
                 Thread.Sleep(Timeout.Infinite);
 
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
-                builder.RegisterStatelessService<Dayoffs>("Arcadia.Assistant.DayoffsType");
+                builder.RegisterStatelessService<WorkHoursCredit>("Arcadia.Assistant.WorkHoursCreditType");
 
                 using (builder.Build())
                 {
-                    ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(Dayoffs).Name);
+                    ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(WorkHoursCredit).Name);
 
                     // Prevents this host process from terminating so services keep running.
                     Thread.Sleep(Timeout.Infinite);

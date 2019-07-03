@@ -1,4 +1,4 @@
-namespace Arcadia.Assistant.Dayoffs
+namespace Arcadia.Assistant.WorkHoursCredit
 {
     using System;
     using System.Collections.Generic;
@@ -15,9 +15,9 @@ namespace Arcadia.Assistant.Dayoffs
     /// <summary>
     ///     An instance of this class is created for each service instance by the Service Fabric runtime.
     /// </summary>
-    public class Dayoffs : StatelessService, IDayoffsService
+    public class WorkHoursCredit : StatelessService, IWorkHoursCredit
     {
-        public Dayoffs(StatelessServiceContext context)
+        public WorkHoursCredit(StatelessServiceContext context)
             : base(context)
         {
         }
@@ -52,9 +52,29 @@ namespace Arcadia.Assistant.Dayoffs
             }
         }
 
-        public Task<int> GetAsync()
+        public Task<int> GetAvailableHoursAsync(string employeeId, CancellationToken cancellationToken)
         {
-            return Task.FromResult(1);
+            throw new NotImplementedException();
+        }
+
+        public Task<Guid> RequestChange(string employeeId, WorkHoursChangeType changeType, DateTime date, DayPart dayPart)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ApproveRequest(Guid requestId, string approvedBy)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RejectRequest(Guid requestId, string rejectionReason, string rejectedBy)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task CancelRequest(Guid requestId, string rejectionReason, string cancelledBy)
+        {
+            throw new NotImplementedException();
         }
     }
 }

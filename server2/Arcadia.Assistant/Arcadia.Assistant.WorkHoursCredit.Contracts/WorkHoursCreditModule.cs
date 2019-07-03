@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.Dayoffs.Contracts
+﻿namespace Arcadia.Assistant.WorkHoursCredit.Contracts
 {
     using System;
 
@@ -6,13 +6,13 @@
 
     using Microsoft.ServiceFabric.Services.Remoting.Client;
 
-    public class DaysoffModule : Module
+    public class WorkHoursCreditModule : Module
     {
         protected override void Load(ContainerBuilder builder)
         {
             builder.Register(x => x
                 .Resolve<IServiceProxyFactory>()
-                .CreateServiceProxy<IDayoffsService>(new Uri("fabric:/Arcadia.Assistant.SF/Arcadia.Assistant.Dayoffs")));
+                .CreateServiceProxy<IWorkHoursCredit>(new Uri("fabric:/Arcadia.Assistant.SF/Arcadia.Assistant.WorkHoursCredit")));
         }
     }
 }

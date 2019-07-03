@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.ServiceFabric.Services.Runtime;
 
-namespace Arcadia.Assistant.Dayoffs
+namespace Arcadia.Assistant.WorkHoursCredit
 {
-    [EventSource(Name = "MyCompany-Arcadia.Assistant.SF-Arcadia.Assistant.Dayoffs")]
+    [EventSource(Name = "MyCompany-Arcadia.Assistant.SF-Arcadia.Assistant.WorkHoursCredit")]
 internal sealed class ServiceEventSource : EventSource
 {
     public static readonly ServiceEventSource Current = new ServiceEventSource();
