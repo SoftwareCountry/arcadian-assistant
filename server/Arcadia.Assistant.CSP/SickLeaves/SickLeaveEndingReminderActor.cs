@@ -53,7 +53,7 @@
                 RemindSickLeaves.Instance,
                 this.Self);
 
-            Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);
+            Context.System.EventStream.Subscribe<CalendarEventCreated>(this.Self);
             Context.System.EventStream.Subscribe<CalendarEventRecoverComplete>(this.Self);
         }
 
@@ -66,13 +66,13 @@
         {
             switch (message)
             {
-                case CalendarEventChanged msg when
-                    msg.NewEvent.Type == CalendarEventTypes.Sickleave:
+                case CalendarEventCreated msg when
+                    msg.Event.Type == CalendarEventTypes.Sickleave:
 
-                    this.OnEventReceived(msg.NewEvent);
+                    this.OnEventReceived(msg.Event);
                     break;
 
-                case CalendarEventChanged _:
+                case CalendarEventCreated _:
                     break;
 
                 case CalendarEventRecoverComplete msg when
