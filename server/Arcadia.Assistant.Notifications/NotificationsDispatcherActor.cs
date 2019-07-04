@@ -13,6 +13,8 @@
 
         private readonly IActorRef notificationsRouterActor;
 
+        private readonly ILoggingAdapter logger = Context.GetLogger();
+
         public NotificationsDispatcherActor(params Props[] notificationsActorsProps)
         {
             var notificationsPools = this.CreateNotificationsPools(notificationsActorsProps);
@@ -26,6 +28,7 @@
             switch (message)
             {
                 case NotificationEventBusMessage msg:
+                    this.logger.Debug($"NotificationEventBusMessage message received in notifications dispatcher actor. Payload type: {msg.Payload?.GetType().FullName}");
                     this.notificationsRouterActor.Tell(msg.Payload);
                     break;
 
