@@ -13,6 +13,8 @@
     using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.Web.Configuration;
 
+    using NLog;
+
     public class UpdateAvailableNotificationActor : UntypedActor, ILogReceive
     {
         private readonly IUpdateNotificationSettings updateNotificationSettings;
@@ -21,6 +23,7 @@
         private readonly ActorSelection pushNotificationsDevicesActor;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
+        private readonly Logger nlogLogger = LogManager.GetCurrentClassLogger();
 
         private readonly Dictionary<ApplicationTypeEnum, string> pushDeviceTypeByApplicationType =
             new Dictionary<ApplicationTypeEnum, string>
@@ -44,7 +47,7 @@
             switch (message)
             {
                 case UpdateAvailable msg:
-                    this.logger.Debug($"UpdateAvailable event received in notification actor for application {msg.ApplicationType}");
+                    this.nlogLogger.Debug($"UpdateAvailable event received in notification actor for application {msg.ApplicationType}");
 
                     this.GetDevicesPushTokensByApplication(msg.ApplicationType)
                         .PipeTo(
@@ -58,7 +61,7 @@
                     break;
 
                 case UpdateAvailableError msg:
-                    this.logger.Warning(msg.Exception.ToString());
+                    this.nlogLogger.Warn(msg.Exception.ToString());
                     break;
 
                 default:
@@ -76,7 +79,7 @@
 
         private void SendUpdateNotification(UpdateAvailableWithAdditionalData message)
         {
-            this.logger.Debug($"Sending push notification about update available for {message.ApplicationType} application");
+            this.nlogLogger.Debug($"Sending push notification about update available for {message.ApplicationType} application");
 
             var pushNotification = this.CreatePushNotification(message.DevicesPushTokens);
             Context.System.EventStream.Publish(new NotificationEventBusMessage(pushNotification));
