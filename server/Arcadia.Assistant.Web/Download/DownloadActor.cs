@@ -81,6 +81,8 @@
             switch (message)
             {
                 case RefreshApplicationBuildsStart _:
+                    this.logger.Debug("Refresh application builds started");
+
                     var androidDownloadTask = this.androidDownloadBuildActor
                         .Ask<DownloadApplicationBuild.Response>(DownloadApplicationBuild.Instance)
                         .PipeTo(
@@ -103,6 +105,8 @@
                     break;
 
                 case RefreshApplicationBuildSuccess msg:
+                    this.logger.Debug($"Application build successfully refreshed. Application type: {msg.ApplicationType}, update available: {msg.UpdateAvailable}");
+
                     if (msg.UpdateAvailable)
                     {
                         Context.System.EventStream.Publish(new UpdateAvailable(msg.ApplicationType));
@@ -115,6 +119,8 @@
                     break;
 
                 case RefreshApplicationBuildsFinish _:
+                    this.logger.Debug("Refresh application builds finished");
+
                     this.Stash.UnstashAll();
                     this.UnbecomeStacked();
                     break;

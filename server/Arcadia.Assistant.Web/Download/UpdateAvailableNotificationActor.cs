@@ -44,6 +44,8 @@
             switch (message)
             {
                 case UpdateAvailable msg:
+                    this.logger.Debug($"UpdateAvailable event received in notification actor for application {msg.ApplicationType}");
+
                     this.GetDevicesPushTokensByApplication(msg.ApplicationType)
                         .PipeTo(
                             this.Self,
