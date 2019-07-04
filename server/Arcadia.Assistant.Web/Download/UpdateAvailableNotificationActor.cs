@@ -80,6 +80,7 @@
         private void SendUpdateNotification(UpdateAvailableWithAdditionalData message)
         {
             this.nlogLogger.Debug($"Sending push notification about update available for {message.ApplicationType} application");
+            this.nlogLogger.Debug($"Recepients: {string.Join(", ", message.DevicesPushTokens)}");
 
             var pushNotification = this.CreatePushNotification(message.DevicesPushTokens);
             Context.System.EventStream.Publish(new NotificationEventBusMessage(pushNotification));
