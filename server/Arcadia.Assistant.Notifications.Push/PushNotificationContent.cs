@@ -16,5 +16,10 @@
 
         [DataMember(Name = "custom_data")]
         public object CustomData { get; set; }
+
+        public class ContentCustomData
+        {
+            public string Type { get; set; }
+        }
     }
 }

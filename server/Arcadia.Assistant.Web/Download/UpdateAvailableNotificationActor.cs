@@ -92,7 +92,7 @@
             {
                 Title = this.updateNotificationSettings.NotificationTitle,
                 Body = this.updateNotificationSettings.NotificationBody,
-                CustomData = new
+                CustomData = new PushNotificationContent.ContentCustomData
                 {
                     Type = UpdateAvailablePushNotificationType
                 }
