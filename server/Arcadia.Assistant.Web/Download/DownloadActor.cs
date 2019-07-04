@@ -12,9 +12,12 @@
 
     using Microsoft.AspNetCore.Hosting;
 
+    using NLog;
+
     public class DownloadActor : UntypedActor, ILogReceive, IWithUnboundedStash
     {
         private readonly ILoggingAdapter logger = Context.GetLogger();
+        private readonly Logger nlogLogger = LogManager.GetCurrentClassLogger();
 
         private readonly IActorRef androidDownloadBuildActor;
         private readonly IActorRef iosDownloadBuildActor;
@@ -81,7 +84,7 @@
             switch (message)
             {
                 case RefreshApplicationBuildsStart _:
-                    this.logger.Debug("Refresh application builds started");
+                    this.nlogLogger.Debug("Refresh application builds started");
 
                     var androidDownloadTask = this.androidDownloadBuildActor
                         .Ask<DownloadApplicationBuild.Response>(DownloadApplicationBuild.Instance)
@@ -105,7 +108,7 @@
                     break;
 
                 case RefreshApplicationBuildSuccess msg:
-                    this.logger.Debug($"Application build successfully refreshed. Application type: {msg.ApplicationType}, update available: {msg.UpdateAvailable}");
+                    this.nlogLogger.Debug($"Application build successfully refreshed. Application type: {msg.ApplicationType}, update available: {msg.UpdateAvailable}");
 
                     if (msg.UpdateAvailable)
                     {
@@ -115,11 +118,11 @@
                     break;
 
                 case RefreshApplicationBuildError msg:
-                    this.logger.Warning(msg.Exception.ToString());
+                    this.nlogLogger.Warn(msg.Exception.ToString());
                     break;
 
                 case RefreshApplicationBuildsFinish _:
-                    this.logger.Debug("Refresh application builds finished");
+                    this.nlogLogger.Debug("Refresh application builds finished");
 
                     this.Stash.UnstashAll();
                     this.UnbecomeStacked();
@@ -144,7 +147,7 @@
                     break;
 
                 default:
-                    this.logger.Warning("Not supported application type");
+                    this.nlogLogger.Warn("Not supported application type");
                     break;
             }
         }
