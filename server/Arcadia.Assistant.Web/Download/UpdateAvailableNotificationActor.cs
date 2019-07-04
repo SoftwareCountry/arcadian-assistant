@@ -20,6 +20,7 @@
         private readonly IUpdateNotificationSettings updateNotificationSettings;
         private const string UpdateAvailablePushNotificationType = "UpdateAvailable";
 
+        private readonly ActorSelection notificationsActor;
         private readonly ActorSelection pushNotificationsDevicesActor;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
@@ -37,6 +38,7 @@
             IUpdateNotificationSettings updateNotificationSettings)
         {
             this.updateNotificationSettings = updateNotificationSettings;
+            this.notificationsActor = Context.ActorSelection(actorPathsBuilder.Get(WellKnownActorPaths.Notifications));
             this.pushNotificationsDevicesActor = Context.ActorSelection(actorPathsBuilder.Get(WellKnownActorPaths.PushNotificationsDevices));
 
             Context.System.EventStream.Subscribe<UpdateAvailable>(this.Self);
@@ -83,7 +85,7 @@
             this.nlogLogger.Debug($"Recepients: {string.Join(", ", message.DevicesPushTokens)}");
 
             var pushNotification = this.CreatePushNotification(message.DevicesPushTokens);
-            Context.System.EventStream.Publish(new NotificationEventBusMessage(pushNotification));
+            this.notificationsActor.Tell(new NotificationEventBusMessage(pushNotification));
         }
 
         private PushNotification CreatePushNotification(IEnumerable<DevicePushToken> pushTokens)
