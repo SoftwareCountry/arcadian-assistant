@@ -7,7 +7,10 @@ namespace Arcadia.Assistant.WorkHoursCredit
     using Autofac;
     using Autofac.Integration.ServiceFabric;
 
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.ServiceFabric.Services.Runtime;
+
+    using Model;
 
     internal static class Program
     {
@@ -18,22 +21,19 @@ namespace Arcadia.Assistant.WorkHoursCredit
         {
             try
             {
-                // The ServiceManifest.XML file defines one or more service type names.
-                // Registering a service maps a service type name to a .NET type.
-                // When Service Fabric creates an instance of this service type,
-                // an instance of the class is created in this host process.
-
-                ServiceRuntime.RegisterServiceAsync("Arcadia.Assistant.WorkHoursCreditType",
-                    context => new WorkHoursCredit(context)).GetAwaiter().GetResult();
-
-                ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(WorkHoursCredit).Name);
-
-                // Prevents this host process from terminating so services keep running.
-                Thread.Sleep(Timeout.Infinite);
-
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterStatelessService<WorkHoursCredit>("Arcadia.Assistant.WorkHoursCreditType");
+
+
+                builder.Register((c) =>
+                {
+                    var opt = new DbContextOptionsBuilder<WorkHoursCreditContext>();
+                    opt.UseInMemoryDatabase("workhours");
+                    return opt.Options;
+                }).SingleInstance();
+
+                builder.Register(c => new WorkHoursCreditContext(c.Resolve<DbContextOptions<WorkHoursCreditContext>>())).AsSelf();
 
                 using (builder.Build())
                 {

@@ -7,7 +7,7 @@
     public class WorkHoursChange
     {
         [DataMember]
-        public Guid Guid { get; set; }
+        public Guid ChangeId { get; set; }
 
         [DataMember]
         public WorkHoursChangeType ChangeType { get; set; }

@@ -19,12 +19,14 @@ namespace Arcadia.Assistant.WorkHoursCredit.Contracts
         /// <returns></returns>
         Task<int> GetAvailableHoursAsync(string employeeId, CancellationToken cancellationToken);
 
-        Task<Guid> RequestChange(string employeeId, WorkHoursChangeType changeType, DateTime date, DayPart dayPart);
+        Task<WorkHoursChange[]> GetCalendarEventsAsync(string employeeId, CancellationToken cancellationToken);
 
-        Task ApproveRequest(Guid requestId, string approvedBy);
+        Task<Guid> RequestChangeAsync(string employeeId, WorkHoursChangeType changeType, DateTime date, DayPart dayPart);
 
-        Task RejectRequest(Guid requestId, string rejectionReason, string rejectedBy);
+        Task ApproveRequestAsync(string employeeId, Guid requestId, string approvedBy);
 
-        Task CancelRequest(Guid requestId, string rejectionReason, string cancelledBy);
+        Task RejectRequestAsync(string employeeId, Guid requestId, string rejectionReason, string rejectedBy);
+
+        Task CancelRequestAsync(string employeeId, Guid requestId, string rejectionReason, string cancelledBy);
     }
 }

@@ -3,23 +3,128 @@ namespace Arcadia.Assistant.WorkHoursCredit
     using System;
     using System.Collections.Generic;
     using System.Fabric;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Autofac.Features.OwnedInstances;
+
     using Contracts;
 
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
+
+    using Model;
 
     /// <summary>
     ///     An instance of this class is created for each service instance by the Service Fabric runtime.
     /// </summary>
     public class WorkHoursCredit : StatelessService, IWorkHoursCredit
     {
-        public WorkHoursCredit(StatelessServiceContext context)
+        private readonly Func<Owned<WorkHoursCreditContext>> dbFactory;
+
+        public WorkHoursCredit(StatelessServiceContext context, Func<Owned<WorkHoursCreditContext>> dbFactory)
             : base(context)
         {
+            this.dbFactory = dbFactory;
+        }
+
+        public Task<int> GetAvailableHoursAsync(string employeeId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<WorkHoursChange[]> GetCalendarEventsAsync(string employeeId, CancellationToken cancellationToken)
+        {
+            using (var ctx = this.dbFactory())
+            {
+                var events = await ctx.Value.ChangeRequests
+                    .Where(x => x.EmployeeId == employeeId)
+                    .Select(x => new WorkHoursChange
+                    {
+                        ChangeType = x.ChangeType,
+                        Date = x.Date,
+                        DayPart = x.DayPart,
+                        ChangeId = x.ChangeRequestId
+                    })
+                    .ToArrayAsync(cancellationToken);
+
+                return events;
+            }
+        }
+
+        public async Task<Guid> RequestChangeAsync(string employeeId, WorkHoursChangeType changeType, DateTime date, DayPart dayPart)
+        {
+            using (var ctx = this.dbFactory())
+            {
+                var id = Guid.NewGuid();
+                var entity = new ChangeRequest
+                {
+                    ChangeRequestId = id,
+                    EmployeeId = employeeId,
+                    ChangeType = changeType,
+                    Date = date,
+                    DayPart = dayPart,
+                    Timestamp = DateTimeOffset.Now
+                };
+
+                ctx.Value.ChangeRequests.Add(entity);
+                await ctx.Value.SaveChangesAsync();
+
+                return id;
+            }
+        }
+
+        public async Task ApproveRequestAsync(string employeeId, Guid requestId, string approvedBy)
+        {
+            using (var ctx = this.dbFactory())
+            {
+                var entity = new Approval
+                {
+                    ChangeRequestId = requestId,
+                    Timestamp = DateTimeOffset.Now,
+                    ChangedByEmployeeId = approvedBy
+                };
+
+                ctx.Value.Approvals.Add(entity);
+                await ctx.Value.SaveChangesAsync();
+            }
+        }
+
+        public async Task RejectRequestAsync(string employeeId, Guid requestId, string rejectionReason, string rejectedBy)
+        {
+            using (var ctx = this.dbFactory())
+            {
+                var entity = new Rejection
+                {
+                    ChangeRequestId = requestId,
+                    Timestamp = DateTimeOffset.Now,
+                    ChangedByEmployeeId = rejectedBy,
+                    Comment = rejectionReason
+                };
+
+                ctx.Value.Rejections.Add(entity);
+                await ctx.Value.SaveChangesAsync();
+            }
+        }
+
+        public async Task CancelRequestAsync(string employeeId, Guid requestId, string rejectionReason, string cancelledBy)
+        {
+            using (var ctx = this.dbFactory())
+            {
+                var entity = new Cancellation()
+                {
+                    ChangeRequestId = requestId,
+                    Timestamp = DateTimeOffset.Now,
+                    ChangedByEmployeeId = cancelledBy,
+                    Comment = rejectionReason
+                };
+
+                ctx.Value.Cancellations.Add(entity);
+                await ctx.Value.SaveChangesAsync();
+            }
         }
 
         /// <summary>
@@ -37,44 +142,9 @@ namespace Arcadia.Assistant.WorkHoursCredit
         /// <param name="cancellationToken">Canceled when Service Fabric needs to shut down this service instance.</param>
         protected override async Task RunAsync(CancellationToken cancellationToken)
         {
-            // TODO: Replace the following sample code with your own logic 
-            //       or remove this RunAsync override if it's not needed in your service.
-
-            long iterations = 0;
-
-            while (true)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                ServiceEventSource.Current.ServiceMessage(this.Context, "Working-{0}", ++iterations);
-
-                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
-            }
-        }
-
-        public Task<int> GetAvailableHoursAsync(string employeeId, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Guid> RequestChange(string employeeId, WorkHoursChangeType changeType, DateTime date, DayPart dayPart)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task ApproveRequest(Guid requestId, string approvedBy)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task RejectRequest(Guid requestId, string rejectionReason, string rejectedBy)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task CancelRequest(Guid requestId, string rejectionReason, string cancelledBy)
-        {
-            throw new NotImplementedException();
+            var requestId = await this.RequestChangeAsync("10", WorkHoursChangeType.Workout, DateTime.Today, DayPart.Full);
+            await this.ApproveRequestAsync("10", requestId, "11");
+            var requests = await this.GetCalendarEventsAsync("10", cancellationToken);
         }
     }
 }
