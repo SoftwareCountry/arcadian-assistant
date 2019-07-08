@@ -46,7 +46,7 @@ const notificationsHandler$ = (action$: ActionsObservable<LoadUserFinished>, sta
 
                         switch (type) {
                             case NotificationType.UpdateAvailable:
-                                Linking.openURL(config.downloadLink).catch(err => console.error(err));
+                                Linking.openURL(config.downloadNewVersionLink).catch(err => console.error(err));
                                 break;
                             case NotificationType.EventAssignedToApprover:
                             case NotificationType.EventStatusChanged:
