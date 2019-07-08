@@ -11,8 +11,8 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac.ServiceFabric" Version="2.2.0" />
-    <PackageReference Include="Microsoft.ServiceFabric.Actors" Version="3.4.639" />
-    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="3.4.639" />
+    <PackageReference Include="Microsoft.ServiceFabric.Actors" Version="3.4.641" />
+    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="3.4.641" />
   </ItemGroup>
 
   <ItemGroup>
