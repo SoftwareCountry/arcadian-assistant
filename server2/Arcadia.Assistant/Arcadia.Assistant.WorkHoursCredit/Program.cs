@@ -8,6 +8,8 @@ namespace Arcadia.Assistant.WorkHoursCredit
     using Autofac.Integration.ServiceFabric;
 
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Logging.Debug;
     using Microsoft.ServiceFabric.Services.Runtime;
 
     using Model;
@@ -29,7 +31,9 @@ namespace Arcadia.Assistant.WorkHoursCredit
                 builder.Register((c) =>
                 {
                     var opt = new DbContextOptionsBuilder<WorkHoursCreditContext>();
-                    opt.UseInMemoryDatabase("workhours");
+                    opt.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
+                        .UseLoggerFactory(new LoggerFactory(new[] { new DebugLoggerProvider(), }))
+                        .UseInMemoryDatabase("workhours");
                     return opt.Options;
                 }).SingleInstance();
 

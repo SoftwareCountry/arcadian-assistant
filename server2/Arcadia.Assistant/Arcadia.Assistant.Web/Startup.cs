@@ -34,6 +34,8 @@
 
     using UserPreferences.Contracts;
 
+    using WorkHoursCredit.Contracts;
+
     public class Startup
     {
         public Startup(IHostingEnvironment env)
@@ -108,6 +110,7 @@
             builder.RegisterModule(new PermissionsModule());
             builder.RegisterModule(new AvatarsModule());
             builder.RegisterModule(new UsersPreferencesModule());
+            builder.RegisterModule(new WorkHoursCreditModule());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

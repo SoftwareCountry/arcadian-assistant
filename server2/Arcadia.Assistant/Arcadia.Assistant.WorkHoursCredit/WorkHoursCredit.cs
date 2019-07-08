@@ -47,7 +47,12 @@ namespace Arcadia.Assistant.WorkHoursCredit
                         ChangeType = x.ChangeType,
                         Date = x.Date,
                         DayPart = x.DayPart,
-                        ChangeId = x.ChangeRequestId
+                        ChangeId = x.ChangeRequestId,
+                        Status = 
+                            x.Cancellations.Any() ? "Cancelled" 
+                            : x.Rejections.Any() ? "Rejected"
+                            : x.Approvals.Any() ? "Approved"
+                                : "Requested"
                     })
                     .ToArrayAsync(cancellationToken);
 

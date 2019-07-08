@@ -17,5 +17,8 @@
 
         [DataMember]
         public DayPart DayPart { get; set; }
+
+        [DataMember]
+        public string Status { get; set; }
     }
 }
