@@ -3,7 +3,7 @@ import { EOL } from 'os';
 
 export interface EnvConfiguration extends Record<string, string> {
     appCenterSecretId: string;
-    apiUrl: string;
+    baseUrl: string;
     oauthRedirectUri: string;
     oauthClientId: string;
     oauthTenant: string;
