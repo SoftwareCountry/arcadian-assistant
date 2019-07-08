@@ -19,6 +19,7 @@ import { logError } from '../utils/analytics';
 import { LoadUserFinished } from '../reducers/user/user.action';
 import { NotificationType } from './notifications';
 import { loadPendingRequests } from '../reducers/calendar/pending-requests/pending-requests.action';
+import config from '../config';
 
 //----------------------------------------------------------------------------
 const notificationsHandler$ = (action$: ActionsObservable<LoadUserFinished>, state$: StateObservable<AppState>) =>
@@ -41,15 +42,11 @@ const notificationsHandler$ = (action$: ActionsObservable<LoadUserFinished>, sta
                         }
 
                         const currentEmployeeId = state$.value.userInfo.employeeId;
-                        const { type, employeeId, approverId, url } = notification.customProperties;
+                        const { type, employeeId, approverId } = notification.customProperties;
 
                         switch (type) {
                             case NotificationType.UpdateAvailable:
-                                if (!url) {
-                                    logError('Unexpected notification payload', notification.customProperties);
-                                } else {
-                                    Linking.openURL(url).catch(err => console.error(err));
-                                }
+                                Linking.openURL(config.downloadNewVersionLink).catch(err => console.error(err));
                                 break;
                             case NotificationType.EventAssignedToApprover:
                             case NotificationType.EventStatusChanged:

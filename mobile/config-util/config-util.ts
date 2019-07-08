@@ -16,7 +16,7 @@ function createConfiguration(): Configuration {
     return {
         env: {
             appCenterSecretId: process.env['AA_API_APPCENTER'] || 'WRITE_ME',
-            apiUrl: process.env['AA_API_URL'] || 'https://arcadia-assistant-dev.arcadialab.ru/api',
+            baseUrl: process.env['AA_BASE_URL'] || 'https://arcadia-assistant-dev.arcadialab.ru',
             oauthRedirectUri: process.env['AA_OAUTH_REDIRECT_URI'] || 'arcadia-assistant://on-login',
             oauthClientId: process.env['AA_OAUTH_CLIENT_ID'] || 'a2ccb221-60e2-47b8-b28c-bf88a59f7f4a',
             oauthTenant: process.env['AA_OAUTH_TENANT'] || 'fa4e9c1f-6222-443d-a083-28f80c1ffefc',
@@ -25,7 +25,7 @@ function createConfiguration(): Configuration {
     };
 }
 
-export function run() {    
+export function run() {
     const config = createConfiguration();
     console.log('writing app config', config);
 
