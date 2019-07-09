@@ -18,7 +18,7 @@ class VacationRequestedDialogImpl extends Component<VacationRequestedDialogDispa
     public render() {
         return <EventDialogBase
             title={'Vacation requested'}
-            text={'You will receive a notification when your vacation become approved and when your documents are ready to sign'}
+            text={'You will receive a notification when your vacation is approved and when your documents are ready to sign'}
             icon={'vacation'}
             acceptLabel={'Ok'}
             onAcceptPress={this.props.closeDialog}
