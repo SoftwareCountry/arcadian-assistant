@@ -6,13 +6,12 @@ import { CompanyDepartmentsLevelPeopleTouchable } from './company-departments-le
 import { employeesAZComparer } from './employee-comparer';
 import { Avatar } from './avatar';
 import { Employee } from '../reducers/organization/employee.model';
-import { Optional } from 'types';
 
 //============================================================================
 interface CompanyDepartmentsLevelPeopleProps {
-    chief: Optional<Employee>;
     employees: Employee[];
     onPressEmployee: (employee: Employee) => void;
+    superiorChiefIds?: string[];
 }
 
 //============================================================================
@@ -26,24 +25,34 @@ export class CompanyDepartmentsLevelPeople extends Component<CompanyDepartmentsL
 
     //----------------------------------------------------------------------------
     public render() {
-        const { employees, chief } = this.props;
 
-        let employeesToRender = employees.slice().sort(employeesAZComparer);
-
-        if (chief) {
-            employeesToRender = employeesToRender.filter(employee => employee.employeeId !== chief.employeeId);
-        }
+        const employees = this.getEmployeesToRender();
 
         return (
             <FlatList
                 style={companyDepartmentLevelPeople.list}
-                data={employeesToRender}
+                data={employees}
                 keyExtractor={this.keyExtractor}
                 renderItem={this.renderItem}
                 scrollEnabled={true}
                 refreshing={false}
             />
         );
+    }
+
+    //----------------------------------------------------------------------------
+    private getEmployeesToRender(): Employee[] {
+        const { employees, superiorChiefIds } = this.props;
+
+        let employeesToRender = employees.slice().sort(employeesAZComparer);
+
+        if (!superiorChiefIds) {
+            return employeesToRender;
+        }
+
+        employeesToRender = employeesToRender.filter(employee => !superiorChiefIds.includes(employee.employeeId));
+
+        return employeesToRender;
     }
 
     //----------------------------------------------------------------------------
