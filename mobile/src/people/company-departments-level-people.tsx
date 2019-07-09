@@ -6,7 +6,6 @@ import { CompanyDepartmentsLevelPeopleTouchable } from './company-departments-le
 import { employeesAZComparer } from './employee-comparer';
 import { Avatar } from './avatar';
 import { Employee } from '../reducers/organization/employee.model';
-import { Optional } from 'types';
 
 //============================================================================
 interface CompanyDepartmentsLevelPeopleProps {
@@ -45,11 +44,12 @@ export class CompanyDepartmentsLevelPeople extends Component<CompanyDepartmentsL
     private getEmployeesToRender(): Employee[] {
         const { employees, superiorChiefIds } = this.props;
 
+        let employeesToRender = employees.slice().sort(employeesAZComparer);
+
         if (!superiorChiefIds) {
-            return employees;
+            return employeesToRender;
         }
 
-        let employeesToRender = employees.slice().sort(employeesAZComparer);
         employeesToRender = employeesToRender.filter(employee => !superiorChiefIds.includes(employee.employeeId));
 
         return employeesToRender;
