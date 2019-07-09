@@ -20,6 +20,7 @@ interface CompanyDepartmentsLevelProps {
     selection: DepartmentIdToSelectedId;
     onSelectedNode: (departmentId: string) => void;
     onPressEmployee: (employee: Employee) => void;
+    superiorChiefIds?: string[];
 }
 
 //============================================================================
@@ -93,8 +94,13 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
     //----------------------------------------------------------------------------
     private renderDepartmentsLevel(node: DepartmentNode) {
         const {
-            selection, departmentIdToChildren, employeeIdsByDepartment, employeesById, onPressEmployee, onSelectedNode
+            selection, departmentIdToChildren, employeeIdsByDepartment, employeesById, onPressEmployee, onSelectedNode, superiorChiefIds
         } = this.props;
+
+        let chiefs = superiorChiefIds ? superiorChiefIds : [];
+        if (node.chiefId) {
+            chiefs.push(node.chiefId);
+        }
 
         return (
             <CompanyDepartmentsLevel
@@ -106,14 +112,15 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
                 employeeIdsByDepartment={employeeIdsByDepartment}
                 selection={selection}
                 onSelectedNode={onSelectedNode}
-                onPressEmployee={onPressEmployee}/>
+                onPressEmployee={onPressEmployee}
+                superiorChiefIds={chiefs}/>
         );
     }
 
     //----------------------------------------------------------------------------
     private renderDepartmentPeople() {
         const {
-            staffDepartmentId, departmentId, employeeIdsByDepartment, employeesById, onPressEmployee, departmentNode
+            staffDepartmentId, departmentId, employeeIdsByDepartment, employeesById, onPressEmployee, superiorChiefIds, departmentNode
         } = this.props;
 
         if (!employeeIdsByDepartment || !departmentNode) {
@@ -139,10 +146,9 @@ export class CompanyDepartmentsLevel extends Component<CompanyDepartmentsLevelPr
             .map(employee => employee!)
             .toArray();
 
-        const chief = employees.find(employee => employee.employeeId === departmentNode.chiefId);
-
         return (
-            <CompanyDepartmentsLevelPeople employees={employees} onPressEmployee={onPressEmployee} chief={chief}/>
+            <CompanyDepartmentsLevelPeople employees={employees} onPressEmployee={onPressEmployee}
+                                           superiorChiefIds={superiorChiefIds}/>
         );
     }
 }
