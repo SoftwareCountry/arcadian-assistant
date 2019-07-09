@@ -16,6 +16,7 @@ import { EmployeeId } from '../reducers/organization/employee.model';
 import { EmployeeMap } from '../reducers/organization/employees.reducer';
 import { loadEmployees } from '../reducers/organization/organization.action';
 import { equals } from '../utils/equitable';
+import { loadCalendarEvents } from '../reducers/calendar/calendar.action';
 
 //============================================================================
 interface EmployeeDetailsProps {
@@ -27,6 +28,7 @@ interface EmployeeDetailsProps {
 interface EmployeeDetailsDispatchProps {
     refresh: () => void;
     loadEmployee: (employeeId: EmployeeId) => void;
+    loadCalendarEvents: (employeeId: EmployeeId) => void;
 }
 
 //============================================================================
@@ -138,7 +140,10 @@ class EmployeeDetailsScreenImpl extends Component<EmployeeDetailsProps & Employe
 
     //----------------------------------------------------------------------------
     private onRefresh = () => {
-        this.props.refresh();
+        const employeeId: EmployeeId | undefined = this.props.navigation.getParam('employeeId', undefined);
+        if (employeeId) {
+            this.props.loadCalendarEvents(employeeId);
+        }
     };
 }
 
@@ -152,6 +157,7 @@ const stateToProps = (state: AppState): EmployeeDetailsProps => ({
 const dispatchToProps = (dispatch: Dispatch<Action>): EmployeeDetailsDispatchProps => ({
     refresh: () => dispatch(refresh()),
     loadEmployee: employeeId => dispatch(loadEmployees([employeeId])),
+    loadCalendarEvents: employeeId => dispatch(loadCalendarEvents(employeeId)),
 });
 
 export const EmployeeDetailsScreen = connect(stateToProps, dispatchToProps)(EmployeeDetailsScreenImpl);
