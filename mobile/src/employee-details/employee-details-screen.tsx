@@ -68,10 +68,10 @@ class EmployeeDetailsScreenImpl extends Component<EmployeeDetailsProps & Employe
             return true;
         }
 
-        const employee = this.props.navigation.getParam('employee', undefined);
-        const nextEmployee = nextProps.navigation.getParam('employee', undefined);
+        const employeeId: EmployeeId | undefined = this.props.navigation.getParam('employeeId', undefined);
+        const nextEmployeeId: EmployeeId | undefined = nextProps.navigation.getParam('employeeId', undefined);
         // noinspection RedundantIfStatementJS
-        if (!equals(employee, nextEmployee)) {
+        if (employeeId !== nextEmployeeId) {
             return true;
         }
 
