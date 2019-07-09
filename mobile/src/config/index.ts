@@ -5,7 +5,7 @@ const config = Object.freeze({
 
     baseUrl: Config.baseUrl as string,
     apiUrl: `${Config.baseUrl}/api`,
-    downloadNewVersionLink: Platform.OS === 'android' ? `${Config.baseUrl}/get/android` :
+    downloadNewVersionLink: Platform.OS === 'android' ? `${Config.baseUrl}/download/android` :
         `itms-services://?action=download-manifest&url=${Config.baseUrl}/download/ios-manifest`,
 
     oauth: Object.freeze({
