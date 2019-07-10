@@ -69,6 +69,8 @@ namespace Arcadia.Assistant.Web.Controllers
                 return this.BadRequest(this.ModelState);
             }
 
+            CalendarEventWithIdModel createdModel;
+
             switch (model.Type)
             {
                 case CalendarEventTypes.Dayoff:
@@ -76,11 +78,13 @@ namespace Arcadia.Assistant.Web.Controllers
                     var type = model.Type == CalendarEventTypes.Dayoff ? WorkHoursChangeType.Dayoff : WorkHoursChangeType.Workout;
                     var dayPart = this.workHoursConverter.GetDayPart(model.Dates);
                     var change = await this.workHoursCredit.RequestChangeAsync(employeeId, type, model.Dates.StartDate, dayPart);
-
-                    return this.CreatedAtAction(nameof(this.Get), new { employeeId, eventId = change.ChangeId }, change);
+                    createdModel = this.workHoursConverter.ToCalendarEventWithId(change);
+                    break;
                 default:
                     return this.BadRequest("Unknown model type");
             }
+
+            return this.CreatedAtAction(nameof(this.Get), new { employeeId, eventId = createdModel.CalendarEventId }, createdModel);
         }
 
         [Route("{eventId}")]
@@ -103,9 +107,9 @@ namespace Arcadia.Assistant.Web.Controllers
                 case CalendarEventTypes.Dayoff:
                 case CalendarEventTypes.Workout:
                     return await this.UpdateWorkHoursRequest(employeeId, eventId, model, changedBy);
+                default:
+                    return this.BadRequest("Unsupported event type");
             }
-
-            return this.Ok();
         }
 
         private async Task<IActionResult> UpdateWorkHoursRequest(string employeeId, Guid eventId, CalendarEventModel model, EmployeeMetadata changedBy)
