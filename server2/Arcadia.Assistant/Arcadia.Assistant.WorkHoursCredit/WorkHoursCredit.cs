@@ -4,6 +4,7 @@ namespace Arcadia.Assistant.WorkHoursCredit
     using System.Collections.Generic;
     using System.Fabric;
     using System.Linq;
+    using System.Linq.Expressions;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -40,34 +41,33 @@ namespace Arcadia.Assistant.WorkHoursCredit
         {
             using (var ctx = this.dbFactory())
             {
-                var events = await ctx.Value.ChangeRequests
-                    .Where(x => x.EmployeeId == employeeId)
-                    .Select(x => new WorkHoursChange
-                    {
-                        ChangeType = x.ChangeType,
-                        Date = x.Date,
-                        DayPart = x.DayPart,
-                        ChangeId = x.ChangeRequestId,
-                        Status = 
-                            x.Cancellations.Any() ? "Cancelled" 
-                            : x.Rejections.Any() ? "Rejected"
-                            : x.Approvals.Any() ? "Approved"
-                                : "Requested"
-                    })
+                var events = await this.GetCalendarEvents(ctx.Value.ChangeRequests, x => x.EmployeeId == employeeId)
                     .ToArrayAsync(cancellationToken);
 
                 return events;
             }
         }
 
-        public async Task<Guid> RequestChangeAsync(string employeeId, WorkHoursChangeType changeType, DateTime date, DayPart dayPart)
+        public async Task<WorkHoursChange> GetCalendarEventAsync(string employeeId, Guid eventId, CancellationToken cancellationToken)
         {
             using (var ctx = this.dbFactory())
             {
-                var id = Guid.NewGuid();
+                var calendarEvent = await this.GetCalendarEvents(
+                        ctx.Value.ChangeRequests, 
+                        x => x.EmployeeId == employeeId && x.ChangeRequestId == eventId)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                return calendarEvent;
+            }
+        }
+
+        public async Task<WorkHoursChange> RequestChangeAsync(string employeeId, WorkHoursChangeType changeType, DateTime date, DayPart dayPart)
+        {
+            using (var ctx = this.dbFactory())
+            {
                 var entity = new ChangeRequest
                 {
-                    ChangeRequestId = id,
+                    ChangeRequestId = Guid.NewGuid(),
                     EmployeeId = employeeId,
                     ChangeType = changeType,
                     Date = date,
@@ -78,7 +78,14 @@ namespace Arcadia.Assistant.WorkHoursCredit
                 ctx.Value.ChangeRequests.Add(entity);
                 await ctx.Value.SaveChangesAsync();
 
-                return id;
+                return new WorkHoursChange()
+                {
+                    ChangeId = entity.ChangeRequestId,
+                    ChangeType = changeType,
+                    DayPart = dayPart,
+                    Date = date,
+                    Status = "Requested"
+                };
             }
         }
 
@@ -148,8 +155,29 @@ namespace Arcadia.Assistant.WorkHoursCredit
         protected override async Task RunAsync(CancellationToken cancellationToken)
         {
             var requestId = await this.RequestChangeAsync("10", WorkHoursChangeType.Workout, DateTime.Today, DayPart.Full);
-            await this.ApproveRequestAsync("10", requestId, "11");
+            await this.ApproveRequestAsync("10", requestId.ChangeId, "11");
             var requests = await this.GetCalendarEventsAsync("10", cancellationToken);
+        }
+
+        private IQueryable<WorkHoursChange> GetCalendarEvents(IQueryable<ChangeRequest> changeRequests, Expression<Func<ChangeRequest, bool>> predicate)
+        {
+            var events = changeRequests
+                .AsNoTracking()
+                .Where(predicate)
+                .Select(x => new WorkHoursChange
+                {
+                    ChangeType = x.ChangeType,
+                    Date = x.Date,
+                    DayPart = x.DayPart,
+                    ChangeId = x.ChangeRequestId,
+                    Status =
+                        x.Cancellations.Any() ? "Cancelled"
+                        : x.Rejections.Any() ? "Rejected"
+                        : x.Approvals.Any() ? "Approved"
+                        : "Requested"
+                });
+
+            return events;
         }
     }
 }

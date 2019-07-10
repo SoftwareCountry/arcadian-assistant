@@ -31,7 +31,7 @@ namespace Arcadia.Assistant.WorkHoursCredit
                 builder.Register((c) =>
                 {
                     var opt = new DbContextOptionsBuilder<WorkHoursCreditContext>();
-                    opt.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
+                    opt
                         .UseLoggerFactory(new LoggerFactory(new[] { new DebugLoggerProvider(), }))
                         .UseInMemoryDatabase("workhours");
                     return opt.Options;

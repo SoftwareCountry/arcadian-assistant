@@ -7,9 +7,9 @@
     public class CalendarEventsWithIdByEmployeeModel
     {
         [DataMember]
-        public Dictionary<string, IEnumerable<CalendarEventsWithIdModel>> Events { get; }
+        public Dictionary<string, IEnumerable<CalendarEventWithIdModel>> Events { get; }
 
-        public CalendarEventsWithIdByEmployeeModel(Dictionary<string, IEnumerable<CalendarEventsWithIdModel>> events)
+        public CalendarEventsWithIdByEmployeeModel(Dictionary<string, IEnumerable<CalendarEventWithIdModel>> events)
         {
             this.Events = events;
         }

@@ -5,7 +5,8 @@
     using NJsonSchema.Annotations;
 
     [JsonSchemaProcessor(typeof(StatusSwaggerSchemaFilter))]
-    public class CalendarEventsModel
+    [WorkHoursChangeValidator]
+    public class CalendarEventModel
     {
         [Required]
         [CalendarEventTypeValidator]
@@ -18,11 +19,11 @@
         [CalendarEventStatusValidator]
         public string Status { get; set; }
 
-        public CalendarEventsModel()
+        public CalendarEventModel()
         {
         }
 
-        public CalendarEventsModel(string type, DatesPeriodModel dates, string status)
+        public CalendarEventModel(string type, DatesPeriodModel dates, string status)
         {
             this.Type = type;
             this.Dates = dates;

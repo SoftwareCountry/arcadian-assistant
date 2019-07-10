@@ -33,9 +33,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.UserPrefe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.UserPreferences.Contracts", "Arcadia.Assistant.UserPreferences.Contracts\Arcadia.Assistant.UserPreferences.Contracts.csproj", "{1877FF11-485D-490B-9409-1AA57C8EBB3D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.WorkHoursCredit", "Arcadia.Assistant.WorkHoursCredit\Arcadia.Assistant.WorkHoursCredit.csproj", "{C228C471-6C35-4630-B475-3161A800C72A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.WorkHoursCredit", "Arcadia.Assistant.WorkHoursCredit\Arcadia.Assistant.WorkHoursCredit.csproj", "{C228C471-6C35-4630-B475-3161A800C72A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.WorkHoursCredit.Contracts", "Arcadia.Assistant.WorkHoursCredit.Contracts\Arcadia.Assistant.WorkHoursCredit.Contracts.csproj", "{A911FABD-DDEA-4B78-BAFB-6CE60BD9D772}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.WorkHoursCredit.Contracts", "Arcadia.Assistant.WorkHoursCredit.Contracts\Arcadia.Assistant.WorkHoursCredit.Contracts.csproj", "{A911FABD-DDEA-4B78-BAFB-6CE60BD9D772}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

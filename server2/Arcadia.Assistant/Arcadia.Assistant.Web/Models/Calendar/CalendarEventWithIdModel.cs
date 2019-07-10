@@ -3,17 +3,17 @@
     using System;
     using System.ComponentModel.DataAnnotations;
 
-    public class CalendarEventsWithIdModel : CalendarEventsModel
+    public class CalendarEventWithIdModel : CalendarEventModel
     {
         [Required]
         public string CalendarEventId { get; set; }
 
         // ReSharper disable once UnusedMember.Global
-        public CalendarEventsWithIdModel()
+        public CalendarEventWithIdModel()
         {
         }
 
-        public CalendarEventsWithIdModel(string calendarEventId, string type, DatesPeriodModel dates, string status)
+        public CalendarEventWithIdModel(string calendarEventId, string type, DatesPeriodModel dates, string status)
             : base(type, dates, status)
         {
             this.CalendarEventId = calendarEventId;

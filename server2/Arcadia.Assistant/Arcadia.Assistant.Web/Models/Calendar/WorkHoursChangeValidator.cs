@@ -1,21 +1,19 @@
 ﻿namespace Arcadia.Assistant.Web.Models.Calendar
 {
     using System.ComponentModel.DataAnnotations;
-    using System.Linq;
 
-    public class CalendarEventStatusValidator : ValidationAttribute
+    public class WorkHoursChangeValidator : ValidationAttribute
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var statuses = new CalendarEventStatuses();
-
             switch (validationContext.ObjectInstance)
             {
-                case CalendarEventModel model when statuses.AllForType(model.Type).Contains(value):
+                case CalendarEventModel model when model.Type != CalendarEventTypes.Dayoff && model.Type != CalendarEventTypes.Workout:
                     return ValidationResult.Success;
-                case CalendarEventModel model:
-                    var validTypes = string.Join(", ", statuses.AllForType(model.Type));
-                    return new ValidationResult($"Calendar event status `{value}` is not recognized. Must be one of the {validTypes}");
+                case CalendarEventModel model when model.Dates.StartDate != model.Dates.EndDate:
+                    return new ValidationResult("Model dates must match");
+                case CalendarEventModel _:
+                    return ValidationResult.Success;
                 default:
                     return new ValidationResult($"Attribute usage error: ValidationContext must be applied to {typeof(CalendarEventModel)}");
             }
