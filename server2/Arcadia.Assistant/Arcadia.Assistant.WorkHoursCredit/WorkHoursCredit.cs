@@ -198,14 +198,6 @@ namespace Arcadia.Assistant.WorkHoursCredit
             return this.CreateServiceRemotingInstanceListeners();
         }
 
-        /// <summary>
-        ///     This is the main entry point for your service instance.
-        /// </summary>
-        /// <param name="cancellationToken">Canceled when Service Fabric needs to shut down this service instance.</param>
-        protected override async Task RunAsync(CancellationToken cancellationToken)
-        {
-        }
-
         private IQueryable<WorkHoursChange> GetCalendarEvents(IQueryable<ChangeRequest> changeRequests, Expression<Func<ChangeRequest, bool>> predicate)
         {
             var events = changeRequests

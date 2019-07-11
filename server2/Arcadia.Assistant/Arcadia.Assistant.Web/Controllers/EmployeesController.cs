@@ -17,6 +17,8 @@
 
     using Permissions.Contracts;
 
+    using VacationsCredit.Contracts;
+
     using WorkHoursCredit.Contracts;
 
     [Route("api/employees")]
@@ -26,15 +28,17 @@
         private readonly IEmployees employees;
         private readonly IPermissions permissions;
         private readonly IWorkHoursCredit workHoursCredit;
+        private readonly IVacationsCredit vacationsCredit;
         private readonly ILogger<EmployeesController> logger;
         private readonly bool sslOffloading = false; //TODO: configured
 
-        public EmployeesController(IEmployees employees, ILogger<EmployeesController> logger, IPermissions permissions, IWorkHoursCredit workHoursCredit)
+        public EmployeesController(IEmployees employees, ILogger<EmployeesController> logger, IPermissions permissions, IWorkHoursCredit workHoursCredit, IVacationsCredit vacationsCredit)
         {
             this.employees = employees;
             this.logger = logger;
             this.permissions = permissions;
             this.workHoursCredit = workHoursCredit;
+            this.vacationsCredit = vacationsCredit;
         }
 
         [Route("{employeeId}")]
@@ -84,7 +88,7 @@
                 .ToList();
 
             var tasks = readableEmployees
-                .Select(x =>
+                .Select(async x =>
                 {
                     var employee = EmployeeModel.FromMetadata(x);
                     var employeePermissions = allPermissions.GetPermissions(x);
@@ -96,11 +100,10 @@
 
                     if (employeePermissions.HasFlag(EmployeePermissionsEntry.ReadEmployeeVacationsCounter))
                     {
-                        //TODO: vacations count
-                        employee.VacationDaysLeft = 5;
+                        employee.VacationDaysLeft = await this.vacationsCredit.GetVacationDaysLeftAsync(employee.Email, cancellationToken);
                     }
 
-                    return Task.FromResult(employee);
+                    return employee;
                 });
 
 
