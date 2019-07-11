@@ -9,7 +9,7 @@
             var type = this.ChangeTypeToString(workHoursChange.ChangeType);
             var dates = this.GetDatesPeriodModel(workHoursChange);
 
-            return new CalendarEventModel(type, dates, workHoursChange.Status);
+            return new CalendarEventModel(type, dates, workHoursChange.Status.ToString());
         }
 
         public CalendarEventWithIdModel ToCalendarEventWithId(WorkHoursChange workHoursChange)
@@ -18,7 +18,7 @@
                 workHoursChange.ChangeId.ToString(),
                 this.ChangeTypeToString(workHoursChange.ChangeType),
                 this.GetDatesPeriodModel(workHoursChange),
-                workHoursChange.Status);
+                workHoursChange.Status.ToString());
         }
 
         private string ChangeTypeToString(WorkHoursChangeType changeType)

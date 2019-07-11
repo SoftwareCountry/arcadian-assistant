@@ -84,8 +84,26 @@ namespace Arcadia.Assistant.WorkHoursCredit
                     ChangeType = changeType,
                     DayPart = dayPart,
                     Date = date,
-                    Status = "Requested"
+                    Status = ChangeRequestStatus.Requested
                 };
+            }
+        }
+
+        public async Task<ChangeRequestApproval[]> GetApprovalsAsync(string employeeId, Guid eventId, CancellationToken cancellationToken)
+        {
+            using (var ctx = this.dbFactory())
+            {
+                var approvals = await ctx.Value
+                    .ChangeRequests
+                    .Where(x => x.EmployeeId == employeeId && x.ChangeRequestId == eventId)
+                    .Select(x => x
+                        .Approvals
+                        .Select(y => new ChangeRequestApproval() { ApproverId = y.ChangedByEmployeeId, Timestamp = y.Timestamp })
+                        .ToArray()
+                    )
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                return approvals;
             }
         }
 
@@ -171,10 +189,10 @@ namespace Arcadia.Assistant.WorkHoursCredit
                     DayPart = x.DayPart,
                     ChangeId = x.ChangeRequestId,
                     Status =
-                        x.Cancellations.Any() ? "Cancelled"
-                        : x.Rejections.Any() ? "Rejected"
-                        : x.Approvals.Any() ? "Approved"
-                        : "Requested"
+                        x.Cancellations.Any() ? ChangeRequestStatus.Cancelled
+                        : x.Rejections.Any() ? ChangeRequestStatus.Rejected
+                        : x.Approvals.Any() ? ChangeRequestStatus.Approved
+                        : ChangeRequestStatus.Requested
                 });
 
             return events;

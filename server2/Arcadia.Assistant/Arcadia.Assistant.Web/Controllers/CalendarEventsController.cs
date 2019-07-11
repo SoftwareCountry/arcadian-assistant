@@ -121,7 +121,7 @@ namespace Arcadia.Assistant.Web.Controllers
             }
 
             //TODO: possibly add a check for date changes
-            if (model.Status != existingEvent.Status)
+            if (model.Status != existingEvent.Status.ToString())
             {
                 //TODO: add authorization
 
