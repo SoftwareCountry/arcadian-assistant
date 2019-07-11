@@ -6,6 +6,7 @@ using Microsoft.ServiceFabric.Services.Remoting.FabricTransport;
 namespace Arcadia.Assistant.WorkHoursCredit.Contracts
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -17,7 +18,7 @@ namespace Arcadia.Assistant.WorkHoursCredit.Contracts
         /// Returns a number of hours available to take as daysoff. If negative, employee is in debt
         /// </summary>
         /// <returns></returns>
-        Task<int> GetAvailableHoursAsync(string employeeId, CancellationToken cancellationToken);
+        Task<Dictionary<string, int>> GetAvailableHoursAsync(string[] employeeIds, CancellationToken cancellationToken);
 
         Task<WorkHoursChange[]> GetCalendarEventsAsync(string employeeId, CancellationToken cancellationToken);
 

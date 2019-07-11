@@ -17,20 +17,24 @@
 
     using Permissions.Contracts;
 
+    using WorkHoursCredit.Contracts;
+
     [Route("api/employees")]
     [Authorize]
     public class EmployeesController : Controller
     {
         private readonly IEmployees employees;
         private readonly IPermissions permissions;
+        private readonly IWorkHoursCredit workHoursCredit;
         private readonly ILogger<EmployeesController> logger;
         private readonly bool sslOffloading = false; //TODO: configured
 
-        public EmployeesController(IEmployees employees, ILogger<EmployeesController> logger, IPermissions permissions)
+        public EmployeesController(IEmployees employees, ILogger<EmployeesController> logger, IPermissions permissions, IWorkHoursCredit workHoursCredit)
         {
             this.employees = employees;
             this.logger = logger;
             this.permissions = permissions;
+            this.workHoursCredit = workHoursCredit;
         }
 
         [Route("{employeeId}")]
@@ -74,8 +78,12 @@
         private async Task<EmployeeModel[]> ProcessEmployeesAsync(IEnumerable<EmployeeMetadata> employeeMetadatas, CancellationToken cancellationToken)
         {
             var allPermissions = await this.permissions.GetPermissionsAsync(this.User.Identity.Name, cancellationToken);
-            var tasks = employeeMetadatas
+
+            var readableEmployees = employeeMetadatas
                 .Where(x => allPermissions.GetPermissions(x).HasFlag(EmployeePermissionsEntry.ReadEmployeeInfo))
+                .ToList();
+
+            var tasks = readableEmployees
                 .Select(x =>
                 {
                     var employee = EmployeeModel.FromMetadata(x);
@@ -92,16 +100,26 @@
                         employee.VacationDaysLeft = 5;
                     }
 
-                    if (employeePermissions.HasFlag(EmployeePermissionsEntry.ReadEmployeeDayoffsCounter))
-                    {
-                        //TODO: dayoffs count
-                        employee.HoursCredit = 3;
-                    }
-
                     return Task.FromResult(employee);
                 });
 
+
+            var hours = await this.workHoursCredit.GetAvailableHoursAsync(
+                readableEmployees
+                    .Where(x => allPermissions.GetPermissions(x).HasFlag(EmployeePermissionsEntry.ReadEmployeeDayoffsCounter))
+                    .Select(x => x.EmployeeId)
+                    .ToArray(),
+                cancellationToken);
             var employeeModels = await Task.WhenAll(tasks);
+
+            foreach (var employeeModel in employeeModels)
+            {
+                if (hours.TryGetValue(employeeModel.EmployeeId, out var value))
+                {
+                    employeeModel.HoursCredit = value;
+                }
+            }
+
             this.FillPhotoUrls(employeeModels);
             return employeeModels;
         }

@@ -32,9 +32,38 @@ namespace Arcadia.Assistant.WorkHoursCredit
             this.dbFactory = dbFactory;
         }
 
-        public Task<int> GetAvailableHoursAsync(string employeeId, CancellationToken cancellationToken)
+        public async Task<Dictionary<string, int>> GetAvailableHoursAsync(string[] employeeIds, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            if (employeeIds.Length == 0)
+            {
+                return new Dictionary<string, int>();
+            }
+
+            using (var ctx = this.dbFactory())
+            {
+                var hours = await ctx.Value.ChangeRequests
+                    .Where(x => employeeIds.Contains(x.EmployeeId))
+                    .Where(x => x.Approvals.Any())
+                    .Select(x => new
+                    {
+                        x.EmployeeId,
+                        Multiplier = x.ChangeType == WorkHoursChangeType.Workout ? 1 : -1,
+                        Hours = x.DayPart == DayPart.Full ? 8 : 4
+                    })
+                    .GroupBy(x => x.EmployeeId)
+                    .Select(x => new { EmployeeId = x.Key, Hours = x.Sum(ch => ch.Multiplier * ch.Hours) })
+                    .ToDictionaryAsync(x => x.EmployeeId, x => x.Hours, cancellationToken);
+
+                foreach (var employeeId in employeeIds)
+                {
+                    if (!hours.ContainsKey(employeeId))
+                    {
+                        hours[employeeId] = 0;
+                    }
+                }
+
+                return hours;
+            }
         }
 
         public async Task<WorkHoursChange[]> GetCalendarEventsAsync(string employeeId, CancellationToken cancellationToken)
