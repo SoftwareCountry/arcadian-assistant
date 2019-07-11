@@ -32,6 +32,10 @@
 
             modelBuilder
                 .Entity<ChangeRequest>()
+                .HasKey(x => new { x.EmployeeId, x.ChangeRequestId });
+
+            modelBuilder
+                .Entity<ChangeRequest>()
                 .Property(e => e.ChangeType)
                 .HasConversion(x => x.ToString(), x => Enum.Parse<WorkHoursChangeType>(x, true));
 
@@ -42,17 +46,17 @@
 
             modelBuilder
                 .Entity<Approval>()
-                .HasIndex(x => new { x.ChangeRequestId });
+                .HasIndex(x => new { x.EmployeeId, x.ChangeRequestId });
 
 
             modelBuilder
                 .Entity<Cancellation>()
-                .HasIndex(x => new { x.ChangeRequestId });
+                .HasIndex(x => new { x.EmployeeId, x.ChangeRequestId });
 
 
             modelBuilder
                 .Entity<Rejection>()
-                .HasIndex(x => new { x.ChangeRequestId });
+                .HasIndex(x => new { x.EmployeeId, x.ChangeRequestId });
         }
     }
 }

@@ -8,11 +8,9 @@
 
     public class ChangeRequest
     {
-        [Key]
-        public Guid ChangeRequestId { get; set; }
-
-        [Required]
         public string EmployeeId { get; set; }
+
+        public Guid ChangeRequestId { get; set; }
 
         [Required]
         public DateTime Date { get; set; }
@@ -26,10 +24,10 @@
         [Required]
         public DateTimeOffset Timestamp { get; set; }
 
-        public List<Approval> Approvals { get; set; }
+        public virtual List<Approval> Approvals { get; set; }
 
-        public List<Cancellation> Cancellations { get; set; }
+        public virtual List<Cancellation> Cancellations { get; set; }
 
-        public List<Rejection> Rejections { get; set; }
+        public virtual List<Rejection> Rejections { get; set; }
     }
 }

@@ -125,12 +125,12 @@ namespace Arcadia.Assistant.Web.Controllers
             {
                 //TODO: add authorization
 
-                if (model.Status == WorkHoursChangeStatuses.Cancelled)
+                if (model.Status == ChangeRequestStatus.Cancelled.ToString())
                 {
                     await this.workHoursCredit.CancelRequestAsync(employeeId, eventId, null, changedBy.EmployeeId);
                 }
 
-                if (model.Status == WorkHoursChangeStatuses.Rejected)
+                if (model.Status == ChangeRequestStatus.Rejected.ToString())
                 {
                     await this.workHoursCredit.RejectRequestAsync(employeeId, eventId, null, changedBy.EmployeeId);
                 }

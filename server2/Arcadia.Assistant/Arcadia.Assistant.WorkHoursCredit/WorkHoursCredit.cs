@@ -113,6 +113,7 @@ namespace Arcadia.Assistant.WorkHoursCredit
             {
                 var entity = new Approval
                 {
+                    EmployeeId = employeeId,
                     ChangeRequestId = requestId,
                     Timestamp = DateTimeOffset.Now,
                     ChangedByEmployeeId = approvedBy
@@ -129,6 +130,7 @@ namespace Arcadia.Assistant.WorkHoursCredit
             {
                 var entity = new Rejection
                 {
+                    EmployeeId = employeeId,
                     ChangeRequestId = requestId,
                     Timestamp = DateTimeOffset.Now,
                     ChangedByEmployeeId = rejectedBy,
@@ -146,6 +148,7 @@ namespace Arcadia.Assistant.WorkHoursCredit
             {
                 var entity = new Cancellation()
                 {
+                    EmployeeId = employeeId,
                     ChangeRequestId = requestId,
                     Timestamp = DateTimeOffset.Now,
                     ChangedByEmployeeId = cancelledBy,
@@ -172,9 +175,6 @@ namespace Arcadia.Assistant.WorkHoursCredit
         /// <param name="cancellationToken">Canceled when Service Fabric needs to shut down this service instance.</param>
         protected override async Task RunAsync(CancellationToken cancellationToken)
         {
-            var requestId = await this.RequestChangeAsync("10", WorkHoursChangeType.Workout, DateTime.Today, DayPart.Full);
-            await this.ApproveRequestAsync("10", requestId.ChangeId, "11");
-            var requests = await this.GetCalendarEventsAsync("10", cancellationToken);
         }
 
         private IQueryable<WorkHoursChange> GetCalendarEvents(IQueryable<ChangeRequest> changeRequests, Expression<Func<ChangeRequest, bool>> predicate)

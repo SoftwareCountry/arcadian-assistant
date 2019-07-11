@@ -15,10 +15,14 @@
         public string Comment { get; set; }
 
         [Required]
+        public string EmployeeId { get; set; }
+
+
+        [Required]
         public Guid ChangeRequestId { get; set; }
 
-        [ForeignKey(nameof(ChangeRequestId))]
         [Required]
-        public ChangeRequest ChangeRequest { get; set; }
+        [ForeignKey(nameof(EmployeeId) + "," + nameof(ChangeRequestId))]
+        public virtual ChangeRequest ChangeRequest { get; set; }
     }
 }
