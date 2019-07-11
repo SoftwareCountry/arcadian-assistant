@@ -1,51 +1,54 @@
 ﻿namespace Arcadia.Assistant.Web.Models.Calendar
 {
+    using System;
     using System.Collections.Generic;
+
+    using WorkHoursCredit.Contracts;
 
     public class CalendarEventStatuses
     {
         private static readonly IReadOnlyDictionary<string, string[]> StatusesByType = new Dictionary<string, string[]>
         {
-            { CalendarEventTypes.Dayoff, WorkHoursChangeStatuses.All },
-            { CalendarEventTypes.Workout, WorkHoursChangeStatuses.All },
+            { CalendarEventTypes.Dayoff, Enum.GetNames(typeof(ChangeRequestStatus)) },
+            { CalendarEventTypes.Workout, Enum.GetNames(typeof(ChangeRequestStatus)) },
             { CalendarEventTypes.Sickleave, SickLeaveStatuses.All },
             { CalendarEventTypes.Vacation, VacationStatuses.All }
         };
 
         private static readonly IReadOnlyDictionary<string, string[]> PendingStatusesByType = new Dictionary<string, string[]>
         {
-            { CalendarEventTypes.Dayoff, WorkHoursChangeStatuses.Pending },
-            { CalendarEventTypes.Workout, WorkHoursChangeStatuses.Pending },
+            { CalendarEventTypes.Dayoff, new [] { ChangeRequestStatus.Requested.ToString() } },
+            { CalendarEventTypes.Workout, new [] { ChangeRequestStatus.Requested.ToString() }  },
             { CalendarEventTypes.Sickleave, SickLeaveStatuses.Pending },
             { CalendarEventTypes.Vacation, VacationStatuses.Pending }
         };
 
         private static readonly IReadOnlyDictionary<string, string[]> ActualStatusesByType = new Dictionary<string, string[]>
         {
-            { CalendarEventTypes.Dayoff, WorkHoursChangeStatuses.Actual },
-            { CalendarEventTypes.Workout, WorkHoursChangeStatuses.Actual },
+            { CalendarEventTypes.Dayoff, new [] { ChangeRequestStatus.Requested.ToString(), ChangeRequestStatus.Approved.ToString() }  },
+            { CalendarEventTypes.Workout, new [] { ChangeRequestStatus.Requested.ToString(), ChangeRequestStatus.Approved.ToString() } },
             { CalendarEventTypes.Sickleave, SickLeaveStatuses.Actual },
             { CalendarEventTypes.Vacation, VacationStatuses.Actual }
         };
 
         private static readonly IReadOnlyDictionary<string, string> ApprovedStatusByType = new Dictionary<string, string>
         {
-            { CalendarEventTypes.Dayoff, WorkHoursChangeStatuses.Approved },
-            { CalendarEventTypes.Workout, WorkHoursChangeStatuses.Approved },
+            { CalendarEventTypes.Dayoff, ChangeRequestStatus.Approved.ToString() },
+            { CalendarEventTypes.Workout, ChangeRequestStatus.Approved.ToString() },
             { CalendarEventTypes.Vacation, VacationStatuses.Approved }
         };
 
         private static readonly IReadOnlyDictionary<string, string> RejectedStatusByType = new Dictionary<string, string>
         {
-            { CalendarEventTypes.Dayoff, WorkHoursChangeStatuses.Rejected },
-            { CalendarEventTypes.Workout, WorkHoursChangeStatuses.Rejected },
+            { CalendarEventTypes.Dayoff, ChangeRequestStatus.Rejected.ToString() },
+            { CalendarEventTypes.Workout, ChangeRequestStatus.Rejected.ToString() },
             { CalendarEventTypes.Vacation, VacationStatuses.Rejected }
         };
 
         private static readonly IReadOnlyDictionary<string, string> CancelledStatusByType = new Dictionary<string, string>
         {
-            { CalendarEventTypes.Dayoff, WorkHoursChangeStatuses.Cancelled },
-            { CalendarEventTypes.Workout, WorkHoursChangeStatuses.Cancelled },
+            { CalendarEventTypes.Dayoff, ChangeRequestStatus.Cancelled.ToString() },
+            { CalendarEventTypes.Workout, ChangeRequestStatus.Cancelled.ToString() },
             { CalendarEventTypes.Sickleave, SickLeaveStatuses.Cancelled },
             { CalendarEventTypes.Vacation, VacationStatuses.Cancelled }
         };
