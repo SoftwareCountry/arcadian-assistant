@@ -6,6 +6,8 @@ namespace Arcadia.Assistant.VacationsCredit
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Autofac.Features.OwnedInstances;
+
     using Contracts;
 
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
@@ -17,11 +19,16 @@ namespace Arcadia.Assistant.VacationsCredit
     /// </summary>
     public class VacationsCredit : StatelessService, IVacationsCredit
     {
+        private readonly InboxConfiguration configuration;
+        private readonly Func<Owned<IVacationsDaysLoader>> loaderFactory;
+
         private Dictionary<string, double> EmailToVacationDaysCount { get; set; }
 
-        public VacationsCredit(StatelessServiceContext context)
+        public VacationsCredit(StatelessServiceContext context, InboxConfiguration configuration, Func<Owned<IVacationsDaysLoader>> loaderFactory)
             : base(context)
         {
+            this.configuration = configuration;
+            this.loaderFactory = loaderFactory;
         }
 
         /// <summary>
@@ -43,9 +50,22 @@ namespace Arcadia.Assistant.VacationsCredit
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                ServiceEventSource.Current.ServiceMessage(this.Context, "Working");
+                ServiceEventSource.Current.ServiceMessage(this.Context, "Checking inbox");
 
-                await Task.Delay(TimeSpan.FromMinutes(10), cancellationToken);
+                using (var loader = this.loaderFactory())
+                {
+                    try
+                    {
+                        this.EmailToVacationDaysCount = await loader.Value.GetEmailsToDaysMappingAsync(cancellationToken);
+                    }
+                    catch (TaskCanceledException) { }
+                    catch (Exception e)
+                    {
+                        ServiceEventSource.Current.ServiceMessage(this.Context, "Error occurred: {0}", e.Message);
+                    }
+                }
+
+                await Task.Delay(this.configuration.RefreshInterval, cancellationToken);
             }
         }
 

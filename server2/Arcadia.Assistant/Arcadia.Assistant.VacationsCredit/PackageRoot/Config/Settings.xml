@@ -3,9 +3,10 @@
   <!-- Add your custom configuration sections and parameters here -->
   
   <Section Name="Inbox">
-    <Parameter Name="Enabled" Value="true" />
+    <Parameter Name="Enabled" Value="false" />
     <Parameter Name="Sender" Value="" />
     <Parameter Name="Subject" Value="" />
+    <Parameter Name="RefreshIntervalMinutes" Value="10" />
   </Section>
   
 </Settings>

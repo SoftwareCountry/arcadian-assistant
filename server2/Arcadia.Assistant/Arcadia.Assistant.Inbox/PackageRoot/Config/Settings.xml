@@ -3,8 +3,6 @@
   <!-- Add your custom configuration sections and parameters here -->
   
   <Section Name="IMAP">
-    <Parameter Name="Enabled" Value="true"/>
-    <Parameter Name="RefreshIntervalMinutes" Value="10" />
     <Parameter Name="Host" Value=""/>
     <Parameter Name="Port" Value=""/>
     <Parameter Name="Password" Value=""/>

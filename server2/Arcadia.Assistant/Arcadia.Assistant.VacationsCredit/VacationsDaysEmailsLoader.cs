@@ -17,9 +17,14 @@
             this.configuration = configuration;
         }
 
-        public Task<Dictionary<string, double>> GetListAsync(CancellationToken cancellationToken)
+        public async Task<Dictionary<string, double>> GetEmailsToDaysMappingAsync(CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            if (!this.configuration.Enabled)
+            {
+                return new Dictionary<string, double>();
+            }
+
+            return new Dictionary<string, double>();
         }
     }
 }
