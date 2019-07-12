@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <IsServiceFabricServiceProject>True</IsServiceFabricServiceProject>
+    <ServerGarbageCollection>True</ServerGarbageCollection>
+    <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
+    <TargetLatestRuntimePatch>False</TargetLatestRuntimePatch>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MailKit" Version="2.2.0" />
+    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="3.4.641" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Arcadia.Assistant.Inbox.Contracts\Arcadia.Assistant.Inbox.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

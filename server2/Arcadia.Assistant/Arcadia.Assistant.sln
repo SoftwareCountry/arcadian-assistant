@@ -41,6 +41,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Vacations
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.VacationsCredit.Contracts", "Arcadia.Assistant.VacationsCredit.Contracts\Arcadia.Assistant.VacationsCredit.Contracts.csproj", "{7925064E-3C64-4865-B603-DEAF82E6A4AC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Inbox", "Arcadia.Assistant.Inbox\Arcadia.Assistant.Inbox.csproj", "{B78E8874-6AA6-47A2-81BC-7CD9D110CF10}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Inbox.Contracts", "Arcadia.Assistant.Inbox.Contracts\Arcadia.Assistant.Inbox.Contracts.csproj", "{B66BE3BE-43A5-47D4-989C-0B905BED8415}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -121,6 +125,14 @@ Global
 		{7925064E-3C64-4865-B603-DEAF82E6A4AC}.Debug|x64.Build.0 = Debug|x64
 		{7925064E-3C64-4865-B603-DEAF82E6A4AC}.Release|x64.ActiveCfg = Release|Any CPU
 		{7925064E-3C64-4865-B603-DEAF82E6A4AC}.Release|x64.Build.0 = Release|Any CPU
+		{B78E8874-6AA6-47A2-81BC-7CD9D110CF10}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B78E8874-6AA6-47A2-81BC-7CD9D110CF10}.Debug|x64.Build.0 = Debug|Any CPU
+		{B78E8874-6AA6-47A2-81BC-7CD9D110CF10}.Release|x64.ActiveCfg = Release|Any CPU
+		{B78E8874-6AA6-47A2-81BC-7CD9D110CF10}.Release|x64.Build.0 = Release|Any CPU
+		{B66BE3BE-43A5-47D4-989C-0B905BED8415}.Debug|x64.ActiveCfg = Debug|x64
+		{B66BE3BE-43A5-47D4-989C-0B905BED8415}.Debug|x64.Build.0 = Debug|x64
+		{B66BE3BE-43A5-47D4-989C-0B905BED8415}.Release|x64.ActiveCfg = Release|Any CPU
+		{B66BE3BE-43A5-47D4-989C-0B905BED8415}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
