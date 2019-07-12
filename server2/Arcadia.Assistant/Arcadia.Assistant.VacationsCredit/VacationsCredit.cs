@@ -56,7 +56,11 @@ namespace Arcadia.Assistant.VacationsCredit
                 {
                     try
                     {
-                        this.EmailToVacationDaysCount = await loader.Value.GetEmailsToDaysMappingAsync(cancellationToken);
+                        var newMapping = await loader.Value.GetEmailsToDaysMappingAsync(cancellationToken);
+                        if (newMapping != null)
+                        {
+                            this.EmailToVacationDaysCount = newMapping;
+                        }
                     }
                     catch (TaskCanceledException) { }
                     catch (Exception e)
