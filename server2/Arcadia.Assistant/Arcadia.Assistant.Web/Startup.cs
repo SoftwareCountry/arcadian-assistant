@@ -34,6 +34,8 @@
 
     using UserPreferences.Contracts;
 
+    using VacationsCredit.Contracts;
+
     using WorkHoursCredit.Contracts;
 
     public class Startup
@@ -111,6 +113,7 @@
             builder.RegisterModule(new AvatarsModule());
             builder.RegisterModule(new UsersPreferencesModule());
             builder.RegisterModule(new WorkHoursCreditModule());
+            builder.RegisterModule(new VacationsCreditModule());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
