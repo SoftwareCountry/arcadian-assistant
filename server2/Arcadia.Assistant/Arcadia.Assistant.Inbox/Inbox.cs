@@ -33,26 +33,11 @@ namespace Arcadia.Assistant.Inbox
             this.imapConfiguration = imapConfiguration;
         }
 
-        /// <summary>
-        ///     This is the main entry point for your service instance.
-        /// </summary>
-        /// <param name="cancellationToken">Canceled when Service Fabric needs to shut down this service instance.</param>
-        //protected override async Task RunAsync(CancellationToken cancellationToken)
-        //{
-        //    while (true)
-        //    {
-        //        cancellationToken.ThrowIfCancellationRequested();
-
-        //        await Task.Delay(TimeSpan.FromMinutes(this.imapConfiguration.RefreshIntervalMinutes), cancellationToken);
-        //    }
-        //}
-        public async Task<IEnumerable<Email>> GetEmailsAsync(EmailSearchQuery query, CancellationToken cancellationToken)
+        public async Task<Email[]> GetEmailsAsync(EmailSearchQuery query, CancellationToken cancellationToken)
         {
             //this.logger.Debug("Loading inbox emails started");
 
             //this.logger.Debug($"Inbox emails query: {query}");
-
-            IEnumerable<Email> emails;
 
             using (var client = new ImapClient())
             {
@@ -99,14 +84,12 @@ namespace Arcadia.Assistant.Inbox
 
                 //   this.logger.Debug($"Total messages loaded: {messages.Count}");
 
-                emails = this.ConvertMessages(client, messages);
+                var emails = this.ConvertMessages(client, messages);
 
                 await client.DisconnectAsync(true, cancellationToken);
+
+                return emails;
             }
-
-            // this.logger.Debug("Loading inbox emails finished");
-
-            return emails;
         }
 
         /// <summary>
@@ -118,7 +101,7 @@ namespace Arcadia.Assistant.Inbox
             return this.CreateServiceRemotingInstanceListeners();
         }
 
-        private IEnumerable<Email> ConvertMessages(ImapClient client, IEnumerable<IMessageSummary> messages)
+        private Email[] ConvertMessages(ImapClient client, IEnumerable<IMessageSummary> messages)
         {
             var emails = messages
                 .Select(m =>
@@ -148,11 +131,11 @@ namespace Arcadia.Assistant.Inbox
 
                             return stream.ToArray();
                         })
-                        .ToList();
+                        .ToArray();
 
                     return new Email(m.UniqueId.Id, date, sender, subject, text, attachments);
                 })
-                .ToList();
+                .ToArray();
 
             return emails;
         }

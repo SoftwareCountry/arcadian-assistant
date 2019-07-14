@@ -2,16 +2,22 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Runtime.Serialization;
 
+    [DataContract]
     public class Email
     {
+        public Email()
+        {
+        }
+
         public Email(
             uint uniqueId,
             DateTimeOffset date,
             string sender,
             string subject,
             string text,
-            IEnumerable<byte[]> attachments)
+            byte[][] attachments)
         {
             this.UniqueId = uniqueId;
             this.Date = date;
@@ -21,16 +27,22 @@
             this.Attachments = attachments;
         }
 
-        public uint UniqueId { get; }
+        [DataMember]
+        public uint UniqueId { get; private set; }
 
-        public DateTimeOffset Date { get; }
+        [DataMember]
+        public DateTimeOffset Date { get; private set; }
 
-        public string Sender { get; }
+        [DataMember]
+        public string Sender { get; private set; }
 
-        public string Subject { get; }
+        [DataMember]
+        public string Subject { get; private set; }
 
-        public string Text { get; }
+        [DataMember]
+        public string Text { get; private set; }
 
-        public IEnumerable<byte[]> Attachments { get; }
+        [DataMember]
+        public byte[][] Attachments { get; private set; }
     }
 }

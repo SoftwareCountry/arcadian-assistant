@@ -29,7 +29,7 @@ namespace Arcadia.Assistant.VacationsCredit
                 // an instance of the class is created in this host process.
 
                 var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
-                var inboxSection = configurationPackage.Settings.Sections["INBOX"];
+                var inboxSection = configurationPackage.Settings.Sections["Inbox"];
                 var inboxConfiguration = new InboxConfiguration(inboxSection);
 
                 var builder = new ContainerBuilder();

@@ -2,6 +2,14 @@
 <ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="Arcadia.Assistant.SFType" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Parameters>
     <Parameter Name="Arcadia.Assistant.Inbox_InstanceCount" DefaultValue="-1" />
+    <Parameter Name="Arcadia.Assistant.Imap_Host" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Imap_Port" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Imap_User" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Imap_Password" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.VacationsCredit_Enabled" DefaultValue="false" />
+    <Parameter Name="Arcadia.Assistant.VacationsCredit_Sender" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.VacationsCredit_Subject" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.VacationsCredit_RefreshIntervalMinutes" DefaultValue="10" />
     <Parameter Name="Arcadia.Assistant.VacationsCredit_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.WorkHoursCredit_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.Permissions_InstanceCount" DefaultValue="-1" />
@@ -30,11 +38,33 @@
        ServiceManifest.xml file. -->
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.InboxPkg" ServiceManifestVersion="1.0.0" />
-    <ConfigOverrides />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="IMAP">
+            <Parameter Name="Host" Value="[Arcadia.Assistant.Imap_Host]" />
+            <Parameter Name="Port" Value="[Arcadia.Assistant.Imap_Port]" />
+            <Parameter Name="Password" Value="[Arcadia.Assistant.Imap_Password]" />
+            <Parameter Name="User" Value="[Arcadia.Assistant.Imap_User]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.VacationsCreditPkg" ServiceManifestVersion="1.0.0" />
-    <ConfigOverrides />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Inbox">
+            <Parameter Name="Enabled" Value="[Arcadia.Assistant.VacationsCredit_Enabled]" />
+            <Parameter Name="Sender" Value="[Arcadia.Assistant.VacationsCredit_Sender]" />
+            <Parameter Name="Subject" Value="[Arcadia.Assistant.VacationsCredit_Subject]" />
+            <Parameter Name="RefreshIntervalMinutes" Value="[Arcadia.Assistant.VacationsCredit_RefreshIntervalMinutes]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.WorkHoursCreditPkg" ServiceManifestVersion="1.0.0" />

@@ -29,7 +29,8 @@
 
             var emailsQuery = EmailSearchQuery.Create()
                 .WithSender(this.configuration.Sender)
-                .WithSubject(this.configuration.Subject);
+                .WithSubject(this.configuration.Subject)
+                .TakeLastNEmails(1);
 
             var emails = await this.inbox.GetEmailsAsync(emailsQuery, cancellationToken);
             var lastActualEmail = emails
@@ -66,7 +67,7 @@
                 })
                 .Where(v => !string.IsNullOrWhiteSpace(v.Email) && !string.IsNullOrWhiteSpace(v.Vacations) && double.TryParse(v.Vacations, out var _))
                 .GroupBy(x => x.Email)
-                .ToDictionary(x => x.Key, x => double.Parse(x.First().Vacations));
+                .ToDictionary(x => x.Key, x => double.Parse(x.First().Vacations), StringComparer.InvariantCultureIgnoreCase);
                 
             return vacations;
         }

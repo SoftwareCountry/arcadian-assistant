@@ -13,6 +13,6 @@ namespace Arcadia.Assistant.Inbox.Contracts
 
     public interface IInbox : IService
     {
-        Task<IEnumerable<Email>> GetEmailsAsync(EmailSearchQuery query, CancellationToken cancellationToken);
+        Task<Email[]> GetEmailsAsync(EmailSearchQuery query, CancellationToken cancellationToken);
     }
 }
