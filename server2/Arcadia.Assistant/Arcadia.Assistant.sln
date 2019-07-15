@@ -45,6 +45,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Inbox", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Inbox.Contracts", "Arcadia.Assistant.Inbox.Contracts\Arcadia.Assistant.Inbox.Contracts.csproj", "{B66BE3BE-43A5-47D4-989C-0B905BED8415}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.SickLeaves", "Arcadia.Assistant.SickLeaves\Arcadia.Assistant.SickLeaves.csproj", "{04C572F0-0075-4A03-9201-247E610B5BB5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -133,6 +135,10 @@ Global
 		{B66BE3BE-43A5-47D4-989C-0B905BED8415}.Debug|x64.Build.0 = Debug|x64
 		{B66BE3BE-43A5-47D4-989C-0B905BED8415}.Release|x64.ActiveCfg = Release|Any CPU
 		{B66BE3BE-43A5-47D4-989C-0B905BED8415}.Release|x64.Build.0 = Release|Any CPU
+		{04C572F0-0075-4A03-9201-247E610B5BB5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{04C572F0-0075-4A03-9201-247E610B5BB5}.Debug|x64.Build.0 = Debug|Any CPU
+		{04C572F0-0075-4A03-9201-247E610B5BB5}.Release|x64.ActiveCfg = Release|Any CPU
+		{04C572F0-0075-4A03-9201-247E610B5BB5}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
