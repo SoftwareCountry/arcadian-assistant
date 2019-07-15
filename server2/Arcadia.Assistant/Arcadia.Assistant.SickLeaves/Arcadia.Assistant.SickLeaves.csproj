@@ -15,4 +15,8 @@
     <PackageReference Include="Microsoft.ServiceFabric.Services" Version="3.4.641" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Arcadia.Assistant.SickLeaves.Contracts\Arcadia.Assistant.SickLeaves.Contracts.csproj" />
+  </ItemGroup>
+
 </Project>

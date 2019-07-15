@@ -6,13 +6,16 @@ namespace Arcadia.Assistant.SickLeaves
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Contracts;
+
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
+    using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
 
     /// <summary>
     ///     An instance of this class is created for each service instance by the Service Fabric runtime.
     /// </summary>
-    internal sealed class SickLeaves : StatelessService
+    public class SickLeaves : StatelessService, ISickLeaves
     {
         public SickLeaves(StatelessServiceContext context)
             : base(context)
@@ -25,7 +28,7 @@ namespace Arcadia.Assistant.SickLeaves
         /// <returns>A collection of listeners.</returns>
         protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
         {
-            return new ServiceInstanceListener[0];
+            return this.CreateServiceRemotingInstanceListeners();
         }
 
         /// <summary>
