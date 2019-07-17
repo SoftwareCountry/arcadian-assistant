@@ -8,7 +8,7 @@
     [DataContract]
     public class EmployeeMetadata
     {
-        public EmployeeMetadata(string employeeId, string name, string email)
+        public EmployeeMetadata(EmployeeId employeeId, string name, string email)
         {
             this.EmployeeId = employeeId;
             this.Name = name;
@@ -16,7 +16,7 @@
         }
 
         [DataMember]
-        public string EmployeeId { get; private set; }
+        public EmployeeId EmployeeId { get; private set; }
 
         [DataMember]
         public string Name { get; set; }

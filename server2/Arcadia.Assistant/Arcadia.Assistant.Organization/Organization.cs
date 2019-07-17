@@ -46,12 +46,12 @@ namespace Arcadia.Assistant.Organization
             return this.organizationDepartments.GetAllAsync(cancellationToken);
         }
 
-        public Task<EmployeeMetadata> FindEmployeeSupervisorAsync(string employeeId, CancellationToken cancellationToken)
+        public Task<EmployeeMetadata> FindEmployeeSupervisorAsync(EmployeeId employeeId, CancellationToken cancellationToken)
         {
             return this.supervisorSearch.FindAsync(employeeId, cancellationToken);
         }
 
-        public async Task<DepartmentMetadata[]> GetSupervisedDepartmentsAsync(string employeeId, CancellationToken cancellationToken)
+        public async Task<DepartmentMetadata[]> GetSupervisedDepartmentsAsync(EmployeeId employeeId, CancellationToken cancellationToken)
         {
             var allDepartments = await this.GetDepartmentsAsync(cancellationToken);
             var supervisedDepartmentsSearch = new SupervisedDepartmentsSearch(allDepartments);

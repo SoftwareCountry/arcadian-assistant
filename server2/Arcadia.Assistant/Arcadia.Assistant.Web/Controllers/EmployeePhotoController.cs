@@ -5,9 +5,9 @@
 
     using Avatars.Contracts;
 
+    using Employees.Contracts;
+
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.ServiceFabric.Actors;
-    using Microsoft.ServiceFabric.Actors.Client;
 
     [Route("api/photo/employee")]
 
@@ -22,9 +22,9 @@
 
         [Route("{employeeId}")]
         [HttpGet]
-        public async Task<IActionResult> GetImage(string employeeId, CancellationToken token)
+        public async Task<IActionResult> GetImage(int employeeId, CancellationToken token)
         {
-            var actor = this.avatars.Get(employeeId);
+            var actor = this.avatars.Get(new EmployeeId(employeeId));
             var photo = await actor.GetPhoto(token);
             if (photo == null)
             {

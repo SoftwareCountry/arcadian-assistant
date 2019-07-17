@@ -35,9 +35,9 @@ namespace Arcadia.Assistant.Web.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<CalendarEventWithIdModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAll(string employeeId, CancellationToken token)
+        public async Task<IActionResult> GetAll(int employeeId, CancellationToken token)
         {
-            var workHoursEvents = await this.workHoursCredit.GetCalendarEventsAsync(employeeId, token);
+            var workHoursEvents = await this.workHoursCredit.GetCalendarEventsAsync(new EmployeeId(employeeId), token);
             var allEvents = workHoursEvents.Select(this.workHoursConverter.ToCalendarEventWithId);
 
             return this.Ok(allEvents);
@@ -48,9 +48,9 @@ namespace Arcadia.Assistant.Web.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(CalendarEventModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Get(string employeeId, Guid eventId, CancellationToken token)
+        public async Task<IActionResult> Get(int employeeId, Guid eventId, CancellationToken token)
         {
-            var change = await this.workHoursCredit.GetCalendarEventAsync(employeeId, eventId, token);
+            var change = await this.workHoursCredit.GetCalendarEventAsync(new EmployeeId(employeeId), eventId, token);
             if (change == null)
             {
                 return this.NotFound();
@@ -62,7 +62,7 @@ namespace Arcadia.Assistant.Web.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(CalendarEventWithIdModel), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create(string employeeId, [FromBody] CalendarEventModel model, CancellationToken token)
+        public async Task<IActionResult> Create(int employeeId, [FromBody] CalendarEventModel model, CancellationToken token)
         {
             if (!this.ModelState.IsValid)
             {
@@ -77,7 +77,7 @@ namespace Arcadia.Assistant.Web.Controllers
                 case CalendarEventTypes.Workout:
                     var type = model.Type == CalendarEventTypes.Dayoff ? WorkHoursChangeType.Dayoff : WorkHoursChangeType.Workout;
                     var dayPart = this.workHoursConverter.GetDayPart(model.Dates);
-                    var change = await this.workHoursCredit.RequestChangeAsync(employeeId, type, model.Dates.StartDate, dayPart);
+                    var change = await this.workHoursCredit.RequestChangeAsync(new EmployeeId(employeeId), type, model.Dates.StartDate, dayPart);
                     createdModel = this.workHoursConverter.ToCalendarEventWithId(change);
                     break;
                 default:
@@ -93,7 +93,7 @@ namespace Arcadia.Assistant.Web.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        public async Task<IActionResult> Update(string employeeId, Guid eventId, [FromBody] CalendarEventModel model)
+        public async Task<IActionResult> Update(int employeeId, Guid eventId, [FromBody] CalendarEventModel model)
         {
             if (!this.ModelState.IsValid)
             {
@@ -106,13 +106,13 @@ namespace Arcadia.Assistant.Web.Controllers
             {
                 case CalendarEventTypes.Dayoff:
                 case CalendarEventTypes.Workout:
-                    return await this.UpdateWorkHoursRequest(employeeId, eventId, model, changedBy);
+                    return await this.UpdateWorkHoursRequest(new EmployeeId(employeeId), eventId, model, changedBy);
                 default:
                     return this.BadRequest("Unsupported event type");
             }
         }
 
-        private async Task<IActionResult> UpdateWorkHoursRequest(string employeeId, Guid eventId, CalendarEventModel model, EmployeeMetadata changedBy)
+        private async Task<IActionResult> UpdateWorkHoursRequest(EmployeeId employeeId, Guid eventId, CalendarEventModel model, EmployeeMetadata changedBy)
         {
             var existingEvent = await this.workHoursCredit.GetCalendarEventAsync(employeeId, eventId, CancellationToken.None);
             if (existingEvent == null)

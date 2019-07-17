@@ -13,6 +13,8 @@ namespace Arcadia.Assistant.Avatars.Manager
 
     using CSP;
 
+    using Employees.Contracts;
+
     using Microsoft.EntityFrameworkCore;
     using Microsoft.ServiceFabric.Actors;
     using Microsoft.ServiceFabric.Actors.Client;
@@ -63,7 +65,7 @@ namespace Arcadia.Assistant.Avatars.Manager
                         foreach (var employee in employees)
                         {
                             cancellationToken.ThrowIfCancellationRequested();
-                            var actor = this.avatars.Get(employee.Id.ToString());
+                            var actor = this.avatars.Get(new EmployeeId(employee.Id));
                             await actor.SetSource(employee.Image);
                         }
                     }

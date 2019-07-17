@@ -8,6 +8,8 @@ namespace Arcadia.Assistant.Web.Controllers
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Employees.Contracts;
+
     using Microsoft.AspNetCore.Http;
 
     using Models.Calendar;
@@ -28,15 +30,15 @@ namespace Arcadia.Assistant.Web.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(IEnumerable<CalendarEventApprovalWithTimestampModel>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetEventApprovals(string employeeId, string eventId, CancellationToken token)
+        public async Task<IActionResult> GetEventApprovals(int employeeId, string eventId, CancellationToken token)
         {
-            var approvals = await this.workHoursCredit.GetApprovalsAsync(employeeId, Guid.Parse(eventId), token);
+            var approvals = await this.workHoursCredit.GetApprovalsAsync(new EmployeeId(employeeId), Guid.Parse(eventId), token);
             if (approvals == null)
             {
                 return this.NotFound();
             }
 
-            return this.Ok(approvals.Select(x => new CalendarEventApprovalWithTimestampModel(x.Timestamp, x.ApproverId)));
+            return this.Ok(approvals.Select(x => new CalendarEventApprovalWithTimestampModel(x.Timestamp, x.ApproverId.ToString())));
         }
 
 
@@ -45,15 +47,20 @@ namespace Arcadia.Assistant.Web.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
-        public async Task<IActionResult> ApproveEvent(string employeeId, Guid eventId, [FromBody] CalendarEventApprovalModel model, CancellationToken token)
+        public async Task<IActionResult> ApproveEvent(int employeeId, Guid eventId, [FromBody] CalendarEventApprovalModel model)
         {
-            var existingEvent = await this.workHoursCredit.GetCalendarEventAsync(employeeId, eventId, CancellationToken.None);
+            var existingEvent = await this.workHoursCredit.GetCalendarEventAsync(new EmployeeId(employeeId), eventId, CancellationToken.None);
             if (existingEvent == null)
             {
                 return this.NotFound();
             }
 
-            await this.workHoursCredit.ApproveRequestAsync(employeeId, eventId, model.ApproverId);
+            if (!int.TryParse(model.ApproverId, out var approverId))
+            {
+                return this.BadRequest("ApproverId must convert to int");
+            }
+
+            await this.workHoursCredit.ApproveRequestAsync(new EmployeeId(employeeId), eventId, new EmployeeId(approverId));
             return this.Ok();
         }
     }

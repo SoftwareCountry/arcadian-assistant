@@ -3,6 +3,8 @@
     using System;
     using System.Runtime.Serialization;
 
+    using Employees.Contracts;
+
     [DataContract]
     public class ChangeRequestApproval
     {
@@ -10,6 +12,6 @@
         public DateTimeOffset Timestamp { get; set; }
 
         [DataMember]
-        public string ApproverId { get; set; }
+        public EmployeeId ApproverId { get; set; }
     }
 }

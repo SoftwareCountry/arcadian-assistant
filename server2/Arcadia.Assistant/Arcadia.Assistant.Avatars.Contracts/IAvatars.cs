@@ -1,7 +1,9 @@
 ﻿namespace Arcadia.Assistant.Avatars.Contracts
 {
+    using Employees.Contracts;
+
     public interface IAvatars
     {
-        IAvatar Get(string employeeId);
+        IAvatar Get(EmployeeId employeeId);
     }
 }

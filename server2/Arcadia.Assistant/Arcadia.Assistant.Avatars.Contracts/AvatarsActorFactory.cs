@@ -1,5 +1,7 @@
 ﻿namespace Arcadia.Assistant.Avatars.Contracts
 {
+    using Employees.Contracts;
+
     using Microsoft.ServiceFabric.Actors;
     using Microsoft.ServiceFabric.Actors.Client;
 
@@ -12,9 +14,9 @@
             this.actorProxyFactory = actorProxyFactory;
         }
 
-        public IAvatar Get(string employeeId)
+        public IAvatar Get(EmployeeId employeeId)
         {
-            return this.actorProxyFactory.CreateActorProxy<IAvatar>(new ActorId(employeeId), serviceName: "AvatarActorService");
+            return this.actorProxyFactory.CreateActorProxy<IAvatar>(new ActorId(employeeId.Value), serviceName: "AvatarActorService");
         }
     }
 }

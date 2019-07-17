@@ -4,6 +4,8 @@
 
     using Contracts;
 
+    using Employees.Contracts;
+
     public class SupervisedDepartmentsSearch
     {
         private readonly DepartmentMetadata[] allDepartments;
@@ -15,7 +17,7 @@
             this.departmentsTreeBuilder = new DepartmentsTreeBuilder(allDepartments);
         }
 
-        public DepartmentMetadata[] FindFor(string employeeId)
+        public DepartmentMetadata[] FindFor(EmployeeId employeeId)
         {
             var directlySupervisedDepartments = this.allDepartments.Where(x => x.ChiefId == employeeId);
             var trees = directlySupervisedDepartments.Select(x => this.departmentsTreeBuilder.Build(x.DepartmentId)).Where(x => x != null);

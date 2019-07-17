@@ -12,7 +12,7 @@ namespace Arcadia.Assistant.Employees.Contracts
 
     public interface IEmployees : IService
     {
-        Task<EmployeeMetadata> FindEmployeeAsync(string employeeId, CancellationToken cancellationToken);
+        Task<EmployeeMetadata> FindEmployeeAsync(EmployeeId? employeeId, CancellationToken cancellationToken);
 
         Task<EmployeeMetadata[]> FindEmployeesAsync(EmployeesQuery employeesQuery, CancellationToken cancellationToken);
     }

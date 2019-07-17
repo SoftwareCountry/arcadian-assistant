@@ -9,6 +9,8 @@ namespace Arcadia.Assistant.Web.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
 
+    using Models;
+
     using Organization.Contracts;
 
     [Route("/api/departments")]
@@ -23,16 +25,19 @@ namespace Arcadia.Assistant.Web.Controllers
 
         [Route("")]
         [HttpGet]
-        [ProducesResponseType(typeof(DepartmentMetadata[]), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DepartmentModel[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> All(CancellationToken token)
         {
             var departments = await this.organization.GetDepartmentsAsync(token);
-            return this.Ok(departments.OrderBy(x => x.DepartmentId).ToArray());
+            return this.Ok(departments
+                .OrderBy(x => x.DepartmentId)
+                .Select(DepartmentModel.FromMetadata)
+                .ToArray());
         }
 
         [Route("{departmentId}")]
         [HttpGet]
-        [ProducesResponseType(typeof(DepartmentMetadata), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DepartmentModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(string departmentId, CancellationToken token)
         {
@@ -42,7 +47,7 @@ namespace Arcadia.Assistant.Web.Controllers
                 return this.NotFound();
             }
 
-            return this.Ok(department);
+            return this.Ok(DepartmentModel.FromMetadata(department));
         }
     }
 }

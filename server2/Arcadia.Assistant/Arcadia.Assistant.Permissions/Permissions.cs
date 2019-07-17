@@ -48,7 +48,7 @@ namespace Arcadia.Assistant.Permissions
             var userEmployee = (await this.employees.FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(identity), cancellationToken)).FirstOrDefault();
             var defaultEmployeePermission = EmployeePermissionsEntry.None;
             var permissionsForDepartments = new Dictionary<string, EmployeePermissionsEntry>();
-            var permissionsForEmployees = new Dictionary<string, EmployeePermissionsEntry>();
+            var permissionsForEmployees = new Dictionary<EmployeeId, EmployeePermissionsEntry>();
 
             if (userEmployee != null)
             {
@@ -63,9 +63,9 @@ namespace Arcadia.Assistant.Permissions
             return new UserPermissionsCollection(defaultEmployeePermission, permissionsForDepartments, permissionsForEmployees);
         }
 
-        private static void BulkBumpPermissions(IEnumerable<string> entriesIds,
+        private static void BulkBumpPermissions<T>(IEnumerable<T> entriesIds,
             EmployeePermissionsEntry permissionSet,
-            Dictionary<string, EmployeePermissionsEntry> targetPermissionsEntries)
+            Dictionary<T, EmployeePermissionsEntry> targetPermissionsEntries)
         {
             foreach (var entryId in entriesIds)
             {

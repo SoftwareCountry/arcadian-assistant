@@ -15,7 +15,7 @@
 
         [DataMember]
         // explicit employees permissions by id
-        private ReadOnlyDictionary<string, EmployeePermissionsEntry> EmployeePermissions { get; set; }
+        private ReadOnlyDictionary<EmployeeId, EmployeePermissionsEntry> EmployeePermissions { get; set; }
 
         [DataMember]
         private EmployeePermissionsEntry defaultPermission;
@@ -23,11 +23,11 @@
         public UserPermissionsCollection(
             EmployeePermissionsEntry defaultPermission,
             IDictionary<string, EmployeePermissionsEntry> departmentPermissions,
-            IDictionary<string, EmployeePermissionsEntry> employeePermissions)
+            IDictionary<EmployeeId, EmployeePermissionsEntry> employeePermissions)
         {
             this.defaultPermission = defaultPermission;
             this.DepartmentPermissions = new ReadOnlyDictionary<string, EmployeePermissionsEntry>(departmentPermissions);
-            this.EmployeePermissions = new ReadOnlyDictionary<string, EmployeePermissionsEntry>(employeePermissions);
+            this.EmployeePermissions = new ReadOnlyDictionary<EmployeeId, EmployeePermissionsEntry>(employeePermissions);
         }
 
 

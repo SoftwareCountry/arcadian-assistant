@@ -37,7 +37,7 @@ namespace Arcadia.Assistant.Employees
 
             this.mapToMetadata = x =>
                 new EmployeeMetadata(
-                    x.Id.ToString(),
+                    new EmployeeId(x.Id),
                     $"{x.LastName} {x.FirstName}".Trim(),
                     x.Email)
                 {
@@ -61,16 +61,16 @@ namespace Arcadia.Assistant.Employees
         }
 
 
-        public async Task<EmployeeMetadata> FindEmployeeAsync(string employeeId, CancellationToken cancellationToken)
+        public async Task<EmployeeMetadata> FindEmployeeAsync(EmployeeId? employeeId, CancellationToken cancellationToken)
         {
+            if (employeeId == null)
+            {
+                return null;
+            }
+
             using (var query = this.cspEmployeeQuery())
             {
-                if (!int.TryParse(employeeId, out var id))
-                {
-                    return null;
-                }
-
-                var employee = await query.Value.Get().Where(x => x.Id == id).Select(this.mapToMetadata).FirstOrDefaultAsync(cancellationToken);
+                var employee = await query.Value.Get().Where(x => x.Id == employeeId.Value.Value).Select(this.mapToMetadata).FirstOrDefaultAsync(cancellationToken);
 
                 return employee;
             }

@@ -3,6 +3,8 @@
     using System.Diagnostics;
     using System.Runtime.Serialization;
 
+    using Employees.Contracts;
+
     [DataContract]
     [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
     public class DepartmentMetadata
@@ -20,7 +22,7 @@
         public string ParentDepartmentId { get; set; }
 
         [DataMember]
-        public string ChiefId { get; set; }
+        public EmployeeId? ChiefId { get; set; }
 
         [DataMember]
         public int PeopleCount { get; set; }

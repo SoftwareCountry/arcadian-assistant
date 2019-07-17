@@ -8,7 +8,7 @@
 
     public class ChangeRequest
     {
-        public string EmployeeId { get; set; }
+        public int EmployeeId { get; set; }
 
         public Guid ChangeRequestId { get; set; }
 

@@ -1,5 +1,7 @@
 ﻿namespace Arcadia.Assistant.UserPreferences.Contracts
 {
+    using Employees.Contracts;
+
     using Microsoft.ServiceFabric.Actors;
     using Microsoft.ServiceFabric.Actors.Client;
 
@@ -12,7 +14,7 @@
             this.actorProxyFactory = actorProxyFactory;
         }
 
-        public IUserPreferencesStorage ForEmployee(string employeeId)
+        public IUserPreferencesStorage ForEmployee(EmployeeId employeeId)
         {
             var actor = this.actorProxyFactory.CreateActorProxy<IUserPreferencesStorage>(new ActorId("employee-" + employeeId), serviceName: "UserPreferencesStorageActorService");
             return actor;

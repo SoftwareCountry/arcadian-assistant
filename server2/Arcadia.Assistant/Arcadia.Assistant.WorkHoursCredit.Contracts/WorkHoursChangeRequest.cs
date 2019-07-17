@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using System.Runtime.Serialization;
 
+    using Employees.Contracts;
+
     [DataContract]
     public class WorkHoursChangeRequest
     {
@@ -20,7 +22,7 @@
             public DateTimeOffset TimeSpan { get; set; }
 
             [DataMember]
-            public string EmployeeId { get; set; }
+            public EmployeeId EmployeeId { get; set; }
 
             [DataMember]
             public WorkHoursChangeType Status { get; set; }

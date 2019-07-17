@@ -55,7 +55,7 @@
         {
             return new EmployeeModel()
                 {
-                    EmployeeId = metadata.EmployeeId,
+                    EmployeeId = metadata.EmployeeId.Value.ToString(),
                     BirthDate = metadata.BirthDate,
                     DepartmentId = metadata.DepartmentId,
                     Email = metadata.Email,

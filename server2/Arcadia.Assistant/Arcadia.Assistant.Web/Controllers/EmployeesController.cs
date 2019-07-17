@@ -45,9 +45,9 @@
         [HttpGet]
         [ProducesResponseType(typeof(EmployeeModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetById(string employeeId, CancellationToken token)
+        public async Task<IActionResult> GetById(int employeeId, CancellationToken token)
         {
-            var employee = await this.employees.FindEmployeeAsync(employeeId, token);
+            var employee = await this.employees.FindEmployeeAsync(new EmployeeId(employeeId), token);
             if (employee == null)
             {
                 return this.NotFound();
@@ -87,6 +87,13 @@
                 .Where(x => allPermissions.GetPermissions(x).HasFlag(EmployeePermissionsEntry.ReadEmployeeInfo))
                 .ToList();
 
+            var hoursTask = this.workHoursCredit.GetAvailableHoursAsync(
+                readableEmployees
+                    .Where(x => allPermissions.GetPermissions(x).HasFlag(EmployeePermissionsEntry.ReadEmployeeDayoffsCounter))
+                    .Select(x => x.EmployeeId)
+                    .ToArray(),
+                cancellationToken);
+
             var tasks = readableEmployees
                 .Select(async x =>
                 {
@@ -103,25 +110,15 @@
                         employee.VacationDaysLeft = await this.vacationsCredit.GetVacationDaysLeftAsync(employee.Email, cancellationToken);
                     }
 
+                    if ((await hoursTask).TryGetValue(x.EmployeeId, out var value))
+                    {
+                        employee.HoursCredit = value;
+                    }
+
                     return employee;
                 });
 
-
-            var hours = await this.workHoursCredit.GetAvailableHoursAsync(
-                readableEmployees
-                    .Where(x => allPermissions.GetPermissions(x).HasFlag(EmployeePermissionsEntry.ReadEmployeeDayoffsCounter))
-                    .Select(x => x.EmployeeId)
-                    .ToArray(),
-                cancellationToken);
             var employeeModels = await Task.WhenAll(tasks);
-
-            foreach (var employeeModel in employeeModels)
-            {
-                if (hours.TryGetValue(employeeModel.EmployeeId, out var value))
-                {
-                    employeeModel.HoursCredit = value;
-                }
-            }
 
             this.FillPhotoUrls(employeeModels);
             return employeeModels;

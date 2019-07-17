@@ -9,7 +9,7 @@
         public string DepartmentId { get; private set; }
 
         [DataMember]
-        public string EmployeeId { get; private set; }
+        public EmployeeId? EmployeeId { get; private set; }
 
         [DataMember]
         public string RoomNumber { get; private set; }
@@ -39,10 +39,10 @@
             return obj;
         }
 
-        public EmployeesQuery WithId(string employeeId)
+        public EmployeesQuery WithId(EmployeeId employeeId)
         {
             var obj = this.Clone();
-            obj.EmployeeId = employeeId;
+            obj.EmployeeId = new EmployeeId(employeeId.Value);
             return obj;
         }
 

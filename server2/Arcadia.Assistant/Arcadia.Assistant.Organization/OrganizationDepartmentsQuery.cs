@@ -12,6 +12,8 @@
 
     using CSP;
 
+    using Employees.Contracts;
+
     using Microsoft.EntityFrameworkCore;
 
     public class OrganizationDepartmentsQuery
@@ -25,7 +27,7 @@
             x.Department.Abbreviation,
             x.Department.ParentDepartmentId == null || x.Department.ParentDepartmentId == x.Department.Id ? null : x.Department.ParentDepartmentId.ToString())
         {
-            ChiefId = x.ActualChiefId == null ? null : x.ActualChiefId.ToString(),
+            ChiefId = x.ActualChiefId == null ? (EmployeeId?)(null) : new EmployeeId(x.ActualChiefId.Value),
             PeopleCount = x.PeopleCount
         };
 

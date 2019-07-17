@@ -18,8 +18,8 @@ namespace Arcadia.Assistant.Organization.Contracts
 
         Task<DepartmentMetadata[]> GetDepartmentsAsync(CancellationToken cancellationToken);
 
-        Task<EmployeeMetadata> FindEmployeeSupervisorAsync(string employeeId, CancellationToken cancellationToken);
+        Task<EmployeeMetadata> FindEmployeeSupervisorAsync(EmployeeId employeeId, CancellationToken cancellationToken);
 
-        Task<DepartmentMetadata[]> GetSupervisedDepartmentsAsync(string employeeId, CancellationToken cancellationToken);
+        Task<DepartmentMetadata[]> GetSupervisedDepartmentsAsync(EmployeeId employeeId, CancellationToken cancellationToken);
     }
 }

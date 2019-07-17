@@ -37,17 +37,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.WorkHours
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.WorkHoursCredit.Contracts", "Arcadia.Assistant.WorkHoursCredit.Contracts\Arcadia.Assistant.WorkHoursCredit.Contracts.csproj", "{A911FABD-DDEA-4B78-BAFB-6CE60BD9D772}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.VacationsCredit", "Arcadia.Assistant.VacationsCredit\Arcadia.Assistant.VacationsCredit.csproj", "{E3B5A256-2924-4E8C-A798-0D74615C2BB6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.VacationsCredit", "Arcadia.Assistant.VacationsCredit\Arcadia.Assistant.VacationsCredit.csproj", "{E3B5A256-2924-4E8C-A798-0D74615C2BB6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.VacationsCredit.Contracts", "Arcadia.Assistant.VacationsCredit.Contracts\Arcadia.Assistant.VacationsCredit.Contracts.csproj", "{7925064E-3C64-4865-B603-DEAF82E6A4AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.VacationsCredit.Contracts", "Arcadia.Assistant.VacationsCredit.Contracts\Arcadia.Assistant.VacationsCredit.Contracts.csproj", "{7925064E-3C64-4865-B603-DEAF82E6A4AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Inbox", "Arcadia.Assistant.Inbox\Arcadia.Assistant.Inbox.csproj", "{B78E8874-6AA6-47A2-81BC-7CD9D110CF10}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Inbox", "Arcadia.Assistant.Inbox\Arcadia.Assistant.Inbox.csproj", "{B78E8874-6AA6-47A2-81BC-7CD9D110CF10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Inbox.Contracts", "Arcadia.Assistant.Inbox.Contracts\Arcadia.Assistant.Inbox.Contracts.csproj", "{B66BE3BE-43A5-47D4-989C-0B905BED8415}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Inbox.Contracts", "Arcadia.Assistant.Inbox.Contracts\Arcadia.Assistant.Inbox.Contracts.csproj", "{B66BE3BE-43A5-47D4-989C-0B905BED8415}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.SickLeaves", "Arcadia.Assistant.SickLeaves\Arcadia.Assistant.SickLeaves.csproj", "{04C572F0-0075-4A03-9201-247E610B5BB5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.SickLeaves", "Arcadia.Assistant.SickLeaves\Arcadia.Assistant.SickLeaves.csproj", "{04C572F0-0075-4A03-9201-247E610B5BB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.SickLeaves.Contracts", "Arcadia.Assistant.SickLeaves.Contracts\Arcadia.Assistant.SickLeaves.Contracts.csproj", "{0FE483A6-B5C9-40D4-94A5-13F9006F420C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.SickLeaves.Contracts", "Arcadia.Assistant.SickLeaves.Contracts\Arcadia.Assistant.SickLeaves.Contracts.csproj", "{0FE483A6-B5C9-40D4-94A5-13F9006F420C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Calendar", "Calendar", "{EC5FA305-0A2E-4985-A977-B9C6F2ADEFFF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -153,6 +155,10 @@ Global
 		{137B9BB9-CFB5-4448-B930-DBE5DFE8D198} = {B9EE598B-6E11-4317-9D82-11F334CFBA10}
 		{BF24FE61-7804-4415-913B-B8714633B8DF} = {B9EE598B-6E11-4317-9D82-11F334CFBA10}
 		{5D2D5D76-743D-4CE4-BA71-B5F0793FB330} = {B9EE598B-6E11-4317-9D82-11F334CFBA10}
+		{C228C471-6C35-4630-B475-3161A800C72A} = {EC5FA305-0A2E-4985-A977-B9C6F2ADEFFF}
+		{A911FABD-DDEA-4B78-BAFB-6CE60BD9D772} = {EC5FA305-0A2E-4985-A977-B9C6F2ADEFFF}
+		{04C572F0-0075-4A03-9201-247E610B5BB5} = {EC5FA305-0A2E-4985-A977-B9C6F2ADEFFF}
+		{0FE483A6-B5C9-40D4-94A5-13F9006F420C} = {EC5FA305-0A2E-4985-A977-B9C6F2ADEFFF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C376673D-F593-42B1-8093-D1F667D586B1}

@@ -7,7 +7,7 @@
     public class StatusChange
     {
         [Required]
-        public string ChangedByEmployeeId { get; set; }
+        public int ChangedByEmployeeId { get; set; }
 
         [Required]
         public DateTimeOffset Timestamp { get; set; }
@@ -15,7 +15,7 @@
         public string Comment { get; set; }
 
         [Required]
-        public string EmployeeId { get; set; }
+        public int EmployeeId { get; set; }
 
 
         [Required]

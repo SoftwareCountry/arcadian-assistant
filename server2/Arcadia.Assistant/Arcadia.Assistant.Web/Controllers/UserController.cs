@@ -41,7 +41,7 @@
 
             return this.Ok(new UserModel()
             {
-                EmployeeId = employee.EmployeeId,
+                EmployeeId = employee.EmployeeId.ToString(),
                 Username = employee.Name
             });
         }
@@ -51,9 +51,10 @@
         [ProducesResponseType(typeof(UserEmployeePermissionsModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetPermissions(string objectEmployeeId, CancellationToken token)
+        public async Task<IActionResult> GetPermissions(int objectEmployeeId, CancellationToken token)
         {
-            var objectEmployee = await this.employees.FindEmployeeAsync(objectEmployeeId, token);
+            var objectId = new EmployeeId(objectEmployeeId);
+            var objectEmployee = await this.employees.FindEmployeeAsync(objectId, token);
             if (objectEmployee == null)
             {
                 return this.NotFound();
@@ -61,7 +62,7 @@
 
             var allPermissions = await this.permissions.GetPermissionsAsync(this.User.Identity.Name, token);
             var employeePermissions = allPermissions.GetPermissions(objectEmployee);
-            return this.Ok(new UserEmployeePermissionsModel(objectEmployeeId, employeePermissions));
+            return this.Ok(new UserEmployeePermissionsModel(objectId.ToString(), employeePermissions));
         }
     }
 }

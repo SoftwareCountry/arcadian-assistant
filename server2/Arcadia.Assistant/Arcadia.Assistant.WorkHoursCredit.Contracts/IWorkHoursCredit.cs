@@ -10,6 +10,8 @@ namespace Arcadia.Assistant.WorkHoursCredit.Contracts
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Employees.Contracts;
+
     using Microsoft.ServiceFabric.Services.Remoting;
 
     public interface IWorkHoursCredit : IService
@@ -18,20 +20,20 @@ namespace Arcadia.Assistant.WorkHoursCredit.Contracts
         /// Returns a number of hours available to take as daysoff. If negative, employee is in debt
         /// </summary>
         /// <returns></returns>
-        Task<Dictionary<string, int>> GetAvailableHoursAsync(string[] employeeIds, CancellationToken cancellationToken);
+        Task<Dictionary<EmployeeId, int>> GetAvailableHoursAsync(EmployeeId[] employeeIds, CancellationToken cancellationToken);
 
-        Task<WorkHoursChange[]> GetCalendarEventsAsync(string employeeId, CancellationToken cancellationToken);
+        Task<WorkHoursChange[]> GetCalendarEventsAsync(EmployeeId employeeId, CancellationToken cancellationToken);
 
-        Task<WorkHoursChange> GetCalendarEventAsync(string employeeId, Guid eventId, CancellationToken cancellationToken);
+        Task<WorkHoursChange> GetCalendarEventAsync(EmployeeId employeeId, Guid eventId, CancellationToken cancellationToken);
 
-        Task<WorkHoursChange> RequestChangeAsync(string employeeId, WorkHoursChangeType changeType, DateTime date, DayPart dayPart);
+        Task<WorkHoursChange> RequestChangeAsync(EmployeeId employeeId, WorkHoursChangeType changeType, DateTime date, DayPart dayPart);
 
-        Task<ChangeRequestApproval[]> GetApprovalsAsync(string employeeId, Guid eventId, CancellationToken cancellationToken);
+        Task<ChangeRequestApproval[]> GetApprovalsAsync(EmployeeId employeeId, Guid eventId, CancellationToken cancellationToken);
 
-        Task ApproveRequestAsync(string employeeId, Guid requestId, string approvedBy);
+        Task ApproveRequestAsync(EmployeeId employeeId, Guid requestId, EmployeeId approvedBy);
 
-        Task RejectRequestAsync(string employeeId, Guid requestId, string rejectionReason, string rejectedBy);
+        Task RejectRequestAsync(EmployeeId employeeId, Guid requestId, string rejectionReason, EmployeeId rejectedBy);
 
-        Task CancelRequestAsync(string employeeId, Guid requestId, string rejectionReason, string cancelledBy);
+        Task CancelRequestAsync(EmployeeId employeeId, Guid requestId, string rejectionReason, EmployeeId cancelledBy);
     }
 }

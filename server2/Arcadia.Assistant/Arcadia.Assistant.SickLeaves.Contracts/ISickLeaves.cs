@@ -9,18 +9,20 @@ namespace Arcadia.Assistant.SickLeaves.Contracts
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Employees.Contracts;
+
     using Microsoft.ServiceFabric.Services.Remoting;
 
     public interface ISickLeaves : IService
     {
-        Task<object[]> GetCalendarEventsAsync(string employeeId, CancellationToken cancellationToken);
+        Task<object[]> GetCalendarEventsAsync(EmployeeId employeeId, CancellationToken cancellationToken);
 
-        Task<object> GetCalendarEventAsync(string employeeId, int eventId, CancellationToken cancellationToken);
+        Task<object> GetCalendarEventAsync(EmployeeId employeeId, int eventId, CancellationToken cancellationToken);
 
-        Task CreateSickLeaveAsync(string employeeId, DateTime startDate, DateTime endDate);
+        Task CreateSickLeaveAsync(EmployeeId employeeId, DateTime startDate, DateTime endDate);
 
-        Task ProlongSickLeaveAsync(string employeeId, int eventId, DateTime endDate);
+        Task ProlongSickLeaveAsync(EmployeeId employeeId, int eventId, DateTime endDate);
 
-        Task CancelSickLeaveAsync(string employeeId, int eventId);
+        Task CancelSickLeaveAsync(EmployeeId employeeId, int eventId);
     }
 }

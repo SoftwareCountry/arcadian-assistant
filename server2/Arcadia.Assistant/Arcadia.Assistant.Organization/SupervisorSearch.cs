@@ -17,7 +17,7 @@
             this.organizationDepartments = organizationDepartments;
         }
 
-        public async Task<EmployeeMetadata> FindAsync(string employeeId, CancellationToken cancellationToken)
+        public async Task<EmployeeMetadata> FindAsync(EmployeeId employeeId, CancellationToken cancellationToken)
         {
             var target = await this.employees.FindEmployeeAsync(employeeId, cancellationToken);
             if (target == null)

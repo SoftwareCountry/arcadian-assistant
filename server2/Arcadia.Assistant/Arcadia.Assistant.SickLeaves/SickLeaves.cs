@@ -8,6 +8,8 @@ namespace Arcadia.Assistant.SickLeaves
 
     using Contracts;
 
+    using Employees.Contracts;
+
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
@@ -45,27 +47,27 @@ namespace Arcadia.Assistant.SickLeaves
             }
         }
 
-        public Task<object[]> GetCalendarEventsAsync(string employeeId, CancellationToken cancellationToken)
+        public Task<object[]> GetCalendarEventsAsync(EmployeeId employeeId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public Task<object> GetCalendarEventAsync(string employeeId, int eventId, CancellationToken cancellationToken)
+        public Task<object> GetCalendarEventAsync(EmployeeId employeeId, int eventId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public Task CreateSickLeaveAsync(string employeeId, DateTime startDate, DateTime endDate)
+        public Task CreateSickLeaveAsync(EmployeeId employeeId, DateTime startDate, DateTime endDate)
         {
             throw new NotImplementedException();
         }
 
-        public Task ProlongSickLeaveAsync(string employeeId, int eventId, DateTime endDate)
+        public Task ProlongSickLeaveAsync(EmployeeId employeeId, int eventId, DateTime endDate)
         {
             throw new NotImplementedException();
         }
 
-        public Task CancelSickLeaveAsync(string employeeId, int eventId)
+        public Task CancelSickLeaveAsync(EmployeeId employeeId, int eventId)
         {
             throw new NotImplementedException();
         }
