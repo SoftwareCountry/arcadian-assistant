@@ -1,14 +1,15 @@
 ﻿namespace Arcadia.Assistant.Employees.Contracts
 {
+    using System;
     using System.Runtime.Serialization;
 
     [DataContract]
-    public struct EmployeeId
+    public struct DepartmentId : IComparable<DepartmentId>
     {
         [DataMember]
         public int Value { get; private set; }
 
-        public EmployeeId(int value)
+        public DepartmentId(int value)
         {
             this.Value = value;
         }
@@ -18,7 +19,7 @@
             return this.Value.ToString();
         }
 
-        public bool Equals(EmployeeId other)
+        public bool Equals(DepartmentId other)
         {
             return this.Value == other.Value;
         }
@@ -30,7 +31,7 @@
                 return false;
             }
 
-            return obj is EmployeeId other && this.Equals(other);
+            return obj is DepartmentId other && this.Equals(other);
         }
 
         public override int GetHashCode()
@@ -39,14 +40,19 @@
             return this.Value;
         }
 
-        public static bool operator ==(EmployeeId id1, EmployeeId id2)
+        public static bool operator ==(DepartmentId id1, DepartmentId id2)
         {
             return id1.Equals(id2);
         }
 
-        public static bool operator !=(EmployeeId id1, EmployeeId id2)
+        public static bool operator !=(DepartmentId id1, DepartmentId id2)
         {
             return !(id1 == id2);
+        }
+
+        public int CompareTo(DepartmentId other)
+        {
+            return this.Value.CompareTo(other.Value);
         }
     }
 }

@@ -31,9 +31,9 @@
             {
                 Abbreviation = department.Abbreviation,
                 ChiefId = department.ChiefId?.Value.ToString(),
-                DepartmentId = department.DepartmentId,
+                DepartmentId = department.DepartmentId.ToString(),
                 Name = department.Name,
-                ParentDepartmentId = department.ParentDepartmentId,
+                ParentDepartmentId = department.ParentDepartmentId?.ToString(),
                 PeopleCount = department.PeopleCount
             };
         }

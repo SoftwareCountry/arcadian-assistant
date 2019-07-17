@@ -46,7 +46,7 @@ namespace Arcadia.Assistant.Employees
                     FireDate = x.FiringDate,
                     MobilePhone = x.MobilePhone,
                     RoomNumber = x.RoomNumber != null ? x.RoomNumber.Trim() : null,
-                    DepartmentId = x.DepartmentId != null ? x.DepartmentId.ToString() : null,
+                    DepartmentId = x.DepartmentId != null ? new DepartmentId(x.DepartmentId.Value) : (DepartmentId?)null,
                     Position = x.Position.Title,
                 };
         }

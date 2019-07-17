@@ -10,7 +10,7 @@
     public class DepartmentMetadata
     {
         [DataMember]
-        public string DepartmentId { get; set; }
+        public DepartmentId DepartmentId { get; set; }
 
         [DataMember]
         public string Abbreviation { get; set; }
@@ -19,7 +19,7 @@
         public string Name { get; set; }
 
         [DataMember]
-        public string ParentDepartmentId { get; set; }
+        public DepartmentId? ParentDepartmentId { get; set; }
 
         [DataMember]
         public EmployeeId? ChiefId { get; set; }
@@ -29,7 +29,7 @@
 
         public bool IsHeadDepartment => this.ParentDepartmentId == null;
 
-        public DepartmentMetadata(string departmentId, string name, string abbreviation, string parentDepartmentId = null)
+        public DepartmentMetadata(DepartmentId departmentId, string name, string abbreviation, DepartmentId? parentDepartmentId = null)
         {
             this.DepartmentId = departmentId;
             this.Name = name;

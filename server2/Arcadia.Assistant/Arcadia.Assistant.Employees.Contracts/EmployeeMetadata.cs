@@ -34,7 +34,7 @@
         public string MobilePhone { get; set; }
 
         [DataMember]
-        public string DepartmentId { get; set; }
+        public DepartmentId? DepartmentId { get; set; }
 
         [DataMember]
         public DateTime HireDate { get; set; }

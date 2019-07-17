@@ -47,14 +47,18 @@ namespace Arcadia.Assistant.Permissions
         {
             var userEmployee = (await this.employees.FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(identity), cancellationToken)).FirstOrDefault();
             var defaultEmployeePermission = EmployeePermissionsEntry.None;
-            var permissionsForDepartments = new Dictionary<string, EmployeePermissionsEntry>();
+            var permissionsForDepartments = new Dictionary<DepartmentId, EmployeePermissionsEntry>();
             var permissionsForEmployees = new Dictionary<EmployeeId, EmployeePermissionsEntry>();
 
             if (userEmployee != null)
             {
                 defaultEmployeePermission = ExistingEmployeeDefaultPermission;
                 BulkBumpPermissions(new [] { userEmployee.EmployeeId }, SelfPermissions, permissionsForEmployees);
-                BulkBumpPermissions(new [] { userEmployee.DepartmentId }, OwnDepartmentPermissions, permissionsForDepartments);
+
+                if (userEmployee.DepartmentId.HasValue)
+                {
+                    BulkBumpPermissions(new[] { userEmployee.DepartmentId.Value }, OwnDepartmentPermissions, permissionsForDepartments);
+                }
 
                 var supervisedDepartments = await this.organization.GetSupervisedDepartmentsAsync(userEmployee.EmployeeId, cancellationToken);
                 BulkBumpPermissions(supervisedDepartments.Select(x => x.DepartmentId), SupervisedPermissions, permissionsForDepartments);

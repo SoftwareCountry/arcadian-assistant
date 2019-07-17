@@ -11,7 +11,7 @@
     {
         [DataMember]
         // explicit department permissions by id
-        private ReadOnlyDictionary<string, EmployeePermissionsEntry> DepartmentPermissions { get; set; }
+        private ReadOnlyDictionary<DepartmentId, EmployeePermissionsEntry> DepartmentPermissions { get; set; }
 
         [DataMember]
         // explicit employees permissions by id
@@ -22,11 +22,11 @@
 
         public UserPermissionsCollection(
             EmployeePermissionsEntry defaultPermission,
-            IDictionary<string, EmployeePermissionsEntry> departmentPermissions,
+            IDictionary<DepartmentId, EmployeePermissionsEntry> departmentPermissions,
             IDictionary<EmployeeId, EmployeePermissionsEntry> employeePermissions)
         {
             this.defaultPermission = defaultPermission;
-            this.DepartmentPermissions = new ReadOnlyDictionary<string, EmployeePermissionsEntry>(departmentPermissions);
+            this.DepartmentPermissions = new ReadOnlyDictionary<DepartmentId, EmployeePermissionsEntry>(departmentPermissions);
             this.EmployeePermissions = new ReadOnlyDictionary<EmployeeId, EmployeePermissionsEntry>(employeePermissions);
         }
 
@@ -44,7 +44,8 @@
                 return permissions | employeePermissions;
             }
 
-            if (this.DepartmentPermissions.TryGetValue(objectEmployee.DepartmentId, out var departmentPermissions))
+            if (objectEmployee.DepartmentId.HasValue 
+                && this.DepartmentPermissions.TryGetValue(objectEmployee.DepartmentId.Value, out var departmentPermissions))
             {
                 return permissions | departmentPermissions;
             }

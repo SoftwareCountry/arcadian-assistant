@@ -5,6 +5,8 @@
 
     using Contracts;
 
+    using Employees.Contracts;
+
     public class DepartmentsTreeBuilder
     {
         private readonly IReadOnlyCollection<DepartmentMetadata> allDepartments;
@@ -14,7 +16,7 @@
             this.allDepartments = allDepartments;
         }
 
-        public DepartmentsTreeNode Build(string rootDepartmentId)
+        public DepartmentsTreeNode Build(DepartmentId rootDepartmentId)
         {
             var root = this.allDepartments.FirstOrDefault(x => x.DepartmentId == rootDepartmentId);
             if (root == null)
@@ -22,7 +24,7 @@
                 return null;
             }
 
-            var processedIds = new HashSet<string>
+            var processedIds = new HashSet<DepartmentId>
                 { rootDepartmentId };
             var tree = new DepartmentsTreeNode(root, root.PeopleCount, this.CreateTree(root.DepartmentId, processedIds));
             return tree;
@@ -31,8 +33,8 @@
         /// <param name="departmentId">Node for which descandants are requested</param>
         /// <param name="processedIds">a hashset with processed department ids to prevent stackoverflow</param>
         private List<DepartmentsTreeNode> CreateTree(
-            string departmentId,
-            HashSet<string> processedIds)
+            DepartmentId departmentId,
+            HashSet<DepartmentId> processedIds)
         {
             var childrenDepartments = this.allDepartments
                 .Where(x => x.ParentDepartmentId == departmentId && !processedIds.Contains(x.DepartmentId))

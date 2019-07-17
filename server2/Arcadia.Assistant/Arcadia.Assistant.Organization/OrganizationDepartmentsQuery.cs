@@ -22,10 +22,12 @@
         private readonly CspDepartmentsQuery cspDepartmentsQuery;
 
         private readonly Expression<Func<CspDepartmentsQuery.DepartmentWithPeopleCount, DepartmentMetadata>> mapToDepartmentMetadata = x => new DepartmentMetadata(
-            x.Department.Id.ToString(),
+            new DepartmentId(x.Department.Id),
             x.Department.Name,
             x.Department.Abbreviation,
-            x.Department.ParentDepartmentId == null || x.Department.ParentDepartmentId == x.Department.Id ? null : x.Department.ParentDepartmentId.ToString())
+            x.Department.ParentDepartmentId == null || x.Department.ParentDepartmentId == x.Department.Id 
+                ? (DepartmentId?)null 
+                : new DepartmentId(x.Department.ParentDepartmentId.Value))
         {
             ChiefId = x.ActualChiefId == null ? (EmployeeId?)(null) : new EmployeeId(x.ActualChiefId.Value),
             PeopleCount = x.PeopleCount
