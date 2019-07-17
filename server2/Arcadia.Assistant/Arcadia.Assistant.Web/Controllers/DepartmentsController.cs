@@ -6,6 +6,8 @@ namespace Arcadia.Assistant.Web.Controllers
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Employees.Contracts;
+
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
 
@@ -39,9 +41,9 @@ namespace Arcadia.Assistant.Web.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(DepartmentModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Get(string departmentId, CancellationToken token)
+        public async Task<IActionResult> Get(int departmentId, CancellationToken token)
         {
-            var department = await this.organization.GetDepartmentAsync(departmentId, token);
+            var department = await this.organization.GetDepartmentAsync(new DepartmentId(departmentId), token);
             if (department == null)
             {
                 return this.NotFound();

@@ -14,7 +14,7 @@ namespace Arcadia.Assistant.Organization.Contracts
 
     public interface IOrganization : IService
     {
-        Task<DepartmentMetadata> GetDepartmentAsync(string departmentId, CancellationToken cancellationToken);
+        Task<DepartmentMetadata> GetDepartmentAsync(DepartmentId departmentId, CancellationToken cancellationToken);
 
         Task<DepartmentMetadata[]> GetDepartmentsAsync(CancellationToken cancellationToken);
 

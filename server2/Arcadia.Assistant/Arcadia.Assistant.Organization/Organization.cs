@@ -35,10 +35,10 @@ namespace Arcadia.Assistant.Organization
             this.supervisorSearch = new SupervisorSearch(employees, this.organizationDepartments);
         }
 
-        public async Task<DepartmentMetadata> GetDepartmentAsync(string departmentId, CancellationToken cancellationToken)
+        public async Task<DepartmentMetadata> GetDepartmentAsync(DepartmentId departmentId, CancellationToken cancellationToken)
         {
             var allDepartments = await this.GetDepartmentsAsync(cancellationToken);
-            return allDepartments.FirstOrDefault(x => StringComparer.InvariantCultureIgnoreCase.Equals(x.DepartmentId, departmentId));
+            return allDepartments.FirstOrDefault(x => x.DepartmentId == departmentId);
         }
 
         public Task<DepartmentMetadata[]> GetDepartmentsAsync(CancellationToken cancellationToken)
