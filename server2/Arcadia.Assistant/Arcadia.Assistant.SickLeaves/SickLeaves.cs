@@ -26,12 +26,16 @@ namespace Arcadia.Assistant.SickLeaves
     public class SickLeaves : StatelessService, ISickLeaves
     {
         private readonly Func<Owned<ArcadiaCspContext>> dbFactory;
+        private readonly Func<Owned<SickLeaveCreationStep>> creationStepsFactory;
         private readonly SickLeaveModelConverter modelConverter = new SickLeaveModelConverter();
 
-        public SickLeaves(StatelessServiceContext context, Func<Owned<ArcadiaCspContext>> dbFactory)
+        public SickLeaves(StatelessServiceContext context, 
+            Func<Owned<ArcadiaCspContext>> dbFactory,
+            Func<Owned<SickLeaveCreationStep>> creationStepsFactory)
             : base(context)
         {
             this.dbFactory = dbFactory;
+            this.creationStepsFactory = creationStepsFactory;
         }
 
         /// <summary>
@@ -71,14 +75,26 @@ namespace Arcadia.Assistant.SickLeaves
             }
         }
 
-        public Task<SickLeaveDescription> GetCalendarEventAsync(EmployeeId employeeId, int eventId, CancellationToken cancellationToken)
+        public async Task<SickLeaveDescription> GetCalendarEventAsync(EmployeeId employeeId, int eventId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            using (var db = this.dbFactory())
+            {
+                var sickLeave = await db.Value
+                    .SickLeaves
+                    .Where(x => x.Id == eventId && x.EmployeeId == employeeId.Value)
+                    .Select(this.modelConverter.ToDescription)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                return sickLeave;
+            }
         }
 
-        public Task<SickLeaveDescription> CreateSickLeaveAsync(EmployeeId employeeId, DateTime startDate, DateTime endDate)
+        public async Task<SickLeaveDescription> CreateSickLeaveAsync(EmployeeId employeeId, DateTime startDate, DateTime endDate)
         {
-            throw new NotImplementedException();
+            using (var step = this.creationStepsFactory())
+            {
+                return await step.Value.Invoke(employeeId, startDate, endDate);
+            }
         }
 
         public Task ProlongSickLeaveAsync(EmployeeId employeeId, int eventId, DateTime endDate)
