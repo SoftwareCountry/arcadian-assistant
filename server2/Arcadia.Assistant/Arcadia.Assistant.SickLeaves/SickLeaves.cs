@@ -3,13 +3,19 @@ namespace Arcadia.Assistant.SickLeaves
     using System;
     using System.Collections.Generic;
     using System.Fabric;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Autofac.Features.OwnedInstances;
+
     using Contracts;
+
+    using CSP.Model;
 
     using Employees.Contracts;
 
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
@@ -19,9 +25,13 @@ namespace Arcadia.Assistant.SickLeaves
     /// </summary>
     public class SickLeaves : StatelessService, ISickLeaves
     {
-        public SickLeaves(StatelessServiceContext context)
+        private readonly Func<Owned<ArcadiaCspContext>> dbFactory;
+        private readonly SickLeaveModelConverter modelConverter = new SickLeaveModelConverter();
+
+        public SickLeaves(StatelessServiceContext context, Func<Owned<ArcadiaCspContext>> dbFactory)
             : base(context)
         {
+            this.dbFactory = dbFactory;
         }
 
         /// <summary>
@@ -47,17 +57,26 @@ namespace Arcadia.Assistant.SickLeaves
             }
         }
 
-        public Task<object[]> GetCalendarEventsAsync(EmployeeId employeeId, CancellationToken cancellationToken)
+        public async Task<SickLeaveDescription[]> GetCalendarEventsAsync(EmployeeId employeeId, CancellationToken cancellationToken)
+        {
+            using (var db = this.dbFactory())
+            {
+                var sickLeaves = await db.Value
+                    .SickLeaves
+                    .Where(x => x.EmployeeId == employeeId.Value)
+                    .Select(this.modelConverter.ToDescription)
+                    .ToArrayAsync(cancellationToken);
+
+                return sickLeaves;
+            }
+        }
+
+        public Task<SickLeaveDescription> GetCalendarEventAsync(EmployeeId employeeId, int eventId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public Task<object> GetCalendarEventAsync(EmployeeId employeeId, int eventId, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task CreateSickLeaveAsync(EmployeeId employeeId, DateTime startDate, DateTime endDate)
+        public Task<SickLeaveDescription> CreateSickLeaveAsync(EmployeeId employeeId, DateTime startDate, DateTime endDate)
         {
             throw new NotImplementedException();
         }

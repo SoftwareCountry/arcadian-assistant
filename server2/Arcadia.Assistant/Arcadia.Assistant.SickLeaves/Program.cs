@@ -2,10 +2,13 @@ namespace Arcadia.Assistant.SickLeaves
 {
     using System;
     using System.Diagnostics;
+    using System.Fabric;
     using System.Threading;
 
     using Autofac;
     using Autofac.Integration.ServiceFabric;
+
+    using CSP;
 
     using Microsoft.ServiceFabric.Services.Remoting.Client;
     using Microsoft.ServiceFabric.Services.Runtime;
@@ -24,10 +27,15 @@ namespace Arcadia.Assistant.SickLeaves
                 // When Service Fabric creates an instance of this service type,
                 // an instance of the class is created in this host process.
 
+                var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
+                var connectionString = configurationPackage.Settings.Sections["Csp"].Parameters["ConnectionString"].Value;
+
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterStatelessService<SickLeaves>("Arcadia.Assistant.SickLeavesType");
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
+                builder.RegisterModule(new CspModule(connectionString));
+
 
                 using (builder.Build())
                 {
