@@ -1,7 +1,6 @@
 ﻿namespace Arcadia.Assistant.Web
 {
     using System.Collections.Generic;
-    using System.Net.Http;
 
     using Autofac;
     using Microsoft.ApplicationInsights.Extensibility;
@@ -25,6 +24,7 @@
     using Arcadia.Assistant.Web.Authorization.Handlers;
     using Arcadia.Assistant.Web.Authorization.Requirements;
     using Arcadia.Assistant.Web.Configuration;
+    using Arcadia.Assistant.Web.DepartmentFeatures;
     using Arcadia.Assistant.Web.Download;
     using Arcadia.Assistant.Web.Employees;
     using Arcadia.Assistant.Web.Health;
@@ -152,6 +152,7 @@
             builder.RegisterType<HealthService>().As<IHealthService>();
             builder.RegisterType<UserPreferencesService>().As<IUserPreferencesService>();
             builder.RegisterType<PushNotificationsService>().As<IPushNotificationsService>();
+            builder.RegisterType<DepartmentFeaturesService>().As<IDepartmentFeaturesService>();
 
             builder.RegisterType<UserIsEmployeeHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
             builder.RegisterType<EmployeePermissionsHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
