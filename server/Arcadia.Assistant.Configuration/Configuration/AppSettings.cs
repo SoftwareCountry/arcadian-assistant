@@ -1,6 +1,7 @@
 ﻿namespace Arcadia.Assistant.Configuration.Configuration
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
     public class AppSettings
@@ -10,6 +11,9 @@
 
         [Required]
         public OrganizationSettings Organization { get; set; }
+
+        [Required]
+        public IEnumerable<DepartmentFeaturesMapping> DepartmentFeatures { get; set; }
 
         [Required]
         public int TimeoutSeconds { get; set; }

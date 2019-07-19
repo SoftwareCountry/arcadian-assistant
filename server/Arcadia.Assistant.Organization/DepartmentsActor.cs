@@ -5,8 +5,8 @@
     using System.Linq;
 
     using Akka.Actor;
-    using Akka.Event;
 
+    using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
 
@@ -17,16 +17,17 @@
         private readonly Dictionary<string, IActorRef> departmentActorsById = new Dictionary<string, IActorRef>();
 
         private readonly IActorRef employees;
+        private readonly IEnumerable<DepartmentFeaturesMapping> departmentFeaturesSettings;
 
-        private readonly ILoggingAdapter logger = Context.GetLogger();
-
-        public DepartmentsActor(IActorRef employees)
+        public DepartmentsActor(IActorRef employees, IEnumerable<DepartmentFeaturesMapping> departmentFeaturesSettings)
         {
             this.employees = employees;
+            this.departmentFeaturesSettings = departmentFeaturesSettings;
             this.departmentsStorage = Context.ActorOf(DepartmentsStorage.GetProps, "departments-storage"); ;
         }
 
-        public static Props GetProps(IActorRef employees) => Props.Create(() => new DepartmentsActor(employees));
+        public static Props GetProps(IActorRef employees, IEnumerable<DepartmentFeaturesMapping> departmentFeaturesSettings) =>
+            Props.Create(() => new DepartmentsActor(employees, departmentFeaturesSettings));
 
         protected override void OnReceive(object message)
         {
@@ -116,7 +117,7 @@
 
             foreach (var newDepartment in newDepartments)
             {
-                var props = DepartmentActor.GetProps(newDepartment, this.employees);
+                var props = DepartmentActor.GetProps(newDepartment, this.employees, this.departmentFeaturesSettings);
                 var departmentActor = Context.ActorOf(props, Uri.EscapeDataString(newDepartment.DepartmentId));
                 this.departmentActorsById[newDepartment.DepartmentId] = departmentActor;
             }
@@ -125,7 +126,7 @@
             {
                 if (!this.departmentActorsById.TryGetValue(department.DepartmentId, out var departmentActor))
                 {
-                    var props = DepartmentActor.GetProps(department, this.employees);
+                    var props = DepartmentActor.GetProps(department, this.employees, this.departmentFeaturesSettings);
                     departmentActor = Context.ActorOf(props, Uri.EscapeDataString(department.DepartmentId));
                     this.departmentActorsById[department.DepartmentId] = departmentActor;
                 }

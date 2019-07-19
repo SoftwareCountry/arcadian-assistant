@@ -26,7 +26,8 @@
             builder.Register(ctx => new OrganizationActor(
                 this.refreshInformation,
                 ctx.Resolve<IEmployeeVacationsRegistryPropsFactory>(),
-                ctx.Resolve<IEmployeeSickLeavesRegistryPropsFactory>()));
+                ctx.Resolve<IEmployeeSickLeavesRegistryPropsFactory>(),
+                ctx.Resolve<AppSettings>()));
 
             builder.RegisterType<DepartmentsStorage>().AsSelf();
 

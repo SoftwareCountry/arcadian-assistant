@@ -6,6 +6,7 @@
     using Akka.Actor;
     using Akka.Util.Internal;
 
+    using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.Feeds;
     using Arcadia.Assistant.Organization.Abstractions;
     using Arcadia.Assistant.Organization.Abstractions.OrganizationRequests;
@@ -13,6 +14,7 @@
     public class DepartmentActor : UntypedActor, ILogReceive, IWithUnboundedStash
     {
         private DepartmentInfo departmentInfo;
+        private readonly IEnumerable<string> departmentFeatures;
 
         private readonly IActorRef organizationEmployeesActor;
 
@@ -26,11 +28,19 @@
 
         public IStash Stash { get; set; }
 
-        public DepartmentActor(DepartmentInfo departmentInfo, IActorRef organizationEmployeesActor)
+        public DepartmentActor(
+            DepartmentInfo departmentInfo,
+            IActorRef organizationEmployeesActor,
+            IEnumerable<DepartmentFeaturesMapping> departmentFeaturesSettings)
         {
             this.departmentInfo = departmentInfo;
+
+            var features = departmentFeaturesSettings.FirstOrDefault(x => x.DepartmentId == departmentInfo.DepartmentId);
+            this.departmentFeatures = features?.Features ?? Enumerable.Empty<string>();
+
             this.organizationEmployeesActor = organizationEmployeesActor;
             this.feed = Context.ActorOf(Props.Create(() => new DepartmentFeedActor(departmentInfo)), "feed");
+
             this.RefreshFeedsInformation();
         }
 
@@ -51,7 +61,7 @@
                 case GetDepartmentFeatures msg:
                     if (this.departmentInfo.DepartmentId == msg.DepartmentId)
                     {
-                        this.Sender.Tell(new GetDepartmentFeatures.Success(new[] { "dayoffs" }));
+                        this.Sender.Tell(new GetDepartmentFeatures.Success(this.departmentFeatures.ToArray()));
                     }
                     else
                     {
@@ -149,8 +159,8 @@
             this.feed.Tell(new DepartmentFeedActor.AssignInformation(this.employees.Select(x => x.Feed), this.departmentInfo));
         }
 
-        public static Props GetProps(DepartmentInfo department, IActorRef organizationEmployeesActor) =>
-            Props.Create(() => new DepartmentActor(department, organizationEmployeesActor));
+        public static Props GetProps(DepartmentInfo department, IActorRef organizationEmployeesActor, IEnumerable<DepartmentFeaturesMapping> departmentFeaturesSettings) =>
+            Props.Create(() => new DepartmentActor(department, organizationEmployeesActor, departmentFeaturesSettings));
 
         public sealed class RefreshDepartmentInfo
         {
