@@ -23,6 +23,6 @@ namespace Arcadia.Assistant.SickLeaves.Contracts
 
         Task ProlongSickLeaveAsync(EmployeeId employeeId, int eventId, DateTime endDate);
 
-        Task CancelSickLeaveAsync(EmployeeId employeeId, int eventId);
+        Task CancelSickLeaveAsync(EmployeeId employeeId, int eventId, EmployeeId cancelledBy);
     }
 }

@@ -27,15 +27,22 @@ namespace Arcadia.Assistant.SickLeaves
     {
         private readonly Func<Owned<ArcadiaCspContext>> dbFactory;
         private readonly Func<Owned<SickLeaveCreationStep>> creationStepsFactory;
+        private readonly Func<Owned<SickLeaveProlongationStep>> prolongationStepsFactory;
+        private readonly Func<Owned<SickLeaveCancellationStep>> cancellationStepsFactory;
+
         private readonly SickLeaveModelConverter modelConverter = new SickLeaveModelConverter();
 
         public SickLeaves(StatelessServiceContext context, 
             Func<Owned<ArcadiaCspContext>> dbFactory,
-            Func<Owned<SickLeaveCreationStep>> creationStepsFactory)
+            Func<Owned<SickLeaveCreationStep>> creationStepsFactory, 
+            Func<Owned<SickLeaveProlongationStep>> prolongationStepsFactory,
+            Func<Owned<SickLeaveCancellationStep>> cancellationStepsFactory)
             : base(context)
         {
             this.dbFactory = dbFactory;
             this.creationStepsFactory = creationStepsFactory;
+            this.prolongationStepsFactory = prolongationStepsFactory;
+            this.cancellationStepsFactory = cancellationStepsFactory;
         }
 
         /// <summary>
@@ -93,18 +100,24 @@ namespace Arcadia.Assistant.SickLeaves
         {
             using (var step = this.creationStepsFactory())
             {
-                return await step.Value.Invoke(employeeId, startDate, endDate);
+                return await step.Value.InvokeAsync(employeeId, startDate, endDate);
             }
         }
 
-        public Task ProlongSickLeaveAsync(EmployeeId employeeId, int eventId, DateTime endDate)
+        public async Task ProlongSickLeaveAsync(EmployeeId employeeId, int eventId, DateTime endDate)
         {
-            throw new NotImplementedException();
+            using (var step = this.prolongationStepsFactory())
+            {
+                await step.Value.InvokeAsync(employeeId, eventId, endDate);
+            }
         }
 
-        public Task CancelSickLeaveAsync(EmployeeId employeeId, int eventId)
+        public async Task CancelSickLeaveAsync(EmployeeId employeeId, int eventId, EmployeeId cancelledBy)
         {
-            throw new NotImplementedException();
+            using (var step = this.cancellationStepsFactory())
+            {
+                await step.Value.InvokeAsync(employeeId, eventId, cancelledBy);
+            }
         }
     }
 }
