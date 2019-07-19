@@ -41,6 +41,18 @@
                     Context.ActorOf(Props.Create(() => new DepartmentsSearch(query, this.departmentActorsById, this.Sender)));
                     break;
 
+                case GetDepartmentFeatures msg:
+                    if (this.departmentActorsById.TryGetValue(msg.DepartmentId, out var department))
+                    {
+                        department.Forward(msg);
+                    }
+                    else
+                    {
+                        this.Sender.Tell(GetDepartmentFeatures.NotFound.Instance);
+                    }
+
+                    break;
+
                 case DepartmentActor.RefreshDepartmentInfo.Finished _:
                     //ignore for now
                     break;
@@ -77,7 +89,7 @@
                     this.RecreateDepartments(departments.Departments);
                     OnRefreshFinish(RefreshDepartments.Finished.Instance);
                     break;
-                
+
                 case Status.Failure e:
                     OnRefreshFinish(e);
                     break;

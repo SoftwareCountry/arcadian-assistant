@@ -55,6 +55,10 @@
                     this.employeesActor.Forward(query);
                     break;
 
+                case GetDepartmentFeatures msg:
+                    this.departmentsActor.Forward(msg);
+                    break;
+
                 default:
                     this.Unhandled(message);
                     break;

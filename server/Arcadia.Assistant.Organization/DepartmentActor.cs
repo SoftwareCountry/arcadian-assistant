@@ -1,12 +1,9 @@
 ﻿namespace Arcadia.Assistant.Organization
 {
-    using System;
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.Linq;
 
     using Akka.Actor;
-    using Akka.Event;
     using Akka.Util.Internal;
 
     using Arcadia.Assistant.Feeds;
@@ -19,15 +16,13 @@
 
         private readonly IActorRef organizationEmployeesActor;
 
-        private readonly ILoggingAdapter logger = Context.GetLogger();
-
         private readonly List<EmployeeContainer> employees = new List<EmployeeContainer>();
 
         private readonly IActorRef feed;
 
         private EmployeeContainer head;
 
-//        private EmployeeContainer headEmployee;
+        //        private EmployeeContainer headEmployee;
 
         public IStash Stash { get; set; }
 
@@ -51,6 +46,18 @@
                 case GetDepartmentInfo _:
                     var container = new DepartmentContainer(this.departmentInfo, this.Self, this.head, this.employees.ToList(), this.feed);
                     this.Sender.Tell(new GetDepartmentInfo.Result(container));
+                    break;
+
+                case GetDepartmentFeatures msg:
+                    if (this.departmentInfo.DepartmentId == msg.DepartmentId)
+                    {
+                        this.Sender.Tell(new GetDepartmentFeatures.Success(new[] { "dayoffs" }));
+                    }
+                    else
+                    {
+                        this.Sender.Tell(GetDepartmentFeatures.NotFound.Instance);
+                    }
+
                     break;
 
                 default:
@@ -160,7 +167,7 @@
             }
         }
 
-        
+
         public sealed class GetDepartmentInfo
         {
             public static readonly GetDepartmentInfo Instance = new GetDepartmentInfo();
