@@ -22,12 +22,15 @@
         public OrganizationActor(
             IRefreshInformation refreshInformation,
             IEmployeeVacationsRegistryPropsFactory employeeVacationsRegistryPropsFactory,
-            IEmployeeSickLeavesRegistryPropsFactory employeeSickLeavesRegistryPropsFactory)
+            IEmployeeSickLeavesRegistryPropsFactory employeeSickLeavesRegistryPropsFactory,
+            AppSettings appSettings)
         {
             this.employeesActor = Context.ActorOf(
                 EmployeesActor.GetProps(employeeVacationsRegistryPropsFactory, employeeSickLeavesRegistryPropsFactory),
                 "employees");
-            this.departmentsActor = Context.ActorOf(DepartmentsActor.GetProps(this.employeesActor), "departments");
+            this.departmentsActor = Context.ActorOf(
+                DepartmentsActor.GetProps(this.employeesActor, appSettings.DepartmentFeatures),
+                "departments");
 
             Context.System.Scheduler.ScheduleTellRepeatedly(
                 TimeSpan.Zero,
@@ -53,6 +56,10 @@
 
                 case EmployeesQuery query:
                     this.employeesActor.Forward(query);
+                    break;
+
+                case GetDepartmentFeatures msg:
+                    this.departmentsActor.Forward(msg);
                     break;
 
                 default:
