@@ -34,6 +34,9 @@ namespace Arcadia.Assistant.SickLeaves
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterStatelessService<SickLeaves>("Arcadia.Assistant.SickLeavesType");
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
+                builder.RegisterType<SickLeaveCancellationStep>().AsSelf();
+                builder.RegisterType<SickLeaveCreationStep>().AsSelf();
+                builder.RegisterType<SickLeaveProlongationStep>().AsSelf();
                 builder.RegisterModule(new CspModule(connectionString));
 
 

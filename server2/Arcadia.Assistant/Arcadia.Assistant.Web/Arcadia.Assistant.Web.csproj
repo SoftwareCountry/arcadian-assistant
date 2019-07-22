@@ -33,6 +33,7 @@
     <ProjectReference Include="..\Arcadia.Assistant.UserPreferences.Contracts\Arcadia.Assistant.UserPreferences.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.VacationsCredit.Contracts\Arcadia.Assistant.VacationsCredit.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.WorkHoursCredit.Contracts\Arcadia.Assistant.WorkHoursCredit.Contracts.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.SickLeaves.Contracts\Arcadia.Assistant.SickLeaves.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

@@ -32,6 +32,8 @@
 
     using Permissions.Contracts;
 
+    using SickLeaves.Contracts;
+
     using UserPreferences.Contracts;
 
     using VacationsCredit.Contracts;
@@ -114,12 +116,14 @@
             builder.RegisterModule(new UsersPreferencesModule());
             builder.RegisterModule(new WorkHoursCreditModule());
             builder.RegisterModule(new VacationsCreditModule());
+            builder.RegisterModule(new SickLeavesModule());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         // ReSharper disable once UnusedMember.Global
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, AppSettings appSettings)
         {
+            /*
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -127,7 +131,7 @@
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-            }
+            }*/
 
             app.UseStaticFiles();
             app.UseCookiePolicy();

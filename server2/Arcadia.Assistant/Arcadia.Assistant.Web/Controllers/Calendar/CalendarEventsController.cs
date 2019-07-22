@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace Arcadia.Assistant.Web.Controllers
+﻿namespace Arcadia.Assistant.Web.Controllers.Calendar
 {
     using System;
     using System.Collections.Generic;
@@ -12,8 +10,13 @@ namespace Arcadia.Assistant.Web.Controllers
 
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
 
     using Models.Calendar;
+
+    using NSwag.Annotations;
+
+    using SickLeaves.Contracts;
 
     using WorkHoursCredit.Contracts;
 
@@ -22,12 +25,15 @@ namespace Arcadia.Assistant.Web.Controllers
     public class CalendarEventsController : Controller
     {
         private readonly IWorkHoursCredit workHoursCredit;
+        private readonly ISickLeaves sickLeaves;
         private readonly IEmployees employees;
         private readonly WorkHoursConverter workHoursConverter = new WorkHoursConverter();
+        private readonly SickLeavesConverter sickLeavesConverter = new SickLeavesConverter();
 
-        public CalendarEventsController(IWorkHoursCredit workHoursCredit, IEmployees employees)
+        public CalendarEventsController(IWorkHoursCredit workHoursCredit, ISickLeaves sickLeaves, IEmployees employees)
         {
             this.workHoursCredit = workHoursCredit;
+            this.sickLeaves = sickLeaves;
             this.employees = employees;
         }
 
@@ -38,7 +44,10 @@ namespace Arcadia.Assistant.Web.Controllers
         public async Task<IActionResult> GetAll(int employeeId, CancellationToken token)
         {
             var workHoursEvents = await this.workHoursCredit.GetCalendarEventsAsync(new EmployeeId(employeeId), token);
-            var allEvents = workHoursEvents.Select(this.workHoursConverter.ToCalendarEventWithId);
+            var sickLeaveEvents = await this.sickLeaves.GetCalendarEventsAsync(new EmployeeId(employeeId), token);
+            var allEvents = workHoursEvents
+                .Select(this.workHoursConverter.ToCalendarEventWithId)
+                .Union(sickLeaveEvents.Select(this.sickLeavesConverter.ToCalendarEventWithId));
 
             return this.Ok(allEvents);
         }
@@ -48,14 +57,27 @@ namespace Arcadia.Assistant.Web.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(CalendarEventModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Get(int employeeId, Guid eventId, CancellationToken token)
+        public async Task<IActionResult> Get(int employeeId, string eventId, CancellationToken token)
         {
-            var change = await this.workHoursCredit.GetCalendarEventAsync(new EmployeeId(employeeId), eventId, token);
-            if (change == null)
+            if (Guid.TryParse(eventId, out var guidId))
             {
-                return this.NotFound();
+                var change = await this.workHoursCredit.GetCalendarEventAsync(new EmployeeId(employeeId), guidId, token);
+                if (change != null)
+                {
+                    return this.Ok(this.workHoursConverter.ToCalendarEvent(change));
+                }
             }
-            return this.Ok(this.workHoursConverter.ToCalendarEvent(change));
+
+            if (int.TryParse(eventId, out var intId))
+            {
+                var sickLeave = await this.sickLeaves.GetCalendarEventAsync(new EmployeeId(employeeId), intId, token);
+                if (sickLeave != null)
+                {
+                    return this.Ok(this.sickLeavesConverter.ToCalendarEvent(sickLeave));
+                }
+            }
+
+            return this.NotFound();
         }
 
         [Route("")]
