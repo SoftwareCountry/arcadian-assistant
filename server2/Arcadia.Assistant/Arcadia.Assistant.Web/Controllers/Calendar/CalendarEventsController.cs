@@ -20,6 +20,7 @@
 
     using WorkHoursCredit.Contracts;
 
+    //TODO: fuck me, that code has to be split apart...
     [Route("/api/employees/{employeeId}/events/")]
     [Authorize]
     public class CalendarEventsController : Controller
@@ -102,6 +103,10 @@
                     var change = await this.workHoursCredit.RequestChangeAsync(new EmployeeId(employeeId), type, model.Dates.StartDate, dayPart);
                     createdModel = this.workHoursConverter.ToCalendarEventWithId(change);
                     break;
+                case CalendarEventTypes.Sickleave:
+                    var sickleave = await this.sickLeaves.CreateSickLeaveAsync(new EmployeeId(employeeId), model.Dates.StartDate, model.Dates.EndDate);
+                    createdModel = this.sickLeavesConverter.ToCalendarEventWithId(sickleave);
+                    break;
                 default:
                     return this.BadRequest("Unknown model type");
             }
@@ -115,7 +120,7 @@
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        public async Task<IActionResult> Update(int employeeId, Guid eventId, [FromBody] CalendarEventModel model)
+        public async Task<IActionResult> Update(int employeeId, string eventId, [FromBody] CalendarEventModel model)
         {
             if (!this.ModelState.IsValid)
             {
@@ -124,22 +129,46 @@
 
             var changedBy = (await this.employees.FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(this.User.Identity.Name), CancellationToken.None)).First();
 
-            switch (model.Type)
+            if (changedBy == null)
             {
-                case CalendarEventTypes.Dayoff:
-                case CalendarEventTypes.Workout:
-                    return await this.UpdateWorkHoursRequest(new EmployeeId(employeeId), eventId, model, changedBy);
-                default:
-                    return this.BadRequest("Unsupported event type");
+                return this.Unauthorized();
+            }
+
+            try
+            {
+                switch (model.Type)
+                {
+                    case CalendarEventTypes.Dayoff:
+                    case CalendarEventTypes.Workout:
+                        return await this.UpdateWorkHoursRequest(new EmployeeId(employeeId), eventId, model, changedBy);
+                    case CalendarEventTypes.Sickleave:
+                        return await this.UpdateSickLeave(new EmployeeId(employeeId), eventId, model, changedBy);
+                    default:
+                        return this.BadRequest("Unsupported event type");
+                }
+            }
+            catch (AggregateException ae) when (ae.InnerException is ArgumentException e)
+            {
+                return this.BadRequest(e.Message);
             }
         }
 
-        private async Task<IActionResult> UpdateWorkHoursRequest(EmployeeId employeeId, Guid eventId, CalendarEventModel model, EmployeeMetadata changedBy)
+        private async Task<IActionResult> UpdateWorkHoursRequest(EmployeeId employeeId, string stringEventId, CalendarEventModel model, EmployeeMetadata changedBy)
         {
+            if (!Guid.TryParse(stringEventId, out var eventId))
+            {
+                return this.BadRequest("EventId is not guid");
+            }
+
             var existingEvent = await this.workHoursCredit.GetCalendarEventAsync(employeeId, eventId, CancellationToken.None);
             if (existingEvent == null)
             {
                 return this.NotFound();
+            }
+
+            if (existingEvent.Status == ChangeRequestStatus.Cancelled)
+            {
+                return this.BadRequest("Cannot change cancelled event");
             }
 
             //TODO: possibly add a check for date changes
@@ -151,11 +180,52 @@
                 {
                     await this.workHoursCredit.CancelRequestAsync(employeeId, eventId, null, changedBy.EmployeeId);
                 }
-
-                if (model.Status == ChangeRequestStatus.Rejected.ToString())
+                else if (model.Status == ChangeRequestStatus.Rejected.ToString())
                 {
                     await this.workHoursCredit.RejectRequestAsync(employeeId, eventId, null, changedBy.EmployeeId);
                 }
+                else
+                {
+                    return this.BadRequest("Unsupported status transition");
+                }
+            }
+
+            return this.NoContent();
+        }
+
+        private async Task<IActionResult> UpdateSickLeave(EmployeeId employeeId, string stringEventId, CalendarEventModel model, EmployeeMetadata changedBy)
+        {
+            if (!int.TryParse(stringEventId, out var eventId))
+            {
+                return this.BadRequest("EventId is not guid");
+            }
+
+            var existingEvent = await this.sickLeaves.GetCalendarEventAsync(employeeId, eventId, CancellationToken.None);
+            if (existingEvent == null)
+            {
+                return this.NotFound();
+            }
+
+            if (existingEvent.Status == SickLeaveStatus.Cancelled)
+            {
+                return this.BadRequest("Cannot change cancelled event");
+            }
+
+            if (model.Status != existingEvent.Status.ToString())
+            {
+                if (model.Status == SickLeaveStatus.Cancelled.ToString())
+                {
+                    await this.sickLeaves.CancelSickLeaveAsync(employeeId, eventId, changedBy.EmployeeId);
+                }
+                else
+                {
+                    return this.BadRequest("Unsupported status transition");
+                }
+            }
+
+            if (model.Dates.EndDate != existingEvent.EndDate)
+            {
+                await this.sickLeaves.ProlongSickLeaveAsync(employeeId, eventId, model.Dates.EndDate);
             }
 
             return this.NoContent();
