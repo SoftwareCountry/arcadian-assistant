@@ -12,21 +12,21 @@ import { DayModel } from '../../reducers/calendar/calendar.model';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
 import moment from 'moment';
 
-interface ProcessDayoffEventDialogDispatchProps {
+interface ProcessDayOffEventDialogDispatchProps {
     cancelDialog: () => void;
     confirmStartDate: () => void;
 }
 
-interface ProcessDayoffEventDialogProps {
+interface ProcessDayOffEventDialogProps {
     startDay: DayModel;
 }
 
-class ProcessDayoffEventDialogImpl extends Component<ProcessDayoffEventDialogProps & ProcessDayoffEventDialogDispatchProps> {
+class ProcessDayOffEventDialogImpl extends Component<ProcessDayOffEventDialogProps & ProcessDayOffEventDialogDispatchProps> {
     public render() {
         return <EventDialogBase
-            title={'Select date to process your dayoff/workout'}
+            title={'Select date to process your day off/workout'}
             text={this.text}
-            icon={'dayoff'}
+            icon={'day_off'}
             cancelLabel={'Back'}
             acceptLabel={'Confirm'}
             onAcceptPress={this.onAcceptClick}
@@ -47,23 +47,23 @@ class ProcessDayoffEventDialogImpl extends Component<ProcessDayoffEventDialogPro
     };
 
     public get text(): string {
-        return `Your dayoff/workout starts on ${this.props.startDay.date.format(eventDialogTextDateFormat)}`;
+        return `Your day off/workout starts on ${this.props.startDay.date.format(eventDialogTextDateFormat)}`;
     }
 }
 
-const mapStateToProps = (state: AppState): ProcessDayoffEventDialogProps => ({
+const mapStateToProps = (state: AppState): ProcessDayOffEventDialogProps => ({
     startDay: state.calendar && state.calendar.calendarEvents.selection.single.day ? state.calendar.calendarEvents.selection.single.day : {
         date: moment(), today: true, belongsToCurrentMonth: true,
     }
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ProcessDayoffEventDialogDispatchProps => ({
+const mapDispatchToProps = (dispatch: Dispatch<EventDialogActions>): ProcessDayOffEventDialogDispatchProps => ({
     cancelDialog: () => {
         dispatch(closeEventDialog());
     },
     confirmStartDate: () => {
-        dispatch(openEventDialog(EventDialogType.ChooseTypeDayoff));
+        dispatch(openEventDialog(EventDialogType.ChooseTypeDayOff));
     }
 });
 
-export const ProcessDayoffEventDialog = connect(mapStateToProps, mapDispatchToProps)(ProcessDayoffEventDialogImpl);
+export const ProcessDayOffEventDialog = connect(mapStateToProps, mapDispatchToProps)(ProcessDayOffEventDialogImpl);

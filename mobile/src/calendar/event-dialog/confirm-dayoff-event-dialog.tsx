@@ -7,33 +7,33 @@ import { closeEventDialog, openEventDialog } from '../../reducers/calendar/event
 import { DayModel, IntervalType } from '../../reducers/calendar/calendar.model';
 import { EventDialogType } from '../../reducers/calendar/event-dialog/event-dialog-type.model';
 import { Moment } from 'moment';
-import { SelectorDayoffDuration } from './selector-dayoff-duration';
-import { confirmProcessDayoff } from '../../reducers/calendar/dayoff.action';
+import { SelectorDayOffDuration } from './selector-dayoff-duration';
+import { confirmProcessDayOff } from '../../reducers/calendar/dayoff.action';
 import { Employee } from '../../reducers/organization/employee.model';
 import { HoursCreditType } from '../../reducers/calendar/days-counters.model';
 import { Optional } from 'types';
 
 //============================================================================
-interface ConfirmDayoffEventDialogDispatchProps {
+interface ConfirmDayOffEventDialogDispatchProps {
     cancelDialog: () => void;
-    confirmDayoff: (employeeId: string, date: Moment, isWorkout: boolean, intervalType: IntervalType) => void;
+    confirmDayOff: (employeeId: string, date: Moment, isWorkout: boolean, intervalType: IntervalType) => void;
     closeDialog: () => void;
 }
 
 //============================================================================
-interface ConfirmDayoffEventDialogProps {
+interface ConfirmDayOffEventDialogProps {
     startDay: Optional<DayModel>;
     isWorkout: boolean;
     userEmployee: Optional<Employee>;
 }
 
 //============================================================================
-interface ConfirmDayoffEventDialogState {
+interface ConfirmDayOffEventDialogState {
     selectedIntervalType: IntervalType;
 }
 
 //============================================================================
-class ConfirmDayoffEventDialogImpl extends Component<ConfirmDayoffEventDialogProps & ConfirmDayoffEventDialogDispatchProps, ConfirmDayoffEventDialogState> {
+class ConfirmDayOffEventDialogImpl extends Component<ConfirmDayOffEventDialogProps & ConfirmDayOffEventDialogDispatchProps, ConfirmDayOffEventDialogState> {
 
     //----------------------------------------------------------------------------
     private readonly intervalTypeToText: { [key: string]: string } = {
@@ -43,7 +43,7 @@ class ConfirmDayoffEventDialogImpl extends Component<ConfirmDayoffEventDialogPro
     };
 
     //----------------------------------------------------------------------------
-    constructor(props: ConfirmDayoffEventDialogProps & ConfirmDayoffEventDialogDispatchProps) {
+    constructor(props: ConfirmDayOffEventDialogProps & ConfirmDayOffEventDialogDispatchProps) {
         super(props);
         this.state = {
             selectedIntervalType: IntervalType.IntervalFullBoundary
@@ -55,13 +55,13 @@ class ConfirmDayoffEventDialogImpl extends Component<ConfirmDayoffEventDialogPro
         return <EventDialogBase
             title={'Select your duration'}
             text={this.text}
-            icon={'dayoff'}
+            icon={'day_off'}
             cancelLabel={'Back'}
             acceptLabel={'Confirm'}
             onAcceptPress={this.onAcceptClick}
             onCancelPress={this.onCancelClick}
             onClosePress={this.onCloseClick}>
-            <SelectorDayoffDuration onIntervalTypeSelected={this.onDayoffTypeSelected}
+            <SelectorDayOffDuration onIntervalTypeSelected={this.onDayOffTypeSelected}
                                     isWorkout={this.props.isWorkout}/>
         </EventDialogBase>;
     }
@@ -73,13 +73,13 @@ class ConfirmDayoffEventDialogImpl extends Component<ConfirmDayoffEventDialogPro
 
     //----------------------------------------------------------------------------
     private onAcceptClick = () => {
-        const { startDay, isWorkout, confirmDayoff, userEmployee } = this.props;
+        const { startDay, isWorkout, confirmDayOff, userEmployee } = this.props;
 
         if (!userEmployee || !startDay) {
             return;
         }
 
-        confirmDayoff(
+        confirmDayOff(
             userEmployee.employeeId,
             startDay.date,
             isWorkout,
@@ -92,7 +92,7 @@ class ConfirmDayoffEventDialogImpl extends Component<ConfirmDayoffEventDialogPro
     };
 
     //----------------------------------------------------------------------------
-    private onDayoffTypeSelected = (selectedType: IntervalType) => {
+    private onDayOffTypeSelected = (selectedType: IntervalType) => {
         this.setState({ selectedIntervalType: selectedType });
     };
 
@@ -104,35 +104,35 @@ class ConfirmDayoffEventDialogImpl extends Component<ConfirmDayoffEventDialogPro
 
         const startDate = this.props.startDay.date.format(eventDialogTextDateFormat);
         const intervalTypeToText = this.intervalTypeToText[this.state.selectedIntervalType];
-        const dateType = this.props.isWorkout ? 'workout' : 'dayoff';
+        const dateType = this.props.isWorkout ? 'workout' : 'day off';
 
         return `Your ${dateType} starts on ${startDate} and continues for ${intervalTypeToText}`;
     }
 }
 
 //----------------------------------------------------------------------------
-const mapStateToProps = (state: AppState): ConfirmDayoffEventDialogProps => ({
+const mapStateToProps = (state: AppState): ConfirmDayOffEventDialogProps => ({
     startDay: state.calendar ? state.calendar.calendarEvents.selection.single.day : undefined,
     isWorkout: state.calendar ? state.calendar.eventDialog.chosenHoursCreditType === HoursCreditType.Workout : false,
     userEmployee: getEmployee(state),
 });
 
 //----------------------------------------------------------------------------
-const mapDispatchToProps = (dispatch: Dispatch<Action>): ConfirmDayoffEventDialogDispatchProps => ({
+const mapDispatchToProps = (dispatch: Dispatch<Action>): ConfirmDayOffEventDialogDispatchProps => ({
     cancelDialog: () => {
-        dispatch(openEventDialog(EventDialogType.ChooseTypeDayoff));
+        dispatch(openEventDialog(EventDialogType.ChooseTypeDayOff));
     },
-    confirmDayoff: (
+    confirmDayOff: (
         employeeId: string,
         date: Moment,
         isWorkout: boolean,
         intervalType: IntervalType
     ) => {
-        dispatch(confirmProcessDayoff(employeeId, date, isWorkout, intervalType));
+        dispatch(confirmProcessDayOff(employeeId, date, isWorkout, intervalType));
     },
     closeDialog: () => {
         dispatch(closeEventDialog());
     }
 });
 
-export const ConfirmDayoffEventDialog = connect(mapStateToProps, mapDispatchToProps)(ConfirmDayoffEventDialogImpl);
+export const ConfirmDayOffEventDialog = connect(mapStateToProps, mapDispatchToProps)(ConfirmDayOffEventDialogImpl);

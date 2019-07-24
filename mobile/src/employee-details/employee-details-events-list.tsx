@@ -12,8 +12,8 @@ import {
     CalendarEvent,
     CalendarEventStatus,
     CalendarEventType,
-    DayoffWorkoutStatus,
-    SickleaveStatus,
+    DayOffWorkoutStatus,
+    SickLeaveStatus,
     VacationStatus
 } from '../reducers/calendar/calendar-event.model';
 import { EventManagementToolset } from './event-management-toolset';
@@ -52,17 +52,17 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
         [VacationStatus.Rejected]: 'rejected',
     };
 
-    private readonly dayoffWorkoutDescriptions: { [key in DayoffWorkoutStatus]: string } = {
-        [DayoffWorkoutStatus.Requested]: 'waiting for approvals',
-        [DayoffWorkoutStatus.Approved]: 'confirmed',
-        [DayoffWorkoutStatus.Cancelled]: 'cancelled',
-        [DayoffWorkoutStatus.Rejected]: 'rejected',
+    private readonly dayOffWorkoutDescriptions: { [key in DayOffWorkoutStatus]: string } = {
+        [DayOffWorkoutStatus.Requested]: 'waiting for approvals',
+        [DayOffWorkoutStatus.Approved]: 'confirmed',
+        [DayOffWorkoutStatus.Cancelled]: 'cancelled',
+        [DayOffWorkoutStatus.Rejected]: 'rejected',
     };
 
-    private readonly sickleaveDescriptions: { [key in SickleaveStatus]: string } = {
-        [SickleaveStatus.Completed]: 'completed',
-        [SickleaveStatus.Cancelled]: 'cancelled',
-        [SickleaveStatus.Requested]: 'confirmed',
+    private readonly sickLeaveDescriptions: { [key in SickLeaveStatus]: string } = {
+        [SickLeaveStatus.Completed]: 'completed',
+        [SickLeaveStatus.Cancelled]: 'cancelled',
+        [SickLeaveStatus.Requested]: 'confirmed',
     };
 
     //----------------------------------------------------------------------------
@@ -157,7 +157,7 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
                 <Avatar photoUrl={employee.photoUrl}
                         style={avatarOuterFrame as ViewStyle}
                         imageStyle={avatarImage as ViewStyle}/>
-                        
+
             </TouchableOpacity>
         );
     }
@@ -170,7 +170,7 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
         const endDate = event.dates.endDate.format(this.eventDigitsDateFormat);
         const hours = this.props.hoursToIntervalTitle(event.dates.startWorkingHour, event.dates.finishWorkingHour);
 
-        if (event.isWorkout || event.isDayoff) {
+        if (event.isWorkout || event.isDayOff) {
             description = `on ${startDate} (${hours})`;
         } else {
             description = `from ${startDate} to ${endDate}`;
@@ -182,35 +182,17 @@ class EmployeeDetailsEventsListImpl extends Component<EmployeeDetailsEventsListP
     //----------------------------------------------------------------------------
     private statusDescription(event: CalendarEvent): string {
 
-        const status = this.preprocessStatus(event);
+        const status = event.status;
 
         switch (event.type) {
             case CalendarEventType.Vacation:
                 return `Vacation: ${this.vacationDescriptions[status as VacationStatus]}`;
-            case CalendarEventType.Sickleave:
-                return `Sickleave: ${this.sickleaveDescriptions[status as SickleaveStatus]}`;
-            case CalendarEventType.Dayoff:
-                return `Dayoff: ${this.dayoffWorkoutDescriptions[status as DayoffWorkoutStatus]}`;
+            case CalendarEventType.SickLeave:
+                return `Sick leave: ${this.sickLeaveDescriptions[status as SickLeaveStatus]}`;
+            case CalendarEventType.DayOff:
+                return `Day off: ${this.dayOffWorkoutDescriptions[status as DayOffWorkoutStatus]}`;
             case CalendarEventType.Workout:
-                return `Workout: ${this.dayoffWorkoutDescriptions[status as DayoffWorkoutStatus]}`;
-        }
-    }
-
-    //----------------------------------------------------------------------------
-    // noinspection JSMethodCanBeStatic
-    private preprocessStatus(event: CalendarEvent): CalendarEventStatus {
-        if (!event.isVacation) {
-            return event.status;
-        }
-
-        switch (event.status) {
-            case VacationStatus.Requested:
-            case VacationStatus.Approved:
-                return VacationStatus.Requested;
-            case VacationStatus.Processed:
-                return VacationStatus.Approved;
-            default:
-                return event.status;
+                return `Workout: ${this.dayOffWorkoutDescriptions[status as DayOffWorkoutStatus]}`;
         }
     }
 }

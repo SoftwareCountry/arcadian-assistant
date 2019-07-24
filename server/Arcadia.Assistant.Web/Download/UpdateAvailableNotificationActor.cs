@@ -13,14 +13,18 @@
     using Arcadia.Assistant.Server.Interop;
     using Arcadia.Assistant.Web.Configuration;
 
+    using NLog;
+
     public class UpdateAvailableNotificationActor : UntypedActor, ILogReceive
     {
         private readonly IUpdateNotificationSettings updateNotificationSettings;
         private const string UpdateAvailablePushNotificationType = "UpdateAvailable";
 
+        private readonly ActorSelection notificationsActor;
         private readonly ActorSelection pushNotificationsDevicesActor;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
+        private readonly Logger nlogLogger = LogManager.GetCurrentClassLogger();
 
         private readonly Dictionary<ApplicationTypeEnum, string> pushDeviceTypeByApplicationType =
             new Dictionary<ApplicationTypeEnum, string>
@@ -34,6 +38,7 @@
             IUpdateNotificationSettings updateNotificationSettings)
         {
             this.updateNotificationSettings = updateNotificationSettings;
+            this.notificationsActor = Context.ActorSelection(actorPathsBuilder.Get(WellKnownActorPaths.Notifications));
             this.pushNotificationsDevicesActor = Context.ActorSelection(actorPathsBuilder.Get(WellKnownActorPaths.PushNotificationsDevices));
 
             Context.System.EventStream.Subscribe<UpdateAvailable>(this.Self);
@@ -44,6 +49,8 @@
             switch (message)
             {
                 case UpdateAvailable msg:
+                    this.nlogLogger.Debug($"UpdateAvailable event received in notification actor for application {msg.ApplicationType}");
+
                     this.GetDevicesPushTokensByApplication(msg.ApplicationType)
                         .PipeTo(
                             this.Self,
@@ -56,7 +63,7 @@
                     break;
 
                 case UpdateAvailableError msg:
-                    this.logger.Warning(msg.Exception.ToString());
+                    this.nlogLogger.Warn(msg.Exception.ToString());
                     break;
 
                 default:
@@ -74,10 +81,11 @@
 
         private void SendUpdateNotification(UpdateAvailableWithAdditionalData message)
         {
-            this.logger.Debug($"Sending push notification about update available for {message.ApplicationType} application");
+            this.nlogLogger.Debug($"Sending push notification about update available for {message.ApplicationType} application");
+            this.nlogLogger.Debug($"Recepients: {string.Join(", ", message.DevicesPushTokens)}");
 
             var pushNotification = this.CreatePushNotification(message.DevicesPushTokens);
-            Context.System.EventStream.Publish(new NotificationEventBusMessage(pushNotification));
+            this.notificationsActor.Tell(new NotificationEventBusMessage(pushNotification));
         }
 
         private PushNotification CreatePushNotification(IEnumerable<DevicePushToken> pushTokens)
@@ -86,7 +94,7 @@
             {
                 Title = this.updateNotificationSettings.NotificationTitle,
                 Body = this.updateNotificationSettings.NotificationBody,
-                CustomData = new
+                CustomData = new PushNotificationContent.ContentCustomData
                 {
                     Type = UpdateAvailablePushNotificationType
                 }

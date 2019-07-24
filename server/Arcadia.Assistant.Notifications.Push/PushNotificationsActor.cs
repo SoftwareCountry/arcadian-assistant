@@ -109,7 +109,7 @@
                 {
                     if (response.IsSuccessStatusCode)
                     {
-                        this.logger.Debug($"Push notification was succesfully sent to {response.RequestMessage.RequestUri}");
+                        this.logger.Debug($"Push notification was successfully sent to {response.RequestMessage.RequestUri}");
                     }
                     else
                     {

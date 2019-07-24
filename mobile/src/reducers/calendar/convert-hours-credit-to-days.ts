@@ -28,8 +28,8 @@ export class ConvertHoursCreditToDays {
             };
         }
 
-        const halfs = hours / ConvertHoursCreditToDays.halfDay;
-        const days = halfs / 2;
+        const halves = hours / ConvertHoursCreditToDays.halfDay;
+        const days = halves / 2;
         let [entireDays, rest] = this.splitDays(days);
 
         let fraction = '';

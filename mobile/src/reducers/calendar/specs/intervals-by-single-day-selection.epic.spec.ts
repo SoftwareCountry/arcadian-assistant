@@ -1,13 +1,7 @@
 import { ActionsObservable } from 'redux-observable';
 import moment from 'moment';
 import { DayModel } from '../calendar.model';
-import {
-    CalendarEvent,
-    CalendarEventStatus,
-    CalendarEventType,
-    DatesInterval,
-    SickleaveStatus
-} from '../calendar-event.model';
+import { CalendarEvent, CalendarEventType, DatesInterval, SickLeaveStatus } from '../calendar-event.model';
 import { CalendarEvents } from '../calendar-events.model';
 import { intervalsBySingleDaySelectionEpic$ } from '../calendar.epics';
 import {
@@ -36,8 +30,8 @@ describe('intervalsBySingleDaySelectionEpic', () => {
         loadedCalendarEvent.dates = new DatesInterval();
         loadedCalendarEvent.dates.startDate = moment();
         loadedCalendarEvent.dates.endDate = moment(loadedCalendarEvent.dates.startDate);
-        loadedCalendarEvent.type = CalendarEventType.Sickleave;
-        loadedCalendarEvent.status = SickleaveStatus.Requested;
+        loadedCalendarEvent.type = CalendarEventType.SickLeave;
+        loadedCalendarEvent.status = SickLeaveStatus.Requested;
 
         const calendarEvents = new CalendarEvents([loadedCalendarEvent]);
 
@@ -47,8 +41,8 @@ describe('intervalsBySingleDaySelectionEpic', () => {
         createdCalendarEvent.dates = new DatesInterval();
         createdCalendarEvent.dates.startDate = moment();
         createdCalendarEvent.dates.endDate = moment(createdCalendarEvent.dates.startDate);
-        createdCalendarEvent.type = CalendarEventType.Sickleave;
-        createdCalendarEvent.status = SickleaveStatus.Requested;
+        createdCalendarEvent.type = CalendarEventType.SickLeave;
+        createdCalendarEvent.status = SickLeaveStatus.Requested;
 
         action$ = new ActionsObservable(concat(
             of(selectCalendarDay(day)),

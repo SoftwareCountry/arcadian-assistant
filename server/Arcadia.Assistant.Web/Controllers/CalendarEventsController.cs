@@ -23,6 +23,8 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
+    using NLog;
+
     [Route("/api/employees/{employeeId}/events/")]
     [Authorize(Policies.UserIsEmployee)]
     public class CalendarEventsController : Controller
@@ -31,6 +33,8 @@
         private readonly IEmployeesRegistry employeesRegistry;
         private readonly IAuthorizationService authorizationService;
         private readonly IUserEmployeeSearch userEmployeeSearch;
+
+        private readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
         public CalendarEventsController(
             ITimeoutSettings timeoutSettings,
@@ -50,19 +54,34 @@
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAll(string employeeId, CancellationToken token)
         {
+            this.logger.Trace($"Start loading of calendar events for user {this.User.Identity.Name}");
+
             var employee = await this.GetEmployeeOrDefaultAsync(employeeId, token);
+
+            this.logger.Trace($"Employee is loaded for user {this.User.Identity.Name}");
 
             if (employee == null)
             {
                 return this.NotFound();
             }
 
-            if (!(await this.authorizationService.AuthorizeAsync(this.User, employee, new ReadCalendarEvents())).Succeeded)
+            this.logger.Trace($"Start checking permissions for user {this.User.Identity.Name}");
+
+            var authorizationResult = await this.authorizationService.AuthorizeAsync(this.User, employee, new ReadCalendarEvents());
+
+            this.logger.Trace($"Permissions checked for user {this.User.Identity.Name}");
+
+            if (!authorizationResult.Succeeded)
             {
                 return this.Ok(new CalendarEventsWithIdModel[0]);
             }
 
+            this.logger.Trace($"Start loading calendar events for user {this.User.Identity.Name}");
+
             var events = await employee.Calendar.CalendarActor.Ask<GetCalendarEvents.Response>(GetCalendarEvents.Instance, this.timeoutSettings.Timeout, token);
+
+            this.logger.Trace($"Calendar events loaded for user {this.User.Identity.Name}");
+
             var eventModels = events.Events
                 .Select(x => new CalendarEventsWithIdModel(x.EventId, x.Type, x.Dates, x.Status));
 

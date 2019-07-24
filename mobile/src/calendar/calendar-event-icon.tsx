@@ -3,17 +3,17 @@ import { CalendarEventType } from '../reducers/calendar/calendar-event.model';
 import { ApplicationIcon } from '../override/application-icon';
 import { ViewStyle } from 'react-native';
 
-interface CalednarEventIconProps {
+interface CalendarEventIconProps {
     type: CalendarEventType;
     style: ViewStyle;
 }
 
-export class CalendarEventIcon extends Component<CalednarEventIconProps> {
+export class CalendarEventIcon extends Component<CalendarEventIconProps> {
     private readonly eventTypeToGlyphIcon: { [key in CalendarEventType]: string } = {
-        [CalendarEventType.Dayoff]: 'dayoff',
+        [CalendarEventType.DayOff]: 'day_off',
         [CalendarEventType.Vacation]: 'vacation',
-        [CalendarEventType.Sickleave]: 'sick_leave',
-        [CalendarEventType.Workout]: 'dayoff'
+        [CalendarEventType.SickLeave]: 'sick_leave',
+        [CalendarEventType.Workout]: 'day_off'
     };
 
     public render() {

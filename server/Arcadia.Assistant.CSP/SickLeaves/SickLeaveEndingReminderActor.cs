@@ -53,6 +53,7 @@
                 RemindSickLeaves.Instance,
                 this.Self);
 
+            Context.System.EventStream.Subscribe<CalendarEventCreated>(this.Self);
             Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);
             Context.System.EventStream.Subscribe<CalendarEventRecoverComplete>(this.Self);
         }
@@ -66,6 +67,15 @@
         {
             switch (message)
             {
+                case CalendarEventCreated msg when
+                    msg.Event.Type == CalendarEventTypes.Sickleave:
+
+                    this.OnEventReceived(msg.Event);
+                    break;
+
+                case CalendarEventCreated _:
+                    break;
+
                 case CalendarEventChanged msg when
                     msg.NewEvent.Type == CalendarEventTypes.Sickleave:
 
@@ -153,7 +163,7 @@
                 new GetUserPreferencesMessage(employeeId));
 
             var sickLeavesArray = sickLeaves
-                .Where(s => s.Dates.EndDate <= DateTime.Now.Date)
+                .Where(s => s.Dates.EndDate < DateTime.Now.Date)
                 .ToArray();
 
             var pushNotificationsTask = this.GetPushNotifications(

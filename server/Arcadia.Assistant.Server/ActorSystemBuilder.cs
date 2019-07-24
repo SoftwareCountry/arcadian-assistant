@@ -4,7 +4,6 @@
     using Akka.DI.Core;
 
     using Arcadia.Assistant.ApplicationBuilds;
-    using Arcadia.Assistant.Calendar;
     using Arcadia.Assistant.Calendar.Notifications;
     using Arcadia.Assistant.Configuration.Configuration;
     using Arcadia.Assistant.Feeds;
@@ -67,7 +66,7 @@
             var pushNotificationsActorProps = this.actorSystem.DI().Props<PushNotificationsActor>();
             this.actorSystem.ActorOf(
                 Props.Create(() => new NotificationsDispatcherActor(emailNotificationsActorProps, pushNotificationsActorProps)),
-                "notifications");
+                WellKnownActorPaths.Notifications);
 
             this.actorSystem.ActorOf(this.actorSystem.DI().Props<CalendarEventsApprovalsChecker>(), "calendar-events-approvals");
 

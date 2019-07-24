@@ -8,13 +8,7 @@ import {
     selectCalendarDay,
     selectIntervalsBySingleDaySelection
 } from '../calendar.action';
-import {
-    CalendarEvent,
-    CalendarEventStatus,
-    CalendarEventType,
-    DatesInterval,
-    SickleaveStatus
-} from '../calendar-event.model';
+import { CalendarEvent, CalendarEventType, DatesInterval, SickLeaveStatus } from '../calendar-event.model';
 import moment from 'moment';
 import { DayModel } from '../calendar.model';
 import { CalendarEvents } from '../calendar-events.model';
@@ -37,8 +31,8 @@ describe('calendar events reducer', () => {
             calendarEvent.dates = new DatesInterval();
             calendarEvent.dates.startDate = moment();
             calendarEvent.dates.endDate = moment(calendarEvent.dates.startDate);
-            calendarEvent.type = CalendarEventType.Sickleave;
-            calendarEvent.status = SickleaveStatus.Requested;
+            calendarEvent.type = CalendarEventType.SickLeave;
+            calendarEvent.status = SickLeaveStatus.Requested;
 
             const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employeeId);
             state = calendarEventsReducer(state, action);
@@ -258,8 +252,8 @@ describe('calendar events reducer', () => {
 
             calendarEvent.dates.endDate.add(2, 'days');
 
-            calendarEvent.type = CalendarEventType.Sickleave;
-            calendarEvent.status = SickleaveStatus.Requested;
+            calendarEvent.type = CalendarEventType.SickLeave;
+            calendarEvent.status = SickLeaveStatus.Requested;
 
             const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employeeId);
             state = calendarEventsReducer(state, action);
@@ -281,8 +275,8 @@ describe('calendar events reducer', () => {
         });
 
         it('should return intervals by single day selection', () => {
-            expect(state.selectedIntervalsBySingleDaySelection.sickleave).toBeDefined();
-            expect(state.selectedIntervalsBySingleDaySelection.sickleave!.calendarEvent).toBe(calendarEvent);
+            expect(state.selectedIntervalsBySingleDaySelection.sickLeave).toBeDefined();
+            expect(state.selectedIntervalsBySingleDaySelection.sickLeave!.calendarEvent).toBe(calendarEvent);
         });
     });
 
@@ -307,8 +301,8 @@ describe('calendar events reducer', () => {
 
             calendarEvent.dates.endDate.add(2, 'days');
 
-            calendarEvent.type = CalendarEventType.Sickleave;
-            calendarEvent.status = SickleaveStatus.Requested;
+            calendarEvent.type = CalendarEventType.SickLeave;
+            calendarEvent.status = SickLeaveStatus.Requested;
 
             const action = loadCalendarEventsFinished(new CalendarEvents([calendarEvent]), employeeId);
             state = calendarEventsReducer(state, action);
@@ -335,9 +329,9 @@ describe('calendar events reducer', () => {
         });
 
         it('should not return intervals', () => {
-            expect(state.selectedIntervalsBySingleDaySelection.sickleave).toBeUndefined();
+            expect(state.selectedIntervalsBySingleDaySelection.sickLeave).toBeUndefined();
             expect(state.selectedIntervalsBySingleDaySelection.vacation).toBeUndefined();
-            expect(state.selectedIntervalsBySingleDaySelection.dayoff).toBeUndefined();
+            expect(state.selectedIntervalsBySingleDaySelection.dayOff).toBeUndefined();
         });
     });
 });

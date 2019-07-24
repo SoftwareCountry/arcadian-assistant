@@ -68,6 +68,7 @@
                     break;
 
                 case GetCalendarEvents _:
+                    this.logger.Debug("GetCalendarEvents message received in CSP employee sick leave registry");
                     this.cspSickLeavesRegistryActor.Tell(new CspSickLeavesRegistry.GetEmployeeCalendarEvents(this.employeeId), this.Sender);
                     break;
 

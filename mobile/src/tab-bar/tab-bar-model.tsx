@@ -3,12 +3,12 @@ import React from 'react';
 import { FeedsScreen } from '../feeds/feeds-screen';
 import { CalendarScreen } from '../calendar/calendar-screen';
 import { ProfileScreen } from '../profile/profile-screen';
-import { TabNavigationOptionsFactory } from '../tabbar/tab-navigation-options-factory';
+import { TabNavigationOptionsFactory } from './tab-navigation-options-factory';
 import { PeopleScreen } from '../people/people-screen';
 
 const navOptionsFactory = new TabNavigationOptionsFactory();
 
-const tabbarModel: NavigationRouteConfigMap = {
+const tabBarModel: NavigationRouteConfigMap = {
 
     News: {
         screen: FeedsScreen,
@@ -32,4 +32,4 @@ const tabbarModel: NavigationRouteConfigMap = {
     }
 };
 
-export default tabbarModel;
+export default tabBarModel;

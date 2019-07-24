@@ -3,10 +3,10 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading;
     using System.Threading.Tasks;
 
     using Akka.Actor;
+    using Akka.Event;
 
     using Arcadia.Assistant.Calendar.Abstractions;
     using Arcadia.Assistant.Calendar.Abstractions.Messages;
@@ -23,6 +23,8 @@
         private readonly IActorRef workHoursActor;
 
         private readonly IActorRef sickLeavesActor;
+
+        private readonly ILoggingAdapter logger = Context.GetLogger();
 
         public EmployeeCalendarActor(string employeeId, IActorRef vacationsActor, IActorRef workHoursActor, IActorRef sickLeavesActor)
         {
@@ -42,6 +44,7 @@
             switch (message)
             {
                 case GetCalendarEvents request:
+                    this.logger.Debug("GetCalendarEvents message received in calendar actor");
                     this.FindAllCalendarEvents(request).PipeTo(this.Sender, this.Self);
                     break;
 
@@ -77,16 +80,27 @@
         private async Task<List<T>> GetActorResponses<T>(object request)
         {
             var responses = new List<T>();
+
+            this.logger.Debug("Started loading of sick leaves");
             responses.Add(await this.sickLeavesActor.Ask<T>(request));
+            this.logger.Debug("Sick leaves loaded");
+
+            this.logger.Debug("Started loading of vacations");
             responses.Add(await this.vacationsActor.Ask<T>(request));
+            this.logger.Debug("Vacations loaded");
+
+            this.logger.Debug("Started loading of work hours");
             responses.Add(await this.workHoursActor.Ask<T>(request));
+            this.logger.Debug("Work hours loaded");
 
             return responses;
         }
 
         private async Task<GetCalendarEvents.Response> FindAllCalendarEvents(GetCalendarEvents request)
         {
+            this.logger.Debug("Started loading of all calendar events");
             var responses = await this.GetActorResponses<GetCalendarEvents.Response>(request);
+            this.logger.Debug("All calendar events loaded");
 
             return new GetCalendarEvents.Response(this.employeeId, responses.SelectMany(x => x.Events).ToList());
         }

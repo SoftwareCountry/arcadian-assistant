@@ -3,12 +3,12 @@ import { loadTicketTemplatesEpic$, ticketTemplatesReducer } from './ticket-templ
 import { TicketTemplate } from './ticket-template.model';
 import { combineEpics } from 'redux-observable';
 
-export interface HelpdeskState {
+export interface HelpDeskState {
     ticketTemplates: TicketTemplate[];
 }
 
-export const helpdeskEpics = combineEpics(loadTicketTemplatesEpic$);
+export const helpDeskEpics = combineEpics(loadTicketTemplatesEpic$);
 
-export const helpdeskReducer = combineReducers<HelpdeskState>({
+export const helpDeskReducer = combineReducers<HelpDeskState>({
     ticketTemplates: ticketTemplatesReducer,
 });

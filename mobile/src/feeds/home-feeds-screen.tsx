@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, ListRenderItemInfo, RefreshControl, SafeAreaView, StatusBar, View } from 'react-native';
+import { ActivityIndicator, ListRenderItemInfo, RefreshControl, SafeAreaView, View } from 'react-native';
 import { Employee } from '../reducers/organization/employee.model';
 import { EmployeesStore } from '../reducers/organization/employees.reducer';
 import { Feed } from '../reducers/feeds/feed.model';

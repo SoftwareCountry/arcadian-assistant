@@ -3,39 +3,39 @@ import { IntervalType } from './calendar.model';
 import { CalendarEvent } from './calendar-event.model';
 import { Action } from 'redux';
 
-export interface ChosenTypeDayoff extends Action {
-    type: 'CHOSEN-TYPE-DAYOFF';
+export interface ChosenTypeDayOff extends Action {
+    type: 'CHOSEN-TYPE-DAY-OFF';
     isWorkout: boolean;
 }
 
-export const chosenTypeDayoff = (
+export const chosenTypeDayOff = (
     isWorkout: boolean
-): ChosenTypeDayoff => ({ type: 'CHOSEN-TYPE-DAYOFF', isWorkout });
+): ChosenTypeDayOff => ({ type: 'CHOSEN-TYPE-DAY-OFF', isWorkout });
 
-export interface ConfirmProcessDayoff extends Action {
-    type: 'CONFIRM-PROCESS-DAYOFF';
+export interface ConfirmProcessDayOff extends Action {
+    type: 'CONFIRM-PROCESS-DAY-OFF';
     employeeId: string;
     date: Moment;
     isWorkout: boolean;
     intervalType: IntervalType;
 }
 
-export const confirmProcessDayoff = (
+export const confirmProcessDayOff = (
     employeeId: string,
     date: Moment,
     isWorkout: boolean,
     intervalType: IntervalType
-): ConfirmProcessDayoff => ({ type: 'CONFIRM-PROCESS-DAYOFF', employeeId, date, isWorkout, intervalType });
+): ConfirmProcessDayOff => ({ type: 'CONFIRM-PROCESS-DAY-OFF', employeeId, date, isWorkout, intervalType });
 
-export interface CancelDayoff extends Action {
-    type: 'CANCEL-DAYOFF';
+export interface CancelDayOff extends Action {
+    type: 'CANCEL-DAY-OFF';
     employeeId: string;
     calendarEvent: CalendarEvent;
 }
 
-export const cancelDayoff = (
+export const cancelDayOff = (
     employeeId: string,
     calendarEvent: CalendarEvent
-): CancelDayoff => ({ type: 'CANCEL-DAYOFF', employeeId, calendarEvent });
+): CancelDayOff => ({ type: 'CANCEL-DAY-OFF', employeeId, calendarEvent });
 
-export type DayoffActions = ChosenTypeDayoff | ConfirmProcessDayoff | CancelDayoff;
+export type DayOffActions = ChosenTypeDayOff | ConfirmProcessDayOff | CancelDayOff;

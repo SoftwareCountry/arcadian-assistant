@@ -6,7 +6,7 @@ import { AppState } from '../reducers/app.reducer';
 import { connect } from 'react-redux';
 import { ExtractedIntervals, ReadOnlyIntervalsModel } from '../reducers/calendar/calendar.model';
 import { VacationActionButton } from './vacation-action-button';
-import { DayoffActionButton } from './dayoff-action-button';
+import { DayOffActionButton } from './dayoff-action-button';
 import { SickLeaveActionButton } from './sick-leave-action-button';
 import { Action, Dispatch } from 'redux';
 import { openEventDialog } from '../reducers/calendar/event-dialog/event-dialog.action';
@@ -31,7 +31,7 @@ interface ActionButtonsGroupDispatchProps {
         request: () => void
         edit: () => void
     };
-    dayoff: {
+    dayOff: {
         process: () => void,
         edit: () => void
     };
@@ -55,15 +55,15 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & A
                     {...this.props.vacationActions} />
                 <CalendarActionButtonSeparator/>
 
-                <DayoffActionButton
-                    interval={intervalsBySingleDaySelection.dayoff}
+                <DayOffActionButton
+                    interval={intervalsBySingleDaySelection.dayOff}
                     disabled={this.props.disableActionButtons}
-                    {...this.props.dayoff} />
+                    {...this.props.dayOff} />
                 <CalendarActionButtonSeparator/>
 
                 <SickLeaveActionButton
                     allIntervals={allIntervals}
-                    interval={intervalsBySingleDaySelection.sickleave}
+                    interval={intervalsBySingleDaySelection.sickLeave}
                     disabled={this.props.disableActionButtons}
                     {...this.props.sickLeaveActions} />
                 <CalendarActionButtonSeparator/>
@@ -100,12 +100,12 @@ const dispatchToProps = (dispatch: Dispatch<Action>): ActionButtonsGroupDispatch
             dispatch(openEventDialog(EventDialogType.EditVacation));
         }
     },
-    dayoff: {
+    dayOff: {
         process: () => {
-            dispatch(openEventDialog(EventDialogType.ProcessDayoff));
+            dispatch(openEventDialog(EventDialogType.ProcessDayOff));
         },
         edit: () => {
-            dispatch(openEventDialog(EventDialogType.EditDayoff));
+            dispatch(openEventDialog(EventDialogType.EditDayOff));
         }
     }
 });

@@ -43,6 +43,7 @@
 
         [Route("get/android")]
         [HttpGet]
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         public Task<IActionResult> GetAndroid(CancellationToken cancellationToken)
         {
             return this.GetFile(DeviceType.Android, cancellationToken);
@@ -50,6 +51,7 @@
 
         [Route("get/ios")]
         [HttpGet]
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         public Task<IActionResult> GetIos(CancellationToken cancellationToken)
         {
             return this.GetFile(DeviceType.Ios, cancellationToken);

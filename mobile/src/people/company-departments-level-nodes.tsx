@@ -36,8 +36,8 @@ export class CompanyDepartmentsLevelNodes extends Component<CompanyDepartmentsLe
 
     private panResponder: Optional<PanResponderInstance>;
 
-    // Why isn't in state? Answer: Perfomance reason.
-    // Changing the state.canSwipe makes twise render calls (when swipe is started, and swipe is ended), it impacts on the animation smoothness,
+    // Why isn't in state? Answer: Performance reason.
+    // Changing the state.canSwipe makes twice render calls (when swipe is started, and swipe is ended), it impacts on the animation smoothness,
     // causing some flickers
     private canSwipe = true;
 

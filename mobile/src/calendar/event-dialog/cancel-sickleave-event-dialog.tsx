@@ -39,11 +39,11 @@ class CancelSickLeaveEventDialogImpl extends Component<CancelSickLeaveEventDialo
     };
 
     private acceptAction = () => {
-        if (!this.props.intervals || !this.props.intervals.sickleave || !this.props.userEmployee) {
+        if (!this.props.intervals || !this.props.intervals.sickLeave || !this.props.userEmployee) {
             return;
         }
 
-        this.props.cancelSickLeave(this.props.userEmployee.employeeId, this.props.intervals.sickleave.calendarEvent);
+        this.props.cancelSickLeave(this.props.userEmployee.employeeId, this.props.intervals.sickLeave.calendarEvent);
     };
 
     private closeDialog = () => {
@@ -51,11 +51,11 @@ class CancelSickLeaveEventDialogImpl extends Component<CancelSickLeaveEventDialo
     };
 
     public get text(): string {
-        if (!this.props.intervals || !this.props.intervals.sickleave) {
+        if (!this.props.intervals || !this.props.intervals.sickLeave) {
             return '';
         }
 
-        const startDate = this.props.intervals.sickleave.calendarEvent.dates.startDate.format(eventDialogTextDateFormat);
+        const startDate = this.props.intervals.sickLeave.calendarEvent.dates.startDate.format(eventDialogTextDateFormat);
 
         return `Your sick leave starts on ${startDate}`;
     }

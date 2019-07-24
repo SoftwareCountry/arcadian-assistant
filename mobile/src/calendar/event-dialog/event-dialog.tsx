@@ -9,13 +9,13 @@ import { ConfirmVacationEventDialog } from './confirm-vaction-event-dialog';
 import { EditVacationEventDialog } from './edit-vacation-event-dialog';
 import { ChangeVacationStartDateEventDialog } from './change-vacation-start-date-event-dialog';
 import { ChangeVacationEndDateEventDialog } from './change-vacation-end-date-event-dialog';
-import { ProcessDayoffEventDialog } from './process-dayoff-event-dialog';
-import { ChooseTypeDayoffEventDialog } from './choose-type-dayoff-event-dialog';
-import { ConfirmDayoffEventDialog } from './confirm-dayoff-event-dialog';
-import { EditDayoffEventDialog } from './edit-dayoff-event-dialog';
+import { ProcessDayOffEventDialog } from './process-dayoff-event-dialog';
+import { ChooseTypeDayOffEventDialog } from './choose-type-dayoff-event-dialog';
+import { ConfirmDayOffEventDialog } from './confirm-dayoff-event-dialog';
+import { EditDayOffEventDialog } from './edit-dayoff-event-dialog';
 import { CancelSickLeaveEventDialog } from './cancel-sickleave-event-dialog';
 import { VacationRequestedDialog } from './vacation-requested-dialog';
-import { DayoffRequestedDialog } from './dayoff-requested-dialog';
+import { DayOffRequestedDialog } from './dayoff-requested-dialog';
 
 interface EventDialogProps {
     dialogType: EventDialogType;
@@ -52,16 +52,16 @@ export class EventDialog extends Component<EventDialogProps> {
             case EventDialogType.VacationRequested:
                 return <VacationRequestedDialog/>;
 
-            case EventDialogType.ProcessDayoff:
-                return <ProcessDayoffEventDialog/>;
-            case EventDialogType.ChooseTypeDayoff:
-                return <ChooseTypeDayoffEventDialog/>;
-            case EventDialogType.ConfirmDayoffStartDate:
-                return <ConfirmDayoffEventDialog/>;
-            case EventDialogType.EditDayoff:
-                return <EditDayoffEventDialog/>;
-            case EventDialogType.DayoffRequested:
-                return <DayoffRequestedDialog/>;
+            case EventDialogType.ProcessDayOff:
+                return <ProcessDayOffEventDialog/>;
+            case EventDialogType.ChooseTypeDayOff:
+                return <ChooseTypeDayOffEventDialog/>;
+            case EventDialogType.ConfirmDayOffStartDate:
+                return <ConfirmDayOffEventDialog/>;
+            case EventDialogType.EditDayOff:
+                return <EditDayOffEventDialog/>;
+            case EventDialogType.DayOffRequested:
+                return <DayOffRequestedDialog/>;
 
             default:
                 throw new Error(`There isn't event dialog implementation for ${this.props.dialogType}`);

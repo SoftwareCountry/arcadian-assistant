@@ -62,7 +62,7 @@ class EditVacationEventDialogImpl extends Component<EditVacationEventDialogProps
         const startDate = this.props.intervals.vacation.calendarEvent.dates.startDate.format(eventDialogTextDateFormat);
         const endDate = this.props.intervals.vacation.calendarEvent.dates.endDate.format(eventDialogTextDateFormat);
 
-        return `Your vacation starts on ${startDate} and completets on ${endDate}.`;
+        return `Your vacation starts on ${startDate} and completes on ${endDate}.`;
     }
 }
 

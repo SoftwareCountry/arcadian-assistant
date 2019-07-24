@@ -12,9 +12,12 @@
 
     using Microsoft.AspNetCore.Hosting;
 
+    using NLog;
+
     public class DownloadActor : UntypedActor, ILogReceive, IWithUnboundedStash
     {
         private readonly ILoggingAdapter logger = Context.GetLogger();
+        private readonly Logger nlogLogger = LogManager.GetCurrentClassLogger();
 
         private readonly IActorRef androidDownloadBuildActor;
         private readonly IActorRef iosDownloadBuildActor;
@@ -81,6 +84,8 @@
             switch (message)
             {
                 case RefreshApplicationBuildsStart _:
+                    this.nlogLogger.Debug("Refresh application builds started");
+
                     var androidDownloadTask = this.androidDownloadBuildActor
                         .Ask<DownloadApplicationBuild.Response>(DownloadApplicationBuild.Instance)
                         .PipeTo(
@@ -103,6 +108,8 @@
                     break;
 
                 case RefreshApplicationBuildSuccess msg:
+                    this.nlogLogger.Debug($"Application build successfully refreshed. Application type: {msg.ApplicationType}, update available: {msg.UpdateAvailable}");
+
                     if (msg.UpdateAvailable)
                     {
                         Context.System.EventStream.Publish(new UpdateAvailable(msg.ApplicationType));
@@ -111,10 +118,12 @@
                     break;
 
                 case RefreshApplicationBuildError msg:
-                    this.logger.Warning(msg.Exception.ToString());
+                    this.nlogLogger.Warn(msg.Exception.ToString());
                     break;
 
                 case RefreshApplicationBuildsFinish _:
+                    this.nlogLogger.Debug("Refresh application builds finished");
+
                     this.Stash.UnstashAll();
                     this.UnbecomeStacked();
                     break;
@@ -138,7 +147,7 @@
                     break;
 
                 default:
-                    this.logger.Warning("Not supported application type");
+                    this.nlogLogger.Warn("Not supported application type");
                     break;
             }
         }

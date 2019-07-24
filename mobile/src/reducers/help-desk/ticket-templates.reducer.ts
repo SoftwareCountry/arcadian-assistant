@@ -8,13 +8,13 @@ const tempMessage = new TicketTemplate();
 tempMessage.templateId = 'call-saul';
 tempMessage.title = 'Better Call Saul';
 tempMessage.description = 'You know what to do';
-tempMessage.recipients = ['IT Helpdesk'];
+tempMessage.recipients = ['IT Help desk'];
 
 const tempMessage2 = new TicketTemplate();
 tempMessage.templateId = 'internet-is-dead';
 tempMessage.title = 'Internet died';
 tempMessage.description = 'again...';
-tempMessage.recipients = ['IT Helpdesk'];
+tempMessage.recipients = ['IT Help desk'];
 
 export const loadTicketTemplatesEpic$ = (action$: ActionsObservable<TicketAction>) =>
     action$.ofType('LOAD-TICKET-TEMPLATES').pipe(

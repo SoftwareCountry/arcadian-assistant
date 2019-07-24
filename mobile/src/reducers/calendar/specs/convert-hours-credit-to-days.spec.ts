@@ -18,7 +18,7 @@ describe('convert hours credit to days', () => {
         expect(result.rest).toBe('');
     });
 
-    describe('hours are divisble by entire day', () => {
+    describe('hours are divisible by entire day', () => {
         it('should return entire days and empty rest', () => {
             const hours = 4 * 2;
             const converter = new ConvertHoursCreditToDays();
@@ -38,7 +38,7 @@ describe('convert hours credit to days', () => {
         });
     });
 
-    describe('hours are NOT divisble by entire day', () => {
+    describe('hours are NOT divisible by entire day', () => {
         it('should return 0 days with rest, if hours <= half day', () => {
             let hours = 1;
             const converter = new ConvertHoursCreditToDays();
