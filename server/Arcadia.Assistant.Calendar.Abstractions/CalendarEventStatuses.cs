@@ -16,7 +16,6 @@
         {
             { CalendarEventTypes.Dayoff, WorkHoursChangeStatuses.Pending },
             { CalendarEventTypes.Workout, WorkHoursChangeStatuses.Pending },
-            { CalendarEventTypes.Sickleave, SickLeaveStatuses.Pending },
             { CalendarEventTypes.Vacation, VacationStatuses.Pending }
         };
 
