@@ -14,8 +14,6 @@
 
     using Models.Calendar;
 
-    using NSwag.Annotations;
-
     using SickLeaves.Contracts;
 
     using WorkHoursCredit.Contracts;
@@ -40,32 +38,33 @@
 
         [Route("")]
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<CalendarEventWithIdModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAll(int employeeId, CancellationToken token)
+        public async Task<ActionResult<IEnumerable<CalendarEventWithIdModel>>> GetAll(int employeeId, CancellationToken token)
         {
             var workHoursEvents = await this.workHoursCredit.GetCalendarEventsAsync(new EmployeeId(employeeId), token);
             var sickLeaveEvents = await this.sickLeaves.GetCalendarEventsAsync(new EmployeeId(employeeId), token);
             var allEvents = workHoursEvents
                 .Select(this.workHoursConverter.ToCalendarEventWithId)
-                .Union(sickLeaveEvents.Select(this.sickLeavesConverter.ToCalendarEventWithId));
+                .Union(sickLeaveEvents.Select(this.sickLeavesConverter.ToCalendarEventWithId))
+                .ToList();
 
-            return this.Ok(allEvents);
+            return allEvents;
         }
 
 
         [Route("{eventId}")]
         [HttpGet]
-        [ProducesResponseType(typeof(CalendarEventModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Get(int employeeId, string eventId, CancellationToken token)
+        public async Task<ActionResult<CalendarEventModel>> Get(int employeeId, string eventId, CancellationToken token)
         {
             if (Guid.TryParse(eventId, out var guidId))
             {
                 var change = await this.workHoursCredit.GetCalendarEventAsync(new EmployeeId(employeeId), guidId, token);
                 if (change != null)
                 {
-                    return this.Ok(this.workHoursConverter.ToCalendarEvent(change));
+                    return this.workHoursConverter.ToCalendarEvent(change);
                 }
             }
 
@@ -74,7 +73,7 @@
                 var sickLeave = await this.sickLeaves.GetCalendarEventAsync(new EmployeeId(employeeId), intId, token);
                 if (sickLeave != null)
                 {
-                    return this.Ok(this.sickLeavesConverter.ToCalendarEvent(sickLeave));
+                    return this.sickLeavesConverter.ToCalendarEvent(sickLeave);
                 }
             }
 
@@ -83,9 +82,9 @@
 
         [Route("")]
         [HttpPost]
-        [ProducesResponseType(typeof(CalendarEventWithIdModel), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create(int employeeId, [FromBody] CalendarEventModel model, CancellationToken token)
+        public async Task<ActionResult<CalendarEventWithIdModel>> Create(int employeeId, [FromBody] CalendarEventModel model, CancellationToken token)
         {
             if (!this.ModelState.IsValid)
             {

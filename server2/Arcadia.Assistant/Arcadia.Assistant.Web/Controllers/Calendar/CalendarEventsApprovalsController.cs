@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace Arcadia.Assistant.Web.Controllers
+﻿namespace Arcadia.Assistant.Web.Controllers.Calendar
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -11,6 +8,7 @@ namespace Arcadia.Assistant.Web.Controllers
     using Employees.Contracts;
 
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
 
     using Models.Calendar;
 
@@ -29,8 +27,8 @@ namespace Arcadia.Assistant.Web.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(IEnumerable<CalendarEventApprovalWithTimestampModel>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetEventApprovals(int employeeId, string eventId, CancellationToken token)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<CalendarEventApprovalWithTimestampModel[]>> GetEventApprovals(int employeeId, string eventId, CancellationToken token)
         {
             var approvals = await this.workHoursCredit.GetApprovalsAsync(new EmployeeId(employeeId), Guid.Parse(eventId), token);
             if (approvals == null)
@@ -38,7 +36,7 @@ namespace Arcadia.Assistant.Web.Controllers
                 return this.NotFound();
             }
 
-            return this.Ok(approvals.Select(x => new CalendarEventApprovalWithTimestampModel(x.Timestamp, x.ApproverId.ToString())));
+            return approvals.Select(x => new CalendarEventApprovalWithTimestampModel(x.Timestamp, x.ApproverId.ToString())).ToArray();
         }
 
 

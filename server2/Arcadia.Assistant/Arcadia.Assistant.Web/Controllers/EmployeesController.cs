@@ -43,9 +43,9 @@
 
         [Route("{employeeId}")]
         [HttpGet]
-        [ProducesResponseType(typeof(EmployeeModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetById(int employeeId, CancellationToken token)
+        public async Task<ActionResult<EmployeeModel>> GetById(int employeeId, CancellationToken token)
         {
             var employee = await this.employees.FindEmployeeAsync(new EmployeeId(employeeId), token);
             if (employee == null)
@@ -59,14 +59,14 @@
                 return this.NotFound();
             }
 
-            return this.Ok(model);
+            return model;
         }
 
         [Route("")]
         [HttpGet]
-        [ProducesResponseType(typeof(EmployeeModel[]), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> FilterEmployees(
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<EmployeeModel[]>> FilterEmployees(
             [FromQuery] string departmentId,
             [FromQuery] string roomNumber,
             [FromQuery] string name,
@@ -76,7 +76,7 @@
             var employeesMetadata = await this.employees.FindEmployeesAsync(query, token);
             var employeeModels = await this.ProcessEmployeesAsync(employeesMetadata, token);
 
-            return this.Ok(employeeModels);
+            return employeeModels;
         }
 
         private async Task<EmployeeModel[]> ProcessEmployeesAsync(IEnumerable<EmployeeMetadata> employeeMetadatas, CancellationToken cancellationToken)

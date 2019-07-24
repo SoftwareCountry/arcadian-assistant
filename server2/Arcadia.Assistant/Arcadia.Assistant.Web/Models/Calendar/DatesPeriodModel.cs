@@ -8,10 +8,12 @@
     [DataContract]
     public class DatesPeriodModel
     {
+        [DataType(DataType.Date)]
         [Required]
         [DataMember]
         public DateTime StartDate { get; set; }
 
+        [DataType(DataType.Date)]
         [Required]
         [DataMember]
         public DateTime EndDate { get; set; }

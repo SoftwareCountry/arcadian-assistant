@@ -28,9 +28,9 @@
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(UserPreferencesModel), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(UserPreferencesModel), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetUserPreferences(CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<UserPreferencesModel>> GetUserPreferences(CancellationToken cancellationToken)
         {
             var employee = (await this.employees
                     .FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(this.User.Identity.Name), cancellationToken))
@@ -48,14 +48,14 @@
                 PushNotifications = userPreferences.PushNotifications
             };
 
-            return this.Ok(model);
+            return model;
         }
 
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> SaveUserPreferences(UserPreferencesModel userPreferencesModel)
+        public async Task<ActionResult<UserPreferencesModel>> SaveUserPreferences(UserPreferencesModel userPreferencesModel)
         {
             if (!this.ModelState.IsValid)
             {
@@ -75,6 +75,7 @@
                 EmailNotifications = userPreferencesModel.EmailNotifications,
                 PushNotifications = userPreferencesModel.PushNotifications
             }, CancellationToken.None);
+
             return this.NoContent();
         }
     }

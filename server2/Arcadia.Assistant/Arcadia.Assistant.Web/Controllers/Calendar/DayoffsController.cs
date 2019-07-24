@@ -2,7 +2,7 @@
 {
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("/api/employees/{employeeId}/sick-leaves/")]
+    [Route("/api/employees/{employeeId}/day-offs/")]
     public class DayoffsController : Controller
     {
     }

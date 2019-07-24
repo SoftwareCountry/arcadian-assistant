@@ -7,6 +7,7 @@
 
     using Employees.Contracts;
 
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     [Route("api/photo/employee")]
@@ -22,6 +23,8 @@
 
         [Route("{employeeId}")]
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetImage(int employeeId, CancellationToken token)
         {
             var actor = this.avatars.Get(new EmployeeId(employeeId));
