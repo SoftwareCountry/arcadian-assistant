@@ -10,8 +10,6 @@
 
         public static readonly string[] All = { Requested, Completed, Cancelled };
 
-        public static readonly string[] Pending = { Requested };
-
         public static readonly string[] Actual = { Requested, Completed };
     }
 }

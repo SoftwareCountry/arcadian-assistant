@@ -20,7 +20,7 @@
 
         private readonly ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings;
         private readonly ActorSelection organizationActor;
-        private IActorRef sharepointStorageActor;
+        private readonly IActorRef sharepointStorageActor;
 
         private readonly ILoggingAdapter logger = Context.GetLogger();
 
@@ -30,6 +30,7 @@
             this.organizationActor = Context.ActorSelection(OrganizationActorPath);
 
             Context.System.EventStream.Subscribe<CalendarEventRecoverComplete>(this.Self);
+            Context.System.EventStream.Subscribe<CalendarEventCreated>(this.Self);
             Context.System.EventStream.Subscribe<CalendarEventChanged>(this.Self);
             Context.System.EventStream.Subscribe<CalendarEventRemoved>(this.Self);
 
@@ -46,6 +47,10 @@
             switch (message)
             {
                 case CalendarEventRecoverComplete msg:
+                    this.OnReceiveEvent(msg.Event);
+                    break;
+
+                case CalendarEventCreated msg:
                     this.OnReceiveEvent(msg.Event);
                     break;
 
