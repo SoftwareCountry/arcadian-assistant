@@ -3,6 +3,8 @@
     using System;
     using System.Collections.Generic;
 
+    using SickLeaves.Contracts;
+
     using WorkHoursCredit.Contracts;
 
     public class CalendarEventStatuses
@@ -11,7 +13,7 @@
         {
             { CalendarEventTypes.Dayoff, Enum.GetNames(typeof(ChangeRequestStatus)) },
             { CalendarEventTypes.Workout, Enum.GetNames(typeof(ChangeRequestStatus)) },
-            { CalendarEventTypes.Sickleave, SickLeaveStatuses.All },
+            { CalendarEventTypes.Sickleave, Enum.GetNames(typeof(SickLeaveStatus)) },
             { CalendarEventTypes.Vacation, VacationStatuses.All }
         };
 
@@ -19,7 +21,6 @@
         {
             { CalendarEventTypes.Dayoff, new [] { ChangeRequestStatus.Requested.ToString() } },
             { CalendarEventTypes.Workout, new [] { ChangeRequestStatus.Requested.ToString() }  },
-            { CalendarEventTypes.Sickleave, SickLeaveStatuses.Pending },
             { CalendarEventTypes.Vacation, VacationStatuses.Pending }
         };
 
@@ -27,7 +28,7 @@
         {
             { CalendarEventTypes.Dayoff, new [] { ChangeRequestStatus.Requested.ToString(), ChangeRequestStatus.Approved.ToString() }  },
             { CalendarEventTypes.Workout, new [] { ChangeRequestStatus.Requested.ToString(), ChangeRequestStatus.Approved.ToString() } },
-            { CalendarEventTypes.Sickleave, SickLeaveStatuses.Actual },
+            { CalendarEventTypes.Sickleave, new [] { SickLeaveStatus.Requested.ToString(), SickLeaveStatus.Completed.ToString() } },
             { CalendarEventTypes.Vacation, VacationStatuses.Actual }
         };
 
@@ -49,7 +50,7 @@
         {
             { CalendarEventTypes.Dayoff, ChangeRequestStatus.Cancelled.ToString() },
             { CalendarEventTypes.Workout, ChangeRequestStatus.Cancelled.ToString() },
-            { CalendarEventTypes.Sickleave, SickLeaveStatuses.Cancelled },
+            { CalendarEventTypes.Sickleave, SickLeaveStatus.Cancelled.ToString() },
             { CalendarEventTypes.Vacation, VacationStatuses.Cancelled }
         };
 
