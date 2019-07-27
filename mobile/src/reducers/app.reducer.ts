@@ -53,6 +53,13 @@ export function hasPermission(permission: Permission, state: AppState): Optional
 }
 
 //----------------------------------------------------------------------------
+export function hasPermission2(permission: Permission, state: AppState): Optional<Boolean> {
+    return state.userInfo ?
+        state.userInfo.permissions.has(permission) :
+        undefined;
+}
+
+//----------------------------------------------------------------------------
 export function getEmployee(state: AppState): Optional<Employee> {
     return (state.organization && state.userInfo && state.userInfo.employeeId) ?
         state.organization.employees.employeesById.get(state.userInfo.employeeId) :

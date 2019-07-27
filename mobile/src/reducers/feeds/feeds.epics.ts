@@ -7,13 +7,13 @@ import { AppState, DependenciesContainer } from '../app.reducer';
 import moment from 'moment';
 import { filter, flatMap, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { handleHttpErrors } from '../../errors/error.operators';
-import { LoadUserEmployeeFinished } from '../user/user.action';
+import { LoadUserEmployeeFinished, UserActionType } from '../user/user.action';
 import { concat, of } from 'rxjs';
 
 export const pagingPeriodDays = 10;
 
 export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
-    action$.ofType('LOAD-USER-EMPLOYEE-FINISHED').pipe(
+    action$.ofType(UserActionType.loadUserEmployeeFinished).pipe(
         map(x => fAction.fetchNewFeeds()),
     );
 

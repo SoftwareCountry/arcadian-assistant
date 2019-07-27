@@ -1,5 +1,6 @@
 import { combineEpics } from 'redux-observable';
 import {
+    loadUserDepartmentFeaturesEpic$,
     loadUserEmployeePermissionsEpic$,
     loadUserEpic$,
     loadUserFinishedEpic$,
@@ -13,4 +14,5 @@ export const userEpics = combineEpics(
     loadUserEmployeePermissionsEpic$ as any,
     loadUserPreferencesEpic$ as any,
     updateUserPreferencesEpic$ as any,
+    loadUserDepartmentFeaturesEpic$ as any,
 );
