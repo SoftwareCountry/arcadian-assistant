@@ -8,10 +8,18 @@ import { ConvertHoursCreditToDays } from '../../reducers/calendar/convert-hours-
 import { Employee } from '../../reducers/organization/employee.model';
 import { none } from '../../types/types-utils';
 import { Nullable } from 'types';
+import { ActionType } from '../calendar-actions-button-group';
+
+//============================================================================
+export enum CounterType {
+    vacation = 'CounterType.vacation',
+    dayoffs = 'CounterType.dayoffs',
+}
 
 //============================================================================
 interface DaysCountersProps {
     employee: Employee;
+    counters: CounterType[];
     additionalStyle?: StyleProp<ViewStyle>;
 }
 
@@ -47,6 +55,10 @@ export class DaysCounters extends Component<DaysCountersProps> {
     //----------------------------------------------------------------------------
     // noinspection JSMethodCanBeStatic
     private renderVacationCounter(vacationDaysLeft: Nullable<number>): React.ReactNode {
+        if (!this.hasCounterEnabled(CounterType.vacation)) {
+            return null;
+        }
+
         if (none(vacationDaysLeft)) {
             return <EmptyDaysCounter/>;
         }
@@ -60,6 +72,10 @@ export class DaysCounters extends Component<DaysCountersProps> {
     //----------------------------------------------------------------------------
     // noinspection JSMethodCanBeStatic
     private renderDaysOffCounter(hoursCredit: Nullable<number>): React.ReactNode {
+        if (!this.hasCounterEnabled(CounterType.dayoffs)) {
+            return null;
+        }
+
         if (none(hoursCredit)) {
             return <EmptyDaysCounter/>;
         }
@@ -70,5 +86,10 @@ export class DaysCounters extends Component<DaysCountersProps> {
         return <DaysCounter textValue={hoursCreditCounter.toString()}
                             title={hoursCreditCounter.title}
                             icon={{ name: 'day_off', size: 30 }}/>;
+    }
+
+    //----------------------------------------------------------------------------
+    private hasCounterEnabled(counter: CounterType): boolean {
+        return this.props.counters.includes(counter);
     }
 }
