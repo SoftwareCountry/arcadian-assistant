@@ -12,6 +12,19 @@ import { Action, Dispatch } from 'redux';
 import { openEventDialog } from '../reducers/calendar/event-dialog/event-dialog.action';
 import { EventDialogType } from '../reducers/calendar/event-dialog/event-dialog-type.model';
 import { Optional } from 'types';
+import { DepartmentFeatures } from '../reducers/user/department-features.model';
+
+//============================================================================
+export enum ActionType {
+    vacation = 'ActionType.vacation',
+    dayoff = 'ActionType.dayoff',
+    sickLeave = 'ActionType.sickLeave',
+}
+
+//============================================================================
+interface ActionButtonGroupOwnProps {
+    actions: ActionType[];
+}
 
 //============================================================================
 interface ActionButtonGroupProps {
@@ -38,7 +51,8 @@ interface ActionButtonsGroupDispatchProps {
 }
 
 //============================================================================
-export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & ActionButtonsGroupDispatchProps> {
+export class ActionsButtonGroupImpl extends Component<ActionButtonGroupOwnProps & ActionButtonGroupProps & ActionButtonsGroupDispatchProps> {
+
     //----------------------------------------------------------------------------
     public render() {
         const { intervalsBySingleDaySelection, allIntervals } = this.props;
@@ -49,26 +63,65 @@ export class ActionsButtonGroupImpl extends Component<ActionButtonGroupProps & A
 
         return (
             <View style={calendarActionsStyles.container}>
-                <VacationActionButton
-                    interval={intervalsBySingleDaySelection.vacation}
-                    disabled={this.props.disableActionButtons}
-                    {...this.props.vacationActions} />
-                <CalendarActionButtonSeparator/>
+                {this.renderVacationActionButton(intervalsBySingleDaySelection)}
 
-                <DayOffActionButton
-                    interval={intervalsBySingleDaySelection.dayOff}
-                    disabled={this.props.disableActionButtons}
-                    {...this.props.dayOff} />
-                <CalendarActionButtonSeparator/>
+                {this.renderDayoffActionButton(intervalsBySingleDaySelection)}
 
-                <SickLeaveActionButton
-                    allIntervals={allIntervals}
-                    interval={intervalsBySingleDaySelection.sickLeave}
-                    disabled={this.props.disableActionButtons}
-                    {...this.props.sickLeaveActions} />
-                <CalendarActionButtonSeparator/>
+                {this.renderSickLeaveActionButton(intervalsBySingleDaySelection, allIntervals)}
             </View>
         );
+    }
+
+    //----------------------------------------------------------------------------
+    private renderVacationActionButton(intervals: ExtractedIntervals): React.ReactNode {
+        if (!this.hasActionEnabled(ActionType.vacation)) {
+            return null;
+        }
+
+        return (
+            <VacationActionButton
+                interval={intervals.vacation}
+                disabled={this.props.disableActionButtons}
+                {...this.props.vacationActions} />
+        );
+    }
+
+    //----------------------------------------------------------------------------
+    private renderDayoffActionButton(intervals: ExtractedIntervals): React.ReactNode {
+        if (!this.hasActionEnabled(ActionType.dayoff)) {
+            return null;
+        }
+
+        return (
+            <DayOffActionButton
+                interval={intervals.dayOff}
+                disabled={this.props.disableActionButtons}
+                {...this.props.dayOff} />
+        );
+    }
+
+    //----------------------------------------------------------------------------
+    private renderSickLeaveActionButton(intervals: ExtractedIntervals, allIntervals: ReadOnlyIntervalsModel | undefined): React.ReactNode {
+        if (!allIntervals) {
+            return null;
+        }
+
+        if (!this.hasActionEnabled(ActionType.sickLeave)) {
+            return null;
+        }
+
+        return (
+            <SickLeaveActionButton
+                allIntervals={allIntervals}
+                interval={intervals.sickLeave}
+                disabled={this.props.disableActionButtons}
+                {...this.props.sickLeaveActions} />
+        );
+    }
+
+    //----------------------------------------------------------------------------
+    private hasActionEnabled(action: ActionType): boolean {
+        return this.props.actions.includes(action);
     }
 }
 
@@ -110,4 +163,5 @@ const dispatchToProps = (dispatch: Dispatch<Action>): ActionButtonsGroupDispatch
     }
 });
 
-export const CalendarActionsButtonGroup = connect(stateToProps, dispatchToProps)(ActionsButtonGroupImpl);
+export const CalendarActionsButtonGroup =
+    connect<ActionButtonGroupProps, ActionButtonsGroupDispatchProps, ActionButtonGroupOwnProps, AppState>(stateToProps, dispatchToProps)(ActionsButtonGroupImpl);

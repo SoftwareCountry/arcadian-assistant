@@ -1,82 +1,146 @@
+/******************************************************************************
+ * Copyright (c) Arcadia, Inc. All rights reserved.
+ ******************************************************************************/
+
 import { Employee } from '../organization/employee.model';
 import { UserEmployeePermissions } from './user-employee-permissions.model';
 import { Action } from 'redux';
 import { UserPreferences } from './user-preferences.model';
+import { DepartmentFeatures } from './department-features.model';
 
-export interface LoadUser extends Action {
-    type: 'LOAD-USER';
+//============================================================================
+export enum UserActionType {
+    loadUser = 'LOAD-USER',
+    loadUserFinished = 'LOAD-USER-FINISHED',
+    loadUserEmployeeFinished = 'LOAD-USER-EMPLOYEE-FINISHED',
+    loadUserEmployeePermissions = 'LOAD-USER-EMPLOYEE-PERMISSIONS',
+    loadUserEmployeePermissionsFinished = 'LOAD-USER-EMPLOYEE-PERMISSIONS-FINISHED',
+    loadUserPreferences = 'LOAD-USER-PREFERENCES',
+    updateUserPreferences = 'UPDATE-USER-PREFERENCES',
+    loadUserPreferencesFinished = 'LOAD-USER-PREFERENCES-FINISHED',
+    loadUserDepartmentFeatures = 'LOAD-USER-DEPARTMENT-FEATURES',
+    loadUserDepartmentFeaturesFinished = 'LOAD-USER-DEPARTMENT-FEATURES-FINISHED',
 }
 
-export const loadUser = (): LoadUser => ({ type: 'LOAD-USER' });
+//----------------------------------------------------------------------------
+// - Actions
+//----------------------------------------------------------------------------
+export interface LoadUser extends Action<UserActionType.loadUser> {
+}
 
-export interface LoadUserFinished extends Action {
-    type: 'LOAD-USER-FINISHED';
+export interface LoadUserFinished extends Action<UserActionType.loadUserFinished> {
     userEmployeeId: string;
 }
 
-export const loadUserFinished = (userEmployeeId: string): LoadUserFinished => ({
-    type: 'LOAD-USER-FINISHED',
-    userEmployeeId
-});
-
-export interface LoadUserEmployeeFinished extends Action {
-    type: 'LOAD-USER-EMPLOYEE-FINISHED';
+export interface LoadUserEmployeeFinished extends Action<UserActionType.loadUserEmployeeFinished> {
     employee: Employee;
 }
 
-export const loadUserEmployeeFinished = (employee: Employee): LoadUserEmployeeFinished => ({
-    type: 'LOAD-USER-EMPLOYEE-FINISHED',
-    employee
-});
-
-export interface LoadUserEmployeePermissions extends Action {
-    type: 'LOAD-USER-EMPLOYEE-PERMISSIONS';
+export interface LoadUserEmployeePermissions extends Action<UserActionType.loadUserEmployeePermissions> {
     employeeId: string;
 }
 
-export const loadUserEmployeePermissions = (employeeId: string): LoadUserEmployeePermissions => ({
-    type: 'LOAD-USER-EMPLOYEE-PERMISSIONS',
-    employeeId
-});
-
-export interface LoadUserEmployeePermissionsFinished extends Action {
-    type: 'LOAD-USER-EMPLOYEE-PERMISSIONS-FINISHED';
+export interface LoadUserEmployeePermissionsFinished extends Action<UserActionType.loadUserEmployeePermissionsFinished> {
     permissions: UserEmployeePermissions;
 }
 
-export const loadUserEmployeePermissionsFinished = (permissions: UserEmployeePermissions): LoadUserEmployeePermissionsFinished =>
-    ({ type: 'LOAD-USER-EMPLOYEE-PERMISSIONS-FINISHED', permissions });
-
-export interface LoadUserPreferences extends Action {
-    type: 'LOAD-USER-PREFERENCES';
+export interface LoadUserPreferences extends Action<UserActionType.loadUserPreferences> {
     userId: string;
 }
 
-export const loadUserPreferences = (userId: string): LoadUserPreferences => ({ type: 'LOAD-USER-PREFERENCES', userId });
-
-export interface UpdateUserPreferences extends Action {
-    type: 'UPDATE-USER-PREFERENCES';
+export interface UpdateUserPreferences extends Action<UserActionType.updateUserPreferences> {
     userId: string;
     previousPreferences: UserPreferences;
     preferences: UserPreferences;
 }
 
-export const updateUserPreferences = (userId: string, previousPreferences: UserPreferences, newPreferences: UserPreferences): UpdateUserPreferences => ({
-    type: 'UPDATE-USER-PREFERENCES',
-    userId: userId,
-    previousPreferences: previousPreferences,
-    preferences: newPreferences,
-});
-
-export interface LoadUserPreferencesFinished extends Action {
-    type: 'LOAD-USER-PREFERENCES-FINISHED';
+export interface LoadUserPreferencesFinished extends Action<UserActionType.loadUserPreferencesFinished> {
     preferences: UserPreferences;
 }
 
-export const loadUserPreferencesFinished = (preferences: UserPreferences): LoadUserPreferencesFinished =>
-    ({ type: 'LOAD-USER-PREFERENCES-FINISHED', preferences });
+export interface LoadUserDepartmentFeatures extends Action<UserActionType.loadUserDepartmentFeatures> {
+}
 
+export interface LoadUserDepartmentFeaturesFinished extends Action<UserActionType.loadUserDepartmentFeaturesFinished> {
+    features: DepartmentFeatures;
+}
 
-export type UserActions = LoadUser | LoadUserFinished | LoadUserEmployeeFinished
+//----------------------------------------------------------------------------
+// - Action creators
+//----------------------------------------------------------------------------
+
+export const loadUser = (): LoadUser => {
+    return {
+        type: UserActionType.loadUser,
+    };
+};
+
+export const loadUserFinished = (userEmployeeId: string): LoadUserFinished => {
+    return {
+        type: UserActionType.loadUserFinished,
+        userEmployeeId,
+    };
+};
+
+export const loadUserEmployeeFinished = (employee: Employee): LoadUserEmployeeFinished => {
+    return {
+        type: UserActionType.loadUserEmployeeFinished,
+        employee,
+    };
+};
+
+export const loadUserEmployeePermissions = (employeeId: string): LoadUserEmployeePermissions => {
+    return {
+        type: UserActionType.loadUserEmployeePermissions,
+        employeeId,
+    };
+};
+
+export const loadUserEmployeePermissionsFinished = (permissions: UserEmployeePermissions): LoadUserEmployeePermissionsFinished => {
+    return {
+        type: UserActionType.loadUserEmployeePermissionsFinished,
+        permissions,
+    };
+};
+
+export const loadUserPreferences = (userId: string): LoadUserPreferences => {
+    return {
+        type: UserActionType.loadUserPreferences,
+        userId,
+    };
+};
+
+export const updateUserPreferences = (userId: string, previousPreferences: UserPreferences, newPreferences: UserPreferences): UpdateUserPreferences => {
+    return {
+        type: UserActionType.updateUserPreferences,
+        userId: userId,
+        previousPreferences: previousPreferences,
+        preferences: newPreferences,
+    };
+};
+
+export const loadUserPreferencesFinished = (preferences: UserPreferences): LoadUserPreferencesFinished => {
+    return {
+        type: UserActionType.loadUserPreferencesFinished,
+        preferences,
+    };
+};
+
+export const loadUserDepartmentFeatures = (): LoadUserDepartmentFeatures => {
+    return {
+        type: UserActionType.loadUserDepartmentFeatures,
+    };
+};
+
+export const loadUserDepartmentFeaturesFinished = (features: DepartmentFeatures): LoadUserDepartmentFeaturesFinished => {
+    return {
+        type: UserActionType.loadUserDepartmentFeaturesFinished,
+        features,
+    };
+};
+
+export type UserActions =
+    LoadUser | LoadUserFinished | LoadUserEmployeeFinished
     | LoadUserEmployeePermissions | LoadUserEmployeePermissionsFinished
-    | LoadUserPreferences | UpdateUserPreferences | LoadUserPreferencesFinished;
+    | LoadUserPreferences | UpdateUserPreferences | LoadUserPreferencesFinished
+    | LoadUserDepartmentFeatures | LoadUserDepartmentFeaturesFinished;

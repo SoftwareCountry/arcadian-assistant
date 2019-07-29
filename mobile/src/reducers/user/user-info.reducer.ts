@@ -1,30 +1,41 @@
+/******************************************************************************
+ * Copyright (c) Arcadia, Inc. All rights reserved.
+ ******************************************************************************/
+
 import { Reducer } from 'redux';
-import { UserActions } from './user.action';
+import { UserActions, UserActionType } from './user.action';
 import { UserEmployeePermissions } from './user-employee-permissions.model';
 import { Map } from 'immutable';
-import { Nullable } from 'types';
+import { Nullable, Optional } from 'types';
 import { UserPreferences } from './user-preferences.model';
+import { DepartmentFeatures } from './department-features.model';
 
+//============================================================================
 export interface UserInfoState {
     employeeId: Nullable<string>;
     permissions: Map<string, UserEmployeePermissions>;
     preferences: Nullable<UserPreferences>;
+    userDepartmentFeatures: Optional<DepartmentFeatures>;
 }
 
 const initState: UserInfoState = {
     employeeId: null,
     permissions: Map<string, UserEmployeePermissions>(),
     preferences: null,
+    userDepartmentFeatures: undefined,
 };
 
+//----------------------------------------------------------------------------
 export const userInfoReducer: Reducer<UserInfoState> = (state = initState, action: UserActions) => {
     switch (action.type) {
-        case 'LOAD-USER-FINISHED':
+
+        case UserActionType.loadUserFinished:
             return {
                 ...state,
                 employeeId: action.userEmployeeId
             };
-        case 'LOAD-USER-EMPLOYEE-PERMISSIONS-FINISHED':
+
+        case UserActionType.loadUserEmployeePermissionsFinished:
             const existingPermissions = state.permissions.get(action.permissions.employeeId);
 
             if (!existingPermissions || !existingPermissions.equals(action.permissions)) {
@@ -35,14 +46,27 @@ export const userInfoReducer: Reducer<UserInfoState> = (state = initState, actio
             }
 
             return state;
-        case 'UPDATE-USER-PREFERENCES':
-        case 'LOAD-USER-PREFERENCES-FINISHED':
+
+        case UserActionType.updateUserPreferences:
+        case UserActionType.loadUserPreferencesFinished:
             const existingPreferences = state.preferences;
 
             if (!existingPreferences || !existingPreferences.equals(action.preferences)) {
                 return {
                     ...state,
                     preferences: action.preferences
+                };
+            }
+
+            return state;
+
+        case UserActionType.loadUserDepartmentFeaturesFinished:
+            const existingDepartmentFeatures = state.userDepartmentFeatures;
+
+            if (!existingDepartmentFeatures || !existingDepartmentFeatures.equals(action.features)) {
+                return {
+                    ...state,
+                    userDepartmentFeatures: action.features,
                 };
             }
 

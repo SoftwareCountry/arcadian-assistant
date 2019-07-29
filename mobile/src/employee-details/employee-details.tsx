@@ -44,6 +44,7 @@ import { EmployeeDetailsTile, TileData } from './employee-details-tile';
 import { employeeDetailsTileStyles } from './styles';
 import { ContactData, EmployeeDetailsContact } from './employee-details-contact';
 import { DaysCounterData, EmployeeDetailsDaysCounter } from './employee-details-days-counter';
+import { DepartmentFeatures } from '../reducers/user/department-features.model';
 
 //============================================================================
 interface EmployeeDetailsOwnProps {
@@ -64,6 +65,7 @@ interface EmployeeDetailsStateProps {
     hoursToIntervalTitle: (startWorkingHour: number, finishWorkingHour: number) => Nullable<string>;
     userEmployeePermissions: Nullable<Map<string, UserEmployeePermissions>>;
     userId: Nullable<EmployeeId>;
+    departmentFeatures: Optional<DepartmentFeatures>;
 }
 
 type EmployeeDetailsProps = EmployeeDetailsOwnProps & EmployeeDetailsStateProps;
@@ -93,6 +95,10 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         }
 
         if (!equals(this.props.employee, nextProps.employee)) {
+            return true;
+        }
+
+        if (!equals(this.props.departmentFeatures, nextProps.departmentFeatures)) {
             return true;
         }
 
@@ -349,20 +355,25 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
         const rest = calculatedDays.rest ? calculatedDays.rest : null;
         const hoursCreditCounter = new HoursCreditCounter(hoursCredit, days, rest);
 
-        const daysCounterData: DaysCounterData[] = [
+        let daysCounterData: DaysCounterData[] = [
             {
                 icon: 'vacation',
                 iconSize: 35,
                 title: 'Days of vacation left:',
                 text: allVacationDaysCounter.toString(),
             },
-            {
-                icon: 'day_off',
-                iconSize: 35,
-                title: capitalizeFirstLetter(hoursCreditCounter.title.join(' ')),
-                text: hoursCreditCounter.toString(),
-            },
         ];
+
+        if (this.isDayoffsSupported()) {
+            daysCounterData.push(
+                {
+                    icon: 'day_off',
+                    iconSize: 35,
+                    title: capitalizeFirstLetter(hoursCreditCounter.title.join(' ')),
+                    text: hoursCreditCounter.toString(),
+                }
+            );
+        }
 
         return daysCounterData
             .map((counter) => (
@@ -454,6 +465,13 @@ export class EmployeeDetailsImpl extends Component<EmployeeDetailsProps & Employ
     }
 
     //----------------------------------------------------------------------------
+    private isDayoffsSupported(): boolean {
+        const { departmentFeatures } = this.props;
+
+        return !!(departmentFeatures && departmentFeatures.isDayoffsSupported);
+    }
+
+    //----------------------------------------------------------------------------
     private openLink(url: string) {
         return () => Linking.openURL(url).catch(err => console.error(err));
     }
@@ -495,6 +513,7 @@ const stateToProps: MapStateToProps<EmployeeDetailsProps, EmployeeDetailsOwnProp
         hoursToIntervalTitle: state.calendar ? state.calendar.pendingRequests.hoursToIntervalTitle : IntervalTypeConverter.hoursToIntervalTitle,
         userEmployeePermissions: state.userInfo ? state.userInfo.permissions : null,
         userId: state.userInfo ? state.userInfo.employeeId : null,
+        departmentFeatures: state.userInfo ? state.userInfo.userDepartmentFeatures : undefined,
     };
 };
 

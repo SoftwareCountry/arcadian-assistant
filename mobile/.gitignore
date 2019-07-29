@@ -23,6 +23,7 @@ DerivedData
 *.xcuserstate
 project.xcworkspace
 Index/
+ios/Products/
 
 # iOS/Appcode
 #

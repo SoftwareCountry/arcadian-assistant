@@ -17,7 +17,7 @@ import {
     LoadEmployeesForRoom,
     loadEmployeesForRoom
 } from './organization.action';
-import { LoadUserEmployeeFinished } from '../user/user.action';
+import { LoadUserEmployeeFinished, UserActionType } from '../user/user.action';
 import { deserialize, deserializeArray } from 'santee-dcts/src/deserializer';
 import { Department } from './department.model';
 import { AppState, DependenciesContainer } from '../app.reducer';
@@ -105,13 +105,13 @@ export const loadEmployeesForRoomEpic$ = (action$: ActionsObservable<LoadEmploye
 
 //----------------------------------------------------------------------------
 export const loadEmployeesForUserDepartmentEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>) => action$.pipe(
-    ofType('LOAD-USER-EMPLOYEE-FINISHED'),
+    ofType(UserActionType.loadUserEmployeeFinished),
     map(x => loadEmployeesForDepartment(x.employee.departmentId)),
 );
 
 //----------------------------------------------------------------------------
 export const loadEmployeesForUserRoomEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>) => action$.pipe(
-    ofType('LOAD-USER-EMPLOYEE-FINISHED'),
+    ofType(UserActionType.loadUserEmployeeFinished),
     filter(action => {
         return action.employee.roomNumber !== null;
     }),
@@ -120,7 +120,7 @@ export const loadEmployeesForUserRoomEpic$ = (action$: ActionsObservable<LoadUse
 
 //----------------------------------------------------------------------------
 export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, _: StateObservable<AppState>, deps: DependenciesContainer) => action$.pipe(
-    ofType('LOAD-USER-EMPLOYEE-FINISHED'),
+    ofType(UserActionType.loadUserEmployeeFinished),
     map(x => loadDepartments()),
 );
 

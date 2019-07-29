@@ -1,5 +1,10 @@
+/******************************************************************************
+ * Copyright (c) Arcadia, Inc. All rights reserved.
+ ******************************************************************************/
+
 import { dataMember, required } from 'santee-dcts';
 
+//============================================================================
 export class UserPreferences {
 
     @dataMember()
@@ -10,11 +15,13 @@ export class UserPreferences {
     @required()
     public pushNotifications: boolean;
 
+    //----------------------------------------------------------------------------
     public constructor() {
         this.emailNotifications = false;
         this.pushNotifications = false;
     }
 
+    //----------------------------------------------------------------------------
     public clone(): UserPreferences {
         const result = new UserPreferences();
 
@@ -24,6 +31,7 @@ export class UserPreferences {
         return result;
     }
 
+    //----------------------------------------------------------------------------
     public equals(obj: UserPreferences): boolean {
         if (!obj) {
             return false;
