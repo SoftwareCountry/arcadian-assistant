@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { agendaSelectedDayStyles, agendaStyles } from './styles';
 import { View } from 'react-native';
-import { CalendarActionsButtonGroup } from './calendar-actions-button-group';
+import { ActionType, CalendarActionsButtonGroup } from './calendar-actions-button-group';
 import { CalendarLegend } from './calendar-legend';
 import { SelectedDay } from './days-counters/selected-day';
 import { EventDialog } from './event-dialog/event-dialog';
@@ -10,12 +10,17 @@ import { connect } from 'react-redux';
 import { EventDialogType } from '../reducers/calendar/event-dialog/event-dialog-type.model';
 
 //============================================================================
+interface AgendaOwnProps {
+    actions: ActionType[];
+}
+
+//============================================================================
 interface AgendaProps {
     dialogType?: EventDialogType;
 }
 
 //============================================================================
-export class AgendaImpl extends Component<AgendaProps> {
+export class AgendaImpl extends Component<AgendaProps & AgendaOwnProps> {
     //----------------------------------------------------------------------------
     public render() {
         return <View style={agendaStyles.container}>
@@ -34,7 +39,7 @@ export class AgendaImpl extends Component<AgendaProps> {
                 <SelectedDay/>
                 <CalendarLegend/>
             </View>
-            <CalendarActionsButtonGroup/>
+            <CalendarActionsButtonGroup actions={this.props.actions}/>
         </View>;
     }
 
@@ -51,4 +56,4 @@ const mapStateToProps = (state: AppState): AgendaProps => ({
     dialogType: state.calendar ? state.calendar.eventDialog.dialogType : undefined
 });
 
-export const Agenda = connect(mapStateToProps)(AgendaImpl);
+export const Agenda = connect<AgendaProps, {}, AgendaOwnProps, AppState>(mapStateToProps)(AgendaImpl);

@@ -2,7 +2,7 @@
  * Copyright (c) Arcadia, Inc. All rights reserved.
  ******************************************************************************/
 
-import { LoadUserEmployeeFinished } from '../user/user.action';
+import { LoadUserEmployeeFinished, UserActionType } from '../user/user.action';
 import { ActionsObservable, StateObservable } from 'redux-observable';
 import { deserializeArray } from 'santee-dcts';
 import {
@@ -31,7 +31,7 @@ import { EmployeeId } from '../organization/employee.model';
 
 //----------------------------------------------------------------------------
 export const loadUserEmployeeFinishedEpic$ = (action$: ActionsObservable<LoadUserEmployeeFinished>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
-    action$.ofType('LOAD-USER-EMPLOYEE-FINISHED').pipe(
+    action$.ofType(UserActionType.loadUserEmployeeFinished).pipe(
         map(action => loadCalendarEvents(action.employee.employeeId)),
     );
 

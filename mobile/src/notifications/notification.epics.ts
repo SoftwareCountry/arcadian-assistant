@@ -16,14 +16,14 @@ import { handleHttpErrors, retryDelayed } from '../errors/error.operators';
 import { Linking, Platform } from 'react-native';
 import { loadCalendarEvents } from '../reducers/calendar/calendar.action';
 import { logError } from '../utils/analytics';
-import { LoadUserFinished } from '../reducers/user/user.action';
+import { LoadUserFinished, UserActionType } from '../reducers/user/user.action';
 import { NotificationType } from './notifications';
 import { loadPendingRequests } from '../reducers/calendar/pending-requests/pending-requests.action';
 import config from '../config';
 
 //----------------------------------------------------------------------------
 const notificationsHandler$ = (action$: ActionsObservable<LoadUserFinished>, state$: StateObservable<AppState>) =>
-    action$.ofType('LOAD-USER-FINISHED').pipe(
+    action$.ofType(UserActionType.loadUserFinished).pipe(
         switchMap(() => {
             return new Observable<Action>(observer => {
                 // noinspection JSIgnoredPromiseFromCall

@@ -1,5 +1,5 @@
 import { ActionsObservable, ofType } from 'redux-observable';
-import { loadUser, LoadUserEmployeeFinished } from '../user/user.action';
+import { loadUser, LoadUserEmployeeFinished, UserActionType } from '../user/user.action';
 import { Refresh } from './refresh.action';
 import { flatMap } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -12,6 +12,6 @@ export const refreshEpic$ = (action$: ActionsObservable<Refresh>) =>
     );
 
 export const refreshUserProfileData$ = (action$: ActionsObservable<LoadUserEmployeeFinished>) => action$.pipe(
-    ofType('LOAD-USER-EMPLOYEE-FINISHED'),
+    ofType(UserActionType.loadUserEmployeeFinished),
     flatMap(action => of(loadPendingRequests(), loadCalendarEvents(action.employee.employeeId))),
 );

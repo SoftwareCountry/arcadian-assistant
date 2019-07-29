@@ -218,12 +218,12 @@ export const calendarActionsStyles = StyleSheet.create({
     container: {
         flex: 4,
         flexDirection: 'column',
-        alignContent: 'space-between',
+        justifyContent: 'space-around',
         marginLeft: 20,
         marginRight: 20,
     },
     buttonContainer: {
-        flex: 3
+        height: '30%',
     },
     button: {
         justifyContent: 'center',
