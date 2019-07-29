@@ -34,6 +34,7 @@
     <ProjectReference Include="..\Arcadia.Assistant.Inbox\Arcadia.Assistant.Inbox.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.SickLeaves\Arcadia.Assistant.SickLeaves.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.VacationsCredit\Arcadia.Assistant.VacationsCredit.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.Vacations\Arcadia.Assistant.Vacations.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.WorkHoursCredit\Arcadia.Assistant.WorkHoursCredit.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Employees\Arcadia.Assistant.Employees.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Organization\Arcadia.Assistant.Organization.csproj" />
