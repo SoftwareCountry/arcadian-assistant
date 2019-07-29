@@ -38,6 +38,8 @@
 
     using UserPreferences.Contracts;
 
+    using Vacations.Contracts;
+
     using VacationsCredit.Contracts;
 
     using WorkHoursCredit.Contracts;
@@ -120,6 +122,7 @@
             builder.RegisterModule(new UsersPreferencesModule());
             builder.RegisterModule(new WorkHoursCreditModule());
             builder.RegisterModule(new VacationsCreditModule());
+            builder.RegisterModule(new VacationsModule());
             builder.RegisterModule(new SickLeavesModule());
         }
 
