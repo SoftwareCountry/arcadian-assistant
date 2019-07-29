@@ -4,7 +4,7 @@
 
     using NJsonSchema.Annotations;
 
-    [JsonSchemaProcessor(typeof(StatusSwaggerSchemaFilter))]
+    [JsonSchemaProcessor(typeof(CalendarEventSchemaProcessor))]
     [WorkHoursChangeValidator]
     public class CalendarEventModel
     {

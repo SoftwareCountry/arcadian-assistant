@@ -24,6 +24,8 @@
     using Microsoft.ServiceFabric.Services.Client;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
 
+    using Newtonsoft.Json.Converters;
+
     using NSwag;
     using NSwag.AspNetCore;
     using NSwag.Generation.Processors.Security;
@@ -65,7 +67,9 @@
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                .AddJsonOptions(x => x.SerializerSettings.Converters.Add(new StringEnumConverter()));
 
             services.AddOpenApiDocument((document, x) =>
             {

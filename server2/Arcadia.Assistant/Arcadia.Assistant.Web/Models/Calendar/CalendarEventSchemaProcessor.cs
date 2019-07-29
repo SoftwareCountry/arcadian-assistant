@@ -6,7 +6,7 @@
 
     using NJsonSchema.Generation;
 
-    public class StatusSwaggerSchemaFilter : ISchemaProcessor
+    public class CalendarEventSchemaProcessor : ISchemaProcessor
     {
         //public void Apply(Schema model, SchemaFilterContext context)
         //{
@@ -24,11 +24,18 @@
                 return;
             }
 
-            context.Schema.Properties[nameof(CalendarEventModel.Type).ToLower()].EnumerationNames = new Collection<string>(CalendarEventTypes.All);
+            var typeProperty = context.Schema.Properties[nameof(CalendarEventModel.Type).ToLower()];
+            typeProperty.IsRequired = true;
+            typeProperty.Example = CalendarEventTypes.Vacation;
+            //typeProperty.EnumerationNames = new Collection<string>(CalendarEventTypes.All);
 
             var statuses = new CalendarEventStatuses();
             var possibleStatusValues = CalendarEventTypes.All.SelectMany(statuses.AllForType).Distinct().ToList();
-            context.Schema.Properties[nameof(CalendarEventModel.Status).ToLower()].EnumerationNames = new Collection<string>(possibleStatusValues);
+            var statusesProperties = context.Schema.Properties[nameof(CalendarEventModel.Status).ToLower()];
+            statusesProperties.IsRequired = true;
+            statusesProperties.Example = possibleStatusValues[0];
+            statusesProperties.EnumerationNames = new Collection<string>(possibleStatusValues);
+            statusesProperties.EnumerationNamesRaw = new Collection<string>(possibleStatusValues);
         }
     }
 }
