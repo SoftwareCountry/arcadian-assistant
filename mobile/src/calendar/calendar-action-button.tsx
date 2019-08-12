@@ -7,6 +7,7 @@ interface CalendarActionButtonProps {
     onPress: () => void;
     borderColor?: string;
     title: string;
+    containerStyle?: ViewStyle;
     style?: ViewStyle;
     textStyle?: TextStyle;
     disabled?: boolean;
@@ -42,7 +43,8 @@ export class CalendarActionButton extends Component<CalendarActionButtonProps, C
             calendarActionsStyles.buttonContainer,
             this.props.disabled
                 ? { opacity: 0.1 }
-                : null
+                : null,
+            this.props.containerStyle
         ]);
 
         const textStyle = StyleSheet.flatten([

@@ -92,6 +92,7 @@ export class EventDialogBaseImpl extends Component<EventDialogBaseProps> {
             return null;
         }
         return <CalendarActionButton title={cancelLabel} onPress={this.cancel}
+                                     containerStyle={buttons.container as ViewStyle}
                                      style={buttons.cancel as ViewStyle}
                                      textStyle={buttons.cancelLabel as TextStyle}
                                      disabled={disableCancel || this.props.inProgress}/>;
@@ -104,6 +105,7 @@ export class EventDialogBaseImpl extends Component<EventDialogBaseProps> {
             return null;
         }
         return <CalendarActionButton title={acceptLabel} onPress={this.accept}
+                                     containerStyle={buttons.container as ViewStyle}
                                      style={buttons.accept as ViewStyle}
                                      textStyle={buttons.acceptLabel as TextStyle}
                                      disabled={disableAccept || this.props.inProgress}/>;

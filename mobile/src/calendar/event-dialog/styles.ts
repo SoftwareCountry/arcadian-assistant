@@ -72,6 +72,10 @@ const defaultButtonStyle = StyleSheet.create({
 });
 
 export const buttons = StyleSheet.create({
+    container: {
+        flex: 3,
+        height: 30,
+    },
     close: {
         fontSize: 50,
         lineHeight: 50,
