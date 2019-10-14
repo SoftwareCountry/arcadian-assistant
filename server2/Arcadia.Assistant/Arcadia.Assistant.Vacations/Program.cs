@@ -34,6 +34,7 @@ namespace Arcadia.Assistant.Vacations
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterStatelessService<Vacations>("Arcadia.Assistant.VacationsType");
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
+                builder.RegisterType<VacationsStorage>().SingleInstance();
                 builder.RegisterModule(new CspModule(connectionString));
 
 

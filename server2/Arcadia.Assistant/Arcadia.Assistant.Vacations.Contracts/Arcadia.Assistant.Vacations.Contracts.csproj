@@ -7,6 +7,11 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac" Version="4.9.3" />
+    <PackageReference Include="Microsoft.ServiceFabric.Services.Remoting" Version="3.4.641" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Arcadia.Assistant.Employees.Contracts\Arcadia.Assistant.Employees.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

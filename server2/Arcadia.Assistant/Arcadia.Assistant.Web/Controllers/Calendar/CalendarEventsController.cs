@@ -16,6 +16,8 @@
 
     using SickLeaves.Contracts;
 
+    using Vacations.Contracts;
+
     using WorkHoursCredit.Contracts;
 
     //TODO: fuck me, that code has to be split apart...
@@ -26,14 +28,17 @@
         private readonly IWorkHoursCredit workHoursCredit;
         private readonly ISickLeaves sickLeaves;
         private readonly IEmployees employees;
+        private readonly IVacations vacations;
         private readonly WorkHoursConverter workHoursConverter = new WorkHoursConverter();
         private readonly SickLeavesConverter sickLeavesConverter = new SickLeavesConverter();
+        private readonly VacationsConverter vacationsConverter = new VacationsConverter();
 
-        public CalendarEventsController(IWorkHoursCredit workHoursCredit, ISickLeaves sickLeaves, IEmployees employees)
+        public CalendarEventsController(IWorkHoursCredit workHoursCredit, ISickLeaves sickLeaves, IEmployees employees, IVacations vacations)
         {
             this.workHoursCredit = workHoursCredit;
             this.sickLeaves = sickLeaves;
             this.employees = employees;
+            this.vacations = vacations;
         }
 
         [Route("")]
@@ -44,9 +49,11 @@
         {
             var workHoursEvents = await this.workHoursCredit.GetCalendarEventsAsync(new EmployeeId(employeeId), token);
             var sickLeaveEvents = await this.sickLeaves.GetCalendarEventsAsync(new EmployeeId(employeeId), token);
+            var vacationEvents = await this.vacations.GetCalendarEventsAsync(new EmployeeId(employeeId), token);
             var allEvents = workHoursEvents
                 .Select(this.workHoursConverter.ToCalendarEventWithId)
                 .Union(sickLeaveEvents.Select(this.sickLeavesConverter.ToCalendarEventWithId))
+                .Union(vacationEvents.Select(this.vacationsConverter.ToCalendarEventWithId))
                 .ToList();
 
             return allEvents;
@@ -106,6 +113,10 @@
                     var sickleave = await this.sickLeaves.CreateSickLeaveAsync(new EmployeeId(employeeId), model.Dates.StartDate, model.Dates.EndDate);
                     createdModel = this.sickLeavesConverter.ToCalendarEventWithId(sickleave);
                     break;
+                case CalendarEventTypes.Vacation:
+                    var vacation = await this.vacations.RequestVacationAsync(new EmployeeId(employeeId), model.Dates.StartDate, model.Dates.EndDate);
+                    createdModel = this.vacationsConverter.ToCalendarEventWithId(vacation);
+                    break;
                 default:
                     return this.BadRequest("Unknown model type");
             }
@@ -142,6 +153,8 @@
                         return await this.UpdateWorkHoursRequest(new EmployeeId(employeeId), eventId, model, changedBy);
                     case CalendarEventTypes.Sickleave:
                         return await this.UpdateSickLeave(new EmployeeId(employeeId), eventId, model, changedBy);
+                    case CalendarEventTypes.Vacation:
+                        return await this.UpdateVacation(new EmployeeId(employeeId), eventId, model, changedBy);
                     default:
                         return this.BadRequest("Unsupported event type");
                 }
@@ -227,6 +240,11 @@
                 await this.sickLeaves.ProlongSickLeaveAsync(employeeId, eventId, model.Dates.EndDate);
             }
 
+            return this.NoContent();
+        }
+
+        private async Task<IActionResult> UpdateVacation(EmployeeId employeeId, string stringEventId, CalendarEventModel model, EmployeeMetadata changedBy)
+        {
             return this.NoContent();
         }
     }
