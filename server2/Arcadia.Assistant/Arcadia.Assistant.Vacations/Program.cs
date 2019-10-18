@@ -29,14 +29,17 @@ namespace Arcadia.Assistant.Vacations
 
                 var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
                 var connectionString = configurationPackage.Settings.Sections["Csp"].Parameters["ConnectionString"].Value;
+                var updateInterval = TimeSpan.FromMinutes(double.Parse(configurationPackage.Settings.Sections["Service"].Parameters["UpdateIntervalMinutes"].Value));
 
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterStatelessService<Vacations>("Arcadia.Assistant.VacationsType");
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
+                builder.Register(x => new Settings() { ChangesCheckInterval = updateInterval }).SingleInstance();
                 builder.RegisterType<VacationsStorage>().SingleInstance();
+                builder.RegisterType<VacationChangesWatcher>().SingleInstance();
+                builder.RegisterType<VacationChangesCheck>().SingleInstance();
                 builder.RegisterModule(new CspModule(connectionString));
-
 
                 using (builder.Build())
                 {

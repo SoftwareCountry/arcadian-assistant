@@ -4,4 +4,7 @@
   <Section Name="Csp">
     <Parameter Name="ConnectionString" Value="" />
   </Section>
+  <Section Name="Service">
+    <Parameter Name="UpdateIntervalMinutes" Value="5"/>
+  </Section>
 </Settings>

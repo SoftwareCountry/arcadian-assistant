@@ -25,19 +25,19 @@ namespace Arcadia.Assistant.Vacations
     /// </summary>
     public class Vacations : StatelessService, IVacations
     {
-        private readonly Func<Owned<ArcadiaCspContext>> cspFactory;
         private readonly Func<Owned<VacationsStorage>> storageFactory;
-
-        private Dictionary<EmployeeId, Dictionary<int, VacationDescription>> vacations
-            = new Dictionary<EmployeeId, Dictionary<int, VacationDescription>>();
+        private readonly VacationChangesWatcher changesWatcher;
 
         //private VacationsStorage storage = new VacationsStorage();
 
-        public Vacations(StatelessServiceContext context, Func<Owned<ArcadiaCspContext>> cspFactory, Func<Owned<VacationsStorage>> storageFactory)
+        public Vacations(
+            StatelessServiceContext context,
+            Func<Owned<VacationsStorage>> storageFactory,
+            VacationChangesWatcher changesWatcher)
             : base(context)
         {
-            this.cspFactory = cspFactory;
             this.storageFactory = storageFactory;
+            this.changesWatcher = changesWatcher;
         }
 
         public async Task<VacationDescription[]> GetCalendarEventsAsync(EmployeeId employeeId, CancellationToken cancellationToken)
@@ -161,79 +161,7 @@ namespace Arcadia.Assistant.Vacations
         /// <param name="cancellationToken">Canceled when Service Fabric needs to shut down this service instance.</param>
         protected override async Task RunAsync(CancellationToken cancellationToken)
         {
-            while (true)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                using (var csp = this.cspFactory())
-                {
-                    var actualVacations = await csp.Value.Vacations
-                        .Include(x => x.VacationCancellations)
-                        .Select(x => new EmployeeVacation
-                        {
-                            EmployeeId = new EmployeeId(x.EmployeeId),
-                            Vacation = new VacationDescription
-                            {
-                                VacationId = x.Id,
-                                StartDate = x.Start,
-                                EndDate = x.End,
-                                CancellationReason = x.VacationCancellations.Select(y => y.Reason).FirstOrDefault(),
-                                Status =
-                                    x.VacationCancellations.Any() ? VacationStatus.Cancelled
-                                    : x.VacationApprovals.Any(v => v.Status == 1) ? VacationStatus.Rejected
-                                    : x.VacationProcesses.Any() ? VacationStatus.Processed
-                                    : x.VacationReadies.Any() ? VacationStatus.AccountingReady
-                                    : x.VacationApprovals.Any(v => v.IsFinal && v.Status == 2) ? VacationStatus.Approved
-                                    : VacationStatus.Requested
-                            }
-                        })
-                        .ToListAsync(cancellationToken);
-                }
-
-                await Task.Delay(TimeSpan.FromMinutes(5), cancellationToken);
-            }
-        }
-
-        private void UpdateList(Dictionary<EmployeeId, Dictionary<int, VacationDescription>> databaseState)
-        {
-            var removedEmployees = this.vacations.Keys.Except(databaseState.Keys);
-            foreach (var removedEmployee in removedEmployees)
-            {
-                this.vacations.Remove(removedEmployee);
-            }
-
-            foreach (var databaseEmployeeState in databaseState)
-            {
-                var localEmployeeState = this.vacations[databaseEmployeeState.Key];
-                foreach (var removedVacation in localEmployeeState.Keys.Except(databaseEmployeeState.Value.Keys))
-                {
-                    localEmployeeState.Remove(removedVacation);
-                }
-
-                foreach (var databaseRecord in databaseEmployeeState.Value)
-                {
-                    var eventId = databaseRecord.Key;
-                    var databaseVacation = databaseRecord.Value;
-                    if (localEmployeeState.TryGetValue(eventId, out var localVacation))
-                    {
-                        if (localVacation.StartDate != databaseVacation.StartDate || localVacation.EndDate != databaseVacation.EndDate)
-                        {
-                            //TODO: dates changed
-                        }
-
-                        if (localVacation.Status != databaseVacation.Status)
-                        {
-                            //TODO: status changed
-                        }
-                    }
-                    else
-                    {
-                        // TODO: vacation added, notify
-                    }
-
-                    localEmployeeState[eventId] = databaseRecord.Value;
-                }
-            }
+            await this.changesWatcher.StartAsync(cancellationToken);
         }
 
         private class EmployeeVacation
