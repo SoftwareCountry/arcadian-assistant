@@ -15,10 +15,12 @@
     {
         private readonly ManualResetEventSlim mres = new ManualResetEventSlim(false);
         private readonly Func<Owned<VacationChangesCheck>> vacationChangesCheckFactory;
+        private readonly Settings settings;
 
-        public VacationChangesWatcher(Func<Owned<VacationChangesCheck>> vacationChangesCheckFactory)
+        public VacationChangesWatcher(Func<Owned<VacationChangesCheck>> vacationChangesCheckFactory, Settings settings)
         {
             this.vacationChangesCheckFactory = vacationChangesCheckFactory;
+            this.settings = settings;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -28,7 +30,7 @@
                 while (true)
                 {
                     await this.Refresh(cancellationToken).ConfigureAwait(false);
-                    this.mres.Wait(TimeSpan.FromMinutes(5), cancellationToken);
+                    this.mres.Wait(this.settings.ChangesCheckInterval, cancellationToken);
                     this.mres.Reset();
                 }
             }

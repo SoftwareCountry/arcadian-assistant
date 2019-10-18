@@ -18,13 +18,11 @@
     public class VacationChangesCheck
     {
         private readonly Func<Owned<ArcadiaCspContext>> dbFactory;
-        private readonly Settings settings;
         private VacationsDictionary vacations;
 
-        public VacationChangesCheck(Func<Owned<ArcadiaCspContext>> dbFactory, Settings settings)
+        public VacationChangesCheck(Func<Owned<ArcadiaCspContext>> dbFactory)
         {
             this.dbFactory = dbFactory;
-            this.settings = settings;
         }
 
         public async Task PerformAsync(CancellationToken cancellationToken)
