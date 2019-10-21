@@ -68,55 +68,51 @@ namespace Arcadia.Assistant.Employees
                 return null;
             }
 
-            using (var query = this.cspEmployeeQuery())
-            {
-                var employee = await query.Value.Get().Where(x => x.Id == employeeId.Value.Value).Select(this.mapToMetadata).FirstOrDefaultAsync(cancellationToken);
+            using var query = this.cspEmployeeQuery();
+            var employee = await query.Value.Get().Where(x => x.Id == employeeId.Value.Value).Select(this.mapToMetadata).FirstOrDefaultAsync(cancellationToken);
 
-                return employee;
-            }
+            return employee;
         }
 
         public async Task<EmployeeMetadata[]> FindEmployeesAsync(EmployeesQuery employeesQuery, CancellationToken cancellationToken)
         {
-            using (var db = this.cspEmployeeQuery())
+            using var db = this.cspEmployeeQuery();
+            var query = db.Value.Get();
+
+            if (employeesQuery.RoomNumber != null)
             {
-                var query = db.Value.Get();
-
-                if (employeesQuery.RoomNumber != null)
-                {
-                    query = query.Where(x => x.RoomNumber.Trim() == employeesQuery.RoomNumber.Trim());
-                }
-
-                if (employeesQuery.DepartmentId != null)
-                {
-                    query = query.Where(x => x.DepartmentId.ToString() == employeesQuery.DepartmentId);
-                }
-
-                if (employeesQuery.NameFilter != null)
-                {
-                    var pattern = $"%{employeesQuery.NameFilter}%";
-                    query = query.Where(x => EF.Functions.Like(x.LastName, pattern) 
-                        || EF.Functions.Like(x.FirstName, pattern));
-                }
-
-                if (employeesQuery.Identity != null)
-                {
-                    var email = employeesQuery.Identity;
-                    var loginName = this.ExtractLoginName(employeesQuery);
-                    if (loginName == null)
-                    {
-                        query = query.Where(x => EF.Functions.Like(x.Email, email));
-                    }
-                    else
-                    {
-                        query = query.Where(x => EF.Functions.Like(x.Email, email) || EF.Functions.Like(x.LoginName, loginName));
-                    }                    
-                }
-
-                var employees = await query.Select(this.mapToMetadata).ToArrayAsync(cancellationToken);
-
-                return employees;
+                query = query.Where(x => x.RoomNumber.Trim() == employeesQuery.RoomNumber.Trim());
             }
+
+            if (employeesQuery.DepartmentId != null)
+            {
+                query = query.Where(x => x.DepartmentId.ToString() == employeesQuery.DepartmentId);
+            }
+
+            if (employeesQuery.NameFilter != null)
+            {
+                var pattern = $"%{employeesQuery.NameFilter}%";
+                query = query.Where(x => EF.Functions.Like(x.LastName, pattern) 
+                    || EF.Functions.Like(x.FirstName, pattern));
+            }
+
+            if (employeesQuery.Identity != null)
+            {
+                var email = employeesQuery.Identity;
+                var loginName = this.ExtractLoginName(employeesQuery);
+                if (loginName == null)
+                {
+                    query = query.Where(x => EF.Functions.Like(x.Email, email));
+                }
+                else
+                {
+                    query = query.Where(x => EF.Functions.Like(x.Email, email) || EF.Functions.Like(x.LoginName, loginName));
+                }                    
+            }
+
+            var employees = await query.Select(this.mapToMetadata).ToArrayAsync(cancellationToken);
+
+            return employees;
         }
 
         private string ExtractLoginName(EmployeesQuery employeesQuery)

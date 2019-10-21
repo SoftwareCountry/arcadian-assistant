@@ -43,154 +43,138 @@ namespace Arcadia.Assistant.WorkHoursCredit
 
             var ids = new HashSet<int>(employeeIds.Select(x => x.Value));
 
-            using (var ctx = this.dbFactory())
-            {
-                var hours = await ctx.Value.ChangeRequests
-                    .Where(x => ids.Contains(x.EmployeeId))
-                    .Where(x => x.Approvals.Any())
-                    .Select(x => new
-                    {
-                        x.EmployeeId,
-                        Multiplier = x.ChangeType == WorkHoursChangeType.Workout ? 1 : -1,
-                        Hours = x.DayPart == DayPart.Full ? 8 : 4
-                    })
-                    .GroupBy(x => x.EmployeeId)
-                    .Select(x => new { EmployeeId = x.Key, Hours = x.Sum(ch => ch.Multiplier * ch.Hours) })
-                    .ToDictionaryAsync(x => new EmployeeId(x.EmployeeId), x => x.Hours, cancellationToken);
-
-                foreach (var employeeId in employeeIds)
+            using var ctx = this.dbFactory();
+            var hours = await ctx.Value.ChangeRequests
+                .Where(x => ids.Contains(x.EmployeeId))
+                .Where(x => x.Approvals.Any())
+                .Select(x => new
                 {
-                    if (!hours.ContainsKey(employeeId))
-                    {
-                        hours[employeeId] = 0;
-                    }
-                }
+                    x.EmployeeId,
+                    Multiplier = x.ChangeType == WorkHoursChangeType.Workout ? 1 : -1,
+                    Hours = x.DayPart == DayPart.Full ? 8 : 4
+                })
+                .GroupBy(x => x.EmployeeId)
+                .Select(x => new { EmployeeId = x.Key, Hours = x.Sum(ch => ch.Multiplier * ch.Hours) })
+                .ToDictionaryAsync(x => new EmployeeId(x.EmployeeId), x => x.Hours, cancellationToken);
 
-                return hours;
+            foreach (var employeeId in employeeIds)
+            {
+                if (!hours.ContainsKey(employeeId))
+                {
+                    hours[employeeId] = 0;
+                }
             }
+
+            return hours;
         }
 
         public async Task<WorkHoursChange[]> GetCalendarEventsAsync(EmployeeId employeeId, CancellationToken cancellationToken)
         {
-            using (var ctx = this.dbFactory())
-            {
-                var events = await this.GetCalendarEvents(ctx.Value.ChangeRequests, x => x.EmployeeId == employeeId.Value)
-                    .ToArrayAsync(cancellationToken);
+            using var ctx = this.dbFactory();
+            var events = await this.GetCalendarEvents(ctx.Value.ChangeRequests, x => x.EmployeeId == employeeId.Value)
+                .ToArrayAsync(cancellationToken);
 
-                return events;
-            }
+            return events;
         }
 
         public async Task<WorkHoursChange> GetCalendarEventAsync(EmployeeId employeeId, Guid eventId, CancellationToken cancellationToken)
         {
-            using (var ctx = this.dbFactory())
-            {
-                var calendarEvent = await this.GetCalendarEvents(
-                        ctx.Value.ChangeRequests, 
-                        x => x.EmployeeId == employeeId.Value && x.ChangeRequestId == eventId)
-                    .FirstOrDefaultAsync(cancellationToken);
+            using var ctx = this.dbFactory();
+            var calendarEvent = await this.GetCalendarEvents(
+                    ctx.Value.ChangeRequests, 
+                    x => x.EmployeeId == employeeId.Value && x.ChangeRequestId == eventId)
+                .FirstOrDefaultAsync(cancellationToken);
 
-                return calendarEvent;
-            }
+            return calendarEvent;
         }
 
         public async Task<WorkHoursChange> RequestChangeAsync(EmployeeId employeeId, WorkHoursChangeType changeType, DateTime date, DayPart dayPart)
         {
-            using (var ctx = this.dbFactory())
+            using var ctx = this.dbFactory();
+            var entity = new ChangeRequest
             {
-                var entity = new ChangeRequest
-                {
-                    ChangeRequestId = Guid.NewGuid(),
-                    EmployeeId = employeeId.Value,
-                    ChangeType = changeType,
-                    Date = date,
-                    DayPart = dayPart,
-                    Timestamp = DateTimeOffset.Now
-                };
+                ChangeRequestId = Guid.NewGuid(),
+                EmployeeId = employeeId.Value,
+                ChangeType = changeType,
+                Date = date,
+                DayPart = dayPart,
+                Timestamp = DateTimeOffset.Now
+            };
 
-                ctx.Value.ChangeRequests.Add(entity);
-                await ctx.Value.SaveChangesAsync();
+            ctx.Value.ChangeRequests.Add(entity);
+            await ctx.Value.SaveChangesAsync();
 
-                return new WorkHoursChange()
-                {
-                    ChangeId = entity.ChangeRequestId,
-                    ChangeType = changeType,
-                    DayPart = dayPart,
-                    Date = date,
-                    Status = ChangeRequestStatus.Requested
-                };
-            }
+            return new WorkHoursChange()
+            {
+                ChangeId = entity.ChangeRequestId,
+                ChangeType = changeType,
+                DayPart = dayPart,
+                Date = date,
+                Status = ChangeRequestStatus.Requested
+            };
         }
 
         public async Task<ChangeRequestApproval[]> GetApprovalsAsync(EmployeeId employeeId, Guid eventId, CancellationToken cancellationToken)
         {
-            using (var ctx = this.dbFactory())
-            {
-                var approvals = await ctx.Value
-                    .ChangeRequests
-                    .Where(x => x.EmployeeId == employeeId.Value && x.ChangeRequestId == eventId)
-                    .Select(x => x
-                        .Approvals
-                        .Select(y => new ChangeRequestApproval() { ApproverId = new EmployeeId(y.ChangedByEmployeeId), Timestamp = y.Timestamp })
-                        .ToArray()
-                    )
-                    .FirstOrDefaultAsync(cancellationToken);
+            using var ctx = this.dbFactory();
+            var approvals = await ctx.Value
+                .ChangeRequests
+                .Where(x => x.EmployeeId == employeeId.Value && x.ChangeRequestId == eventId)
+                .Select(x => x
+                    .Approvals
+                    .Select(y => new ChangeRequestApproval() { ApproverId = new EmployeeId(y.ChangedByEmployeeId), Timestamp = y.Timestamp })
+                    .ToArray()
+                )
+                .FirstOrDefaultAsync(cancellationToken);
 
-                return approvals;
-            }
+            return approvals;
         }
 
         public async Task ApproveRequestAsync(EmployeeId employeeId, Guid requestId, EmployeeId approvedBy)
         {
-            using (var ctx = this.dbFactory())
+            using var ctx = this.dbFactory();
+            var entity = new Approval
             {
-                var entity = new Approval
-                {
-                    EmployeeId = employeeId.Value,
-                    ChangeRequestId = requestId,
-                    Timestamp = DateTimeOffset.Now,
-                    ChangedByEmployeeId = approvedBy.Value
-                };
+                EmployeeId = employeeId.Value,
+                ChangeRequestId = requestId,
+                Timestamp = DateTimeOffset.Now,
+                ChangedByEmployeeId = approvedBy.Value
+            };
 
-                ctx.Value.Approvals.Add(entity);
-                await ctx.Value.SaveChangesAsync();
-            }
+            ctx.Value.Approvals.Add(entity);
+            await ctx.Value.SaveChangesAsync();
         }
 
         public async Task RejectRequestAsync(EmployeeId employeeId, Guid requestId, string rejectionReason, EmployeeId rejectedBy)
         {
-            using (var ctx = this.dbFactory())
+            using var ctx = this.dbFactory();
+            var entity = new Rejection
             {
-                var entity = new Rejection
-                {
-                    EmployeeId = employeeId.Value,
-                    ChangeRequestId = requestId,
-                    Timestamp = DateTimeOffset.Now,
-                    ChangedByEmployeeId = rejectedBy.Value,
-                    Comment = rejectionReason
-                };
+                EmployeeId = employeeId.Value,
+                ChangeRequestId = requestId,
+                Timestamp = DateTimeOffset.Now,
+                ChangedByEmployeeId = rejectedBy.Value,
+                Comment = rejectionReason
+            };
 
-                ctx.Value.Rejections.Add(entity);
-                await ctx.Value.SaveChangesAsync();
-            }
+            ctx.Value.Rejections.Add(entity);
+            await ctx.Value.SaveChangesAsync();
         }
 
         public async Task CancelRequestAsync(EmployeeId employeeId, Guid requestId, string rejectionReason, EmployeeId cancelledBy)
         {
-            using (var ctx = this.dbFactory())
+            using var ctx = this.dbFactory();
+            var entity = new Cancellation()
             {
-                var entity = new Cancellation()
-                {
-                    EmployeeId = employeeId.Value,
-                    ChangeRequestId = requestId,
-                    Timestamp = DateTimeOffset.Now,
-                    ChangedByEmployeeId = cancelledBy.Value,
-                    Comment = rejectionReason
-                };
+                EmployeeId = employeeId.Value,
+                ChangeRequestId = requestId,
+                Timestamp = DateTimeOffset.Now,
+                ChangedByEmployeeId = cancelledBy.Value,
+                Comment = rejectionReason
+            };
 
-                ctx.Value.Cancellations.Add(entity);
-                await ctx.Value.SaveChangesAsync();
-            }
+            ctx.Value.Cancellations.Add(entity);
+            await ctx.Value.SaveChangesAsync();
         }
 
         /// <summary>

@@ -70,54 +70,44 @@ namespace Arcadia.Assistant.SickLeaves
 
         public async Task<SickLeaveDescription[]> GetCalendarEventsAsync(EmployeeId employeeId, CancellationToken cancellationToken)
         {
-            using (var db = this.dbFactory())
-            {
-                var sickLeaves = await db.Value
-                    .SickLeaves
-                    .Where(x => x.EmployeeId == employeeId.Value)
-                    .Select(this.modelConverter.ToDescription)
-                    .ToArrayAsync(cancellationToken);
+            using var db = this.dbFactory();
+            var sickLeaves = await db.Value
+                .SickLeaves
+                .Where(x => x.EmployeeId == employeeId.Value)
+                .Select(this.modelConverter.ToDescription)
+                .ToArrayAsync(cancellationToken);
 
-                return sickLeaves;
-            }
+            return sickLeaves;
         }
 
         public async Task<SickLeaveDescription> GetCalendarEventAsync(EmployeeId employeeId, int eventId, CancellationToken cancellationToken)
         {
-            using (var db = this.dbFactory())
-            {
-                var sickLeave = await db.Value
-                    .SickLeaves
-                    .Where(x => x.Id == eventId && x.EmployeeId == employeeId.Value)
-                    .Select(this.modelConverter.ToDescription)
-                    .FirstOrDefaultAsync(cancellationToken);
+            using var db = this.dbFactory();
+            var sickLeave = await db.Value
+                .SickLeaves
+                .Where(x => x.Id == eventId && x.EmployeeId == employeeId.Value)
+                .Select(this.modelConverter.ToDescription)
+                .FirstOrDefaultAsync(cancellationToken);
 
-                return sickLeave;
-            }
+            return sickLeave;
         }
 
         public async Task<SickLeaveDescription> CreateSickLeaveAsync(EmployeeId employeeId, DateTime startDate, DateTime endDate)
         {
-            using (var step = this.creationStepsFactory())
-            {
-                return await step.Value.InvokeAsync(employeeId, startDate, endDate);
-            }
+            using var step = this.creationStepsFactory();
+            return await step.Value.InvokeAsync(employeeId, startDate, endDate);
         }
 
         public async Task ProlongSickLeaveAsync(EmployeeId employeeId, int eventId, DateTime endDate)
         {
-            using (var step = this.prolongationStepsFactory())
-            {
-                await step.Value.InvokeAsync(employeeId, eventId, endDate);
-            }
+            using var step = this.prolongationStepsFactory();
+            await step.Value.InvokeAsync(employeeId, eventId, endDate);
         }
 
         public async Task CancelSickLeaveAsync(EmployeeId employeeId, int eventId, EmployeeId cancelledBy)
         {
-            using (var step = this.cancellationStepsFactory())
-            {
-                await step.Value.InvokeAsync(employeeId, eventId, cancelledBy);
-            }
+            using var step = this.cancellationStepsFactory();
+            await step.Value.InvokeAsync(employeeId, eventId, cancelledBy);
         }
     }
 }

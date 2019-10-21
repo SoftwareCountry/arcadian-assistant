@@ -29,63 +29,55 @@
 
         public async Task<VacationDescription[]> GetCalendarEvents(EmployeeId employeeId, CancellationToken cancellationToken)
         {
-            using (var csp = this.cspFactory())
-            {
-                return await csp.Value.Vacations
-                    .Where(x => x.EmployeeId == employeeId.Value)
-                    .Select(this.toDescription)
-                    .ToArrayAsync(cancellationToken);
-            }
+            using var csp = this.cspFactory();
+            return await csp.Value.Vacations
+                .Where(x => x.EmployeeId == employeeId.Value)
+                .Select(this.toDescription)
+                .ToArrayAsync(cancellationToken);
         }
 
         public async Task<VacationDescription> GetCalendarEvent(EmployeeId employeeId, int eventId, CancellationToken cancellationToken)
         {
-            using (var csp = this.cspFactory())
-            {
-                return await csp.Value.Vacations
-                    .Where(x => x.EmployeeId == employeeId.Value && eventId == x.Id)
-                    .Select(this.toDescription)
-                    .FirstOrDefaultAsync(cancellationToken);
-            }
+            using var csp = this.cspFactory();
+            return await csp.Value.Vacations
+                .Where(x => x.EmployeeId == employeeId.Value && eventId == x.Id)
+                .Select(this.toDescription)
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
         public async Task<VacationDescription> CreateCalendarEvent(EmployeeId employeeId, DateTime startDate, DateTime endDate)
         {
-            using (var csp = this.cspFactory())
+            using var csp = this.cspFactory();
+            var model = new CSP.Model.Vacations
             {
-                var model = new CSP.Model.Vacations
-                {
-                    EmployeeId = employeeId.Value,
-                    RaisedAt = DateTimeOffset.Now,
-                    Start = startDate,
-                    End = endDate
-                };
+                EmployeeId = employeeId.Value,
+                RaisedAt = DateTimeOffset.Now,
+                Start = startDate,
+                End = endDate
+            };
 
-                csp.Value.Vacations.Add(model);
+            csp.Value.Vacations.Add(model);
 
-                await csp.Value.SaveChangesAsync();
+            await csp.Value.SaveChangesAsync();
 
-                var newVacation = new VacationDescription
-                {
-                    Status = VacationStatus.Requested,
-                    StartDate = model.Start,
-                    EndDate = model.End,
-                    VacationId = model.Id
-                };
+            var newVacation = new VacationDescription
+            {
+                Status = VacationStatus.Requested,
+                StartDate = model.Start,
+                EndDate = model.End,
+                VacationId = model.Id
+            };
 
-                return newVacation;
-            }
+            return newVacation;
         }
 
 
         public async Task UpdateCalendarEvent(EmployeeId employeeId, int eventId, Action<CSP.Model.Vacations> updateFunc)
         {
-            using (var csp = this.cspFactory())
-            {
-                var vacationInstance = await this.LoadVacationInstance(csp.Value, employeeId, eventId);
-                updateFunc(vacationInstance);
-                await csp.Value.SaveChangesAsync();
-            }
+            using var csp = this.cspFactory();
+            var vacationInstance = await this.LoadVacationInstance(csp.Value, employeeId, eventId);
+            updateFunc(vacationInstance);
+            await csp.Value.SaveChangesAsync();
         }
 
         private async Task<CSP.Model.Vacations> LoadVacationInstance(ArcadiaCspContext context, EmployeeId employeeId, int eventId)
