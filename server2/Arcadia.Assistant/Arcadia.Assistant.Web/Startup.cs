@@ -144,7 +144,6 @@
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
-            /*
             app.UseOpenApi();
             app.UseSwaggerUi3((settings) =>
             {
@@ -152,7 +151,7 @@
                 {
                     ClientId = appSettings.Config.Security.ClientId
                 };
-            });*/
+            });
 
             app.UseAuthentication();
 

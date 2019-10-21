@@ -35,7 +35,6 @@
             statusesProperties.IsRequired = true;
             statusesProperties.Example = possibleStatusValues[0];
             statusesProperties.EnumerationNames = new Collection<string>(possibleStatusValues);
-            statusesProperties.EnumerationNamesRaw = new Collection<string>(possibleStatusValues);
         }
     }
 }
