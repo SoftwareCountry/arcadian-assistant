@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Reflection;
+    using System.Text.Json.Serialization;
 
     using Autofac;
 
@@ -69,9 +70,8 @@
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddJsonOptions(x => x.SerializerSettings.Converters.Add(new StringEnumConverter()));
+            services.AddRazorPages()
+                .AddJsonOptions(x => x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
             services.AddOpenApiDocument((document, x) =>
             {
@@ -128,7 +128,7 @@
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         // ReSharper disable once UnusedMember.Global
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, AppSettings appSettings)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AppSettings appSettings)
         {
             /*
             if (env.IsDevelopment())
@@ -154,11 +154,12 @@
 
             app.UseAuthentication();
 
-            app.UseMvc(routes =>
+            app.UseRouting();
+            app.UseAuthorization();
+
+            app.UseEndpoints(routes =>
             {
-                routes.MapRoute(
-                    "default",
-                    "{controller=Home}/{action=Index}/{id?}");
+                routes.MapRazorPages();
             });
         }
     }
