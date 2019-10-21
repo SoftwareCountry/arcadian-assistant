@@ -51,10 +51,8 @@
 
         private async Task Refresh(CancellationToken cancellationToken)
         {
-            using (var vacationChangesCheck = this.vacationChangesCheckFactory())
-            {
-                await vacationChangesCheck.Value.PerformAsync(cancellationToken);
-            }
+            using var vacationChangesCheck = this.vacationChangesCheckFactory();
+            await vacationChangesCheck.Value.PerformAsync(cancellationToken);
         }
     }
 }

@@ -14,19 +14,17 @@
         {
             try
             {
-                using (var image = Image.Load(source))
-                using (var output = new MemoryStream())
+                using var image = Image.Load(source);
+                using var output = new MemoryStream();
+                if (image.Width != image.Height)
                 {
-                    if (image.Width != image.Height)
-                    {
-                        var squareLength = Math.Min(image.Width, image.Height);
-                        image.Mutate(x => x.Crop(squareLength, squareLength));
-                    }
-
-                    image.Mutate(x => x.Resize(width, height));
-                    image.SaveAsJpeg(output);
-                    return output.ToArray();
+                    var squareLength = Math.Min(image.Width, image.Height);
+                    image.Mutate(x => x.Crop(squareLength, squareLength));
                 }
+
+                image.Mutate(x => x.Resize(width, height));
+                image.SaveAsJpeg(output);
+                return output.ToArray();
             }
             catch (Exception)
             {

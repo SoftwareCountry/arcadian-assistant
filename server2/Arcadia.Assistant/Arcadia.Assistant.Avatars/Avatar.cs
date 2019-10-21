@@ -78,10 +78,8 @@ namespace Arcadia.Assistant.Avatars
 
         private static string GetBytesHash(byte[] bytes)
         {
-            using (var sha512 = SHA512.Create())
-            {
-                return Convert.ToBase64String(sha512.ComputeHash(bytes)) + Width + Height + Mime;
-            }
+            using var sha512 = SHA512.Create();
+            return Convert.ToBase64String(sha512.ComputeHash(bytes)) + Width + Height + Mime;
         }
 
         private async Task ProcessImage(byte[] bytes)

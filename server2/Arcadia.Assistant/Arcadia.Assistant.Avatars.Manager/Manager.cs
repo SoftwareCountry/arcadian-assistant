@@ -56,6 +56,7 @@ namespace Arcadia.Assistant.Avatars.Manager
                 cancellationToken.ThrowIfCancellationRequested();
 
                 ServiceEventSource.Current.ServiceMessage(this.Context, "Start updating avatars...");
+
                 using (var query = this.employeeQuery())
                 {
                     try
@@ -73,9 +74,9 @@ namespace Arcadia.Assistant.Avatars.Manager
                     {
                         ServiceEventSource.Current.ServiceMessage(this.Context, "Error occured {0}", e);
                     }
-
-                    await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
                 }
+
+                await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
             }
         }
     }
