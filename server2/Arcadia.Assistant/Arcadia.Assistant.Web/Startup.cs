@@ -47,7 +47,7 @@
 
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IWebHostEnvironment env)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -70,7 +70,8 @@
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddRazorPages()
+            services
+                .AddControllersWithViews()
                 .AddJsonOptions(x => x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
             services.AddOpenApiDocument((document, x) =>
@@ -143,6 +144,7 @@
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
+            /*
             app.UseOpenApi();
             app.UseSwaggerUi3((settings) =>
             {
@@ -150,16 +152,18 @@
                 {
                     ClientId = appSettings.Config.Security.ClientId
                 };
-            });
+            });*/
 
             app.UseAuthentication();
 
             app.UseRouting();
             app.UseAuthorization();
 
-            app.UseEndpoints(routes =>
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRazorPages();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }
