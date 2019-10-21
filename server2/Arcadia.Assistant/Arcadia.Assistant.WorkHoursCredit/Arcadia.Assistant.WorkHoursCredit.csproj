@@ -14,8 +14,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.2.6" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.2.0" />
-    <PackageReference Include="Microsoft.ServiceFabric.Actors" Version="3.4.641" />
-    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="3.4.641" />
+    <PackageReference Include="Microsoft.ServiceFabric.Actors" Version="3.4.677" />
+    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="3.4.677" />
   </ItemGroup>
 
   <ItemGroup>

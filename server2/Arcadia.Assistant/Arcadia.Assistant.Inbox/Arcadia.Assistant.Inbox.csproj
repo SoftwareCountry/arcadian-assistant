@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="MailKit" Version="2.2.0" />
-    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="3.4.641" />
+    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="3.4.677" />
   </ItemGroup>
 
   <ItemGroup>
