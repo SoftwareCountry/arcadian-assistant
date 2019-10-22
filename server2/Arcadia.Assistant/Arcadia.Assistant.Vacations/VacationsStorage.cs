@@ -48,7 +48,7 @@
         public async Task<VacationDescription> CreateCalendarEvent(EmployeeId employeeId, DateTime startDate, DateTime endDate)
         {
             using var csp = this.cspFactory();
-            var model = new CSP.Model.Vacations
+            var model = new CSP.Model.Vacation
             {
                 EmployeeId = employeeId.Value,
                 RaisedAt = DateTimeOffset.Now,
@@ -72,7 +72,7 @@
         }
 
 
-        public async Task UpdateCalendarEvent(EmployeeId employeeId, int eventId, Action<CSP.Model.Vacations> updateFunc)
+        public async Task UpdateCalendarEvent(EmployeeId employeeId, int eventId, Action<CSP.Model.Vacation> updateFunc)
         {
             using var csp = this.cspFactory();
             var vacationInstance = await this.LoadVacationInstance(csp.Value, employeeId, eventId);
@@ -80,7 +80,7 @@
             await csp.Value.SaveChangesAsync();
         }
 
-        private async Task<CSP.Model.Vacations> LoadVacationInstance(ArcadiaCspContext context, EmployeeId employeeId, int eventId)
+        private async Task<CSP.Model.Vacation> LoadVacationInstance(ArcadiaCspContext context, EmployeeId employeeId, int eventId)
         {
             var model = await context
                 .Vacations
@@ -99,7 +99,7 @@
             return model;
         }
 
-        private readonly Expression<Func<CSP.Model.Vacations, VacationDescription>> toDescription = x => new VacationDescription()
+        private readonly Expression<Func<CSP.Model.Vacation, VacationDescription>> toDescription = x => new VacationDescription()
         {
             CancellationReason = x.VacationCancellations.Select(y => y.Reason).FirstOrDefault(),
             StartDate = x.Start,

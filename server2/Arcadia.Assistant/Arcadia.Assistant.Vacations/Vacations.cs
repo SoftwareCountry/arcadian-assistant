@@ -60,7 +60,7 @@ namespace Arcadia.Assistant.Vacations
 
         public async Task ChangeDatesAsync(EmployeeId employeeId, int eventId, DateTime startDate, DateTime endDate)
         {
-            void Update(CSP.Model.Vacations oldValue)
+            void Update(CSP.Model.Vacation oldValue)
             {
                 var status = new StatusConverter().GetStatus(oldValue);
                 if (status != VacationStatus.Requested)
@@ -78,11 +78,11 @@ namespace Arcadia.Assistant.Vacations
 
         public async Task CancelVacationAsync(EmployeeId employeeId, int eventId, EmployeeId cancelledBy, string cancellationReason)
         {
-            void Update(CSP.Model.Vacations oldValue)
+            void Update(CSP.Model.Vacation oldValue)
             {
                 //var status = new StatusConverter().GetStatus(oldValue);
                 oldValue.VacationCancellations.Add(
-                    new VacationCancellations()
+                    new VacationCancellation()
                     {
                         CancelledAt = DateTimeOffset.Now,
                         CancelledById = cancelledBy.Value,
@@ -96,11 +96,11 @@ namespace Arcadia.Assistant.Vacations
 
         public async Task ApproveVacationAsync(EmployeeId employeeId, int eventId, EmployeeId approvedBy)
         {
-            void Update(CSP.Model.Vacations oldValue)
+            void Update(CSP.Model.Vacation oldValue)
             {
                 //var status = new StatusConverter().GetStatus(oldValue);
                 oldValue.VacationApprovals.Add(
-                    new VacationApprovals()
+                    new VacationApproval()
                     {
                         ApproverId = approvedBy.Value,
                         IsFinal = true, //fix it
@@ -115,11 +115,11 @@ namespace Arcadia.Assistant.Vacations
 
         public async Task RejectVacationAsync(EmployeeId employeeId, int eventId, EmployeeId rejectedBy)
         {
-            void Update(CSP.Model.Vacations oldValue)
+            void Update(CSP.Model.Vacation oldValue)
             {
                 //var status = new StatusConverter().GetStatus(oldValue);
                 oldValue.VacationApprovals.Add(
-                    new VacationApprovals()
+                    new VacationApproval()
                     {
                         ApproverId = rejectedBy.Value,
                         IsFinal = true, //fix it

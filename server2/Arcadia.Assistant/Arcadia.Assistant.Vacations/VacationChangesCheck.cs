@@ -13,7 +13,7 @@
 
     using Microsoft.EntityFrameworkCore;
 
-    using VacationsDictionary = System.Collections.Generic.Dictionary<Employees.Contracts.EmployeeId, System.Collections.Generic.Dictionary<int, CSP.Model.Vacations>>;
+    using VacationsDictionary = System.Collections.Generic.Dictionary<Employees.Contracts.EmployeeId, System.Collections.Generic.Dictionary<int, CSP.Model.Vacation>>;
 
     public class VacationChangesCheck
     {
@@ -30,14 +30,18 @@
             VacationsDictionary databaseState;
             using (var db = this.dbFactory())
             {
-                databaseState = await db.Value.Vacations
+
+                var allVacations = await db.Value.Vacations
                     .Include(x => x.VacationCancellations)
                     .Include(x => x.VacationApprovals)
                     .Include(x => x.VacationProcesses)
                     .Include(x => x.VacationReadies)
                     .AsNoTracking()
+                    .ToListAsync(cancellationToken);
+
+                databaseState = allVacations
                     .GroupBy(x => x.EmployeeId)
-                    .ToDictionaryAsync(x => new EmployeeId(x.Key), x => x.ToDictionary(y => y.Id), cancellationToken);
+                    .ToDictionary(x => new EmployeeId(x.Key), x => x.ToDictionary(y => y.Id));
             }
 
             if (this.vacations == null)

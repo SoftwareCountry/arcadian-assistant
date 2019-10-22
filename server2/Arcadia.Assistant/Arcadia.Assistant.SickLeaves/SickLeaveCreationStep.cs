@@ -21,7 +21,7 @@
 
         public async Task<SickLeaveDescription> InvokeAsync(EmployeeId employeeId, DateTime startDate, DateTime endDate)
         {
-            var newSickLeave = new CSP.Model.SickLeaves()
+            var newSickLeave = new CSP.Model.SickLeave()
             {
                 EmployeeId = employeeId.Value,
                 Start = startDate,

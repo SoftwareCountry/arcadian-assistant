@@ -21,7 +21,7 @@
 
         public IQueryable<Employee> Get()
         {
-            return this.ctx.Employee
+            return this.ctx.Employees
                 .AsNoTracking()
                 .Where(x => x.FiringDate == null && !x.IsDelete && x.CompanyId == this.cspConfiguration.CompanyId || x.Id == ArcadyKhotinEmployeeId);
         }

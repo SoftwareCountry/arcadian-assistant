@@ -6,7 +6,7 @@
 
     public class StatusConverter
     {
-        public VacationStatus GetStatus(CSP.Model.Vacations vacation)
+        public VacationStatus GetStatus(CSP.Model.Vacation vacation)
         {
             return vacation.VacationCancellations.Any() ? VacationStatus.Cancelled
                 : vacation.VacationApprovals.Any(v => v.Status == 1) ? VacationStatus.Rejected

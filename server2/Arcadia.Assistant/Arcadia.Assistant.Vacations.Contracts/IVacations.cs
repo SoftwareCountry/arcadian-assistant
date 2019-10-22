@@ -17,7 +17,7 @@ namespace Arcadia.Assistant.Vacations.Contracts
     {
         Task<VacationDescription[]> GetCalendarEventsAsync(EmployeeId employeeId, CancellationToken cancellationToken);
 
-        Task<VacationDescription> GetCalendarEventAsync(EmployeeId employeeId, int eventId, CancellationToken cancellationToken);
+        Task<VacationDescription?> GetCalendarEventAsync(EmployeeId employeeId, int eventId, CancellationToken cancellationToken);
 
         Task<VacationDescription> RequestVacationAsync(EmployeeId employeeId, DateTime startDate, DateTime endDate);
 

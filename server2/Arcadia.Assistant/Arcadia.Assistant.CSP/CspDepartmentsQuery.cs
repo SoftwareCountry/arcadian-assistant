@@ -31,7 +31,7 @@
 
             var organizationDepartments = this
                 .cspContext
-                .Department
+                .Departments
                 .AsNoTracking()
                 .Where(x => x.IsDelete != true && x.CompanyId == this.configuration.CompanyId);
 

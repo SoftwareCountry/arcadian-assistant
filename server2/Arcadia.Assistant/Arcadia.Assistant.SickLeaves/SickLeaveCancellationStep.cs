@@ -32,7 +32,7 @@
                 throw new ArgumentException($"Couldn't cancel {eventId} as its already complete"); //TODO: true?
             }
 
-            this.database.SickLeaveCancellations.Add(new SickLeaveCancellations()
+            this.database.SickLeaveCancellations.Add(new SickLeaveCancellation()
             {
                 At = DateTimeOffset.Now,
                 ById = cancelledBy.Value,

@@ -8,7 +8,7 @@
 
     public class SickLeaveModelConverter
     {
-        public Expression<Func<CSP.Model.SickLeaves, SickLeaveDescription>> ToDescription { get; }
+        public Expression<Func<CSP.Model.SickLeave, SickLeaveDescription>> ToDescription { get; }
             = model => new SickLeaveDescription()
             {
                 SickLeaveId = model.Id,

@@ -19,6 +19,6 @@
         public VacationStatus Status { get; set; }
 
         [DataMember]
-        public string CancellationReason { get; set; }
+        public string? CancellationReason { get; set; }
     }
 }
