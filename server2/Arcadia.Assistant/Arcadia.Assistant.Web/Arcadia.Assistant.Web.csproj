@@ -9,6 +9,7 @@
     <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
     <TargetLatestRuntimePatch>False</TargetLatestRuntimePatch>
     <UserSecretsId>9d64df12-fad6-4991-a388-f6963554c54c</UserSecretsId>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
 

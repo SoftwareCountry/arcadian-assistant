@@ -18,6 +18,6 @@ namespace Arcadia.Assistant.Avatars.Contracts
     {
         Task SetSource(byte[] bytes);
 
-        Task<Photo> GetPhoto(CancellationToken cancellationToken);
+        Task<Photo?> GetPhoto(CancellationToken cancellationToken);
     }
 }
