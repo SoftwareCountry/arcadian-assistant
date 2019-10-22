@@ -23,8 +23,6 @@
         [DataMember]
         public string? LastName { get; set; }
 
-        public string Name => $"{this.LastName} {this.FirstName}".Trim();
-
         [DataMember]
         public string Email { get; set; }
 
@@ -98,6 +96,6 @@
             return years;
         }
 
-        public override string ToString() => $"{this.Name} <{this.EmployeeId}>, Email: {this.Email}, Department {this.DepartmentId}";
+        public override string ToString() => $"{this.LastName} {this.FirstName} <{this.EmployeeId}>, Email: {this.Email}, Department {this.DepartmentId}";
     }
 }

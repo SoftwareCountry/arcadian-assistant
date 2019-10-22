@@ -10,10 +10,10 @@
     public class WorkHoursChangeRequest
     {
         [DataMember]
-        public WorkHoursChange Change { get; set; }
+        public WorkHoursChange Change { get; set; } = new WorkHoursChange();
 
         [DataMember]
-        public RequestStatusChange[] RequestStatusChanges { get; set; }
+        public RequestStatusChange[] RequestStatusChanges { get; set; } = new RequestStatusChange[0];
 
         [DataContract]
         public class RequestStatusChange

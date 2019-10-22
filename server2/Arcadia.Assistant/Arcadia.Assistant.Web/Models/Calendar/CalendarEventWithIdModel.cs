@@ -2,13 +2,15 @@
 {
     using System;
     using System.ComponentModel.DataAnnotations;
+    using System.Runtime.Serialization;
 
+    [DataContract]
     public class CalendarEventWithIdModel : CalendarEventModel
     {
         [Required]
-        public string CalendarEventId { get; set; }
+        [DataMember]
+        public string? CalendarEventId { get; set; }
 
-        // ReSharper disable once UnusedMember.Global
         public CalendarEventWithIdModel()
         {
         }

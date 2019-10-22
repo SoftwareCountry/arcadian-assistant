@@ -70,6 +70,7 @@ namespace Arcadia.Assistant.Permissions
         private static void BulkBumpPermissions<T>(IEnumerable<T> entriesIds,
             EmployeePermissionsEntry permissionSet,
             Dictionary<T, EmployeePermissionsEntry> targetPermissionsEntries)
+        where T: struct
         {
             foreach (var entryId in entriesIds)
             {

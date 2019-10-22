@@ -15,6 +15,7 @@ namespace Arcadia.Assistant.Web.Controllers
     using Organization.Contracts;
 
     [Route("/api/departments")]
+    [ApiController]
     public class DepartmentsController : Controller
     {
         private readonly IOrganization organization;

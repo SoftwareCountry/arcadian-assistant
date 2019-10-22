@@ -6,7 +6,7 @@
     public class Photo
     {
         [DataMember]
-        public string MimeType { get; set; }
+        public string? MimeType { get; set; }
 
         [DataMember]
         public int Width { get; set; }
@@ -15,6 +15,6 @@
         public int Height { get; set; }
 
         [DataMember]
-        public byte[] Bytes { get; set; } //TODO: switch to ReadOnlySpan
+        public byte[]? Bytes { get; set; } //TODO: switch to ReadOnlySpan
     }
 }

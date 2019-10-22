@@ -145,7 +145,7 @@ namespace Arcadia.Assistant.WorkHoursCredit
             await ctx.Value.SaveChangesAsync();
         }
 
-        public async Task RejectRequestAsync(EmployeeId employeeId, Guid requestId, string rejectionReason, EmployeeId rejectedBy)
+        public async Task RejectRequestAsync(EmployeeId employeeId, Guid requestId, string? rejectionReason, EmployeeId rejectedBy)
         {
             using var ctx = this.dbFactory();
             var entity = new Rejection

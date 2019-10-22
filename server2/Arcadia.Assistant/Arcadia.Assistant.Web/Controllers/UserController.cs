@@ -16,6 +16,7 @@
 
     [Route("api/user")]
     [Authorize]
+    [ApiController]
     public class UserController : Controller
     {
         private readonly IEmployees employees;
@@ -31,18 +32,14 @@
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<UserModel>> GetCurrentUser(CancellationToken cancellationToken)
         {
-            var userEmployees = await this.employees.FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(this.User.Identity.Name), cancellationToken);
+            var userEmployees = await this.employees.FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(this.User.Identity), cancellationToken);
             var employee = userEmployees.SingleOrDefault();
             if (employee == null)
             {
                 return this.Forbid();
             }
 
-            return new UserModel()
-            {
-                EmployeeId = employee.EmployeeId.ToString(),
-                Username = employee.Name
-            };
+            return new UserModel(employee.EmployeeId.ToString(), employee.Email);
         }
 
         [Route("permissions/{objectEmployeeId}")]
@@ -57,6 +54,11 @@
             if (objectEmployee == null)
             {
                 return this.NotFound();
+            }
+
+            if (this.User.Identity.Name == null)
+            {
+                return this.Forbid();
             }
 
             var allPermissions = await this.permissions.GetPermissionsAsync(this.User.Identity.Name, token);

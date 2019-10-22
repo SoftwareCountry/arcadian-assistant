@@ -11,7 +11,7 @@
     using Microsoft.AspNetCore.Mvc;
 
     [Route("api/photo/employee")]
-
+    [ApiController]
     public class EmployeePhotoController : Controller
     {
         private readonly IAvatars avatars;

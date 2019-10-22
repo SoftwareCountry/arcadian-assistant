@@ -84,7 +84,7 @@
             return new string[0];
         }
 
-        public string ApprovedForType(string type)
+        public string? ApprovedForType(string type)
         {
             if (ApprovedStatusByType.TryGetValue(type, out var status))
             {
@@ -94,7 +94,7 @@
             return null;
         }
 
-        public string RejectedForType(string type)
+        public string? RejectedForType(string type)
         {
             if (RejectedStatusByType.TryGetValue(type, out var status))
             {
@@ -104,7 +104,7 @@
             return null;
         }
 
-        public string CancelledForType(string type)
+        public string? CancelledForType(string type)
         {
             if (CancelledStatusByType.TryGetValue(type, out var status))
             {

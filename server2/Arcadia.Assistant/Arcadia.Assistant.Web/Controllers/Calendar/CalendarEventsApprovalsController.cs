@@ -15,6 +15,7 @@
     using WorkHoursCredit.Contracts;
 
     [Route("/api/employees/{employeeId}/events/{eventId}/approvals")]
+    [ApiController]
     public class CalendarEventsApprovalsController : Controller
     {
         private readonly IWorkHoursCredit workHoursCredit;
@@ -44,7 +45,7 @@
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> ApproveEvent(int employeeId, Guid eventId, [FromBody] CalendarEventApprovalModel model)
         {
             var existingEvent = await this.workHoursCredit.GetCalendarEventAsync(new EmployeeId(employeeId), eventId, CancellationToken.None);

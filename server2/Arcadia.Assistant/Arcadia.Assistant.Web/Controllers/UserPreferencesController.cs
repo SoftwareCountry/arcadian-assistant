@@ -16,6 +16,7 @@
 
     [Authorize]
     [Route("/api/user-preferences")]
+    [ApiController]
     public class UserPreferencesController : Controller
     {
         private readonly IEmployees employees;
@@ -33,7 +34,7 @@
         public async Task<ActionResult<UserPreferencesModel>> GetUserPreferences(CancellationToken cancellationToken)
         {
             var employee = (await this.employees
-                    .FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(this.User.Identity.Name), cancellationToken))
+                    .FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(this.User.Identity), cancellationToken))
                 .FirstOrDefault();
 
             if (employee == null)
@@ -63,7 +64,7 @@
             }
 
             var employee = (await this.employees
-                .FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(this.User.Identity.Name), CancellationToken.None)).FirstOrDefault();
+                .FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(this.User.Identity), CancellationToken.None)).FirstOrDefault();
 
             if (employee == null)
             {

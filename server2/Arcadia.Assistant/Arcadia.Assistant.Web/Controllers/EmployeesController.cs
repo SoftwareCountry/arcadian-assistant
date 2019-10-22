@@ -23,6 +23,7 @@
 
     [Route("api/employees")]
     [Authorize]
+    [ApiController]
     public class EmployeesController : Controller
     {
         private readonly IEmployees employees;
@@ -53,7 +54,13 @@
                 return this.NotFound();
             }
 
-            var model = (await this.ProcessEmployeesAsync(new[] { employee }, token)).FirstOrDefault();
+            var identity = this.User.Identity.Name;
+            if (identity == null)
+            {
+                return this.Forbid();
+            }
+
+            var model = (await this.ProcessEmployeesAsync(identity, new[] { employee }, token)).FirstOrDefault();
             if (model == null)
             {
                 return this.NotFound();
@@ -74,14 +81,20 @@
         {
             var query = EmployeesQuery.Create().ForDepartment(departmentId).ForRoom(roomNumber).WithNameFilter(name);
             var employeesMetadata = await this.employees.FindEmployeesAsync(query, token);
-            var employeeModels = await this.ProcessEmployeesAsync(employeesMetadata, token);
+            var identity = this.User.Identity.Name;
+            if (identity == null)
+            {
+                return this.Forbid();
+            }
+
+            var employeeModels = await this.ProcessEmployeesAsync(identity, employeesMetadata, token);
 
             return employeeModels;
         }
 
-        private async Task<EmployeeModel[]> ProcessEmployeesAsync(IEnumerable<EmployeeMetadata> employeeMetadatas, CancellationToken cancellationToken)
+        private async Task<EmployeeModel[]> ProcessEmployeesAsync(string identity, IEnumerable<EmployeeMetadata> employeeMetadatas, CancellationToken cancellationToken)
         {
-            var allPermissions = await this.permissions.GetPermissionsAsync(this.User.Identity.Name, cancellationToken);
+            var allPermissions = await this.permissions.GetPermissionsAsync(identity, cancellationToken);
 
             var readableEmployees = employeeMetadatas
                 .Where(x => allPermissions.GetPermissions(x).HasFlag(EmployeePermissionsEntry.ReadEmployeeInfo))

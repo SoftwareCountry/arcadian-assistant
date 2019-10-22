@@ -95,7 +95,7 @@ namespace Arcadia.Assistant.Employees
             if (employeesQuery.Identity != null)
             {
                 var email = employeesQuery.Identity;
-                var loginName = this.ExtractLoginName(employeesQuery);
+                var loginName = this.ExtractLoginName(email);
                 if (loginName == null)
                 {
                     query = query.Where(x => EF.Functions.Like(x.Email, email));
@@ -111,12 +111,13 @@ namespace Arcadia.Assistant.Employees
             return employees;
         }
 
-        private string? ExtractLoginName(EmployeesQuery employeesQuery)
+        private string? ExtractLoginName(string email)
         {
             var domain = "@" + this.cspConfiguration.UserIdentityDomain;
-            if (employeesQuery.Identity.EndsWith(domain, StringComparison.OrdinalIgnoreCase))
+
+            if (email.EndsWith(domain, StringComparison.OrdinalIgnoreCase))
             {
-                return employeesQuery.Identity.Substring(0, employeesQuery.Identity.LastIndexOf(domain, StringComparison.OrdinalIgnoreCase));
+                return email.Substring(0, email.LastIndexOf(domain, StringComparison.OrdinalIgnoreCase));
             }
 
             return null;

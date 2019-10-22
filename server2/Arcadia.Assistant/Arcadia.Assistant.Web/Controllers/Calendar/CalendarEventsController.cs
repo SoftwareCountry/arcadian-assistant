@@ -23,6 +23,7 @@
     //TODO: fuck me, that code has to be split apart...
     [Route("/api/employees/{employeeId}/events/")]
     [Authorize]
+    [ApiController]
     public class CalendarEventsController : Controller
     {
         private readonly IWorkHoursCredit workHoursCredit;
@@ -127,6 +128,7 @@
         [Route("{eventId}")]
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -137,7 +139,7 @@
                 return this.BadRequest(this.ModelState);
             }
 
-            var changedBy = (await this.employees.FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(this.User.Identity.Name), CancellationToken.None)).First();
+            var changedBy = (await this.employees.FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(this.User.Identity), CancellationToken.None)).First();
 
             if (changedBy == null)
             {

@@ -32,8 +32,8 @@ namespace Arcadia.Assistant.WorkHoursCredit.Contracts
 
         Task ApproveRequestAsync(EmployeeId employeeId, Guid requestId, EmployeeId approvedBy);
 
-        Task RejectRequestAsync(EmployeeId employeeId, Guid requestId, string rejectionReason, EmployeeId rejectedBy);
+        Task RejectRequestAsync(EmployeeId employeeId, Guid requestId, string? rejectionReason, EmployeeId rejectedBy);
 
-        Task CancelRequestAsync(EmployeeId employeeId, Guid requestId, string rejectionReason, EmployeeId cancelledBy);
+        Task CancelRequestAsync(EmployeeId employeeId, Guid requestId, string? rejectionReason, EmployeeId cancelledBy);
     }
 }

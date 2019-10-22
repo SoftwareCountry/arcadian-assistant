@@ -1,24 +1,26 @@
 ﻿namespace Arcadia.Assistant.Employees.Contracts
 {
+    using System;
     using System.Runtime.Serialization;
+    using System.Security.Principal;
 
     [DataContract]
     public class EmployeesQuery
     {
         [DataMember]
-        public string DepartmentId { get; private set; }
+        public string? DepartmentId { get; private set; }
 
         [DataMember]
         public EmployeeId? EmployeeId { get; private set; }
 
         [DataMember]
-        public string RoomNumber { get; private set; }
+        public string? RoomNumber { get; private set; }
 
         [DataMember]
-        public string Identity { get; private set; }
+        public string? Identity { get; private set; }
 
         [DataMember]
-        public string NameFilter { get; private set; }
+        public string? NameFilter { get; private set; }
 
         public static EmployeesQuery Create()
         {
@@ -50,6 +52,18 @@
         {
             var obj = this.Clone();
             obj.Identity = identity;
+            return obj;
+        }
+
+        public EmployeesQuery WithIdentity(IIdentity identity)
+        {
+            var obj = this.Clone();
+            if (identity.Name == null)
+            {
+                throw new ArgumentException("Identity name is null");
+            }
+
+            obj.Identity = identity.Name;
             return obj;
         }
 

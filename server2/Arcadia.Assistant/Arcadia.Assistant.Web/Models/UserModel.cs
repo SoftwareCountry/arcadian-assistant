@@ -5,10 +5,16 @@
     [DataContract]
     public class UserModel
     {
-        [DataMember]
-        public string Username { get; set; }
+        public UserModel(string username, string employeeId)
+        {
+            this.Username = username;
+            this.EmployeeId = employeeId;
+        }
 
         [DataMember]
-        public string EmployeeId { get; set; }
+        public string Username { get; }
+
+        [DataMember]
+        public string EmployeeId { get; }
     }
 }

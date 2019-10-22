@@ -1,14 +1,16 @@
 ﻿namespace Arcadia.Assistant.Web.Models
 {
     using System.ComponentModel.DataAnnotations;
+    using System.Runtime.Serialization;
 
+    [DataContract]
     public class PushNotificationDeviceModel
     {
         [Required]
-        public string DevicePushToken { get; set; }
+        public string DevicePushToken { get; set; } = string.Empty;
 
         [Required]
         [EnumDataType(typeof(DeviceType))]
-        public DeviceType DeviceType { get; set; }
+        public DeviceType DeviceType { get; set; } = DeviceType.Android;
     }
 }
