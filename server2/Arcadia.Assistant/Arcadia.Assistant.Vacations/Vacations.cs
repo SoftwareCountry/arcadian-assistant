@@ -46,7 +46,7 @@ namespace Arcadia.Assistant.Vacations
             return await storage.Value.GetCalendarEvents(employeeId, cancellationToken);
         }
 
-        public async Task<VacationDescription> GetCalendarEventAsync(EmployeeId employeeId, int eventId, CancellationToken cancellationToken)
+        public async Task<VacationDescription?> GetCalendarEventAsync(EmployeeId employeeId, int eventId, CancellationToken cancellationToken)
         {
             using var storage = this.storageFactory();
             return await storage.Value.GetCalendarEvent(employeeId, eventId, cancellationToken);
@@ -60,7 +60,7 @@ namespace Arcadia.Assistant.Vacations
 
         public async Task ChangeDatesAsync(EmployeeId employeeId, int eventId, DateTime startDate, DateTime endDate)
         {
-            void Update(CSP.Model.Vacation oldValue)
+            void Update(Vacation oldValue)
             {
                 var status = new StatusConverter().GetStatus(oldValue);
                 if (status != VacationStatus.Requested)
@@ -78,7 +78,7 @@ namespace Arcadia.Assistant.Vacations
 
         public async Task CancelVacationAsync(EmployeeId employeeId, int eventId, EmployeeId cancelledBy, string cancellationReason)
         {
-            void Update(CSP.Model.Vacation oldValue)
+            void Update(Vacation oldValue)
             {
                 //var status = new StatusConverter().GetStatus(oldValue);
                 oldValue.VacationCancellations.Add(
@@ -96,7 +96,7 @@ namespace Arcadia.Assistant.Vacations
 
         public async Task ApproveVacationAsync(EmployeeId employeeId, int eventId, EmployeeId approvedBy)
         {
-            void Update(CSP.Model.Vacation oldValue)
+            void Update(Vacation oldValue)
             {
                 //var status = new StatusConverter().GetStatus(oldValue);
                 oldValue.VacationApprovals.Add(
@@ -115,7 +115,7 @@ namespace Arcadia.Assistant.Vacations
 
         public async Task RejectVacationAsync(EmployeeId employeeId, int eventId, EmployeeId rejectedBy)
         {
-            void Update(CSP.Model.Vacation oldValue)
+            void Update(Vacation oldValue)
             {
                 //var status = new StatusConverter().GetStatus(oldValue);
                 oldValue.VacationApprovals.Add(
@@ -150,11 +150,12 @@ namespace Arcadia.Assistant.Vacations
             await this.changesWatcher.StartAsync(cancellationToken);
         }
 
+        /*
         private class EmployeeVacation
         {
             public EmployeeId EmployeeId { get; set; }
 
             public VacationDescription Vacation { get; set; }
-        }
+        }*/
     }
 }

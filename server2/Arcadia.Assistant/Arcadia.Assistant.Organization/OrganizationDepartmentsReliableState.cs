@@ -15,6 +15,6 @@
         public DateTimeOffset Timestamp { get; set; }
 
         [DataMember]
-        public DepartmentMetadata[] Data { get; set; }
+        public DepartmentMetadata[]? Data { get; set; }
     }
 }

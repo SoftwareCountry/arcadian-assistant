@@ -77,7 +77,7 @@ namespace Arcadia.Assistant.WorkHoursCredit
             return events;
         }
 
-        public async Task<WorkHoursChange> GetCalendarEventAsync(EmployeeId employeeId, Guid eventId, CancellationToken cancellationToken)
+        public async Task<WorkHoursChange?> GetCalendarEventAsync(EmployeeId employeeId, Guid eventId, CancellationToken cancellationToken)
         {
             using var ctx = this.dbFactory();
             var calendarEvent = await this.GetCalendarEvents(
@@ -161,7 +161,7 @@ namespace Arcadia.Assistant.WorkHoursCredit
             await ctx.Value.SaveChangesAsync();
         }
 
-        public async Task CancelRequestAsync(EmployeeId employeeId, Guid requestId, string rejectionReason, EmployeeId cancelledBy)
+        public async Task CancelRequestAsync(EmployeeId employeeId, Guid requestId, string? rejectionReason, EmployeeId cancelledBy)
         {
             using var ctx = this.dbFactory();
             var entity = new Cancellation()

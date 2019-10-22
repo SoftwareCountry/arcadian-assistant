@@ -56,8 +56,12 @@
 
             var treeBuilder = new DepartmentsTreeBuilder(allDepartments);
             var tree = treeBuilder.Build(head.DepartmentId);
-            var departments = tree.AsEnumerable().Where(x => x.CountAllEmployees() != 0).Select(x => x.DepartmentInfo).ToList();
+            if (tree == null)
+            {
+                return new DepartmentMetadata[0];
+            }
 
+            var departments = tree.AsEnumerable().Where(x => x.CountAllEmployees() != 0).Select(x => x.DepartmentInfo).ToList();
             return departments;
         }
     }

@@ -38,9 +38,10 @@ namespace Arcadia.Assistant.Employees
             this.mapToMetadata = x =>
                 new EmployeeMetadata(
                     new EmployeeId(x.Id),
-                    $"{x.LastName} {x.FirstName}".Trim(),
                     x.Email)
                 {
+                    LastName = x.LastName,
+                    FirstName = x.FirstName,
                     BirthDate = x.Birthday,
                     HireDate = x.HiringDate,
                     FireDate = x.FiringDate,
@@ -61,15 +62,10 @@ namespace Arcadia.Assistant.Employees
         }
 
 
-        public async Task<EmployeeMetadata> FindEmployeeAsync(EmployeeId? employeeId, CancellationToken cancellationToken)
+        public async Task<EmployeeMetadata?> FindEmployeeAsync(EmployeeId employeeId, CancellationToken cancellationToken)
         {
-            if (employeeId == null)
-            {
-                return null;
-            }
-
             using var query = this.cspEmployeeQuery();
-            var employee = await query.Value.Get().Where(x => x.Id == employeeId.Value.Value).Select(this.mapToMetadata).FirstOrDefaultAsync(cancellationToken);
+            var employee = await query.Value.Get().Where(x => x.Id == employeeId.Value).Select(this.mapToMetadata).FirstOrDefaultAsync(cancellationToken);
 
             return employee;
         }
@@ -115,7 +111,7 @@ namespace Arcadia.Assistant.Employees
             return employees;
         }
 
-        private string ExtractLoginName(EmployeesQuery employeesQuery)
+        private string? ExtractLoginName(EmployeesQuery employeesQuery)
         {
             var domain = "@" + this.cspConfiguration.UserIdentityDomain;
             if (employeesQuery.Identity.EndsWith(domain, StringComparison.OrdinalIgnoreCase))

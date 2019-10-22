@@ -14,11 +14,11 @@ namespace Arcadia.Assistant.Organization.Contracts
 
     public interface IOrganization : IService
     {
-        Task<DepartmentMetadata> GetDepartmentAsync(DepartmentId departmentId, CancellationToken cancellationToken);
+        Task<DepartmentMetadata?> GetDepartmentAsync(DepartmentId departmentId, CancellationToken cancellationToken);
 
         Task<DepartmentMetadata[]> GetDepartmentsAsync(CancellationToken cancellationToken);
 
-        Task<EmployeeMetadata> FindEmployeeSupervisorAsync(EmployeeId employeeId, CancellationToken cancellationToken);
+        Task<EmployeeMetadata?> FindEmployeeSupervisorAsync(EmployeeId employeeId, CancellationToken cancellationToken);
 
         Task<DepartmentMetadata[]> GetSupervisedDepartmentsAsync(EmployeeId employeeId, CancellationToken cancellationToken);
     }

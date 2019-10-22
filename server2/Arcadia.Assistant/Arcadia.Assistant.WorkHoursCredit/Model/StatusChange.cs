@@ -12,7 +12,7 @@
         [Required]
         public DateTimeOffset Timestamp { get; set; }
 
-        public string Comment { get; set; }
+        public string? Comment { get; set; }
 
         [Required]
         public int EmployeeId { get; set; }
@@ -23,6 +23,6 @@
 
         [Required]
         [ForeignKey(nameof(EmployeeId) + "," + nameof(ChangeRequestId))]
-        public virtual ChangeRequest ChangeRequest { get; set; }
+        public virtual ChangeRequest? ChangeRequest { get; set; } = null;
     }
 }

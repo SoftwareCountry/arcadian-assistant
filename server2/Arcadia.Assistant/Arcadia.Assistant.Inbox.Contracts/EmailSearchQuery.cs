@@ -10,10 +10,10 @@
         }
 
         [DataMember]
-        public string Subject { get; private set; }
+        public string? Subject { get; private set; }
 
         [DataMember]
-        public string Sender { get; private set; }
+        public string? Sender { get; private set; }
 
         [DataMember]
         public uint? MinId { get; private set; }

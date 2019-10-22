@@ -10,7 +10,7 @@
     public class ImageResizer
     {
         [HandleProcessCorruptedStateExceptions]
-        public byte[] ResizeImage(byte[] source, int width, int height)
+        public byte[]? ResizeImage(byte[] source, int width, int height)
         {
             try
             {

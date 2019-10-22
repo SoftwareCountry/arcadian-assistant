@@ -20,7 +20,10 @@
         public DepartmentMetadata[] FindFor(EmployeeId employeeId)
         {
             var directlySupervisedDepartments = this.allDepartments.Where(x => x.ChiefId == employeeId);
-            var trees = directlySupervisedDepartments.Select(x => this.departmentsTreeBuilder.Build(x.DepartmentId)).Where(x => x != null);
+
+            // ReSharper disable once RedundantEnumerableCastCall
+            var trees = directlySupervisedDepartments.Select(x => this.departmentsTreeBuilder.Build(x.DepartmentId)).OfType<DepartmentsTreeNode>();
+
             var departments = trees.SelectMany(x => x.AsEnumerable().Select(tree => tree.DepartmentInfo)).Distinct().ToArray();
             return departments;
         }

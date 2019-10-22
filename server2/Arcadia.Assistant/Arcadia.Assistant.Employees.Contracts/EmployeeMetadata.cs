@@ -8,10 +8,9 @@
     [DataContract]
     public class EmployeeMetadata
     {
-        public EmployeeMetadata(EmployeeId employeeId, string name, string email)
+        public EmployeeMetadata(EmployeeId employeeId, string email)
         {
             this.EmployeeId = employeeId;
-            this.Name = name;
             this.Email = email;
         }
 
@@ -19,19 +18,24 @@
         public EmployeeId EmployeeId { get; private set; }
 
         [DataMember]
-        public string Name { get; set; }
+        public string? FirstName { get; set; }
+
+        [DataMember]
+        public string? LastName { get; set; }
+
+        public string Name => $"{this.LastName} {this.FirstName}".Trim();
 
         [DataMember]
         public string Email { get; set; }
 
         [DataMember]
-        public string RoomNumber { get; set; }
+        public string? RoomNumber { get; set; }
 
         [DataMember]
-        public string Position { get; set; }
+        public string? Position { get; set; }
 
         [DataMember]
-        public string MobilePhone { get; set; }
+        public string? MobilePhone { get; set; }
 
         [DataMember]
         public DepartmentId? DepartmentId { get; set; }

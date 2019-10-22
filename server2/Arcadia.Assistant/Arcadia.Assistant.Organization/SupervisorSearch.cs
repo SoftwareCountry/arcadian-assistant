@@ -17,7 +17,7 @@
             this.organizationDepartments = organizationDepartments;
         }
 
-        public async Task<EmployeeMetadata> FindAsync(EmployeeId employeeId, CancellationToken cancellationToken)
+        public async Task<EmployeeMetadata?> FindAsync(EmployeeId employeeId, CancellationToken cancellationToken)
         {
             var target = await this.employees.FindEmployeeAsync(employeeId, cancellationToken);
             if (target == null)
@@ -39,7 +39,9 @@
                     return candidate;
                 }
 
-                var chief = await this.employees.FindEmployeeAsync(department.ChiefId, cancellationToken);
+                var chief = department.ChiefId.HasValue
+                    ? await this.employees.FindEmployeeAsync(department.ChiefId.Value, cancellationToken)
+                    : null;
 
                 if (chief != null && chief.EmployeeId != candidate.EmployeeId || department.IsHeadDepartment)
                 {

@@ -7,6 +7,6 @@
 
     public interface ISupervisorSearch
     {
-        Task<EmployeeMetadata> FindAsync(EmployeeId employeeId, CancellationToken cancellationToken);
+        Task<EmployeeMetadata?> FindAsync(EmployeeId employeeId, CancellationToken cancellationToken);
     }
 }

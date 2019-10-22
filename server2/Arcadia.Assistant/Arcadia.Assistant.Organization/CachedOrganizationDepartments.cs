@@ -38,7 +38,8 @@
                 var storedDepartments = await dictionary.TryGetValueAsync(tx, StoredKey);
                 if (storedDepartments.HasValue && storedDepartments.Value.Timestamp.Add(CacheTime) > DateTimeOffset.Now)
                 {
-                    return storedDepartments.Value.Data;
+                    return storedDepartments.Value.Data 
+                        ?? throw new Exception($"{nameof(OrganizationDepartmentsReliableState.Data)} field is null");
                 }
             }
             catch (Exception e)

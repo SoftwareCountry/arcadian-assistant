@@ -18,7 +18,7 @@
     public class VacationChangesCheck
     {
         private readonly Func<Owned<ArcadiaCspContext>> dbFactory;
-        private VacationsDictionary vacations;
+        private VacationsDictionary? vacations;
 
         public VacationChangesCheck(Func<Owned<ArcadiaCspContext>> dbFactory)
         {

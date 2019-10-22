@@ -35,7 +35,7 @@ namespace Arcadia.Assistant.Organization
             this.supervisorSearch = new SupervisorSearch(employees, this.organizationDepartments);
         }
 
-        public async Task<DepartmentMetadata> GetDepartmentAsync(DepartmentId departmentId, CancellationToken cancellationToken)
+        public async Task<DepartmentMetadata?> GetDepartmentAsync(DepartmentId departmentId, CancellationToken cancellationToken)
         {
             var allDepartments = await this.GetDepartmentsAsync(cancellationToken);
             return allDepartments.FirstOrDefault(x => x.DepartmentId == departmentId);
@@ -46,7 +46,7 @@ namespace Arcadia.Assistant.Organization
             return this.organizationDepartments.GetAllAsync(cancellationToken);
         }
 
-        public Task<EmployeeMetadata> FindEmployeeSupervisorAsync(EmployeeId employeeId, CancellationToken cancellationToken)
+        public Task<EmployeeMetadata?> FindEmployeeSupervisorAsync(EmployeeId employeeId, CancellationToken cancellationToken)
         {
             return this.supervisorSearch.FindAsync(employeeId, cancellationToken);
         }

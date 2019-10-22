@@ -16,7 +16,7 @@
             this.allDepartments = allDepartments;
         }
 
-        public DepartmentsTreeNode Build(DepartmentId rootDepartmentId)
+        public DepartmentsTreeNode? Build(DepartmentId rootDepartmentId)
         {
             var root = this.allDepartments.FirstOrDefault(x => x.DepartmentId == rootDepartmentId);
             if (root == null)
