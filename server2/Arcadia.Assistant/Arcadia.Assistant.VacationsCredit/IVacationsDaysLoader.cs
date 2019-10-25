@@ -6,6 +6,6 @@
 
     public interface IVacationsDaysLoader
     {
-        Task<Dictionary<string, double>> GetEmailsToDaysMappingAsync(CancellationToken cancellationToken);
+        Task<Dictionary<string, double>?> GetEmailsToDaysMappingAsync(CancellationToken cancellationToken);
     }
 }

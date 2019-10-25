@@ -22,7 +22,7 @@ namespace Arcadia.Assistant.VacationsCredit
         private readonly InboxConfiguration configuration;
         private readonly Func<Owned<IVacationsDaysLoader>> loaderFactory;
 
-        private Dictionary<string, double> EmailToVacationDaysCount { get; set; }
+        private Dictionary<string, double> EmailToVacationDaysCount { get; set; } = new Dictionary<string, double>();
 
         public VacationsCredit(StatelessServiceContext context, InboxConfiguration configuration, Func<Owned<IVacationsDaysLoader>> loaderFactory)
             : base(context)

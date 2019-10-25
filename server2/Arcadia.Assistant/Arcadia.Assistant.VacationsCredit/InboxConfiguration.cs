@@ -5,10 +5,6 @@
 
     public class InboxConfiguration
     {
-        public InboxConfiguration()
-        {
-        }
-
         public InboxConfiguration(ConfigurationSection configurationSection)
         {
             this.Enabled = bool.Parse(configurationSection.Parameters["Enabled"].Value);

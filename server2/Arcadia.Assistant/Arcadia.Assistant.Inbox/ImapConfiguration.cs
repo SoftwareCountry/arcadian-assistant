@@ -4,10 +4,6 @@
 
     public class ImapConfiguration
     {
-        public ImapConfiguration()
-        {
-        }
-
         public ImapConfiguration(ConfigurationSection configurationSection)
         {
             this.Host = configurationSection.Parameters["Host"].Value;

@@ -34,15 +34,15 @@
         public DateTimeOffset Date { get; private set; }
 
         [DataMember]
-        public string Sender { get; private set; }
+        public string Sender { get; private set; } = string.Empty;
 
         [DataMember]
-        public string Subject { get; private set; }
+        public string Subject { get; private set; } = string.Empty;
 
         [DataMember]
-        public string Text { get; private set; }
+        public string Text { get; private set; } = string.Empty;
 
         [DataMember]
-        public byte[][] Attachments { get; private set; }
+        public byte[][] Attachments { get; private set; } = new byte[0][];
     }
 }

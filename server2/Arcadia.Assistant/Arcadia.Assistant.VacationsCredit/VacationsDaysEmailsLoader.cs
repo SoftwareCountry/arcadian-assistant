@@ -20,7 +20,7 @@
             this.configuration = configuration;
         }
 
-        public async Task<Dictionary<string, double>> GetEmailsToDaysMappingAsync(CancellationToken cancellationToken)
+        public async Task<Dictionary<string, double>?> GetEmailsToDaysMappingAsync(CancellationToken cancellationToken)
         {
             if (!this.configuration.Enabled)
             {
