@@ -4,6 +4,8 @@
 
     public class SickLeavesConverter
     {
+        private readonly CalendarEventIdConverter idConverter = new CalendarEventIdConverter();
+
         public CalendarEventModel ToCalendarEvent(SickLeaveDescription sickLeave)
         {
             return new CalendarEventModel(CalendarEventTypes.Sickleave, this.ToDatesPeriod(sickLeave), sickLeave.Status.ToString());
@@ -11,7 +13,8 @@
 
         public CalendarEventWithIdModel ToCalendarEventWithId(SickLeaveDescription sickLeave)
         {
-            return new CalendarEventWithIdModel(sickLeave.SickLeaveId.ToString(), CalendarEventTypes.Sickleave, this.ToDatesPeriod(sickLeave), sickLeave.Status.ToString());
+            var dtoId = this.idConverter.ToDtoId(CalendarEventTypes.Sickleave, sickLeave.SickLeaveId);
+            return new CalendarEventWithIdModel(dtoId, CalendarEventTypes.Sickleave, this.ToDatesPeriod(sickLeave), sickLeave.Status.ToString());
         }
 
         private DatesPeriodModel ToDatesPeriod(SickLeaveDescription sickLeave)

@@ -258,10 +258,6 @@
                 return this.NotFound();
             }
 
-            if (existingEvent.Status != VacationStatus.Requested)
-            {
-                return this.BadRequest("Can only change requests in Requested status");
-            }
 
             if (!Enum.TryParse<VacationStatus>(model.Status, out var newStatus))
             {
@@ -276,14 +272,30 @@
                 return this.Forbid();
             }
 
-            if (newStatus == VacationStatus.Cancelled)
+            if (existingEvent.Status != newStatus)
             {
-                await this.vacations.CancelVacationAsync(employeeId, eventId, currentUser.EmployeeId, string.Empty);
-            }
+                if (newStatus == VacationStatus.Requested)
+                {
+                    return this.BadRequest("Cannot move from any status to Requested status");
+                }
 
-            if (newStatus == VacationStatus.Requested && (model.Dates.StartDate != existingEvent.StartDate || model.Dates.EndDate != existingEvent.EndDate))
+                /*
+                if (existingEvent.Status == VacationStatus.Approved && (newStatus == VacationStatus.Cancelled || newStatus == )
+                {
+                    await this.vacations.CancelVacationAsync(employeeId, eventId, currentUser.EmployeeId, string.Empty);
+                }*/
+
+                if (newStatus == VacationStatus.Rejected)
+                {
+                    await this.vacations.RejectVacationAsync(employeeId, eventId, employeeId);
+                }
+            }
+            else
             {
-                await this.vacations.ChangeDatesAsync(employeeId, eventId, model.Dates.StartDate, model.Dates.EndDate);
+                if (newStatus == VacationStatus.Requested && (model.Dates.StartDate != existingEvent.StartDate || model.Dates.EndDate != existingEvent.EndDate))
+                {
+                    await this.vacations.ChangeDatesAsync(employeeId, eventId, model.Dates.StartDate, model.Dates.EndDate);
+                }
             }
 
             return this.NoContent();

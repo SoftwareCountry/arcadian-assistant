@@ -4,6 +4,8 @@
 
     public class WorkHoursConverter
     {
+        private readonly CalendarEventIdConverter idConverter = new CalendarEventIdConverter();
+
         public CalendarEventModel ToCalendarEvent(WorkHoursChange workHoursChange)
         {
             var type = this.ChangeTypeToString(workHoursChange.ChangeType);
@@ -14,9 +16,11 @@
 
         public CalendarEventWithIdModel ToCalendarEventWithId(WorkHoursChange workHoursChange)
         {
+            var type = this.ChangeTypeToString(workHoursChange.ChangeType);
+            var dtoId = this.idConverter.ToDtoId(type, workHoursChange.ChangeId);
             return new CalendarEventWithIdModel(
-                workHoursChange.ChangeId.ToString(),
-                this.ChangeTypeToString(workHoursChange.ChangeType),
+                dtoId,
+                type,
                 this.GetDatesPeriodModel(workHoursChange),
                 workHoursChange.Status.ToString());
         }

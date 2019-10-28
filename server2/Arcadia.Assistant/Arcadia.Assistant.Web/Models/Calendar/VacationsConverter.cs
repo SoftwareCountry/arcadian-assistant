@@ -4,6 +4,8 @@
 
     public class VacationsConverter
     {
+        private readonly CalendarEventIdConverter idConverter = new CalendarEventIdConverter();
+
         public CalendarEventModel ToCalendarEvent(VacationDescription vacation)
         {
             return new CalendarEventModel(CalendarEventTypes.Vacation, this.ToDatesPeriod(vacation), vacation.Status.ToString());
@@ -11,7 +13,8 @@
 
         public CalendarEventWithIdModel ToCalendarEventWithId(VacationDescription vacation)
         {
-            return new CalendarEventWithIdModel(vacation.VacationId.ToString(), CalendarEventTypes.Vacation, this.ToDatesPeriod(vacation), vacation.Status.ToString());
+            var dtoId = this.idConverter.ToDtoId(CalendarEventTypes.Vacation, vacation.VacationId);
+            return new CalendarEventWithIdModel(dtoId, CalendarEventTypes.Vacation, this.ToDatesPeriod(vacation), vacation.Status.ToString());
         }
 
         private DatesPeriodModel ToDatesPeriod(VacationDescription vacationDescription)
