@@ -1,6 +1,7 @@
 ﻿namespace Arcadia.Assistant.Vacations
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -59,6 +60,11 @@
 
             foreach (var databaseEmployeeState in databaseState)
             {
+                if (!this.vacations.ContainsKey(databaseEmployeeState.Key))
+                {
+                    this.vacations[databaseEmployeeState.Key] = new Dictionary<int, Vacation>();
+                }
+
                 var localEmployeeState = this.vacations[databaseEmployeeState.Key];
                 foreach (var removedVacation in localEmployeeState.Keys.Except(databaseEmployeeState.Value.Keys))
                 {
