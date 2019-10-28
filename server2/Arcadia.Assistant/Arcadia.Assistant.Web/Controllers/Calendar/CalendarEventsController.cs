@@ -67,21 +67,29 @@
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<CalendarEventModel>> Get(int employeeId, string eventId, CancellationToken token)
         {
-            if (Guid.TryParse(eventId, out var guidId))
+            var idConverter = new CalendarEventIdConverter();
+            if (idConverter.TryParseWorkHoursChangeId(eventId, out var changeId))
             {
-                var change = await this.workHoursCredit.GetCalendarEventAsync(new EmployeeId(employeeId), guidId, token);
+                var change = await this.workHoursCredit.GetCalendarEventAsync(new EmployeeId(employeeId), changeId, token);
                 if (change != null)
                 {
                     return this.workHoursConverter.ToCalendarEvent(change);
                 }
             }
-
-            if (int.TryParse(eventId, out var intId))
+            else if (idConverter.TryParseSickLeaveId(eventId, out var sickLeaveId))
             {
-                var sickLeave = await this.sickLeaves.GetCalendarEventAsync(new EmployeeId(employeeId), intId, token);
+                var sickLeave = await this.sickLeaves.GetCalendarEventAsync(new EmployeeId(employeeId), sickLeaveId, token);
                 if (sickLeave != null)
                 {
                     return this.sickLeavesConverter.ToCalendarEvent(sickLeave);
+                }
+            } 
+            else if (idConverter.TryParseVacationId(eventId, out var vacationId))
+            {
+                var vacation = await this.vacations.GetCalendarEventAsync(new EmployeeId(employeeId), vacationId, token);
+                if (vacation != null)
+                {
+                    return this.vacationsConverter.ToCalendarEvent(vacation);
                 }
             }
 
@@ -134,11 +142,6 @@
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> Update(int employeeId, string eventId, [FromBody] CalendarEventModel model)
         {
-            if (!this.ModelState.IsValid)
-            {
-                return this.BadRequest(this.ModelState);
-            }
-
             var changedBy = (await this.employees.FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(this.User.Identity), CancellationToken.None)).First();
 
             if (changedBy == null)

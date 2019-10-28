@@ -30,7 +30,7 @@
         /// Finish working hour index. Typically, 4 or 8
         /// </summary>
         [DefaultValue(8)]
-        [Range(1, 24)]
+        [Range(0, 24)]
         [DataMember]
         public int FinishWorkingHour { get; set; } = 8;
 
