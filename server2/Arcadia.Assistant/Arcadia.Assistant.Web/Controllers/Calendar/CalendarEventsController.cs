@@ -211,7 +211,7 @@
         {
             if (!int.TryParse(stringEventId, out var eventId))
             {
-                return this.BadRequest("EventId is not guid");
+                return this.BadRequest("EventId is not int");
             }
 
             var existingEvent = await this.sickLeaves.GetCalendarEventAsync(employeeId, eventId, CancellationToken.None);
@@ -247,6 +247,45 @@
 
         private async Task<IActionResult> UpdateVacation(EmployeeId employeeId, string stringEventId, CalendarEventModel model, EmployeeMetadata changedBy)
         {
+            if (!int.TryParse(stringEventId, out var eventId))
+            {
+                return this.BadRequest("id is not an integer");
+            }
+
+            var existingEvent = await this.vacations.GetCalendarEventAsync(employeeId, eventId, CancellationToken.None);
+            if (existingEvent == null)
+            {
+                return this.NotFound();
+            }
+
+            if (existingEvent.Status != VacationStatus.Requested)
+            {
+                return this.BadRequest("Can only change requests in Requested status");
+            }
+
+            if (!Enum.TryParse<VacationStatus>(model.Status, out var newStatus))
+            {
+                return this.BadRequest("Unknown vacation status");
+            }
+
+            var currentUser = (await this.employees.FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(this.User.Identity), CancellationToken.None))
+                .FirstOrDefault();
+
+            if (currentUser == null)
+            {
+                return this.Forbid();
+            }
+
+            if (newStatus == VacationStatus.Cancelled)
+            {
+                await this.vacations.CancelVacationAsync(employeeId, eventId, currentUser.EmployeeId, string.Empty);
+            }
+
+            if (newStatus == VacationStatus.Requested && (model.Dates.StartDate != existingEvent.StartDate || model.Dates.EndDate != existingEvent.EndDate))
+            {
+                await this.vacations.ChangeDatesAsync(employeeId, eventId, model.Dates.StartDate, model.Dates.EndDate);
+            }
+
             return this.NoContent();
         }
     }
