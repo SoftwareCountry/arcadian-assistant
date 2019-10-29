@@ -57,7 +57,9 @@ namespace Arcadia.Assistant.Vacations
         public async Task<VacationDescription> RequestVacationAsync(EmployeeId employeeId, DateTime startDate, DateTime endDate)
         {
             using var storage = this.storageFactory();
-            return await storage.Value.CreateCalendarEvent(employeeId, startDate, endDate);
+            var description = await storage.Value.CreateCalendarEvent(employeeId, startDate, endDate);
+            this.changesWatcher.ForceRefresh();
+            return description;
         }
 
         public async Task ChangeDatesAsync(EmployeeId employeeId, int eventId, DateTime startDate, DateTime endDate)
@@ -76,6 +78,7 @@ namespace Arcadia.Assistant.Vacations
 
             using var storage = this.storageFactory();
             await storage.Value.UpdateCalendarEvent(employeeId, eventId, Update);
+            this.changesWatcher.ForceRefresh();
         }
 
         public async Task CancelVacationAsync(EmployeeId employeeId, int eventId, EmployeeId cancelledBy, string cancellationReason)
@@ -94,6 +97,7 @@ namespace Arcadia.Assistant.Vacations
 
             using var storage = this.storageFactory();
             await storage.Value.UpdateCalendarEvent(employeeId, eventId, Update);
+            this.changesWatcher.ForceRefresh();
         }
 
         public async Task ApproveVacationAsync(EmployeeId employeeId, int eventId, EmployeeId approvedBy)
@@ -113,6 +117,7 @@ namespace Arcadia.Assistant.Vacations
 
             using var storage = this.storageFactory();
             await storage.Value.UpdateCalendarEvent(employeeId, eventId, Update);
+            this.changesWatcher.ForceRefresh();
         }
 
         public async Task RejectVacationAsync(EmployeeId employeeId, int eventId, EmployeeId rejectedBy)
@@ -132,6 +137,7 @@ namespace Arcadia.Assistant.Vacations
 
             using var storage = this.storageFactory();
             await storage.Value.UpdateCalendarEvent(employeeId, eventId, Update);
+            this.changesWatcher.ForceRefresh();
         }
 
         /// <summary>

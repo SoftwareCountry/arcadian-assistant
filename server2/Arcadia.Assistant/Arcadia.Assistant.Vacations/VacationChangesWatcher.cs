@@ -29,7 +29,15 @@
             {
                 while (true)
                 {
-                    await this.Refresh(cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        await this.Refresh(cancellationToken).ConfigureAwait(false);
+                    }
+                    catch (Exception e)
+                    {
+                        //TODO: log error
+                    }
+
                     this.mres.Wait(this.settings.ChangesCheckInterval, cancellationToken);
                     this.mres.Reset();
                 }
@@ -41,7 +49,7 @@
 
         public void ForceRefresh()
         {
-            this.mres.Reset();
+            this.mres.Set();
         }
 
         public void Dispose()
