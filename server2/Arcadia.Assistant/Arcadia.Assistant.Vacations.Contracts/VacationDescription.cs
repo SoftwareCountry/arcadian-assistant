@@ -1,9 +1,8 @@
 ﻿namespace Arcadia.Assistant.Vacations.Contracts
 {
     using System;
+    using System.Linq;
     using System.Runtime.Serialization;
-
-    using Employees.Contracts;
 
     [DataContract]
     public class VacationDescription
@@ -18,12 +17,29 @@
         public DateTime EndDate { get; set; }
 
         [DataMember]
-        public VacationStatus Status { get; set; }
-
-        [DataMember]
         public VacationApproval[] Approvals { get; set; } = new VacationApproval[0];
 
         [DataMember]
+        public bool IsRejected { get; set; } = false;
+
+        [DataMember]
+        public bool IsCancelled { get; set; } = false;
+
+        [DataMember]
+        public bool IsProcessed { get; set; } = false;
+
+        [DataMember]
+        public bool AccountingReady { get; set; } = false;
+
+        [DataMember]
         public string? CancellationReason { get; set; }
+
+        public VacationStatus Status => 
+            this.IsCancelled ? VacationStatus.Cancelled 
+            : this.IsRejected ? VacationStatus.Rejected
+            : this.IsProcessed ? VacationStatus.Processed
+            : this.AccountingReady ? VacationStatus.AccountingReady
+            : this.Approvals.Any(x => x.IsFinal) ? VacationStatus.Approved
+            : VacationStatus.Requested;
     }
 }

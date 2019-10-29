@@ -108,15 +108,22 @@
             EndDate = x.End,
             VacationId = x.Id,
             Approvals = x.VacationApprovals
-                .Where(v => v.Status == 2)
+                .Where(v => v.Status == VacationApprovalStatus.Approved)
                 .Select(v => new VacationApproval(new EmployeeId(v.Id)) { IsFinal = v.IsFinal, Timestamp = v.TimeStamp })
                 .ToArray(),
+
+            IsRejected = x.VacationApprovals.Any(v => v.Status == VacationApprovalStatus.Rejected),
+            IsProcessed = x.VacationProcesses.Any(),
+            IsCancelled = x.VacationCancellations.Any(),
+            AccountingReady = x.VacationReadies.Any(),
+
+            /*
             Status = x.VacationCancellations.Any() ? VacationStatus.Cancelled
                     : x.VacationApprovals.Any(v => v.Status == 1) ? VacationStatus.Rejected
                     : x.VacationProcesses.Any() ? VacationStatus.Processed
                     : x.VacationReadies.Any() ? VacationStatus.AccountingReady
                     : x.VacationApprovals.Any(v => v.IsFinal && v.Status == 2) ? VacationStatus.Approved //TODO: status should be calculated separately
-                    : VacationStatus.Requested
+                    : VacationStatus.Requested*/
         };
     }
 }
