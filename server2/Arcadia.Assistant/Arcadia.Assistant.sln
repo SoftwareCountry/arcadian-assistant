@@ -51,9 +51,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.SickLeave
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Calendar", "Calendar", "{EC5FA305-0A2E-4985-A977-B9C6F2ADEFFF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Vacations", "Arcadia.Assistant.Vacations\Arcadia.Assistant.Vacations.csproj", "{88DA2A02-B4E5-46AF-AE5D-E2405E3AFB5F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Vacations", "Arcadia.Assistant.Vacations\Arcadia.Assistant.Vacations.csproj", "{88DA2A02-B4E5-46AF-AE5D-E2405E3AFB5F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.Vacations.Contracts", "Arcadia.Assistant.Vacations.Contracts\Arcadia.Assistant.Vacations.Contracts.csproj", "{BBA7563D-DFD2-4964-8FD0-CD340B272662}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Vacations.Contracts", "Arcadia.Assistant.Vacations.Contracts\Arcadia.Assistant.Vacations.Contracts.csproj", "{BBA7563D-DFD2-4964-8FD0-CD340B272662}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.PendingActions", "Arcadia.Assistant.PendingActions\Arcadia.Assistant.PendingActions.csproj", "{62740673-4B3F-4093-A7E5-94251B7C74EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.PendingActions.Contracts", "Arcadia.Assistant.PendingActions.Contracts\Arcadia.Assistant.PendingActions.Contracts.csproj", "{F402EF81-854B-483C-A795-0FA2796CF153}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -159,6 +163,14 @@ Global
 		{BBA7563D-DFD2-4964-8FD0-CD340B272662}.Debug|x64.Build.0 = Debug|x64
 		{BBA7563D-DFD2-4964-8FD0-CD340B272662}.Release|x64.ActiveCfg = Release|Any CPU
 		{BBA7563D-DFD2-4964-8FD0-CD340B272662}.Release|x64.Build.0 = Release|Any CPU
+		{62740673-4B3F-4093-A7E5-94251B7C74EE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{62740673-4B3F-4093-A7E5-94251B7C74EE}.Debug|x64.Build.0 = Debug|Any CPU
+		{62740673-4B3F-4093-A7E5-94251B7C74EE}.Release|x64.ActiveCfg = Release|Any CPU
+		{62740673-4B3F-4093-A7E5-94251B7C74EE}.Release|x64.Build.0 = Release|Any CPU
+		{F402EF81-854B-483C-A795-0FA2796CF153}.Debug|x64.ActiveCfg = Debug|x64
+		{F402EF81-854B-483C-A795-0FA2796CF153}.Debug|x64.Build.0 = Debug|x64
+		{F402EF81-854B-483C-A795-0FA2796CF153}.Release|x64.ActiveCfg = Release|Any CPU
+		{F402EF81-854B-483C-A795-0FA2796CF153}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -175,6 +187,8 @@ Global
 		{0FE483A6-B5C9-40D4-94A5-13F9006F420C} = {EC5FA305-0A2E-4985-A977-B9C6F2ADEFFF}
 		{88DA2A02-B4E5-46AF-AE5D-E2405E3AFB5F} = {EC5FA305-0A2E-4985-A977-B9C6F2ADEFFF}
 		{BBA7563D-DFD2-4964-8FD0-CD340B272662} = {EC5FA305-0A2E-4985-A977-B9C6F2ADEFFF}
+		{62740673-4B3F-4093-A7E5-94251B7C74EE} = {EC5FA305-0A2E-4985-A977-B9C6F2ADEFFF}
+		{F402EF81-854B-483C-A795-0FA2796CF153} = {EC5FA305-0A2E-4985-A977-B9C6F2ADEFFF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C376673D-F593-42B1-8093-D1F667D586B1}

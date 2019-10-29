@@ -64,7 +64,6 @@
 
             var newVacation = new VacationDescription
             {
-                Status = VacationStatus.Requested,
                 StartDate = model.Start,
                 EndDate = model.End,
                 VacationId = model.Id
