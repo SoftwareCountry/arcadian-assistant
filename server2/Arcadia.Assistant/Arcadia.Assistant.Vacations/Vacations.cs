@@ -76,9 +76,7 @@ namespace Arcadia.Assistant.Vacations
                 oldValue.End = endDate;
             }
 
-            using var storage = this.storageFactory();
-            await storage.Value.UpdateCalendarEvent(employeeId, eventId, Update);
-            this.changesWatcher.ForceRefresh();
+            await this.UpdateCalendarEvent(employeeId, eventId, Update);
         }
 
         public async Task CancelVacationAsync(EmployeeId employeeId, int eventId, EmployeeId cancelledBy, string cancellationReason)
@@ -95,9 +93,7 @@ namespace Arcadia.Assistant.Vacations
                     });
             }
 
-            using var storage = this.storageFactory();
-            await storage.Value.UpdateCalendarEvent(employeeId, eventId, Update);
-            this.changesWatcher.ForceRefresh();
+            await this.UpdateCalendarEvent(employeeId, eventId, Update);
         }
 
         public async Task ApproveVacationAsync(EmployeeId employeeId, int eventId, EmployeeId approvedBy)
@@ -115,9 +111,7 @@ namespace Arcadia.Assistant.Vacations
                     });
             }
 
-            using var storage = this.storageFactory();
-            await storage.Value.UpdateCalendarEvent(employeeId, eventId, Update);
-            this.changesWatcher.ForceRefresh();
+            await this.UpdateCalendarEvent(employeeId, eventId, Update);
         }
 
         public async Task RejectVacationAsync(EmployeeId employeeId, int eventId, EmployeeId rejectedBy)
@@ -135,9 +129,7 @@ namespace Arcadia.Assistant.Vacations
                     });
             }
 
-            using var storage = this.storageFactory();
-            await storage.Value.UpdateCalendarEvent(employeeId, eventId, Update);
-            this.changesWatcher.ForceRefresh();
+            await this.UpdateCalendarEvent(employeeId, eventId, Update);
         }
 
         /// <summary>
@@ -156,6 +148,13 @@ namespace Arcadia.Assistant.Vacations
         protected override async Task RunAsync(CancellationToken cancellationToken)
         {
             await this.changesWatcher.StartAsync(cancellationToken);
+        }
+
+        private async Task UpdateCalendarEvent(EmployeeId employeeId, int eventId, Action<Vacation> updateFunc)
+        {
+            using var storage = this.storageFactory();
+            await storage.Value.UpdateCalendarEvent(employeeId, eventId, updateFunc);
+            this.changesWatcher.ForceRefresh();
         }
     }
 }
