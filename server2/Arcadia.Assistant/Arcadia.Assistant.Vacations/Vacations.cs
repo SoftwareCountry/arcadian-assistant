@@ -20,6 +20,8 @@ namespace Arcadia.Assistant.Vacations
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
 
+    using VacationApproval = Contracts.VacationApproval;
+
     /// <summary>
     ///     An instance of this class is created for each service instance by the Service Fabric runtime.
     /// </summary>
@@ -100,7 +102,7 @@ namespace Arcadia.Assistant.Vacations
             {
                 //var status = new StatusConverter().GetStatus(oldValue);
                 oldValue.VacationApprovals.Add(
-                    new VacationApproval()
+                    new CSP.Model.VacationApproval()
                     {
                         ApproverId = approvedBy.Value,
                         IsFinal = true, //fix it
@@ -119,7 +121,7 @@ namespace Arcadia.Assistant.Vacations
             {
                 //var status = new StatusConverter().GetStatus(oldValue);
                 oldValue.VacationApprovals.Add(
-                    new VacationApproval()
+                    new CSP.Model.VacationApproval()
                     {
                         ApproverId = rejectedBy.Value,
                         IsFinal = true, //fix it
@@ -149,13 +151,5 @@ namespace Arcadia.Assistant.Vacations
         {
             await this.changesWatcher.StartAsync(cancellationToken);
         }
-
-        /*
-        private class EmployeeVacation
-        {
-            public EmployeeId EmployeeId { get; set; }
-
-            public VacationDescription Vacation { get; set; }
-        }*/
     }
 }

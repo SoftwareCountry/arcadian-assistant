@@ -20,6 +20,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.ServiceFabric.Actors.Client;
     using Microsoft.ServiceFabric.AspNetCore.Configuration;
     using Microsoft.ServiceFabric.Services.Client;
@@ -131,7 +132,6 @@
         // ReSharper disable once UnusedMember.Global
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AppSettings appSettings)
         {
-            /*
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -139,7 +139,7 @@
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-            }*/
+            }
 
             app.UseStaticFiles();
             app.UseCookiePolicy();

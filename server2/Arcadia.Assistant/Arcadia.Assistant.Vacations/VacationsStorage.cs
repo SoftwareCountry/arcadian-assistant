@@ -18,6 +18,8 @@
 
     using Microsoft.EntityFrameworkCore;
 
+    using VacationApproval = Contracts.VacationApproval;
+
     public class VacationsStorage
     {
         private readonly Func<Owned<ArcadiaCspContext>> cspFactory;
@@ -105,11 +107,15 @@
             StartDate = x.Start,
             EndDate = x.End,
             VacationId = x.Id,
+            Approvals = x.VacationApprovals
+                .Where(v => v.Status == 2)
+                .Select(v => new VacationApproval(new EmployeeId(v.Id)) { IsFinal = v.IsFinal, Timestamp = v.TimeStamp })
+                .ToArray(),
             Status = x.VacationCancellations.Any() ? VacationStatus.Cancelled
                     : x.VacationApprovals.Any(v => v.Status == 1) ? VacationStatus.Rejected
                     : x.VacationProcesses.Any() ? VacationStatus.Processed
                     : x.VacationReadies.Any() ? VacationStatus.AccountingReady
-                    : x.VacationApprovals.Any(v => v.IsFinal && v.Status == 2) ? VacationStatus.Approved
+                    : x.VacationApprovals.Any(v => v.IsFinal && v.Status == 2) ? VacationStatus.Approved //TODO: status should be calculated separately
                     : VacationStatus.Requested
         };
     }
