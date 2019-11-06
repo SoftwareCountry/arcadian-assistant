@@ -4,7 +4,8 @@
     using System.Collections.Generic;
     using System.Reflection;
     using System.Text.Json.Serialization;
-
+    using Arcadia.Assistant.AppCenterBuilds.Contracts.Interfaces;
+    using Arcadia.Assistant.MobileBuild.Contracts;
     using Autofac;
 
     using Avatars.Contracts;
@@ -115,6 +116,8 @@
         public void ConfigureContainer(ContainerBuilder builder)
         {
             builder.RegisterInstance(this.AppSettings);
+            builder.RegisterInstance<IHelpSettings>(this.AppSettings.Config.Links);
+            builder.RegisterInstance<ISslSettings>(this.AppSettings.Config.Ssl);
             builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
             builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
             builder.RegisterModule(new OrganizationModule());
@@ -126,6 +129,7 @@
             builder.RegisterModule(new VacationsCreditModule());
             builder.RegisterModule(new VacationsModule());
             builder.RegisterModule(new SickLeavesModule());
+            builder.RegisterModule(new MobileBuildModule());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

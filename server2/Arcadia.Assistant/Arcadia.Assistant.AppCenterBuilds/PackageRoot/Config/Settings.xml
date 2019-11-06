@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Settings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+  <!-- Add your custom configuration sections and parameters here -->
+  <!--
+  <Section Name="MyConfigSection">
+    <Parameter Name="MyParameter" Value="Value1" />
+  </Section>
+  -->
+  <Section Name="DownloadApplication">
+    <Parameter Name="DownloadBuildIntervalMinutes" Value="10"/>
+    <Parameter Name="BuildsFolder" Value="Builds"/>
+    <Parameter Name="RenameBuildFilePattern" Value="app_release_{buildNumber}{ext}"/>
+    <Parameter Name="ApiToken" Value="63ec9ba00d063026bba58bb2e07f06e32466571a"/>
+    <Parameter Name="AndroidGetBuildsUrl" Value="https://api.appcenter.ms/v0.1/apps/JSC-Arcadia-Inc/Arcadia-Assistant-Android/branches/master/builds"/>
+    <Parameter Name="AndroidGetBuildDownloadLinkTemplateUrl" Value="https://api.appcenter.ms/v0.1/apps/JSC-Arcadia-Inc/Arcadia-Assistant-Android/builds/{buildId}/downloads/build"/>
+    <Parameter Name="IosGetBuildsUrl" Value="https://api.appcenter.ms/v0.1/apps/JSC-Arcadia-Inc/Arcadia-Assistant/branches/master/builds"/>
+    <Parameter Name="IosGetBuildDownloadLinkTemplateUrl" Value="https://api.appcenter.ms/v0.1/apps/JSC-Arcadia-Inc/Arcadia-Assistant/builds/{buildId}/downloads/build"/>
+  </Section>
+</Settings>
