@@ -46,6 +46,12 @@ namespace Arcadia.Assistant.Vacations
             return await storage.Value.GetCalendarEvents(employeeId, cancellationToken);
         }
 
+        public async Task<Dictionary<EmployeeId, VacationDescription[]>> GetCalendarEventsByEmployeeAsync(EmployeeId[] employeeIds, CancellationToken cancellationToken)
+        {
+            using var storage = this.storageFactory();
+            return await storage.Value.GetCalendarEvents(employeeIds, cancellationToken);
+        }
+
         public async Task<VacationDescription?> GetCalendarEventAsync(EmployeeId employeeId, int eventId, CancellationToken cancellationToken)
         {
             using var storage = this.storageFactory();
