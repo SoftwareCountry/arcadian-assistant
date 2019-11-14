@@ -3,9 +3,14 @@
     using System;
     using System.Runtime.Serialization;
 
+    using Employees.Contracts;
+
     [DataContract]
     public class WorkHoursChange
     {
+        [DataMember]
+        public EmployeeId EmployeeId { get; set; }
+
         [DataMember]
         public Guid ChangeId { get; set; }
 
