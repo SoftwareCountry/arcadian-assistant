@@ -7,19 +7,19 @@
     <ServerGarbageCollection>True</ServerGarbageCollection>
     <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
     <TargetLatestRuntimePatch>False</TargetLatestRuntimePatch>
-    <UpdateServiceFabricManifestEnabled>True</UpdateServiceFabricManifestEnabled>
-    <ServicePackagePath>PackageRoot</ServicePackagePath>
-    <ServicePackagePrefix>$(MSBuildProjectName)</ServicePackagePrefix>
-    <FabActUtilWorkingDir>$(BaseIntermediateOutputPath)\FabActUtilTemp</FabActUtilWorkingDir>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.9.4" />
+    <PackageReference Include="Autofac.ServiceFabric" Version="2.2.0" />
     <PackageReference Include="Microsoft.ServiceFabric.Actors" Version="3.4.677" />
     <PackageReference Include="Microsoft.ServiceFabric.Services" Version="3.4.677" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Arcadia.Assistant.MobileBuild.Interfaces\Arcadia.Assistant.MobileBuild.Contracts.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.CSP\Arcadia.Assistant.CSP.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.Employees.Contracts\Arcadia.Assistant.Employees.Contracts.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.SharedFeeds.Contracts\Arcadia.Assistant.SharedFeeds.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

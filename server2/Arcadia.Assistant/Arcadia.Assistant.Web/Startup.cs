@@ -6,6 +6,7 @@
     using System.Text.Json.Serialization;
     using Arcadia.Assistant.AppCenterBuilds.Contracts.Interfaces;
     using Arcadia.Assistant.MobileBuild.Contracts;
+    using Arcadia.Assistant.SharedFeeds.Contracts;
     using Autofac;
 
     using Avatars.Contracts;
@@ -130,6 +131,7 @@
             builder.RegisterModule(new VacationsModule());
             builder.RegisterModule(new SickLeavesModule());
             builder.RegisterModule(new MobileBuildModule());
+            builder.RegisterModule(new FeedsModule());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

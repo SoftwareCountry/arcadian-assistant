@@ -59,15 +59,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.PendingAc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.PendingActions.Contracts", "Arcadia.Assistant.PendingActions.Contracts\Arcadia.Assistant.PendingActions.Contracts.csproj", "{F402EF81-854B-483C-A795-0FA2796CF153}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.AppCenterBuilds", "Arcadia.Assistant.AppCenterBuilds\Arcadia.Assistant.AppCenterBuilds.csproj", "{BA73D362-4E99-42F2-9966-E6692B0CBF7D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.AppCenterBuilds", "Arcadia.Assistant.AppCenterBuilds\Arcadia.Assistant.AppCenterBuilds.csproj", "{BA73D362-4E99-42F2-9966-E6692B0CBF7D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.MobileBuild", "Arcadia.Assistant.MobileBuild\Arcadia.Assistant.MobileBuild.csproj", "{BC44E3D2-B3B0-49F8-965E-25AAB4589BAA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.MobileBuild", "Arcadia.Assistant.MobileBuild\Arcadia.Assistant.MobileBuild.csproj", "{BC44E3D2-B3B0-49F8-965E-25AAB4589BAA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.MobileBuild.Contracts", "Arcadia.Assistant.MobileBuild.Interfaces\Arcadia.Assistant.MobileBuild.Contracts.csproj", "{1C3C2A57-B9EE-45E6-8639-7295AFDEC518}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.MobileBuild.Contracts", "Arcadia.Assistant.MobileBuild.Interfaces\Arcadia.Assistant.MobileBuild.Contracts.csproj", "{1C3C2A57-B9EE-45E6-8639-7295AFDEC518}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.AppCenterBuilds.Contracts", "Arcadia.Assistant.AppCenterBuilds.Contracts\Arcadia.Assistant.AppCenterBuilds.Contracts.csproj", "{78072EC9-451A-440A-A746-775B2709896B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MobileBuilds", "MobileBuilds", "{13E39FC7-D22B-4521-B65A-48C62593821F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.SharedFeeds", "Arcadia.Assistant.SharedFeeds\Arcadia.Assistant.SharedFeeds.csproj", "{F35F095F-99E1-4BAB-A69E-189B51715E68}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.SharedFeeds.Contracts", "Arcadia.Assistant.SharedFeeds.Contracts\Arcadia.Assistant.SharedFeeds.Contracts.csproj", "{D02874F7-7705-4100-A90A-8614386C28B2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Feeds", "Feeds", "{E87445C9-0766-41BC-B6B5-14A5992AADE2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -317,6 +323,22 @@ Global
 		{78072EC9-451A-440A-A746-775B2709896B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{78072EC9-451A-440A-A746-775B2709896B}.Release|x64.ActiveCfg = Release|Any CPU
 		{78072EC9-451A-440A-A746-775B2709896B}.Release|x64.Build.0 = Release|Any CPU
+		{F35F095F-99E1-4BAB-A69E-189B51715E68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F35F095F-99E1-4BAB-A69E-189B51715E68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F35F095F-99E1-4BAB-A69E-189B51715E68}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F35F095F-99E1-4BAB-A69E-189B51715E68}.Debug|x64.Build.0 = Debug|Any CPU
+		{F35F095F-99E1-4BAB-A69E-189B51715E68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F35F095F-99E1-4BAB-A69E-189B51715E68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F35F095F-99E1-4BAB-A69E-189B51715E68}.Release|x64.ActiveCfg = Release|Any CPU
+		{F35F095F-99E1-4BAB-A69E-189B51715E68}.Release|x64.Build.0 = Release|Any CPU
+		{D02874F7-7705-4100-A90A-8614386C28B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D02874F7-7705-4100-A90A-8614386C28B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D02874F7-7705-4100-A90A-8614386C28B2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D02874F7-7705-4100-A90A-8614386C28B2}.Debug|x64.Build.0 = Debug|Any CPU
+		{D02874F7-7705-4100-A90A-8614386C28B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D02874F7-7705-4100-A90A-8614386C28B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D02874F7-7705-4100-A90A-8614386C28B2}.Release|x64.ActiveCfg = Release|Any CPU
+		{D02874F7-7705-4100-A90A-8614386C28B2}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

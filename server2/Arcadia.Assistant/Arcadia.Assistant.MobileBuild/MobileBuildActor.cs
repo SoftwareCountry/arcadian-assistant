@@ -40,10 +40,11 @@ namespace Arcadia.Assistant.MobileBuild
             return this.StateManager.GetStateAsync<byte[]>(BuildDataKey, cancellationToken);
         }
 
-        public Task SetMobileBuildData(string version, byte[] data, CancellationToken cancellationToken)
+        public async Task SetMobileBuildData(string version, byte[] data, CancellationToken cancellationToken)
         {
-            this.StateManager.AddOrUpdateStateAsync(BuildVersionKey, version, (key, value) => version, cancellationToken).Wait();
-            return this.StateManager.AddOrUpdateStateAsync(BuildDataKey, data, (key, value) => data, cancellationToken);
+            await this.StateManager.AddOrUpdateStateAsync(BuildVersionKey, version, (key, value) => version, cancellationToken);
+            await this.StateManager.AddOrUpdateStateAsync(BuildDataKey, data, (key, value) => data, cancellationToken);
+            await this.StateManager.SaveStateAsync(cancellationToken);
         }
 
         /// <summary>
