@@ -13,6 +13,6 @@
         public VacationDescription[] PendingVacations { get; set; } = new VacationDescription[0];
 
         [DataMember]
-        public WorkHoursChangeRequest[] PendingWorkHoursChanges { get; set; } = new WorkHoursChangeRequest[0];
+        public WorkHoursChange[] PendingWorkHoursChanges { get; set; } = new WorkHoursChange[0];
     }
 }
