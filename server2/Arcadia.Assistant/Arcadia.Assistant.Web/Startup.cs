@@ -34,6 +34,8 @@
 
     using Organization.Contracts;
 
+    using PendingActions.Contracts;
+
     using Permissions.Contracts;
 
     using SickLeaves.Contracts;
@@ -126,6 +128,7 @@
             builder.RegisterModule(new VacationsCreditModule());
             builder.RegisterModule(new VacationsModule());
             builder.RegisterModule(new SickLeavesModule());
+            builder.RegisterModule(new PendingActionsModule());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
