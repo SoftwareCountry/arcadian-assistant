@@ -20,7 +20,8 @@
                                     AzureActiveDirectory="true"
                                     ServerCertThumbprint="0123456789012345678901234567890123456789" />
   -->
-  <ClusterConnectionParameters ConnectionEndpoint="assistant.westeurope.cloudapp.azure.com:19000" X509Credential="true" ServerCertThumbprint="0517B3183019AA896EF928E69B486BBED70343B6" FindType="FindByThumbprint" FindValue="0517B3183019AA896EF928E69B486BBED70343B6" StoreLocation="" StoreName="" />
+  <ClusterConnectionParameters ConnectionEndpoint="assistant.westeurope.cloudapp.azure.com:19000" X509Credential="true" FindType="FindByThumbprint" FindValue="0517b3183019aa896ef928e69b486bbed70343b6" ServerCertThumbprint="0517b3183019aa896ef928e69b486bbed70343b6" StoreLocation="CurrentUser" StoreName="My" />
+
   <ApplicationParameterFile Path="..\ApplicationParameters\Cloud.xml" />
   <CopyPackageParameters CompressPackage="true" />
 </PublishProfile>

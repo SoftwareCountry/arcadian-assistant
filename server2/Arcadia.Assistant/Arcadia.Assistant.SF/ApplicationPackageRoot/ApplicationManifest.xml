@@ -49,7 +49,15 @@
 
 <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.SharedFeedsPkg" ServiceManifestVersion="1.0.0" />
-    <ConfigOverrides />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Csp">
+            <Parameter Name="ConnectionString" Value="[Arcadia.Assistant.Csp_ConnectionString]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.MobileBuildPkg" ServiceManifestVersion="1.0.0" />
