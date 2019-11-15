@@ -26,6 +26,8 @@ namespace Arcadia.Assistant.WorkHoursCredit.Contracts
 
         Task<WorkHoursChange?> GetCalendarEventAsync(EmployeeId employeeId, Guid eventId, CancellationToken cancellationToken);
 
+        Task<Dictionary<EmployeeId, WorkHoursChange[]>> GetActiveRequestsAsync(EmployeeId[] employeeIds, CancellationToken cancellationToken);
+
         Task<WorkHoursChange> RequestChangeAsync(EmployeeId employeeId, WorkHoursChangeType changeType, DateTime date, DayPart dayPart);
 
         Task<ChangeRequestApproval[]> GetApprovalsAsync(EmployeeId employeeId, Guid eventId, CancellationToken cancellationToken);

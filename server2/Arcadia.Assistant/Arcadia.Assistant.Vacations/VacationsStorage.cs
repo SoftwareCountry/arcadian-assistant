@@ -64,6 +64,7 @@
 
             var newVacation = new VacationDescription
             {
+                EmployeeId = employeeId,
                 StartDate = model.Start,
                 EndDate = model.End,
                 VacationId = model.Id
@@ -102,6 +103,7 @@
 
         private readonly Expression<Func<CSP.Model.Vacation, VacationDescription>> toDescription = x => new VacationDescription()
         {
+            EmployeeId = new EmployeeId(x.EmployeeId),
             CancellationReason = x.VacationCancellations.Select(y => y.Reason).FirstOrDefault(),
             StartDate = x.Start,
             EndDate = x.End,
@@ -124,5 +126,17 @@
                     : x.VacationApprovals.Any(v => v.IsFinal && v.Status == 2) ? VacationStatus.Approved //TODO: status should be calculated separately
                     : VacationStatus.Requested*/
         };
+
+        public async Task<Dictionary<EmployeeId, VacationDescription[]>> GetCalendarEvents(EmployeeId[] employeeIds, CancellationToken cancellationToken)
+        {
+            using var csp = this.cspFactory();
+            var ids = employeeIds.Select(x => x.Value);
+            var pendingVacations = await csp.Value.Vacations
+                .Where(x => ids.Contains(x.EmployeeId))
+                .Select(this.toDescription)
+                .ToArrayAsync(cancellationToken);
+
+            return pendingVacations.GroupBy(x => x.EmployeeId).ToDictionary(x => x.Key, x => x.ToArray());
+        }
     }
 }

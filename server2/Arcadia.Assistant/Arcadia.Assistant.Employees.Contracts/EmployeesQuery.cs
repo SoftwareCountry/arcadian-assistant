@@ -1,14 +1,17 @@
 ﻿namespace Arcadia.Assistant.Employees.Contracts
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Runtime.Serialization;
     using System.Security.Principal;
 
     [DataContract]
+    [KnownType(typeof(string[]))]
     public class EmployeesQuery
     {
         [DataMember]
-        public string? DepartmentId { get; private set; }
+        public IReadOnlyList<string>? DepartmentIds { get; private set; }
 
         [DataMember]
         public EmployeeId? EmployeeId { get; private set; }
@@ -30,7 +33,14 @@
         public EmployeesQuery ForDepartment(string departmentId)
         {
             var obj = this.Clone();
-            obj.DepartmentId = departmentId;
+            obj.DepartmentIds = new [] { departmentId };
+            return obj;
+        }
+
+        public EmployeesQuery ForDepartments(IEnumerable<string> departmentIds)
+        {
+            var obj = this.Clone();
+            obj.DepartmentIds = departmentIds.ToArray();
             return obj;
         }
 
@@ -77,7 +87,7 @@
         private EmployeesQuery Clone()
         {
             var newObj = new EmployeesQuery();
-            newObj.DepartmentId = this.DepartmentId;
+            newObj.DepartmentIds = this.DepartmentIds;
             newObj.EmployeeId = this.EmployeeId;
             newObj.RoomNumber = this.RoomNumber;
             //newObj.BirthDate = this.BirthDate;

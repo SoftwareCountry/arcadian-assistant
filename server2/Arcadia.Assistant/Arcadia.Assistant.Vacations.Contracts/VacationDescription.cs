@@ -4,11 +4,16 @@
     using System.Linq;
     using System.Runtime.Serialization;
 
+    using Employees.Contracts;
+
     [DataContract]
     public class VacationDescription
     {
         [DataMember]
         public int VacationId { get; set; }
+
+        [DataMember]
+        public EmployeeId EmployeeId { get; set; }
 
         [DataMember]
         public DateTime StartDate { get; set; }

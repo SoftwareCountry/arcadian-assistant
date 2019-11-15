@@ -71,7 +71,7 @@ namespace Arcadia.Assistant.WorkHoursCredit
         public async Task<WorkHoursChange[]> GetCalendarEventsAsync(EmployeeId employeeId, CancellationToken cancellationToken)
         {
             using var ctx = this.dbFactory();
-            var events = await this.GetCalendarEvents(ctx.Value.ChangeRequests, x => x.EmployeeId == employeeId.Value)
+            var events = await this.QueryCalendarEvents(ctx.Value.ChangeRequests, x => x.EmployeeId == employeeId.Value)
                 .ToArrayAsync(cancellationToken);
 
             return events;
@@ -80,12 +80,41 @@ namespace Arcadia.Assistant.WorkHoursCredit
         public async Task<WorkHoursChange?> GetCalendarEventAsync(EmployeeId employeeId, Guid eventId, CancellationToken cancellationToken)
         {
             using var ctx = this.dbFactory();
-            var calendarEvent = await this.GetCalendarEvents(
+            var calendarEvent = await this.QueryCalendarEvents(
                     ctx.Value.ChangeRequests, 
                     x => x.EmployeeId == employeeId.Value && x.ChangeRequestId == eventId)
                 .FirstOrDefaultAsync(cancellationToken);
 
             return calendarEvent;
+        }
+
+        public async Task<Dictionary<EmployeeId, WorkHoursChange[]>> GetActiveRequestsAsync(EmployeeId[] employeeIds, CancellationToken cancellationToken)
+        {
+            if (employeeIds.Length == 0)
+            {
+                return new Dictionary<EmployeeId, WorkHoursChange[]>();
+            }
+
+            var ids = new HashSet<int>(employeeIds.Select(x => x.Value));
+
+            using var ctx = this.dbFactory();
+            var events = await this.QueryCalendarEvents(
+                    ctx.Value.ChangeRequests,
+                    x => ids.Contains(x.EmployeeId))
+                .Where(x => x.Status != ChangeRequestStatus.Cancelled && x.Status != ChangeRequestStatus.Approved)
+                .ToListAsync(cancellationToken);
+
+            var groupedEvents = events.GroupBy(x => x.EmployeeId).ToDictionary(x => x.Key, x => x.ToArray());
+
+            foreach (var employeeId in employeeIds)
+            {
+                if (!groupedEvents.ContainsKey(employeeId))
+                {
+                    groupedEvents[employeeId] = new WorkHoursChange[0];
+                }
+            }
+
+            return groupedEvents;
         }
 
         public async Task<WorkHoursChange> RequestChangeAsync(EmployeeId employeeId, WorkHoursChangeType changeType, DateTime date, DayPart dayPart)
@@ -186,13 +215,14 @@ namespace Arcadia.Assistant.WorkHoursCredit
             return this.CreateServiceRemotingInstanceListeners();
         }
 
-        private IQueryable<WorkHoursChange> GetCalendarEvents(IQueryable<ChangeRequest> changeRequests, Expression<Func<ChangeRequest, bool>> predicate)
+        private IQueryable<WorkHoursChange> QueryCalendarEvents(IQueryable<ChangeRequest> changeRequests, Expression<Func<ChangeRequest, bool>> predicate)
         {
             var events = changeRequests
                 .AsNoTracking()
                 .Where(predicate)
                 .Select(x => new WorkHoursChange
                 {
+                    EmployeeId = new EmployeeId(x.EmployeeId),
                     ChangeType = x.ChangeType,
                     Date = x.Date,
                     DayPart = x.DayPart,

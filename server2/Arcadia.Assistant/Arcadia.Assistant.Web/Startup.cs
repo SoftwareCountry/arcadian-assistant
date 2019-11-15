@@ -35,6 +35,8 @@
 
     using Organization.Contracts;
 
+    using PendingActions.Contracts;
+
     using Permissions.Contracts;
 
     using SickLeaves.Contracts;
@@ -129,6 +131,7 @@
             builder.RegisterModule(new VacationsCreditModule());
             builder.RegisterModule(new VacationsModule());
             builder.RegisterModule(new SickLeavesModule());
+            builder.RegisterModule(new PendingActionsModule());
             builder.RegisterModule(new MobileBuildModule());
         }
 

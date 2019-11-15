@@ -80,9 +80,11 @@ namespace Arcadia.Assistant.Employees
                 query = query.Where(x => x.RoomNumber.Trim() == employeesQuery.RoomNumber.Trim());
             }
 
-            if (employeesQuery.DepartmentId != null)
+            if (employeesQuery.DepartmentIds != null)
             {
-                query = query.Where(x => x.DepartmentId.ToString() == employeesQuery.DepartmentId);
+                query = employeesQuery.DepartmentIds.Count == 1 
+                    ? query.Where(x => x.DepartmentId != null && x.DepartmentId.ToString() == employeesQuery.DepartmentIds[0]) 
+                    : query.Where(x => x.DepartmentId != null && employeesQuery.DepartmentIds.Contains(x.DepartmentId.ToString()));
             }
 
             if (employeesQuery.NameFilter != null)
