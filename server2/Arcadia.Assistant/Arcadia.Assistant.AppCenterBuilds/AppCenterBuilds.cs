@@ -71,15 +71,11 @@ namespace Arcadia.Assistant.AppCenterBuilds
                     ServiceEventSource.Current.ServiceMessage(this.Context, "Configuration is empty");
                 }
 
-#if DEBUG
-                await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
-#else
                 await Task.Delay(TimeSpan.FromMinutes(this.DownloadBuildIntervalMinutes), cancellationToken);
-#endif
             }
         }
 
-        private int DownloadBuildIntervalMinutes { get => this.configuration == null ? 10 : this.configuration.DownloadBuildIntervalMinutes; }
+        private int DownloadBuildIntervalMinutes { get => this.configuration == null ? 720 : this.configuration.DownloadBuildIntervalMinutes; }
 
         private string ApiToken { get => this.configuration?.ApiToken ?? string.Empty; }
 

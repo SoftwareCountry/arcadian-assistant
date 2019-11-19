@@ -8,7 +8,7 @@
     <Parameter Name="OpenIdConfigurationUrl" Value=""/>
   </Section>
   <Section Name="Links">
-    <Parameter Name="HelpLink" Value="https://arcadiaspb.sharepoint.com/teams/ArcadiaAssistant/SitePages/Usage%20Guide.aspx"/>
+    <Parameter Name="HelpLink" Value=""/>
   </Section>
   <Section Name="Ssl">
     <Parameter Name="SslOffloading" Value="false"/>

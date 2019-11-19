@@ -2,11 +2,7 @@
 {
     public interface IDownloadApplicationSettings
     {
-        string BuildsFolder { get; }
-
         int DownloadBuildIntervalMinutes { get; }
-
-        string RenameBuildFilePattern { get; }
 
         string ApiToken { get; }
 

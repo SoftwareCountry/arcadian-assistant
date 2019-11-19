@@ -1,7 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="Arcadia.Assistant.SFType" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Parameters>
-    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_InstanceCount" DefaultValue="-1" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_InstanceCount" DefaultValue="1" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_DownloadBuildIntervalMinutes" DefaultValue="720" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_ApiToken" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_AndroidGetBuildsUrl" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_AndroidGetBuildDownloadLinkTemplateUrl" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_IosGetBuildsUrl" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_IosGetBuildDownloadLinkTemplateUrl" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.PendingActions_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.Vacations_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.SickLeaves_InstanceCount" DefaultValue="-1" />
@@ -29,6 +35,8 @@
     <Parameter Name="Arcadia.Assistant.Web_Security_AuthorizationUrl" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_Security_TokenUrl" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_Security_OpenIdConfigurationUrl" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Web_Links_HelpLink" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Web_Ssl_SslOffloading" DefaultValue="false" />
     <Parameter Name="AvatarActorService_PartitionCount" DefaultValue="10" />
     <Parameter Name="AvatarActorService_MinReplicaSetSize" DefaultValue="3" />
     <Parameter Name="AvatarActorService_TargetReplicaSetSize" DefaultValue="3" />
@@ -48,7 +56,20 @@
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.AppCenterBuildsPkg" ServiceManifestVersion="1.0.0" />
-    <ConfigOverrides />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="DownloadApplication">
+            <Parameter Name="DownloadBuildIntervalMinutes" Value="[Arcadia.Assistant.AppCenterBuilds_DownloadBuildIntervalMinutes]" />
+            <Parameter Name="ApiToken" Value="[Arcadia.Assistant.AppCenterBuilds_ApiToken]" />
+            <Parameter Name="AndroidGetBuildsUrl" Value="[Arcadia.Assistant.AppCenterBuilds_AndroidGetBuildsUrl]" />
+            <Parameter Name="AndroidGetBuildDownloadLinkTemplateUrl" Value="[Arcadia.Assistant.AppCenterBuilds_AndroidGetBuildDownloadLinkTemplateUrl]" />
+            <Parameter Name="IosGetBuildsUrl" Value="[Arcadia.Assistant.AppCenterBuilds_IosGetBuildsUrl]" />
+            <Parameter Name="IosGetBuildDownloadLinkTemplateUrl" Value="[Arcadia.Assistant.AppCenterBuilds_IosGetBuildDownloadLinkTemplateUrl]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.PendingActionsPkg" ServiceManifestVersion="1.0.0" />
@@ -168,6 +189,12 @@
             <Parameter Name="AuthorizationUrl" Value="[Arcadia.Assistant.Web_Security_AuthorizationUrl]" />
             <Parameter Name="TokenUrl" Value="[Arcadia.Assistant.Web_Security_TokenUrl]" />
             <Parameter Name="OpenIdConfigurationUrl" Value="[Arcadia.Assistant.Web_Security_OpenIdConfigurationUrl]" />
+          </Section>
+        <Section Name="Links">
+            <Parameter Name="HelpLink" Value="[Arcadia.Assistant.Web_Links_HelpLink]" />
+          </Section>
+          <Section Name="Ssl">
+            <Parameter Name="SslOffloading" Value="[Arcadia.Assistant.Web_Ssl_SslOffloading]" />
           </Section>
         </Settings>
       </ConfigOverride>
