@@ -39,11 +39,11 @@ namespace Arcadia.Assistant.AppCenterBuilds
                 var downloadModel = await GetBuildDownloadModel(appCenterLatestBuild, httpClientFactory);
                 var data = await GetBuildData(downloadModel, httpClientFactory);
                 await mobileBuildActor.SetMobileBuildData(appCenterLastBuildVersion, data, cancellationToken);
-                logStore($"Mobile build {appCenterLastBuildVersion} updated from {downloadModel.Uri}");
+                logStore?.Invoke($"Mobile build {appCenterLastBuildVersion} updated from {downloadModel.Uri}");
             }
             else
             {
-                logStore("The same version - nothing to do");
+                logStore?.Invoke("The same version - nothing to do");
             }
 
             return true;

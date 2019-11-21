@@ -13,4 +13,7 @@
   <Section Name="Ssl">
     <Parameter Name="SslOffloading" Value="false"/>
   </Section>
+  <Section Name="Logging">
+    <Parameter Name="ApplicationInsightsKey" Value=""/>
+  </Section>
 </Settings>

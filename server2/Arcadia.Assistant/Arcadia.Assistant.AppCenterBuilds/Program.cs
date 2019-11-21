@@ -4,12 +4,16 @@ using System.Fabric;
 using System.Threading;
 using Arcadia.Assistant.AppCenterBuilds.Contracts;
 using Arcadia.Assistant.AppCenterBuilds.Contracts.Interfaces;
+using Arcadia.Assistant.Logging;
 using Arcadia.Assistant.MobileBuild.Contracts;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Autofac.Integration.ServiceFabric;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.ServiceFabric.Actors.Client;
+using Microsoft.ServiceFabric.Services.Remoting.Client;
+using Microsoft.ServiceFabric.Services.Runtime;
 
 namespace Arcadia.Assistant.AppCenterBuilds
 {
@@ -20,9 +24,11 @@ namespace Arcadia.Assistant.AppCenterBuilds
         /// </summary>
         private static void Main()
         {
+            ILogger logger = null;
             try
             {
                 var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
+                var appInsightKey = configurationPackage.Settings.Sections["Logging"].Parameters["ApplicationInsightsKey"].Value;
 
                 var services = new ServiceCollection();
                 services.AddHttpClient();
@@ -30,7 +36,9 @@ namespace Arcadia.Assistant.AppCenterBuilds
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
                 builder.Register(x => new DownloadApplicationSettings(configurationPackage.Settings.Sections["DownloadApplication"])).As<IDownloadApplicationSettings>().SingleInstance();
+                builder.Register(x => new LoggerSettings(appInsightKey)).SingleInstance();
                 builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
+                builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
                 builder.RegisterModule(new MobileBuildModule());
                 builder.RegisterStatelessService<AppCenterBuilds>("Arcadia.Assistant.AppCenterBuildsType");
                 builder.Populate(services);
