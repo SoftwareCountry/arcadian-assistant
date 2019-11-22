@@ -11,6 +11,7 @@
     <ServicePackagePath>PackageRoot</ServicePackagePath>
     <ServicePackagePrefix>$(MSBuildProjectName)</ServicePackagePrefix>
     <FabActUtilWorkingDir>$(BaseIntermediateOutputPath)\FabActUtilTemp</FabActUtilWorkingDir>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Arcadia.Assistant.MobileBuild.Interfaces\Arcadia.Assistant.MobileBuild.Contracts.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.MobileBuild.Contracts\Arcadia.Assistant.MobileBuild.Contracts.csproj" />
   </ItemGroup>
 
 </Project>
