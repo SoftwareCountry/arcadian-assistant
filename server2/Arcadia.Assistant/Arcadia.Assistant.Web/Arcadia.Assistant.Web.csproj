@@ -31,7 +31,7 @@
     <ProjectReference Include="..\Arcadia.Assistant.AppCenterBuilds.Contracts\Arcadia.Assistant.AppCenterBuilds.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Avatars.Contracts\Arcadia.Assistant.Avatars.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Employees.Contracts\Arcadia.Assistant.Employees.Contracts.csproj" />
-    <ProjectReference Include="..\Arcadia.Assistant.MobileBuild.Interfaces\Arcadia.Assistant.MobileBuild.Contracts.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.MobileBuild.Contracts\Arcadia.Assistant.MobileBuild.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Organization.Contracts\Arcadia.Assistant.Organization.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.PendingActions.Contracts\Arcadia.Assistant.PendingActions.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Permissions.Contracts\Arcadia.Assistant.Permissions.Contracts.csproj" />

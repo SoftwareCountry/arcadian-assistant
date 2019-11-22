@@ -1,7 +1,7 @@
 ﻿using System.Fabric.Description;
 using Arcadia.Assistant.AppCenterBuilds.Contracts.Interfaces;
 
-namespace Arcadia.Assistant.AppCenterBuilds.Contracts
+namespace Arcadia.Assistant.AppCenterBuilds
 {
     public class DownloadApplicationSettings : IDownloadApplicationSettings
     {

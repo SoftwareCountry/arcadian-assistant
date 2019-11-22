@@ -17,13 +17,6 @@
     {
         private readonly IMobileBuildActorFactory mobileBuildActor;
 
-        private readonly Dictionary<DeviceType, ApplicationTypeEnum> buildTypeByDeviceType =
-            new Dictionary<DeviceType, ApplicationTypeEnum>
-            {
-                [DeviceType.Android] = ApplicationTypeEnum.Android,
-                [DeviceType.Ios] = ApplicationTypeEnum.Ios
-            };
-
         private readonly Dictionary<DeviceType, string> fileContentTypeByDeviceType = new Dictionary<DeviceType, string>
         {
             [DeviceType.Android] = "application/vnd.android.package-archive",
@@ -52,8 +45,8 @@
 
         private async Task<IActionResult> GetFile(DeviceType deviceType, CancellationToken token)
         {
-            var buildApplicationType = this.buildTypeByDeviceType[deviceType];
-            var downloadActor = this.mobileBuildActor.MobileBuild(buildApplicationType.ToString());
+            var buildApplicationType = deviceType.MobileBuildType();
+            var downloadActor = this.mobileBuildActor.MobileBuild(buildApplicationType);
 
             try
             {

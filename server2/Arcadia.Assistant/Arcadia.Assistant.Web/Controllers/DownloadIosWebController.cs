@@ -6,12 +6,17 @@
 
     using Arcadia.Assistant.Web.Models;
     using Arcadia.Assistant.AppCenterBuilds.Contracts.Interfaces;
+    using Arcadia.Assistant.MobileBuild.Contracts.Interfaces;
+    using System.Threading.Tasks;
+    using System.Threading;
 
     [ApiExplorerSettings(IgnoreApi = true)]
     public class DownloadIosWebController : Controller
     {
         private readonly ISslSettings sslSettings;
         private readonly IHelpSettings helpSettings;
+        private readonly IMobileBuildActorFactory mobileBuildActor;
+
         private const string iosManifest = @"
     <value>&lt;?xml version=""1.0"" encoding=""UTF-8""?&gt;
 &lt;!DOCTYPE plist PUBLIC ""-//Apple//DTD PLIST 1.0//EN"" ""http://www.apple.com/DTDs/PropertyList-1.0.dtd""&gt;
@@ -45,20 +50,24 @@
     &lt;/dict&gt;
 &lt;/plist&gt;</value>";
 
-        public DownloadIosWebController(ISslSettings sslSettings, IHelpSettings helpSettings)
+        public DownloadIosWebController(ISslSettings sslSettings, IHelpSettings helpSettings, IMobileBuildActorFactory mobileBuildActor)
         {
             this.sslSettings = sslSettings;
             this.helpSettings = helpSettings;
+            this.mobileBuildActor = mobileBuildActor;
         }
 
         [Route("download/ios")]
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            using CancellationTokenSource cts = new CancellationTokenSource();
+            var version = await mobileBuildActor.MobileBuild(DeviceType.Ios.MobileBuildType()).GetMobileBuildVersionAsync(cts.Token);
             return this.View(new HomeViewModel
             {
                 ManifestLink = this.GetAbsoluteUrl("GetIosManifest", "DownloadIosWeb"),
-                HelpLink = this.helpSettings.HelpLink
+                HelpLink = this.helpSettings.HelpLink,
+                Version = version
             });
         }
 
