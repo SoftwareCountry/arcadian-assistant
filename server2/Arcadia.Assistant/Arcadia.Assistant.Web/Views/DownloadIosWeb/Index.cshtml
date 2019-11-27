@@ -63,7 +63,7 @@
                 <a href="itms-services://?action=download-manifest&url=@Model.ManifestLink">
                     <img src="~/images/download_ios.svg" alt="Download for iOS" />
                 </a>
-                <label class="version">Version:&nbsp; @Model.Version &nbsp;</label>
+                <div class="version">Version:&nbsp; @Model.Version &nbsp;</div>
             </div>
             <div class="another-application-link">
                 @Html.ActionLink("Not an iOS?", "Index", "DownloadAndroidWeb")

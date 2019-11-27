@@ -1,11 +1,6 @@
 namespace Arcadia.Assistant.Web
 {
-    using System.Collections.Generic;
-    using System.Fabric;
-    using System.IO;
-
     using Autofac.Extensions.DependencyInjection;
-
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -13,6 +8,9 @@ namespace Arcadia.Assistant.Web
     using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
+    using System.Collections.Generic;
+    using System.Fabric;
+    using System.IO;
 
     /// <summary>
     ///     The FabricRuntime creates an instance of this class for each service type instance.

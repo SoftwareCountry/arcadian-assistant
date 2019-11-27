@@ -1,13 +1,11 @@
 ﻿using Arcadia.Assistant.AppCenterBuilds.Contracts.AppCenter;
-using Arcadia.Assistant.MobileBuild.Contracts.Interfaces;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+using Arcadia.Assistant.MobileBuild.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,8 +17,14 @@ namespace Arcadia.Assistant.AppCenterBuilds
         private readonly string downloadUrlTemplate;
         private readonly string apiKey;
 
-        public UpdateMobileBuildHelper(string buildUrl, string downloadUrlTemplate, string apiKey)
+        public UpdateMobileBuildHelper(string? buildUrl, string? downloadUrlTemplate, string? apiKey)
         {
+            if (buildUrl == null || downloadUrlTemplate == null)
+                throw new ArgumentNullException("Mobile build configuration error.");
+
+            if (string.IsNullOrWhiteSpace(apiKey))
+                throw new ArgumentNullException("Mobile build ApiKey is empty.");
+
             this.buildUrl = buildUrl;
             this.downloadUrlTemplate = downloadUrlTemplate;
             this.apiKey = apiKey;
@@ -32,7 +36,11 @@ namespace Arcadia.Assistant.AppCenterBuilds
         {
             var currentMobileBuildVersion = await mobileBuildActor.GetMobileBuildVersionAsync(cancellationToken);
             var appCenterLatestBuild = await GetLatestBuild(httpClientFactory);
-            var appCenterLastBuildVersion = appCenterLatestBuild.Id.ToString();
+            if (!appCenterLatestBuild.Id.HasValue)
+            {
+                throw new ArgumentNullException("Application center build identifier expected");
+            }
+            var appCenterLastBuildVersion = appCenterLatestBuild.Id.Value.ToString();
 
             if (currentMobileBuildVersion != appCenterLastBuildVersion)
             {
@@ -43,6 +51,7 @@ namespace Arcadia.Assistant.AppCenterBuilds
             }
             else
             {
+                // TO DO: Refactor for common logger using
                 logStore("The same version - nothing to do");
             }
 
@@ -104,11 +113,11 @@ namespace Arcadia.Assistant.AppCenterBuilds
 
         private T DeserializeJson<T>(string message)
         {
-            var serializerSettings = new JsonSerializerSettings
+            var serializerSettings = new JsonSerializerOptions
             {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
-            return JsonConvert.DeserializeObject<T>(message, serializerSettings);
+            return JsonSerializer.Deserialize<T>(message, serializerSettings);
         }
 
         #endregion

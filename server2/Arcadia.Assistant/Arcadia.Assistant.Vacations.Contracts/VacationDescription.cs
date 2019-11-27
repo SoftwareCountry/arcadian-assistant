@@ -1,10 +1,9 @@
 ﻿namespace Arcadia.Assistant.Vacations.Contracts
 {
+    using Employees.Contracts;
     using System;
     using System.Linq;
     using System.Runtime.Serialization;
-
-    using Employees.Contracts;
 
     [DataContract]
     public class VacationDescription
@@ -39,8 +38,8 @@
         [DataMember]
         public string? CancellationReason { get; set; }
 
-        public VacationStatus Status => 
-            this.IsCancelled ? VacationStatus.Cancelled 
+        public VacationStatus Status =>
+            this.IsCancelled ? VacationStatus.Cancelled
             : this.IsRejected ? VacationStatus.Rejected
             : this.IsProcessed ? VacationStatus.Processed
             : this.AccountingReady ? VacationStatus.AccountingReady

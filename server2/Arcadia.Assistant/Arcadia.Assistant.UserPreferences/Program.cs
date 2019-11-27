@@ -1,9 +1,8 @@
 namespace Arcadia.Assistant.UserPreferences
 {
+    using Microsoft.ServiceFabric.Actors.Runtime;
     using System;
     using System.Threading;
-
-    using Microsoft.ServiceFabric.Actors.Runtime;
 
     internal static class Program
     {

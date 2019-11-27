@@ -5,11 +5,9 @@ using Microsoft.ServiceFabric.Services.Remoting.FabricTransport;
 
 namespace Arcadia.Assistant.Inbox.Contracts
 {
-    using System.Collections.Generic;
+    using Microsoft.ServiceFabric.Services.Remoting;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using Microsoft.ServiceFabric.Services.Remoting;
 
     public interface IInbox : IService
     {

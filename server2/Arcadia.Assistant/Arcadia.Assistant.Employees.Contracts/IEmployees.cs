@@ -5,10 +5,9 @@ using Microsoft.ServiceFabric.Services.Remoting.FabricTransport;
 
 namespace Arcadia.Assistant.Employees.Contracts
 {
+    using Microsoft.ServiceFabric.Services.Remoting;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using Microsoft.ServiceFabric.Services.Remoting;
 
     public interface IEmployees : IService
     {

@@ -1,11 +1,9 @@
 ﻿namespace Arcadia.Assistant.Organization
 {
+    using Contracts;
+    using Employees.Contracts;
     using System.Collections.Generic;
     using System.Linq;
-
-    using Contracts;
-
-    using Employees.Contracts;
 
     public class DepartmentsTreeBuilder
     {

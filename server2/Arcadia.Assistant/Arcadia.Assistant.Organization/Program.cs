@@ -1,18 +1,14 @@
 namespace Arcadia.Assistant.Organization
 {
+    using Autofac;
+    using Autofac.Integration.ServiceFabric;
+    using CSP;
+    using Employees.Contracts;
+    using Microsoft.ServiceFabric.Services.Remoting.Client;
     using System;
     using System.Diagnostics;
     using System.Fabric;
     using System.Threading;
-
-    using Autofac;
-    using Autofac.Integration.ServiceFabric;
-
-    using CSP;
-
-    using Employees.Contracts;
-
-    using Microsoft.ServiceFabric.Services.Remoting.Client;
 
     internal static class Program
     {

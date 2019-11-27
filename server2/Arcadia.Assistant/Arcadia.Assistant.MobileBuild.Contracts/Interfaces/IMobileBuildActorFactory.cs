@@ -1,4 +1,4 @@
-namespace Arcadia.Assistant.MobileBuild.Contracts.Interfaces
+namespace Arcadia.Assistant.MobileBuild.Contracts
 {
     /// <summary>
     /// This interface defines the methods exposed by an actor.

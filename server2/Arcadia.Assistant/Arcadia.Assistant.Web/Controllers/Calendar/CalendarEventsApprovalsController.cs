@@ -1,20 +1,14 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers.Calendar
 {
-    using System;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-
     using Employees.Contracts;
-
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-
     using Models.Calendar;
-
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Vacations.Contracts;
-
     using WorkHoursCredit.Contracts;
 
     [Route("/api/employees/{employeeId}/events/{eventId}/approvals")]
@@ -51,14 +45,14 @@
 
                 return approvals.Select(x => new CalendarEventApprovalModel(x.ApproverId.ToString(), x.Timestamp)).ToArray();
             }
-            
+
             if (this.idConverter.TryParseVacationId(eventId, out var vacationId))
             {
                 var vacation = await this.vacations.GetCalendarEventAsync(new EmployeeId(employeeId), vacationId, token);
                 if (vacation == null)
                 {
                     return this.NotFound();
-                } 
+                }
 
                 return vacation.Approvals.Select(x => new CalendarEventApprovalModel(x.ApproverId.ToString(), x.Timestamp)).ToArray();
             }
@@ -89,7 +83,8 @@
                 }
 
                 await this.workHoursCredit.ApproveRequestAsync(new EmployeeId(employeeId), changeId, approver.EmployeeId);
-            } else if (this.idConverter.TryParseVacationId(eventId, out var vacationId))
+            }
+            else if (this.idConverter.TryParseVacationId(eventId, out var vacationId))
             {
 
                 var existingEvent = await this.vacations.GetCalendarEventAsync(new EmployeeId(employeeId), vacationId, CancellationToken.None);

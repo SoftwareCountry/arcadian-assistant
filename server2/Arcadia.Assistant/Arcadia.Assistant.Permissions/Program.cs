@@ -1,18 +1,13 @@
 namespace Arcadia.Assistant.Permissions
 {
+    using Autofac;
+    using Autofac.Integration.ServiceFabric;
+    using Employees.Contracts;
+    using Microsoft.ServiceFabric.Services.Remoting.Client;
+    using Organization.Contracts;
     using System;
     using System.Diagnostics;
     using System.Threading;
-
-    using Autofac;
-    using Autofac.Integration.ServiceFabric;
-
-    using Employees.Contracts;
-
-    using Microsoft.ServiceFabric.Services.Remoting.Client;
-    using Microsoft.ServiceFabric.Services.Runtime;
-
-    using Organization.Contracts;
 
     internal static class Program
     {

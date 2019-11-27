@@ -1,14 +1,11 @@
 ﻿namespace Arcadia.Assistant.SickLeaves
 {
+    using CSP.Model;
+    using Employees.Contracts;
+    using Microsoft.EntityFrameworkCore;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-
-    using CSP.Model;
-
-    using Employees.Contracts;
-
-    using Microsoft.EntityFrameworkCore;
 
     public class SickLeaveCancellationStep
     {

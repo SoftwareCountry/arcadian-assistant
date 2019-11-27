@@ -1,10 +1,9 @@
 ﻿namespace Arcadia.Assistant.Permissions.Contracts
 {
+    using Employees.Contracts;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Runtime.Serialization;
-
-    using Employees.Contracts;
 
     [DataContract]
     public class UserPermissionsCollection
@@ -44,7 +43,7 @@
                 return permissions | employeePermissions;
             }
 
-            if (objectEmployee.DepartmentId.HasValue 
+            if (objectEmployee.DepartmentId.HasValue
                 && this.DepartmentPermissions.TryGetValue(objectEmployee.DepartmentId.Value, out var departmentPermissions))
             {
                 return permissions | departmentPermissions;

@@ -1,7 +1,6 @@
 ﻿namespace Arcadia.Assistant.Inbox.Contracts
 {
     using System;
-    using System.Collections.Generic;
     using System.Runtime.Serialization;
 
     [DataContract]

@@ -5,13 +5,11 @@ using Microsoft.ServiceFabric.Services.Remoting.FabricTransport;
 
 namespace Arcadia.Assistant.SickLeaves.Contracts
 {
+    using Employees.Contracts;
+    using Microsoft.ServiceFabric.Services.Remoting;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using Employees.Contracts;
-
-    using Microsoft.ServiceFabric.Services.Remoting;
 
     public interface ISickLeaves : IService
     {

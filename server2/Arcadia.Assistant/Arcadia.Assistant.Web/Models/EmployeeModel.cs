@@ -1,9 +1,8 @@
 ﻿namespace Arcadia.Assistant.Web.Models
 {
+    using Employees.Contracts;
     using System;
     using System.Runtime.Serialization;
-
-    using Employees.Contracts;
 
     [DataContract]
     public class EmployeeModel
@@ -66,17 +65,17 @@
         public static EmployeeModel FromMetadata(EmployeeMetadata metadata)
         {
             return new EmployeeModel(metadata.EmployeeId.ToString(), metadata.Email)
-                {
-                    BirthDate = metadata.BirthDate,
-                    DepartmentId = metadata.DepartmentId?.ToString(),
-                    HireDate = metadata.HireDate,
-                    MobilePhone = metadata.MobilePhone,
-                    FirstName = metadata.FirstName,
-                    LastName = metadata.LastName,
-                    Position = metadata.Position,
-                    Sex = metadata.Sex,
-                    RoomNumber = metadata.RoomNumber
-                };
+            {
+                BirthDate = metadata.BirthDate,
+                DepartmentId = metadata.DepartmentId?.ToString(),
+                HireDate = metadata.HireDate,
+                MobilePhone = metadata.MobilePhone,
+                FirstName = metadata.FirstName,
+                LastName = metadata.LastName,
+                Position = metadata.Position,
+                Sex = metadata.Sex,
+                RoomNumber = metadata.RoomNumber
+            };
         }
     }
 }

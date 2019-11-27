@@ -1,23 +1,18 @@
 namespace Arcadia.Assistant.Organization
 {
+    using Autofac.Features.OwnedInstances;
+    using Contracts;
+    using Employees.Contracts;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.ServiceFabric.Services.Communication.Runtime;
+    using Microsoft.ServiceFabric.Services.Remoting.Runtime;
+    using Microsoft.ServiceFabric.Services.Runtime;
     using System;
     using System.Collections.Generic;
     using System.Fabric;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using Autofac.Features.OwnedInstances;
-
-    using Contracts;
-
-    using Employees.Contracts;
-
-    using Microsoft.Extensions.Logging;
-    using Microsoft.ServiceFabric.Data.Collections;
-    using Microsoft.ServiceFabric.Services.Communication.Runtime;
-    using Microsoft.ServiceFabric.Services.Remoting.Runtime;
-    using Microsoft.ServiceFabric.Services.Runtime;
 
     /// <summary>
     ///     An instance of this class is created for each service replica by the Service Fabric runtime.

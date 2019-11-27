@@ -1,15 +1,9 @@
 ﻿namespace Arcadia.Assistant.Vacations
 {
+    using Autofac.Features.OwnedInstances;
     using System;
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using Autofac.Features.OwnedInstances;
-
-    using Contracts;
-
-    using Employees.Contracts;
 
     public class VacationChangesWatcher : IDisposable
     {

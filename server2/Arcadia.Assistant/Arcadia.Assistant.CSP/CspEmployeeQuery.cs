@@ -1,10 +1,8 @@
 ﻿namespace Arcadia.Assistant.CSP
 {
-    using System.Linq;
-
     using Arcadia.Assistant.CSP.Model;
-
     using Microsoft.EntityFrameworkCore;
+    using System.Linq;
 
     public class CspEmployeeQuery
     {

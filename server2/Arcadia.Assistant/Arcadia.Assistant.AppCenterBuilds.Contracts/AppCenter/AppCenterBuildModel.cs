@@ -4,12 +4,12 @@
 
     public class AppCenterBuildModel
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
-        public DateTimeOffset FinishTime { get; set; }
+        public DateTimeOffset? FinishTime { get; set; }
 
-        public string Status { get; set; }
+        public string? Status { get; set; }
 
-        public string Result { get; set; }
+        public string? Result { get; set; }
     }
 }

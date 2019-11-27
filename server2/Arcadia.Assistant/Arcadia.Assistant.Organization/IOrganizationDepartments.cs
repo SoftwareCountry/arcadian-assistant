@@ -1,9 +1,8 @@
 ﻿namespace Arcadia.Assistant.Organization
 {
+    using Contracts;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using Contracts;
 
     public interface IOrganizationDepartments
     {

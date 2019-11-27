@@ -1,11 +1,9 @@
 ﻿namespace Arcadia.Assistant.Organization.Contracts
 {
-    using System;
-
     using Autofac;
-
     using Microsoft.ServiceFabric.Services.Client;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
+    using System;
 
     public class OrganizationModule : Module
     {

@@ -1,10 +1,8 @@
 ﻿namespace Arcadia.Assistant.Organization
 {
-    using System.Linq;
-
     using Contracts;
-
     using Employees.Contracts;
+    using System.Linq;
 
     public class SupervisedDepartmentsSearch
     {

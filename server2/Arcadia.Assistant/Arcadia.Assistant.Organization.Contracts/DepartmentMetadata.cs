@@ -1,9 +1,8 @@
 ﻿namespace Arcadia.Assistant.Organization.Contracts
 {
+    using Employees.Contracts;
     using System.Diagnostics;
     using System.Runtime.Serialization;
-
-    using Employees.Contracts;
 
     [DataContract]
     [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]

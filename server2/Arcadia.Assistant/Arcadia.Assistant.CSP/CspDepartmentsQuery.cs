@@ -1,13 +1,9 @@
 ﻿namespace Arcadia.Assistant.CSP
 {
-    using System;
+    using Microsoft.EntityFrameworkCore;
+    using Model;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Linq.Expressions;
-
-    using Microsoft.EntityFrameworkCore;
-
-    using Model;
 
     public class CspDepartmentsQuery
     {
@@ -36,10 +32,10 @@
                 .Where(x => x.IsDelete != true && x.CompanyId == this.configuration.CompanyId);
 
             var chiefs = organizationDepartments
-                .Join(arcEmployees, d => d.ChiefId, e => e.Id, (d,e) => new { DepartmentId = d.Id, e.Id });
+                .Join(arcEmployees, d => d.ChiefId, e => e.Id, (d, e) => new { DepartmentId = d.Id, e.Id });
 
             var allDepartments = organizationDepartments
-                .GroupJoin(employeeByDepCounts, d => d.Id, e => e.DepartmentId, (d, e) => 
+                .GroupJoin(employeeByDepCounts, d => d.Id, e => e.DepartmentId, (d, e) =>
                     new DepartmentWithPeopleCount()
                     {
                         ActualChiefId = d.ChiefId,

@@ -1,25 +1,18 @@
 
 namespace Arcadia.Assistant.PendingActions
 {
-    using System;
+    using Contracts;
+    using Employees.Contracts;
+    using Microsoft.ServiceFabric.Services.Communication.Runtime;
+    using Microsoft.ServiceFabric.Services.Remoting.Runtime;
+    using Microsoft.ServiceFabric.Services.Runtime;
+    using Organization.Contracts;
     using System.Collections.Generic;
     using System.Fabric;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using Contracts;
-
-    using Employees.Contracts;
-
-    using Microsoft.ServiceFabric.Services.Communication.Runtime;
-    using Microsoft.ServiceFabric.Services.Remoting.Runtime;
-    using Microsoft.ServiceFabric.Services.Runtime;
-
-    using Organization.Contracts;
-
     using Vacations.Contracts;
-
     using WorkHoursCredit.Contracts;
 
     /// <summary>

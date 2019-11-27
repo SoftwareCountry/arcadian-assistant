@@ -1,17 +1,14 @@
 ﻿namespace Arcadia.Assistant.Organization
 {
+    using Autofac.Features.OwnedInstances;
+    using Contracts;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.ServiceFabric.Data;
+    using Microsoft.ServiceFabric.Data.Collections;
     using System;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using Autofac.Features.OwnedInstances;
-
-    using Contracts;
-
-    using Microsoft.Extensions.Logging;
-    using Microsoft.ServiceFabric.Data;
-    using Microsoft.ServiceFabric.Data.Collections;
 
     public class CachedOrganizationDepartments : IOrganizationDepartments
     {
@@ -38,7 +35,7 @@
                 var storedDepartments = await dictionary.TryGetValueAsync(tx, StoredKey);
                 if (storedDepartments.HasValue && storedDepartments.Value.Timestamp.Add(CacheTime) > DateTimeOffset.Now)
                 {
-                    return storedDepartments.Value.Data 
+                    return storedDepartments.Value.Data
                         ?? throw new Exception($"{nameof(OrganizationDepartmentsReliableState.Data)} field is null");
                 }
             }

@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.Tracing;
-using System.Fabric;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.ServiceFabric.Actors.Runtime;
+using System;
+using System.Diagnostics.Tracing;
+using System.Threading.Tasks;
 
 namespace Arcadia.Assistant.Avatars
 {
@@ -93,9 +89,9 @@ namespace Arcadia.Assistant.Avatars
         private const int ActorMessageEventId = 2;
         [Event(ActorMessageEventId, Level = EventLevel.Informational, Message = "{9}")]
         private
-    #if UNSAFE
+#if UNSAFE
             unsafe
-    #endif
+#endif
             void ActorMessage(
             string actorType,
             string actorId,
@@ -108,7 +104,7 @@ namespace Arcadia.Assistant.Avatars
             string nodeName,
             string message)
         {
-    #if !UNSAFE
+#if !UNSAFE
             WriteEvent(
                     ActorMessageEventId,
                     actorType,
@@ -121,7 +117,7 @@ namespace Arcadia.Assistant.Avatars
                     replicaOrInstanceId,
                     nodeName,
                     message);
-    #else
+#else
                 const int numArgs = 10;
                 fixed (char* pActorType = actorType, pActorId = actorId, pApplicationTypeName = applicationTypeName, pApplicationName = applicationName, pServiceTypeName = serviceTypeName, pServiceName = serviceName, pNodeName = nodeName, pMessage = message)
                 {
@@ -139,7 +135,7 @@ namespace Arcadia.Assistant.Avatars
 
                     WriteEventCore(ActorMessageEventId, numArgs, eventData);
                 }
-    #endif
+#endif
         }
 
         private const int ActorHostInitializationFailedEventId = 3;
@@ -151,7 +147,7 @@ namespace Arcadia.Assistant.Avatars
         #endregion
 
         #region Private Methods
-    #if UNSAFE
+#if UNSAFE
             private int SizeInBytes(string s)
             {
                 if (s == null)
@@ -163,7 +159,7 @@ namespace Arcadia.Assistant.Avatars
                     return (s.Length + 1) * sizeof(char);
                 }
             }
-    #endif
+#endif
         #endregion
     }
 }

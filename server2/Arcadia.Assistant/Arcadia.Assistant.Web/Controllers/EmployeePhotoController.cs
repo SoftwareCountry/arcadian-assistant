@@ -1,14 +1,11 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
-    using System.Threading;
-    using System.Threading.Tasks;
-
     using Avatars.Contracts;
-
     using Employees.Contracts;
-
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     [Route("api/photo/employee")]
     [ApiController]

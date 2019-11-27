@@ -1,10 +1,8 @@
 ﻿namespace Arcadia.Assistant.SickLeaves.Contracts
 {
-    using System;
-
     using Autofac;
-
     using Microsoft.ServiceFabric.Services.Remoting.Client;
+    using System;
 
     public class SickLeavesModule : Module
     {

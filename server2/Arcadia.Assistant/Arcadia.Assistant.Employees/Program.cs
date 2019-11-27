@@ -1,14 +1,12 @@
 namespace Arcadia.Assistant.Employees
 {
+    using Autofac;
+    using Autofac.Integration.ServiceFabric;
+    using CSP;
     using System;
     using System.Diagnostics;
     using System.Fabric;
     using System.Threading;
-
-    using Autofac;
-    using Autofac.Integration.ServiceFabric;
-
-    using CSP;
 
     internal static class Program
     {

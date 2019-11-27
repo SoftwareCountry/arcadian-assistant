@@ -1,16 +1,12 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers.Calendar
 {
-    using System.Threading;
-    using System.Threading.Tasks;
-
     using Employees.Contracts;
-
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-
     using Models.Calendar;
-
     using PendingActions.Contracts;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     [ApiController]
     [Route("api/pending-requests")]

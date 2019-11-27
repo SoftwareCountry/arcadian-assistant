@@ -1,5 +1,13 @@
 namespace Arcadia.Assistant.WorkHoursCredit
 {
+    using Autofac.Features.OwnedInstances;
+    using Contracts;
+    using Employees.Contracts;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.ServiceFabric.Services.Communication.Runtime;
+    using Microsoft.ServiceFabric.Services.Remoting.Runtime;
+    using Microsoft.ServiceFabric.Services.Runtime;
+    using Model;
     using System;
     using System.Collections.Generic;
     using System.Fabric;
@@ -7,19 +15,6 @@ namespace Arcadia.Assistant.WorkHoursCredit
     using System.Linq.Expressions;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using Autofac.Features.OwnedInstances;
-
-    using Contracts;
-
-    using Employees.Contracts;
-
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.ServiceFabric.Services.Communication.Runtime;
-    using Microsoft.ServiceFabric.Services.Remoting.Runtime;
-    using Microsoft.ServiceFabric.Services.Runtime;
-
-    using Model;
 
     /// <summary>
     ///     An instance of this class is created for each service instance by the Service Fabric runtime.
@@ -81,7 +76,7 @@ namespace Arcadia.Assistant.WorkHoursCredit
         {
             using var ctx = this.dbFactory();
             var calendarEvent = await this.QueryCalendarEvents(
-                    ctx.Value.ChangeRequests, 
+                    ctx.Value.ChangeRequests,
                     x => x.EmployeeId == employeeId.Value && x.ChangeRequestId == eventId)
                 .FirstOrDefaultAsync(cancellationToken);
 

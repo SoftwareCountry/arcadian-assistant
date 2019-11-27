@@ -1,23 +1,17 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers.Calendar
 {
+    using Employees.Contracts;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+    using Models.Calendar;
+    using SickLeaves.Contracts;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using Employees.Contracts;
-
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
-
-    using Models.Calendar;
-
-    using SickLeaves.Contracts;
-
     using Vacations.Contracts;
-
     using WorkHoursCredit.Contracts;
 
     //TODO: fuck me, that code has to be split apart...
@@ -83,7 +77,7 @@
                 {
                     return this.sickLeavesConverter.ToCalendarEvent(sickLeave);
                 }
-            } 
+            }
             else if (idConverter.TryParseVacationId(eventId, out var vacationId))
             {
                 var vacation = await this.vacations.GetCalendarEventAsync(new EmployeeId(employeeId), vacationId, token);

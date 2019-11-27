@@ -2,17 +2,13 @@
 
 namespace Arcadia.Assistant.Web.Controllers
 {
+    using Employees.Contracts;
+    using Microsoft.AspNetCore.Http;
+    using Models;
+    using Organization.Contracts;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using Employees.Contracts;
-
-    using Microsoft.AspNetCore.Http;
-
-    using Models;
-
-    using Organization.Contracts;
 
     [Route("/api/departments")]
     [ApiController]

@@ -1,10 +1,8 @@
 ﻿namespace Arcadia.Assistant.WorkHoursCredit.Contracts
 {
-    using System;
-
     using Autofac;
-
     using Microsoft.ServiceFabric.Services.Remoting.Client;
+    using System;
 
     public class WorkHoursCreditModule : Module
     {

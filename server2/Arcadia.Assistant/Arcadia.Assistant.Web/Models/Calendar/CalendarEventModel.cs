@@ -1,9 +1,8 @@
 ﻿namespace Arcadia.Assistant.Web.Models.Calendar
 {
+    using NJsonSchema.Annotations;
     using System.ComponentModel.DataAnnotations;
     using System.Runtime.Serialization;
-
-    using NJsonSchema.Annotations;
 
     [JsonSchemaProcessor(typeof(CalendarEventSchemaProcessor))]
     [WorkHoursChangeValidator]

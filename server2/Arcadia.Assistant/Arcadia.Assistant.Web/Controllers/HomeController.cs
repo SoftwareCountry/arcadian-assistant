@@ -1,12 +1,9 @@
-﻿using System.Diagnostics;
-
+﻿using Arcadia.Assistant.Web.Models;
 using Microsoft.AspNetCore.Mvc;
-using Arcadia.Assistant.Web.Models;
+using System.Diagnostics;
 
 namespace Arcadia.Assistant.Web.Controllers
 {
-    using System.Threading.Tasks;
-
     public class HomeController : Controller
     {
         public IActionResult Index()

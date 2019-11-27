@@ -1,15 +1,14 @@
-using System;
-using System.Diagnostics;
-using System.Fabric;
-using System.Threading;
 using Arcadia.Assistant.AppCenterBuilds.Contracts;
-using Arcadia.Assistant.AppCenterBuilds.Contracts.Interfaces;
 using Arcadia.Assistant.MobileBuild.Contracts;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Autofac.Integration.ServiceFabric;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.ServiceFabric.Actors.Client;
+using System;
+using System.Diagnostics;
+using System.Fabric;
+using System.Threading;
 
 namespace Arcadia.Assistant.AppCenterBuilds
 {

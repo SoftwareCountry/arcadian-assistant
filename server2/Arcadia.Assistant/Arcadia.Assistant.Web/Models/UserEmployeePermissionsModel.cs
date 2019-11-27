@@ -1,9 +1,8 @@
 ﻿namespace Arcadia.Assistant.Web.Models
 {
+    using Permissions.Contracts;
     using System.Linq;
     using System.Runtime.Serialization;
-
-    using Permissions.Contracts;
 
     [DataContract]
     public class UserEmployeePermissionsModel

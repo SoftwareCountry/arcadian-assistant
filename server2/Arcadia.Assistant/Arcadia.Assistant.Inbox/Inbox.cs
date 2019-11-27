@@ -1,5 +1,13 @@
 namespace Arcadia.Assistant.Inbox
 {
+    using Contracts;
+    using MailKit;
+    using MailKit.Net.Imap;
+    using MailKit.Search;
+    using Microsoft.ServiceFabric.Services.Communication.Runtime;
+    using Microsoft.ServiceFabric.Services.Remoting.Runtime;
+    using Microsoft.ServiceFabric.Services.Runtime;
+    using MimeKit;
     using System;
     using System.Collections.Generic;
     using System.Fabric;
@@ -7,18 +15,6 @@ namespace Arcadia.Assistant.Inbox
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using Contracts;
-
-    using MailKit;
-    using MailKit.Net.Imap;
-    using MailKit.Search;
-
-    using Microsoft.ServiceFabric.Services.Communication.Runtime;
-    using Microsoft.ServiceFabric.Services.Remoting.Runtime;
-    using Microsoft.ServiceFabric.Services.Runtime;
-
-    using MimeKit;
 
     /// <summary>
     ///     An instance of this class is created for each service instance by the Service Fabric runtime.

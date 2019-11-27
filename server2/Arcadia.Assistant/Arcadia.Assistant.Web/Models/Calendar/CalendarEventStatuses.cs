@@ -1,10 +1,8 @@
 ﻿namespace Arcadia.Assistant.Web.Models.Calendar
 {
+    using SickLeaves.Contracts;
     using System;
     using System.Collections.Generic;
-
-    using SickLeaves.Contracts;
-
     using WorkHoursCredit.Contracts;
 
     public class CalendarEventStatuses

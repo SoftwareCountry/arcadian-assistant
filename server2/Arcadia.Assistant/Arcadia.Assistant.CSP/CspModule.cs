@@ -21,7 +21,7 @@
         {
             var optionsBuilder = new DbContextOptionsBuilder<ArcadiaCspContext>()
                 .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
-                .UseLoggerFactory(new LoggerFactory(new []{ new DebugLoggerProvider(), }))
+                .UseLoggerFactory(new LoggerFactory(new[] { new DebugLoggerProvider(), }))
                 .UseSqlServer(this.cspConnectionString);
 
             var options = optionsBuilder.Options;

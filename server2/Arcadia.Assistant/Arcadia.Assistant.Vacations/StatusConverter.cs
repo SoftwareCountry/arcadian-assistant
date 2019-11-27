@@ -1,8 +1,7 @@
 ﻿namespace Arcadia.Assistant.Vacations
 {
-    using System.Linq;
-
     using Contracts;
+    using System.Linq;
 
     public class StatusConverter
     {

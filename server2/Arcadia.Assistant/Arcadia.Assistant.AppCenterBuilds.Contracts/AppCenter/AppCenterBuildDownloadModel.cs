@@ -2,8 +2,8 @@
 {
     public class AppCenterBuildDownloadModel
     {
-        public string Uri { get; set; }
+        public string? Uri { get; set; }
 
-        public int BuildNumber { get; set; }
+        public int? BuildNumber { get; set; }
     }
 }

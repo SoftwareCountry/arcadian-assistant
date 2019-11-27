@@ -1,14 +1,12 @@
 namespace Arcadia.Assistant.Avatars
 {
+    using Contracts;
+    using Microsoft.ServiceFabric.Actors;
+    using Microsoft.ServiceFabric.Actors.Runtime;
     using System;
     using System.Security.Cryptography;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using Contracts;
-
-    using Microsoft.ServiceFabric.Actors;
-    using Microsoft.ServiceFabric.Actors.Runtime;
 
     /// <remarks>
     ///     This class represents an actor.

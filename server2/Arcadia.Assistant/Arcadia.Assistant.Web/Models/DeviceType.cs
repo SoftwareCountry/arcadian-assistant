@@ -11,16 +11,16 @@ namespace Arcadia.Assistant.Web.Models
 
     internal static class DeviceTypeExtension
     {
-        private static Dictionary<DeviceType, ApplicationTypeEnum> buildTypeByDeviceType =
-            new Dictionary<DeviceType, ApplicationTypeEnum>
+        private static Dictionary<DeviceType, ApplicationType> buildTypeByDeviceType =
+            new Dictionary<DeviceType, ApplicationType>
             {
-                [DeviceType.Android] = ApplicationTypeEnum.Android,
-                [DeviceType.Ios] = ApplicationTypeEnum.Ios
+                [DeviceType.Android] = ApplicationType.Android,
+                [DeviceType.Ios] = ApplicationType.Ios
             };
 
-        public static string MobileBuildType(this DeviceType type) 
-        { 
-            return buildTypeByDeviceType[type].ToString(); 
+        public static string MobileBuildType(this DeviceType type)
+        {
+            return buildTypeByDeviceType[type].ToString();
         }
     }
 }

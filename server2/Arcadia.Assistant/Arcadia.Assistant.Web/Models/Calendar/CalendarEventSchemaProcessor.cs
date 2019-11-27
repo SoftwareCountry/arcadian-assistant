@@ -1,10 +1,8 @@
 ﻿namespace Arcadia.Assistant.Web.Models.Calendar
 {
-    using System.Collections.Generic;
+    using NJsonSchema.Generation;
     using System.Collections.ObjectModel;
     using System.Linq;
-
-    using NJsonSchema.Generation;
 
     public class CalendarEventSchemaProcessor : ISchemaProcessor
     {

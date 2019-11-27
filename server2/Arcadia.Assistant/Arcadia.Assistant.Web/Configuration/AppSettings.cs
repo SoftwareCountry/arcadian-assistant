@@ -1,4 +1,4 @@
-﻿using Arcadia.Assistant.AppCenterBuilds.Contracts.Interfaces;
+﻿using Arcadia.Assistant.AppCenterBuilds.Contracts;
 
 namespace Arcadia.Assistant.Web.Configuration
 {
@@ -8,12 +8,12 @@ namespace Arcadia.Assistant.Web.Configuration
 
         public class LinkConfiguration : IHelpSettings
         {
-            public string HelpLink { get; set; } = string.Empty;
+            public string? HelpLink { get; set; }
         }
 
         public class SslConfiguration : ISslSettings
         {
-            public bool SslOffloading { get; set; } = false;
+            public bool? SslOffloading { get; set; }
         }
 
         public class ConfigPackageSettings

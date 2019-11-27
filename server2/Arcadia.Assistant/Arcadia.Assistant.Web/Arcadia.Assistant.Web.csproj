@@ -63,9 +63,4 @@
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
-
-  <ItemGroup>
-    <Folder Include="Policies\" />
-  </ItemGroup>
-
 </Project>

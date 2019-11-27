@@ -5,10 +5,9 @@ using Microsoft.ServiceFabric.Services.Remoting;
 
 namespace Arcadia.Assistant.Avatars.Contracts
 {
+    using Microsoft.ServiceFabric.Actors;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using Microsoft.ServiceFabric.Actors;
 
     /// <summary>
     ///     This interface defines the methods exposed by an actor.

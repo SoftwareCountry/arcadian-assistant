@@ -1,10 +1,9 @@
 ﻿namespace Arcadia.Assistant.WorkHoursCredit.Model
 {
+    using Contracts;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
-
-    using Contracts;
 
     public class ChangeRequest
     {

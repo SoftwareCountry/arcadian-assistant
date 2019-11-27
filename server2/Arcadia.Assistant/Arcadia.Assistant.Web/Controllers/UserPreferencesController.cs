@@ -1,17 +1,13 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-
     using Employees.Contracts;
-
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-
     using Models;
-
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using UserPreferences.Contracts;
 
     [Authorize]

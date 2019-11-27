@@ -1,9 +1,8 @@
 ﻿namespace Arcadia.Assistant.Organization
 {
+    using Contracts;
     using System;
     using System.Runtime.Serialization;
-
-    using Contracts;
 
     [DataContract]
     public class OrganizationDepartmentsReliableState

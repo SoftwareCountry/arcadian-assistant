@@ -1,10 +1,9 @@
 ﻿namespace Arcadia.Assistant.Organization
 {
+    using Employees.Contracts;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using Employees.Contracts;
 
     public class SupervisorSearch : ISupervisorSearch
     {

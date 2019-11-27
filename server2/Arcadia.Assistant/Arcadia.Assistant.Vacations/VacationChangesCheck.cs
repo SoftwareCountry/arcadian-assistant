@@ -1,19 +1,14 @@
 ﻿namespace Arcadia.Assistant.Vacations
 {
+    using Autofac.Features.OwnedInstances;
+    using CSP.Model;
+    using Employees.Contracts;
+    using Microsoft.EntityFrameworkCore;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using Autofac.Features.OwnedInstances;
-
-    using CSP.Model;
-
-    using Employees.Contracts;
-
-    using Microsoft.EntityFrameworkCore;
-
     using VacationsDictionary = System.Collections.Generic.Dictionary<Employees.Contracts.EmployeeId, System.Collections.Generic.Dictionary<int, CSP.Model.Vacation>>;
 
     public class VacationChangesCheck

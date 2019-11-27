@@ -1,10 +1,8 @@
 ﻿namespace Arcadia.Assistant.WorkHoursCredit.Model
 {
-    using System;
-
     using Contracts;
-
     using Microsoft.EntityFrameworkCore;
+    using System;
 
     public class WorkHoursCreditContext : DbContext
     {

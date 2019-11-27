@@ -1,23 +1,16 @@
 namespace Arcadia.Assistant.Permissions
 {
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Fabric;
-    using System.Linq;
-    using System.Security.Claims;
-    using System.Security.Principal;
-    using System.Threading;
-    using System.Threading.Tasks;
-
     using Contracts;
-
     using Employees.Contracts;
-
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
-
     using Organization.Contracts;
+    using System.Collections.Generic;
+    using System.Fabric;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
     ///     An instance of this class is created for each service instance by the Service Fabric runtime.
@@ -53,7 +46,7 @@ namespace Arcadia.Assistant.Permissions
             if (userEmployee != null)
             {
                 defaultEmployeePermission = ExistingEmployeeDefaultPermission;
-                BulkBumpPermissions(new [] { userEmployee.EmployeeId }, SelfPermissions, permissionsForEmployees);
+                BulkBumpPermissions(new[] { userEmployee.EmployeeId }, SelfPermissions, permissionsForEmployees);
 
                 if (userEmployee.DepartmentId.HasValue)
                 {
@@ -70,7 +63,7 @@ namespace Arcadia.Assistant.Permissions
         private static void BulkBumpPermissions<T>(IEnumerable<T> entriesIds,
             EmployeePermissionsEntry permissionSet,
             Dictionary<T, EmployeePermissionsEntry> targetPermissionsEntries)
-        where T: struct
+        where T : struct
         {
             foreach (var entryId in entriesIds)
             {

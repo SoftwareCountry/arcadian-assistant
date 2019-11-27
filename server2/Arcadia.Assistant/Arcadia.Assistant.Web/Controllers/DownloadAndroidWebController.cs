@@ -1,7 +1,7 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
-    using Arcadia.Assistant.AppCenterBuilds.Contracts.Interfaces;
-    using Arcadia.Assistant.MobileBuild.Contracts.Interfaces;
+    using Arcadia.Assistant.AppCenterBuilds.Contracts;
+    using Arcadia.Assistant.MobileBuild.Contracts;
     using Arcadia.Assistant.Web.Models;
     using Microsoft.AspNetCore.Mvc;
     using System.Threading;

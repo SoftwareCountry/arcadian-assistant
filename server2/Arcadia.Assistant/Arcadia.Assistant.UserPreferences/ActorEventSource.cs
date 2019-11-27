@@ -1,10 +1,9 @@
 namespace Arcadia.Assistant.UserPreferences
 {
+    using Microsoft.ServiceFabric.Actors.Runtime;
     using System;
     using System.Diagnostics.Tracing;
     using System.Threading.Tasks;
-
-    using Microsoft.ServiceFabric.Actors.Runtime;
 
     [EventSource(Name = "MyCompany-Arcadia.Assistant.SF-Arcadia.Assistant.UserPreferences")]
     internal sealed class ActorEventSource : EventSource

@@ -20,7 +20,7 @@
         {
             id = default(Guid);
             var parts = GetIdParts(dtoId);
-            return parts != null 
+            return parts != null
                 && (parts.Value.Item1 == CalendarEventTypes.Dayoff || parts.Value.Item1 == CalendarEventTypes.Workout)
                 && Guid.TryParse(parts.Value.Item2, out id);
         }

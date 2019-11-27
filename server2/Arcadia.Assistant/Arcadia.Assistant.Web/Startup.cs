@@ -1,52 +1,33 @@
 ﻿namespace Arcadia.Assistant.Web
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Reflection;
-    using System.Text.Json.Serialization;
-    using Arcadia.Assistant.AppCenterBuilds.Contracts.Interfaces;
+    using Arcadia.Assistant.AppCenterBuilds.Contracts;
     using Arcadia.Assistant.MobileBuild.Contracts;
     using Autofac;
-
     using Avatars.Contracts;
-
     using Configuration;
-
     using Employees.Contracts;
-
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.ServiceFabric.Actors.Client;
     using Microsoft.ServiceFabric.AspNetCore.Configuration;
-    using Microsoft.ServiceFabric.Services.Client;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
-
-    using Newtonsoft.Json.Converters;
-
     using NSwag;
     using NSwag.AspNetCore;
     using NSwag.Generation.Processors.Security;
-
     using Organization.Contracts;
-
     using PendingActions.Contracts;
-
     using Permissions.Contracts;
-
     using SickLeaves.Contracts;
-
+    using System.Collections.Generic;
+    using System.Text.Json.Serialization;
     using UserPreferences.Contracts;
-
     using Vacations.Contracts;
-
     using VacationsCredit.Contracts;
-
     using WorkHoursCredit.Contracts;
 
     public class Startup
@@ -55,7 +36,7 @@
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional:false, reloadOnChange:true)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddServiceFabricConfiguration()
                 .AddEnvironmentVariables();

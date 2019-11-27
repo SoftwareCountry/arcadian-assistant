@@ -1,17 +1,17 @@
-﻿namespace Arcadia.Assistant.AppCenterBuilds.Contracts.Interfaces
+﻿namespace Arcadia.Assistant.AppCenterBuilds.Contracts
 {
     public interface IDownloadApplicationSettings
     {
-        int DownloadBuildIntervalMinutes { get; }
+        int? DownloadBuildIntervalMinutes { get; }
 
-        string ApiToken { get; }
+        string? ApiToken { get; }
 
-        string AndroidGetBuildsUrl { get; }
+        string? AndroidGetBuildsUrl { get; }
 
-        string AndroidGetBuildDownloadLinkTemplateUrl { get; }
+        string? AndroidGetBuildDownloadLinkTemplateUrl { get; }
 
-        string IosGetBuildsUrl { get; }
+        string? IosGetBuildsUrl { get; }
 
-        string IosGetBuildDownloadLinkTemplateUrl { get; }
+        string? IosGetBuildDownloadLinkTemplateUrl { get; }
     }
 }

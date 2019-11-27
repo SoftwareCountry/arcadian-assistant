@@ -1,8 +1,7 @@
 ﻿namespace Arcadia.Assistant.Web.Models
 {
-    using System.Runtime.Serialization;
-
     using Organization.Contracts;
+    using System.Runtime.Serialization;
 
     [DataContract]
     public class DepartmentModel

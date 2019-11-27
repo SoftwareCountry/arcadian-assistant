@@ -1,13 +1,10 @@
 ﻿namespace Arcadia.Assistant.SickLeaves
 {
+    using Contracts;
+    using CSP.Model;
+    using Employees.Contracts;
     using System;
     using System.Threading.Tasks;
-
-    using Contracts;
-
-    using CSP.Model;
-
-    using Employees.Contracts;
 
     public class SickLeaveCreationStep
     {

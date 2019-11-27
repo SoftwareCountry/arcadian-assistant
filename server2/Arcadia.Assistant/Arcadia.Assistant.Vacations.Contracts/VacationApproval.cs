@@ -1,9 +1,8 @@
 ﻿namespace Arcadia.Assistant.Vacations.Contracts
 {
+    using Employees.Contracts;
     using System;
     using System.Runtime.Serialization;
-
-    using Employees.Contracts;
 
     [DataContract]
     public class VacationApproval

@@ -1,13 +1,12 @@
 ﻿namespace Arcadia.Assistant.VacationsCredit
 {
+    using Inbox.Contracts;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using Inbox.Contracts;
 
     public class VacationsDaysEmailsLoader : IVacationsDaysLoader
     {
@@ -68,7 +67,7 @@
                 .Where(v => !string.IsNullOrWhiteSpace(v.Email) && !string.IsNullOrWhiteSpace(v.Vacations) && double.TryParse(v.Vacations, out var _))
                 .GroupBy(x => x.Email)
                 .ToDictionary(x => x.Key, x => double.Parse(x.First().Vacations), StringComparer.InvariantCultureIgnoreCase);
-                
+
             return vacations;
         }
 

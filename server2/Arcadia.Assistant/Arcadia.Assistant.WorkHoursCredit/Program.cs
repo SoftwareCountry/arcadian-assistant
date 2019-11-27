@@ -1,18 +1,14 @@
 namespace Arcadia.Assistant.WorkHoursCredit
 {
-    using System;
-    using System.Diagnostics;
-    using System.Threading;
-
     using Autofac;
     using Autofac.Integration.ServiceFabric;
-
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.Debug;
-    using Microsoft.ServiceFabric.Services.Runtime;
-
     using Model;
+    using System;
+    using System.Diagnostics;
+    using System.Threading;
 
     internal static class Program
     {

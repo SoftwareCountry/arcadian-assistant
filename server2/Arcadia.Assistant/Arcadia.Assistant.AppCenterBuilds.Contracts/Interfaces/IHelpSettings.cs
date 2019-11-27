@@ -1,7 +1,7 @@
-﻿namespace Arcadia.Assistant.AppCenterBuilds.Contracts.Interfaces
+﻿namespace Arcadia.Assistant.AppCenterBuilds.Contracts
 {
     public interface IHelpSettings
     {
-        string HelpLink { get; }
+        string? HelpLink { get; }
     }
 }

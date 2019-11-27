@@ -33,7 +33,7 @@
         public EmployeesQuery ForDepartment(string departmentId)
         {
             var obj = this.Clone();
-            obj.DepartmentIds = new [] { departmentId };
+            obj.DepartmentIds = new[] { departmentId };
             return obj;
         }
 

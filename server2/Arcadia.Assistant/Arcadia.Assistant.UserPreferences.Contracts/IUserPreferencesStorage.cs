@@ -4,10 +4,9 @@ using Microsoft.ServiceFabric.Services.Remoting;
 [assembly: FabricTransportActorRemotingProvider(RemotingListenerVersion = RemotingListenerVersion.V2_1, RemotingClientVersion = RemotingClientVersion.V2_1)]
 namespace Arcadia.Assistant.UserPreferences.Contracts
 {
+    using Microsoft.ServiceFabric.Actors;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using Microsoft.ServiceFabric.Actors;
 
     /// <summary>
     /// This interface defines the methods exposed by an actor.

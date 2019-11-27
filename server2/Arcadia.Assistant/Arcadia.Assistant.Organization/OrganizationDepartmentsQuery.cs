@@ -1,20 +1,15 @@
 ﻿namespace Arcadia.Assistant.Organization
 {
+    using Contracts;
+    using CSP;
+    using Employees.Contracts;
+    using Microsoft.EntityFrameworkCore;
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using Contracts;
-
-    using CSP;
-
-    using Employees.Contracts;
-
-    using Microsoft.EntityFrameworkCore;
 
     public class OrganizationDepartmentsQuery
     {
@@ -25,8 +20,8 @@
             new DepartmentId(x.Department.Id),
             x.Department.Name,
             x.Department.Abbreviation,
-            x.Department.ParentDepartmentId == null || x.Department.ParentDepartmentId == x.Department.Id 
-                ? (DepartmentId?)null 
+            x.Department.ParentDepartmentId == null || x.Department.ParentDepartmentId == x.Department.Id
+                ? (DepartmentId?)null
                 : new DepartmentId(x.Department.ParentDepartmentId.Value))
         {
             ChiefId = x.ActualChiefId == null ? (EmployeeId?)(null) : new EmployeeId(x.ActualChiefId.Value),

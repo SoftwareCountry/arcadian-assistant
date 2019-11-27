@@ -1,12 +1,10 @@
 namespace Arcadia.Assistant.UserPreferences
 {
-    using System.Threading;
-    using System.Threading.Tasks;
-
     using Contracts;
-
     using Microsoft.ServiceFabric.Actors;
     using Microsoft.ServiceFabric.Actors.Runtime;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     /// <remarks>
     ///     This class represents an actor.

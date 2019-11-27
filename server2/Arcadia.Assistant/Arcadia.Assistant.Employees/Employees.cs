@@ -1,5 +1,13 @@
 namespace Arcadia.Assistant.Employees
 {
+    using Autofac.Features.OwnedInstances;
+    using Contracts;
+    using CSP;
+    using CSP.Model;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.ServiceFabric.Services.Communication.Runtime;
+    using Microsoft.ServiceFabric.Services.Remoting.Runtime;
+    using Microsoft.ServiceFabric.Services.Runtime;
     using System;
     using System.Collections.Generic;
     using System.Fabric;
@@ -7,18 +15,6 @@ namespace Arcadia.Assistant.Employees
     using System.Linq.Expressions;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using Autofac.Features.OwnedInstances;
-
-    using Contracts;
-
-    using CSP;
-    using CSP.Model;
-
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.ServiceFabric.Services.Communication.Runtime;
-    using Microsoft.ServiceFabric.Services.Remoting.Runtime;
-    using Microsoft.ServiceFabric.Services.Runtime;
 
     /// <summary>
     ///     An instance of this class is created for each service instance by the Service Fabric runtime.
@@ -82,15 +78,15 @@ namespace Arcadia.Assistant.Employees
 
             if (employeesQuery.DepartmentIds != null)
             {
-                query = employeesQuery.DepartmentIds.Count == 1 
-                    ? query.Where(x => x.DepartmentId != null && x.DepartmentId.ToString() == employeesQuery.DepartmentIds[0]) 
+                query = employeesQuery.DepartmentIds.Count == 1
+                    ? query.Where(x => x.DepartmentId != null && x.DepartmentId.ToString() == employeesQuery.DepartmentIds[0])
                     : query.Where(x => x.DepartmentId != null && employeesQuery.DepartmentIds.Contains(x.DepartmentId.ToString()));
             }
 
             if (employeesQuery.NameFilter != null)
             {
                 var pattern = $"%{employeesQuery.NameFilter}%";
-                query = query.Where(x => EF.Functions.Like(x.LastName, pattern) 
+                query = query.Where(x => EF.Functions.Like(x.LastName, pattern)
                     || EF.Functions.Like(x.FirstName, pattern));
             }
 
@@ -105,7 +101,7 @@ namespace Arcadia.Assistant.Employees
                 else
                 {
                     query = query.Where(x => EF.Functions.Like(x.Email, email) || EF.Functions.Like(x.LoginName, loginName));
-                }                    
+                }
             }
 
             var employees = await query.Select(this.mapToMetadata).ToArrayAsync(cancellationToken);
