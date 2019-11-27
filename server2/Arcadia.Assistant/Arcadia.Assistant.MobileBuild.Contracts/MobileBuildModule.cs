@@ -1,6 +1,5 @@
 ﻿namespace Arcadia.Assistant.MobileBuild.Contracts
 {
-    using Arcadia.Assistant.MobileBuild.Contracts.Interfaces;
     using Autofac;
 
     public class MobileBuildModule : Module

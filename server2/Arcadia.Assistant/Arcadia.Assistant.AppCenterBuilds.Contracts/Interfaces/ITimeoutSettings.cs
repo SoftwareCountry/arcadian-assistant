@@ -1,9 +1,9 @@
-﻿namespace Arcadia.Assistant.AppCenterBuilds.Contracts.Interfaces
+﻿namespace Arcadia.Assistant.AppCenterBuilds.Contracts
 {
     using System;
 
     public interface ITimeoutSettings
     {
-        TimeSpan Timeout { get; }
+        TimeSpan? Timeout { get; }
     }
 }

@@ -1,8 +1,8 @@
-using System.Threading;
-using System.Threading.Tasks;
+using Arcadia.Assistant.MobileBuild.Contracts;
 using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Runtime;
-using Arcadia.Assistant.MobileBuild.Contracts.Interfaces;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Arcadia.Assistant.MobileBuild
 {
@@ -25,7 +25,7 @@ namespace Arcadia.Assistant.MobileBuild
         /// </summary>
         /// <param name="actorService">The Microsoft.ServiceFabric.Actors.Runtime.ActorService that will host this actor instance.</param>
         /// <param name="actorId">The Microsoft.ServiceFabric.Actors.ActorId for this actor instance.</param>
-        public MobileBuildActor(ActorService actorService, ActorId actorId) 
+        public MobileBuildActor(ActorService actorService, ActorId actorId)
             : base(actorService, actorId)
         {
         }
