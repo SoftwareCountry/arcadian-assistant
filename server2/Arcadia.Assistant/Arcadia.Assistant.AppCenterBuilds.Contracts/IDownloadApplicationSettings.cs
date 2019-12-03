@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.AppCenterBuilds.Contracts.Interfaces
+﻿namespace Arcadia.Assistant.AppCenterBuilds.Contracts
 {
     public interface IDownloadApplicationSettings
     {

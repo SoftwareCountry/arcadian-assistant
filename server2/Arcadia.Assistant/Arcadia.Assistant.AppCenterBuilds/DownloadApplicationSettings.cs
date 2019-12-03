@@ -1,17 +1,15 @@
-﻿using System.Fabric.Description;
-using Arcadia.Assistant.AppCenterBuilds.Contracts.Interfaces;
-
-namespace Arcadia.Assistant.AppCenterBuilds
+﻿namespace Arcadia.Assistant.AppCenterBuilds
 {
+    using System.Fabric.Description;
+
+    using Contracts;
+
     public class DownloadApplicationSettings : IDownloadApplicationSettings
     {
-        public DownloadApplicationSettings()
-        { }
-
         public DownloadApplicationSettings(ConfigurationSection configurationSection)
         {
             this.ApiToken = configurationSection.Parameters["ApiToken"].Value;
-            this.DownloadBuildIntervalMinutes = int.TryParse(configurationSection.Parameters["DownloadBuildIntervalMinutes"].Value, out var res) ? res : 720;
+            this.DownloadBuildIntervalMinutes = int.Parse(configurationSection.Parameters["DownloadBuildIntervalMinutes"].Value);
             this.AndroidGetBuildsUrl = configurationSection.Parameters["AndroidGetBuildsUrl"].Value;
             this.AndroidGetBuildDownloadLinkTemplateUrl = configurationSection.Parameters["AndroidGetBuildDownloadLinkTemplateUrl"].Value;
             this.IosGetBuildsUrl = configurationSection.Parameters["IosGetBuildsUrl"].Value;

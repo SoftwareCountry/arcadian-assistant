@@ -1,16 +1,14 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
     using System.Collections.Generic;
-    using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Mvc;
 
-    using Arcadia.Assistant.Web.Models;
-    using Arcadia.Assistant.AppCenterBuilds.Contracts;
-    using Arcadia.Assistant.MobileBuild.Contracts.Interfaces;
-    using System.Text;
+    using Models;
+    using MobileBuild.Contracts;
+    using System;
 
     [ApiExplorerSettings(IgnoreApi = true)]
     public class GetFileWebController : Controller
@@ -31,19 +29,19 @@
 
         [Route("get/android")]
         [HttpGet]
-        public Task<IActionResult> GetAndroid(CancellationToken cancellationToken)
+        public Task<IActionResult> GetAndroid()
         {
-            return this.GetFile(DeviceType.Android, cancellationToken);
+            return this.GetFile(DeviceType.Android);
         }
 
         [Route("get/ios")]
         [HttpGet]
-        public Task<IActionResult> GetIos(CancellationToken cancellationToken)
+        public Task<IActionResult> GetIos()
         {
-            return this.GetFile(DeviceType.Ios, cancellationToken);
+            return this.GetFile(DeviceType.Ios);
         }
 
-        private async Task<IActionResult> GetFile(DeviceType deviceType, CancellationToken token)
+        private async Task<IActionResult> GetFile(DeviceType deviceType)
         {
             var buildApplicationType = deviceType.MobileBuildType();
             var downloadActor = this.mobileBuildActor.MobileBuild(buildApplicationType);
@@ -54,8 +52,9 @@
                 var fileContent = await downloadActor.GetMobileBuildDataAsync(CancellationToken.None);
                 return this.File(fileContent, fileContentType);
             }
-            catch
+            catch (Exception ex)
             {
+                // TO DO add error logging
                 return this.NotFound();
             }
         }

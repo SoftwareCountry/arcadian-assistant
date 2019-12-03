@@ -1,6 +1,6 @@
 ﻿namespace Arcadia.Assistant.AppCenterBuilds.Contracts
 {
-    public enum ApplicationTypeEnum
+    public enum ApplicationType
     {
         Android,
         Ios

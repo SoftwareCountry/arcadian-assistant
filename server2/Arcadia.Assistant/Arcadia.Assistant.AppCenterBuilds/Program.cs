@@ -4,19 +4,35 @@ using System.Fabric;
 using System.Threading;
 using Arcadia.Assistant.AppCenterBuilds.Contracts;
 using Arcadia.Assistant.AppCenterBuilds.Contracts.Interfaces;
-using Arcadia.Assistant.Logging;
 using Arcadia.Assistant.MobileBuild.Contracts;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Autofac.Integration.ServiceFabric;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.ServiceFabric.Actors.Client;
-using Microsoft.ServiceFabric.Services.Remoting.Client;
-using Microsoft.ServiceFabric.Services.Runtime;
 
 namespace Arcadia.Assistant.AppCenterBuilds
 {
+    using System;
+    using System.Diagnostics;
+    using System.Fabric;
+    using System.Threading;
+
+    using Autofac;
+    using Autofac.Extensions.DependencyInjection;
+    using Autofac.Integration.ServiceFabric;
+
+    using Contracts;
+
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.ServiceFabric.Actors.Client;
+using Arcadia.Assistant.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.ServiceFabric.Services.Remoting.Client;
+using Microsoft.ServiceFabric.Services.Runtime;
+
+    using MobileBuild.Contracts;
+
     internal static class Program
     {
         /// <summary>

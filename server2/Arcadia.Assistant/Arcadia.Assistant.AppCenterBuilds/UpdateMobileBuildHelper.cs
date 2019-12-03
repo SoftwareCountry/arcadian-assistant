@@ -1,23 +1,23 @@
-﻿using Arcadia.Assistant.AppCenterBuilds.Contracts.AppCenter;
-using Arcadia.Assistant.MobileBuild.Contracts.Interfaces;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace Arcadia.Assistant.AppCenterBuilds
+﻿namespace Arcadia.Assistant.AppCenterBuilds
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
+    using System.Text.Json;
+    using System.Threading;
+    using System.Threading.Tasks;
+
+    using Contracts.AppCenter;
+
+    using MobileBuild.Contracts;
+
     internal class UpdateMobileBuildHelper
     {
+        private readonly string apiKey;
         private readonly string buildUrl;
         private readonly string downloadUrlTemplate;
-        private readonly string apiKey;
 
         public UpdateMobileBuildHelper(string buildUrl, string downloadUrlTemplate, string apiKey)
         {
@@ -28,25 +28,29 @@ namespace Arcadia.Assistant.AppCenterBuilds
 
         #region public mehods
 
-        public async Task<bool> CheckAndupdateMobileBuild(IHttpClientFactory httpClientFactory, IMobileBuildActor mobileBuildActor, CancellationToken cancellationToken, Action<string> logStore)
+        public async Task CheckAndUpdateMobileBuild(IHttpClientFactory httpClientFactory, IMobileBuildActor mobileBuildActor, CancellationToken cancellationToken, Action<string> logStore)
         {
             var currentMobileBuildVersion = await mobileBuildActor.GetMobileBuildVersionAsync(cancellationToken);
-            var appCenterLatestBuild = await GetLatestBuild(httpClientFactory);
-            var appCenterLastBuildVersion = appCenterLatestBuild.Id.ToString();
+            var appCenterLatestBuild = await this.GetLatestBuild(httpClientFactory);
+            if (!appCenterLatestBuild.Id.HasValue)
+            {
+                throw new ArgumentNullException("Application center build identifier expected");
+            }
+
+            var appCenterLastBuildVersion = appCenterLatestBuild.Id.Value.ToString();
 
             if (currentMobileBuildVersion != appCenterLastBuildVersion)
             {
-                var downloadModel = await GetBuildDownloadModel(appCenterLatestBuild, httpClientFactory);
-                var data = await GetBuildData(downloadModel, httpClientFactory);
+                var downloadModel = await this.GetBuildDownloadModel(appCenterLatestBuild, httpClientFactory);
+                var data = await this.GetBuildData(downloadModel, httpClientFactory);
                 await mobileBuildActor.SetMobileBuildData(appCenterLastBuildVersion, data, cancellationToken);
                 logStore?.Invoke($"Mobile build {appCenterLastBuildVersion} updated from {downloadModel.Uri}");
             }
             else
             {
+                // TO DO: Refactor for common logger using
                 logStore?.Invoke("The same version - nothing to do");
             }
-
-            return true;
         }
 
         #endregion
@@ -104,11 +108,11 @@ namespace Arcadia.Assistant.AppCenterBuilds
 
         private T DeserializeJson<T>(string message)
         {
-            var serializerSettings = new JsonSerializerSettings
+            var serializerSettings = new JsonSerializerOptions
             {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
-            return JsonConvert.DeserializeObject<T>(message, serializerSettings);
+            return JsonSerializer.Deserialize<T>(message, serializerSettings);
         }
 
         #endregion

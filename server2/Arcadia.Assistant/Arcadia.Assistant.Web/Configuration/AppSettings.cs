@@ -1,4 +1,4 @@
-﻿using Arcadia.Assistant.AppCenterBuilds.Contracts.Interfaces;
+﻿using Arcadia.Assistant.AppCenterBuilds.Contracts;
 
 namespace Arcadia.Assistant.Web.Configuration
 {

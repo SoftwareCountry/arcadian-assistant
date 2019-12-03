@@ -1,8 +1,8 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
-    using Arcadia.Assistant.AppCenterBuilds.Contracts.Interfaces;
-    using Arcadia.Assistant.MobileBuild.Contracts.Interfaces;
-    using Arcadia.Assistant.Web.Models;
+    using AppCenterBuilds.Contracts;
+    using MobileBuild.Contracts;
+    using Models;
     using Microsoft.AspNetCore.Mvc;
     using System.Threading;
     using System.Threading.Tasks;
@@ -23,8 +23,7 @@
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            using CancellationTokenSource cts = new CancellationTokenSource();
-            var version = await mobileBuildActor.MobileBuild(DeviceType.Android.MobileBuildType()).GetMobileBuildVersionAsync(cts.Token);
+            var version = await mobileBuildActor.MobileBuild(DeviceType.Android.MobileBuildType()).GetMobileBuildVersionAsync(CancellationToken.None);
             return this.View(new HomeViewModel
             {
                 HelpLink = this.helpSettings.HelpLink,

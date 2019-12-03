@@ -1,6 +1,5 @@
 ﻿namespace Arcadia.Assistant.MobileBuild.Contracts
 {
-    using Arcadia.Assistant.MobileBuild.Contracts.Interfaces;
     using Microsoft.ServiceFabric.Actors;
     using Microsoft.ServiceFabric.Actors.Client;
 

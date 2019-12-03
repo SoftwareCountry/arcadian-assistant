@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Arcadia.Assistant.AppCenterBuilds.Contracts;
 using Arcadia.Assistant.AppCenterBuilds.Contracts.AppCenter;
 using Arcadia.Assistant.AppCenterBuilds.Contracts.Interfaces;
-using Arcadia.Assistant.Logging;
 using Arcadia.Assistant.MobileBuild.Contracts.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
@@ -19,13 +18,27 @@ using Newtonsoft.Json.Serialization;
 
 namespace Arcadia.Assistant.AppCenterBuilds
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Fabric;
+    using System.Net.Http;
+    using System.Threading;
+    using System.Threading.Tasks;
+
+    using Contracts;
+
+    using Microsoft.ServiceFabric.Services.Communication.Runtime;
+    using Microsoft.ServiceFabric.Services.Runtime;
+
+    using MobileBuild.Contracts;
+
     /// <summary>
     /// An instance of this class is created for each service instance by the Service Fabric runtime.
     /// </summary>
     public class AppCenterBuilds : StatelessService
     {
-        private readonly IDownloadApplicationSettings configuration;
         private readonly IHttpClientFactory clientFactory;
+        private readonly IDownloadApplicationSettings configuration;
         private readonly IMobileBuildActorFactory mobileBuildFactory;
         private readonly ILogger logger;
 
@@ -38,6 +51,12 @@ namespace Arcadia.Assistant.AppCenterBuilds
             var loggerFactory = new LoggerFactoryBuilder(context).CreateLoggerFactory(loggerSettings?.ApplicationInsightsKey);
             this.logger = loggerFactory.CreateLogger<AppCenterBuilds>();
         }
+
+        private int DownloadBuildIntervalMinutes => this.configuration.DownloadBuildIntervalMinutes;
+
+        private string ApiToken // null - rise the exception
+            =>
+                this.configuration.ApiToken;
 
         /// <summary>
         /// Optional override to create listeners (e.g., TCP, HTTP) for this service replica to handle client or user requests.
@@ -61,47 +80,29 @@ namespace Arcadia.Assistant.AppCenterBuilds
                 //ServiceEventSource.Current.ServiceMessage(this.Context, "Request build version");
                 logger?.LogDebug("Request build version");
 
-                if (this.configuration != null)
-                {
                     // for android
-                    var result = await UpdateMobileBuild(ApplicationTypeEnum.Android, this.configuration?.AndroidGetBuildsUrl ?? string.Empty, this.configuration?.AndroidGetBuildDownloadLinkTemplateUrl ?? string.Empty, cancellationToken);
-                    //ServiceEventSource.Current.ServiceMessage(this.Context, "Android build version update result: {0}", result);
-                    logger?.LogInformation($"Android build version update result: {result}");
+                await this.UpdateMobileBuild(ApplicationType.Android, this.configuration.AndroidGetBuildsUrl, this.configuration.AndroidGetBuildDownloadLinkTemplateUrl, cancellationToken);
 
                     // for ios
-                    result = await UpdateMobileBuild(ApplicationTypeEnum.Ios, this.configuration?.IosGetBuildsUrl ?? string.Empty, this.configuration?.IosGetBuildDownloadLinkTemplateUrl ?? string.Empty, cancellationToken);
-                    //ServiceEventSource.Current.ServiceMessage(this.Context, "Ios build version update result: {0}", result);
-                    logger?.LogInformation($"Ios build version update result: {result}");
-                }
-                else
-                {
-                    //ServiceEventSource.Current.ServiceMessage(this.Context, "Configuration is empty");
-                    logger?.LogInformation("Configuration is empty");
-                }
+                await this.UpdateMobileBuild(ApplicationType.Ios, this.configuration.IosGetBuildsUrl, this.configuration.IosGetBuildDownloadLinkTemplateUrl, cancellationToken);
 
                 await Task.Delay(TimeSpan.FromMinutes(this.DownloadBuildIntervalMinutes), cancellationToken);
             }
         }
 
-        private int DownloadBuildIntervalMinutes { get => this.configuration == null ? 720 : this.configuration.DownloadBuildIntervalMinutes; }
-
-        private string ApiToken { get => this.configuration?.ApiToken ?? string.Empty; }
-
-        private async Task<bool> UpdateMobileBuild(ApplicationTypeEnum type, string buildUrl, string buildDownloadUrlTemplate, CancellationToken cancellationToken)
+        private async Task UpdateMobileBuild(ApplicationType type, string buildUrl, string buildDownloadUrlTemplate, CancellationToken cancellationToken)
         {
             try
             {
                 var logStore = new Action<string>(x => /*ServiceEventSource.Current.ServiceMessage(this.Context, x)*/logger?.LogInformation(x));
                 var mobileType = type.ToString();
-                var actor = mobileBuildFactory.MobileBuild(mobileType);
-                var updateHelper = new UpdateMobileBuildHelper(buildUrl, buildDownloadUrlTemplate, ApiToken);
-                return await updateHelper.CheckAndupdateMobileBuild(this.clientFactory, actor, cancellationToken, logStore);
+                var actor = this.mobileBuildFactory.MobileBuild(mobileType);
+                var updateHelper = new UpdateMobileBuildHelper(buildUrl, buildDownloadUrlTemplate, this.ApiToken);
+                await updateHelper.CheckAndUpdateMobileBuild(this.clientFactory, actor, cancellationToken, logStore);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                //ServiceEventSource.Current.ServiceMessage(this.Context, "{0} mobile type version udpate exception: {1}", type, ex.Message);
                 logger?.LogError(ex, "{0} mobile type version udpate exception: {1}", type, ex.Message);
-                return false;
             }
         }
     }

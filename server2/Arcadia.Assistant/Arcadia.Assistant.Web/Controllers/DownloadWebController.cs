@@ -5,7 +5,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Net.Http.Headers;
 
-    using Arcadia.Assistant.Web.Models;
+    using Models;
 
     [Route("")]
     [ApiExplorerSettings(IgnoreApi = true)]
