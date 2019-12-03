@@ -4,8 +4,6 @@ namespace Arcadia.Assistant.Web
     using System.Diagnostics;
     using System.Threading;
 
-    using Autofac;
-
     using Microsoft.ServiceFabric.Services.Runtime;
 
     internal static class Program

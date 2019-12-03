@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.AppCenterBuilds.Contracts
+﻿namespace Arcadia.Assistant.Web.Configuration
 {
     public interface IHelpSettings
     {

@@ -2,8 +2,9 @@
 {
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
-    using Arcadia.Assistant.AppCenterBuilds.Contracts;
-    using Arcadia.Assistant.MobileBuild.Contracts;
+
+    using AppCenterBuilds.Contracts;
+
     using Autofac;
 
     using Avatars.Contracts;
@@ -22,6 +23,8 @@
     using Microsoft.ServiceFabric.Actors.Client;
     using Microsoft.ServiceFabric.AspNetCore.Configuration;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
+
+    using MobileBuild.Contracts;
 
     using NSwag;
     using NSwag.AspNetCore;
@@ -49,8 +52,8 @@
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional:false, reloadOnChange:true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddJsonFile("appsettings.json", false, true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
                 .AddServiceFabricConfiguration()
                 .AddEnvironmentVariables();
             this.AppSettings = builder.Build().Get<AppSettings>();
@@ -75,14 +78,14 @@
             services.AddOpenApiDocument((document, x) =>
             {
                 var settings = x.GetService<AppSettings>().Config.Security;
-                document.AddSecurity("bearer", new List<string>(), new OpenApiSecurityScheme()
+                document.AddSecurity("bearer", new List<string>(), new OpenApiSecurityScheme
                 {
                     Type = OpenApiSecuritySchemeType.OAuth2,
                     Description = "Oauth",
                     Flow = OpenApiOAuth2Flow.Implicit,
-                    Flows = new OpenApiOAuthFlows()
+                    Flows = new OpenApiOAuthFlows
                     {
-                        Implicit = new OpenApiOAuthFlow()
+                        Implicit = new OpenApiOAuthFlow
                         {
                             AuthorizationUrl = settings.AuthorizationUrl,
                             TokenUrl = settings.TokenUrl
@@ -146,9 +149,9 @@
             app.UseCookiePolicy();
 
             app.UseOpenApi();
-            app.UseSwaggerUi3((settings) =>
+            app.UseSwaggerUi3(settings =>
             {
-                settings.OAuth2Client = new OAuth2ClientSettings()
+                settings.OAuth2Client = new OAuth2ClientSettings
                 {
                     ClientId = appSettings.Config.Security.ClientId
                 };
@@ -162,8 +165,8 @@
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    "default",
+                    "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }
