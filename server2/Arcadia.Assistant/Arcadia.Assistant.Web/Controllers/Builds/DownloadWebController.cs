@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.Web.Controllers
+﻿namespace Arcadia.Assistant.Web.Controllers.Builds
 {
     using System;
 

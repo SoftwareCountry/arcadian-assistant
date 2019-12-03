@@ -1,14 +1,15 @@
-﻿namespace Arcadia.Assistant.Web.Controllers
+﻿namespace Arcadia.Assistant.Web.Controllers.Builds
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Mvc;
 
-    using Models;
     using MobileBuild.Contracts;
-    using System;
+
+    using Models;
 
     [ApiExplorerSettings(IgnoreApi = true)]
     public class GetFileWebController : Controller
@@ -46,17 +47,9 @@
             var buildApplicationType = deviceType.MobileBuildType();
             var downloadActor = this.mobileBuildActor.MobileBuild(buildApplicationType);
 
-            try
-            {
-                var fileContentType = this.fileContentTypeByDeviceType[deviceType];
-                var fileContent = await downloadActor.GetMobileBuildDataAsync(CancellationToken.None);
-                return this.File(fileContent, fileContentType);
-            }
-            catch (Exception ex)
-            {
-                // TO DO add error logging
-                return this.NotFound();
-            }
+            var fileContentType = this.fileContentTypeByDeviceType[deviceType];
+            var fileContent = await downloadActor.GetMobileBuildDataAsync(CancellationToken.None);
+            return this.File(fileContent, fileContentType);
         }
     }
 }
