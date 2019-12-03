@@ -6,8 +6,8 @@
 
     using Microsoft.AspNetCore.Mvc;
 
-    using Arcadia.Assistant.Web.Models;
-    using Arcadia.Assistant.MobileBuild.Contracts;
+    using Models;
+    using MobileBuild.Contracts;
     using System;
 
     [ApiExplorerSettings(IgnoreApi = true)]

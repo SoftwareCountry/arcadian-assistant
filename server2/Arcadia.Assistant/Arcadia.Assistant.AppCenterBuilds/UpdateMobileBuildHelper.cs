@@ -1,30 +1,26 @@
-﻿using Arcadia.Assistant.AppCenterBuilds.Contracts.AppCenter;
-using Arcadia.Assistant.MobileBuild.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace Arcadia.Assistant.AppCenterBuilds
+﻿namespace Arcadia.Assistant.AppCenterBuilds
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
+    using System.Text.Json;
+    using System.Threading;
+    using System.Threading.Tasks;
+
+    using Contracts.AppCenter;
+
+    using MobileBuild.Contracts;
+
     internal class UpdateMobileBuildHelper
     {
+        private readonly string apiKey;
         private readonly string buildUrl;
         private readonly string downloadUrlTemplate;
-        private readonly string apiKey;
 
-        public UpdateMobileBuildHelper(string? buildUrl, string? downloadUrlTemplate, string? apiKey)
+        public UpdateMobileBuildHelper(string buildUrl, string downloadUrlTemplate, string apiKey)
         {
-            if (buildUrl == null || downloadUrlTemplate == null)
-                throw new ArgumentNullException("Mobile build configuration error.");
-
-            if (string.IsNullOrWhiteSpace(apiKey))
-                throw new ArgumentNullException("Mobile build ApiKey is empty.");
-
             this.buildUrl = buildUrl;
             this.downloadUrlTemplate = downloadUrlTemplate;
             this.apiKey = apiKey;
@@ -32,20 +28,21 @@ namespace Arcadia.Assistant.AppCenterBuilds
 
         #region public mehods
 
-        public async Task<bool> CheckAndupdateMobileBuild(IHttpClientFactory httpClientFactory, IMobileBuildActor mobileBuildActor, CancellationToken cancellationToken, Action<string> logStore)
+        public async Task CheckAndUpdateMobileBuild(IHttpClientFactory httpClientFactory, IMobileBuildActor mobileBuildActor, CancellationToken cancellationToken, Action<string> logStore)
         {
             var currentMobileBuildVersion = await mobileBuildActor.GetMobileBuildVersionAsync(cancellationToken);
-            var appCenterLatestBuild = await GetLatestBuild(httpClientFactory);
+            var appCenterLatestBuild = await this.GetLatestBuild(httpClientFactory);
             if (!appCenterLatestBuild.Id.HasValue)
             {
                 throw new ArgumentNullException("Application center build identifier expected");
             }
+
             var appCenterLastBuildVersion = appCenterLatestBuild.Id.Value.ToString();
 
             if (currentMobileBuildVersion != appCenterLastBuildVersion)
             {
-                var downloadModel = await GetBuildDownloadModel(appCenterLatestBuild, httpClientFactory);
-                var data = await GetBuildData(downloadModel, httpClientFactory);
+                var downloadModel = await this.GetBuildDownloadModel(appCenterLatestBuild, httpClientFactory);
+                var data = await this.GetBuildData(downloadModel, httpClientFactory);
                 await mobileBuildActor.SetMobileBuildData(appCenterLastBuildVersion, data, cancellationToken);
                 logStore($"Mobile build {appCenterLastBuildVersion} updated from {downloadModel.Uri}");
             }
@@ -54,8 +51,6 @@ namespace Arcadia.Assistant.AppCenterBuilds
                 // TO DO: Refactor for common logger using
                 logStore("The same version - nothing to do");
             }
-
-            return true;
         }
 
         #endregion

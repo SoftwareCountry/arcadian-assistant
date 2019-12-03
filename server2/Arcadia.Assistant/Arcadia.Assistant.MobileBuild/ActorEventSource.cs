@@ -1,10 +1,11 @@
-using Microsoft.ServiceFabric.Actors.Runtime;
-using System;
-using System.Diagnostics.Tracing;
-using System.Threading.Tasks;
-
 namespace Arcadia.Assistant.MobileBuild
 {
+    using System;
+    using System.Diagnostics.Tracing;
+    using System.Threading.Tasks;
+
+    using Microsoft.ServiceFabric.Actors.Runtime;
+
     [EventSource(Name = "MyCompany-Arcadia.Assistant.SF-Arcadia.Assistant.MobileBuild")]
     internal sealed class ActorEventSource : EventSource
     {
@@ -14,13 +15,18 @@ namespace Arcadia.Assistant.MobileBuild
         {
             // A workaround for the problem where ETW activities do not get tracked until Tasks infrastructure is initialized.
             // This problem will be fixed in .NET Framework 4.6.2.
-            Task.Run(() => { });
+            Task.Run(() =>
+            {
+            });
         }
 
         // Instance constructor is private to enforce singleton semantics
-        private ActorEventSource() : base() { }
+        private ActorEventSource()
+        {
+        }
 
         #region Keywords
+
         // Event keywords can be used to categorize events. 
         // Each keyword is a bit flag. A single event can be associated with multiple keywords (via EventAttribute.Keywords property).
         // Keywords must be defined as a public class named 'Keywords' inside EventSource that uses them.
@@ -28,9 +34,11 @@ namespace Arcadia.Assistant.MobileBuild
         {
             public const EventKeywords HostInitialization = (EventKeywords)0x1L;
         }
+
         #endregion
 
         #region Events
+
         // Define an instance method for each event you want to record and apply an [Event] attribute to it.
         // The method name is the name of the event.
         // Pass any parameters you want to record with the event (only primitive integer types, DateTime, Guid & string are allowed).
@@ -44,18 +52,19 @@ namespace Arcadia.Assistant.MobileBuild
         {
             if (this.IsEnabled())
             {
-                string finalMessage = string.Format(message, args);
-                Message(finalMessage);
+                var finalMessage = string.Format(message, args);
+                this.Message(finalMessage);
             }
         }
 
         private const int MessageEventId = 1;
+
         [Event(MessageEventId, Level = EventLevel.Informational, Message = "{0}")]
         public void Message(string message)
         {
             if (this.IsEnabled())
             {
-                WriteEvent(MessageEventId, message);
+                this.WriteEvent(MessageEventId, message);
             }
         }
 
@@ -68,8 +77,8 @@ namespace Arcadia.Assistant.MobileBuild
                 && actor.ActorService.Context != null
                 && actor.ActorService.Context.CodePackageActivationContext != null)
             {
-                string finalMessage = string.Format(message, args);
-                ActorMessage(
+                var finalMessage = string.Format(message, args);
+                this.ActorMessage(
                     actor.GetType().ToString(),
                     actor.Id.ToString(),
                     actor.ActorService.Context.CodePackageActivationContext.ApplicationTypeName,
@@ -87,36 +96,37 @@ namespace Arcadia.Assistant.MobileBuild
         // This results in more efficient parameter handling, but requires explicit allocation of EventData structure and unsafe code.
         // To enable this code path, define UNSAFE conditional compilation symbol and turn on unsafe code support in project properties.
         private const int ActorMessageEventId = 2;
+
         [Event(ActorMessageEventId, Level = EventLevel.Informational, Message = "{9}")]
         private
 #if UNSAFE
             unsafe
 #endif
             void ActorMessage(
-            string actorType,
-            string actorId,
-            string applicationTypeName,
-            string applicationName,
-            string serviceTypeName,
-            string serviceName,
-            Guid partitionId,
-            long replicaOrInstanceId,
-            string nodeName,
-            string message)
+                string actorType,
+                string actorId,
+                string applicationTypeName,
+                string applicationName,
+                string serviceTypeName,
+                string serviceName,
+                Guid partitionId,
+                long replicaOrInstanceId,
+                string nodeName,
+                string message)
         {
 #if !UNSAFE
-            WriteEvent(
-                    ActorMessageEventId,
-                    actorType,
-                    actorId,
-                    applicationTypeName,
-                    applicationName,
-                    serviceTypeName,
-                    serviceName,
-                    partitionId,
-                    replicaOrInstanceId,
-                    nodeName,
-                    message);
+            this.WriteEvent(
+                ActorMessageEventId,
+                actorType,
+                actorId,
+                applicationTypeName,
+                applicationName,
+                serviceTypeName,
+                serviceName,
+                partitionId,
+                replicaOrInstanceId,
+                nodeName,
+                message);
 #else
                 const int numArgs = 10;
                 fixed (char* pActorType = actorType, pActorId = actorId, pApplicationTypeName = applicationTypeName, pApplicationName = applicationName, pServiceTypeName = serviceTypeName, pServiceName = serviceName, pNodeName = nodeName, pMessage = message)
@@ -139,14 +149,17 @@ namespace Arcadia.Assistant.MobileBuild
         }
 
         private const int ActorHostInitializationFailedEventId = 3;
+
         [Event(ActorHostInitializationFailedEventId, Level = EventLevel.Error, Message = "Actor host initialization failed", Keywords = Keywords.HostInitialization)]
         public void ActorHostInitializationFailed(string exception)
         {
-            WriteEvent(ActorHostInitializationFailedEventId, exception);
+            this.WriteEvent(ActorHostInitializationFailedEventId, exception);
         }
+
         #endregion
 
         #region Private Methods
+
 #if UNSAFE
             private int SizeInBytes(string s)
             {
@@ -160,6 +173,7 @@ namespace Arcadia.Assistant.MobileBuild
                 }
             }
 #endif
+
         #endregion
     }
 }

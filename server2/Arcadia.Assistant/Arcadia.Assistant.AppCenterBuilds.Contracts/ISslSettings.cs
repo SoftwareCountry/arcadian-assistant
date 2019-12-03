@@ -1,7 +1,7 @@
 ﻿namespace Arcadia.Assistant.AppCenterBuilds.Contracts
 {
-    public interface IHelpSettings
+    public interface ISslSettings
     {
-        string? HelpLink { get; }
+        bool SslOffloading { get; }
     }
 }

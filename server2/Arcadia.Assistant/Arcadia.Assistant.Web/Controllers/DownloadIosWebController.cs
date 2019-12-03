@@ -4,13 +4,12 @@
 
     using Microsoft.AspNetCore.Mvc;
 
-    using Arcadia.Assistant.Web.Models;
-    using Arcadia.Assistant.AppCenterBuilds.Contracts;
-    using Arcadia.Assistant.MobileBuild.Contracts;
+    using Models;
+    using AppCenterBuilds.Contracts;
+    using MobileBuild.Contracts;
     using System.Threading.Tasks;
     using System.Threading;
-    using System;
-    using Arcadia.Assistant.Web.Properties;
+    using Properties;
 
     [ApiExplorerSettings(IgnoreApi = true)]
     public class DownloadIosWebController : Controller
@@ -21,13 +20,7 @@
 
         public DownloadIosWebController(ISslSettings sslSettings, IHelpSettings helpSettings, IMobileBuildActorFactory mobileBuildActor)
         {
-            if (sslSettings?.SslOffloading == null
-                || helpSettings?.HelpLink == null)
-            {
-                throw new ArgumentNullException("Application center build identifier expected");
-            }
-
-            this.sslOffloading = sslSettings.SslOffloading.Value;
+            this.sslOffloading = sslSettings.SslOffloading;
             this.helpLink = helpSettings.HelpLink;
             this.mobileBuildActor = mobileBuildActor;
         }
@@ -36,8 +29,7 @@
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            using CancellationTokenSource cts = new CancellationTokenSource();
-            var version = await mobileBuildActor.MobileBuild(DeviceType.Ios.MobileBuildType()).GetMobileBuildVersionAsync(cts.Token);
+            var version = await mobileBuildActor.MobileBuild(DeviceType.Ios.MobileBuildType()).GetMobileBuildVersionAsync(CancellationToken.None);
             return this.View(new HomeViewModel
             {
                 ManifestLink = this.GetAbsoluteUrl("GetIosManifest", "DownloadIosWeb"),

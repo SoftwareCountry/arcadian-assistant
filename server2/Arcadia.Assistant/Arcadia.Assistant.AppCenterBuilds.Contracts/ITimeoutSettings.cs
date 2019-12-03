@@ -4,6 +4,6 @@
 
     public interface ITimeoutSettings
     {
-        TimeSpan? Timeout { get; }
+        TimeSpan Timeout { get; }
     }
 }

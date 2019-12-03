@@ -8,12 +8,12 @@ namespace Arcadia.Assistant.Web.Configuration
 
         public class LinkConfiguration : IHelpSettings
         {
-            public string? HelpLink { get; set; }
+            public string HelpLink { get; set; } = string.Empty;
         }
 
         public class SslConfiguration : ISslSettings
         {
-            public bool? SslOffloading { get; set; }
+            public bool SslOffloading { get; set; } = false;
         }
 
         public class ConfigPackageSettings
