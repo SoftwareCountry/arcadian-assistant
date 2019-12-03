@@ -14,7 +14,6 @@ namespace Arcadia.Assistant.AppCenterBuilds
     using Logging;
 
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Actors.Client;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
 
