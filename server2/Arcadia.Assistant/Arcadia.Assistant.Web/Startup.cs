@@ -1,8 +1,6 @@
 ﻿namespace Arcadia.Assistant.Web
 {
-    using System;
     using System.Collections.Generic;
-    using System.Reflection;
     using System.Text.Json.Serialization;
 
     using Autofac;
@@ -17,16 +15,14 @@
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.ServiceFabric.Actors.Client;
     using Microsoft.ServiceFabric.AspNetCore.Configuration;
-    using Microsoft.ServiceFabric.Services.Client;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
 
-    using Newtonsoft.Json.Converters;
+    using MobileBuild.Contracts;
 
     using NSwag;
     using NSwag.AspNetCore;
@@ -54,8 +50,8 @@
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional:false, reloadOnChange:true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddJsonFile("appsettings.json", false, true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
                 .AddServiceFabricConfiguration()
                 .AddEnvironmentVariables();
             this.AppSettings = builder.Build().Get<AppSettings>();
@@ -80,14 +76,14 @@
             services.AddOpenApiDocument((document, x) =>
             {
                 var settings = x.GetService<AppSettings>().Config.Security;
-                document.AddSecurity("bearer", new List<string>(), new OpenApiSecurityScheme()
+                document.AddSecurity("bearer", new List<string>(), new OpenApiSecurityScheme
                 {
                     Type = OpenApiSecuritySchemeType.OAuth2,
                     Description = "Oauth",
                     Flow = OpenApiOAuth2Flow.Implicit,
-                    Flows = new OpenApiOAuthFlows()
+                    Flows = new OpenApiOAuthFlows
                     {
-                        Implicit = new OpenApiOAuthFlow()
+                        Implicit = new OpenApiOAuthFlow
                         {
                             AuthorizationUrl = settings.AuthorizationUrl,
                             TokenUrl = settings.TokenUrl
@@ -117,6 +113,8 @@
         public void ConfigureContainer(ContainerBuilder builder)
         {
             builder.RegisterInstance(this.AppSettings);
+            builder.RegisterInstance<IHelpSettings>(this.AppSettings.Config.Links);
+            builder.RegisterInstance<ISslSettings>(this.AppSettings.Config.Ssl);
             builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
             builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
             builder.RegisterModule(new OrganizationModule());
@@ -129,6 +127,7 @@
             builder.RegisterModule(new VacationsModule());
             builder.RegisterModule(new SickLeavesModule());
             builder.RegisterModule(new PendingActionsModule());
+            builder.RegisterModule(new MobileBuildModule());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -148,9 +147,9 @@
             app.UseCookiePolicy();
 
             app.UseOpenApi();
-            app.UseSwaggerUi3((settings) =>
+            app.UseSwaggerUi3(settings =>
             {
-                settings.OAuth2Client = new OAuth2ClientSettings()
+                settings.OAuth2Client = new OAuth2ClientSettings
                 {
                     ClientId = appSettings.Config.Security.ClientId
                 };
@@ -164,8 +163,8 @@
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    "default",
+                    "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

@@ -55,9 +55,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Vacations
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Vacations.Contracts", "Arcadia.Assistant.Vacations.Contracts\Arcadia.Assistant.Vacations.Contracts.csproj", "{BBA7563D-DFD2-4964-8FD0-CD340B272662}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.PendingActions", "Arcadia.Assistant.PendingActions\Arcadia.Assistant.PendingActions.csproj", "{62740673-4B3F-4093-A7E5-94251B7C74EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.PendingActions", "Arcadia.Assistant.PendingActions\Arcadia.Assistant.PendingActions.csproj", "{62740673-4B3F-4093-A7E5-94251B7C74EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.PendingActions.Contracts", "Arcadia.Assistant.PendingActions.Contracts\Arcadia.Assistant.PendingActions.Contracts.csproj", "{F402EF81-854B-483C-A795-0FA2796CF153}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.PendingActions.Contracts", "Arcadia.Assistant.PendingActions.Contracts\Arcadia.Assistant.PendingActions.Contracts.csproj", "{F402EF81-854B-483C-A795-0FA2796CF153}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.AppCenterBuilds", "Arcadia.Assistant.AppCenterBuilds\Arcadia.Assistant.AppCenterBuilds.csproj", "{BA73D362-4E99-42F2-9966-E6692B0CBF7D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.MobileBuild", "Arcadia.Assistant.MobileBuild\Arcadia.Assistant.MobileBuild.csproj", "{BC44E3D2-B3B0-49F8-965E-25AAB4589BAA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.MobileBuild.Contracts", "Arcadia.Assistant.MobileBuild.Contracts\Arcadia.Assistant.MobileBuild.Contracts.csproj", "{1C3C2A57-B9EE-45E6-8639-7295AFDEC518}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MobileBuilds", "MobileBuilds", "{13E39FC7-D22B-4521-B65A-48C62593821F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -171,6 +179,18 @@ Global
 		{F402EF81-854B-483C-A795-0FA2796CF153}.Debug|x64.Build.0 = Debug|x64
 		{F402EF81-854B-483C-A795-0FA2796CF153}.Release|x64.ActiveCfg = Release|Any CPU
 		{F402EF81-854B-483C-A795-0FA2796CF153}.Release|x64.Build.0 = Release|Any CPU
+		{BA73D362-4E99-42F2-9966-E6692B0CBF7D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BA73D362-4E99-42F2-9966-E6692B0CBF7D}.Debug|x64.Build.0 = Debug|Any CPU
+		{BA73D362-4E99-42F2-9966-E6692B0CBF7D}.Release|x64.ActiveCfg = Release|Any CPU
+		{BA73D362-4E99-42F2-9966-E6692B0CBF7D}.Release|x64.Build.0 = Release|Any CPU
+		{BC44E3D2-B3B0-49F8-965E-25AAB4589BAA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BC44E3D2-B3B0-49F8-965E-25AAB4589BAA}.Debug|x64.Build.0 = Debug|Any CPU
+		{BC44E3D2-B3B0-49F8-965E-25AAB4589BAA}.Release|x64.ActiveCfg = Release|Any CPU
+		{BC44E3D2-B3B0-49F8-965E-25AAB4589BAA}.Release|x64.Build.0 = Release|Any CPU
+		{1C3C2A57-B9EE-45E6-8639-7295AFDEC518}.Debug|x64.ActiveCfg = Debug|x64
+		{1C3C2A57-B9EE-45E6-8639-7295AFDEC518}.Debug|x64.Build.0 = Debug|x64
+		{1C3C2A57-B9EE-45E6-8639-7295AFDEC518}.Release|x64.ActiveCfg = Release|Any CPU
+		{1C3C2A57-B9EE-45E6-8639-7295AFDEC518}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -189,6 +209,9 @@ Global
 		{BBA7563D-DFD2-4964-8FD0-CD340B272662} = {EC5FA305-0A2E-4985-A977-B9C6F2ADEFFF}
 		{62740673-4B3F-4093-A7E5-94251B7C74EE} = {EC5FA305-0A2E-4985-A977-B9C6F2ADEFFF}
 		{F402EF81-854B-483C-A795-0FA2796CF153} = {EC5FA305-0A2E-4985-A977-B9C6F2ADEFFF}
+		{BA73D362-4E99-42F2-9966-E6692B0CBF7D} = {13E39FC7-D22B-4521-B65A-48C62593821F}
+		{BC44E3D2-B3B0-49F8-965E-25AAB4589BAA} = {13E39FC7-D22B-4521-B65A-48C62593821F}
+		{1C3C2A57-B9EE-45E6-8639-7295AFDEC518} = {13E39FC7-D22B-4521-B65A-48C62593821F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C376673D-F593-42B1-8093-D1F667D586B1}

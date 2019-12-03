@@ -7,6 +7,10 @@
         public class ConfigPackageSettings
         {
             public SecuritySettings Security { get; set; } = new SecuritySettings();
+
+            public LinkConfiguration Links { get; set; } = new LinkConfiguration();
+
+            public SslConfiguration Ssl { get; set; } = new SslConfiguration();
         }
     }
 }

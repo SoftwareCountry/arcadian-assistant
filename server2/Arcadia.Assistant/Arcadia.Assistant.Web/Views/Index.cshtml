@@ -1,0 +1,30 @@
+﻿@model Arcadia.Assistant.Web.Models.HomeViewModel
+
+<style>
+    @@media screen and (max-width: 499px) {
+        .android-content {
+            width: 100%;
+            height: 100%;
+            margin-top: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="android-content">
+    <div class="download-block">
+        <div>
+            <a href="@Url.Action("GetAndroid", "GetFileWeb")">
+                <img src="~/images/download_android.svg" alt="Download for Android" />
+            </a>
+        </div>
+        <div class="another-application-link">
+            @Html.ActionLink("Not an Android?", "Index", "DownloadIosWeb")
+        </div>
+        <div class="help-link">
+            <a href="@Model.HelpLink" target="_blank">Read Usage Guide</a>
+        </div>
+    </div>
+</div>

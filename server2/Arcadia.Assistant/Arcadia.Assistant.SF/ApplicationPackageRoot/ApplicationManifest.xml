@@ -1,6 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="Arcadia.Assistant.SFType" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Parameters>
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_InstanceCount" DefaultValue="1" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_DownloadBuildIntervalMinutes" DefaultValue="720" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_ApiToken" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_AndroidGetBuildsUrl" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_AndroidGetBuildDownloadLinkTemplateUrl" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_IosGetBuildsUrl" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_IosGetBuildDownloadLinkTemplateUrl" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.PendingActions_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.Vacations_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.SickLeaves_InstanceCount" DefaultValue="-1" />
@@ -28,6 +35,8 @@
     <Parameter Name="Arcadia.Assistant.Web_Security_AuthorizationUrl" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_Security_TokenUrl" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_Security_OpenIdConfigurationUrl" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Web_Links_HelpLink" DefaultValue="https://arcadiaspb.sharepoint.com/teams/ArcadiaAssistant/SitePages/Usage%20Guide.aspx" />
+    <Parameter Name="Arcadia.Assistant.Web_Ssl_SslOffloading" DefaultValue="false" />
     <Parameter Name="AvatarActorService_PartitionCount" DefaultValue="10" />
     <Parameter Name="AvatarActorService_MinReplicaSetSize" DefaultValue="3" />
     <Parameter Name="AvatarActorService_TargetReplicaSetSize" DefaultValue="3" />
@@ -35,10 +44,33 @@
     <Parameter Name="UserPreferencesStorageActorService_PartitionCount" DefaultValue="10" />
     <Parameter Name="UserPreferencesStorageActorService_MinReplicaSetSize" DefaultValue="3" />
     <Parameter Name="UserPreferencesStorageActorService_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="MobileBuildActorService_PartitionCount" DefaultValue="10" />
+    <Parameter Name="MobileBuildActorService_MinReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="MobileBuildActorService_TargetReplicaSetSize" DefaultValue="3" />
   </Parameters>
   <!-- Import the ServiceManifest from the ServicePackage. The ServiceManifestName and ServiceManifestVersion 
        should match the Name and Version attributes of the ServiceManifest element defined in the 
        ServiceManifest.xml file. -->
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.MobileBuildPkg" ServiceManifestVersion="1.0.0" />
+  </ServiceManifestImport>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.AppCenterBuildsPkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="DownloadApplication">
+            <Parameter Name="DownloadBuildIntervalMinutes" Value="[Arcadia.Assistant.AppCenterBuilds_DownloadBuildIntervalMinutes]" />
+            <Parameter Name="ApiToken" Value="[Arcadia.Assistant.AppCenterBuilds_ApiToken]" />
+            <Parameter Name="AndroidGetBuildsUrl" Value="[Arcadia.Assistant.AppCenterBuilds_AndroidGetBuildsUrl]" />
+            <Parameter Name="AndroidGetBuildDownloadLinkTemplateUrl" Value="[Arcadia.Assistant.AppCenterBuilds_AndroidGetBuildDownloadLinkTemplateUrl]" />
+            <Parameter Name="IosGetBuildsUrl" Value="[Arcadia.Assistant.AppCenterBuilds_IosGetBuildsUrl]" />
+            <Parameter Name="IosGetBuildDownloadLinkTemplateUrl" Value="[Arcadia.Assistant.AppCenterBuilds_IosGetBuildDownloadLinkTemplateUrl]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
+  </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.PendingActionsPkg" ServiceManifestVersion="1.0.0" />
     <ConfigOverrides />
@@ -158,6 +190,12 @@
             <Parameter Name="TokenUrl" Value="[Arcadia.Assistant.Web_Security_TokenUrl]" />
             <Parameter Name="OpenIdConfigurationUrl" Value="[Arcadia.Assistant.Web_Security_OpenIdConfigurationUrl]" />
           </Section>
+          <Section Name="Links">
+            <Parameter Name="HelpLink" Value="[Arcadia.Assistant.Web_Links_HelpLink]" />
+          </Section>
+          <Section Name="Ssl">
+            <Parameter Name="SslOffloading" Value="[Arcadia.Assistant.Web_Ssl_SslOffloading]" />
+          </Section>
         </Settings>
       </ConfigOverride>
     </ConfigOverrides>
@@ -176,6 +214,11 @@
          ServiceFabric PowerShell module.
          
          The attribute ServiceTypeName below must match the name defined in the imported ServiceManifest.xml file. -->
+    <Service Name="Arcadia.Assistant.AppCenterBuilds" ServicePackageActivationMode="ExclusiveProcess">
+      <StatelessService ServiceTypeName="Arcadia.Assistant.AppCenterBuildsType" InstanceCount="[Arcadia.Assistant.AppCenterBuilds_InstanceCount]">
+        <SingletonPartition />
+      </StatelessService>
+    </Service>
     <Service Name="Arcadia.Assistant.PendingActions" ServicePackageActivationMode="ExclusiveProcess">
       <StatelessService ServiceTypeName="Arcadia.Assistant.PendingActionsType" InstanceCount="[Arcadia.Assistant.PendingActions_InstanceCount]">
         <SingletonPartition />
@@ -239,6 +282,11 @@
     <Service Name="UserPreferencesStorageActorService" GeneratedIdRef="60586cd7-62d3-471e-a869-517daf5adc18|Persisted">
       <StatefulService ServiceTypeName="UserPreferencesStorageActorServiceType" TargetReplicaSetSize="[UserPreferencesStorageActorService_TargetReplicaSetSize]" MinReplicaSetSize="[UserPreferencesStorageActorService_MinReplicaSetSize]">
         <UniformInt64Partition PartitionCount="[UserPreferencesStorageActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+      </StatefulService>
+    </Service>
+    <Service Name="MobileBuildActorService" GeneratedIdRef="7e23e345-9819-4781-9ba3-1ab8acdfb5b3|Persisted">
+      <StatefulService ServiceTypeName="MobileBuildActorServiceType" TargetReplicaSetSize="[MobileBuildActorService_TargetReplicaSetSize]" MinReplicaSetSize="[MobileBuildActorService_MinReplicaSetSize]">
+        <UniformInt64Partition PartitionCount="[MobileBuildActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
       </StatefulService>
     </Service>
   </DefaultServices>

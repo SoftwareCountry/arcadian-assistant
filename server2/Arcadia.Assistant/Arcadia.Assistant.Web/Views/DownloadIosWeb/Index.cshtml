@@ -1,0 +1,97 @@
+﻿@model Arcadia.Assistant.Web.Models.HomeViewModel
+
+<style>
+    .ios-content {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .installation-steps {
+        margin-top: 30px;
+    }
+
+    .screenshots-container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .screenshot {
+        display: inline-block;
+        position: relative;
+        flex-basis: 100%;
+        margin: 0 10px 10px 0;
+        height: 300px;
+        max-width: 150px;
+    }
+
+    .screenshot img {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+
+    @@media screen and (max-width: 499px) {
+        .ios-content {
+            margin-top: 30px;
+        }
+
+        .download-block-container {
+            text-align: center;
+        }
+
+        .installation-steps {
+            text-align: center;
+        }
+
+        .screenshots-container {
+            justify-content: space-evenly;
+        }
+    }
+
+    .version {
+        text-align: right;
+        width: 100%;
+    }
+</style>
+
+<div class="ios-content">
+    <div class="download-block-container">
+        <div class="download-block">
+            <div>
+                <a href="itms-services://?action=download-manifest&url=@Model.ManifestLink">
+                    <img src="~/images/download_ios.svg" alt="Download for iOS" />
+                </a>
+                <div class="version">Version:&nbsp; @Model.Version &nbsp;</div>
+            </div>
+            <div class="another-application-link">
+                @Html.ActionLink("Not an iOS?", "Index", "DownloadAndroidWeb")
+            </div>
+        </div>
+    </div>
+    <div class="help-link">
+        <a href="@Model.HelpLink" target="_blank">Read Usage Guide</a>
+    </div>
+    <h3 class="installation-steps">Installation steps</h3>
+    <div class="screenshots-container">
+        <div class="screenshot">
+            <img src="~/images/ios-installation-screenshots/step_1.png" />
+        </div>
+        <div class="screenshot">
+            <img src="~/images/ios-installation-screenshots/step_2.png" />
+        </div>
+        <div class="screenshot">
+            <img src="~/images/ios-installation-screenshots/step_3.png" />
+        </div>
+        <div class="screenshot">
+            <img src="~/images/ios-installation-screenshots/step_4.png" />
+        </div>
+        <div class="screenshot">
+            <img src="~/images/ios-installation-screenshots/step_5.png" />
+        </div>
+        <div class="screenshot">
+            <img src="~/images/ios-installation-screenshots/step_6.png" />
+        </div>
+    </div>
+</div>

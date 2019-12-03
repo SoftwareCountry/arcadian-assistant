@@ -7,4 +7,10 @@
     <Parameter Name="TokenUrl" Value=""/>
     <Parameter Name="OpenIdConfigurationUrl" Value=""/>
   </Section>
+  <Section Name="Links">
+    <Parameter Name="HelpLink" Value=""/>
+  </Section>
+  <Section Name="Ssl">
+    <Parameter Name="SslOffloading" Value="false"/>
+  </Section>
 </Settings>
