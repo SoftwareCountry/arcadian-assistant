@@ -35,7 +35,7 @@
     <Parameter Name="Arcadia.Assistant.Web_Security_AuthorizationUrl" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_Security_TokenUrl" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_Security_OpenIdConfigurationUrl" DefaultValue="" />
-    <Parameter Name="Arcadia.Assistant.Web_Links_HelpLink" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Web_Links_HelpLink" DefaultValue="https://arcadiaspb.sharepoint.com/teams/ArcadiaAssistant/SitePages/Usage%20Guide.aspx" />
     <Parameter Name="Arcadia.Assistant.Web_Ssl_SslOffloading" DefaultValue="false" />
     <Parameter Name="AvatarActorService_PartitionCount" DefaultValue="10" />
     <Parameter Name="AvatarActorService_MinReplicaSetSize" DefaultValue="3" />
