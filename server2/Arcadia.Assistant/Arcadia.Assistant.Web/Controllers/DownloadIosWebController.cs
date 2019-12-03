@@ -1,22 +1,25 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
     using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
+
+    using Configuration;
 
     using Microsoft.AspNetCore.Mvc;
 
-    using Models;
-    using AppCenterBuilds.Contracts;
     using MobileBuild.Contracts;
-    using System.Threading.Tasks;
-    using System.Threading;
+
+    using Models;
+
     using Properties;
 
     [ApiExplorerSettings(IgnoreApi = true)]
     public class DownloadIosWebController : Controller
     {
-        private readonly bool sslOffloading;
         private readonly string helpLink;
         private readonly IMobileBuildActorFactory mobileBuildActor;
+        private readonly bool sslOffloading;
 
         public DownloadIosWebController(ISslSettings sslSettings, IHelpSettings helpSettings, IMobileBuildActorFactory mobileBuildActor)
         {
@@ -29,7 +32,7 @@
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var version = await mobileBuildActor.MobileBuild(DeviceType.Ios.MobileBuildType()).GetMobileBuildVersionAsync(CancellationToken.None);
+            var version = await this.mobileBuildActor.MobileBuild(DeviceType.Ios.MobileBuildType()).GetMobileBuildVersionAsync(CancellationToken.None);
             return this.View(new HomeViewModel
             {
                 ManifestLink = this.GetAbsoluteUrl("GetIosManifest", "DownloadIosWeb"),

@@ -1,17 +1,21 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
-    using AppCenterBuilds.Contracts;
-    using MobileBuild.Contracts;
-    using Models;
-    using Microsoft.AspNetCore.Mvc;
     using System.Threading;
     using System.Threading.Tasks;
+
+    using Configuration;
+
+    using Microsoft.AspNetCore.Mvc;
+
+    using MobileBuild.Contracts;
+
+    using Models;
 
     [ApiExplorerSettings(IgnoreApi = true)]
     public class DownloadAndroidWebController : Controller
     {
-        private readonly IMobileBuildActorFactory mobileBuildActor;
         private readonly IHelpSettings helpSettings;
+        private readonly IMobileBuildActorFactory mobileBuildActor;
 
         public DownloadAndroidWebController(IHelpSettings helpSettings, IMobileBuildActorFactory mobileBuildActor)
         {
@@ -23,7 +27,7 @@
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var version = await mobileBuildActor.MobileBuild(DeviceType.Android.MobileBuildType()).GetMobileBuildVersionAsync(CancellationToken.None);
+            var version = await this.mobileBuildActor.MobileBuild(DeviceType.Android.MobileBuildType()).GetMobileBuildVersionAsync(CancellationToken.None);
             return this.View(new HomeViewModel
             {
                 HelpLink = this.helpSettings.HelpLink,

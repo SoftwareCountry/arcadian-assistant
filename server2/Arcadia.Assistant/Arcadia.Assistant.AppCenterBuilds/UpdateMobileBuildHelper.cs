@@ -13,7 +13,7 @@
 
     using MobileBuild.Contracts;
 
-    internal class UpdateMobileBuildHelper
+    public class UpdateMobileBuildHelper
     {
         private readonly string apiKey;
         private readonly string buildUrl;

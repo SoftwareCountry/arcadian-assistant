@@ -2,10 +2,7 @@ namespace Arcadia.Assistant.Web
 {
     using System;
     using System.Diagnostics;
-    using System.Fabric;
     using System.Threading;
-    using Arcadia.Assistant.Logging;
-    using Autofac;
 
     using Microsoft.ServiceFabric.Services.Runtime;
 
