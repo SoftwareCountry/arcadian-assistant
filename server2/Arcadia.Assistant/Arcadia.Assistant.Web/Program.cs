@@ -2,8 +2,9 @@ namespace Arcadia.Assistant.Web
 {
     using System;
     using System.Diagnostics;
+    using System.Fabric;
     using System.Threading;
-
+    using Arcadia.Assistant.Logging;
     using Microsoft.ServiceFabric.Services.Runtime;
 
     internal static class Program

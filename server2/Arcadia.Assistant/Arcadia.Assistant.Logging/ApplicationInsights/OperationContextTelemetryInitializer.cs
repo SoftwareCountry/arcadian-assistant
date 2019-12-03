@@ -1,9 +1,10 @@
-using System;
-using Microsoft.ApplicationInsights.Channel;
-using Microsoft.ApplicationInsights.Extensibility;
-
 namespace Arcadia.Assistant.Logging.ApplicationInsights
 {
+    using System;
+
+    using Microsoft.ApplicationInsights.Channel;
+    using Microsoft.ApplicationInsights.Extensibility;
+
     internal class OperationContextTelemetryInitializer : ITelemetryInitializer
     {
         private readonly Func<string> operationIdProvider;
@@ -15,11 +16,13 @@ namespace Arcadia.Assistant.Logging.ApplicationInsights
 
         public void Initialize(ITelemetry telemetry)
         {
-            telemetry.Context.Operation.Id = operationIdProvider.Invoke();
-            telemetry.Context.Operation.ParentId = operationIdProvider.Invoke();
+            telemetry.Context.Operation.Id = this.operationIdProvider.Invoke();
+            telemetry.Context.Operation.ParentId = this.operationIdProvider.Invoke();
 
-            if(telemetry.Context.Operation.Name == null)
+            if (telemetry.Context.Operation.Name == null)
+            {
                 telemetry.Context.Operation.Name = Guid.NewGuid().ToString();
+            }
         }
     }
 }

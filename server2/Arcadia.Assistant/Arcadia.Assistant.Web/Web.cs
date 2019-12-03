@@ -57,7 +57,6 @@ namespace Arcadia.Assistant.Web
                                 logging.AddConfiguration(hosingContext.Configuration.GetSection("Logging"));
                                 logging.AddConsole();
                                 logging.AddDebug();
-                                logging.AddApplicationInsights(appInsightsKey);
                                 logging.AddEventSourceLogger();
                             })
                             .UseContentRoot(Directory.GetCurrentDirectory())

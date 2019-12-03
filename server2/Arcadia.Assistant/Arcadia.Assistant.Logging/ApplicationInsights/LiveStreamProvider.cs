@@ -1,9 +1,9 @@
-using Microsoft.ApplicationInsights.DependencyCollector;
-using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.ApplicationInsights.Extensibility.PerfCounterCollector.QuickPulse;
-
 namespace Arcadia.Assistant.Logging.ApplicationInsights
 {
+    using Microsoft.ApplicationInsights.DependencyCollector;
+    using Microsoft.ApplicationInsights.Extensibility;
+    using Microsoft.ApplicationInsights.Extensibility.PerfCounterCollector.QuickPulse;
+
     internal class LiveStreamProvider
     {
         private readonly TelemetryConfiguration configuration;
@@ -16,11 +16,11 @@ namespace Arcadia.Assistant.Logging.ApplicationInsights
         public void Enable()
         {
             var module = new DependencyTrackingTelemetryModule();
-            module.Initialize(configuration);
+            module.Initialize(this.configuration);
 
             QuickPulseTelemetryProcessor processor = null;
 
-            configuration.TelemetryProcessorChainBuilder
+            this.configuration.TelemetryProcessorChainBuilder
                 .Use(next =>
                 {
                     processor = new QuickPulseTelemetryProcessor(next);
@@ -29,7 +29,7 @@ namespace Arcadia.Assistant.Logging.ApplicationInsights
                 .Build();
 
             var quickPulse = new QuickPulseTelemetryModule();
-            quickPulse.Initialize(configuration);
+            quickPulse.Initialize(this.configuration);
             quickPulse.RegisterTelemetryProcessor(processor);
         }
     }

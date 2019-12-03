@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Arcadia.Assistant.Logging
+﻿namespace Arcadia.Assistant.Logging
 {
     public class LoggerSettings
     {

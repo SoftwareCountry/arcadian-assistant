@@ -1,15 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Fabric;
-using System.Linq;
-using Microsoft.ApplicationInsights.Channel;
-using Microsoft.ApplicationInsights.DataContracts;
-using Serilog.Events;
-using Arcadia.Assistant.Logging.PropertyMap;
-
 namespace Arcadia.Assistant.Logging.ApplicationInsights
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Fabric;
+    using System.Linq;
+
+    using Microsoft.ApplicationInsights.Channel;
+    using Microsoft.ApplicationInsights.DataContracts;
+
+    using PropertyMap;
+
+    using Serilog.Events;
+
     internal class TelemetryBuilder
     {
         private readonly ServiceContext context;
@@ -23,8 +26,8 @@ namespace Arcadia.Assistant.Logging.ApplicationInsights
 
         public ITelemetry LogEventToTelemetryConverter()
         {
-            int serviceFabricEvent = ServiceFabricEvent.Undefined;
-            if (logEvent.Properties.TryGetValue(SharedProperties.EventId, out LogEventPropertyValue eventId))
+            var serviceFabricEvent = ServiceFabricEvent.Undefined;
+            if (this.logEvent.Properties.TryGetValue(SharedProperties.EventId, out var eventId))
             {
                 int.TryParse(((StructureValue)eventId).Properties[0].Value.ToString(), out serviceFabricEvent);
             }
@@ -33,24 +36,24 @@ namespace Arcadia.Assistant.Logging.ApplicationInsights
             switch (serviceFabricEvent)
             {
                 case ServiceFabricEvent.Exception:
-                    telemetry = CreateExceptionTelemetry();
+                    telemetry = this.CreateExceptionTelemetry();
                     break;
                 case ServiceFabricEvent.ApiRequest:
-                    telemetry = CreateRequestTelemetry();
+                    telemetry = this.CreateRequestTelemetry();
                     break;
                 case ServiceFabricEvent.Metric:
-                    telemetry = CreateMetricTelemetry();
+                    telemetry = this.CreateMetricTelemetry();
                     break;
                 case ServiceFabricEvent.ServiceRequest:
                 case ServiceFabricEvent.Dependency:
-                    telemetry = CreateDependencyTelemetry();
+                    telemetry = this.CreateDependencyTelemetry();
                     break;
                 default:
-                    telemetry = CreateTraceTelemetry();
+                    telemetry = this.CreateTraceTelemetry();
                     break;
             }
 
-            SetContextProperties(telemetry);
+            this.SetContextProperties(telemetry);
 
             return telemetry;
         }
@@ -59,24 +62,24 @@ namespace Arcadia.Assistant.Logging.ApplicationInsights
         {
             var requestTelemetry = new RequestTelemetry
             {
-                ResponseCode = TryGetStringValue(ApiRequestProperties.StatusCode),
-                Url = new Uri($"{TryGetStringValue(ApiRequestProperties.Scheme)}://{TryGetStringValue(ApiRequestProperties.Host)}{TryGetStringValue(ApiRequestProperties.Path)}"),
-                Name = $"{TryGetStringValue(ApiRequestProperties.Method)} {TryGetStringValue(ApiRequestProperties.Path)}",
-                Timestamp = DateTime.Parse(TryGetStringValue(ApiRequestProperties.StartTime)),
-                Duration = TimeSpan.FromMilliseconds(double.Parse(TryGetStringValue(ApiRequestProperties.DurationInMs))),
-                Success = bool.Parse(TryGetStringValue(ApiRequestProperties.Success)),
+                ResponseCode = this.TryGetStringValue(ApiRequestProperties.StatusCode),
+                Url = new Uri($"{this.TryGetStringValue(ApiRequestProperties.Scheme)}://{this.TryGetStringValue(ApiRequestProperties.Host)}{this.TryGetStringValue(ApiRequestProperties.Path)}"),
+                Name = $"{this.TryGetStringValue(ApiRequestProperties.Method)} {this.TryGetStringValue(ApiRequestProperties.Path)}",
+                Timestamp = DateTime.Parse(this.TryGetStringValue(ApiRequestProperties.StartTime)),
+                Duration = TimeSpan.FromMilliseconds(double.Parse(this.TryGetStringValue(ApiRequestProperties.DurationInMs))),
+                Success = bool.Parse(this.TryGetStringValue(ApiRequestProperties.Success)),
                 Properties =
                 {
-                    { ApiRequestProperties.Method, TryGetStringValue(ApiRequestProperties.Method) },
-                    { ApiRequestProperties.Headers, TryGetStringValue(ApiRequestProperties.Headers) },
-                    { ApiRequestProperties.Body,  TryGetStringValue(ApiRequestProperties.Body) }
+                    { ApiRequestProperties.Method, this.TryGetStringValue(ApiRequestProperties.Method) },
+                    { ApiRequestProperties.Headers, this.TryGetStringValue(ApiRequestProperties.Headers) },
+                    { ApiRequestProperties.Body, this.TryGetStringValue(ApiRequestProperties.Body) }
                 }
             };
 
             requestTelemetry.Context.Operation.Name = requestTelemetry.Name;
-            requestTelemetry.Id = TryGetStringValue(SharedProperties.TraceId);
+            requestTelemetry.Id = this.TryGetStringValue(SharedProperties.TraceId);
 
-            AddLogEventProperties(requestTelemetry, typeof(ApiRequestProperties).GetFields().Select(f => f.GetRawConstantValue().ToString()));
+            this.AddLogEventProperties(requestTelemetry, typeof(ApiRequestProperties).GetFields().Select(f => f.GetRawConstantValue().ToString()));
 
             return requestTelemetry;
         }
@@ -85,18 +88,18 @@ namespace Arcadia.Assistant.Logging.ApplicationInsights
         {
             var dependencyTelemetry = new DependencyTelemetry
             {
-                Name = TryGetStringValue(DependencyProperties.DependencyTypeName),
-                Duration = TimeSpan.FromMilliseconds(double.Parse(TryGetStringValue(DependencyProperties.DurationInMs))),
-                Data = TryGetStringValue(DependencyProperties.Name),
-                Success = bool.Parse(TryGetStringValue(DependencyProperties.Success)),
-                Type = TryGetStringValue(DependencyProperties.Type),
-                Timestamp = DateTime.Parse(TryGetStringValue(DependencyProperties.StartTime)),
+                Name = this.TryGetStringValue(DependencyProperties.DependencyTypeName),
+                Duration = TimeSpan.FromMilliseconds(double.Parse(this.TryGetStringValue(DependencyProperties.DurationInMs))),
+                Data = this.TryGetStringValue(DependencyProperties.Name),
+                Success = bool.Parse(this.TryGetStringValue(DependencyProperties.Success)),
+                Type = this.TryGetStringValue(DependencyProperties.Type),
+                Timestamp = DateTime.Parse(this.TryGetStringValue(DependencyProperties.StartTime))
             };
 
             dependencyTelemetry.Id = dependencyTelemetry.Data;
             dependencyTelemetry.Context.Operation.Name = dependencyTelemetry.Name;
 
-            AddLogEventProperties(dependencyTelemetry, typeof(DependencyProperties).GetFields().Select(f => f.GetRawConstantValue().ToString()));
+            this.AddLogEventProperties(dependencyTelemetry, typeof(DependencyProperties).GetFields().Select(f => f.GetRawConstantValue().ToString()));
 
             return dependencyTelemetry;
         }
@@ -105,44 +108,48 @@ namespace Arcadia.Assistant.Logging.ApplicationInsights
         {
             var metricTelemetry = new MetricTelemetry
             {
-                Name = TryGetStringValue(MetricProperties.Name),
-                Sum = double.Parse(TryGetStringValue(MetricProperties.Value)),
-                Timestamp = logEvent.Timestamp
+                Name = this.TryGetStringValue(MetricProperties.Name),
+                Sum = double.Parse(this.TryGetStringValue(MetricProperties.Value)),
+                Timestamp = this.logEvent.Timestamp
             };
 
-            if (logEvent.Properties.TryGetValue(MetricProperties.MinValue, out LogEventPropertyValue min))
+            if (this.logEvent.Properties.TryGetValue(MetricProperties.MinValue, out var min))
+            {
                 metricTelemetry.Min = double.Parse(min.ToString());
+            }
 
-            if (logEvent.Properties.TryGetValue(MetricProperties.MaxValue, out LogEventPropertyValue max))
+            if (this.logEvent.Properties.TryGetValue(MetricProperties.MaxValue, out var max))
+            {
                 metricTelemetry.Max = double.Parse(max.ToString());
+            }
 
-            AddLogEventProperties(metricTelemetry, typeof(MetricProperties).GetFields().Select(f => f.GetRawConstantValue().ToString()));
+            this.AddLogEventProperties(metricTelemetry, typeof(MetricProperties).GetFields().Select(f => f.GetRawConstantValue().ToString()));
 
             return metricTelemetry;
         }
 
         private ITelemetry CreateExceptionTelemetry()
         {
-            var exceptionTelemetry = new ExceptionTelemetry(logEvent.Exception)
+            var exceptionTelemetry = new ExceptionTelemetry(this.logEvent.Exception)
             {
-                SeverityLevel = logEvent.Level.ToSeverityLevel(),
-                Timestamp = logEvent.Timestamp
+                SeverityLevel = this.logEvent.Level.ToSeverityLevel(),
+                Timestamp = this.logEvent.Timestamp
             };
 
-            AddLogEventProperties(exceptionTelemetry);
+            this.AddLogEventProperties(exceptionTelemetry);
 
             return exceptionTelemetry;
         }
 
         private ITelemetry CreateTraceTelemetry()
         {
-            var traceTelemetry = new TraceTelemetry(logEvent.RenderMessage())
+            var traceTelemetry = new TraceTelemetry(this.logEvent.RenderMessage())
             {
-                SeverityLevel = logEvent.Level.ToSeverityLevel(),
-                Timestamp = logEvent.Timestamp
+                SeverityLevel = this.logEvent.Level.ToSeverityLevel(),
+                Timestamp = this.logEvent.Timestamp
             };
 
-            AddLogEventProperties(traceTelemetry);
+            this.AddLogEventProperties(traceTelemetry);
 
             return traceTelemetry;
         }
@@ -151,7 +158,7 @@ namespace Arcadia.Assistant.Logging.ApplicationInsights
         {
             telemetry.Context.Cloud.RoleName = FabricEnvironmentVariable.ServicePackageName;
             telemetry.Context.Cloud.RoleInstance = FabricEnvironmentVariable.ServicePackageActivationId ?? FabricEnvironmentVariable.ServicePackageInstanceId;
-            telemetry.Context.Component.Version = context.CodePackageActivationContext.CodePackageVersion;
+            telemetry.Context.Component.Version = this.context.CodePackageActivationContext.CodePackageVersion;
 
             if (!telemetry.Context.Properties.ContainsKey(ServiceContextProperties.NodeName))
             {
@@ -170,9 +177,9 @@ namespace Arcadia.Assistant.Logging.ApplicationInsights
             }
 #endif
 
-            if (logEvent.Properties.TryGetValue(SharedProperties.TraceId, out LogEventPropertyValue value))
+            if (this.logEvent.Properties.TryGetValue(SharedProperties.TraceId, out var value))
             {
-                var id = ((ScalarValue) value).Value.ToString();
+                var id = ((ScalarValue)value).Value.ToString();
                 telemetry.Context.Operation.ParentId = id;
                 telemetry.Context.Operation.Id = id;
             }
@@ -186,10 +193,12 @@ namespace Arcadia.Assistant.Logging.ApplicationInsights
                 ServiceContextProperties.ServicePackageVersion
             };
 
-            if(excludePropertyKeys != null)
+            if (excludePropertyKeys != null)
+            {
                 excludedPropertyKeys.AddRange(excludePropertyKeys);
+            }
 
-            foreach (var property in logEvent
+            foreach (var property in this.logEvent
                 .Properties
                 .Where(property => property.Value != null && !excludedPropertyKeys.Contains(property.Key) && !telemetry.Properties.ContainsKey(property.Key)))
             {
@@ -199,8 +208,10 @@ namespace Arcadia.Assistant.Logging.ApplicationInsights
 
         private string TryGetStringValue(string propertyName)
         {
-            if (!logEvent.Properties.TryGetValue(propertyName, out LogEventPropertyValue value))
-                throw new ArgumentException($"LogEvent does not contain required property {propertyName} for EventId {logEvent.Properties[SharedProperties.EventId]}", propertyName);
+            if (!this.logEvent.Properties.TryGetValue(propertyName, out var value))
+            {
+                throw new ArgumentException($"LogEvent does not contain required property {propertyName} for EventId {this.logEvent.Properties[SharedProperties.EventId]}", propertyName);
+            }
 
             return ((ScalarValue)value).Value.ToString();
         }

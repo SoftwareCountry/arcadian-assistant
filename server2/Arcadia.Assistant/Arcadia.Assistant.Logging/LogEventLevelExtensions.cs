@@ -1,8 +1,9 @@
-using Microsoft.ApplicationInsights.DataContracts;
-using Serilog.Events;
-
 namespace Arcadia.Assistant.Logging
 {
+    using Microsoft.ApplicationInsights.DataContracts;
+
+    using Serilog.Events;
+
     internal static class LogEventLevelExtensions
     {
         public static SeverityLevel? ToSeverityLevel(this LogEventLevel logEventLevel)

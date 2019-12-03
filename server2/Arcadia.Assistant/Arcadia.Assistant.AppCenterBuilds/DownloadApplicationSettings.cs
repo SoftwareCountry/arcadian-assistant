@@ -11,8 +11,8 @@
         public DownloadApplicationSettings(ConfigurationSection configurationSection)
         {
             this.ApiToken = configurationSection.Parameters["ApiToken"].Value;
-            this.DownloadBuildIntervalMinutes = int.TryParse(configurationSection.Parameters["DownloadBuildIntervalMinutes"].Value, out var interval) 
-                ? interval 
+            this.DownloadBuildIntervalMinutes = int.TryParse(configurationSection.Parameters["DownloadBuildIntervalMinutes"].Value, out var interval)
+                ? interval
                 : DefaultDownloadBuildIntervalMinutes;
             this.AndroidGetBuildsUrl = configurationSection.Parameters["AndroidGetBuildsUrl"].Value;
             this.AndroidGetBuildDownloadLinkTemplateUrl = configurationSection.Parameters["AndroidGetBuildDownloadLinkTemplateUrl"].Value;

@@ -1,16 +1,3 @@
-using System;
-using System.Diagnostics;
-using System.Fabric;
-using System.Threading;
-using Arcadia.Assistant.AppCenterBuilds.Contracts;
-using Arcadia.Assistant.AppCenterBuilds.Contracts.Interfaces;
-using Arcadia.Assistant.MobileBuild.Contracts;
-using Autofac;
-using Autofac.Extensions.DependencyInjection;
-using Autofac.Integration.ServiceFabric;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.ServiceFabric.Actors.Client;
-
 namespace Arcadia.Assistant.AppCenterBuilds
 {
     using System;
@@ -24,23 +11,22 @@ namespace Arcadia.Assistant.AppCenterBuilds
 
     using Contracts;
 
+    using Logging;
+
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Actors.Client;
-using Arcadia.Assistant.Logging;
-using Microsoft.Extensions.Logging;
-using Microsoft.ServiceFabric.Services.Remoting.Client;
-using Microsoft.ServiceFabric.Services.Runtime;
+    using Microsoft.ServiceFabric.Services.Remoting.Client;
 
     using MobileBuild.Contracts;
 
     internal static class Program
     {
         /// <summary>
-        /// This is the entry point of the service host process.
+        ///     This is the entry point of the service host process.
         /// </summary>
         private static void Main()
         {
-            ILogger logger = null;
             try
             {
                 var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
