@@ -65,8 +65,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.MobileBui
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.MobileBuild.Contracts", "Arcadia.Assistant.MobileBuild.Contracts\Arcadia.Assistant.MobileBuild.Contracts.csproj", "{1C3C2A57-B9EE-45E6-8639-7295AFDEC518}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.AppCenterBuilds.Contracts", "Arcadia.Assistant.AppCenterBuilds.Contracts\Arcadia.Assistant.AppCenterBuilds.Contracts.csproj", "{78072EC9-451A-440A-A746-775B2709896B}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MobileBuilds", "MobileBuilds", "{13E39FC7-D22B-4521-B65A-48C62593821F}"
 EndProject
 Global
@@ -193,10 +191,6 @@ Global
 		{1C3C2A57-B9EE-45E6-8639-7295AFDEC518}.Debug|x64.Build.0 = Debug|x64
 		{1C3C2A57-B9EE-45E6-8639-7295AFDEC518}.Release|x64.ActiveCfg = Release|Any CPU
 		{1C3C2A57-B9EE-45E6-8639-7295AFDEC518}.Release|x64.Build.0 = Release|Any CPU
-		{78072EC9-451A-440A-A746-775B2709896B}.Debug|x64.ActiveCfg = Debug|x64
-		{78072EC9-451A-440A-A746-775B2709896B}.Debug|x64.Build.0 = Debug|x64
-		{78072EC9-451A-440A-A746-775B2709896B}.Release|x64.ActiveCfg = Release|Any CPU
-		{78072EC9-451A-440A-A746-775B2709896B}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -218,7 +212,6 @@ Global
 		{BA73D362-4E99-42F2-9966-E6692B0CBF7D} = {13E39FC7-D22B-4521-B65A-48C62593821F}
 		{BC44E3D2-B3B0-49F8-965E-25AAB4589BAA} = {13E39FC7-D22B-4521-B65A-48C62593821F}
 		{1C3C2A57-B9EE-45E6-8639-7295AFDEC518} = {13E39FC7-D22B-4521-B65A-48C62593821F}
-		{78072EC9-451A-440A-A746-775B2709896B} = {13E39FC7-D22B-4521-B65A-48C62593821F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C376673D-F593-42B1-8093-D1F667D586B1}

@@ -44,7 +44,7 @@
     <Parameter Name="UserPreferencesStorageActorService_PartitionCount" DefaultValue="10" />
     <Parameter Name="UserPreferencesStorageActorService_MinReplicaSetSize" DefaultValue="3" />
     <Parameter Name="UserPreferencesStorageActorService_TargetReplicaSetSize" DefaultValue="3" />
-  <Parameter Name="MobileBuildActorService_PartitionCount" DefaultValue="10" />
+    <Parameter Name="MobileBuildActorService_PartitionCount" DefaultValue="10" />
     <Parameter Name="MobileBuildActorService_MinReplicaSetSize" DefaultValue="3" />
     <Parameter Name="MobileBuildActorService_TargetReplicaSetSize" DefaultValue="3" />
   </Parameters>
@@ -190,7 +190,7 @@
             <Parameter Name="TokenUrl" Value="[Arcadia.Assistant.Web_Security_TokenUrl]" />
             <Parameter Name="OpenIdConfigurationUrl" Value="[Arcadia.Assistant.Web_Security_OpenIdConfigurationUrl]" />
           </Section>
-        <Section Name="Links">
+          <Section Name="Links">
             <Parameter Name="HelpLink" Value="[Arcadia.Assistant.Web_Links_HelpLink]" />
           </Section>
           <Section Name="Ssl">
@@ -284,7 +284,7 @@
         <UniformInt64Partition PartitionCount="[UserPreferencesStorageActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
       </StatefulService>
     </Service>
-  <Service Name="MobileBuildActorService" GeneratedIdRef="7e23e345-9819-4781-9ba3-1ab8acdfb5b3|Persisted">
+    <Service Name="MobileBuildActorService" GeneratedIdRef="7e23e345-9819-4781-9ba3-1ab8acdfb5b3|Persisted">
       <StatefulService ServiceTypeName="MobileBuildActorServiceType" TargetReplicaSetSize="[MobileBuildActorService_TargetReplicaSetSize]" MinReplicaSetSize="[MobileBuildActorService_MinReplicaSetSize]">
         <UniformInt64Partition PartitionCount="[MobileBuildActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
       </StatefulService>

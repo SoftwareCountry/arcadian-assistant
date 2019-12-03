@@ -9,8 +9,6 @@ namespace Arcadia.Assistant.AppCenterBuilds
     using Autofac.Extensions.DependencyInjection;
     using Autofac.Integration.ServiceFabric;
 
-    using Contracts;
-
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.ServiceFabric.Actors.Client;
 

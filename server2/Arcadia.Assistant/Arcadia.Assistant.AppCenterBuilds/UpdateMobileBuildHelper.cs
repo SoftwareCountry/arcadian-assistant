@@ -9,9 +9,9 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    using Contracts.AppCenter;
-
     using MobileBuild.Contracts;
+
+    using Models;
 
     public class UpdateMobileBuildHelper
     {
@@ -34,7 +34,7 @@
             var appCenterLatestBuild = await this.GetLatestBuild(httpClientFactory);
             if (!appCenterLatestBuild.Id.HasValue)
             {
-                throw new ArgumentNullException("Application center build identifier expected");
+                throw new Exception("Application center build identifier expected");
             }
 
             var appCenterLastBuildVersion = appCenterLatestBuild.Id.Value.ToString();
@@ -59,39 +59,35 @@
 
         private async Task<AppCenterBuildModel> GetLatestBuild(IHttpClientFactory httpClientFactory)
         {
-            using (var response = await this.SendAppCenterRequest(this.buildUrl, httpClientFactory))
-            {
-                var contentString = await response.Content.ReadAsStringAsync();
-                var builds = this.DeserializeJson<IEnumerable<AppCenterBuildModel>>(contentString);
+            using var response = await this.SendAppCenterRequest(this.buildUrl, httpClientFactory);
 
-                return builds
-                    .Where(b => b.Result == "succeeded" && b.Status == "completed")
-                    .OrderByDescending(b => b.FinishTime)
-                    .FirstOrDefault();
-            }
+            var contentString = await response.Content.ReadAsStringAsync();
+            var builds = this.DeserializeJson<IEnumerable<AppCenterBuildModel>>(contentString);
+
+            return builds
+                .Where(b => b.Result == "succeeded" && b.Status == "completed")
+                .OrderByDescending(b => b.FinishTime)
+                .FirstOrDefault();
         }
 
         private async Task<AppCenterBuildDownloadModel> GetBuildDownloadModel(AppCenterBuildModel build, IHttpClientFactory httpClientFactory)
         {
             var getBuildUrl = this.downloadUrlTemplate.Replace("{buildId}", build.Id.ToString());
 
-            using (var response = await this.SendAppCenterRequest(getBuildUrl, httpClientFactory))
-            {
-                var contentString = await response.Content.ReadAsStringAsync();
+            using var response = await this.SendAppCenterRequest(getBuildUrl, httpClientFactory);
 
-                var downloadModel = this.DeserializeJson<AppCenterBuildDownloadModel>(contentString);
-                downloadModel.BuildNumber = build.Id;
+            var contentString = await response.Content.ReadAsStringAsync();
 
-                return downloadModel;
-            }
+            var downloadModel = this.DeserializeJson<AppCenterBuildDownloadModel>(contentString);
+            downloadModel.BuildNumber = build.Id;
+
+            return downloadModel;
         }
 
         private async Task<byte[]> GetBuildData(AppCenterBuildDownloadModel buildDownloadModel, IHttpClientFactory httpClientFactory)
         {
-            using (var client = httpClientFactory.CreateClient())
-            {
-                return await client.GetByteArrayAsync(buildDownloadModel.Uri);
-            }
+            using var client = httpClientFactory.CreateClient();
+            return await client.GetByteArrayAsync(buildDownloadModel.Uri);
         }
 
         private async Task<HttpResponseMessage> SendAppCenterRequest(string url, IHttpClientFactory httpClientFactory)
@@ -100,10 +96,8 @@
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             request.Headers.Add("X-API-Token", this.apiKey);
 
-            using (var httpClient = httpClientFactory.CreateClient())
-            {
-                return await httpClient.SendAsync(request);
-            }
+            using var httpClient = httpClientFactory.CreateClient();
+            return await httpClient.SendAsync(request);
         }
 
         private T DeserializeJson<T>(string message)
@@ -112,6 +106,7 @@
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
+
             return JsonSerializer.Deserialize<T>(message, serializerSettings);
         }
 

@@ -18,6 +18,6 @@
     <Parameter Name="Arcadia.Assistant.Web_InstanceCount" Value="1" />
     <Parameter Name="AvatarActorService_PartitionCount" Value="1" />
     <Parameter Name="UserPreferencesStorageActorService_PartitionCount" Value="1" />
-  <Parameter Name="MobileBuildActorService_PartitionCount" Value="1" />
+    <Parameter Name="MobileBuildActorService_PartitionCount" Value="1" />
   </Parameters>
 </Application>

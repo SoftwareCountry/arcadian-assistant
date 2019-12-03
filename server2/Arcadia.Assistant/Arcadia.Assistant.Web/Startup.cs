@@ -3,8 +3,6 @@
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
-    using AppCenterBuilds.Contracts;
-
     using Autofac;
 
     using Avatars.Contracts;

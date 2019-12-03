@@ -2,8 +2,6 @@
 {
     using System.Fabric.Description;
 
-    using Contracts;
-
     public class DownloadApplicationSettings : IDownloadApplicationSettings
     {
         private const int DefaultDownloadBuildIntervalMinutes = 720;

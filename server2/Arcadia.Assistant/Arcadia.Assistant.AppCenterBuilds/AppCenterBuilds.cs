@@ -7,8 +7,6 @@ namespace Arcadia.Assistant.AppCenterBuilds
     using System.Threading;
     using System.Threading.Tasks;
 
-    using Contracts;
-
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
 
@@ -59,28 +57,27 @@ namespace Arcadia.Assistant.AppCenterBuilds
                 ServiceEventSource.Current.ServiceMessage(this.Context, "Request build version");
 
                 // for android
-                await this.UpdateMobileBuild(ApplicationType.Android, this.configuration.AndroidGetBuildsUrl, this.configuration.AndroidGetBuildDownloadLinkTemplateUrl, cancellationToken);
+                await this.UpdateMobileBuild(WellKnownBuildTypes.Android, this.configuration.AndroidGetBuildsUrl, this.configuration.AndroidGetBuildDownloadLinkTemplateUrl, cancellationToken);
 
                 // for ios
-                await this.UpdateMobileBuild(ApplicationType.Ios, this.configuration.IosGetBuildsUrl, this.configuration.IosGetBuildDownloadLinkTemplateUrl, cancellationToken);
+                await this.UpdateMobileBuild(WellKnownBuildTypes.Ios, this.configuration.IosGetBuildsUrl, this.configuration.IosGetBuildDownloadLinkTemplateUrl, cancellationToken);
 
                 await Task.Delay(TimeSpan.FromMinutes(this.DownloadBuildIntervalMinutes), cancellationToken);
             }
         }
 
-        private async Task UpdateMobileBuild(ApplicationType type, string buildUrl, string buildDownloadUrlTemplate, CancellationToken cancellationToken)
+        private async Task UpdateMobileBuild(string mobileType, string buildUrl, string buildDownloadUrlTemplate, CancellationToken cancellationToken)
         {
             try
             {
                 var logStore = new Action<string>(x => ServiceEventSource.Current.ServiceMessage(this.Context, x));
-                var mobileType = type.ToString();
                 var actor = this.mobileBuildFactory.MobileBuild(mobileType);
                 var updateHelper = new UpdateMobileBuildHelper(buildUrl, buildDownloadUrlTemplate, this.ApiToken);
                 await updateHelper.CheckAndUpdateMobileBuild(this.clientFactory, actor, cancellationToken, logStore);
             }
             catch (Exception ex)
             {
-                ServiceEventSource.Current.ServiceMessage(this.Context, "{0} mobile type version udpate exception: {1}", type, ex.Message);
+                ServiceEventSource.Current.ServiceMessage(this.Context, "{0} mobile type version update exception: {1}", mobileType, ex.Message);
             }
         }
     }

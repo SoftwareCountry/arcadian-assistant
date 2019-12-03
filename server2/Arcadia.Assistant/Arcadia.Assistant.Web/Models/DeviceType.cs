@@ -1,8 +1,9 @@
-﻿using Arcadia.Assistant.AppCenterBuilds.Contracts;
-using System.Collections.Generic;
-
-namespace Arcadia.Assistant.Web.Models
+﻿namespace Arcadia.Assistant.Web.Models
 {
+    using System.Collections.Generic;
+
+    using MobileBuild.Contracts;
+
     public enum DeviceType
     {
         Android,
@@ -11,16 +12,16 @@ namespace Arcadia.Assistant.Web.Models
 
     internal static class DeviceTypeExtension
     {
-        private static Dictionary<DeviceType, ApplicationType> buildTypeByDeviceType =
-            new Dictionary<DeviceType, ApplicationType>
+        private static readonly Dictionary<DeviceType, string> BuildTypeByDeviceType =
+            new Dictionary<DeviceType, string>
             {
-                [DeviceType.Android] = ApplicationType.Android,
-                [DeviceType.Ios] = ApplicationType.Ios
+                [DeviceType.Android] = WellKnownBuildTypes.Android,
+                [DeviceType.Ios] = WellKnownBuildTypes.Ios
             };
 
         public static string MobileBuildType(this DeviceType type)
         {
-            return buildTypeByDeviceType[type].ToString();
+            return BuildTypeByDeviceType[type];
         }
     }
 }

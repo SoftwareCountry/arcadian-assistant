@@ -1,6 +1,4 @@
-﻿using Arcadia.Assistant.AppCenterBuilds.Contracts;
-
-namespace Arcadia.Assistant.Web.Configuration
+﻿namespace Arcadia.Assistant.Web.Configuration
 {
     public class AppSettings
     {
