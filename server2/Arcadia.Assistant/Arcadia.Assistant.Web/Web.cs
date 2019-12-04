@@ -3,7 +3,7 @@ namespace Arcadia.Assistant.Web
     using System.Collections.Generic;
     using System.Fabric;
     using System.IO;
-
+    using Arcadia.Assistant.Logging;
     using Autofac.Extensions.DependencyInjection;
 
     using Microsoft.AspNetCore.Hosting;
@@ -19,9 +19,16 @@ namespace Arcadia.Assistant.Web
     /// </summary>
     internal sealed class Web : StatelessService
     {
-        public Web(StatelessServiceContext context)
+        private readonly string appInsightsKey;
+        private readonly ILogger logger;
+
+        public Web(StatelessServiceContext context, LoggerSettings settings)
             : base(context)
         {
+
+            var loggerFactory = new LoggerFactoryBuilder(context).CreateLoggerFactory(settings.ApplicationInsightsKey);
+            logger = loggerFactory.CreateLogger<Web>();
+            appInsightsKey = settings.ApplicationInsightsKey;
         }
 
         /// <summary>
@@ -35,13 +42,15 @@ namespace Arcadia.Assistant.Web
                 new ServiceInstanceListener(serviceContext =>
                     new KestrelCommunicationListener(serviceContext, "ServiceEndpoint", (url, listener) =>
                     {
-                        ServiceEventSource.Current.ServiceMessage(serviceContext, $"Starting Kestrel on {url}");
+                        //ServiceEventSource.Current.ServiceMessage(serviceContext, $"Starting Kestrel on {url}");
+                        logger?.LogInformation($"Starting Kestrel on {url}");
 
                         return new WebHostBuilder()
                             .UseKestrel()
                             .ConfigureServices(
                                 services => services
-                                    .AddSingleton(serviceContext))
+                                    .AddSingleton(serviceContext)
+                                    .AddSingleton(logger))
                             .ConfigureServices(services => services.AddAutofac())
                             .ConfigureLogging((hosingContext, logging) =>
                             {

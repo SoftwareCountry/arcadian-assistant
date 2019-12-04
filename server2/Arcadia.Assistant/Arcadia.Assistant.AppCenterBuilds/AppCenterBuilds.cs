@@ -7,6 +7,9 @@ namespace Arcadia.Assistant.AppCenterBuilds
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Logging;
+
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
 
@@ -19,14 +22,17 @@ namespace Arcadia.Assistant.AppCenterBuilds
     {
         private readonly IHttpClientFactory clientFactory;
         private readonly IDownloadApplicationSettings configuration;
+        private readonly ILogger logger;
         private readonly IMobileBuildActorFactory mobileBuildFactory;
 
-        public AppCenterBuilds(StatelessServiceContext context, IDownloadApplicationSettings configuration, IHttpClientFactory clientFactory, IMobileBuildActorFactory mobileBuildFactory)
+        public AppCenterBuilds(StatelessServiceContext context, IDownloadApplicationSettings configuration, IHttpClientFactory clientFactory, IMobileBuildActorFactory mobileBuildFactory, LoggerSettings loggerSettings)
             : base(context)
         {
             this.configuration = configuration;
             this.clientFactory = clientFactory;
             this.mobileBuildFactory = mobileBuildFactory;
+            var loggerFactory = new LoggerFactoryBuilder(context).CreateLoggerFactory(loggerSettings.ApplicationInsightsKey);
+            this.logger = loggerFactory.CreateLogger<AppCenterBuilds>();
         }
 
         private int DownloadBuildIntervalMinutes => this.configuration.DownloadBuildIntervalMinutes;
@@ -54,7 +60,8 @@ namespace Arcadia.Assistant.AppCenterBuilds
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                ServiceEventSource.Current.ServiceMessage(this.Context, "Request build version");
+                //ServiceEventSource.Current.ServiceMessage(this.Context, "Request build version");
+                this.logger?.LogDebug("Request build version");
 
                 // for android
                 await this.UpdateMobileBuild(WellKnownBuildTypes.Android, this.configuration.AndroidGetBuildsUrl, this.configuration.AndroidGetBuildDownloadLinkTemplateUrl, cancellationToken);
@@ -70,14 +77,14 @@ namespace Arcadia.Assistant.AppCenterBuilds
         {
             try
             {
-                var logStore = new Action<string>(x => ServiceEventSource.Current.ServiceMessage(this.Context, x));
+                var logStore = new Action<string>(x => /*ServiceEventSource.Current.ServiceMessage(this.Context, x)*/this.logger?.LogInformation(x));
                 var actor = this.mobileBuildFactory.MobileBuild(mobileType);
                 var updateHelper = new UpdateMobileBuildHelper(buildUrl, buildDownloadUrlTemplate, this.ApiToken);
                 await updateHelper.CheckAndUpdateMobileBuild(this.clientFactory, actor, cancellationToken, logStore);
             }
             catch (Exception ex)
             {
-                ServiceEventSource.Current.ServiceMessage(this.Context, "{0} mobile type version update exception: {1}", mobileType, ex.Message);
+                this.logger?.LogError(ex, "{0} mobile type version udpate exception: {1}", mobileType, ex.Message);
             }
         }
     }

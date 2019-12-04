@@ -44,12 +44,12 @@
                 var downloadModel = await this.GetBuildDownloadModel(appCenterLatestBuild, httpClientFactory);
                 var data = await this.GetBuildData(downloadModel, httpClientFactory);
                 await mobileBuildActor.SetMobileBuildData(appCenterLastBuildVersion, data, cancellationToken);
-                logStore($"Mobile build {appCenterLastBuildVersion} updated from {downloadModel.Uri}");
+                logStore?.Invoke($"Mobile build {appCenterLastBuildVersion} updated from {downloadModel.Uri}");
             }
             else
             {
                 // TO DO: Refactor for common logger using
-                logStore("The same version - nothing to do");
+                logStore?.Invoke("The same version - nothing to do");
             }
         }
 

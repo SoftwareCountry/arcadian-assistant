@@ -2,8 +2,9 @@ namespace Arcadia.Assistant.Web
 {
     using System;
     using System.Diagnostics;
+    using System.Fabric;
     using System.Threading;
-
+    using Arcadia.Assistant.Logging;
     using Microsoft.ServiceFabric.Services.Runtime;
 
     internal static class Program
@@ -15,13 +16,16 @@ namespace Arcadia.Assistant.Web
         {
             try
             {
+                var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
+                var appInsightKey = configurationPackage.Settings.Sections["Logging"].Parameters["ApplicationInsightsKey"].Value;
+
                 // The ServiceManifest.XML file defines one or more service type names.
                 // Registering a service maps a service type name to a .NET type.
                 // When Service Fabric creates an instance of this service type,
                 // an instance of the class is created in this host process.
 
                 ServiceRuntime.RegisterServiceAsync("Arcadia.Assistant.WebType",
-                    context => new Web(context)).GetAwaiter().GetResult();
+                    context => new Web(context, new LoggerSettings(appInsightKey))).GetAwaiter().GetResult();
 
                 ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(Web).Name);
 
