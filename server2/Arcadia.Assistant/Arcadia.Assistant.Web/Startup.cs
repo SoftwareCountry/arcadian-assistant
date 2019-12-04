@@ -3,6 +3,8 @@
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
+    using Authentication;
+
     using Autofac;
 
     using Avatars.Contracts;
@@ -104,6 +106,11 @@
                     jwtOptions.Audience = this.AppSettings.Config.OpenId.ClientId;
                     jwtOptions.MetadataAddress = this.AppSettings.Config.OpenId.OpenIdConfigurationUrl;
                     jwtOptions.Events = new JwtBearerEvents();
+                })
+                .AddBasicAuthentication(basicOptions =>
+                {
+                    basicOptions.Realm = this.AppSettings.Config.BasicAuthentication.Realm;
+                    basicOptions.EventsType = typeof(ServiceUserAuthenticationEvents);
                 });
 
             //services.AddAuthorization();
@@ -118,6 +125,7 @@
             builder.RegisterInstance<IBasicAuthenticationSettings>(this.AppSettings.Config.BasicAuthentication);
             builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
             builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
+            builder.RegisterType<ServiceUserAuthenticationEvents>();
             builder.RegisterModule(new OrganizationModule());
             builder.RegisterModule(new EmployeesModule());
             builder.RegisterModule(new PermissionsModule());

@@ -24,6 +24,7 @@
     <PackageReference Include="Microsoft.ServiceFabric.Services.Remoting" Version="3.4.677" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0" />
     <PackageReference Include="NSwag.AspNetCore" Version="13.1.3" />
+    <PackageReference Include="ZNetCS.AspNetCore.Authentication.Basic" Version="3.0.2" />
   </ItemGroup>
 
 
@@ -59,7 +60,6 @@
 
 
   <ItemGroup>
-    <Folder Include="Authentication\" />
     <Folder Include="Authorization\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
