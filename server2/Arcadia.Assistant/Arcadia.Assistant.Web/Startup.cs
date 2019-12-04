@@ -75,7 +75,7 @@
 
             services.AddOpenApiDocument((document, x) =>
             {
-                var settings = x.GetService<AppSettings>().Config.Security;
+                var settings = x.GetService<AppSettings>().Config.OpenId;
                 document.AddSecurity("bearer", new List<string>(), new OpenApiSecurityScheme
                 {
                     Type = OpenApiSecuritySchemeType.OAuth2,
@@ -101,8 +101,8 @@
                 })
                 .AddJwtBearer(jwtOptions =>
                 {
-                    jwtOptions.Audience = this.AppSettings.Config.Security.ClientId;
-                    jwtOptions.MetadataAddress = this.AppSettings.Config.Security.OpenIdConfigurationUrl;
+                    jwtOptions.Audience = this.AppSettings.Config.OpenId.ClientId;
+                    jwtOptions.MetadataAddress = this.AppSettings.Config.OpenId.OpenIdConfigurationUrl;
                     jwtOptions.Events = new JwtBearerEvents();
                 });
 
@@ -115,6 +115,7 @@
             builder.RegisterInstance(this.AppSettings);
             builder.RegisterInstance<IHelpSettings>(this.AppSettings.Config.Links);
             builder.RegisterInstance<ISslSettings>(this.AppSettings.Config.Ssl);
+            builder.RegisterInstance<IBasicAuthenticationSettings>(this.AppSettings.Config.BasicAuthentication);
             builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
             builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
             builder.RegisterModule(new OrganizationModule());
@@ -151,7 +152,7 @@
             {
                 settings.OAuth2Client = new OAuth2ClientSettings
                 {
-                    ClientId = appSettings.Config.Security.ClientId
+                    ClientId = appSettings.Config.OpenId.ClientId
                 };
             });
 

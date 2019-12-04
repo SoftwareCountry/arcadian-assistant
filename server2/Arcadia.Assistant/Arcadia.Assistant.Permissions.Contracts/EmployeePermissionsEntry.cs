@@ -2,6 +2,9 @@
 {
     using System;
 
+    /// <summary>
+    /// Those are currently used by a client app
+    /// </summary>
     [Flags]
     public enum EmployeePermissionsEntry
     {

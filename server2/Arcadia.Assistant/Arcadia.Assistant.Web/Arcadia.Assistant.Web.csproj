@@ -59,6 +59,8 @@
 
 
   <ItemGroup>
+    <Folder Include="Authentication\" />
+    <Folder Include="Authorization\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
 

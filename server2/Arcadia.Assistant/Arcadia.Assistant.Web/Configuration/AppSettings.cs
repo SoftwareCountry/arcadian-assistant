@@ -6,11 +6,13 @@
 
         public class ConfigPackageSettings
         {
-            public SecuritySettings Security { get; set; } = new SecuritySettings();
+            public OpenIdSettings OpenId { get; set; } = new OpenIdSettings();
 
             public LinkConfiguration Links { get; set; } = new LinkConfiguration();
 
             public SslConfiguration Ssl { get; set; } = new SslConfiguration();
+
+            public BasicAuthenticationSettings BasicAuthentication { get; set; } = new BasicAuthenticationSettings();
         }
     }
 }
