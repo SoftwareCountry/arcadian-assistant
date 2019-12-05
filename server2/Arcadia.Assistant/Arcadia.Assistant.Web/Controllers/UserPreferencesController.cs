@@ -4,6 +4,8 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Authorization;
+
     using Employees.Contracts;
 
     using Microsoft.AspNetCore.Authorization;
@@ -14,7 +16,7 @@
 
     using UserPreferences.Contracts;
 
-    [Authorize]
+    [Authorize(Policies.UserIsEmployee)]
     [Route("/api/user-preferences")]
     [ApiController]
     public class UserPreferencesController : Controller

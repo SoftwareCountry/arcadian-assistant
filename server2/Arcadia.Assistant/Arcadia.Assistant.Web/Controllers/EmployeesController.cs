@@ -6,6 +6,8 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Authorization;
+
     using Employees.Contracts;
 
     using Microsoft.AspNetCore.Authorization;
@@ -22,7 +24,7 @@
     using WorkHoursCredit.Contracts;
 
     [Route("api/employees")]
-    [Authorize]
+    [Authorize(Policies.UserIsEmployee)]
     [ApiController]
     public class EmployeesController : Controller
     {
@@ -74,18 +76,34 @@
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<EmployeeModel[]>> FilterEmployees(
-            [FromQuery] string departmentId,
-            [FromQuery] string roomNumber,
-            [FromQuery] string name,
+            [FromQuery] string? departmentId,
+            [FromQuery] string? roomNumber,
+            [FromQuery] string? name,
             CancellationToken token)
         {
-            var query = EmployeesQuery.Create().ForDepartment(departmentId).ForRoom(roomNumber).WithNameFilter(name);
-            var employeesMetadata = await this.employees.FindEmployeesAsync(query, token);
             var identity = this.User.Identity.Name;
             if (identity == null)
             {
                 return this.Forbid();
             }
+
+            var query = EmployeesQuery.Create();
+            if (departmentId != null)
+            {
+                query = query.ForDepartment(departmentId);
+            }
+
+            if (roomNumber != null)
+            {
+                query = query.ForRoom(roomNumber);
+            }
+
+            if (name != null)
+            {
+                query = query.WithNameFilter(name);
+            }
+
+            var employeesMetadata = await this.employees.FindEmployeesAsync(query, token);
 
             var employeeModels = await this.ProcessEmployeesAsync(identity, employeesMetadata, token);
 

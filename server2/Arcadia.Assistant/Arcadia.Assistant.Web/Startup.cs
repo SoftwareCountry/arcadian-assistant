@@ -5,6 +5,10 @@
 
     using Authentication;
 
+    using Authorization;
+    using Authorization.Handlers;
+    using Authorization.Requirements;
+
     using Autofac;
 
     using Avatars.Contracts;
@@ -14,6 +18,7 @@
     using Employees.Contracts;
 
     using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
@@ -45,6 +50,8 @@
     using VacationsCredit.Contracts;
 
     using WorkHoursCredit.Contracts;
+
+    using ZNetCS.AspNetCore.Authentication.Basic;
 
     public class Startup
     {
@@ -113,6 +120,18 @@
                     basicOptions.EventsType = typeof(ServiceUserAuthenticationEvents);
                 });
 
+            services
+                .AddAuthorization(options =>
+                {
+                    options.AddPolicy(Policies.UserIsEmployee, policy => policy.Requirements.Add(new UserIsEmployeeRequirement()));
+
+                    options.AddPolicy(Policies.ServiceEndpoint, policy =>
+                    {
+                        policy.AddAuthenticationSchemes(BasicAuthenticationDefaults.AuthenticationScheme, JwtBearerDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                    });
+                });
+
             //services.AddAuthorization();
         }
 
@@ -137,6 +156,9 @@
             builder.RegisterModule(new SickLeavesModule());
             builder.RegisterModule(new PendingActionsModule());
             builder.RegisterModule(new MobileBuildModule());
+
+            builder.RegisterType<UserIsEmployeeHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
+            builder.RegisterType<EmployeePermissionsHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

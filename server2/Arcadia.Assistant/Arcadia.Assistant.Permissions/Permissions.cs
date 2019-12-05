@@ -53,7 +53,7 @@ namespace Arcadia.Assistant.Permissions
             if (userEmployee != null)
             {
                 defaultEmployeePermission = ExistingEmployeeDefaultPermission;
-                BulkBumpPermissions(new [] { userEmployee.EmployeeId }, SelfPermissions, permissionsForEmployees);
+                BulkBumpPermissions(new[] { userEmployee.EmployeeId }, SelfPermissions, permissionsForEmployees);
 
                 if (userEmployee.DepartmentId.HasValue)
                 {

@@ -6,6 +6,8 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Authorization;
+
     using Employees.Contracts;
 
     using Microsoft.AspNetCore.Authorization;
@@ -22,7 +24,7 @@
 
     //TODO: fuck me, that code has to be split apart...
     [Route("/api/employees/{employeeId}/events/")]
-    [Authorize]
+    [Authorize(Policies.UserIsEmployee)]
     [ApiController]
     public class CalendarEventsController : Controller
     {

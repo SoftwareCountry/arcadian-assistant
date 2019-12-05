@@ -5,6 +5,8 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Authorization;
+
     using Employees.Contracts;
 
     using Microsoft.AspNetCore.Authorization;
@@ -18,7 +20,7 @@
     using WorkHoursCredit.Contracts;
 
     [Route("/api/employees/{employeeId}/events/{eventId}/approvals")]
-    [Authorize]
+    [Authorize(Policies.UserIsEmployee)]
     [ApiController]
     public class CalendarEventsApprovalsController : Controller
     {
