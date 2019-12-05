@@ -6,17 +6,24 @@ namespace Arcadia.Assistant.Sharepoint
     using System.Threading;
     using System.Threading.Tasks;
 
+    using ExternalStorages.SharepointOnline.Contracts;
+
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
 
     /// <summary>
     ///     An instance of this class is created for each service instance by the Service Fabric runtime.
     /// </summary>
-    internal sealed class Sharepoint : StatelessService
+    public class Sharepoint : StatelessService
     {
-        public Sharepoint(StatelessServiceContext context)
+        private readonly ISharepointOnlineConfiguration sharepointConnectSettings;
+        private readonly ISharepointDepartmentsCalendarsSettings departmentsSettings;
+
+        public Sharepoint(StatelessServiceContext context, ISharepointOnlineConfiguration sharepointConnectSettings, ISharepointDepartmentsCalendarsSettings departmentsSettings)
             : base(context)
         {
+            this.sharepointConnectSettings = sharepointConnectSettings;
+            this.departmentsSettings = departmentsSettings;
         }
 
         /// <summary>

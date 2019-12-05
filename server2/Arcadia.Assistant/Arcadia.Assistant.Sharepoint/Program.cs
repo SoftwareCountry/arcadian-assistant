@@ -2,9 +2,17 @@ namespace Arcadia.Assistant.Sharepoint
 {
     using System;
     using System.Diagnostics;
+    using System.Fabric;
     using System.Threading;
 
-    using Microsoft.ServiceFabric.Services.Runtime;
+    using Autofac;
+    using Autofac.Extensions.DependencyInjection;
+    using Autofac.Integration.ServiceFabric;
+
+    using ExternalStorages.SharepointOnline;
+    using ExternalStorages.SharepointOnline.Contracts;
+
+    using Microsoft.Extensions.DependencyInjection;
 
     internal static class Program
     {
@@ -15,18 +23,25 @@ namespace Arcadia.Assistant.Sharepoint
         {
             try
             {
-                // The ServiceManifest.XML file defines one or more service type names.
-                // Registering a service maps a service type name to a .NET type.
-                // When Service Fabric creates an instance of this service type,
-                // an instance of the class is created in this host process.
+                var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
 
-                ServiceRuntime.RegisterServiceAsync("Arcadia.Assistant.SharepointType",
-                    context => new Sharepoint(context)).GetAwaiter().GetResult();
+                var services = new ServiceCollection();
+                services.AddHttpClient();
 
-                ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(Sharepoint).Name);
+                var builder = new ContainerBuilder();
+                builder.RegisterServiceFabricSupport();
+                builder.Register(x => new SharepointOnlineConfiguration(configurationPackage.Settings.Sections["Sharepoint"])).As<ISharepointOnlineConfiguration>().SingleInstance();
+                builder.Register(x => new SharepointDepartmentsCalendarsSettings(configurationPackage.Settings.Sections["DepartmentsCalendars"])).As<ISharepointDepartmentsCalendarsSettings>().SingleInstance();
+                builder.RegisterStatelessService<Sharepoint>("Arcadia.Assistant.SharepointType");
+                builder.Populate(services);
 
-                // Prevents this host process from terminating so services keep running.
-                Thread.Sleep(Timeout.Infinite);
+                using (builder.Build())
+                {
+                    ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(Sharepoint).Name);
+
+                    // Prevents this host process from terminating so services keep running.
+                    Thread.Sleep(Timeout.Infinite);
+                }
             }
             catch (Exception e)
             {

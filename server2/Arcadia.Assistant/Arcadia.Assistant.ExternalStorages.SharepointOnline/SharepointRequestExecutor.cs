@@ -1,12 +1,11 @@
 ﻿namespace Arcadia.Assistant.ExternalStorages.SharepointOnline
 {
     using System.Net.Http;
+    using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
 
     using Contracts;
-
-    using Newtonsoft.Json;
 
     public class SharepointRequestExecutor : ISharepointRequestExecutor
     {
@@ -36,7 +35,7 @@
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<T>(content);
+            return JsonSerializer.Deserialize<T>(content);
         }
 
         public async Task<HttpResponseMessage> ExecuteSharepointRequest(SharepointRequest request, CancellationToken cancellationToken = default)

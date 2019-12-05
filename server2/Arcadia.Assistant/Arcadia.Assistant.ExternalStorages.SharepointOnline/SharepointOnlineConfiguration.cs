@@ -1,13 +1,22 @@
 ﻿namespace Arcadia.Assistant.ExternalStorages.SharepointOnline
 {
+    using System.Fabric.Description;
+
     using Contracts;
 
     public class SharepointOnlineConfiguration : ISharepointOnlineConfiguration
     {
-        public string ServerUrl { get; set; } = string.Empty;
+        public SharepointOnlineConfiguration(ConfigurationSection configurationSection)
+        {
+            this.ServerUrl = configurationSection.Parameters["ServerUrl"].Value;
+            this.ClientId = configurationSection.Parameters["ClientId"].Value;
+            this.ClientSecret = configurationSection.Parameters["ClientSecret"].Value;
+        }
 
-        public string ClientId { get; set; } = string.Empty;
+        public string ServerUrl { get; set; }
 
-        public string ClientSecret { get; set; } = string.Empty;
+        public string ClientId { get; set; }
+
+        public string ClientSecret { get; set; }
     }
 }

@@ -4,8 +4,7 @@
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Net.Http.Headers;
-
-    using Newtonsoft.Json;
+    using System.Text.Json;
 
     public class SharepointRequest
     {
@@ -51,7 +50,7 @@
 
         public SharepointRequest WithContent(object content)
         {
-            var contentString = JsonConvert.SerializeObject(content);
+            var contentString = JsonSerializer.Serialize(content);
             this.Content = new StringContent(contentString);
 
             this.AddHeader(ContentTypeHeaderName, "application/json;odata=verbose");

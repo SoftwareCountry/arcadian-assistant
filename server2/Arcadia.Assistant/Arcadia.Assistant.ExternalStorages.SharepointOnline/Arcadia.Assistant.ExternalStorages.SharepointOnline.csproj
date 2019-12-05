@@ -8,9 +8,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="Microsoft.ServiceFabric" Version="6.5.677" />
+    <PackageReference Include="System.Text.Json" Version="4.7.0" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\Arcadia.Assistant.ExternalStorages.Abstractions\Arcadia.Assistant.ExternalStorages.Abstractions.csproj" />
   </ItemGroup>

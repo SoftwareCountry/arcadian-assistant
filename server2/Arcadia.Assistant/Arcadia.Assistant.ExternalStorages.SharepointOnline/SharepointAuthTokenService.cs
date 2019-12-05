@@ -8,13 +8,12 @@
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Runtime.Serialization;
+    using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Web;
 
     using Contracts;
-
-    using Newtonsoft.Json;
 
     public class SharepointAuthTokenService : ISharepointAuthTokenService
     {
@@ -142,7 +141,7 @@
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            var oauthResult = JsonConvert.DeserializeObject<OAuth2AccessTokenResponse>(responseContent);
+            var oauthResult = JsonSerializer.Deserialize<OAuth2AccessTokenResponse>(responseContent);
             return oauthResult.AccessToken;
         }
 
@@ -166,7 +165,7 @@
 
             var response = await this.httpClient.GetAsync(metadataEndpointUrl, cancellationToken);
             var metadataString = await response.Content.ReadAsStringAsync();
-            var metadata = JsonConvert.DeserializeObject<JsonMetadataDocument>(metadataString);
+            var metadata = JsonSerializer.Deserialize<JsonMetadataDocument>(metadataString);
 
             if (metadata == null)
             {
