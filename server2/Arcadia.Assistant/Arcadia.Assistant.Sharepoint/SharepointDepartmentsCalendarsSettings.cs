@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.Json;
-
-namespace Arcadia.Assistant.Sharepoint
+﻿namespace Arcadia.Assistant.Sharepoint
 {
+    using System;
+    using System.Collections.Generic;
     using System.Fabric.Description;
-    using System.Text.Json.Serialization;
+    using System.Text.Json;
 
     public class SharepointDepartmentsCalendarsSettings : ISharepointDepartmentsCalendarsSettings
     {

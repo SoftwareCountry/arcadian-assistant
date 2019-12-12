@@ -32,6 +32,8 @@
     <Parameter Name="Arcadia.Assistant.Sharepoint_ServerUrl" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Sharepoint_ClientId" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Sharepoint_ClientSecret" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_CalendarEventIdField" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_SynchronizationIntervalMinutes" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Sharepoint_DepartmentsCalendars" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_ASPNETCORE_ENVIRONMENT" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_InstanceCount" DefaultValue="-1" />
@@ -65,6 +67,10 @@
             <Parameter Name="ServerUrl" Value="[Arcadia.Assistant.Sharepoint_ServerUrl]" />
             <Parameter Name="ClientId" Value="[Arcadia.Assistant.Sharepoint_ClientId]" />
             <Parameter Name="ClientSecret" Value="[Arcadia.Assistant.Sharepoint_ClientSecret]" />
+            <Parameter Name="CalendarEventIdField" Value="[Arcadia.Assistant.Sharepoint_CalendarEventIdField]" />
+          </Section>
+          <Section Name="Service">
+            <Parameter Name="SynchronizationIntervalMinutes" Value="[Arcadia.Assistant.Sharepoint_SynchronizationIntervalMinutes]" />
           </Section>
           <Section Name="DepartmentsCalendars">
             <Parameter Name="Value" Value="[Arcadia.Assistant.Sharepoint_DepartmentsCalendars]" />

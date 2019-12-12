@@ -6,6 +6,10 @@
     <Parameter Name="ServerUrl" Value="" />
     <Parameter Name="ClientId" Value="" />
     <Parameter Name="ClientSecret" Value="" />
+    <Parameter Name="CalendarEventIdField" Value="" />
+  </Section>
+  <Section Name="Service">
+    <Parameter Name="SynchronizationIntervalMinutes" Value="720" />
   </Section>
   <Section Name="DepartmentsCalendars">
     <Parameter Name="Value" Value="" />
