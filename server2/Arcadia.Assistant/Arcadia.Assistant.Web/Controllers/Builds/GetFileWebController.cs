@@ -30,25 +30,25 @@
 
         [Route("get/android")]
         [HttpGet]
-        public Task<IActionResult> GetAndroid()
+        public Task<IActionResult> GetAndroid(CancellationToken cancellationToken)
         {
-            return this.GetFile(DeviceType.Android);
+            return this.GetFile(DeviceType.Android, cancellationToken);
         }
 
         [Route("get/ios")]
         [HttpGet]
-        public Task<IActionResult> GetIos()
+        public Task<IActionResult> GetIos(CancellationToken cancellationToken)
         {
-            return this.GetFile(DeviceType.Ios);
+            return this.GetFile(DeviceType.Ios, cancellationToken);
         }
 
-        private async Task<IActionResult> GetFile(DeviceType deviceType)
+        private async Task<IActionResult> GetFile(DeviceType deviceType, CancellationToken cancellationToken)
         {
             var buildApplicationType = deviceType.MobileBuildType();
             var downloadActor = this.mobileBuildActor.MobileBuild(buildApplicationType);
 
             var fileContentType = this.fileContentTypeByDeviceType[deviceType];
-            var fileContent = await downloadActor.GetMobileBuildDataAsync(CancellationToken.None);
+            var fileContent = await downloadActor.GetMobileBuildDataAsync(cancellationToken);
             return this.File(fileContent, fileContentType);
         }
     }
