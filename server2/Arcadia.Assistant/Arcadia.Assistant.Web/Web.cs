@@ -13,11 +13,12 @@ namespace Arcadia.Assistant.Web
     using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
+    using ServiceFabric.Logging;
 
     /// <summary>
     ///     The FabricRuntime creates an instance of this class for each service type instance.
     /// </summary>
-    internal sealed class Web : StatelessService
+    internal sealed class Web : StatelessService, ILoggerDistributor
     {
         private readonly string appInsightsKey;
         private readonly ILogger logger;
@@ -30,6 +31,8 @@ namespace Arcadia.Assistant.Web
             logger = loggerFactory.CreateLogger<Web>();
             appInsightsKey = settings.ApplicationInsightsKey;
         }
+
+        public ILogger Logger => this.logger;
 
         /// <summary>
         ///     Optional override to create listeners (like tcp, http) for this service instance.

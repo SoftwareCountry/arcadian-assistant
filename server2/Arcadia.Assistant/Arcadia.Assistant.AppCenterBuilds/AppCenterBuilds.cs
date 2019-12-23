@@ -14,11 +14,12 @@ namespace Arcadia.Assistant.AppCenterBuilds
     using Microsoft.ServiceFabric.Services.Runtime;
 
     using MobileBuild.Contracts;
+    using ServiceFabric.Logging;
 
     /// <summary>
     ///     An instance of this class is created for each service instance by the Service Fabric runtime.
     /// </summary>
-    public class AppCenterBuilds : StatelessService
+    public class AppCenterBuilds : StatelessService, ILoggerDistributor
     {
         private readonly IHttpClientFactory clientFactory;
         private readonly IDownloadApplicationSettings configuration;
@@ -33,6 +34,7 @@ namespace Arcadia.Assistant.AppCenterBuilds
             this.mobileBuildFactory = mobileBuildFactory;
             var loggerFactory = new LoggerFactoryBuilder(context).CreateLoggerFactory(loggerSettings.ApplicationInsightsKey);
             this.logger = loggerFactory.CreateLogger<AppCenterBuilds>();
+
         }
 
         private int DownloadBuildIntervalMinutes => this.configuration.DownloadBuildIntervalMinutes;
@@ -40,6 +42,8 @@ namespace Arcadia.Assistant.AppCenterBuilds
         private string ApiToken // null - rise the exception
             =>
                 this.configuration.ApiToken;
+
+        ILogger ILoggerDistributor.Logger => this.logger;
 
         /// <summary>
         ///     Optional override to create listeners (e.g., TCP, HTTP) for this service replica to handle client or user requests.

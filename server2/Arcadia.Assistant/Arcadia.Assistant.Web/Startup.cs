@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
-
+    using Arcadia.Assistant.Logging;
     using Autofac;
 
     using Avatars.Contracts;

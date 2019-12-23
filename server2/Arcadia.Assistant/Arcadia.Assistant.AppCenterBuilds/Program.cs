@@ -6,16 +6,25 @@ namespace Arcadia.Assistant.AppCenterBuilds
     using System.Threading;
 
     using Autofac;
+    using Autofac.Core.Registration;
     using Autofac.Extensions.DependencyInjection;
     using Autofac.Integration.ServiceFabric;
 
     using Logging;
 
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Actors.Client;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
+    using Microsoft.ServiceFabric.Services.Runtime;
 
     using MobileBuild.Contracts;
+
+    using Serilog;
+
+    using ServiceFabric.Logging;
+
+    using ILogger = Microsoft.Extensions.Logging.ILogger;
 
     internal static class Program
     {
@@ -33,13 +42,14 @@ namespace Arcadia.Assistant.AppCenterBuilds
                 services.AddHttpClient();
 
                 var builder = new ContainerBuilder();
+                builder.RegisterType<AppCenterBuilds>().As<ILoggerDistributor>().SingleInstance();
                 builder.RegisterServiceFabricSupport();
+                builder.RegisterStatelessService<AppCenterBuilds>("Arcadia.Assistant.AppCenterBuildsType");
                 builder.Register(x => new DownloadApplicationSettings(configurationPackage.Settings.Sections["DownloadApplication"])).As<IDownloadApplicationSettings>().SingleInstance();
                 builder.Register(x => new LoggerSettings(appInsightKey)).SingleInstance();
                 builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
                 builder.RegisterModule(new MobileBuildModule());
-                builder.RegisterStatelessService<AppCenterBuilds>("Arcadia.Assistant.AppCenterBuildsType");
                 builder.Populate(services);
 
                 using (builder.Build())

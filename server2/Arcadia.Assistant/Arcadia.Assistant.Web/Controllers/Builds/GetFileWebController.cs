@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
 
     using MobileBuild.Contracts;
 
@@ -15,6 +16,7 @@
     public class GetFileWebController : Controller
     {
         private readonly IMobileBuildActorFactory mobileBuildActor;
+        private readonly ILogger logger;
 
         private readonly Dictionary<DeviceType, string> fileContentTypeByDeviceType = new Dictionary<DeviceType, string>
         {
@@ -23,9 +25,11 @@
         };
 
         public GetFileWebController(
-            IMobileBuildActorFactory mobileBuildActor)
+            IMobileBuildActorFactory mobileBuildActor,
+            ILogger logger)
         {
             this.mobileBuildActor = mobileBuildActor;
+            this.logger = logger;
         }
 
         [Route("get/android")]
@@ -45,10 +49,12 @@
         private async Task<IActionResult> GetFile(DeviceType deviceType, CancellationToken cancellationToken)
         {
             var buildApplicationType = deviceType.MobileBuildType();
+            this.logger?.LogDebug($"Request {buildApplicationType} mobile build.");
             var downloadActor = this.mobileBuildActor.MobileBuild(buildApplicationType);
 
             var fileContentType = this.fileContentTypeByDeviceType[deviceType];
             var fileContent = await downloadActor.GetMobileBuildDataAsync(cancellationToken);
+            this.logger?.LogDebug($"{buildApplicationType} mobile build file received.");
             return this.File(fileContent, fileContentType);
         }
     }
