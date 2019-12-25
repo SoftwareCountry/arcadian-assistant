@@ -18,7 +18,7 @@ namespace Arcadia.Assistant.SickLeaves.Contracts
     {
         Task<SickLeaveDescription[]> GetCalendarEventsAsync(EmployeeId employeeId, CancellationToken cancellationToken);
 
-        Task<Dictionary<EmployeeId, SickLeaveDescription[]>> GetCalendarEventsCollectionAsync(EmployeeId[] employeeIds, CancellationToken cancellationToken);
+        Task<Dictionary<EmployeeId, SickLeaveDescription[]>> GetCalendarEventsByEmployeeMapAsync(EmployeeId[] employeeIds, CancellationToken cancellationToken);
 
         Task<SickLeaveDescription?> GetCalendarEventAsync(EmployeeId employeeId, int eventId, CancellationToken cancellationToken);
 

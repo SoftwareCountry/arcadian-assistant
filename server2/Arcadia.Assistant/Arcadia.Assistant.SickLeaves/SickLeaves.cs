@@ -80,7 +80,7 @@ namespace Arcadia.Assistant.SickLeaves
             return sickLeaves;
         }
 
-        public async Task<Dictionary<EmployeeId, SickLeaveDescription[]>> GetCalendarEventsCollectionAsync(EmployeeId[] employeeIds, CancellationToken cancellationToken)
+        public async Task<Dictionary<EmployeeId, SickLeaveDescription[]>> GetCalendarEventsByEmployeeMapAsync(EmployeeId[] employeeIds, CancellationToken cancellationToken)
         {
             using var db = this.dbFactory();
             var sickLeaves = await db.Value

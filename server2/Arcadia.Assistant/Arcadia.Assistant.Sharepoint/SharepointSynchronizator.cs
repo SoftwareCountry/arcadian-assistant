@@ -54,10 +54,10 @@
                 var employeeVacations = await this.vacations.GetCalendarEventsByEmployeeAsync(employeeIds, cancellationToken);
                 var employeeVacationValues = employeeVacations.Values.SelectMany(x => x).ToDictionary(x => CspCalendarEventIdParser.GetCalendarEventIdFromCspId(x.VacationId, CalendarEventTypes.Vacation), x => x);
 
-                var employeeWorkouts = await this.workouts.GetCalendarEventsCollectionAsync(employeeIds, cancellationToken);
+                var employeeWorkouts = await this.workouts.GetCalendarEventsByEmployeeMapAsync(employeeIds, cancellationToken);
                 var employeeWorkoutsValues = employeeWorkouts.Values.SelectMany(x => x).ToDictionary(x => CspCalendarEventIdParser.GetCalendarEventIdFromCspId(x.ChangeId, CalendarEventTypes.Workout), x => x);
 
-                var employeeSickLeaves = await this.sickLeaves.GetCalendarEventsCollectionAsync(employeeIds, cancellationToken);
+                var employeeSickLeaves = await this.sickLeaves.GetCalendarEventsByEmployeeMapAsync(employeeIds, cancellationToken);
                 var employeeSickLeavesValues = employeeSickLeaves.Values.SelectMany(x => x).ToDictionary(x => CspCalendarEventIdParser.GetCalendarEventIdFromCspId(x.SickLeaveId, CalendarEventTypes.Sickleave), x => x);
 
                 foreach (var calendar in this.GetSharepointCalendarsByDepartment(departmentId))
