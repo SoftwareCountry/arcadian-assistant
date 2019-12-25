@@ -1,4 +1,6 @@
-﻿namespace Arcadia.Assistant.Web.Configuration
+﻿using Arcadia.Assistant.Logging;
+
+namespace Arcadia.Assistant.Web.Configuration
 {
     public class AppSettings
     {
@@ -11,6 +13,8 @@
             public LinkConfiguration Links { get; set; } = new LinkConfiguration();
 
             public SslConfiguration Ssl { get; set; } = new SslConfiguration();
+
+            public LoggerSettings Logging { get; set; } = new LoggerSettings();
         }
     }
 }

@@ -42,14 +42,15 @@ namespace Arcadia.Assistant.AppCenterBuilds
                 services.AddHttpClient();
 
                 var builder = new ContainerBuilder();
-                builder.RegisterType<AppCenterBuilds>().As<ILoggerDistributor>().SingleInstance();
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterStatelessService<AppCenterBuilds>("Arcadia.Assistant.AppCenterBuildsType");
                 builder.Register(x => new DownloadApplicationSettings(configurationPackage.Settings.Sections["DownloadApplication"])).As<IDownloadApplicationSettings>().SingleInstance();
                 builder.Register(x => new LoggerSettings(appInsightKey)).SingleInstance();
+
                 builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
                 builder.RegisterModule(new MobileBuildModule());
+                builder.RegisterModule(new LoggerModule());
                 builder.Populate(services);
 
                 using (builder.Build())

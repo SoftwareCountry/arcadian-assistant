@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.9.4" />
     <PackageReference Include="Microsoft.ServiceFabric" Version="6.3.162" />
     <PackageReference Include="ServiceFabric.Logging" Version="2.0.3" />
   </ItemGroup>

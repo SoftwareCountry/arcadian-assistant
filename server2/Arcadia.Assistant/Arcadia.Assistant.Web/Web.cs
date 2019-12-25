@@ -18,21 +18,12 @@ namespace Arcadia.Assistant.Web
     /// <summary>
     ///     The FabricRuntime creates an instance of this class for each service type instance.
     /// </summary>
-    internal sealed class Web : StatelessService, ILoggerDistributor
+    internal sealed class Web : StatelessService
     {
-        private readonly string appInsightsKey;
-        private readonly ILogger logger;
-
-        public Web(StatelessServiceContext context, LoggerSettings settings)
+        public Web(StatelessServiceContext context)
             : base(context)
         {
-
-            var loggerFactory = new LoggerFactoryBuilder(context).CreateLoggerFactory(settings.ApplicationInsightsKey);
-            logger = loggerFactory.CreateLogger<Web>();
-            appInsightsKey = settings.ApplicationInsightsKey;
         }
-
-        public ILogger Logger => this.logger;
 
         /// <summary>
         ///     Optional override to create listeners (like tcp, http) for this service instance.
@@ -45,15 +36,12 @@ namespace Arcadia.Assistant.Web
                 new ServiceInstanceListener(serviceContext =>
                     new KestrelCommunicationListener(serviceContext, "ServiceEndpoint", (url, listener) =>
                     {
-                        //ServiceEventSource.Current.ServiceMessage(serviceContext, $"Starting Kestrel on {url}");
-                        logger?.LogInformation($"Starting Kestrel on {url}");
-
+                        ServiceEventSource.Current.ServiceMessage(serviceContext, $"Starting Kestrel on {url}");
                         return new WebHostBuilder()
                             .UseKestrel()
                             .ConfigureServices(
                                 services => services
-                                    .AddSingleton(serviceContext)
-                                    .AddSingleton(logger))
+                                    .AddSingleton(serviceContext))
                             .ConfigureServices(services => services.AddAutofac())
                             .ConfigureLogging((hosingContext, logging) =>
                             {

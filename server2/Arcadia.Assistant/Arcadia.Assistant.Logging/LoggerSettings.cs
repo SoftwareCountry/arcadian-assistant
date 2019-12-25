@@ -2,6 +2,10 @@
 {
     public class LoggerSettings
     {
+        public LoggerSettings()
+        {
+        }
+
         public LoggerSettings(string appKey)
         {
             this.ApplicationInsightsKey = appKey;
