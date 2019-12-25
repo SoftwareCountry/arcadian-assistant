@@ -4,7 +4,7 @@ namespace Arcadia.Assistant.Sharepoint
     using System.Diagnostics.Tracing;
     using System.Fabric;
 
-    [EventSource(Name = "MyCompany-Arcadia.Assistant.SF-Arcadia.Assistant.Sharepoint")]
+    [EventSource(Name = "Arcadia.Assistant.SF-Arcadia.Assistant.Sharepoint")]
     internal sealed class ServiceEventSource : EventSource
     {
         public static readonly ServiceEventSource Current = new ServiceEventSource();

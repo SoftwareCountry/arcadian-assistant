@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.Sharepoint
+﻿namespace Arcadia.Assistant.Sharepoint.Models
 {
     using System;
     using System.Collections.Generic;

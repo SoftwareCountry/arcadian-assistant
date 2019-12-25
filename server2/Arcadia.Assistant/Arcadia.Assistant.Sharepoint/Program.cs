@@ -19,6 +19,8 @@ namespace Arcadia.Assistant.Sharepoint
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
 
+    using Models;
+
     using Organization.Contracts;
 
     using SickLeaves.Contracts;

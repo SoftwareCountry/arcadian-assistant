@@ -1,8 +1,6 @@
-﻿namespace Arcadia.Assistant.Sharepoint
+﻿namespace Arcadia.Assistant.ExternalStorages.Abstractions
 {
     using System.Collections.Generic;
-
-    using ExternalStorages.Abstractions;
 
     public sealed class SharepointStorageItemComparer : IEqualityComparer<StorageItem>
     {

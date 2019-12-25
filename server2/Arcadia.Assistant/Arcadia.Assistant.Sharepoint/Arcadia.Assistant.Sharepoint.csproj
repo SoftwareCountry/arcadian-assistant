@@ -19,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Arcadia.Assistant.Calendar.Abstractions\Arcadia.Assistant.Calendar.Abstractions.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Employees.Contracts\Arcadia.Assistant.Employees.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.ExternalStorages.SharepointOnline\Arcadia.Assistant.ExternalStorages.SharepointOnline.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Organization.Contracts\Arcadia.Assistant.Organization.Contracts.csproj" />

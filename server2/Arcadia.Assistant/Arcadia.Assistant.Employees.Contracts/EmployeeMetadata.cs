@@ -59,7 +59,7 @@
             return CalculateYearsFromDate(this.BirthDate, date);
         }
 
-        public string Name => $"{this.FirstName ?? string.Empty} {this.LastName ?? string.Empty}";
+        public string Name => $"{this.FirstName ?? string.Empty} {this.LastName ?? string.Empty}".Trim();
 
         public int? YearsServedAt(DateTime date)
         {
