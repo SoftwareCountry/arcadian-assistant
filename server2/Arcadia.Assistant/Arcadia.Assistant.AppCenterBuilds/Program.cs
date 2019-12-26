@@ -36,7 +36,6 @@ namespace Arcadia.Assistant.AppCenterBuilds
             try
             {
                 var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
-                var appInsightKey = configurationPackage.Settings.Sections["Logging"].Parameters["ApplicationInsightsKey"].Value;
 
                 var services = new ServiceCollection();
                 services.AddHttpClient();
@@ -45,13 +44,13 @@ namespace Arcadia.Assistant.AppCenterBuilds
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterStatelessService<AppCenterBuilds>("Arcadia.Assistant.AppCenterBuildsType");
                 builder.Register(x => new DownloadApplicationSettings(configurationPackage.Settings.Sections["DownloadApplication"])).As<IDownloadApplicationSettings>().SingleInstance();
-                builder.Register(x => new LoggerSettings(appInsightKey)).SingleInstance();
 
                 builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
                 builder.RegisterModule(new MobileBuildModule());
-                builder.RegisterModule(new LoggerModule());
                 builder.Populate(services);
+
+                builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using (builder.Build())
                 {

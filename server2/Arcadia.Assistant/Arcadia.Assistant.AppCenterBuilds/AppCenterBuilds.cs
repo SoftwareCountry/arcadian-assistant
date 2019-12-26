@@ -26,7 +26,7 @@ namespace Arcadia.Assistant.AppCenterBuilds
         private readonly ILogger logger;
         private readonly IMobileBuildActorFactory mobileBuildFactory;
 
-        public AppCenterBuilds(StatelessServiceContext context, IDownloadApplicationSettings configuration, IHttpClientFactory clientFactory, IMobileBuildActorFactory mobileBuildFactory, ILogger logger)
+        public AppCenterBuilds(StatelessServiceContext context, IDownloadApplicationSettings configuration, IHttpClientFactory clientFactory, IMobileBuildActorFactory mobileBuildFactory, ILogger<AppCenterBuilds> logger)
             : base(context)
         {
             this.configuration = configuration;

@@ -18,7 +18,7 @@ namespace Arcadia.Assistant.Web
     /// <summary>
     ///     The FabricRuntime creates an instance of this class for each service type instance.
     /// </summary>
-    internal sealed class Web : StatelessService
+    public class Web : StatelessService
     {
         public Web(StatelessServiceContext context)
             : base(context)
@@ -41,8 +41,10 @@ namespace Arcadia.Assistant.Web
                             .UseKestrel()
                             .ConfigureServices(
                                 services => services
-                                    .AddSingleton(serviceContext))
-                            .ConfigureServices(services => services.AddAutofac())
+                                    .AddSingleton(serviceContext)
+                                    .AddAutofac())
+                            //.ConfigureServices(services => services.AddAutofac())
+                            /*
                             .ConfigureLogging((hosingContext, logging) =>
                             {
                                 logging.AddConfiguration(hosingContext.Configuration.GetSection("Logging"));
@@ -50,6 +52,7 @@ namespace Arcadia.Assistant.Web
                                 logging.AddDebug();
                                 logging.AddEventSourceLogger();
                             })
+                            */
                             .UseContentRoot(Directory.GetCurrentDirectory())
                             .UseStartup<Startup>()
                             .UseServiceFabricIntegration(listener, ServiceFabricIntegrationOptions.None)

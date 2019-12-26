@@ -1,20 +1,25 @@
-﻿namespace Arcadia.Assistant.Logging
-{
-    using Autofac;
-    using Microsoft.Extensions.Logging;
-    using ServiceFabric.Logging;
-    using System.Fabric;
+﻿using Autofac;
+using Microsoft.Extensions.Logging;
+using ServiceFabric.Logging;
+using System;
+using System.Fabric;
 
-    public class LoggerModule : Module
+namespace Arcadia.Assistant.Logging
+{
+    public static class LoggerRegistrationExtensions
     {
-        protected override void Load(ContainerBuilder builder)
+        public static void RegisterServiceLogging(
+            this ContainerBuilder builder,
+            LoggerSettings loggerSettings)
         {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+
             builder.Register((x, p) =>
                 {
                     var sc = p.TypedAs<ServiceContext>();
                     var loggerFactoryBuilder = new LoggerFactoryBuilder(sc);
-                    var settings = x.Resolve<LoggerSettings>();
-                    return loggerFactoryBuilder.CreateLoggerFactory(settings.ApplicationInsightsKey);
+                    return loggerFactoryBuilder.CreateLoggerFactory(loggerSettings.ApplicationInsightsKey);
                 })
                 .Named<ILoggerFactory>("servicefabriclogger")
                 .SingleInstance();
@@ -24,7 +29,7 @@
                 if (x.IsRegistered<ServiceContext>())
                 {
                     var sc = x.Resolve<ServiceContext>();
-                    return x.ResolveNamed<ILoggerFactory>("servicefabriclogger", new TypedParameter(typeof(ServiceContext), sc));
+                    return x.ResolveNamed<ILoggerFactory>("servicefabriclogger", TypedParameter.From(sc));
                 }
 
                 return new LoggerFactory();

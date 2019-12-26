@@ -115,7 +115,6 @@
             builder.RegisterInstance(this.AppSettings);
             builder.RegisterInstance<IHelpSettings>(this.AppSettings.Config.Links);
             builder.RegisterInstance<ISslSettings>(this.AppSettings.Config.Ssl);
-            builder.RegisterInstance(this.AppSettings.Config.Logging).AsSelf().SingleInstance();
             builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
             builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
             builder.RegisterModule(new OrganizationModule());
@@ -129,7 +128,7 @@
             builder.RegisterModule(new SickLeavesModule());
             builder.RegisterModule(new PendingActionsModule());
             builder.RegisterModule(new MobileBuildModule());
-            builder.RegisterModule(new LoggerModule());
+            builder.RegisterServiceLogging(this.AppSettings.Config.Logging);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
