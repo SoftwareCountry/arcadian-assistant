@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Fabric;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -26,7 +27,7 @@
 
         public GetFileWebController(
             IMobileBuildActorFactory mobileBuildActor,
-            ILogger<GetFileWebController> logger)
+            ILogger logger)
         {
             this.mobileBuildActor = mobileBuildActor;
             this.logger = logger;
@@ -49,12 +50,12 @@
         private async Task<IActionResult> GetFile(DeviceType deviceType, CancellationToken cancellationToken)
         {
             var buildApplicationType = deviceType.MobileBuildType();
-            this.logger?.LogDebug($"Request {buildApplicationType} mobile build.");
+            this.logger?.LogInformation($"Request {buildApplicationType} mobile build.");
             var downloadActor = this.mobileBuildActor.MobileBuild(buildApplicationType);
 
             var fileContentType = this.fileContentTypeByDeviceType[deviceType];
             var fileContent = await downloadActor.GetMobileBuildDataAsync(cancellationToken);
-            this.logger?.LogDebug($"{buildApplicationType} mobile build file received.");
+            this.logger?.LogInformation($"{buildApplicationType} mobile build file received.");
             return this.File(fileContent, fileContentType);
         }
     }

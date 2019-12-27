@@ -4,6 +4,7 @@ namespace Arcadia.Assistant.Web
     using System.Fabric;
     using System.IO;
     using Arcadia.Assistant.Logging;
+    using Autofac;
     using Autofac.Extensions.DependencyInjection;
 
     using Microsoft.AspNetCore.Hosting;
@@ -20,9 +21,11 @@ namespace Arcadia.Assistant.Web
     /// </summary>
     public class Web : StatelessService
     {
-        public Web(StatelessServiceContext context)
+        private readonly ILogger logger;
+        public Web(StatelessServiceContext context, ILogger logger)
             : base(context)
         {
+            this.logger = logger;
         }
 
         /// <summary>
@@ -42,17 +45,8 @@ namespace Arcadia.Assistant.Web
                             .ConfigureServices(
                                 services => services
                                     .AddSingleton(serviceContext)
-                                    .AddAutofac())
-                            //.ConfigureServices(services => services.AddAutofac())
-                            /*
-                            .ConfigureLogging((hosingContext, logging) =>
-                            {
-                                logging.AddConfiguration(hosingContext.Configuration.GetSection("Logging"));
-                                logging.AddConsole();
-                                logging.AddDebug();
-                                logging.AddEventSourceLogger();
-                            })
-                            */
+                                    .AddAutofac()
+                                    .AddSingleton(this.logger))
                             .UseContentRoot(Directory.GetCurrentDirectory())
                             .UseStartup<Startup>()
                             .UseServiceFabricIntegration(listener, ServiceFabricIntegrationOptions.None)

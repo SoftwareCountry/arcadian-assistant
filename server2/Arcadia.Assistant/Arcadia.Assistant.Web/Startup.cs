@@ -1,13 +1,17 @@
 ﻿namespace Arcadia.Assistant.Web
 {
     using System.Collections.Generic;
+    using System.Fabric;
+    using System.Linq;
     using System.Text.Json.Serialization;
     using Arcadia.Assistant.Logging;
     using Autofac;
-
+    using Autofac.Integration.ServiceFabric;
     using Avatars.Contracts;
 
     using Configuration;
+
+    using Controllers.Builds;
 
     using Employees.Contracts;
 
@@ -18,6 +22,7 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Actors.Client;
     using Microsoft.ServiceFabric.AspNetCore.Configuration;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
@@ -128,7 +133,7 @@
             builder.RegisterModule(new SickLeavesModule());
             builder.RegisterModule(new PendingActionsModule());
             builder.RegisterModule(new MobileBuildModule());
-            builder.RegisterServiceLogging(this.AppSettings.Config.Logging);
+            //builder.RegisterServiceLogging(this.AppSettings.Config.Logging);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

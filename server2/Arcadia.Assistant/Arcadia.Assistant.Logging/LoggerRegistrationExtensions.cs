@@ -29,7 +29,8 @@ namespace Arcadia.Assistant.Logging
                 if (x.IsRegistered<ServiceContext>())
                 {
                     var sc = x.Resolve<ServiceContext>();
-                    return x.ResolveNamed<ILoggerFactory>("servicefabriclogger", TypedParameter.From(sc));
+                    var loggerFactory = x.ResolveNamed<ILoggerFactory>("servicefabriclogger", TypedParameter.From(sc));
+                    return loggerFactory;
                 }
 
                 return new LoggerFactory();
