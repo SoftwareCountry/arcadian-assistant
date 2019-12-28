@@ -6,6 +6,7 @@ using Microsoft.ServiceFabric.Services.Remoting.FabricTransport;
 namespace Arcadia.Assistant.Vacations.Contracts
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -16,6 +17,8 @@ namespace Arcadia.Assistant.Vacations.Contracts
     public interface IVacations : IService
     {
         Task<VacationDescription[]> GetCalendarEventsAsync(EmployeeId employeeId, CancellationToken cancellationToken);
+
+        Task<Dictionary<EmployeeId, VacationDescription[]>> GetCalendarEventsByEmployeeAsync(EmployeeId[] employeeIds, CancellationToken cancellationToken);
 
         Task<VacationDescription?> GetCalendarEventAsync(EmployeeId employeeId, int eventId, CancellationToken cancellationToken);
 

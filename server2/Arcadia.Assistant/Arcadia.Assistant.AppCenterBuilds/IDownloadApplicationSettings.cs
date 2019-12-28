@@ -1,12 +1,8 @@
-﻿namespace Arcadia.Assistant.AppCenterBuilds.Contracts.Interfaces
+﻿namespace Arcadia.Assistant.AppCenterBuilds
 {
     public interface IDownloadApplicationSettings
     {
-        string BuildsFolder { get; }
-
         int DownloadBuildIntervalMinutes { get; }
-
-        string RenameBuildFilePattern { get; }
 
         string ApiToken { get; }
 

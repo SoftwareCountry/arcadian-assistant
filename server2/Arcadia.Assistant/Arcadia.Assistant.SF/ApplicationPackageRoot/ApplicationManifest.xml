@@ -4,7 +4,13 @@
     <Parameter Name="Arcadia.Assistant.SharedFeeds_MinReplicaSetSize" DefaultValue="3" />
     <Parameter Name="Arcadia.Assistant.SharedFeeds_PartitionCount" DefaultValue="1" />
     <Parameter Name="Arcadia.Assistant.SharedFeeds_TargetReplicaSetSize" DefaultValue="3" />
-    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_InstanceCount" DefaultValue="-1" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_InstanceCount" DefaultValue="1" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_DownloadBuildIntervalMinutes" DefaultValue="720" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_ApiToken" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_AndroidGetBuildsUrl" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_AndroidGetBuildDownloadLinkTemplateUrl" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_IosGetBuildsUrl" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_IosGetBuildDownloadLinkTemplateUrl" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.PendingActions_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.Vacations_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.SickLeaves_InstanceCount" DefaultValue="-1" />
@@ -25,6 +31,7 @@
     <Parameter Name="Arcadia.Assistant.Organization_MinReplicaSetSize" DefaultValue="3" />
     <Parameter Name="Arcadia.Assistant.Organization_PartitionCount" DefaultValue="1" />
     <Parameter Name="Arcadia.Assistant.Organization_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="Arcadia.Assistant.ApplicationInsightsKey" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_ASPNETCORE_ENVIRONMENT" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.Web_Port" DefaultValue="63601" />
@@ -32,6 +39,8 @@
     <Parameter Name="Arcadia.Assistant.Web_Security_AuthorizationUrl" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_Security_TokenUrl" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_Security_OpenIdConfigurationUrl" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Web_Links_HelpLink" DefaultValue="https://arcadiaspb.sharepoint.com/teams/ArcadiaAssistant/SitePages/Usage%20Guide.aspx" />
+    <Parameter Name="Arcadia.Assistant.Web_Ssl_SslOffloading" DefaultValue="false" />
     <Parameter Name="AvatarActorService_PartitionCount" DefaultValue="10" />
     <Parameter Name="AvatarActorService_MinReplicaSetSize" DefaultValue="3" />
     <Parameter Name="AvatarActorService_TargetReplicaSetSize" DefaultValue="3" />
@@ -61,10 +70,35 @@
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.MobileBuildPkg" ServiceManifestVersion="1.0.0" />
+  <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.AppCenterBuildsPkg" ServiceManifestVersion="1.0.0" />
-    <ConfigOverrides />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="DownloadApplication">
+            <Parameter Name="DownloadBuildIntervalMinutes" Value="[Arcadia.Assistant.AppCenterBuilds_DownloadBuildIntervalMinutes]" />
+            <Parameter Name="ApiToken" Value="[Arcadia.Assistant.AppCenterBuilds_ApiToken]" />
+            <Parameter Name="AndroidGetBuildsUrl" Value="[Arcadia.Assistant.AppCenterBuilds_AndroidGetBuildsUrl]" />
+            <Parameter Name="AndroidGetBuildDownloadLinkTemplateUrl" Value="[Arcadia.Assistant.AppCenterBuilds_AndroidGetBuildDownloadLinkTemplateUrl]" />
+            <Parameter Name="IosGetBuildsUrl" Value="[Arcadia.Assistant.AppCenterBuilds_IosGetBuildsUrl]" />
+            <Parameter Name="IosGetBuildDownloadLinkTemplateUrl" Value="[Arcadia.Assistant.AppCenterBuilds_IosGetBuildDownloadLinkTemplateUrl]" />
+          </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.PendingActionsPkg" ServiceManifestVersion="1.0.0" />
@@ -184,6 +218,15 @@
             <Parameter Name="AuthorizationUrl" Value="[Arcadia.Assistant.Web_Security_AuthorizationUrl]" />
             <Parameter Name="TokenUrl" Value="[Arcadia.Assistant.Web_Security_TokenUrl]" />
             <Parameter Name="OpenIdConfigurationUrl" Value="[Arcadia.Assistant.Web_Security_OpenIdConfigurationUrl]" />
+          </Section>
+        <Section Name="Links">
+            <Parameter Name="HelpLink" Value="[Arcadia.Assistant.Web_Links_HelpLink]" />
+          </Section>
+          <Section Name="Ssl">
+            <Parameter Name="SslOffloading" Value="[Arcadia.Assistant.Web_Ssl_SslOffloading]" />
+          </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
           </Section>
         </Settings>
       </ConfigOverride>

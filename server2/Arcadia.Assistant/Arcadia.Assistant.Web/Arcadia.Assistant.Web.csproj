@@ -28,11 +28,12 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\Arcadia.Assistant.AppCenterBuilds.Contracts\Arcadia.Assistant.AppCenterBuilds.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Avatars.Contracts\Arcadia.Assistant.Avatars.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Employees.Contracts\Arcadia.Assistant.Employees.Contracts.csproj" />
-    <ProjectReference Include="..\Arcadia.Assistant.MobileBuild.Interfaces\Arcadia.Assistant.MobileBuild.Contracts.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.Logging\Arcadia.Assistant.Logging.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.MobileBuild.Contracts\Arcadia.Assistant.MobileBuild.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Organization.Contracts\Arcadia.Assistant.Organization.Contracts.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.PendingActions.Contracts\Arcadia.Assistant.PendingActions.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Permissions.Contracts\Arcadia.Assistant.Permissions.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.SharedFeeds.Contracts\Arcadia.Assistant.SharedFeeds.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.UserPreferences.Contracts\Arcadia.Assistant.UserPreferences.Contracts.csproj" />
@@ -41,7 +42,6 @@
     <ProjectReference Include="..\Arcadia.Assistant.WorkHoursCredit.Contracts\Arcadia.Assistant.WorkHoursCredit.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.SickLeaves.Contracts\Arcadia.Assistant.SickLeaves.Contracts.csproj" />
   </ItemGroup>
-
 
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.AppCenterBuilds.Contracts.AppCenter
+﻿namespace Arcadia.Assistant.AppCenterBuilds.Models
 {
     using System;
 

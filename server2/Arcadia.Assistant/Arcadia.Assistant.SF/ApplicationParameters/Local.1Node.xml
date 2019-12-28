@@ -5,7 +5,6 @@
     <Parameter Name="Arcadia.Assistant.SharedFeeds_MinReplicaSetSize" Value="1" />
     <Parameter Name="Arcadia.Assistant.SharedFeeds_TargetReplicaSetSize" Value="1" />
     <Parameter Name="Arcadia.Assistant.AppCenterBuilds_InstanceCount" Value="1" />
-    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_InstanceCount" Value="1" />
     <Parameter Name="Arcadia.Assistant.PendingActions_InstanceCount" Value="1" />
     <Parameter Name="Arcadia.Assistant.Vacations_InstanceCount" Value="1" />
     <Parameter Name="Arcadia.Assistant.SickLeaves_InstanceCount" Value="1" />
@@ -25,7 +24,7 @@
     <Parameter Name="UserPreferencesStorageActorService_PartitionCount" Value="1" />
     <Parameter Name="UserPreferencesStorageActorService_TargetReplicaSetSize" Value="1" />
     <Parameter Name="UserPreferencesStorageActorService_MinReplicaSetSize" Value="1" />
-  <Parameter Name="MobileBuildActorService_PartitionCount" Value="1" />
+    <Parameter Name="MobileBuildActorService_PartitionCount" Value="1" />
     <Parameter Name="MobileBuildActorService_TargetReplicaSetSize" Value="1" />
     <Parameter Name="MobileBuildActorService_MinReplicaSetSize" Value="1" />
   </Parameters>

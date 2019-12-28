@@ -11,6 +11,11 @@
             justify-content: center;
         }
     }
+
+    .version {
+        text-align: right;
+        width: 100%;
+    }
 </style>
 
 <div class="android-content">
@@ -19,6 +24,7 @@
             <a href="@Url.Action("GetAndroid", "GetFileWeb")">
                 <img src="~/images/download_android.svg" alt="Download for Android" />
             </a>
+            <div class="version">Version:&nbsp; @Model.Version &nbsp;</div>
         </div>
         <div class="another-application-link">
             @Html.ActionLink("Not an Android?", "Index", "DownloadIosWeb")

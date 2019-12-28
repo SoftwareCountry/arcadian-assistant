@@ -1,17 +1,17 @@
 ﻿namespace Arcadia.Assistant.Web
 {
-    using System;
     using System.Collections.Generic;
-    using System.Reflection;
+    using System.Fabric;
+    using System.Linq;
     using System.Text.Json.Serialization;
-    using Arcadia.Assistant.AppCenterBuilds.Contracts.Interfaces;
-    using Arcadia.Assistant.MobileBuild.Contracts;
-    using Arcadia.Assistant.SharedFeeds.Contracts;
+    using Arcadia.Assistant.Logging;
     using Autofac;
-
+    using Autofac.Integration.ServiceFabric;
     using Avatars.Contracts;
 
     using Configuration;
+
+    using Controllers.Builds;
 
     using Employees.Contracts;
 
@@ -19,22 +19,23 @@
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Actors.Client;
     using Microsoft.ServiceFabric.AspNetCore.Configuration;
-    using Microsoft.ServiceFabric.Services.Client;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
 
-    using Newtonsoft.Json.Converters;
+    using MobileBuild.Contracts;
 
     using NSwag;
     using NSwag.AspNetCore;
     using NSwag.Generation.Processors.Security;
 
     using Organization.Contracts;
+
+    using PendingActions.Contracts;
 
     using Permissions.Contracts;
 
@@ -54,8 +55,8 @@
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional:false, reloadOnChange:true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddJsonFile("appsettings.json", false, true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
                 .AddServiceFabricConfiguration()
                 .AddEnvironmentVariables();
             this.AppSettings = builder.Build().Get<AppSettings>();
@@ -80,14 +81,14 @@
             services.AddOpenApiDocument((document, x) =>
             {
                 var settings = x.GetService<AppSettings>().Config.Security;
-                document.AddSecurity("bearer", new List<string>(), new OpenApiSecurityScheme()
+                document.AddSecurity("bearer", new List<string>(), new OpenApiSecurityScheme
                 {
                     Type = OpenApiSecuritySchemeType.OAuth2,
                     Description = "Oauth",
                     Flow = OpenApiOAuth2Flow.Implicit,
-                    Flows = new OpenApiOAuthFlows()
+                    Flows = new OpenApiOAuthFlows
                     {
-                        Implicit = new OpenApiOAuthFlow()
+                        Implicit = new OpenApiOAuthFlow
                         {
                             AuthorizationUrl = settings.AuthorizationUrl,
                             TokenUrl = settings.TokenUrl
@@ -130,6 +131,7 @@
             builder.RegisterModule(new VacationsCreditModule());
             builder.RegisterModule(new VacationsModule());
             builder.RegisterModule(new SickLeavesModule());
+            builder.RegisterModule(new PendingActionsModule());
             builder.RegisterModule(new MobileBuildModule());
             builder.RegisterModule(new FeedsModule());
         }
@@ -151,9 +153,9 @@
             app.UseCookiePolicy();
 
             app.UseOpenApi();
-            app.UseSwaggerUi3((settings) =>
+            app.UseSwaggerUi3(settings =>
             {
-                settings.OAuth2Client = new OAuth2ClientSettings()
+                settings.OAuth2Client = new OAuth2ClientSettings
                 {
                     ClientId = appSettings.Config.Security.ClientId
                 };
@@ -167,8 +169,8 @@
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    "default",
+                    "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

@@ -1,11 +1,11 @@
-﻿namespace Arcadia.Assistant.Web.Controllers
+﻿namespace Arcadia.Assistant.Web.Controllers.Builds
 {
     using System;
 
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Net.Http.Headers;
 
-    using Arcadia.Assistant.Web.Models;
+    using Models;
 
     [Route("")]
     [ApiExplorerSettings(IgnoreApi = true)]

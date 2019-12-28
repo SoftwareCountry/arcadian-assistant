@@ -74,7 +74,7 @@ namespace Arcadia.Assistant.Web.Properties {
         ///                        &lt;key&gt;kind&lt;/key&gt;
         ///                        &lt;string&gt;software-package&lt;/string&gt;
         ///                        &lt;key&gt;url&lt;/key&gt;
-        ///                        &lt;string&gt;{downloadApplicationUrl [rest of string was truncated]&quot;;.
+        ///                        &lt;string&gt;{downloadA [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string iosManifest {
             get {

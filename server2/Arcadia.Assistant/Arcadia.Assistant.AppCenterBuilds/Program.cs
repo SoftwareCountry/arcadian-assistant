@@ -1,22 +1,35 @@
-using System;
-using System.Diagnostics;
-using System.Fabric;
-using System.Threading;
-using Arcadia.Assistant.AppCenterBuilds.Contracts;
-using Arcadia.Assistant.AppCenterBuilds.Contracts.Interfaces;
-using Arcadia.Assistant.MobileBuild.Contracts;
-using Autofac;
-using Autofac.Extensions.DependencyInjection;
-using Autofac.Integration.ServiceFabric;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.ServiceFabric.Actors.Client;
-
 namespace Arcadia.Assistant.AppCenterBuilds
 {
+    using System;
+    using System.Diagnostics;
+    using System.Fabric;
+    using System.Threading;
+
+    using Autofac;
+    using Autofac.Core.Registration;
+    using Autofac.Extensions.DependencyInjection;
+    using Autofac.Integration.ServiceFabric;
+
+    using Logging;
+
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.ServiceFabric.Actors.Client;
+    using Microsoft.ServiceFabric.Services.Remoting.Client;
+    using Microsoft.ServiceFabric.Services.Runtime;
+
+    using MobileBuild.Contracts;
+
+    using Serilog;
+
+    using ServiceFabric.Logging;
+
+    using ILogger = Microsoft.Extensions.Logging.ILogger;
+
     internal static class Program
     {
         /// <summary>
-        /// This is the entry point of the service host process.
+        ///     This is the entry point of the service host process.
         /// </summary>
         private static void Main()
         {
@@ -29,11 +42,15 @@ namespace Arcadia.Assistant.AppCenterBuilds
 
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
-                builder.Register(x => new DownloadApplicationSettings(configurationPackage.Settings.Sections["DownloadApplication"])).As<IDownloadApplicationSettings>().SingleInstance();
-                builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
-                builder.RegisterModule(new MobileBuildModule());
                 builder.RegisterStatelessService<AppCenterBuilds>("Arcadia.Assistant.AppCenterBuildsType");
+                builder.Register(x => new DownloadApplicationSettings(configurationPackage.Settings.Sections["DownloadApplication"])).As<IDownloadApplicationSettings>().SingleInstance();
+
+                builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
+                builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
+                builder.RegisterModule(new MobileBuildModule());
                 builder.Populate(services);
+
+                builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using (builder.Build())
                 {

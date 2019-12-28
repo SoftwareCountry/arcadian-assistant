@@ -288,6 +288,11 @@
                     await this.vacations.CancelVacationAsync(employeeId, eventId, currentUser.EmployeeId, string.Empty);
                 }*/
 
+                if (newStatus == VacationStatus.Cancelled)
+                {
+                    await this.vacations.CancelVacationAsync(employeeId, eventId, employeeId, "");
+                }
+
                 if (newStatus == VacationStatus.Rejected)
                 {
                     await this.vacations.RejectVacationAsync(employeeId, eventId, employeeId);

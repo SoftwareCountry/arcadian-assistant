@@ -1,30 +1,24 @@
-﻿using System.Fabric.Description;
-using Arcadia.Assistant.AppCenterBuilds.Contracts.Interfaces;
-
-namespace Arcadia.Assistant.AppCenterBuilds.Contracts
+﻿namespace Arcadia.Assistant.AppCenterBuilds
 {
+    using System.Fabric.Description;
+
     public class DownloadApplicationSettings : IDownloadApplicationSettings
     {
-        public DownloadApplicationSettings()
-        { }
+        private const int DefaultDownloadBuildIntervalMinutes = 720;
 
         public DownloadApplicationSettings(ConfigurationSection configurationSection)
         {
-            this.BuildsFolder = configurationSection.Parameters["BuildsFolder"].Value;
-            this.RenameBuildFilePattern = configurationSection.Parameters["RenameBuildFilePattern"].Value;
             this.ApiToken = configurationSection.Parameters["ApiToken"].Value;
-            this.DownloadBuildIntervalMinutes = int.TryParse(configurationSection.Parameters["DownloadBuildIntervalMinutes"].Value, out var res) ? res : 0;
+            this.DownloadBuildIntervalMinutes = int.TryParse(configurationSection.Parameters["DownloadBuildIntervalMinutes"].Value, out var interval)
+                ? interval
+                : DefaultDownloadBuildIntervalMinutes;
             this.AndroidGetBuildsUrl = configurationSection.Parameters["AndroidGetBuildsUrl"].Value;
             this.AndroidGetBuildDownloadLinkTemplateUrl = configurationSection.Parameters["AndroidGetBuildDownloadLinkTemplateUrl"].Value;
             this.IosGetBuildsUrl = configurationSection.Parameters["IosGetBuildsUrl"].Value;
             this.IosGetBuildDownloadLinkTemplateUrl = configurationSection.Parameters["IosGetBuildDownloadLinkTemplateUrl"].Value;
         }
 
-        public string BuildsFolder { get; set; }
-
         public int DownloadBuildIntervalMinutes { get; set; }
-
-        public string RenameBuildFilePattern { get; set; }
 
         public string ApiToken { get; set; }
 

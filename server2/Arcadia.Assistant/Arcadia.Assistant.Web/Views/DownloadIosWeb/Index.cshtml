@@ -49,6 +49,11 @@
             justify-content: space-evenly;
         }
     }
+
+    .version {
+        text-align: right;
+        width: 100%;
+    }
 </style>
 
 <div class="ios-content">
@@ -58,6 +63,7 @@
                 <a href="itms-services://?action=download-manifest&url=@Model.ManifestLink">
                     <img src="~/images/download_ios.svg" alt="Download for iOS" />
                 </a>
+                <div class="version">Version:&nbsp; @Model.Version &nbsp;</div>
             </div>
             <div class="another-application-link">
                 @Html.ActionLink("Not an iOS?", "Index", "DownloadAndroidWeb")

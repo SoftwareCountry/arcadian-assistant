@@ -10,7 +10,11 @@ namespace Arcadia.Assistant.PendingActions
     using Autofac;
     using Autofac.Integration.ServiceFabric;
 
+    using Employees.Contracts;
+
     using Microsoft.ServiceFabric.Services.Remoting.Client;
+
+    using Organization.Contracts;
 
     using Vacations.Contracts;
 
@@ -31,6 +35,8 @@ namespace Arcadia.Assistant.PendingActions
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
                 builder.RegisterModule<VacationsModule>();
                 builder.RegisterModule<WorkHoursCreditModule>();
+                builder.RegisterModule<EmployeesModule>();
+                builder.RegisterModule<OrganizationModule>();
 
                 using (builder.Build())
                 {

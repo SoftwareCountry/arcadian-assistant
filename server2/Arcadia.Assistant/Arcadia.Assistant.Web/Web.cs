@@ -3,7 +3,8 @@ namespace Arcadia.Assistant.Web
     using System.Collections.Generic;
     using System.Fabric;
     using System.IO;
-
+    using Arcadia.Assistant.Logging;
+    using Autofac;
     using Autofac.Extensions.DependencyInjection;
 
     using Microsoft.AspNetCore.Hosting;
@@ -13,15 +14,18 @@ namespace Arcadia.Assistant.Web
     using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
+    using ServiceFabric.Logging;
 
     /// <summary>
     ///     The FabricRuntime creates an instance of this class for each service type instance.
     /// </summary>
-    internal sealed class Web : StatelessService
+    public class Web : StatelessService
     {
-        public Web(StatelessServiceContext context)
+        private readonly ILogger logger;
+        public Web(StatelessServiceContext context, ILogger logger)
             : base(context)
         {
+            this.logger = logger;
         }
 
         /// <summary>
@@ -36,20 +40,13 @@ namespace Arcadia.Assistant.Web
                     new KestrelCommunicationListener(serviceContext, "ServiceEndpoint", (url, listener) =>
                     {
                         ServiceEventSource.Current.ServiceMessage(serviceContext, $"Starting Kestrel on {url}");
-
                         return new WebHostBuilder()
                             .UseKestrel()
                             .ConfigureServices(
                                 services => services
-                                    .AddSingleton(serviceContext))
-                            .ConfigureServices(services => services.AddAutofac())
-                            .ConfigureLogging((hosingContext, logging) =>
-                            {
-                                logging.AddConfiguration(hosingContext.Configuration.GetSection("Logging"));
-                                logging.AddConsole();
-                                logging.AddDebug();
-                                logging.AddEventSourceLogger();
-                            })
+                                    .AddSingleton(serviceContext)
+                                    .AddAutofac()
+                                    .AddSingleton(this.logger))
                             .UseContentRoot(Directory.GetCurrentDirectory())
                             .UseStartup<Startup>()
                             .UseServiceFabricIntegration(listener, ServiceFabricIntegrationOptions.None)
