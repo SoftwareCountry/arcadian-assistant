@@ -48,6 +48,10 @@ namespace Arcadia.Assistant.Web
                                     .AddAutofac()
                                     .AddSingleton(this.logger))
                             .UseContentRoot(Directory.GetCurrentDirectory())
+                            .ConfigureLogging(logger =>
+                            {
+                                logger.ClearProviders();
+                            })
                             .UseStartup<Startup>()
                             .UseServiceFabricIntegration(listener, ServiceFabricIntegrationOptions.None)
                             .UseUrls(url)

@@ -48,15 +48,14 @@
     <Parameter Name="UserPreferencesStorageActorService_PartitionCount" DefaultValue="10" />
     <Parameter Name="UserPreferencesStorageActorService_MinReplicaSetSize" DefaultValue="3" />
     <Parameter Name="UserPreferencesStorageActorService_TargetReplicaSetSize" DefaultValue="3" />
-  <Parameter Name="MobileBuildActorService_PartitionCount" DefaultValue="10" />
+    <Parameter Name="MobileBuildActorService_PartitionCount" DefaultValue="10" />
     <Parameter Name="MobileBuildActorService_MinReplicaSetSize" DefaultValue="3" />
     <Parameter Name="MobileBuildActorService_TargetReplicaSetSize" DefaultValue="3" />
   </Parameters>
   <!-- Import the ServiceManifest from the ServicePackage. The ServiceManifestName and ServiceManifestVersion 
        should match the Name and Version attributes of the ServiceManifest element defined in the 
        ServiceManifest.xml file. -->
-
-<ServiceManifestImport>
+  <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.SharedFeedsPkg" ServiceManifestVersion="1.0.0" />
     <ConfigOverrides>
       <ConfigOverride Name="Config">
@@ -70,7 +69,7 @@
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.MobileBuildPkg" ServiceManifestVersion="1.0.0" />
-  <ConfigOverrides>
+    <ConfigOverrides>
       <ConfigOverride Name="Config">
         <Settings>
           <Section Name="Logging">
@@ -219,7 +218,7 @@
             <Parameter Name="TokenUrl" Value="[Arcadia.Assistant.Web_Security_TokenUrl]" />
             <Parameter Name="OpenIdConfigurationUrl" Value="[Arcadia.Assistant.Web_Security_OpenIdConfigurationUrl]" />
           </Section>
-        <Section Name="Links">
+          <Section Name="Links">
             <Parameter Name="HelpLink" Value="[Arcadia.Assistant.Web_Links_HelpLink]" />
           </Section>
           <Section Name="Ssl">
@@ -321,7 +320,7 @@
         <UniformInt64Partition PartitionCount="[UserPreferencesStorageActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
       </StatefulService>
     </Service>
-  <Service Name="MobileBuildActorService" GeneratedIdRef="7e23e345-9819-4781-9ba3-1ab8acdfb5b3|Persisted">
+    <Service Name="MobileBuildActorService" GeneratedIdRef="7e23e345-9819-4781-9ba3-1ab8acdfb5b3|Persisted">
       <StatefulService ServiceTypeName="MobileBuildActorServiceType" TargetReplicaSetSize="[MobileBuildActorService_TargetReplicaSetSize]" MinReplicaSetSize="[MobileBuildActorService_MinReplicaSetSize]">
         <UniformInt64Partition PartitionCount="[MobileBuildActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
       </StatefulService>

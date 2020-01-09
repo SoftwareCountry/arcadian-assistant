@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Text.Json.Serialization;
     using Arcadia.Assistant.Logging;
+    using Arcadia.Assistant.SharedFeeds.Contracts;
     using Autofac;
     using Autofac.Integration.ServiceFabric;
     using Avatars.Contracts;
