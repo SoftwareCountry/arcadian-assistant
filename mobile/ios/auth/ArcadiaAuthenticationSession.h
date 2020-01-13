@@ -8,7 +8,7 @@
 @import SafariServices;
 
 //============================================================================
-@interface ArcadiaAuthenticationSession : NSObject<RCTBridgeModule>
+@interface ArcadiaAuthenticationSession : NSObject<RCTBridgeModule, ASWebAuthenticationPresentationContextProviding>
 
 @property (nonatomic) ASWebAuthenticationSession* asWebAuthSession;
 
