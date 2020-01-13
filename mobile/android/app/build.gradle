@@ -96,7 +96,10 @@ def enableProguardInReleaseBuilds = false
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
 
     defaultConfig {
         applicationId "ru.spb.arcadia.product.assistant.android"
@@ -105,7 +108,7 @@ android {
         versionCode 1
         versionName "1.0"
         ndk {
-            abiFilters "armeabi-v7a", "x86"
+            abiFilters "armeabi-v7a", "x86", "x86-64"
         }
     }
     splits {
@@ -113,7 +116,7 @@ android {
             reset()
             enable enableSeparateBuildPerCPUArchitecture
             universalApk false  // If true, also generate a universal APK
-            include "armeabi-v7a", "x86"
+            include "armeabi-v7a", "x86", "x86-64"
         }
     }
     buildTypes {
@@ -127,7 +130,7 @@ android {
         variant.outputs.each { output ->
             // For each separate APK per architecture, set a unique version code as described here:
             // http://tools.android.com/tech-docs/new-build-system/user-guide/apk-splits
-            def versionCodes = ["armeabi-v7a":1, "x86":2]
+            def versionCodes = ["armeabi-v7a":1, "x86":2, "x86-64": 3]
             def abi = output.getFilter(OutputFile.ABI)
             if (abi != null) {  // null for the universal-debug, universal-release variants
                 output.versionCodeOverride =
@@ -138,6 +141,7 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-config')
     implementation project(':@react-native-community_async-storage')
     implementation project(':react-native-fast-image')
     implementation project(':react-native-gesture-handler')
@@ -145,11 +149,9 @@ dependencies {
     implementation project(':appcenter-analytics')
     implementation project(':appcenter')
     implementation project(':appcenter-push')
-    implementation project(':react-native-config')
     implementation project(':react-native-fingerprint-scanner')
     implementation project(':react-native-vector-icons')
     implementation project(':react-native-sensitive-info')
-    implementation project(':react-native-config')
 
     implementation "com.android.support:customtabs:${rootProject.ext.supportLibVersion}"
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
