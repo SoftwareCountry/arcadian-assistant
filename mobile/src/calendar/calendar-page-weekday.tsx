@@ -29,6 +29,7 @@ export class WeekDayCircle extends Component<WeekDayCircleProps> {
         const { day, weekHeight } = this.props;
 
         const height = PixelRatio.roundToNearestPixel(weekHeight);
+        const borderRadius = PixelRatio.roundToNearestPixel(height / 2);
 
         // noinspection JSSuspiciousNameCombination
         const circleStyle = StyleSheet.flatten([
@@ -36,21 +37,21 @@ export class WeekDayCircle extends Component<WeekDayCircleProps> {
             {
                 width: height,
                 height: height,
-                borderRadius: PixelRatio.roundToNearestPixel(height / 2),
+                borderRadius: borderRadius,
                 borderWidth: 2,
                 borderColor: this.isSelectedDay(day) ? Style.color.base : Style.color.transparent,
                 backgroundColor: this.isSelectedDay(day) ? Style.color.white : Style.color.transparent,
             }
         ]);
 
-        const innerCircleSize = (circleStyle.width as number) - (circleStyle.width as number * intervalMargin);
+        const innerCircleSize = height * (1 - intervalMargin);
 
         const innerCircleStyle = StyleSheet.flatten([
             calendarStyles.weekDayCircle,
             {
                 width: innerCircleSize,
                 height: innerCircleSize,
-                borderRadius: circleStyle.borderRadius! - (circleStyle.borderRadius! * intervalMargin),
+                borderRadius: borderRadius * (1 - intervalMargin),
                 backgroundColor: this.isSelectedDay(day) ? Style.color.base : Style.color.transparent,
             }
         ]);
@@ -59,7 +60,7 @@ export class WeekDayCircle extends Component<WeekDayCircleProps> {
             calendarStyles.weekDayNumber,
             {
                 color: this.getColorFor(day),
-                fontWeight: day.today ? 'bold' : 'normal',
+                fontWeight: day.today ? 'bold' as const : 'normal' as const,
                 lineHeight: day.today ? 14 : 12,
                 fontSize: day.today ? 14 : 12,
             }

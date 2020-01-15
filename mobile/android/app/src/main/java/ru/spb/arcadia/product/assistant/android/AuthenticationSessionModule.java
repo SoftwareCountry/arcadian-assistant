@@ -2,7 +2,7 @@ package ru.spb.arcadia.product.assistant.android;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.support.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsIntent;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.BaseActivityEventListener;

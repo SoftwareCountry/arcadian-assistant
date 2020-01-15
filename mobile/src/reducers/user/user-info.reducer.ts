@@ -26,7 +26,7 @@ const initState: UserInfoState = {
 };
 
 //----------------------------------------------------------------------------
-export const userInfoReducer: Reducer<UserInfoState> = (state = initState, action: UserActions) => {
+export const userInfoReducer: Reducer<UserInfoState | undefined> = (state = initState, action: UserActions) => {
     switch (action.type) {
 
         case UserActionType.loadUserFinished:

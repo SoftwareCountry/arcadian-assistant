@@ -30,7 +30,7 @@ const initState: FeedsState = {
     filter: '',
 };
 
-export const feedsReducer: Reducer<FeedsState> = (state = initState, action: FeedsActions | SearchActions) => {
+export const feedsReducer: Reducer<FeedsState | undefined> = (state = initState, action: FeedsActions | SearchActions) => {
     switch (action.type) {
         case 'FETCH_NEW_FEEDS':
         case 'FETCH_OLD_FEEDS':

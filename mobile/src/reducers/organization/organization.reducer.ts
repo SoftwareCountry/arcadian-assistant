@@ -5,7 +5,6 @@
 import { Department } from './department.model';
 import { combineEpics } from 'redux-observable';
 import { combineReducers } from 'redux';
-import { OrganizationState } from './organization.reducer';
 import { departmentsReducer } from './departments.reducer';
 import { employeesReducer, EmployeesStore } from './employees.reducer';
 import {
@@ -42,7 +41,7 @@ export const organizationEpics = combineEpics(
 );
 
 //============================================================================
-export const organizationReducer = combineReducers<OrganizationState>({
+export const organizationReducer = combineReducers<OrganizationState | undefined>({
     departments: departmentsReducer,
     employees: employeesReducer
 });

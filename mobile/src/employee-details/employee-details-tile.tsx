@@ -2,7 +2,7 @@
  * Copyright (c) Arcadia, Inc. All rights reserved.
  ******************************************************************************/
 
-import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { StyleProp, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { Nullable } from 'types';
 import React, { Component } from 'react';
 import { ApplicationIcon } from '../override/application-icon';
@@ -13,7 +13,7 @@ import { employeeDetailsTileStyles } from './styles';
 export interface TileData {
     label: string;
     icon: string;
-    style: ViewStyle;
+    style: TextStyle;
     size: number;
     payload: Nullable<string>;
     onPress: Nullable<() => void>;

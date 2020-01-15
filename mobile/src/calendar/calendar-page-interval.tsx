@@ -32,7 +32,7 @@ export class HalfInterval extends Component<HalfIntervalProps> {
         const containerStyles = StyleSheet.flatten([
             calendarIntervalStyles.container,
             this.props.align === 'right'
-                ? { flexDirection: 'row-reverse' }
+                ? { flexDirection: 'row-reverse' as const }
                 : {},
             this.props.style
         ]);
@@ -83,7 +83,7 @@ export const Interval = (props: IntervalProps) => {
 
     const containerStyles = StyleSheet.flatten([
         calendarIntervalStyles.container,
-        { justifyContent: 'center' },
+        { justifyContent: 'center' as const },
         props.style
     ]);
 

@@ -11,6 +11,8 @@ target 'ArcadiaAssistant' do
   pod 'AppCenter/Analytics', '~> 1.11.0'
   pod 'AppCenterReactNativeShared', '~> 1.10.0'
 
+  pod 'react-native-sensitive-info', :path => '../node_modules/react-native-sensitive-info'
+
   target 'ArcadiaAssistantTests' do
     inherit! :search_paths
     # Pods for testing
