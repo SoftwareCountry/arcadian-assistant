@@ -43,7 +43,6 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             return Arrays.asList(
                     new MainReactPackage(),
-            new ReactNativeConfigPackage(),
                     new AsyncStoragePackage(),
                     new FastImageViewPackage(),
                     new RNGestureHandlerPackage(),
@@ -61,7 +60,7 @@ public class MainApplication extends Application implements ReactApplication {
 
         @Override
         protected String getJSMainModuleName() {
-            return "artifacts/index";
+            return "index";
         }
     };
 
