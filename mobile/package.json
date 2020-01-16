@@ -108,10 +108,5 @@
       "<rootDir>/node_modules/appcenter-crashes/test/AppCenterCrashesMock.js"
     ]
   },
-  "rnpm": {
-    "assets": [
-      "./assets/fonts/"
-    ]
-  },
   "cacheDirectory": ".jest/cache"
 }
