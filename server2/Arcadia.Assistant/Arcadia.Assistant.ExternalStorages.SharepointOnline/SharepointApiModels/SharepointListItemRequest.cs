@@ -2,39 +2,42 @@
 {
     using System.Runtime.Serialization;
 
+    using Abstractions;
+
     [DataContract]
-    public class SharepointListItemRequest
+    public class SharepointListItemRequest : StorageItem
     {
+        public SharepointListItemRequest(StorageItem storage, string? type = null)
+        {
+            this.Id = storage.Id;
+            this.Title = storage.Title;
+            this.Description = storage.Description;
+            this.StartDate = storage.StartDate;
+            this.EndDate = storage.EndDate;
+            this.Category = storage.Category;
+            this.AllDayEvent = storage.AllDayEvent;
+            this.CalendarEventId = storage.CalendarEventId;
+            if (type != null)
+            {
+                this.Metadata = new MetadataRequest(type);
+            }
+        }
+
         [DataMember(Name = "__metadata")]
         public MetadataRequest Metadata { get; set; } = new MetadataRequest();
-
-        [DataMember]
-        public int Id { get; set; }
-
-        [DataMember]
-        public string Title { get; set; } = string.Empty;
-
-        [DataMember]
-        public string Description { get; set; } = string.Empty;
-
-        [DataMember]
-        public string EventDate { get; set; } = string.Empty;
-
-        [DataMember]
-        public string EndDate { get; set; } = string.Empty;
-
-        [DataMember]
-        public string Category { get; set; } = string.Empty;
-
-        [DataMember(Name = "fAllDayEvent")]
-        public bool AllDayEvent { get; set; }
-
-        [DataMember]
-        public string CalendarEventId { get; set; } = string.Empty;
 
         [DataContract]
         public class MetadataRequest
         {
+            public MetadataRequest()
+            {
+            }
+
+            public MetadataRequest(string type)
+            {
+                this.Type = type;
+            }
+
             [DataMember(Name = "type")]
             public string? Type { get; set; }
         }

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Text.Json;
@@ -36,9 +37,18 @@
             return new SharepointRequest(httpMethod, url);
         }
 
-        public SharepointRequest WithAcceptHeader(string value)
+        public SharepointRequest WithAcceptHeader(string value, bool update = true)
         {
-            this.AddHeader(AcceptHeaderName, value);
+            if (update)
+            {
+                this.RemoveHeader(AcceptHeaderName);
+            }
+
+            if (update || !this.headersInternal.Any(x => x.Item1 == AcceptHeaderName))
+            {
+                this.AddHeader(AcceptHeaderName, value);
+            }
+
             return this;
         }
 
@@ -48,15 +58,20 @@
             return this;
         }
 
-        public SharepointRequest WithContent(object content)
+        public SharepointRequest WithContentString(string contentString)
         {
-            var contentString = JsonSerializer.Serialize(content);
             this.Content = new StringContent(contentString);
 
             this.AddHeader(ContentTypeHeaderName, "application/json;odata=verbose");
             this.AddHeader(ContentLengthHeaderName, contentString.Length.ToString());
 
             return this;
+        }
+
+        public SharepointRequest WithContent(object content)
+        {
+            var contentString = JsonSerializer.Serialize(content);
+            return this.WithContentString(contentString);
         }
 
         public SharepointRequest WithIfMatchHeader()
@@ -114,6 +129,11 @@
         private void AddHeader(string name, string value)
         {
             this.headersInternal.Add(Tuple.Create(name, value));
+        }
+
+        private void RemoveHeader(string name)
+        {
+            this.headersInternal.Where(x => x.Item1 == name).ToList().ForEach(x => this.headersInternal.Remove(x));
         }
     }
 }

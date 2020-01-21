@@ -43,13 +43,19 @@
         public string GetSharepointField(Expression<Func<StorageItem, object>> property)
         {
             var propertyName = this.GetPropertyName(property);
+            var fieldName = this.GetSharepointField(propertyName);
 
-            if (this.fieldsByPropertyName.TryGetValue(propertyName, out var field))
+            if (fieldName == null)
             {
-                return field;
+                throw new ArgumentException($"Mapping for property '{propertyName}' doesn't exist");
             }
 
-            throw new ArgumentException($"Mapping for property '{propertyName}' doesn't exist");
+            return fieldName;
+        }
+
+        public string? GetSharepointField(string propertyName)
+        {
+            return this.fieldsByPropertyName.TryGetValue(propertyName, out var field) ? field : null;
         }
 
         public static SharepointFieldMapping CreateMapping(Expression<Func<StorageItem, object>> property, string fieldName)

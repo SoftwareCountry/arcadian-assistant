@@ -17,7 +17,6 @@
     {
         private readonly ISharepointConditionsCompiler conditionsCompiler;
         private readonly ISharepointOnlineConfiguration configuration;
-        private readonly ISharepointFieldsMapper fieldsMapper;
         private readonly ISharepointRequestExecutor requestExecutor;
 
         public SharepointStorage(
@@ -28,31 +27,33 @@
         {
             this.configuration = configuration;
             this.requestExecutor = requestExecutor;
-            this.fieldsMapper = sharePointFieldsMapper;
+            this.FieldsMapper = sharePointFieldsMapper;
             this.conditionsCompiler = sharePointConditionsCompiler;
+            this.StorageItemJsonConvertor = new StorageItemJsonConvertor(this.FieldsMapper);
         }
+
+        private ISharepointFieldsMapper FieldsMapper { get; }
+
+        private StorageItemJsonConvertor StorageItemJsonConvertor { get; }
 
         public async Task<IEnumerable<StorageItem>> GetItems(string list, IEnumerable<ICondition>? conditions, CancellationToken cancellationToken)
         {
             var listItems = await this.GetListItems(list, conditions, cancellationToken);
 
-            return listItems
-                .Select(this.ListItemToStorageItem)
-                .ToArray();
+            return listItems?.ToArray() ?? new StorageItem[0];
         }
 
         public async Task<StorageItem> AddItem(string list, StorageItem item, CancellationToken cancellationToken)
         {
             var listItemType = await this.GetListItemType(list, cancellationToken);
-            var requestData = this.StorageItemToListItemRequest(item, listItemType);
+            var requestData = this.StorageItemJsonConvertor.StorageItemToRequestJson(item, listItemType);
 
             var request = SharepointRequest
-                .Create(HttpMethod.Post, this.GetListItemsUrl(list))
-                .WithContent(requestData);
+                .Create(HttpMethod.Post, this.GetListItemsUrl(list, false))
+                .WithAcceptHeader("application/json;odata=verbose")
+                .WithContentString(requestData);
 
-            var addedItem = await this.requestExecutor.ExecuteSharepointRequest<SharepointListItem>(request, cancellationToken);
-
-            return this.ListItemToStorageItem(addedItem);
+            return await this.requestExecutor.ExecuteSharepointRequest<StorageItem>(request, cancellationToken);
         }
 
         public async Task UpdateItem(string list, StorageItem item, CancellationToken cancellationToken)
@@ -69,15 +70,16 @@
 
             var listItemType = await this.GetListItemType(list, cancellationToken);
 
-            var requestData = this.StorageItemToListItemRequest(item, listItemType);
+            var requestData = this.StorageItemJsonConvertor.StorageItemToRequestJson(item, listItemType);
 
             var request = SharepointRequest
                 .Create(HttpMethod.Post, updateItemUrl)
-                .WithContent(requestData)
+                .WithAcceptHeader("application/json;odata=verbose")
+                .WithContentString(requestData)
                 .WithIfMatchHeader()
                 .WithXHttpMethodHeader("MERGE");
 
-            await this.requestExecutor.ExecuteSharepointRequest<SharepointListItem>(request, cancellationToken);
+            await this.requestExecutor.ExecuteSharepointRequest<StorageItem>(request, cancellationToken);
         }
 
         public async Task DeleteItem(string list, string itemId, CancellationToken cancellationToken)
@@ -94,6 +96,7 @@
 
             var request = SharepointRequest
                 .Create(HttpMethod.Post, deleteItemUrl)
+                .WithAcceptHeader("application/json;odata=verbose")
                 .WithIfMatchHeader()
                 .WithXHttpMethodHeader("DELETE");
 
@@ -104,7 +107,7 @@
         {
         }
 
-        private async Task<IEnumerable<SharepointListItem>?> GetListItems(
+        private async Task<IEnumerable<StorageItem>?> GetListItems(
             string list,
             IEnumerable<ICondition>? conditions,
             CancellationToken cancellationToken)
@@ -120,8 +123,7 @@
 
             var request = SharepointRequest.Create(HttpMethod.Get, itemsUrl);
             var response = await this.requestExecutor.ExecuteSharepointRequest<SharepointListItemsResponse>(request, cancellationToken);
-
-            return response.Value;
+            return response.Value.Select(this.StorageItemJsonConvertor.JsonToStorageItem);
         }
 
         private async Task<string?> GetListItemType(string list, CancellationToken cancellationToken)
@@ -134,14 +136,14 @@
 
         private string GetListUrl(string list)
         {
-            return $"{this.configuration.ServerUrl}/_api/lists/GetByTitle('{list}')";
+            return $"{this.configuration.ServerUrl}/_api/web/lists/getByTitle('{list}')";
         }
 
         private string GetListItemsUrl(string list, bool includeSelectPart = true)
         {
             var baseUrl = $"{this.GetListUrl(list)}/items";
 
-            var fieldNames = this.GetFieldNames();
+            var fieldNames = this.StorageItemJsonConvertor.GetFieldNames();
 
             var selectUrlPart =
                 $"$select={fieldNames.Id},{fieldNames.Title},{fieldNames.Description},{fieldNames.StartDate}," +
@@ -152,40 +154,7 @@
                 : $"{baseUrl}?{selectUrlPart}";
         }
 
-        private StorageItem ListItemToStorageItem(SharepointListItem item)
-        {
-            return new StorageItem
-            {
-                Id = item.Id.ToString(),
-                Title = item.Title,
-                Description = item.Description,
-                StartDate = item.EventDate,
-                EndDate = item.EndDate,
-                Category = item.Category,
-                AllDayEvent = item.AllDayEvent,
-                CalendarEventId = item.CalendarEventId
-            };
-        }
-
-        private SharepointListItemRequest StorageItemToListItemRequest(StorageItem item, string? listItemType)
-        {
-            return new SharepointListItemRequest
-            {
-                Metadata = new SharepointListItemRequest.MetadataRequest
-                {
-                    Type = listItemType
-                },
-                Title = item.Title,
-                Description = item.Description,
-                EventDate = item.StartDate.ToString("d"),
-                EndDate = item.EndDate.ToString("d"),
-                Category = item.Category,
-                AllDayEvent = item.AllDayEvent,
-                CalendarEventId = item.CalendarEventId
-            };
-        }
-
-        private void EnsureSingleItemReturned(SharepointListItem[] listItems)
+        private void EnsureSingleItemReturned(StorageItem[] listItems)
         {
             if (listItems.Length == 0)
             {
@@ -196,28 +165,6 @@
             {
                 throw new ArgumentException("More than one item was found by specified conditions");
             }
-        }
-
-        private (
-            string Id,
-            string Title,
-            string Description,
-            string StartDate,
-            string EndDate,
-            string Category,
-            string AllDayEvent,
-            string CalendarEventId
-            ) GetFieldNames()
-        {
-            var idField = this.fieldsMapper.GetSharepointField(si => si.Id);
-            var titleField = this.fieldsMapper.GetSharepointField(si => si.Title);
-            var descriptionField = this.fieldsMapper.GetSharepointField(si => si.Description);
-            var startDateField = this.fieldsMapper.GetSharepointField(si => si.StartDate);
-            var endDateField = this.fieldsMapper.GetSharepointField(si => si.EndDate);
-            var categoryField = this.fieldsMapper.GetSharepointField(si => si.Category);
-            var allDayEvent = this.fieldsMapper.GetSharepointField(si => si.AllDayEvent);
-            var calendarEventIdField = this.fieldsMapper.GetSharepointField(si => si.CalendarEventId);
-            return (idField, titleField, descriptionField, startDateField, endDateField, categoryField, allDayEvent, calendarEventIdField);
         }
     }
 }

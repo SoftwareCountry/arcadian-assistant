@@ -6,12 +6,12 @@
 
     public class PropertyNameParser
     {
-        public void EnsureExpressionIsProperty(Expression<Func<StorageItem, object>> expression)
+        public void EnsureExpressionIsProperty<T>(Expression<Func<T, object>> expression)
         {
             this.GetName(expression);
         }
 
-        public string GetName(Expression<Func<StorageItem, object>> expression)
+        public string GetName<T>(Expression<Func<T, object>> expression)
         {
             switch (expression.Body)
             {

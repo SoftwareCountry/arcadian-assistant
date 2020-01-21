@@ -1,9 +1,12 @@
 ﻿namespace Arcadia.Assistant.ExternalStorages.SharepointOnline.SharepointApiModels
 {
     using System.Collections.Generic;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
 
     public class SharepointListItemsResponse
     {
-        public IEnumerable<SharepointListItem>? Value { get; set; }
+        [JsonPropertyName("value")]
+        public IEnumerable<JsonElement>? Value { get; set; }
     }
 }

@@ -27,14 +27,14 @@
             }
 
             return
-                string.Equals(x.Id, y.Id) &&
-                string.Equals(x.Title, y.Title) &&
-                string.Equals(x.Description, y.Description) &&
+                x.Id.Equals(y.Id) &&
+                x.Title.Equals(y.Title) &&
+                x.Description.Equals(y.Description) &&
                 x.StartDate.Date.Equals(y.StartDate.Date) &&
                 x.EndDate.Date.Equals(y.EndDate.Date) &&
-                string.Equals(x.Category, y.Category) &&
+                x.Category.Equals(y.Category) &&
                 x.AllDayEvent == y.AllDayEvent &&
-                string.Equals(x.CalendarEventId, y.CalendarEventId);
+                x.CalendarEventId.Equals(y.CalendarEventId);
         }
 
         public int GetHashCode(StorageItem obj)

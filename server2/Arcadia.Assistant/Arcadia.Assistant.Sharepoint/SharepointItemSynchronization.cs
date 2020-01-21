@@ -47,7 +47,7 @@
                 {
                     await this.ExternalStorage.DeleteItem(
                         calendar,
-                        item.Id);
+                        item.Id.ToString());
                 }
             }
             catch (Exception e)
@@ -81,7 +81,7 @@
         private async Task UpsertItem(string eventId, string calendar, T item, EmployeeMetadata employeeMetadata, IExternalStorage externalStorage, CancellationToken cancellationToken)
         {
             var datesPeriod = this.GetItemDatePeriod(item);
-            var upsertItem = this.CalendarEventToStorageItem(eventId, CalendarEventTypes.Sickleave, datesPeriod, employeeMetadata);
+            var upsertItem = this.CalendarEventToStorageItem(eventId, this.ItemEventType, datesPeriod, employeeMetadata);
             await this.UpsertStorageItem(eventId, calendar, datesPeriod, upsertItem, externalStorage, cancellationToken);
         }
 
@@ -104,26 +104,26 @@
                     upsertItem,
                     cancellationToken);
             }
-            else if (!this.sharepointStorageItemComparer.Equals(upsertItem, storageItem))
+            else
             {
                 upsertItem.Id = storageItem.Id;
-                await externalStorage.UpdateItem(
-                    calendar,
-                    upsertItem,
-                    cancellationToken);
+                if (!this.sharepointStorageItemComparer.Equals(upsertItem, storageItem))
+                {
+                    await externalStorage.UpdateItem(
+                        calendar,
+                        upsertItem,
+                        cancellationToken);
+                }
             }
         }
 
         private StorageItem CalendarEventToStorageItem(string eventId, string calendarEventType, DatesPeriod period, EmployeeMetadata employeeMetadata)
         {
             var totalHours = period.FinishWorkingHour - period.StartWorkingHour;
-
-            var longEventsTitle = $"{employeeMetadata.Name} ({calendarEventType})";
-            var shortEventsTitle = $"{employeeMetadata.Name} ({calendarEventType}: {totalHours} hours)";
-
-            var title = calendarEventType == CalendarEventTypes.Vacation || calendarEventType == CalendarEventTypes.Sickleave
-                ? longEventsTitle
-                : shortEventsTitle;
+            var longEvent = calendarEventType == CalendarEventTypes.Vacation || calendarEventType == CalendarEventTypes.Sickleave;
+            var title = longEvent
+                ? $"{employeeMetadata.Name} ({calendarEventType})"
+                : $"{employeeMetadata.Name} ({calendarEventType}: {totalHours} hours)";
 
             var storageItem = new StorageItem
             {
@@ -131,7 +131,7 @@
                 StartDate = period.StartDate,
                 EndDate = period.EndDate,
                 Category = calendarEventType,
-                AllDayEvent = true,
+                AllDayEvent = longEvent,
                 CalendarEventId = eventId
             };
 
