@@ -7,14 +7,11 @@ namespace Arcadia.Assistant.AppCenterBuilds
     using System.Threading;
     using System.Threading.Tasks;
 
-    using Logging;
-
     using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
 
     using MobileBuild.Contracts;
-    using ServiceFabric.Logging;
 
     /// <summary>
     ///     An instance of this class is created for each service instance by the Service Fabric runtime.
@@ -61,7 +58,7 @@ namespace Arcadia.Assistant.AppCenterBuilds
                 cancellationToken.ThrowIfCancellationRequested();
 
                 //ServiceEventSource.Current.ServiceMessage(this.Context, "Request build version");
-                this.logger?.LogDebug("Request build version");
+                this.logger.LogDebug("Request build version");
 
                 // for android
                 await this.UpdateMobileBuild(WellKnownBuildTypes.Android, this.configuration.AndroidGetBuildsUrl, this.configuration.AndroidGetBuildDownloadLinkTemplateUrl, cancellationToken);
@@ -77,14 +74,13 @@ namespace Arcadia.Assistant.AppCenterBuilds
         {
             try
             {
-                var logStore = new Action<string>(x => /*ServiceEventSource.Current.ServiceMessage(this.Context, x)*/this.logger?.LogInformation(x));
                 var actor = this.mobileBuildFactory.MobileBuild(mobileType);
                 var updateHelper = new UpdateMobileBuildHelper(buildUrl, buildDownloadUrlTemplate, this.ApiToken);
-                await updateHelper.CheckAndUpdateMobileBuild(this.clientFactory, actor, cancellationToken, logStore);
+                await updateHelper.CheckAndUpdateMobileBuild(this.clientFactory, actor, cancellationToken, this.logger);
             }
             catch (Exception ex)
             {
-                this.logger?.LogError(ex, "{0} mobile type version udpate exception: {1}", mobileType, ex.Message);
+                this.logger.LogError(ex, "{0} mobile type version udpate exception: {1}", mobileType, ex.Message);
             }
         }
     }

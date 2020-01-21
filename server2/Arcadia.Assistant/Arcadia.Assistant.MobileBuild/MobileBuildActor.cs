@@ -38,13 +38,13 @@ namespace Arcadia.Assistant.MobileBuild
 
         public Task<string> GetMobileBuildVersionAsync(CancellationToken cancellationToken)
         {
-            this.logger?.LogDebug($"Return version");
+            this.logger.LogDebug("Return version");
             return this.StateManager.GetStateAsync<string>(BuildVersionKey, cancellationToken);
         }
 
         public Task<byte[]> GetMobileBuildDataAsync(CancellationToken cancellationToken)
         {
-            this.logger?.LogDebug($"Return build data");
+            this.logger.LogDebug("Return build data");
             return this.StateManager.GetStateAsync<byte[]>(BuildDataKey, cancellationToken);
         }
 
@@ -52,7 +52,7 @@ namespace Arcadia.Assistant.MobileBuild
         {
             await this.StateManager.AddOrUpdateStateAsync(BuildVersionKey, version, (key, value) => version, cancellationToken);
             await this.StateManager.AddOrUpdateStateAsync(BuildDataKey, data, (key, value) => data, cancellationToken);
-            logger?.LogDebug($"Store build data (length:{data?.Length}) for version {version}");
+            this.logger.LogDebug($"Store build data (length:{data?.Length}) for version {version}");
             await this.StateManager.SaveStateAsync(cancellationToken);
         }
 
@@ -63,7 +63,7 @@ namespace Arcadia.Assistant.MobileBuild
         protected override Task OnActivateAsync()
         {
             //ActorEventSource.Current.ActorMessage(this, "Actor activated.");
-            this.logger?.LogInformation("Actor activated.");
+            this.logger.LogInformation("Actor activated.");
 
             // The StateManager is this actor's private state store.
             // Data stored in the StateManager will be replicated for high-availability for actors that use volatile or persisted state storage.

@@ -3,11 +3,11 @@ namespace Arcadia.Assistant.MobileBuild
     using System;
     using System.Fabric;
     using System.Threading;
-    using Arcadia.Assistant.Logging;
+
     using Autofac;
     using Autofac.Integration.ServiceFabric;
-    using Microsoft.ServiceFabric.Actors.Runtime;
-    using ServiceFabric.Remoting.CustomHeaders.Actors;
+
+    using Logging;
 
     internal static class Program
     {

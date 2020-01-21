@@ -6,25 +6,16 @@ namespace Arcadia.Assistant.AppCenterBuilds
     using System.Threading;
 
     using Autofac;
-    using Autofac.Core.Registration;
     using Autofac.Extensions.DependencyInjection;
     using Autofac.Integration.ServiceFabric;
 
     using Logging;
 
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Actors.Client;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
-    using Microsoft.ServiceFabric.Services.Runtime;
 
     using MobileBuild.Contracts;
-
-    using Serilog;
-
-    using ServiceFabric.Logging;
-
-    using ILogger = Microsoft.Extensions.Logging.ILogger;
 
     internal static class Program
     {
