@@ -1,11 +1,37 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Application xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="fabric:/Arcadia.Assistant.SF" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Parameters>
+    <Parameter Name="Arcadia.Assistant.PushNotification_PartitionCount" Value="1" />
+    <Parameter Name="Arcadia.Assistant.PushNotification_MinReplicaSetSize" Value="1" />
+    <Parameter Name="Arcadia.Assistant.PushNotification_TargetReplicaSetSize" Value="1" />
     <Parameter Name="Arcadia.Assistant.AppCenterBuilds_InstanceCount" Value="1" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_DownloadBuildIntervalMinutes" Value="720" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_ApiToken" Value="63ec9ba00d063026bba58bb2e07f06e32466571a" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_AndroidGetBuildsUrl" Value="https://api.appcenter.ms/v0.1/apps/JSC-Arcadia-Inc/Arcadia-Assistant-Android/branches/master/builds" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_AndroidGetBuildDownloadLinkTemplateUrl" Value="https://api.appcenter.ms/v0.1/apps/JSC-Arcadia-Inc/Arcadia-Assistant-Android/builds/{buildId}/downloads/build" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_IosGetBuildsUrl" Value="https://api.appcenter.ms/v0.1/apps/JSC-Arcadia-Inc/Arcadia-Assistant/branches/master/builds" />
+    <Parameter Name="Arcadia.Assistant.AppCenterBuilds_IosGetBuildDownloadLinkTemplateUrl" Value="https://api.appcenter.ms/v0.1/apps/JSC-Arcadia-Inc/Arcadia-Assistant/builds/{buildId}/downloads/build" />
     <Parameter Name="Arcadia.Assistant.PendingActions_InstanceCount" Value="1" />
     <Parameter Name="Arcadia.Assistant.Vacations_InstanceCount" Value="1" />
     <Parameter Name="Arcadia.Assistant.SickLeaves_InstanceCount" Value="1" />
     <Parameter Name="Arcadia.Assistant.Inbox_InstanceCount" Value="1" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_InstanceCount" Value="1" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_ServerUrl" Value="https://arcadialab.sharepoint.com/sites/intra" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_ClientId" Value="82c79a18-5233-439e-9a1a-96b546e61eb4" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_ClientSecret" Value="uhLmUHQKHo1uf8Cv/P5kHehdUi+hhoKD3Gr4T1SxlWs=" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_SynchronizationIntervalMinutes" Value="2" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_CalendarEventIdField" Value="CalendarEventid" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_DepartmentsCalendars" Value="[{&quot;id&quot;: &quot;60&quot;, &quot;name&quot;: &quot;Assistant&quot; }]" />
+    <Parameter Name="Arcadia.Assistant.Imap_Host" Value="mail.arcadialab.ru" />
+    <Parameter Name="Arcadia.Assistant.Imap_Port" Value="993" />
+    <Parameter Name="Arcadia.Assistant.Imap_User" Value="arcadia-assistant-de" />
+    <Parameter Name="Arcadia.Assistant.Imap_Password" Value="bYuXu9ALHvj" />
+    <Parameter Name="Arcadia.Assistant.VacationsCredit_Enabled" Value="true" />
+    <Parameter Name="Arcadia.Assistant.VacationsCredit_Sender" Value="buhgalter@arcadia.spb.ru" />
+    <Parameter Name="Arcadia.Assistant.VacationsCredit_Subject" Value="VacationDays" />
+    <Parameter Name="Arcadia.Assistant.VacationsCredit_RefreshIntervalMinutes" Value="10" />
+    <Parameter Name="Arcadia.Assistant.VacationsCredit_InstanceCount" Value="1" />
+    <Parameter Name="Arcadia.Assistant.Csp_ConnectionString" Value="Server=ArcadiaCSPDB00V,1433\\;Database=ArcadiaCSP;Trusted_Connection=False;User Id=CSPDBdatareader;Password=he11ow33n" />
     <Parameter Name="Arcadia.Assistant.WorkHoursCredit_InstanceCount" Value="1" />
     <Parameter Name="Arcadia.Assistant.Permissions_InstanceCount" Value="1" />
     <Parameter Name="Arcadia.Assistant.Employees_InstanceCount" Value="1" />
@@ -15,6 +41,11 @@
     <Parameter Name="Arcadia.Assistant.Organization_TargetReplicaSetSize" Value="1" />
     <Parameter Name="Arcadia.Assistant.Web_ASPNETCORE_ENVIRONMENT" Value="Development" />
     <Parameter Name="Arcadia.Assistant.Web_InstanceCount" Value="1" />
+    <Parameter Name="Arcadia.Assistant.Web_Security_ClientId" Value="a2ccb221-60e2-47b8-b28c-bf88a59f7f4a" />
+    <Parameter Name="Arcadia.Assistant.Web_Security_AuthorizationUrl" Value="https://login.microsoftonline.com/fa4e9c1f-6222-443d-a083-28f80c1ffefc/oauth2/authorize?resource=a2ccb221-60e2-47b8-b28c-bf88a59f7f4a" />
+    <Parameter Name="Arcadia.Assistant.Web_Security_TokenUrl" Value="https://login.microsoftonline.com/fa4e9c1f-6222-443d-a083-28f80c1ffefc/oauth2/token" />
+    <Parameter Name="Arcadia.Assistant.Web_Security_OpenIdConfigurationUrl" Value="https://login.microsoftonline.com/fa4e9c1f-6222-443d-a083-28f80c1ffefc/.well-known/openid-configuration" />
+    <Parameter Name="Arcadia.Assistant.Web_Links_HelpLink" Value="https://arcadiaspb.sharepoint.com/teams/ArcadiaAssistant/SitePages/Usage%20Guide.aspx" />
     <Parameter Name="AvatarActorService_PartitionCount" Value="1" />
     <Parameter Name="AvatarActorService_TargetReplicaSetSize" Value="1" />
     <Parameter Name="AvatarActorService_MinReplicaSetSize" Value="1" />
