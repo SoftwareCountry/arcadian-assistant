@@ -8,23 +8,25 @@
     using Microsoft.AspNetCore.Mvc;
 
     using Models;
-    using PushNotifications;
     using System.Security.Claims;
     using Employees.Contracts;
     using System.Linq;
+
+    using PushNotificationsDeviceRegistrator.Contracts;
+    using PushNotificationsDeviceRegistrator.Contracts.Models;
 
     [Route("/api/push/device")]
     [Authorize]
     public class PushNotificationsController : Controller
     {
-        private readonly IPushNotificationsService pushNotificationsService;
+        private readonly IPushNotificationsDeviceRegistrationActorFactory pushNotificationDeviceRegistrationFactory;
         private readonly IEmployees employees;
 
         public PushNotificationsController(
-            IPushNotificationsService pushNotificationsService,
+            IPushNotificationsDeviceRegistrationActorFactory pushNotificationDeviceRegistrationFactory,
             IEmployees employees)
         {
-            this.pushNotificationsService = pushNotificationsService;
+            this.pushNotificationDeviceRegistrationFactory = pushNotificationDeviceRegistrationFactory;
             this.employees = employees;
         }
 
@@ -38,12 +40,19 @@
                 return this.BadRequest(this.ModelState);
             }
 
+            var deviceType = deviceModel.DeviceType.MobileBuildType();
             var employee = await this.FindOrDefaultAsync(this.User, cancellationToken);
 
-            this.pushNotificationsService.RegisterDevice(
-                employee.EmployeeId.ToString(),
-                deviceModel.DevicePushToken,
-                deviceModel.DeviceType);
+            if (employee != null)
+            {
+                var deviceRegistrationActor = this.pushNotificationDeviceRegistrationFactory.PushNotificationsDeviceRegistrator();
+                await deviceRegistrationActor.RegisterDevice(
+                    new RegisterPushNotificationsDevice(
+                        employee.EmployeeId.ToString(),
+                        deviceModel.DevicePushToken,
+                        deviceType),
+                    cancellationToken);
+            }
 
             return this.Accepted();
         }
@@ -55,12 +64,20 @@
         {
             var employee = await this.FindOrDefaultAsync(this.User, cancellationToken);
 
-            this.pushNotificationsService.RemoveDevice(employee.EmployeeId.ToString(), devicePushToken);
+            if (employee != null)
+            {
+                var deviceRegistrationActor = this.pushNotificationDeviceRegistrationFactory.PushNotificationsDeviceRegistrator();
+                await deviceRegistrationActor.RemoveDevice(
+                    new RemovePushNotificationsDevice(
+                        employee.EmployeeId.ToString(),
+                        devicePushToken),
+                    cancellationToken);
+            }
 
             return this.Accepted();
         }
 
-        private async Task<EmployeeMetadata> FindOrDefaultAsync(ClaimsPrincipal user, CancellationToken cancellationToken)
+        private async Task<EmployeeMetadata?> FindOrDefaultAsync(ClaimsPrincipal user, CancellationToken cancellationToken)
         {
             if (!user.Identity.IsAuthenticated)
             {

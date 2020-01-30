@@ -34,6 +34,8 @@
 
     using Permissions.Contracts;
 
+    using PushNotificationsDeviceRegistrator.Contracts;
+
     using SickLeaves.Contracts;
 
     using UserPreferences.Contracts;
@@ -128,6 +130,7 @@
             builder.RegisterModule(new SickLeavesModule());
             builder.RegisterModule(new PendingActionsModule());
             builder.RegisterModule(new MobileBuildModule());
+            builder.RegisterModule(new PushNotificationsDeviceRegistratorModule());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
