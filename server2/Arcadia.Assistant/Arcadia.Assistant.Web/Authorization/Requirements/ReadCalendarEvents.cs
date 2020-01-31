@@ -2,7 +2,7 @@
 {
     using Permissions.Contracts;
 
-    public class ReadCalendarEvents : RequiredEmployeePermissions
+    public class ReadCalendarEvents : EmployeePermissionsRequirement
     {
         public ReadCalendarEvents()
             :base(EmployeePermissionsEntry.ReadEmployeeCalendarEvents)

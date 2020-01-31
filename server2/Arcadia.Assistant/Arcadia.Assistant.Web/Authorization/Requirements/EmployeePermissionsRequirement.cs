@@ -4,11 +4,11 @@
 
     using Permissions.Contracts;
 
-    public class RequiredEmployeePermissions : IAuthorizationRequirement
+    public class EmployeePermissionsRequirement : IAuthorizationRequirement
     {
         public EmployeePermissionsEntry RequiredPermissions { get; private set; }
 
-        public RequiredEmployeePermissions(EmployeePermissionsEntry requiredPermissions)
+        public EmployeePermissionsRequirement(EmployeePermissionsEntry requiredPermissions)
         {
             this.RequiredPermissions = requiredPermissions;
         }

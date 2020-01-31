@@ -12,14 +12,14 @@
         public bool TryParseSickLeaveId(string dtoId, out int id)
         {
             id = 0;
-            var parts = GetIdParts(dtoId);
+            var parts = this.GetIdParts(dtoId);
             return parts != null && parts.Value.Item1 == CalendarEventTypes.Sickleave && int.TryParse(parts.Value.Item2, out id);
         }
 
         public bool TryParseWorkHoursChangeId(string dtoId, out Guid id)
         {
-            id = default(Guid);
-            var parts = GetIdParts(dtoId);
+            id = default;
+            var parts = this.GetIdParts(dtoId);
             return parts != null 
                 && (parts.Value.Item1 == CalendarEventTypes.Dayoff || parts.Value.Item1 == CalendarEventTypes.Workout)
                 && Guid.TryParse(parts.Value.Item2, out id);
@@ -27,7 +27,7 @@
 
         public bool TryParseVacationId(string dtoId, out int id)
         {
-            id = 0;
+            id = default;
             var parts = GetIdParts(dtoId);
             return parts != null && parts.Value.Item1 == CalendarEventTypes.Vacation && int.TryParse(parts.Value.Item2, out id);
         }

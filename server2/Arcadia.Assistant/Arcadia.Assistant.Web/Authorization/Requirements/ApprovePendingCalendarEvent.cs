@@ -2,7 +2,7 @@
 {
     using Permissions.Contracts;
 
-    public class ApprovePendingCalendarEvent : RequiredEmployeePermissions
+    public class ApprovePendingCalendarEvent : EmployeePermissionsRequirement
     {
         public ApprovePendingCalendarEvent()
             : base(EmployeePermissionsEntry.ApproveCalendarEvents)

@@ -2,7 +2,7 @@
 {
     using Permissions.Contracts;
 
-    public class EditPendingCalendarEvents : RequiredEmployeePermissions
+    public class EditPendingCalendarEvents : EmployeePermissionsRequirement
     {
         public EditPendingCalendarEvents()
             : base(EmployeePermissionsEntry.EditPendingCalendarEvents)
