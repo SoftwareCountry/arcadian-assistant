@@ -9,6 +9,8 @@
 
     using Configuration;
 
+    using DeviceRegistry.Contracts;
+
     using Employees.Contracts;
 
     using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -33,8 +35,6 @@
     using PendingActions.Contracts;
 
     using Permissions.Contracts;
-
-    using PushNotificationsDeviceRegistrator.Contracts;
 
     using SickLeaves.Contracts;
 
@@ -130,7 +130,7 @@
             builder.RegisterModule(new SickLeavesModule());
             builder.RegisterModule(new PendingActionsModule());
             builder.RegisterModule(new MobileBuildModule());
-            builder.RegisterModule(new PushNotificationsDeviceRegistratorModule());
+            builder.RegisterModule(new DeviceRegistryModule());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

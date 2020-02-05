@@ -12,21 +12,21 @@
     using Employees.Contracts;
     using System.Linq;
 
-    using PushNotificationsDeviceRegistrator.Contracts;
-    using PushNotificationsDeviceRegistrator.Contracts.Models;
+    using DeviceRegistry.Contracts;
+    using Arcadia.Assistant.DeviceRegistry.Contracts.Models;
 
     [Route("/api/push/device")]
     [Authorize]
     public class PushNotificationsController : Controller
     {
-        private readonly IPushNotificationsDeviceRegistrationActorFactory pushNotificationDeviceRegistrationFactory;
+        private readonly IDeviceRegistry deviceRegistry;
         private readonly IEmployees employees;
 
         public PushNotificationsController(
-            IPushNotificationsDeviceRegistrationActorFactory pushNotificationDeviceRegistrationFactory,
+            IDeviceRegistry deviceRegistry,
             IEmployees employees)
         {
-            this.pushNotificationDeviceRegistrationFactory = pushNotificationDeviceRegistrationFactory;
+            this.deviceRegistry = deviceRegistry;
             this.employees = employees;
         }
 
@@ -45,12 +45,10 @@
 
             if (employee != null)
             {
-                var deviceRegistrationActor = this.pushNotificationDeviceRegistrationFactory.PushNotificationsDeviceRegistrator();
-                await deviceRegistrationActor.RegisterDevice(
-                    new RegisterPushNotificationsDevice(
-                        employee.EmployeeId.ToString(),
-                        deviceModel.DevicePushToken,
-                        deviceType),
+                await this.deviceRegistry.RegisterDevice(
+                    employee.EmployeeId.ToString(),
+                    deviceModel.DevicePushToken,
+                    deviceType,
                     cancellationToken);
             }
 
@@ -66,11 +64,9 @@
 
             if (employee != null)
             {
-                var deviceRegistrationActor = this.pushNotificationDeviceRegistrationFactory.PushNotificationsDeviceRegistrator();
-                await deviceRegistrationActor.RemoveDevice(
-                    new RemovePushNotificationsDevice(
-                        employee.EmployeeId.ToString(),
-                        devicePushToken),
+                await this.deviceRegistry.RemoveDevice(
+                    employee.EmployeeId.ToString(),
+                    devicePushToken,
                     cancellationToken);
             }
 

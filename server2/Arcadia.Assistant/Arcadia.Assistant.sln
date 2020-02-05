@@ -67,15 +67,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.MobileBui
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MobileBuilds", "MobileBuilds", "{13E39FC7-D22B-4521-B65A-48C62593821F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.PushNotificationsDeviceRegistrator", "Arcadia.Assistant.PushNotificationsDevice\Arcadia.Assistant.PushNotificationsDeviceRegistrator.csproj", "{468595AF-A41F-4DB2-B133-5B262419C706}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notifications", "Notifications", "{AF82271D-2D95-4E64-8B1B-50B5147B08A4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.PushNotificationsDeviceRegistrator.Contracts", "Arcadia.Assistant.PushNotificationsDevice.Contracts\Arcadia.Assistant.PushNotificationsDeviceRegistrator.Contracts.csproj", "{9CFAF6A7-F744-403C-A0D4-1424B09CA2D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.DeviceRegistry", "Arcadia.Assistant.DeviceRegistry\Arcadia.Assistant.DeviceRegistry.csproj", "{15789285-56D9-4D6E-BCCF-E3F0E215B40A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.PushNotificationsDistributor", "Arcadia.Assistant.PushNotificationsDistribution\Arcadia.Assistant.PushNotificationsDistributor.csproj", "{4B49D1C0-EF73-436B-8EFC-98660F3F9617}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.PushNotifications", "Arcadia.Assistant.PushNotifications\Arcadia.Assistant.PushNotifications.csproj", "{666DFBC3-FE93-49B5-A9B7-8DADCC7F380E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.PushNotificationsDistributor.Contracts", "Arcadia.Assistant.PushNotificationsDistribution.Contracts\Arcadia.Assistant.PushNotificationsDistributor.Contracts.csproj", "{C52E070C-816A-486E-9A55-E9A9E43CB108}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Notifications", "Arcadia.Assistant.Notifications\Arcadia.Assistant.Notifications.csproj", "{45F74264-D432-40B9-ACA6-D1D07E491692}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notifications", "Notifications", "{CA9DFED4-ACC8-44C8-B210-415EF300947D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.DeviceRegistry.Contracts", "Arcadia.Assistant.DeviceRegistry.Contracts\Arcadia.Assistant.DeviceRegistry.Contracts.csproj", "{3BDB0801-08DA-4F89-BB22-C1FBEBD38FFB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Notifications.Contracts", "Arcadia.Assistant.Notifications.Contracts\Arcadia.Assistant.Notifications.Contracts.csproj", "{9A1B6E4A-5A30-41A4-BCB7-DD95028F8A72}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.PushNotifications.Contracts", "Arcadia.Assistant.PushNotifications.Contracts\Arcadia.Assistant.PushNotifications.Contracts.csproj", "{0CF34F6D-7C13-4952-8F4A-C376F297712C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -199,22 +203,30 @@ Global
 		{1C3C2A57-B9EE-45E6-8639-7295AFDEC518}.Debug|x64.Build.0 = Debug|x64
 		{1C3C2A57-B9EE-45E6-8639-7295AFDEC518}.Release|x64.ActiveCfg = Release|Any CPU
 		{1C3C2A57-B9EE-45E6-8639-7295AFDEC518}.Release|x64.Build.0 = Release|Any CPU
-		{468595AF-A41F-4DB2-B133-5B262419C706}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{468595AF-A41F-4DB2-B133-5B262419C706}.Debug|x64.Build.0 = Debug|Any CPU
-		{468595AF-A41F-4DB2-B133-5B262419C706}.Release|x64.ActiveCfg = Release|Any CPU
-		{468595AF-A41F-4DB2-B133-5B262419C706}.Release|x64.Build.0 = Release|Any CPU
-		{9CFAF6A7-F744-403C-A0D4-1424B09CA2D6}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{9CFAF6A7-F744-403C-A0D4-1424B09CA2D6}.Debug|x64.Build.0 = Debug|Any CPU
-		{9CFAF6A7-F744-403C-A0D4-1424B09CA2D6}.Release|x64.ActiveCfg = Release|Any CPU
-		{9CFAF6A7-F744-403C-A0D4-1424B09CA2D6}.Release|x64.Build.0 = Release|Any CPU
-		{4B49D1C0-EF73-436B-8EFC-98660F3F9617}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{4B49D1C0-EF73-436B-8EFC-98660F3F9617}.Debug|x64.Build.0 = Debug|Any CPU
-		{4B49D1C0-EF73-436B-8EFC-98660F3F9617}.Release|x64.ActiveCfg = Release|Any CPU
-		{4B49D1C0-EF73-436B-8EFC-98660F3F9617}.Release|x64.Build.0 = Release|Any CPU
-		{C52E070C-816A-486E-9A55-E9A9E43CB108}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{C52E070C-816A-486E-9A55-E9A9E43CB108}.Debug|x64.Build.0 = Debug|Any CPU
-		{C52E070C-816A-486E-9A55-E9A9E43CB108}.Release|x64.ActiveCfg = Release|Any CPU
-		{C52E070C-816A-486E-9A55-E9A9E43CB108}.Release|x64.Build.0 = Release|Any CPU
+		{15789285-56D9-4D6E-BCCF-E3F0E215B40A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{15789285-56D9-4D6E-BCCF-E3F0E215B40A}.Debug|x64.Build.0 = Debug|Any CPU
+		{15789285-56D9-4D6E-BCCF-E3F0E215B40A}.Release|x64.ActiveCfg = Release|Any CPU
+		{15789285-56D9-4D6E-BCCF-E3F0E215B40A}.Release|x64.Build.0 = Release|Any CPU
+		{666DFBC3-FE93-49B5-A9B7-8DADCC7F380E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{666DFBC3-FE93-49B5-A9B7-8DADCC7F380E}.Debug|x64.Build.0 = Debug|Any CPU
+		{666DFBC3-FE93-49B5-A9B7-8DADCC7F380E}.Release|x64.ActiveCfg = Release|Any CPU
+		{666DFBC3-FE93-49B5-A9B7-8DADCC7F380E}.Release|x64.Build.0 = Release|Any CPU
+		{45F74264-D432-40B9-ACA6-D1D07E491692}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{45F74264-D432-40B9-ACA6-D1D07E491692}.Debug|x64.Build.0 = Debug|Any CPU
+		{45F74264-D432-40B9-ACA6-D1D07E491692}.Release|x64.ActiveCfg = Release|Any CPU
+		{45F74264-D432-40B9-ACA6-D1D07E491692}.Release|x64.Build.0 = Release|Any CPU
+		{3BDB0801-08DA-4F89-BB22-C1FBEBD38FFB}.Debug|x64.ActiveCfg = Debug|x64
+		{3BDB0801-08DA-4F89-BB22-C1FBEBD38FFB}.Debug|x64.Build.0 = Debug|x64
+		{3BDB0801-08DA-4F89-BB22-C1FBEBD38FFB}.Release|x64.ActiveCfg = Release|x64
+		{3BDB0801-08DA-4F89-BB22-C1FBEBD38FFB}.Release|x64.Build.0 = Release|x64
+		{9A1B6E4A-5A30-41A4-BCB7-DD95028F8A72}.Debug|x64.ActiveCfg = Debug|x64
+		{9A1B6E4A-5A30-41A4-BCB7-DD95028F8A72}.Debug|x64.Build.0 = Debug|x64
+		{9A1B6E4A-5A30-41A4-BCB7-DD95028F8A72}.Release|x64.ActiveCfg = Release|x64
+		{9A1B6E4A-5A30-41A4-BCB7-DD95028F8A72}.Release|x64.Build.0 = Release|x64
+		{0CF34F6D-7C13-4952-8F4A-C376F297712C}.Debug|x64.ActiveCfg = Debug|x64
+		{0CF34F6D-7C13-4952-8F4A-C376F297712C}.Debug|x64.Build.0 = Debug|x64
+		{0CF34F6D-7C13-4952-8F4A-C376F297712C}.Release|x64.ActiveCfg = Release|x64
+		{0CF34F6D-7C13-4952-8F4A-C376F297712C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -236,10 +248,12 @@ Global
 		{BA73D362-4E99-42F2-9966-E6692B0CBF7D} = {13E39FC7-D22B-4521-B65A-48C62593821F}
 		{BC44E3D2-B3B0-49F8-965E-25AAB4589BAA} = {13E39FC7-D22B-4521-B65A-48C62593821F}
 		{1C3C2A57-B9EE-45E6-8639-7295AFDEC518} = {13E39FC7-D22B-4521-B65A-48C62593821F}
-		{468595AF-A41F-4DB2-B133-5B262419C706} = {CA9DFED4-ACC8-44C8-B210-415EF300947D}
-		{9CFAF6A7-F744-403C-A0D4-1424B09CA2D6} = {CA9DFED4-ACC8-44C8-B210-415EF300947D}
-		{4B49D1C0-EF73-436B-8EFC-98660F3F9617} = {CA9DFED4-ACC8-44C8-B210-415EF300947D}
-		{C52E070C-816A-486E-9A55-E9A9E43CB108} = {CA9DFED4-ACC8-44C8-B210-415EF300947D}
+		{15789285-56D9-4D6E-BCCF-E3F0E215B40A} = {AF82271D-2D95-4E64-8B1B-50B5147B08A4}
+		{666DFBC3-FE93-49B5-A9B7-8DADCC7F380E} = {AF82271D-2D95-4E64-8B1B-50B5147B08A4}
+		{45F74264-D432-40B9-ACA6-D1D07E491692} = {AF82271D-2D95-4E64-8B1B-50B5147B08A4}
+		{3BDB0801-08DA-4F89-BB22-C1FBEBD38FFB} = {AF82271D-2D95-4E64-8B1B-50B5147B08A4}
+		{9A1B6E4A-5A30-41A4-BCB7-DD95028F8A72} = {AF82271D-2D95-4E64-8B1B-50B5147B08A4}
+		{0CF34F6D-7C13-4952-8F4A-C376F297712C} = {AF82271D-2D95-4E64-8B1B-50B5147B08A4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C376673D-F593-42B1-8093-D1F667D586B1}
