@@ -32,7 +32,7 @@ namespace Arcadia.Assistant.Notifications
         private readonly IDeviceRegistry deviceRegistry;
         private readonly IPushNotifications pushNotifications;
 
-        private readonly Dictionary<NotificationType, IEnumerable<NotificationProviderType>> notificationProvidersMap;
+        private readonly Dictionary<CalendarEventType, IEnumerable<NotificationProviderType>> notificationProvidersMap;
 
         public Notifications(
             StatelessServiceContext context, 
@@ -44,27 +44,23 @@ namespace Arcadia.Assistant.Notifications
             this.notificationSettings = notificationSettings;
             this.deviceRegistry = deviceRegistry;
             this.pushNotifications = pushNotifications;
-            this.notificationProvidersMap = new Dictionary<NotificationType, IEnumerable<NotificationProviderType>>()
+            this.notificationProvidersMap = new Dictionary<CalendarEventType, IEnumerable<NotificationProviderType>>()
             {
-                {NotificationType.CalendarEventAdd, new List<NotificationProviderType>()
-                    {
-                        NotificationProviderType.Push
-                    }},
-                {NotificationType.CalendarEventRemove, new List<NotificationProviderType>()
-                    {
-                        NotificationProviderType.Push
-                    }},
+                {CalendarEventType.Vacation, new List<NotificationProviderType>() { NotificationProviderType.Push }},
+                {CalendarEventType.Dayoff, new List<NotificationProviderType>() { NotificationProviderType.Push }},
+                {CalendarEventType.Workout, new List<NotificationProviderType>() { NotificationProviderType.Push }},
+                {CalendarEventType.Sickleave, new List<NotificationProviderType>() { NotificationProviderType.Push }},
             };
         }
 
         public async Task Send(IEnumerable<string> employeeIds, NotificationType notificationType, CalendarEventType eventType, NotificationMessage notificationMessage, CancellationToken cancellationToken)
         {
-            if (employeeIds.IsNullOrEmpty() || !this.notificationProvidersMap.ContainsKey(notificationType))
+            if (employeeIds.IsNullOrEmpty() || !this.notificationProvidersMap.ContainsKey(eventType))
             {
                 return;
             }
 
-            var notificationProviders = this.notificationProvidersMap[notificationType];
+            var notificationProviders = this.notificationProvidersMap[eventType];
             foreach (var providerType in notificationProviders)
             {
                 switch (providerType)

@@ -2,7 +2,11 @@
 <ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="Arcadia.Assistant.SFType" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Parameters>
     <Parameter Name="Arcadia.Assistant.Notifications_InstanceCount" DefaultValue="-1" />
+    <Parameter Name="Arcadia.Assistant.Notifications_EnablePush" DefaultValue="false" />
     <Parameter Name="Arcadia.Assistant.PushNotifications_InstanceCount" DefaultValue="-1" />
+    <Parameter Name="Arcadia.Assistant.PushNotifications_ApiToken" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.PushNotifications_AndroidPushUrl" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.PushNotifications_IosPushUrl" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.DeviceRegistry_MinReplicaSetSize" DefaultValue="3" />
     <Parameter Name="Arcadia.Assistant.DeviceRegistry_PartitionCount" DefaultValue="1" />
     <Parameter Name="Arcadia.Assistant.DeviceRegistry_TargetReplicaSetSize" DefaultValue="3" />
@@ -58,11 +62,29 @@
        ServiceManifest.xml file. -->
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.NotificationsPkg" ServiceManifestVersion="1.0.0" />
-    <ConfigOverrides />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Notifications">
+            <Parameter Name="EnablePush" Value="[Arcadia.Assistant.Notifications_EnablePush]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.PushNotificationsPkg" ServiceManifestVersion="1.0.0" />
-    <ConfigOverrides />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="PushNotifications">
+            <Parameter Name="ApiToken" Value="[Arcadia.Assistant.PushNotifications_ApiToken]" />
+            <Parameter Name="AndroidPushUrl" Value="[Arcadia.Assistant.PushNotifications_AndroidPushUrl]" />
+            <Parameter Name="IosPushUrl" Value="[Arcadia.Assistant.PushNotifications_IosPushUrl]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.DeviceRegistryPkg" ServiceManifestVersion="1.0.0" />
