@@ -79,7 +79,7 @@ class AvatarImpl extends Component<AvatarProps, AvatarState> {
                 height: this.state.size
             },
             this.props.style,
-            this.state.visible ? {} : { display: 'none' }
+            this.state.visible ? {} : { display: 'none' as const }
         ]);
 
         const image = this.renderImage(outerFrameStyle);

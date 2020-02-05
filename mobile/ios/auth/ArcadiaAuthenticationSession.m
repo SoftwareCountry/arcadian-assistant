@@ -69,6 +69,7 @@ RCT_REMAP_METHOD(getSafariData,
 {
     if (@available(iOS 12.0, *))
     {
+        self.asWebAuthSession.presentationContextProvider = self;
         return [self.asWebAuthSession start];
     }
 
@@ -128,6 +129,12 @@ RCT_REMAP_METHOD(getSafariData,
 - (BOOL) isCancellationUrl:(NSURL*)url
 {
     return [[url absoluteString] containsString:CANCELLATION_SUBCODE];
+}
+
+//----------------------------------------------------------------------------
+- (ASPresentationAnchor)presentationAnchorForWebAuthenticationSession:(ASWebAuthenticationSession *)session
+{
+    return UIApplication.sharedApplication.keyWindow;
 }
 
 @end

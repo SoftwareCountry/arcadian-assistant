@@ -5,6 +5,7 @@
 import { NativeModules, Platform } from 'react-native';
 import * as moment from 'moment';
 import 'moment/locale/en-gb';
+import { Optional } from 'types';
 
 //----------------------------------------------------------------------------
 export function applyCalendarLocale() {
@@ -21,12 +22,22 @@ export function applyCalendarLocale() {
 
 //----------------------------------------------------------------------------
 function getDeviceLocale(): string {
+    let locale: Optional<string> = undefined;
+
     switch (Platform.OS) {
         case 'android':
-            return NativeModules.I18nManager.localeIdentifier.toLowerCase();
+            locale = NativeModules.I18nManager.localeIdentifier;
+            break;
         case 'ios':
-            return NativeModules.SettingsManager.settings.AppleLocale.toLowerCase();
-        default:
-            return 'en';
+            locale = NativeModules.SettingsManager.settings.AppleLocale;
+            if (locale === undefined) {
+                locale = NativeModules.SettingsManager.settings.AppleLanguages[0];
+            }
+            break;
     }
+
+    if (locale === undefined) {
+        return 'en';
+    }
+    return locale.toLowerCase();
 }

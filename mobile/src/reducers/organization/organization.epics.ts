@@ -34,7 +34,7 @@ export const loadEmployeeEpic$ = (action$: ActionsObservable<LoadEmployees>, _: 
     mergeMap(action => {
         const employeeIds = Set(action.employeeIds);
         const requests = employeeIds.toArray().map(employeeId => {
-            return deps.apiClient.getJSON(`/employees/${employeeId}`).pipe(
+            return deps.apiClient.getJSON<Object>(`/employees/${employeeId}`).pipe(
                 map(obj => deserialize(obj, Employee)),
                 handleHttpErrors<Employee>(),
             );

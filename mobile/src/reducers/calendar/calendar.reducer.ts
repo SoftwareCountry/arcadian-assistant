@@ -56,7 +56,7 @@ export const calendarEpics = combineEpics(
     approve$,
     loadApprovals$);
 
-export const calendarReducer = combineReducers<CalendarState>({
+export const calendarReducer = combineReducers<CalendarState | undefined>({
     calendarEvents: calendarEventsReducer,
     eventDialog: eventDialogReducer,
     pendingRequests: pendingRequestsReducer

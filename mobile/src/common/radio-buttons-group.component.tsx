@@ -32,15 +32,8 @@ class RadioButtonComponent extends React.Component<RadioButtonProps> {
     public render() {
         const opacity = this.props.disabled ? 0.2 : 1;
 
-        let layout: RegisteredStyle<ViewStyle>;
-        let textStyle: RegisteredStyle<TextStyle>;
-        if (this.props.layout === 'column') {
-            layout = radioButtonsGroupStyles.view.layoutColumn;
-            textStyle = radioButtonsGroupStyles.view.textColumn;
-        } else {
-            layout = radioButtonsGroupStyles.view.layoutRow;
-            textStyle = radioButtonsGroupStyles.view.textRow;
-        }
+        const layout = this.props.layout === 'column' ? radioButtonsGroupStyles.view.layoutColumn : radioButtonsGroupStyles.view.layoutRow;
+        const textStyle = this.props.layout === 'column' ? radioButtonsGroupStyles.view.textColumn : radioButtonsGroupStyles.view.textRow;
 
         return (
             <TouchableOpacity

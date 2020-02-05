@@ -9,6 +9,6 @@ export interface HelpDeskState {
 
 export const helpDeskEpics = combineEpics(loadTicketTemplatesEpic$);
 
-export const helpDeskReducer = combineReducers<HelpDeskState>({
+export const helpDeskReducer = combineReducers<HelpDeskState | undefined>({
     ticketTemplates: ticketTemplatesReducer,
 });

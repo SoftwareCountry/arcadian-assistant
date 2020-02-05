@@ -1,6 +1,5 @@
 import { Action } from 'redux';
 import { TicketTemplate } from './ticket-template.model';
-import { LoadTicketTemplates } from './tickets.actions';
 
 export interface LoadTicketTemplates extends Action {
     type: 'LOAD-TICKET-TEMPLATES';

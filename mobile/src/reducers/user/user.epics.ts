@@ -32,7 +32,7 @@ import { DepartmentFeatures } from './department-features.model';
 //----------------------------------------------------------------------------
 export const loadUserEpic$ = (action$: ActionsObservable<LoadUser>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType(UserActionType.loadUser).pipe(
-        switchMap(x => deps.apiClient.getJSON(`/user`).pipe(handleHttpErrors(false))),
+        switchMap(x => deps.apiClient.getJSON<Object>(`/user`).pipe(handleHttpErrors(false))),
         map(x => deserialize(x, User)),
         mergeMap(x => of(loadUserFinished(x.employeeId), loadUserPreferences(x.employeeId), loadUserDepartmentFeatures())),
         catchError(e => of(startLogoutProcess())));
@@ -40,7 +40,7 @@ export const loadUserEpic$ = (action$: ActionsObservable<LoadUser>, _: StateObse
 //----------------------------------------------------------------------------
 export const loadUserFinishedEpic$ = (action$: ActionsObservable<LoadUserFinished>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType(UserActionType.loadUserFinished).pipe(
-        switchMap(x => deps.apiClient.getJSON(`/employees/${x.userEmployeeId}`).pipe(handleHttpErrors(false))),
+        switchMap(x => deps.apiClient.getJSON<Object>(`/employees/${x.userEmployeeId}`).pipe(handleHttpErrors(false))),
         map(obj => deserialize(obj, Employee)),
         map(z => loadUserEmployeeFinished(z)),
         catchError(e => of(startLogoutProcess())));
@@ -48,7 +48,7 @@ export const loadUserFinishedEpic$ = (action$: ActionsObservable<LoadUserFinishe
 //----------------------------------------------------------------------------
 export const loadUserEmployeePermissionsEpic$ = (action$: ActionsObservable<LoadUserEmployeePermissions>, _: StateObservable<AppState>, deps: DependenciesContainer) =>
     action$.ofType(UserActionType.loadUserEmployeePermissions).pipe(
-        switchMap(x => deps.apiClient.getJSON(`/user/permissions/${x.employeeId}`).pipe(handleHttpErrors(false))),
+        switchMap(x => deps.apiClient.getJSON<Object>(`/user/permissions/${x.employeeId}`).pipe(handleHttpErrors(false))),
         map(obj => deserialize(obj, UserEmployeePermissions)),
         map(x => loadUserEmployeePermissionsFinished(x)),
         catchError(e => of(startLogoutProcess())));
@@ -56,7 +56,7 @@ export const loadUserEmployeePermissionsEpic$ = (action$: ActionsObservable<Load
 //----------------------------------------------------------------------------
 export const loadUserPreferencesEpic$ = (action$: ActionsObservable<LoadUserPreferences>, appState: AppState, deps: DependenciesContainer) =>
     action$.ofType(UserActionType.loadUserPreferences).pipe(
-        switchMap(() => deps.apiClient.getJSON(`/user-preferences/`)
+        switchMap(() => deps.apiClient.getJSON<Object>(`/user-preferences/`)
             .pipe(handleHttpErrors(false))),
         map(obj => deserialize(obj, UserPreferences)),
         map(response => loadUserPreferencesFinished(response)),
@@ -78,7 +78,7 @@ export const updateUserPreferencesEpic$ = (action$: ActionsObservable<UpdateUser
 //----------------------------------------------------------------------------
 export const loadUserDepartmentFeaturesEpic$ = (action$: ActionsObservable<LoadUserDepartmentFeatures>, appState: AppState, deps: DependenciesContainer) =>
     action$.ofType(UserActionType.loadUserDepartmentFeatures).pipe(
-        switchMap(() => deps.apiClient.getJSON(`/user-department-features/`).pipe(handleHttpErrors(false))),
+        switchMap(() => deps.apiClient.getJSON<Object>(`/user-department-features/`).pipe(handleHttpErrors(false))),
         map(obj => deserialize(obj, DepartmentFeatures)),
         map(features => loadUserDepartmentFeaturesFinished(features)),
         catchError(e => of(startLogoutProcess())));
