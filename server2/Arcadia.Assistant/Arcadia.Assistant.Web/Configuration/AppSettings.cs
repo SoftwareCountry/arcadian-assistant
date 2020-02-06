@@ -1,7 +1,7 @@
-﻿using Arcadia.Assistant.Logging;
-
-namespace Arcadia.Assistant.Web.Configuration
+﻿namespace Arcadia.Assistant.Web.Configuration
 {
+    using Logging;
+
     public class AppSettings
     {
         public ConfigPackageSettings Config { get; set; } = new ConfigPackageSettings();

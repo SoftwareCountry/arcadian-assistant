@@ -1,16 +1,14 @@
-﻿@model Arcadia.Assistant.Web.Models.HomeViewModel
+﻿@model HomeViewModel
 
 <style>
     .ios-content {
-        width: 100%;
-        height: 100%;
         display: flex;
         flex-direction: column;
+        height: 100%;
+        width: 100%;
     }
 
-    .installation-steps {
-        margin-top: 30px;
-    }
+    .installation-steps { margin-top: 30px; }
 
     .screenshots-container {
         display: flex;
@@ -19,35 +17,27 @@
 
     .screenshot {
         display: inline-block;
-        position: relative;
         flex-basis: 100%;
-        margin: 0 10px 10px 0;
         height: 300px;
+        margin: 0 10px 10px 0;
         max-width: 150px;
+        position: relative;
     }
 
     .screenshot img {
+        height: 100%;
         position: absolute;
         width: 100%;
-        height: 100%;
     }
 
     @@media screen and (max-width: 499px) {
-        .ios-content {
-            margin-top: 30px;
-        }
+        .ios-content { margin-top: 30px; }
 
-        .download-block-container {
-            text-align: center;
-        }
+        .download-block-container { text-align: center; }
 
-        .installation-steps {
-            text-align: center;
-        }
+        .installation-steps { text-align: center; }
 
-        .screenshots-container {
-            justify-content: space-evenly;
-        }
+        .screenshots-container { justify-content: space-evenly; }
     }
 
     .version {
@@ -61,7 +51,7 @@
         <div class="download-block">
             <div>
                 <a href="itms-services://?action=download-manifest&url=@Model.ManifestLink">
-                    <img src="~/images/download_ios.svg" alt="Download for iOS" />
+                    <img src="~/images/download_ios.svg" alt="Download for iOS"/>
                 </a>
                 <div class="version">Version:&nbsp; @Model.Version &nbsp;</div>
             </div>
@@ -76,22 +66,22 @@
     <h3 class="installation-steps">Installation steps</h3>
     <div class="screenshots-container">
         <div class="screenshot">
-            <img src="~/images/ios-installation-screenshots/step_1.png" />
+            <img src="~/images/ios-installation-screenshots/step_1.png"/>
         </div>
         <div class="screenshot">
-            <img src="~/images/ios-installation-screenshots/step_2.png" />
+            <img src="~/images/ios-installation-screenshots/step_2.png"/>
         </div>
         <div class="screenshot">
-            <img src="~/images/ios-installation-screenshots/step_3.png" />
+            <img src="~/images/ios-installation-screenshots/step_3.png"/>
         </div>
         <div class="screenshot">
-            <img src="~/images/ios-installation-screenshots/step_4.png" />
+            <img src="~/images/ios-installation-screenshots/step_4.png"/>
         </div>
         <div class="screenshot">
-            <img src="~/images/ios-installation-screenshots/step_5.png" />
+            <img src="~/images/ios-installation-screenshots/step_5.png"/>
         </div>
         <div class="screenshot">
-            <img src="~/images/ios-installation-screenshots/step_6.png" />
+            <img src="~/images/ios-installation-screenshots/step_6.png"/>
         </div>
     </div>
 </div>

@@ -1,7 +1,6 @@
 ﻿namespace Arcadia.Assistant.Web.Models.Calendar
 {
     using System;
-    using System.ComponentModel.DataAnnotations;
     using System.Runtime.Serialization;
 
     [DataContract]

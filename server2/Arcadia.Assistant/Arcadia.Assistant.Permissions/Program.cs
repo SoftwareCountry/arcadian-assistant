@@ -2,12 +2,15 @@ namespace Arcadia.Assistant.Permissions
 {
     using System;
     using System.Diagnostics;
+    using System.Fabric;
     using System.Threading;
 
     using Autofac;
     using Autofac.Integration.ServiceFabric;
 
     using Employees.Contracts;
+
+    using Logging;
 
     using Microsoft.ServiceFabric.Services.Remoting.Client;
     using Microsoft.ServiceFabric.Services.Runtime;
@@ -23,16 +26,15 @@ namespace Arcadia.Assistant.Permissions
         {
             try
             {
-                // The ServiceManifest.XML file defines one or more service type names.
-                // Registering a service maps a service type name to a .NET type.
-                // When Service Fabric creates an instance of this service type,
-                // an instance of the class is created in this host process.
+                var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
+
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterStatelessService<Permissions>("Arcadia.Assistant.PermissionsType");
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
                 builder.RegisterModule(new EmployeesModule());
                 builder.RegisterModule(new OrganizationModule());
+                builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using (builder.Build())
                 {

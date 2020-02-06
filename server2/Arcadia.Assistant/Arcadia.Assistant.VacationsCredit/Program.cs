@@ -12,6 +12,8 @@ namespace Arcadia.Assistant.VacationsCredit
 
     using Inbox.Contracts;
 
+    using Logging;
+
     using Microsoft.ServiceFabric.Services.Remoting.Client;
 
     internal static class Program
@@ -39,6 +41,7 @@ namespace Arcadia.Assistant.VacationsCredit
                 builder.RegisterModule(new InboxModule());
                 builder.RegisterType<VacationsDaysEmailsLoader>().As<IVacationsDaysLoader>();
                 builder.RegisterInstance(inboxConfiguration);
+                builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using (builder.Build())
                 {

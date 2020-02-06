@@ -10,6 +10,8 @@ namespace Arcadia.Assistant.SickLeaves
 
     using CSP;
 
+    using Logging;
+
     using Microsoft.ServiceFabric.Services.Remoting.Client;
     using Microsoft.ServiceFabric.Services.Runtime;
 
@@ -38,7 +40,7 @@ namespace Arcadia.Assistant.SickLeaves
                 builder.RegisterType<SickLeaveCreationStep>().AsSelf();
                 builder.RegisterType<SickLeaveProlongationStep>().AsSelf();
                 builder.RegisterModule(new CspModule(connectionString));
-
+                builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using (builder.Build())
                 {

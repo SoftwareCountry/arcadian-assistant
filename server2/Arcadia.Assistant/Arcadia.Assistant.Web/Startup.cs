@@ -2,18 +2,17 @@
 {
     using System.Collections.Generic;
     using System.Fabric;
-    using System.Linq;
     using System.Text.Json.Serialization;
-    using Arcadia.Assistant.Logging;
+
     using Autofac;
-    using Autofac.Integration.ServiceFabric;
+
     using Avatars.Contracts;
 
     using Configuration;
 
-    using Controllers.Builds;
-
     using Employees.Contracts;
+
+    using Logging;
 
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
@@ -22,7 +21,6 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Actors.Client;
     using Microsoft.ServiceFabric.AspNetCore.Configuration;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
@@ -51,7 +49,9 @@
 
     public class Startup
     {
-        public Startup(IWebHostEnvironment env)
+        private readonly StatelessServiceContext serviceContext;
+
+        public Startup(IWebHostEnvironment env, StatelessServiceContext serviceContext)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -60,6 +60,7 @@
                 .AddServiceFabricConfiguration()
                 .AddEnvironmentVariables();
             this.AppSettings = builder.Build().Get<AppSettings>();
+            this.serviceContext = serviceContext;
         }
 
         public AppSettings AppSettings { get; }
@@ -116,6 +117,7 @@
         public void ConfigureContainer(ContainerBuilder builder)
         {
             builder.RegisterInstance(this.AppSettings);
+            builder.RegisterInstance(this.serviceContext).As<ServiceContext>();
             builder.RegisterInstance<IHelpSettings>(this.AppSettings.Config.Links);
             builder.RegisterInstance<ISslSettings>(this.AppSettings.Config.Ssl);
             builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
@@ -131,6 +133,7 @@
             builder.RegisterModule(new SickLeavesModule());
             builder.RegisterModule(new PendingActionsModule());
             builder.RegisterModule(new MobileBuildModule());
+            builder.RegisterServiceLogging(new LoggerSettings(this.AppSettings.Config.Logging.ApplicationInsightsKey));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -4,7 +4,7 @@ namespace Arcadia.Assistant.Organization
     using System.Diagnostics;
     using System.Fabric;
     using System.Threading;
-
+    using Arcadia.Assistant.Logging;
     using Autofac;
     using Autofac.Integration.ServiceFabric;
 
@@ -38,6 +38,7 @@ namespace Arcadia.Assistant.Organization
                 builder.RegisterType<OrganizationDepartmentsQuery>();
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
                 builder.RegisterModule(new EmployeesModule());
+                builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using (builder.Build())
                 {

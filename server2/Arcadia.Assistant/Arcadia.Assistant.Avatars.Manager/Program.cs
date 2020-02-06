@@ -14,6 +14,8 @@ namespace Arcadia.Assistant.Avatars.Manager
 
     using CSP;
 
+    using Logging;
+
     using Microsoft.ServiceFabric.Actors.Client;
 
     internal static class Program
@@ -39,6 +41,7 @@ namespace Arcadia.Assistant.Avatars.Manager
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
                 builder.RegisterModule(new AvatarsModule());
+                builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 builder.RegisterStatelessService<Manager>("Arcadia.Assistant.Avatars.ManagerType");
 

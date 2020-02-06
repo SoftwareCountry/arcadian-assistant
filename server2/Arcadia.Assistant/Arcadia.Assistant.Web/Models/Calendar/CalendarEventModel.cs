@@ -10,6 +10,17 @@
     [DataContract]
     public class CalendarEventModel
     {
+        public CalendarEventModel()
+        {
+        }
+
+        public CalendarEventModel(string type, DatesPeriodModel dates, string status)
+        {
+            this.Type = type;
+            this.Dates = dates;
+            this.Status = status;
+        }
+
         [Required]
         [CalendarEventTypeValidator]
         [DataMember]
@@ -23,16 +34,5 @@
         [CalendarEventStatusValidator]
         [DataMember]
         public string Status { get; set; } = string.Empty;
-
-        public CalendarEventModel()
-        {
-        }
-
-        public CalendarEventModel(string type, DatesPeriodModel dates, string status)
-        {
-            this.Type = type;
-            this.Dates = dates;
-            this.Status = status;
-        }
     }
 }

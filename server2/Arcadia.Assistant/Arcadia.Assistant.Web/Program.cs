@@ -2,14 +2,9 @@ namespace Arcadia.Assistant.Web
 {
     using System;
     using System.Diagnostics;
-    using System.Fabric;
     using System.Threading;
-    using Arcadia.Assistant.Logging;
-    using Microsoft.ServiceFabric.Services.Runtime;
-    using ServiceFabric.Logging;
 
-    using Microsoft.Extensions.Logging;
-    using ServiceFabric.Logging.Extensions;
+    using Microsoft.ServiceFabric.Services.Runtime;
 
     internal static class Program
     {
@@ -20,17 +15,8 @@ namespace Arcadia.Assistant.Web
         {
             try
             {
-                var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
-                var loggerSettings = new LoggerSettings(configurationPackage.Settings.Sections["Logging"]);
-
                 ServiceRuntime.RegisterServiceAsync("Arcadia.Assistant.WebType",
-                    context =>
-                    {
-                        var loggerFactory = new LoggerFactoryBuilder(context).CreateLoggerFactory(loggerSettings.ApplicationInsightsKey);
-                        var logger = loggerFactory.CreateLogger<Web>();
-
-                        return new Web(context, logger);
-                    }).GetAwaiter().GetResult();
+                    context => new Web(context)).GetAwaiter().GetResult();
 
                 ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(Web).Name);
 

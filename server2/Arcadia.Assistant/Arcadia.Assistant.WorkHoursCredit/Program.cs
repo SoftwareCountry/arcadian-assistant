@@ -2,10 +2,13 @@ namespace Arcadia.Assistant.WorkHoursCredit
 {
     using System;
     using System.Diagnostics;
+    using System.Fabric;
     using System.Threading;
 
     using Autofac;
     using Autofac.Integration.ServiceFabric;
+
+    using Logging;
 
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
@@ -23,10 +26,12 @@ namespace Arcadia.Assistant.WorkHoursCredit
         {
             try
             {
+                var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
+
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterStatelessService<WorkHoursCredit>("Arcadia.Assistant.WorkHoursCreditType");
-
+                builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 builder.Register((c) =>
                 {

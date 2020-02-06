@@ -10,6 +10,8 @@ namespace Arcadia.Assistant.Employees
 
     using CSP;
 
+    using Logging;
+
     internal static class Program
     {
         /// <summary>
@@ -31,6 +33,7 @@ namespace Arcadia.Assistant.Employees
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterStatelessService<Employees>("Arcadia.Assistant.EmployeesType");
                 builder.RegisterModule(new CspModule(connectionString));
+                builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using (builder.Build())
                 {

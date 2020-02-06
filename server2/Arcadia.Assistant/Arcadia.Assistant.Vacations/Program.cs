@@ -4,7 +4,7 @@ namespace Arcadia.Assistant.Vacations
     using System.Diagnostics;
     using System.Fabric;
     using System.Threading;
-
+    using Arcadia.Assistant.Logging;
     using Autofac;
     using Autofac.Integration.ServiceFabric;
 
@@ -40,6 +40,7 @@ namespace Arcadia.Assistant.Vacations
                 builder.RegisterType<VacationChangesWatcher>().SingleInstance();
                 builder.RegisterType<VacationChangesCheck>().SingleInstance();
                 builder.RegisterModule(new CspModule(connectionString));
+                builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using (builder.Build())
                 {

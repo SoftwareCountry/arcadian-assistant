@@ -12,6 +12,8 @@ namespace Arcadia.Assistant.PendingActions
 
     using Employees.Contracts;
 
+    using Logging;
+
     using Microsoft.ServiceFabric.Services.Remoting.Client;
 
     using Organization.Contracts;
@@ -29,6 +31,8 @@ namespace Arcadia.Assistant.PendingActions
         {
             try
             {
+                var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
+
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterStatelessService<PendingActions>("Arcadia.Assistant.PendingActionsType");
@@ -37,6 +41,7 @@ namespace Arcadia.Assistant.PendingActions
                 builder.RegisterModule<WorkHoursCreditModule>();
                 builder.RegisterModule<EmployeesModule>();
                 builder.RegisterModule<OrganizationModule>();
+                builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using (builder.Build())
                 {

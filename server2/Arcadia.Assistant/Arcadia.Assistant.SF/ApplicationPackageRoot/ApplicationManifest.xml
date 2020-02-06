@@ -86,7 +86,15 @@
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.PendingActionsPkg" ServiceManifestVersion="1.0.0" />
-    <ConfigOverrides />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.VacationsPkg" ServiceManifestVersion="1.0.0" />
@@ -95,6 +103,9 @@
         <Settings>
           <Section Name="Csp">
             <Parameter Name="ConnectionString" Value="[Arcadia.Assistant.Csp_ConnectionString]" />
+          </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
           </Section>
         </Settings>
       </ConfigOverride>
@@ -107,6 +118,9 @@
         <Settings>
           <Section Name="Csp">
             <Parameter Name="ConnectionString" Value="[Arcadia.Assistant.Csp_ConnectionString]" />
+          </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
           </Section>
         </Settings>
       </ConfigOverride>
@@ -123,6 +137,9 @@
             <Parameter Name="Password" Value="[Arcadia.Assistant.Imap_Password]" />
             <Parameter Name="User" Value="[Arcadia.Assistant.Imap_User]" />
           </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
         </Settings>
       </ConfigOverride>
     </ConfigOverrides>
@@ -138,20 +155,48 @@
             <Parameter Name="Subject" Value="[Arcadia.Assistant.VacationsCredit_Subject]" />
             <Parameter Name="RefreshIntervalMinutes" Value="[Arcadia.Assistant.VacationsCredit_RefreshIntervalMinutes]" />
           </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
         </Settings>
       </ConfigOverride>
     </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.WorkHoursCreditPkg" ServiceManifestVersion="1.0.0" />
-    <ConfigOverrides />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.UserPreferencesPkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.PermissionsPkg" ServiceManifestVersion="1.0.0" />
-    <ConfigOverrides />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.EmployeesPkg" ServiceManifestVersion="1.0.0" />
@@ -160,6 +205,9 @@
         <Settings>
           <Section Name="Csp">
             <Parameter Name="ConnectionString" Value="[Arcadia.Assistant.Csp_ConnectionString]" />
+          </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
           </Section>
         </Settings>
       </ConfigOverride>
@@ -173,12 +221,24 @@
           <Section Name="Csp">
             <Parameter Name="ConnectionString" Value="[Arcadia.Assistant.Csp_ConnectionString]" />
           </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
         </Settings>
       </ConfigOverride>
     </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.AvatarsPkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.OrganizationPkg" ServiceManifestVersion="1.0.0" />
@@ -187,6 +247,9 @@
         <Settings>
           <Section Name="Csp">
             <Parameter Name="ConnectionString" Value="[Arcadia.Assistant.Csp_ConnectionString]" />
+          </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
           </Section>
         </Settings>
       </ConfigOverride>

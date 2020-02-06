@@ -1,8 +1,6 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers.Builds
 {
-    using System;
     using System.Collections.Generic;
-    using System.Fabric;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -16,14 +14,14 @@
     [ApiExplorerSettings(IgnoreApi = true)]
     public class GetFileWebController : Controller
     {
-        private readonly IMobileBuildActorFactory mobileBuildActor;
-        private readonly ILogger logger;
-
         private readonly Dictionary<DeviceType, string> fileContentTypeByDeviceType = new Dictionary<DeviceType, string>
         {
             [DeviceType.Android] = "application/vnd.android.package-archive",
             [DeviceType.Ios] = "application/octet-stream"
         };
+
+        private readonly ILogger logger;
+        private readonly IMobileBuildActorFactory mobileBuildActor;
 
         public GetFileWebController(
             IMobileBuildActorFactory mobileBuildActor,

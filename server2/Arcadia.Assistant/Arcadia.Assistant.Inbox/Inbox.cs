@@ -14,6 +14,7 @@ namespace Arcadia.Assistant.Inbox
     using MailKit.Net.Imap;
     using MailKit.Search;
 
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
@@ -23,21 +24,23 @@ namespace Arcadia.Assistant.Inbox
     /// <summary>
     ///     An instance of this class is created for each service instance by the Service Fabric runtime.
     /// </summary>
-    internal sealed class Inbox : StatelessService, IInbox
+    public class Inbox : StatelessService, IInbox
     {
         private readonly ImapConfiguration imapConfiguration;
+        private readonly ILogger logger;
 
-        public Inbox(StatelessServiceContext context, ImapConfiguration imapConfiguration)
+        public Inbox(StatelessServiceContext context, ImapConfiguration imapConfiguration, ILogger logger)
             : base(context)
         {
             this.imapConfiguration = imapConfiguration;
+            this.logger = logger;
         }
 
         public async Task<Email[]> GetEmailsAsync(EmailSearchQuery query, CancellationToken cancellationToken)
         {
-            //this.logger.Debug("Loading inbox emails started");
+            this.logger.LogDebug("Loading inbox emails started");
 
-            //this.logger.Debug($"Inbox emails query: {query}");
+            this.logger.LogDebug($"Inbox emails query: {query}");
 
             using (var client = new ImapClient())
             {
@@ -82,7 +85,7 @@ namespace Arcadia.Assistant.Inbox
                         .ToList();
                 }
 
-                //   this.logger.Debug($"Total messages loaded: {messages.Count}");
+                this.logger.LogDebug($"Total messages loaded: {messages.Count}");
 
                 var emails = this.ConvertMessages(client, messages);
 
