@@ -38,5 +38,19 @@ namespace Arcadia.Assistant.Logging
 
             builder.RegisterGeneric(typeof(Logger<>)).As(typeof(ILogger<>)).InstancePerDependency();
         }
+
+        public static void RegisterServiceLogging(
+            this ContainerBuilder builder,
+            LoggerSettings loggerSettings,
+            ServiceContext context)
+        {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+
+            var loggerFactoryBuilder = new LoggerFactoryBuilder(context);
+            var loggerFactory = loggerFactoryBuilder.CreateLoggerFactory(loggerSettings.ApplicationInsightsKey);
+            builder.Register(x => loggerFactory).As<ILoggerFactory>().SingleInstance();
+            builder.RegisterGeneric(typeof(Logger<>)).As(typeof(ILogger<>)).InstancePerDependency();
+        }
     }
 }

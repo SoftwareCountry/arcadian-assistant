@@ -117,7 +117,6 @@
         public void ConfigureContainer(ContainerBuilder builder)
         {
             builder.RegisterInstance(this.AppSettings);
-            builder.RegisterInstance(this.serviceContext).As<ServiceContext>();
             builder.RegisterInstance<IHelpSettings>(this.AppSettings.Config.Links);
             builder.RegisterInstance<ISslSettings>(this.AppSettings.Config.Ssl);
             builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
@@ -133,7 +132,7 @@
             builder.RegisterModule(new SickLeavesModule());
             builder.RegisterModule(new PendingActionsModule());
             builder.RegisterModule(new MobileBuildModule());
-            builder.RegisterServiceLogging(new LoggerSettings(this.AppSettings.Config.Logging.ApplicationInsightsKey));
+            builder.RegisterServiceLogging(new LoggerSettings(this.AppSettings.Config.Logging.ApplicationInsightsKey), this.serviceContext);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

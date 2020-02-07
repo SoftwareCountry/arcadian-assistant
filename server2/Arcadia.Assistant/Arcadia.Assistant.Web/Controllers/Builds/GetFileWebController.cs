@@ -25,7 +25,7 @@
 
         public GetFileWebController(
             IMobileBuildActorFactory mobileBuildActor,
-            ILogger logger)
+            ILogger<GetFileWebController> logger)
         {
             this.mobileBuildActor = mobileBuildActor;
             this.logger = logger;
