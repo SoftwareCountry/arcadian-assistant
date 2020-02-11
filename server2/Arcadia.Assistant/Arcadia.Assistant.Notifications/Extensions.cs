@@ -6,11 +6,13 @@
 
     public static class Extensions
     {
-        public static DeviceToken ToDeviceToken(this DeviceRegistryItem item) =>
-            new DeviceToken()
+        public static DeviceToken ToDeviceToken(this DeviceRegistryItem item)
+        {
+            return new DeviceToken
             {
                 DeviceId = item.DeviceId,
                 DeviceType = item.DeviceType
             };
+        }
     }
 }

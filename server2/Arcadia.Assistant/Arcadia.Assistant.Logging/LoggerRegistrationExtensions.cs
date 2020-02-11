@@ -1,11 +1,14 @@
-﻿using Autofac;
-using Microsoft.Extensions.Logging;
-using ServiceFabric.Logging;
-using System;
-using System.Fabric;
-
-namespace Arcadia.Assistant.Logging
+﻿namespace Arcadia.Assistant.Logging
 {
+    using System;
+    using System.Fabric;
+
+    using Autofac;
+
+    using Microsoft.Extensions.Logging;
+
+    using ServiceFabric.Logging;
+
     public static class LoggerRegistrationExtensions
     {
         public static void RegisterServiceLogging(
@@ -13,7 +16,9 @@ namespace Arcadia.Assistant.Logging
             LoggerSettings loggerSettings)
         {
             if (builder == null)
+            {
                 throw new ArgumentNullException(nameof(builder));
+            }
 
             builder.Register((x, p) =>
                 {
@@ -45,7 +50,9 @@ namespace Arcadia.Assistant.Logging
             ServiceContext context)
         {
             if (builder == null)
+            {
                 throw new ArgumentNullException(nameof(builder));
+            }
 
             var loggerFactoryBuilder = new LoggerFactoryBuilder(context);
             var loggerFactory = loggerFactoryBuilder.CreateLoggerFactory(loggerSettings.ApplicationInsightsKey);

@@ -1,22 +1,21 @@
-using System;
-using System.Diagnostics;
-using System.Fabric;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.ServiceFabric.Services.Remoting.Client;
-using Microsoft.ServiceFabric.Services.Runtime;
-
 namespace Arcadia.Assistant.Notifications
 {
+    using System;
+    using System.Diagnostics;
+    using System.Fabric;
+    using System.Threading;
+
     using Autofac;
-    using Autofac.Extensions.DependencyInjection;
     using Autofac.Integration.ServiceFabric;
 
     using DeviceRegistry.Contracts;
 
     using Interfaces;
 
-    using Microsoft.Extensions.DependencyInjection;
+    using Logging;
+
+    using Microsoft.Extensions.Logging;
+    using Microsoft.ServiceFabric.Services.Remoting.Client;
 
     using Models;
 
@@ -25,16 +24,14 @@ namespace Arcadia.Assistant.Notifications
     internal static class Program
     {
         /// <summary>
-        /// This is the entry point of the service host process.
+        ///     This is the entry point of the service host process.
         /// </summary>
         private static void Main()
         {
+            ILogger? logger = null;
             try
             {
                 var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
-
-                var services = new ServiceCollection();
-                services.AddHttpClient();
 
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
@@ -43,16 +40,17 @@ namespace Arcadia.Assistant.Notifications
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
                 builder.RegisterModule<DeviceRegistryModule>();
                 builder.RegisterModule<PushNotificationsModule>();
-                builder.Populate(services);
+                builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
-                using (builder.Build())
-                {
-                    Thread.Sleep(Timeout.Infinite);
-                }
+                using var container = builder.Build();
+                logger = container.TryResolve(out ILogger val) ? val : null;
+                logger?.LogInformation($"Service type '{typeof(Notifications).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
+                Thread.Sleep(Timeout.Infinite);
             }
             catch (Exception e)
             {
                 ServiceEventSource.Current.ServiceHostInitializationFailed(e.ToString());
+                logger?.LogCritical(e, e.Message);
                 throw;
             }
         }

@@ -1,7 +1,8 @@
 ﻿namespace Arcadia.Assistant.PushNotifications.Models
 {
-    using Interfaces;
     using System.Fabric.Description;
+
+    using Interfaces;
 
     public class PushSettings : IPushSettings
     {

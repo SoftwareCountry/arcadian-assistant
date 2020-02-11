@@ -4,14 +4,15 @@ namespace Arcadia.Assistant.DeviceRegistry
     using System.Collections.Generic;
     using System.Fabric;
     using System.Linq;
-    using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
-    using Arcadia.Assistant.DeviceRegistry.Contracts.Models;
+
     using Castle.Core.Internal;
 
     using Contracts;
+    using Contracts.Models;
 
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Data.Collections;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
@@ -25,39 +26,20 @@ namespace Arcadia.Assistant.DeviceRegistry
     {
         private const string DeviceRegistryKey = "device_tokens";
         private const string DeviceOwnersRegistryKey = "device_employee";
+        private readonly ILogger logger;
         private readonly int OperationTimeout = 5;
 
-        private sealed class DeviceRegistrationInfo
-        {
-            public EmployeeId OwnerId { get; }
-
-            public string DeviceType { get; }
-
-            public DeviceRegistrationInfo(EmployeeId ownerId, string deviceType)
-            {
-                this.OwnerId = ownerId;
-                this.DeviceType = deviceType;
-            }
-        }
-
-        public DeviceRegistry(StatefulServiceContext context)
+        public DeviceRegistry(StatefulServiceContext context, ILogger logger)
             : base(context)
         {
-            this.Timeout = TimeSpan.FromMinutes(OperationTimeout);
+            this.Timeout = TimeSpan.FromMinutes(this.OperationTimeout);
+            this.logger = logger;
         }
 
         private TimeSpan Timeout { get; }
 
         public async Task RegisterDevice(string employeeId, string deviceId, string deviceType, CancellationToken cancellationToken)
         {
-            /// TODO: check this functionality
-            /*
-            if (!PushDeviceTypes.IsKnownType(message.DeviceType))
-            {
-                return;
-            }
-            */
-
             var newDeviceItem = new DeviceRegistryItem
             {
                 DeviceId = deviceId,
@@ -146,7 +128,7 @@ namespace Arcadia.Assistant.DeviceRegistry
 
         public async Task<IEnumerable<DeviceRegistryItem>> GetDeviceRegistryByEmployee(string employeeId, CancellationToken cancellationToken)
         {
-            return await GetEmployeeDeviceRegistry(new EmployeeId(employeeId), cancellationToken);
+            return await this.GetEmployeeDeviceRegistry(new EmployeeId(employeeId), cancellationToken);
         }
 
         public async Task<Dictionary<string, IEnumerable<DeviceRegistryItem>>> GetDeviceRegistryByEmployeeList(IEnumerable<string> employeeIds, CancellationToken cancellationToken)
@@ -158,7 +140,8 @@ namespace Arcadia.Assistant.DeviceRegistry
                 {
                     return new Dictionary<string, IEnumerable<DeviceRegistryItem>>();
                 }
-                result.Add(id, await GetEmployeeDeviceRegistry(new EmployeeId(id), cancellationToken));
+
+                result.Add(id, await this.GetEmployeeDeviceRegistry(new EmployeeId(id), cancellationToken));
             }
 
             return result;
@@ -166,7 +149,7 @@ namespace Arcadia.Assistant.DeviceRegistry
 
         public async Task<IEnumerable<DeviceRegistryItem>> GetDeviceRegistryByEmployeeAndType(string employeeId, string deviceType, CancellationToken cancellationToken)
         {
-            return (await GetEmployeeDeviceRegistry(new EmployeeId(employeeId), cancellationToken))
+            return (await this.GetEmployeeDeviceRegistry(new EmployeeId(employeeId), cancellationToken))
                 .Where(x => x.DeviceType == deviceType);
         }
 
@@ -191,6 +174,19 @@ namespace Arcadia.Assistant.DeviceRegistry
         protected override IEnumerable<ServiceReplicaListener> CreateServiceReplicaListeners()
         {
             return new ServiceReplicaListener[0];
+        }
+
+        private sealed class DeviceRegistrationInfo
+        {
+            public DeviceRegistrationInfo(EmployeeId ownerId, string deviceType)
+            {
+                this.OwnerId = ownerId;
+                this.DeviceType = deviceType;
+            }
+
+            public EmployeeId OwnerId { get; }
+
+            public string DeviceType { get; }
         }
     }
 }

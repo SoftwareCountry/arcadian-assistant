@@ -69,6 +69,9 @@
           <Section Name="Notifications">
             <Parameter Name="EnablePush" Value="[Arcadia.Assistant.Notifications_EnablePush]" />
           </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
         </Settings>
       </ConfigOverride>
     </ConfigOverrides>
@@ -83,13 +86,24 @@
             <Parameter Name="AndroidPushUrl" Value="[Arcadia.Assistant.PushNotifications_AndroidPushUrl]" />
             <Parameter Name="IosPushUrl" Value="[Arcadia.Assistant.PushNotifications_IosPushUrl]" />
           </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
         </Settings>
       </ConfigOverride>
     </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.DeviceRegistryPkg" ServiceManifestVersion="1.0.0" />
-    <ConfigOverrides />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.MobileBuildPkg" ServiceManifestVersion="1.0.0" />

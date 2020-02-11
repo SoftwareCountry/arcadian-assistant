@@ -1,7 +1,8 @@
 ﻿namespace Arcadia.Assistant.PushNotifications.Models
 {
-    using Arcadia.Assistant.PushNotifications.Contracts.Models;
     using System.Runtime.Serialization;
+
+    using Contracts.Models;
 
     [DataContract]
     public class PushNotificationPayload

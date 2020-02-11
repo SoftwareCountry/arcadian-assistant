@@ -1,7 +1,8 @@
 ﻿namespace Arcadia.Assistant.Notifications.Models
 {
-    using Interfaces;
     using System.Fabric.Description;
+
+    using Interfaces;
 
     public class NotificationSettings : INotificationSettings
     {
