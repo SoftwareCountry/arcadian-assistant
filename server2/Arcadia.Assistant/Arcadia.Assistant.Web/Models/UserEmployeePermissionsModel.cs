@@ -8,17 +8,17 @@
     [DataContract]
     public class UserEmployeePermissionsModel
     {
-        [DataMember]
-        public string EmployeeId { get; }
-
-        [DataMember]
-        public string[] PermissionsNames { get; }
-
         public UserEmployeePermissionsModel(string employeeId, EmployeePermissionsEntry employeePermissionsEntry)
         {
             this.EmployeeId = employeeId;
             this.PermissionsNames = this.ExtractPermissionNames(employeePermissionsEntry);
         }
+
+        [DataMember]
+        public string EmployeeId { get; }
+
+        [DataMember]
+        public string[] PermissionsNames { get; }
 
         private string[] ExtractPermissionNames(EmployeePermissionsEntry employeePermissionsEntry)
         {

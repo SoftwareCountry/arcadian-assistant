@@ -26,13 +26,13 @@
     [ApiController]
     public class CalendarEventsController : Controller
     {
-        private readonly IWorkHoursCredit workHoursCredit;
-        private readonly ISickLeaves sickLeaves;
         private readonly IEmployees employees;
-        private readonly IVacations vacations;
-        private readonly WorkHoursConverter workHoursConverter = new WorkHoursConverter();
+        private readonly ISickLeaves sickLeaves;
         private readonly SickLeavesConverter sickLeavesConverter = new SickLeavesConverter();
+        private readonly IVacations vacations;
         private readonly VacationsConverter vacationsConverter = new VacationsConverter();
+        private readonly WorkHoursConverter workHoursConverter = new WorkHoursConverter();
+        private readonly IWorkHoursCredit workHoursCredit;
 
         public CalendarEventsController(IWorkHoursCredit workHoursCredit, ISickLeaves sickLeaves, IEmployees employees, IVacations vacations)
         {
@@ -60,7 +60,6 @@
             return allEvents;
         }
 
-
         [Route("{eventId}")]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -83,7 +82,7 @@
                 {
                     return this.sickLeavesConverter.ToCalendarEvent(sickLeave);
                 }
-            } 
+            }
             else if (idConverter.TryParseVacationId(eventId, out var vacationId))
             {
                 var vacation = await this.vacations.GetCalendarEventAsync(new EmployeeId(employeeId), vacationId, token);
@@ -260,7 +259,6 @@
             {
                 return this.NotFound();
             }
-
 
             if (!Enum.TryParse<VacationStatus>(model.Status, out var newStatus))
             {

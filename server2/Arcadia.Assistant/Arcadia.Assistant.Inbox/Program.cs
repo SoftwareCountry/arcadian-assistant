@@ -4,7 +4,11 @@ namespace Arcadia.Assistant.Inbox
     using System.Diagnostics;
     using System.Fabric;
     using System.Threading;
+    using Arcadia.Assistant.Logging;
+    using Autofac;
+    using Autofac.Integration.ServiceFabric;
 
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Runtime;
 
     internal static class Program
@@ -14,28 +18,26 @@ namespace Arcadia.Assistant.Inbox
         /// </summary>
         private static void Main()
         {
+            ILogger? logger = null;
             try
             {
-                // The ServiceManifest.XML file defines one or more service type names.
-                // Registering a service maps a service type name to a .NET type.
-                // When Service Fabric creates an instance of this service type,
-                // an instance of the class is created in this host process.
-
                 var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
-                var imapSection = configurationPackage.Settings.Sections["IMAP"];
-                var imapConfiguration = new ImapConfiguration(imapSection);
 
-                ServiceRuntime.RegisterServiceAsync("Arcadia.Assistant.InboxType",
-                    context => new Inbox(context, imapConfiguration)).GetAwaiter().GetResult();
+                var builder = new ContainerBuilder();
+                builder.RegisterServiceFabricSupport();
+                builder.RegisterStatelessService<Inbox>("Arcadia.Assistant.InboxType");
+                builder.Register(x => new ImapConfiguration(configurationPackage.Settings.Sections["IMAP"])).AsSelf().SingleInstance();
+                builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
-                ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(Inbox).Name);
-
-                // Prevents this host process from terminating so services keep running.
+                using var container = builder.Build();
+                logger = container.TryResolve<ILogger>(out ILogger val) ? val : null;
+                logger?.LogInformation($"Service type '{typeof(Inbox).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
                 Thread.Sleep(Timeout.Infinite);
             }
             catch (Exception e)
             {
                 ServiceEventSource.Current.ServiceHostInitializationFailed(e.ToString());
+                logger?.LogCritical(e, e.Message);
                 throw;
             }
         }

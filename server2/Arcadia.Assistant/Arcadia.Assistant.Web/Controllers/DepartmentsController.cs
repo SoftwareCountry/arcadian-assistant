@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace Arcadia.Assistant.Web.Controllers
+﻿namespace Arcadia.Assistant.Web.Controllers
 {
     using System.Linq;
     using System.Threading;
@@ -9,6 +7,7 @@ namespace Arcadia.Assistant.Web.Controllers
     using Employees.Contracts;
 
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
 
     using Models;
 

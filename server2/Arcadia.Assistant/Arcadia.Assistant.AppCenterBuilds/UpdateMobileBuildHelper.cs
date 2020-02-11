@@ -9,6 +9,8 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Microsoft.Extensions.Logging;
+
     using MobileBuild.Contracts;
 
     using Models;
@@ -28,7 +30,7 @@
 
         #region public mehods
 
-        public async Task CheckAndUpdateMobileBuild(IHttpClientFactory httpClientFactory, IMobileBuildActor mobileBuildActor, CancellationToken cancellationToken, Action<string> logStore)
+        public async Task CheckAndUpdateMobileBuild(IHttpClientFactory httpClientFactory, IMobileBuildActor mobileBuildActor, CancellationToken cancellationToken, ILogger logStore)
         {
             var currentMobileBuildVersion = await mobileBuildActor.GetMobileBuildVersionAsync(cancellationToken);
             var appCenterLatestBuild = await this.GetLatestBuild(httpClientFactory);
@@ -44,12 +46,12 @@
                 var downloadModel = await this.GetBuildDownloadModel(appCenterLatestBuild, httpClientFactory);
                 var data = await this.GetBuildData(downloadModel, httpClientFactory);
                 await mobileBuildActor.SetMobileBuildData(appCenterLastBuildVersion, data, cancellationToken);
-                logStore($"Mobile build {appCenterLastBuildVersion} updated from {downloadModel.Uri}");
+                logStore.LogInformation($"Mobile build {appCenterLastBuildVersion} updated from {downloadModel.Uri}");
             }
             else
             {
                 // TO DO: Refactor for common logger using
-                logStore("The same version - nothing to do");
+                logStore.LogInformation("The same version - nothing to do");
             }
         }
 

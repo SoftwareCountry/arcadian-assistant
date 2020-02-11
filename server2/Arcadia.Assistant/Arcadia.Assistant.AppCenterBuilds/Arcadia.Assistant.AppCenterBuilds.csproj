@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Arcadia.Assistant.MobileBuild.Contracts\Arcadia.Assistant.MobileBuild.Contracts.csproj" />
+<ProjectReference Include="..\Arcadia.Assistant.Logging\Arcadia.Assistant.Logging.csproj" />
   </ItemGroup>
 
 </Project>

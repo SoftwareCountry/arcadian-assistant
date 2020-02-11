@@ -7,4 +7,7 @@
   <Section Name="Service">
     <Parameter Name="UpdateIntervalMinutes" Value="5"/>
   </Section>
+  <Section Name="Logging">
+    <Parameter Name="ApplicationInsightsKey" Value="" />
+  </Section>
 </Settings>

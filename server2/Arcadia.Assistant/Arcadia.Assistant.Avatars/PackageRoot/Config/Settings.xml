@@ -7,5 +7,7 @@
   <Section Name="AvatarActorServiceReplicatorSecurityConfig">
     <Parameter Name="CredentialType" Value="None" />
   </Section>
-  <!-- The content will be generated during build -->
+  <Section Name="Logging">
+    <Parameter Name="ApplicationInsightsKey" Value="" />
+  </Section>
 </Settings>

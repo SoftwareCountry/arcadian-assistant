@@ -57,8 +57,8 @@
         public int? VacationDaysLeft { get; set; }
 
         /// <summary>
-        /// Positive values means that these days must be worked out.
-        /// Negative means that these can be taken as days off
+        ///     Positive values means that these days must be worked out.
+        ///     Negative means that these can be taken as days off
         /// </summary>
         [DataMember]
         public int? HoursCredit { get; set; }
@@ -66,17 +66,17 @@
         public static EmployeeModel FromMetadata(EmployeeMetadata metadata)
         {
             return new EmployeeModel(metadata.EmployeeId.ToString(), metadata.Email)
-                {
-                    BirthDate = metadata.BirthDate,
-                    DepartmentId = metadata.DepartmentId?.ToString(),
-                    HireDate = metadata.HireDate,
-                    MobilePhone = metadata.MobilePhone,
-                    FirstName = metadata.FirstName,
-                    LastName = metadata.LastName,
-                    Position = metadata.Position,
-                    Sex = metadata.Sex,
-                    RoomNumber = metadata.RoomNumber
-                };
+            {
+                BirthDate = metadata.BirthDate,
+                DepartmentId = metadata.DepartmentId?.ToString(),
+                HireDate = metadata.HireDate,
+                MobilePhone = metadata.MobilePhone,
+                FirstName = metadata.FirstName,
+                LastName = metadata.LastName,
+                Position = metadata.Position,
+                Sex = metadata.Sex,
+                RoomNumber = metadata.RoomNumber
+            };
         }
     }
 }

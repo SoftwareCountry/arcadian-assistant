@@ -1,6 +1,7 @@
 ﻿namespace Arcadia.Assistant.Web
 {
     using System.Collections.Generic;
+    using System.Fabric;
     using System.Text.Json.Serialization;
 
     using Autofac;
@@ -10,6 +11,8 @@
     using Configuration;
 
     using Employees.Contracts;
+
+    using Logging;
 
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
@@ -46,7 +49,9 @@
 
     public class Startup
     {
-        public Startup(IWebHostEnvironment env)
+        private readonly StatelessServiceContext serviceContext;
+
+        public Startup(IWebHostEnvironment env, StatelessServiceContext serviceContext)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -55,6 +60,7 @@
                 .AddServiceFabricConfiguration()
                 .AddEnvironmentVariables();
             this.AppSettings = builder.Build().Get<AppSettings>();
+            this.serviceContext = serviceContext;
         }
 
         public AppSettings AppSettings { get; }
@@ -105,8 +111,6 @@
                     jwtOptions.MetadataAddress = this.AppSettings.Config.Security.OpenIdConfigurationUrl;
                     jwtOptions.Events = new JwtBearerEvents();
                 });
-
-            //services.AddAuthorization();
         }
 
         // ReSharper disable once UnusedMember.Global
@@ -128,6 +132,7 @@
             builder.RegisterModule(new SickLeavesModule());
             builder.RegisterModule(new PendingActionsModule());
             builder.RegisterModule(new MobileBuildModule());
+            builder.RegisterServiceLogging(new LoggerSettings(this.AppSettings.Config.Logging.ApplicationInsightsKey), this.serviceContext);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

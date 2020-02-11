@@ -15,6 +15,7 @@ namespace Arcadia.Assistant.WorkHoursCredit
     using Employees.Contracts;
 
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
@@ -27,11 +28,13 @@ namespace Arcadia.Assistant.WorkHoursCredit
     public class WorkHoursCredit : StatelessService, IWorkHoursCredit
     {
         private readonly Func<Owned<WorkHoursCreditContext>> dbFactory;
+        private readonly ILogger logger;
 
-        public WorkHoursCredit(StatelessServiceContext context, Func<Owned<WorkHoursCreditContext>> dbFactory)
+        public WorkHoursCredit(StatelessServiceContext context, Func<Owned<WorkHoursCreditContext>> dbFactory, ILogger logger)
             : base(context)
         {
             this.dbFactory = dbFactory;
+            this.logger = logger;
         }
 
         public async Task<Dictionary<EmployeeId, int>> GetAvailableHoursAsync(EmployeeId[] employeeIds, CancellationToken cancellationToken)
