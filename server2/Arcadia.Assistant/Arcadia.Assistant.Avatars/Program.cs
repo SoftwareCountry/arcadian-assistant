@@ -30,7 +30,7 @@ namespace Arcadia.Assistant.Avatars
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using var container = builder.Build();
-                logger = container.Resolve<ILogger>();
+                logger = container.TryResolve(out ILogger val) ? val : null;
                 Thread.Sleep(Timeout.Infinite);
             }
             catch (Exception e)

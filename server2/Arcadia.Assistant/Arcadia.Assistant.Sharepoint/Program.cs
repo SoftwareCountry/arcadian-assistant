@@ -16,7 +16,10 @@ namespace Arcadia.Assistant.Sharepoint
     using ExternalStorages.SharepointOnline;
     using ExternalStorages.SharepointOnline.Contracts;
 
+    using Logging;
+
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
 
     using Models;
@@ -36,6 +39,7 @@ namespace Arcadia.Assistant.Sharepoint
         /// </summary>
         private static void Main()
         {
+            ILogger? logger = null;
             try
             {
                 var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
@@ -78,19 +82,19 @@ namespace Arcadia.Assistant.Sharepoint
                 builder.RegisterModule<SickLeavesModule>();
                 builder.RegisterModule<EmployeesModule>();
                 builder.RegisterModule<OrganizationModule>();
+                builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
                 builder.Populate(services);
 
-                using (builder.Build())
-                {
-                    ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(Sharepoint).Name);
-
-                    // Prevents this host process from terminating so services keep running.
-                    Thread.Sleep(Timeout.Infinite);
-                }
+                using var container = builder.Build();
+                logger = container.TryResolve(out ILogger log) ? log : null;
+                logger?.LogInformation($"Service type '{typeof(Sharepoint).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
+                // Prevents this host process from terminating so services keep running.
+                Thread.Sleep(Timeout.Infinite);
             }
             catch (Exception e)
             {
                 ServiceEventSource.Current.ServiceHostInitializationFailed(e.ToString());
+                logger?.LogCritical(e, e.Message);
                 throw;
             }
         }
