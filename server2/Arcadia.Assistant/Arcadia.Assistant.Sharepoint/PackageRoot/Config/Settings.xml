@@ -14,4 +14,7 @@
   <Section Name="DepartmentsCalendars">
     <Parameter Name="Value" Value="" />
   </Section>
+  <Section Name="Logging">
+    <Parameter Name="ApplicationInsightsKey" Value="" />
+  </Section>
 </Settings>
