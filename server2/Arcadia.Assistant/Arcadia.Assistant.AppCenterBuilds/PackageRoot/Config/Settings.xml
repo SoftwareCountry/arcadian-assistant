@@ -10,4 +10,7 @@
     <Parameter Name="IosGetBuildsUrl" Value="" />
     <Parameter Name="IosGetBuildDownloadLinkTemplateUrl" Value="" />
   </Section>
+  <Section Name="Logging">
+    <Parameter Name="ApplicationInsightsKey" Value="" />
+  </Section>
 </Settings>

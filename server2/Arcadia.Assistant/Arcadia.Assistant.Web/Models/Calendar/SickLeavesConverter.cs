@@ -19,7 +19,7 @@
 
         private DatesPeriodModel ToDatesPeriod(SickLeaveDescription sickLeave)
         {
-            return new DatesPeriodModel()
+            return new DatesPeriodModel
             {
                 EndDate = sickLeave.EndDate,
                 StartDate = sickLeave.StartDate,

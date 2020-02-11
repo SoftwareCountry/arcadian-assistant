@@ -5,6 +5,7 @@ namespace Arcadia.Assistant.UserPreferences
 
     using Contracts;
 
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Actors;
     using Microsoft.ServiceFabric.Actors.Runtime;
 
@@ -17,18 +18,21 @@ namespace Arcadia.Assistant.UserPreferences
     ///     - None: State is kept in memory only and not replicated.
     /// </remarks>
     [StatePersistence(StatePersistence.Persisted)]
-    internal class UserPreferencesStorage : Actor, IUserPreferencesStorage
+    public class UserPreferencesStorage : Actor, IUserPreferencesStorage
     {
         private const string StateKey = "preferences";
+        private readonly ILogger logger;
 
         /// <summary>
         ///     Initializes a new instance of UserPreferences
         /// </summary>
         /// <param name="actorService">The Microsoft.ServiceFabric.Actors.Runtime.ActorService that will host this actor instance.</param>
         /// <param name="actorId">The Microsoft.ServiceFabric.Actors.ActorId for this actor instance.</param>
-        public UserPreferencesStorage(ActorService actorService, ActorId actorId)
+        /// <param name="logger">Logger object</param>
+        public UserPreferencesStorage(ActorService actorService, ActorId actorId, ILogger logger)
             : base(actorService, actorId)
         {
+            this.logger = logger;
         }
 
         public async Task<UserPreferences> Get(CancellationToken cancellationToken)
@@ -49,7 +53,7 @@ namespace Arcadia.Assistant.UserPreferences
         /// </summary>
         protected override Task OnActivateAsync()
         {
-            ActorEventSource.Current.ActorMessage(this, "Actor activated.");
+            this.logger.LogInformation("Actor activated.");
 
             // The StateManager is this actor's private state store.
             // Data stored in the StateManager will be replicated for high-availability for actors that use volatile or persisted state storage.

@@ -16,6 +16,7 @@ namespace Arcadia.Assistant.Employees
     using CSP.Model;
 
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
@@ -27,13 +28,15 @@ namespace Arcadia.Assistant.Employees
     {
         private readonly Func<Owned<CspEmployeeQuery>> cspEmployeeQuery;
         private readonly CspConfiguration cspConfiguration;
+        private readonly ILogger logger;
 
         private readonly Expression<Func<Employee, EmployeeMetadata>> mapToMetadata;
-        public Employees(StatelessServiceContext context, Func<Owned<CspEmployeeQuery>> cspEmployeeQuery, CspConfiguration cspConfiguration)
+        public Employees(StatelessServiceContext context, Func<Owned<CspEmployeeQuery>> cspEmployeeQuery, CspConfiguration cspConfiguration, ILogger logger)
             : base(context)
         {
             this.cspEmployeeQuery = cspEmployeeQuery;
             this.cspConfiguration = cspConfiguration;
+            this.logger = logger;
 
             this.mapToMetadata = x =>
                 new EmployeeMetadata(

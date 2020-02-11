@@ -28,6 +28,7 @@
     <Parameter Name="Arcadia.Assistant.Organization_MinReplicaSetSize" DefaultValue="3" />
     <Parameter Name="Arcadia.Assistant.Organization_PartitionCount" DefaultValue="1" />
     <Parameter Name="Arcadia.Assistant.Organization_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="Arcadia.Assistant.ApplicationInsightsKey" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_ASPNETCORE_ENVIRONMENT" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.Web_Port" DefaultValue="63601" />
@@ -53,6 +54,15 @@
        ServiceManifest.xml file. -->
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.MobileBuildPkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.AppCenterBuildsPkg" ServiceManifestVersion="1.0.0" />
@@ -67,13 +77,24 @@
             <Parameter Name="IosGetBuildsUrl" Value="[Arcadia.Assistant.AppCenterBuilds_IosGetBuildsUrl]" />
             <Parameter Name="IosGetBuildDownloadLinkTemplateUrl" Value="[Arcadia.Assistant.AppCenterBuilds_IosGetBuildDownloadLinkTemplateUrl]" />
           </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
         </Settings>
       </ConfigOverride>
     </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.PendingActionsPkg" ServiceManifestVersion="1.0.0" />
-    <ConfigOverrides />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.VacationsPkg" ServiceManifestVersion="1.0.0" />
@@ -82,6 +103,9 @@
         <Settings>
           <Section Name="Csp">
             <Parameter Name="ConnectionString" Value="[Arcadia.Assistant.Csp_ConnectionString]" />
+          </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
           </Section>
         </Settings>
       </ConfigOverride>
@@ -94,6 +118,9 @@
         <Settings>
           <Section Name="Csp">
             <Parameter Name="ConnectionString" Value="[Arcadia.Assistant.Csp_ConnectionString]" />
+          </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
           </Section>
         </Settings>
       </ConfigOverride>
@@ -110,6 +137,9 @@
             <Parameter Name="Password" Value="[Arcadia.Assistant.Imap_Password]" />
             <Parameter Name="User" Value="[Arcadia.Assistant.Imap_User]" />
           </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
         </Settings>
       </ConfigOverride>
     </ConfigOverrides>
@@ -125,20 +155,48 @@
             <Parameter Name="Subject" Value="[Arcadia.Assistant.VacationsCredit_Subject]" />
             <Parameter Name="RefreshIntervalMinutes" Value="[Arcadia.Assistant.VacationsCredit_RefreshIntervalMinutes]" />
           </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
         </Settings>
       </ConfigOverride>
     </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.WorkHoursCreditPkg" ServiceManifestVersion="1.0.0" />
-    <ConfigOverrides />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.UserPreferencesPkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.PermissionsPkg" ServiceManifestVersion="1.0.0" />
-    <ConfigOverrides />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.EmployeesPkg" ServiceManifestVersion="1.0.0" />
@@ -147,6 +205,9 @@
         <Settings>
           <Section Name="Csp">
             <Parameter Name="ConnectionString" Value="[Arcadia.Assistant.Csp_ConnectionString]" />
+          </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
           </Section>
         </Settings>
       </ConfigOverride>
@@ -160,12 +221,24 @@
           <Section Name="Csp">
             <Parameter Name="ConnectionString" Value="[Arcadia.Assistant.Csp_ConnectionString]" />
           </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
         </Settings>
       </ConfigOverride>
     </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.AvatarsPkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.OrganizationPkg" ServiceManifestVersion="1.0.0" />
@@ -174,6 +247,9 @@
         <Settings>
           <Section Name="Csp">
             <Parameter Name="ConnectionString" Value="[Arcadia.Assistant.Csp_ConnectionString]" />
+          </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
           </Section>
         </Settings>
       </ConfigOverride>
@@ -195,6 +271,9 @@
           </Section>
           <Section Name="Ssl">
             <Parameter Name="SslOffloading" Value="[Arcadia.Assistant.Web_Ssl_SslOffloading]" />
+          </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
           </Section>
         </Settings>
       </ConfigOverride>

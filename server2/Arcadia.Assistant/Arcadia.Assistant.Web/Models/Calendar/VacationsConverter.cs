@@ -19,7 +19,7 @@
 
         private DatesPeriodModel ToDatesPeriod(VacationDescription vacationDescription)
         {
-            return new DatesPeriodModel()
+            return new DatesPeriodModel
             {
                 EndDate = vacationDescription.EndDate,
                 StartDate = vacationDescription.StartDate,

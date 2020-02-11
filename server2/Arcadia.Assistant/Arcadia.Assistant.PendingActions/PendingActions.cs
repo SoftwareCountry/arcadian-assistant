@@ -12,6 +12,7 @@ namespace Arcadia.Assistant.PendingActions
 
     using Employees.Contracts;
 
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
@@ -31,14 +32,21 @@ namespace Arcadia.Assistant.PendingActions
         private IWorkHoursCredit workHoursCredit;
         private IEmployees employees;
         private IOrganization organization;
+        private readonly ILogger logger;
 
-        public PendingActions(StatelessServiceContext context, IOrganization organization, IVacations vacations, IWorkHoursCredit workHoursCredit, IEmployees employees)
+        public PendingActions(StatelessServiceContext context, 
+            IOrganization organization, 
+            IVacations vacations, 
+            IWorkHoursCredit workHoursCredit, 
+            IEmployees employees,
+            ILogger logger)
             : base(context)
         {
             this.organization = organization;
             this.vacations = vacations;
             this.workHoursCredit = workHoursCredit;
             this.employees = employees;
+            this.logger = logger;
         }
 
         /// <summary>
