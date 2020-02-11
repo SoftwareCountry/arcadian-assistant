@@ -58,7 +58,7 @@ namespace Arcadia.Assistant.Avatars.Manager
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                ServiceEventSource.Current.ServiceMessage(this.Context, "Start updating avatars...");
+                this.logger.LogInformation("Start updating avatars...");
 
                 using (var query = this.employeeQuery())
                 {
@@ -75,7 +75,7 @@ namespace Arcadia.Assistant.Avatars.Manager
                     }
                     catch (Exception e)
                     {
-                        ServiceEventSource.Current.ServiceMessage(this.Context, "Error occured {0}", e);
+                        this.logger.LogError(e, e.Message);
                     }
                 }
 

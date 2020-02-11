@@ -14,6 +14,7 @@ namespace Arcadia.Assistant.VacationsCredit
 
     using Logging;
 
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
 
     internal static class Program
@@ -23,6 +24,7 @@ namespace Arcadia.Assistant.VacationsCredit
         /// </summary>
         private static void Main()
         {
+            ILogger? logger = null;
             try
             {
                 // The ServiceManifest.XML file defines one or more service type names.
@@ -43,17 +45,16 @@ namespace Arcadia.Assistant.VacationsCredit
                 builder.RegisterInstance(inboxConfiguration);
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
-                using (builder.Build())
-                {
-                    ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(VacationsCredit).Name);
-
-                    // Prevents this host process from terminating so services keep running.
-                    Thread.Sleep(Timeout.Infinite);
-                }
+                using var container = builder.Build();
+                logger = container.TryResolve<ILogger>(out ILogger val) ? val : null;
+                logger?.LogInformation($"Service type '{typeof(VacationsCredit).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
+                // Prevents this host process from terminating so services keep running.
+                Thread.Sleep(Timeout.Infinite);
             }
             catch (Exception e)
             {
                 ServiceEventSource.Current.ServiceHostInitializationFailed(e.ToString());
+                logger?.LogCritical(e, e.Message);
                 throw;
             }
         }

@@ -57,7 +57,6 @@ namespace Arcadia.Assistant.AppCenterBuilds
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                //ServiceEventSource.Current.ServiceMessage(this.Context, "Request build version");
                 this.logger.LogDebug("Request build version");
 
                 // for android

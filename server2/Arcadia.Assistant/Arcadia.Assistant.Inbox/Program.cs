@@ -8,6 +8,7 @@ namespace Arcadia.Assistant.Inbox
     using Autofac;
     using Autofac.Integration.ServiceFabric;
 
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Runtime;
 
     internal static class Program
@@ -17,6 +18,7 @@ namespace Arcadia.Assistant.Inbox
         /// </summary>
         private static void Main()
         {
+            ILogger? logger = null;
             try
             {
                 var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
@@ -27,14 +29,15 @@ namespace Arcadia.Assistant.Inbox
                 builder.Register(x => new ImapConfiguration(configurationPackage.Settings.Sections["IMAP"])).AsSelf().SingleInstance();
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
-                using (builder.Build())
-                {
-                    Thread.Sleep(Timeout.Infinite);
-                }
+                using var container = builder.Build();
+                logger = container.TryResolve<ILogger>(out ILogger val) ? val : null;
+                logger?.LogInformation($"Service type '{typeof(Inbox).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
+                Thread.Sleep(Timeout.Infinite);
             }
             catch (Exception e)
             {
                 ServiceEventSource.Current.ServiceHostInitializationFailed(e.ToString());
+                logger?.LogCritical(e, e.Message);
                 throw;
             }
         }

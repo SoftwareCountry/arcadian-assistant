@@ -16,6 +16,7 @@ namespace Arcadia.Assistant.Avatars.Manager
 
     using Logging;
 
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Actors.Client;
 
     internal static class Program
@@ -25,6 +26,7 @@ namespace Arcadia.Assistant.Avatars.Manager
         /// </summary>
         private static void Main()
         {
+            ILogger? logger = null;
             try
             {
                 // The ServiceManifest.XML file defines one or more service type names.
@@ -45,16 +47,16 @@ namespace Arcadia.Assistant.Avatars.Manager
 
                 builder.RegisterStatelessService<Manager>("Arcadia.Assistant.Avatars.ManagerType");
 
-                using (builder.Build())
-                {
-                    ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(Manager).Name);
-                    // Prevents this host process from terminating so services keep running.
-                    Thread.Sleep(Timeout.Infinite);
-                }
+                using var container = builder.Build();
+                logger = container.TryResolve<ILogger>(out ILogger val) ? val : null;
+                logger?.LogInformation($"Service type '{typeof(Manager).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
+                // Prevents this host process from terminating so services keep running.
+                Thread.Sleep(Timeout.Infinite);
             }
             catch (Exception e)
             {
                 ServiceEventSource.Current.ServiceHostInitializationFailed(e.ToString());
+                logger?.LogCritical(e, e.Message);
                 throw;
             }
         }

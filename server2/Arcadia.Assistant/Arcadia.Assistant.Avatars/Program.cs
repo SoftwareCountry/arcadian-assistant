@@ -10,6 +10,8 @@ using Microsoft.ServiceFabric.Actors.Runtime;
 
 namespace Arcadia.Assistant.Avatars
 {
+    using Microsoft.Extensions.Logging;
+
     internal static class Program
     {
         /// <summary>
@@ -17,6 +19,7 @@ namespace Arcadia.Assistant.Avatars
         /// </summary>
         private static void Main()
         {
+            ILogger? logger = null;
             try
             {
                 var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
@@ -26,14 +29,14 @@ namespace Arcadia.Assistant.Avatars
                 builder.RegisterActor<Avatar>();
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
-                using (builder.Build())
-                {
-                    Thread.Sleep(Timeout.Infinite);
-                }
+                using var container = builder.Build();
+                logger = container.Resolve<ILogger>();
+                Thread.Sleep(Timeout.Infinite);
             }
             catch (Exception e)
             {
                 ActorEventSource.Current.ActorHostInitializationFailed(e.ToString());
+                logger?.LogCritical(e, e.Message);
                 throw;
             }
         }

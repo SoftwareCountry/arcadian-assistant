@@ -9,6 +9,8 @@ namespace Arcadia.Assistant.MobileBuild
 
     using Logging;
 
+    using Microsoft.Extensions.Logging;
+
     internal static class Program
     {
         /// <summary>
@@ -16,6 +18,7 @@ namespace Arcadia.Assistant.MobileBuild
         /// </summary>
         private static void Main()
         {
+            ILogger? logger = null;
             try
             {
                 var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
@@ -25,14 +28,14 @@ namespace Arcadia.Assistant.MobileBuild
                 builder.RegisterActor<MobileBuildActor>();
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
-                using (builder.Build())
-                {
-                    Thread.Sleep(Timeout.Infinite);
-                }
+                using var container = builder.Build();
+                logger = container.TryResolve<ILogger>(out ILogger val) ? val : null;
+                Thread.Sleep(Timeout.Infinite);
             }
             catch (Exception e)
             {
                 ActorEventSource.Current.ActorHostInitializationFailed(e.ToString());
+                logger?.LogCritical(e, e.ToString());
                 throw;
             }
         }

@@ -28,6 +28,7 @@ namespace Arcadia.Assistant.UserPreferences
         /// </summary>
         /// <param name="actorService">The Microsoft.ServiceFabric.Actors.Runtime.ActorService that will host this actor instance.</param>
         /// <param name="actorId">The Microsoft.ServiceFabric.Actors.ActorId for this actor instance.</param>
+        /// <param name="logger">Logger object</param>
         public UserPreferencesStorage(ActorService actorService, ActorId actorId, ILogger logger)
             : base(actorService, actorId)
         {
@@ -52,7 +53,7 @@ namespace Arcadia.Assistant.UserPreferences
         /// </summary>
         protected override Task OnActivateAsync()
         {
-            ActorEventSource.Current.ActorMessage(this, "Actor activated.");
+            this.logger.LogInformation("Actor activated.");
 
             // The StateManager is this actor's private state store.
             // Data stored in the StateManager will be replicated for high-availability for actors that use volatile or persisted state storage.
