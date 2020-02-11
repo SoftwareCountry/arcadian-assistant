@@ -1,6 +1,5 @@
 ﻿namespace Arcadia.Assistant.Web.Models.Calendar
 {
-    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
 

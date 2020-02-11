@@ -16,6 +16,7 @@ namespace Arcadia.Assistant.Avatars.Manager
     using Employees.Contracts;
 
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Actors;
     using Microsoft.ServiceFabric.Actors.Client;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
@@ -28,12 +29,14 @@ namespace Arcadia.Assistant.Avatars.Manager
     {
         private readonly Func<Owned<CspEmployeeQuery>> employeeQuery;
         private readonly IAvatars avatars;
+        private readonly ILogger logger;
 
-        public Manager(StatelessServiceContext context, Func<Owned<CspEmployeeQuery>> employeeQuery, IAvatars avatars)
+        public Manager(StatelessServiceContext context, Func<Owned<CspEmployeeQuery>> employeeQuery, IAvatars avatars, ILogger logger)
             : base(context)
         {
             this.employeeQuery = employeeQuery;
             this.avatars = avatars;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -55,7 +58,7 @@ namespace Arcadia.Assistant.Avatars.Manager
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                ServiceEventSource.Current.ServiceMessage(this.Context, "Start updating avatars...");
+                this.logger.LogInformation("Start updating avatars...");
 
                 using (var query = this.employeeQuery())
                 {
@@ -72,7 +75,7 @@ namespace Arcadia.Assistant.Avatars.Manager
                     }
                     catch (Exception e)
                     {
-                        ServiceEventSource.Current.ServiceMessage(this.Context, "Error occured {0}", e);
+                        this.logger.LogError(e, e.Message);
                     }
                 }
 

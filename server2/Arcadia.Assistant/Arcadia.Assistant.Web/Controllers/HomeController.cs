@@ -1,11 +1,10 @@
-﻿using System.Diagnostics;
-
-using Microsoft.AspNetCore.Mvc;
-using Arcadia.Assistant.Web.Models;
-
-namespace Arcadia.Assistant.Web.Controllers
+﻿namespace Arcadia.Assistant.Web.Controllers
 {
-    using System.Threading.Tasks;
+    using System.Diagnostics;
+
+    using Microsoft.AspNetCore.Mvc;
+
+    using Models;
 
     public class HomeController : Controller
     {
@@ -22,7 +21,7 @@ namespace Arcadia.Assistant.Web.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return this.View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return this.View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier });
         }
     }
 }

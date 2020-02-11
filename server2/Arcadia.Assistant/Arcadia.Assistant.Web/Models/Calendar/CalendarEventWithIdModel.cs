@@ -1,16 +1,11 @@
 ﻿namespace Arcadia.Assistant.Web.Models.Calendar
 {
-    using System;
     using System.ComponentModel.DataAnnotations;
     using System.Runtime.Serialization;
 
     [DataContract]
     public class CalendarEventWithIdModel : CalendarEventModel
     {
-        [Required]
-        [DataMember]
-        public string? CalendarEventId { get; set; }
-
         public CalendarEventWithIdModel()
         {
         }
@@ -20,5 +15,9 @@
         {
             this.CalendarEventId = calendarEventId;
         }
+
+        [Required]
+        [DataMember]
+        public string? CalendarEventId { get; set; }
     }
 }

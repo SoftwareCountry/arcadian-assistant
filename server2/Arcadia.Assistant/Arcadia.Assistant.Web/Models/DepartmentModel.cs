@@ -30,7 +30,7 @@
         public string? ChiefId { get; set; }
 
         [DataMember]
-        public int PeopleCount { get; set; } = 0;
+        public int PeopleCount { get; set; }
 
         public static DepartmentModel FromMetadata(DepartmentMetadata department)
         {

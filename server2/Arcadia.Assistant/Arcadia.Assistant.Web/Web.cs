@@ -8,8 +8,6 @@ namespace Arcadia.Assistant.Web
 
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Logging.Configuration;
     using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
@@ -17,7 +15,7 @@ namespace Arcadia.Assistant.Web
     /// <summary>
     ///     The FabricRuntime creates an instance of this class for each service type instance.
     /// </summary>
-    internal sealed class Web : StatelessService
+    public class Web : StatelessService
     {
         public Web(StatelessServiceContext context)
             : base(context)
@@ -36,20 +34,12 @@ namespace Arcadia.Assistant.Web
                     new KestrelCommunicationListener(serviceContext, "ServiceEndpoint", (url, listener) =>
                     {
                         ServiceEventSource.Current.ServiceMessage(serviceContext, $"Starting Kestrel on {url}");
-
                         return new WebHostBuilder()
                             .UseKestrel()
                             .ConfigureServices(
                                 services => services
-                                    .AddSingleton(serviceContext))
-                            .ConfigureServices(services => services.AddAutofac())
-                            .ConfigureLogging((hosingContext, logging) =>
-                            {
-                                logging.AddConfiguration(hosingContext.Configuration.GetSection("Logging"));
-                                logging.AddConsole();
-                                logging.AddDebug();
-                                logging.AddEventSourceLogger();
-                            })
+                                    .AddSingleton(serviceContext)
+                                    .AddAutofac())
                             .UseContentRoot(Directory.GetCurrentDirectory())
                             .UseStartup<Startup>()
                             .UseServiceFabricIntegration(listener, ServiceFabricIntegrationOptions.None)

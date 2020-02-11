@@ -6,7 +6,7 @@ namespace Arcadia.Assistant.Avatars
     using System.Threading.Tasks;
 
     using Contracts;
-
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Actors;
     using Microsoft.ServiceFabric.Actors.Runtime;
 
@@ -19,7 +19,7 @@ namespace Arcadia.Assistant.Avatars
     ///     - None: State is kept in memory only and not replicated.
     /// </remarks>
     [StatePersistence(StatePersistence.Volatile)]
-    internal class Avatar : Actor, IAvatar
+    public class Avatar : Actor, IAvatar
     {
         private const int Width = 200;
 
@@ -31,15 +31,18 @@ namespace Arcadia.Assistant.Avatars
         private const string ImageBytesKey = "image-bytes";
 
         private readonly ImageResizer resizer = new ImageResizer();
+        private readonly ILogger logger;
 
         /// <summary>
         ///     Initializes a new instance of Avatar
         /// </summary>
         /// <param name="actorService">The Microsoft.ServiceFabric.Actors.Runtime.ActorService that will host this actor instance.</param>
         /// <param name="actorId">The Microsoft.ServiceFabric.Actors.ActorId for this actor instance.</param>
-        public Avatar(ActorService actorService, ActorId actorId)
+        /// <param name="logger">Logger object</param>
+        public Avatar(ActorService actorService, ActorId actorId, ILogger logger)
             : base(actorService, actorId)
         {
+            this.logger = logger;
         }
 
         /// <summary>
@@ -48,7 +51,7 @@ namespace Arcadia.Assistant.Avatars
         /// </summary>
         protected override Task OnActivateAsync()
         {
-            ActorEventSource.Current.ActorMessage(this, "Actor activated.");
+            logger.LogInformation("Actor activated.");
             return Task.CompletedTask;
         }
 

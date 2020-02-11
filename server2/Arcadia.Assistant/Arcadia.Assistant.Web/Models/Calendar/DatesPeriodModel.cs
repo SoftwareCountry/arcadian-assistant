@@ -19,15 +19,15 @@
         public DateTime EndDate { get; set; }
 
         /// <summary>
-        /// Starting working hour index. Typically, 0 or 4.
+        ///     Starting working hour index. Typically, 0 or 4.
         /// </summary>
         [DefaultValue(0)]
         [Range(0, 23)]
         [DataMember]
-        public int StartWorkingHour { get; set; } = 0;
+        public int StartWorkingHour { get; set; }
 
         /// <summary>
-        /// Finish working hour index. Typically, 4 or 8
+        ///     Finish working hour index. Typically, 4 or 8
         /// </summary>
         [DefaultValue(8)]
         [Range(0, 24)]

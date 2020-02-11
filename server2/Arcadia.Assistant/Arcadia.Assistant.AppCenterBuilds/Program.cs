@@ -9,8 +9,12 @@ namespace Arcadia.Assistant.AppCenterBuilds
     using Autofac.Extensions.DependencyInjection;
     using Autofac.Integration.ServiceFabric;
 
+    using Logging;
+
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Actors.Client;
+    using Microsoft.ServiceFabric.Services.Remoting.Client;
 
     using MobileBuild.Contracts;
 
@@ -21,6 +25,7 @@ namespace Arcadia.Assistant.AppCenterBuilds
         /// </summary>
         private static void Main()
         {
+            ILogger? logger = null;
             try
             {
                 var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
@@ -30,23 +35,26 @@ namespace Arcadia.Assistant.AppCenterBuilds
 
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
-                builder.Register(x => new DownloadApplicationSettings(configurationPackage.Settings.Sections["DownloadApplication"])).As<IDownloadApplicationSettings>().SingleInstance();
-                builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
-                builder.RegisterModule(new MobileBuildModule());
                 builder.RegisterStatelessService<AppCenterBuilds>("Arcadia.Assistant.AppCenterBuildsType");
+                builder.Register(x => new DownloadApplicationSettings(configurationPackage.Settings.Sections["DownloadApplication"])).As<IDownloadApplicationSettings>().SingleInstance();
+
+                builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
+                builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
+                builder.RegisterModule(new MobileBuildModule());
                 builder.Populate(services);
 
-                using (builder.Build())
-                {
-                    ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(AppCenterBuilds).Name);
+                builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
-                    // Prevents this host process from terminating so services keep running.
-                    Thread.Sleep(Timeout.Infinite);
-                }
+                using var container = builder.Build();
+                logger = container.TryResolve<ILogger>(out ILogger val) ? val : null;
+                logger?.LogInformation($"Service type '{typeof(AppCenterBuilds).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
+                // Prevents this host process from terminating so services keep running.
+                Thread.Sleep(Timeout.Infinite);
             }
             catch (Exception e)
             {
                 ServiceEventSource.Current.ServiceHostInitializationFailed(e.ToString());
+                logger?.LogCritical(e, e.Message);
                 throw;
             }
         }

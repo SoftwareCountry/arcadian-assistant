@@ -16,6 +16,7 @@ namespace Arcadia.Assistant.Vacations
     using Employees.Contracts;
 
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
@@ -27,17 +28,20 @@ namespace Arcadia.Assistant.Vacations
     {
         private readonly Func<Owned<VacationsStorage>> storageFactory;
         private readonly VacationChangesWatcher changesWatcher;
+        private readonly ILogger logger;
 
         //private VacationsStorage storage = new VacationsStorage();
 
         public Vacations(
             StatelessServiceContext context,
             Func<Owned<VacationsStorage>> storageFactory,
-            VacationChangesWatcher changesWatcher)
+            VacationChangesWatcher changesWatcher,
+            ILogger logger)
             : base(context)
         {
             this.storageFactory = storageFactory;
             this.changesWatcher = changesWatcher;
+            this.logger = logger;
         }
 
         public async Task<VacationDescription[]> GetCalendarEventsAsync(EmployeeId employeeId, CancellationToken cancellationToken)
@@ -151,6 +155,7 @@ namespace Arcadia.Assistant.Vacations
         /// <param name="cancellationToken">Canceled when Service Fabric needs to shut down this service instance.</param>
         protected override async Task RunAsync(CancellationToken cancellationToken)
         {
+            logger.LogInformation("Vacation changes watcher activated.");
             await this.changesWatcher.StartAsync(cancellationToken);
         }
 

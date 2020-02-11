@@ -13,6 +13,7 @@ namespace Arcadia.Assistant.Permissions
 
     using Employees.Contracts;
 
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
@@ -26,12 +27,14 @@ namespace Arcadia.Assistant.Permissions
     {
         private readonly IEmployees employees;
         private readonly IOrganization organization;
+        private readonly ILogger logger;
 
-        public Permissions(StatelessServiceContext context, IEmployees employees, IOrganization organization)
+        public Permissions(StatelessServiceContext context, IEmployees employees, IOrganization organization, ILogger logger)
             : base(context)
         {
             this.employees = employees;
             this.organization = organization;
+            this.logger = logger;
         }
 
         /// <summary>
