@@ -1,10 +1,12 @@
-namespace Arcadia.Assistant.SickLeaves
-{
-    using System;
-    using System.Diagnostics;
-    using System.Fabric;
-    using System.Threading;
+using System;
+using System.Diagnostics;
+using System.Fabric;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.ServiceFabric.Services.Runtime;
 
+namespace Arcadia.Assistant.BirthdaysFeed
+{
     using Autofac;
     using Autofac.Integration.ServiceFabric;
 
@@ -13,40 +15,31 @@ namespace Arcadia.Assistant.SickLeaves
     using Logging;
 
     using Microsoft.Extensions.Logging;
-    using Microsoft.ServiceFabric.Services.Remoting.Client;
-    using Microsoft.ServiceFabric.Services.Runtime;
+    using Microsoft.ServiceFabric.Actors.Client;
 
     internal static class Program
     {
         /// <summary>
-        ///     This is the entry point of the service host process.
+        /// This is the entry point of the service host process.
         /// </summary>
         private static void Main()
         {
             ILogger? logger = null;
             try
             {
-                // The ServiceManifest.XML file defines one or more service type names.
-                // Registering a service maps a service type name to a .NET type.
-                // When Service Fabric creates an instance of this service type,
-                // an instance of the class is created in this host process.
-
                 var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
                 var connectionString = configurationPackage.Settings.Sections["Csp"].Parameters["ConnectionString"].Value;
 
                 var builder = new ContainerBuilder();
-                builder.RegisterServiceFabricSupport();
-                builder.RegisterStatelessService<SickLeaves>("Arcadia.Assistant.SickLeavesType");
-                builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
-                builder.RegisterType<SickLeaveCancellationStep>().AsSelf();
-                builder.RegisterType<SickLeaveCreationStep>().AsSelf();
-                builder.RegisterType<SickLeaveProlongationStep>().AsSelf();
+
                 builder.RegisterModule(new CspModule(connectionString));
+                builder.RegisterServiceFabricSupport();
+                builder.RegisterStatelessService<BirthdaysFeed>("Arcadia.Assistant.BirthdaysFeedType");
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using var container = builder.Build();
                 logger = container.ResolveOptional<ILogger>();
-                logger?.LogInformation($"Service type '{typeof(SickLeaves).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
+                logger?.LogInformation($"Service type '{typeof(BirthdaysFeed).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
                 // Prevents this host process from terminating so services keep running.
                 Thread.Sleep(Timeout.Infinite);
             }

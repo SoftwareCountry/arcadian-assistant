@@ -30,7 +30,7 @@ namespace Arcadia.Assistant.Inbox
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using var container = builder.Build();
-                logger = container.TryResolve<ILogger>(out ILogger val) ? val : null;
+                logger = container.ResolveOptional<ILogger>();
                 logger?.LogInformation($"Service type '{typeof(Inbox).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
                 Thread.Sleep(Timeout.Infinite);
             }

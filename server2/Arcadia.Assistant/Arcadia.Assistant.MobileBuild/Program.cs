@@ -29,7 +29,7 @@ namespace Arcadia.Assistant.MobileBuild
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using var container = builder.Build();
-                logger = container.TryResolve<ILogger>(out ILogger val) ? val : null;
+                logger = container.ResolveOptional<ILogger>();
                 Thread.Sleep(Timeout.Infinite);
             }
             catch (Exception e)

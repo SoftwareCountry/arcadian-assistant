@@ -3,18 +3,19 @@ using System.Diagnostics;
 using System.Fabric;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
+using Autofac.Integration.ServiceFabric;
+using Microsoft.Extensions.Logging;
 using Microsoft.ServiceFabric.Services.Runtime;
 
-namespace Arcadia.Assistant.VacationsCredit
+namespace Arcadia.Assistant.UserFeeds
 {
-    using Autofac;
-    using Autofac.Integration.ServiceFabric;
+    using AnniversaryFeed.Contracts;
 
-    using Inbox.Contracts;
+    using BirthdaysFeed.Contracts;
 
     using Logging;
 
-    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
 
     internal static class Program
@@ -27,27 +28,19 @@ namespace Arcadia.Assistant.VacationsCredit
             ILogger? logger = null;
             try
             {
-                // The ServiceManifest.XML file defines one or more service type names.
-                // Registering a service maps a service type name to a .NET type.
-                // When Service Fabric creates an instance of this service type,
-                // an instance of the class is created in this host process.
-
                 var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
-                var inboxSection = configurationPackage.Settings.Sections["Inbox"];
-                var inboxConfiguration = new InboxConfiguration(inboxSection);
 
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
-                builder.RegisterStatelessService<VacationsCredit>("Arcadia.Assistant.VacationsCreditType");
+                builder.RegisterStatefulService<UserFeeds>("Arcadia.Assistant.UserFeedsType");
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
-                builder.RegisterModule(new InboxModule());
-                builder.RegisterType<VacationsDaysEmailsLoader>().As<IVacationsDaysLoader>();
-                builder.RegisterInstance(inboxConfiguration);
+                builder.RegisterModule(new AnniversaryFeedModule());
+                builder.RegisterModule(new BirthdaysFeedModule());
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using var container = builder.Build();
                 logger = container.ResolveOptional<ILogger>();
-                logger?.LogInformation($"Service type '{typeof(VacationsCredit).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
+                logger?.LogInformation($"Service type '{typeof(UserFeeds).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
                 // Prevents this host process from terminating so services keep running.
                 Thread.Sleep(Timeout.Infinite);
             }
