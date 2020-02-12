@@ -7,7 +7,6 @@
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
-    using System.Runtime.Serialization;
     using System.Text.Json;
     using System.Text.Json.Serialization;
     using System.Threading;
@@ -183,31 +182,24 @@
                 : string.Format(CultureInfo.InvariantCulture, "{0}/{1}@{2}", principalName, hostName, realm);
         }
 
-        [DataContract]
         private class JsonMetadataDocument
         {
             [JsonPropertyName("endpoints")]
-            [DataMember(Name = "endpoints")]
             public IEnumerable<JsonEndpoint>? Endpoints { get; set; }
         }
 
-        [DataContract]
         private class JsonEndpoint
         {
             [JsonPropertyName("location")]
-            [DataMember(Name = "location")]
             public string? Location { get; set; }
 
             [JsonPropertyName("protocol")]
-            [DataMember(Name = "protocol")]
             public string? Protocol { get; set; }
         }
 
-        [DataContract]
         private class OAuth2AccessTokenResponse
         {
             [JsonPropertyName("access_token")]
-            [DataMember(Name = "access_token")]
             public string? AccessToken { get; set; }
         }
     }

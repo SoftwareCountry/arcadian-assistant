@@ -34,7 +34,7 @@
 
         #endregion
 
-        #region publci interface
+        #region public interface
 
         public async Task Synchronize(IEmployees employees, IEnumerable<string> departments, IExternalStorage storage, CancellationToken cancellationToken)
         {
@@ -42,36 +42,35 @@
             var workoutsSync = new EmployeeWorkoutsSynchronization(storage, this.logger);
             var sickLeavesSync = new EmployeeSickLeavesSynchronization(storage, this.logger);
 
-            var sharepointCalendars = departments.Distinct().ToDictionary(x => x,
+            var sharepointItemsByCalendars = departments.Distinct().ToDictionary(x => x,
                 dId => this.GetSharepointCalendarsByDepartment(dId).ToDictionary(x => x,
                     async cal => await this.GetAllSharepointItemsForCalendar(storage, cal)));
 
             foreach (var departmentId in departments)
             {
-                var departmentEmployes = await employees.FindEmployeesAsync(EmployeesQuery.Create().ForDepartment(departmentId), cancellationToken);
-                var employeeIds = departmentEmployes.Select(x => x.EmployeeId).ToArray();
+                var departmentEmployees = await employees.FindEmployeesAsync(EmployeesQuery.Create().ForDepartment(departmentId), cancellationToken);
+                var employeeIds = departmentEmployees.Select(x => x.EmployeeId).ToArray();
 
-                var employeeVacations = await this.vacations.GetCalendarEventsByEmployeeAsync(employeeIds, cancellationToken);
-                var employeeVacationValues = employeeVacations.Values.SelectMany(x => x).ToDictionary(x => CspCalendarEventIdParser.GetCalendarEventIdFromCspId(x.VacationId, CalendarEventTypes.Vacation), x => x);
+                var employeeVacationsTask = this.vacations.GetCalendarEventsByEmployeeAsync(employeeIds, cancellationToken);
+                var employeeWorkoutsTask = this.workouts.GetCalendarEventsByEmployeeMapAsync(employeeIds, cancellationToken);
+                var employeeSickLeavesTask = this.sickLeaves.GetCalendarEventsByEmployeeMapAsync(employeeIds, cancellationToken);
+                await Task.WhenAll(employeeVacationsTask, employeeWorkoutsTask, employeeSickLeavesTask);
 
-                var employeeWorkouts = await this.workouts.GetCalendarEventsByEmployeeMapAsync(employeeIds, cancellationToken);
-                var employeeWorkoutsValues = employeeWorkouts.Values.SelectMany(x => x).ToDictionary(x => CspCalendarEventIdParser.GetCalendarEventIdFromCspId(x.ChangeId, CalendarEventTypes.Workout), x => x);
+                var employeeVacationValues = employeeVacationsTask.Result.Values.SelectMany(x => x).ToDictionary(x => CspCalendarEventIdParser.GetCalendarEventIdFromCspId(x.VacationId, CalendarEventTypes.Vacation), x => x);
+                var employeeWorkoutsValues = employeeWorkoutsTask.Result.Values.SelectMany(x => x).ToDictionary(x => CspCalendarEventIdParser.GetCalendarEventIdFromCspId(x.ChangeId, CalendarEventTypes.Workout), x => x);
+                var employeeSickLeavesValues = employeeSickLeavesTask.Result.Values.SelectMany(x => x).ToDictionary(x => CspCalendarEventIdParser.GetCalendarEventIdFromCspId(x.SickLeaveId, CalendarEventTypes.Sickleave), x => x);
 
-                var employeeSickLeaves = await this.sickLeaves.GetCalendarEventsByEmployeeMapAsync(employeeIds, cancellationToken);
-                var employeeSickLeavesValues = employeeSickLeaves.Values.SelectMany(x => x).ToDictionary(x => CspCalendarEventIdParser.GetCalendarEventIdFromCspId(x.SickLeaveId, CalendarEventTypes.Sickleave), x => x);
-
-                foreach (var calendar in this.GetSharepointCalendarsByDepartment(departmentId))
+                foreach (var calendar in sharepointItemsByCalendars[departmentId].Keys)
                 {
-                    var storageItems = await sharepointCalendars[departmentId][calendar];
+                    var storageItems = await sharepointItemsByCalendars[departmentId][calendar];
 
-                    // synchronize vacations for selected department
-                    await vacationsSync.SynchronizeItem(calendar, departmentEmployes, employeeVacationValues, storageItems, cancellationToken);
-
-                    // synchronize workouts for selected department
-                    await workoutsSync.SynchronizeItem(calendar, departmentEmployes, employeeWorkoutsValues, storageItems, cancellationToken);
-
-                    // synchronize vacations for selected department
-                    await sickLeavesSync.SynchronizeItem(calendar, departmentEmployes, employeeSickLeavesValues, storageItems, cancellationToken);
+                    await Task.WhenAll(
+                        // synchronize vacations for selected department
+                        vacationsSync.SynchronizeItems(calendar, departmentEmployees, employeeVacationValues, storageItems, cancellationToken),
+                        // synchronize workouts for selected department
+                        workoutsSync.SynchronizeItems(calendar, departmentEmployees, employeeWorkoutsValues, storageItems, cancellationToken),
+                        // synchronize vacations for selected department
+                        sickLeavesSync.SynchronizeItems(calendar, departmentEmployees, employeeSickLeavesValues, storageItems, cancellationToken));
                 }
             }
         }

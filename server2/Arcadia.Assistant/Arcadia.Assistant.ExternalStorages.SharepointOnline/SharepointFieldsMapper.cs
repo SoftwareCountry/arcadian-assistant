@@ -53,7 +53,7 @@
             return fieldName;
         }
 
-        public string? GetSharepointField(string propertyName)
+        private string? GetSharepointField(string propertyName)
         {
             return this.fieldsByPropertyName.TryGetValue(propertyName, out var field) ? field : null;
         }

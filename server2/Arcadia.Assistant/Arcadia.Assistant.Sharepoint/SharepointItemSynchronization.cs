@@ -28,7 +28,7 @@
 
         #region public interface
 
-        public async Task SynchronizeItem(string calendar, EmployeeMetadata[] departmentEmployes, Dictionary<string, T> values, IEnumerable<StorageItem> storageItemsList, CancellationToken cancellationToken)
+        public async Task SynchronizeItems(string calendar, EmployeeMetadata[] departmentEmployees, Dictionary<string, T> values, IEnumerable<StorageItem> storageItemsList, CancellationToken cancellationToken)
         {
             try
             {
@@ -38,7 +38,7 @@
                 // insert or update items
                 foreach (var workHourEventId in values.Keys)
                 {
-                    var employeeMetadata = departmentEmployes.Single(x => x.EmployeeId == this.GetItemEmployeeId(values[workHourEventId]));
+                    var employeeMetadata = departmentEmployees.Single(x => x.EmployeeId == this.GetItemEmployeeId(values[workHourEventId]));
                     await this.UpsertItem(workHourEventId, calendar, values[workHourEventId], employeeMetadata, this.ExternalStorage, cancellationToken);
                 }
 

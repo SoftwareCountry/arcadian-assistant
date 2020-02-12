@@ -133,7 +133,7 @@
 
         private void RemoveHeader(string name)
         {
-            this.headersInternal.Where(x => x.Item1 == name).ToList().ForEach(x => this.headersInternal.Remove(x));
+            this.headersInternal.RemoveAll(x => x.Item1 == name);
         }
     }
 }

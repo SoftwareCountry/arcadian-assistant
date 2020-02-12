@@ -8,7 +8,5 @@
     public interface ISharepointFieldsMapper
     {
         string GetSharepointField(Expression<Func<StorageItem, object>> property);
-
-        string? GetSharepointField(string propertyName);
     }
 }

@@ -1,10 +1,9 @@
 ﻿namespace Arcadia.Assistant.ExternalStorages.SharepointOnline.SharepointApiModels
 {
-    using System.Runtime.Serialization;
+    using System.Text.Json.Serialization;
 
     using Abstractions;
 
-    [DataContract]
     public class SharepointListItemRequest : StorageItem
     {
         public SharepointListItemRequest(StorageItem storage, string? type = null)
@@ -23,10 +22,9 @@
             }
         }
 
-        [DataMember(Name = "__metadata")]
+        [JsonPropertyName("__metadata")]
         public MetadataRequest Metadata { get; set; } = new MetadataRequest();
 
-        [DataContract]
         public class MetadataRequest
         {
             public MetadataRequest()
@@ -38,7 +36,7 @@
                 this.Type = type;
             }
 
-            [DataMember(Name = "type")]
+            [JsonPropertyName("type")]
             public string? Type { get; set; }
         }
     }
