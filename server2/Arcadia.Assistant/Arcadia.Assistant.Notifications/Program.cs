@@ -43,7 +43,7 @@ namespace Arcadia.Assistant.Notifications
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using var container = builder.Build();
-                logger = container.TryResolve(out ILogger val) ? val : null;
+                logger = container.ResolveOptional<ILogger>();
                 logger?.LogInformation($"Service type '{typeof(Notifications).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
                 Thread.Sleep(Timeout.Infinite);
             }
