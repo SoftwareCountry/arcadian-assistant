@@ -53,11 +53,6 @@
             return fieldName;
         }
 
-        private string? GetSharepointField(string propertyName)
-        {
-            return this.fieldsByPropertyName.TryGetValue(propertyName, out var field) ? field : null;
-        }
-
         public static SharepointFieldMapping CreateMapping(Expression<Func<StorageItem, object>> property, string fieldName)
         {
             return new SharepointFieldMapping(property, fieldName);
@@ -66,6 +61,11 @@
         private string GetPropertyName(Expression<Func<StorageItem, object>> property)
         {
             return new PropertyNameParser().GetName(property);
+        }
+
+        private string? GetSharepointField(string propertyName)
+        {
+            return this.fieldsByPropertyName.TryGetValue(propertyName, out var field) ? field : null;
         }
 
         public struct SharepointFieldMapping

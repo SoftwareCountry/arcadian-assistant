@@ -1,6 +1,5 @@
 ﻿namespace Arcadia.Assistant.Sharepoint.Models
 {
-    using System;
     using System.Collections.Generic;
     using System.Fabric.Description;
     using System.Text.Json;
@@ -9,16 +8,8 @@
     {
         public SharepointDepartmentsCalendarsSettings(ConfigurationSection configurationSection)
         {
-            try
-            {
-                var val = configurationSection.Parameters["Value"].Value;
-                this.DepartmentsCalendars = JsonSerializer.Deserialize<IEnumerable<SharepointDepartmentCalendarMapping>>(val);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            var val = configurationSection.Parameters["Value"].Value;
+            this.DepartmentsCalendars = JsonSerializer.Deserialize<IEnumerable<SharepointDepartmentCalendarMapping>>(val);
         }
 
         public IEnumerable<SharepointDepartmentCalendarMapping> DepartmentsCalendars { get; set; }
