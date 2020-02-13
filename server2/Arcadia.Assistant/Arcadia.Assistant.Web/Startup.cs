@@ -39,6 +39,8 @@
 
     using SickLeaves.Contracts;
 
+    using UserFeeds.Contracts;
+
     using UserPreferences.Contracts;
 
     using Vacations.Contracts;
@@ -132,6 +134,7 @@
             builder.RegisterModule(new SickLeavesModule());
             builder.RegisterModule(new PendingActionsModule());
             builder.RegisterModule(new MobileBuildModule());
+            builder.RegisterModule(new UserFeedsModule());
             builder.RegisterServiceLogging(new LoggerSettings(this.AppSettings.Config.Logging.ApplicationInsightsKey), this.serviceContext);
         }
 

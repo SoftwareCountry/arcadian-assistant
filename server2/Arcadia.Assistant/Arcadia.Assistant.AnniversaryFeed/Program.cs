@@ -12,6 +12,8 @@ namespace Arcadia.Assistant.AnniversaryFeed
 
     using CSP;
 
+    using Employees.Contracts;
+
     using Logging;
 
     using Microsoft.Extensions.Logging;
@@ -27,13 +29,12 @@ namespace Arcadia.Assistant.AnniversaryFeed
             try
             {
                 var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
-                var connectionString = configurationPackage.Settings.Sections["Csp"].Parameters["ConnectionString"].Value;
 
                 var builder = new ContainerBuilder();
 
-                builder.RegisterModule(new CspModule(connectionString));
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterStatelessService<AnniversaryFeed>("Arcadia.Assistant.AnniversaryFeedType");
+                builder.RegisterModule(new EmployeesModule());
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using var container = builder.Build();

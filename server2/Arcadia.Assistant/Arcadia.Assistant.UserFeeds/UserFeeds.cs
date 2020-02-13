@@ -71,7 +71,7 @@ namespace Arcadia.Assistant.UserFeeds
                 }
             }
 
-            return result;
+            return result.OrderByDescending(x => x.Date);
         }
 
         public async Task Subscribe(string employeeId, IEnumerable<string> feedIds, CancellationToken cancellationToken)
