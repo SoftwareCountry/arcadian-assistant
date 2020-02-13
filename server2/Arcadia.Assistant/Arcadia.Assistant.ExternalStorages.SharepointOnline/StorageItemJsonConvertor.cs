@@ -76,8 +76,8 @@
                 Id = this.GetJsonInt(item, this.FieldsMapper.GetSharepointField(x => x.Id)),
                 Title = this.GetJsonString(item, this.FieldsMapper.GetSharepointField(x => x.Title)),
                 Description = this.GetJsonString(item, this.FieldsMapper.GetSharepointField(x => x.Description)),
-                StartDate = this.GetJsonDate(item, this.FieldsMapper.GetSharepointField(x => x.StartDate), allDayEvent, DateTime.MinValue),
-                EndDate = this.GetJsonDate(item, this.FieldsMapper.GetSharepointField(x => x.EndDate), allDayEvent, DateTime.UtcNow),
+                StartDate = this.GetJsonDate(item, this.FieldsMapper.GetSharepointField(x => x.StartDate), DateTime.MinValue, allDayEvent),
+                EndDate = this.GetJsonDate(item, this.FieldsMapper.GetSharepointField(x => x.EndDate), DateTime.UtcNow, allDayEvent),
                 Category = this.GetJsonString(item, this.FieldsMapper.GetSharepointField(x => x.Category)),
                 AllDayEvent = allDayEvent,
                 CalendarEventId = this.GetJsonString(item, this.FieldsMapper.GetSharepointField(x => x.CalendarEventId))
@@ -103,15 +103,10 @@
             return item.TryGetProperty(propName, out var prop) && prop.ValueKind != JsonValueKind.Null ? prop.GetBoolean() : defaultValue;
         }
 
-        private DateTime GetJsonDate(JsonElement item, string propName, bool dateOnly, DateTime defaultValue)
+        private DateTime GetJsonDate(JsonElement item, string propName, DateTime defaultValue, bool dateOnly = false)
         {
-            var date = item.TryGetProperty(propName, out var prop) && prop.ValueKind != JsonValueKind.Null && prop.TryGetDateTime(out var val) ? val : defaultValue;
-            return dateOnly ? new DateTime(date.Year, date.Month, date.Day) : date;
-        }
-
-        private DateTime GetJsonDate(JsonElement item, string propName, DateTime defaultValue)
-        {
-            return item.TryGetProperty(propName, out var prop) && prop.ValueKind != JsonValueKind.Null && prop.TryGetDateTime(out var val) ? val : defaultValue;
+            var date = item.TryGetProperty(propName, out var prop) && prop.ValueKind != JsonValueKind.Null && prop.TryGetDateTime(out var val) ? val : defaultValue; ;
+            return dateOnly ? date.Date : date;
         }
 
         #endregion

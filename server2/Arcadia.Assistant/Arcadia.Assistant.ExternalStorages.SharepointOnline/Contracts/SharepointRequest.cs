@@ -16,7 +16,12 @@
         private const string IfMatchHeaderName = "IF-MATCH";
         private const string XHttpMethodHeaderName = "X-HTTP-Method";
 
-        private readonly List<Tuple<string, string>> headersInternal = new List<Tuple<string, string>>();
+        /**** According rfc7230 3.2.2 p.2 
+         * A sender must not generate multiple header fields with the same field name in a message unless either the entire field
+         * value for that header field is defined as a comma-separated list [i.e., #(values)] or the header field is a well-known
+         * exception (as noted below).
+         */
+        private readonly Dictionary<string, List<string>> headersInternal = new Dictionary<string, List<string>>();
 
         private SharepointRequest(HttpMethod httpMethod, string url)
         {
@@ -30,25 +35,14 @@
 
         public HttpContent? Content { get; private set; }
 
-        public IReadOnlyList<Tuple<string, string>> Headers => this.headersInternal;
-
         public static SharepointRequest Create(HttpMethod httpMethod, string url)
         {
             return new SharepointRequest(httpMethod, url);
         }
 
-        public SharepointRequest WithAcceptHeader(string value, bool update = true)
+        public SharepointRequest WithAcceptHeader(string value)
         {
-            if (update)
-            {
-                this.RemoveHeader(AcceptHeaderName);
-            }
-
-            if (update || !this.headersInternal.Any(x => x.Item1 == AcceptHeaderName))
-            {
-                this.AddHeader(AcceptHeaderName, value);
-            }
-
+            this.AddHeader(AcceptHeaderName, value);
             return this;
         }
 
@@ -95,8 +89,9 @@
                 httpRequest.Content = this.Content;
             }
 
-            foreach (var (headerName, headerValue) in this.headersInternal)
+            foreach (var (headerName, headerValues) in this.headersInternal)
             {
+                var headerValue = string.Join(", ", headerValues);
                 switch (headerName)
                 {
                     case AcceptHeaderName:
@@ -128,12 +123,16 @@
 
         private void AddHeader(string name, string value)
         {
-            this.headersInternal.Add(Tuple.Create(name, value));
-        }
-
-        private void RemoveHeader(string name)
-        {
-            this.headersInternal.RemoveAll(x => x.Item1 == name);
+            if (!this.headersInternal.TryGetValue(name, out var headerValues))
+            {
+                this.headersInternal.Add(name, new List<string>()
+                {
+                    value
+                });
+            } else if (!headerValues.Contains(value))
+            {
+                this.headersInternal[name].Add(value);
+            }
         }
     }
 }

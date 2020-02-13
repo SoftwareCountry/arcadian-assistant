@@ -27,13 +27,13 @@
         private readonly IVacations vacations;
         private readonly IWorkHoursCredit workouts;
         private readonly ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings;
-        private readonly ILogger? logger;
+        private readonly ILogger logger;
 
         #endregion
 
         #region ctor
 
-        public SharepointSynchronizator(ISickLeaves sickLeaves, IVacations vacations, IWorkHoursCredit workouts, ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings, ILogger? logger)
+        public SharepointSynchronizator(ISickLeaves sickLeaves, IVacations vacations, IWorkHoursCredit workouts, ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings, ILogger logger)
         {
             this.sickLeaves = sickLeaves;
             this.vacations = vacations;
@@ -111,7 +111,7 @@
 
         private class EmployeeVacationsSynchronization : SharepointItemSynchronization<VacationDescription>
         {
-            public EmployeeVacationsSynchronization(IExternalStorage externalStorage, ILogger? logger = null)
+            public EmployeeVacationsSynchronization(IExternalStorage externalStorage, ILogger logger)
                 : base(externalStorage, logger)
             {
             }
@@ -131,7 +131,7 @@
 
         private class EmployeeWorkoutsSynchronization : SharepointItemSynchronization<WorkHoursChange>
         {
-            public EmployeeWorkoutsSynchronization(IExternalStorage externalStorage, ILogger? logger = null)
+            public EmployeeWorkoutsSynchronization(IExternalStorage externalStorage, ILogger logger)
                 : base(externalStorage, logger)
             {
             }
@@ -151,7 +151,7 @@
 
         private class EmployeeSickLeavesSynchronization : SharepointItemSynchronization<SickLeaveDescription>
         {
-            public EmployeeSickLeavesSynchronization(IExternalStorage externalStorage, ILogger? logger = null)
+            public EmployeeSickLeavesSynchronization(IExternalStorage externalStorage, ILogger logger)
                 : base(externalStorage, logger)
             {
             }

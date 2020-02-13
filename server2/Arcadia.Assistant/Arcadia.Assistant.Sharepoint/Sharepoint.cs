@@ -31,7 +31,7 @@ namespace Arcadia.Assistant.Sharepoint
         private readonly ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings;
         private readonly IEmployees employees;
         private readonly Func<IExternalStorage> externalStorageProvider;
-        private readonly ILogger? logger = null; // TO DO - initialize variable
+        private readonly ILogger? logger;
         private readonly IOrganization organizations;
         private readonly ISharepointSynchronizationSettings serviceSettings;
         private readonly ISickLeaves sickLeaves;
@@ -47,7 +47,8 @@ namespace Arcadia.Assistant.Sharepoint
             IOrganization organizations,
             Func<IExternalStorage> externalStorageProvider,
             ISharepointSynchronizationSettings serviceSettings,
-            ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings)
+            ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings,
+            ILogger logger)
             : base(context)
         {
             this.externalStorageProvider = externalStorageProvider;
@@ -58,6 +59,7 @@ namespace Arcadia.Assistant.Sharepoint
             this.organizations = organizations;
             this.serviceSettings = serviceSettings;
             this.departmentsCalendarsSettings = departmentsCalendarsSettings;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -92,7 +94,7 @@ namespace Arcadia.Assistant.Sharepoint
                 }
                 catch (Exception e)
                 {
-                    this.logger?.LogError(e, "Sharepoint items synchronization fail");
+                    this.logger.LogError(e, "Sharepoint items synchronization fail");
                 }
 
                 await Task.Delay(TimeSpan.FromMinutes(this.serviceSettings.SynchronizationIntervalMinutes), cancellationToken);

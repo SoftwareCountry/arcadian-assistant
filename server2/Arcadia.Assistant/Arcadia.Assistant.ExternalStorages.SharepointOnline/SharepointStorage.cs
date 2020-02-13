@@ -65,8 +65,7 @@
 
             var existingListItem = listItems.First();
 
-            var updateItemUrl = this.GetListItemsUrl(list, false);
-            updateItemUrl += $"({existingListItem.Id})";
+            var updateItemUrl = $"{this.GetListItemsUrl(list, false)}({existingListItem.Id})";
 
             var listItemType = await this.GetListItemType(list, cancellationToken);
 
