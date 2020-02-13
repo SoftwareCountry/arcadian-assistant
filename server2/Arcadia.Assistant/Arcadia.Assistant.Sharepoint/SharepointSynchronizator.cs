@@ -21,6 +21,16 @@
 
     public sealed class SharepointSynchronizator
     {
+        #region variables
+
+        private readonly ISickLeaves sickLeaves;
+        private readonly IVacations vacations;
+        private readonly IWorkHoursCredit workouts;
+        private readonly ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings;
+        private readonly ILogger? logger;
+
+        #endregion
+
         #region ctor
 
         public SharepointSynchronizator(ISickLeaves sickLeaves, IVacations vacations, IWorkHoursCredit workouts, ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings, ILogger? logger)
@@ -42,11 +52,8 @@
             var workoutsSync = new EmployeeWorkoutsSynchronization(storage, this.logger);
             var sickLeavesSync = new EmployeeSickLeavesSynchronization(storage, this.logger);
 
-            var sharepointItemsByCalendars = departments.Distinct().ToDictionary(x => x,
-                dId => this.GetSharepointCalendarsByDepartment(dId).ToDictionary(x => x,
-                    async cal => await this.GetAllSharepointItemsForCalendar(storage, cal)));
-
-            foreach (var departmentId in departments)
+            var storageItemsCache = new Dictionary<string, IEnumerable<StorageItem>>();
+            foreach (var departmentId in departments.Distinct())
             {
                 var departmentEmployees = await employees.FindEmployeesAsync(EmployeesQuery.Create().ForDepartment(departmentId), cancellationToken);
                 var employeeIds = departmentEmployees.Select(x => x.EmployeeId).ToArray();
@@ -56,23 +63,46 @@
                 var employeeSickLeavesTask = this.sickLeaves.GetCalendarEventsByEmployeeMapAsync(employeeIds, cancellationToken);
                 await Task.WhenAll(employeeVacationsTask, employeeWorkoutsTask, employeeSickLeavesTask);
 
-                var employeeVacationValues = employeeVacationsTask.Result.Values.SelectMany(x => x).ToDictionary(x => CspCalendarEventIdParser.GetCalendarEventIdFromCspId(x.VacationId, CalendarEventTypes.Vacation), x => x);
-                var employeeWorkoutsValues = employeeWorkoutsTask.Result.Values.SelectMany(x => x).ToDictionary(x => CspCalendarEventIdParser.GetCalendarEventIdFromCspId(x.ChangeId, CalendarEventTypes.Workout), x => x);
-                var employeeSickLeavesValues = employeeSickLeavesTask.Result.Values.SelectMany(x => x).ToDictionary(x => CspCalendarEventIdParser.GetCalendarEventIdFromCspId(x.SickLeaveId, CalendarEventTypes.Sickleave), x => x);
+                var employeeVacationValues = employeeVacationsTask.Result.Values.SelectMany(x => x)
+                    .ToDictionary(x => CspCalendarEventIdParser.GetCalendarEventIdFromCspId(x.VacationId, CalendarEventTypes.Vacation), x => x);
+                var employeeWorkoutsValues = employeeWorkoutsTask.Result.Values.SelectMany(x => x)
+                    .ToDictionary(x => CspCalendarEventIdParser.GetCalendarEventIdFromCspId(x.ChangeId, CalendarEventTypes.Workout), x => x);
+                var employeeSickLeavesValues = employeeSickLeavesTask.Result.Values.SelectMany(x => x)
+                    .ToDictionary(x => CspCalendarEventIdParser.GetCalendarEventIdFromCspId(x.SickLeaveId, CalendarEventTypes.Sickleave), x => x);
 
-                foreach (var calendar in sharepointItemsByCalendars[departmentId].Keys)
+                foreach (var calendar in this.GetSharepointCalendarsByDepartment(departmentId))
                 {
-                    var storageItems = await sharepointItemsByCalendars[departmentId][calendar];
+                    if (!storageItemsCache.ContainsKey(calendar))
+                    {
+                        storageItemsCache.Add(calendar, await this.GetAllSharepointItemsForCalendar(storage, calendar));
+                    }
 
                     await Task.WhenAll(
                         // synchronize vacations for selected department
-                        vacationsSync.SynchronizeItems(calendar, departmentEmployees, employeeVacationValues, storageItems, cancellationToken),
+                        vacationsSync.SynchronizeItems(calendar, departmentEmployees, employeeVacationValues, storageItemsCache[calendar], cancellationToken),
                         // synchronize workouts for selected department
-                        workoutsSync.SynchronizeItems(calendar, departmentEmployees, employeeWorkoutsValues, storageItems, cancellationToken),
+                        workoutsSync.SynchronizeItems(calendar, departmentEmployees, employeeWorkoutsValues, storageItemsCache[calendar], cancellationToken),
                         // synchronize vacations for selected department
-                        sickLeavesSync.SynchronizeItems(calendar, departmentEmployees, employeeSickLeavesValues, storageItems, cancellationToken));
+                        sickLeavesSync.SynchronizeItems(calendar, departmentEmployees, employeeSickLeavesValues, storageItemsCache[calendar], cancellationToken));
                 }
             }
+        }
+
+        #endregion
+
+        #region private
+
+        private async Task<IEnumerable<StorageItem>> GetAllSharepointItemsForCalendar(IExternalStorage externalStorage, string calendar)
+        {
+            return await externalStorage.GetItems(calendar);
+        }
+
+        private IEnumerable<string> GetSharepointCalendarsByDepartment(string departmentId)
+        {
+            return this.departmentsCalendarsSettings.DepartmentsCalendars
+                .Where(x => x.DepartmentId == departmentId)
+                .Select(x => x.Calendar)
+                .Distinct();
         }
 
         #endregion
@@ -141,30 +171,5 @@
 
         #endregion
 
-        #region variables
-
-        private readonly ISickLeaves sickLeaves;
-        private readonly IVacations vacations;
-        private readonly IWorkHoursCredit workouts;
-        private readonly ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings;
-        private readonly ILogger? logger;
-
-        #endregion
-
-        #region private
-
-        private async Task<IEnumerable<StorageItem>> GetAllSharepointItemsForCalendar(IExternalStorage externalStorage, string calendar)
-        {
-            return await externalStorage.GetItems(calendar);
-        }
-
-        private IEnumerable<string> GetSharepointCalendarsByDepartment(string departmentId)
-        {
-            return this.departmentsCalendarsSettings.DepartmentsCalendars
-                .Where(x => x.DepartmentId == departmentId)
-                .Select(x => x.Calendar);
-        }
-
-        #endregion
     }
 }

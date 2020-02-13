@@ -86,8 +86,8 @@ namespace Arcadia.Assistant.WorkHoursCredit
             var events = await this.QueryCalendarEvents(ctx.Value.ChangeRequests, x => employeeIds.Any(id => id.Value == x.EmployeeId))
                 .ToArrayAsync(cancellationToken);
 
-            return events.GroupBy(x=> x.EmployeeId)
-                .ToDictionary(x => x.Key, x=> x.ToArray());
+            return events.GroupBy(x => x.EmployeeId)
+                .ToDictionary(x => x.Key, x => x.ToArray());
         }
 
         public async Task<WorkHoursChange?> GetCalendarEventAsync(EmployeeId employeeId, Guid eventId, CancellationToken cancellationToken)

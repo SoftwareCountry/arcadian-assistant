@@ -103,7 +103,7 @@ namespace Arcadia.Assistant.Sharepoint
         {
             if (this.departmentsCalendarsSettings.DepartmentsCalendars != null && this.departmentsCalendarsSettings.DepartmentsCalendars.Any())
             {
-                return this.departmentsCalendarsSettings.DepartmentsCalendars.Select(x => x.DepartmentId);
+                return this.departmentsCalendarsSettings.DepartmentsCalendars.Select(x => x.DepartmentId).Distinct();
             }
 
             return (await this.organizations.GetDepartmentsAsync(cancellationToken)).Select(x => x.DepartmentId.Value.ToString());
