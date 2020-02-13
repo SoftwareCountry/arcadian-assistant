@@ -29,11 +29,11 @@
     public class EmployeesController : Controller
     {
         private readonly IEmployees employees;
-        private readonly IPermissions permissions;
-        private readonly IWorkHoursCredit workHoursCredit;
-        private readonly IVacationsCredit vacationsCredit;
         private readonly ILogger<EmployeesController> logger;
+        private readonly IPermissions permissions;
         private readonly bool sslOffloading = false; //TODO: configured
+        private readonly IVacationsCredit vacationsCredit;
+        private readonly IWorkHoursCredit workHoursCredit;
 
         public EmployeesController(IEmployees employees, ILogger<EmployeesController> logger, IPermissions permissions, IWorkHoursCredit workHoursCredit, IVacationsCredit vacationsCredit)
         {

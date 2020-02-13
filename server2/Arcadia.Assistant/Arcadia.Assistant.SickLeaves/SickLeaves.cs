@@ -16,6 +16,7 @@ namespace Arcadia.Assistant.SickLeaves
     using Employees.Contracts;
 
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
@@ -31,18 +32,21 @@ namespace Arcadia.Assistant.SickLeaves
         private readonly Func<Owned<SickLeaveCancellationStep>> cancellationStepsFactory;
 
         private readonly SickLeaveModelConverter modelConverter = new SickLeaveModelConverter();
+        private readonly ILogger logger;
 
         public SickLeaves(StatelessServiceContext context, 
             Func<Owned<ArcadiaCspContext>> dbFactory,
             Func<Owned<SickLeaveCreationStep>> creationStepsFactory, 
             Func<Owned<SickLeaveProlongationStep>> prolongationStepsFactory,
-            Func<Owned<SickLeaveCancellationStep>> cancellationStepsFactory)
+            Func<Owned<SickLeaveCancellationStep>> cancellationStepsFactory,
+            ILogger logger)
             : base(context)
         {
             this.dbFactory = dbFactory;
             this.creationStepsFactory = creationStepsFactory;
             this.prolongationStepsFactory = prolongationStepsFactory;
             this.cancellationStepsFactory = cancellationStepsFactory;
+            this.logger = logger;
         }
 
         /// <summary>

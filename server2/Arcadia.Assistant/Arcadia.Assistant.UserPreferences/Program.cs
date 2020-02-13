@@ -1,9 +1,14 @@
 namespace Arcadia.Assistant.UserPreferences
 {
     using System;
+    using System.Fabric;
     using System.Threading;
 
-    using Microsoft.ServiceFabric.Actors.Runtime;
+    using Autofac;
+    using Autofac.Integration.ServiceFabric;
+    using Logging;
+
+    using Microsoft.Extensions.Logging;
 
     internal static class Program
     {
@@ -12,21 +17,24 @@ namespace Arcadia.Assistant.UserPreferences
         /// </summary>
         private static void Main()
         {
+            ILogger? logger = null;
             try
             {
-                // This line registers an Actor Service to host your actor class with the Service Fabric runtime.
-                // The contents of your ServiceManifest.xml and ApplicationManifest.xml files
-                // are automatically populated when you build this project.
-                // For more information, see https://aka.ms/servicefabricactorsplatform
+                var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
 
-                ActorRuntime.RegisterActorAsync<UserPreferencesStorage>(
-                    (context, actorType) => new ActorService(context, actorType)).GetAwaiter().GetResult();
+                var builder = new ContainerBuilder();
+                builder.RegisterServiceFabricSupport();
+                builder.RegisterActor<UserPreferencesStorage>();
+                builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
+                using var container = builder.Build();
+                logger = container.TryResolve<ILogger>(out ILogger val) ? val : null;
                 Thread.Sleep(Timeout.Infinite);
             }
             catch (Exception e)
             {
                 ActorEventSource.Current.ActorHostInitializationFailed(e.ToString());
+                logger?.LogCritical(e, e.ToString());
                 throw;
             }
         }

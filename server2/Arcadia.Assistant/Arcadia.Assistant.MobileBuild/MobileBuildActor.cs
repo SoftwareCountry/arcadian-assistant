@@ -5,6 +5,7 @@ namespace Arcadia.Assistant.MobileBuild
 
     using Contracts;
 
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Actors;
     using Microsoft.ServiceFabric.Actors.Runtime;
 
@@ -17,28 +18,33 @@ namespace Arcadia.Assistant.MobileBuild
     ///     - None: State is kept in memory only and not replicated.
     /// </remarks>
     [StatePersistence(StatePersistence.Persisted)]
-    internal class MobileBuildActor : Actor, IMobileBuildActor
+    public class MobileBuildActor : Actor, IMobileBuildActor
     {
         private const string BuildVersionKey = "build_version";
         private const string BuildDataKey = "build_data";
+        private readonly ILogger logger;
 
         /// <summary>
         ///     Initializes a new instance of MobileBuild
         /// </summary>
         /// <param name="actorService">The Microsoft.ServiceFabric.Actors.Runtime.ActorService that will host this actor instance.</param>
         /// <param name="actorId">The Microsoft.ServiceFabric.Actors.ActorId for this actor instance.</param>
-        public MobileBuildActor(ActorService actorService, ActorId actorId)
+        /// <param name="logger">Logger object interface </param>
+        public MobileBuildActor(ActorService actorService, ActorId actorId, ILogger<MobileBuildActor> logger)
             : base(actorService, actorId)
         {
+            this.logger = logger;
         }
 
         public Task<string> GetMobileBuildVersionAsync(CancellationToken cancellationToken)
         {
+            this.logger.LogDebug("Return version");
             return this.StateManager.GetStateAsync<string>(BuildVersionKey, cancellationToken);
         }
 
         public Task<byte[]> GetMobileBuildDataAsync(CancellationToken cancellationToken)
         {
+            this.logger.LogDebug("Return build data");
             return this.StateManager.GetStateAsync<byte[]>(BuildDataKey, cancellationToken);
         }
 
@@ -46,6 +52,7 @@ namespace Arcadia.Assistant.MobileBuild
         {
             await this.StateManager.AddOrUpdateStateAsync(BuildVersionKey, version, (key, value) => version, cancellationToken);
             await this.StateManager.AddOrUpdateStateAsync(BuildDataKey, data, (key, value) => data, cancellationToken);
+            this.logger.LogDebug($"Store build data (length:{data?.Length}) for version {version}");
             await this.StateManager.SaveStateAsync(cancellationToken);
         }
 
@@ -55,7 +62,7 @@ namespace Arcadia.Assistant.MobileBuild
         /// </summary>
         protected override Task OnActivateAsync()
         {
-            ActorEventSource.Current.ActorMessage(this, "Actor activated.");
+            this.logger.LogInformation("Actor activated.");
 
             // The StateManager is this actor's private state store.
             // Data stored in the StateManager will be replicated for high-availability for actors that use volatile or persisted state storage.

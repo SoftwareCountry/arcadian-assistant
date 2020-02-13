@@ -67,6 +67,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.MobileBui
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MobileBuilds", "MobileBuilds", "{13E39FC7-D22B-4521-B65A-48C62593821F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Logging", "Arcadia.Assistant.Logging\Arcadia.Assistant.Logging.csproj", "{46AA315B-CF2D-4151-937A-D525D0BBF93A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -191,6 +193,10 @@ Global
 		{1C3C2A57-B9EE-45E6-8639-7295AFDEC518}.Debug|x64.Build.0 = Debug|x64
 		{1C3C2A57-B9EE-45E6-8639-7295AFDEC518}.Release|x64.ActiveCfg = Release|Any CPU
 		{1C3C2A57-B9EE-45E6-8639-7295AFDEC518}.Release|x64.Build.0 = Release|Any CPU
+		{46AA315B-CF2D-4151-937A-D525D0BBF93A}.Debug|x64.ActiveCfg = Debug|x64
+		{46AA315B-CF2D-4151-937A-D525D0BBF93A}.Debug|x64.Build.0 = Debug|x64
+		{46AA315B-CF2D-4151-937A-D525D0BBF93A}.Release|x64.ActiveCfg = Release|Any CPU
+		{46AA315B-CF2D-4151-937A-D525D0BBF93A}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

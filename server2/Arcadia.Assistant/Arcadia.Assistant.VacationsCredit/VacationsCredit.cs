@@ -10,6 +10,7 @@ namespace Arcadia.Assistant.VacationsCredit
 
     using Contracts;
 
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
@@ -21,14 +22,16 @@ namespace Arcadia.Assistant.VacationsCredit
     {
         private readonly InboxConfiguration configuration;
         private readonly Func<Owned<IVacationsDaysLoader>> loaderFactory;
+        private readonly ILogger logger;
 
         private Dictionary<string, double> EmailToVacationDaysCount { get; set; } = new Dictionary<string, double>();
 
-        public VacationsCredit(StatelessServiceContext context, InboxConfiguration configuration, Func<Owned<IVacationsDaysLoader>> loaderFactory)
+        public VacationsCredit(StatelessServiceContext context, InboxConfiguration configuration, Func<Owned<IVacationsDaysLoader>> loaderFactory, ILogger logger)
             : base(context)
         {
             this.configuration = configuration;
             this.loaderFactory = loaderFactory;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -50,7 +53,7 @@ namespace Arcadia.Assistant.VacationsCredit
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                ServiceEventSource.Current.ServiceMessage(this.Context, "Checking inbox");
+                this.logger.LogInformation( "Checking inbox");
 
                 using (var loader = this.loaderFactory())
                 {
@@ -65,7 +68,7 @@ namespace Arcadia.Assistant.VacationsCredit
                     catch (TaskCanceledException) { }
                     catch (Exception e)
                     {
-                        ServiceEventSource.Current.ServiceMessage(this.Context, "Error occurred: {0}", e.Message);
+                        this.logger.LogError(e, e.Message);
                     }
                 }
 

@@ -1,6 +1,5 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers.Calendar
 {
-    using System;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -25,12 +24,12 @@
     [ApiController]
     public class CalendarEventsApprovalsController : Controller
     {
-        private readonly IWorkHoursCredit workHoursCredit;
-        private readonly IVacations vacations;
         private readonly IEmployees employees;
         private readonly IAuthorizationService authorizationService;
 
         private readonly CalendarEventIdConverter idConverter = new CalendarEventIdConverter();
+        private readonly IVacations vacations;
+        private readonly IWorkHoursCredit workHoursCredit;
 
         public CalendarEventsApprovalsController(IWorkHoursCredit workHoursCredit, IVacations vacations, IEmployees employees, IAuthorizationService authorizationService)
         {
@@ -61,21 +60,20 @@
 
                 return approvals.Select(x => new CalendarEventApprovalModel(x.ApproverId.ToString(), x.Timestamp)).ToArray();
             }
-            
+
             if (this.idConverter.TryParseVacationId(eventId, out var vacationId))
             {
                 var vacation = await this.vacations.GetCalendarEventAsync(new EmployeeId(employeeId), vacationId, token);
                 if (vacation == null)
                 {
                     return this.NotFound();
-                } 
+                }
 
                 return vacation.Approvals.Select(x => new CalendarEventApprovalModel(x.ApproverId.ToString(), x.Timestamp)).ToArray();
             }
 
             return this.NotFound();
         }
-
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -104,9 +102,9 @@
                 }
 
                 await this.workHoursCredit.ApproveRequestAsync(new EmployeeId(employeeId), changeId, approver.EmployeeId);
-            } else if (this.idConverter.TryParseVacationId(eventId, out var vacationId))
+            }
+            else if (this.idConverter.TryParseVacationId(eventId, out var vacationId))
             {
-
                 var existingEvent = await this.vacations.GetCalendarEventAsync(new EmployeeId(employeeId), vacationId, CancellationToken.None);
                 if (existingEvent == null)
                 {

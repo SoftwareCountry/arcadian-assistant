@@ -4,4 +4,7 @@
   <Section Name="Csp">
     <Parameter Name="ConnectionString" Value="" />
   </Section>
+  <Section Name="Logging">
+    <Parameter Name="ApplicationInsightsKey" Value="" />
+  </Section>
 </Settings>

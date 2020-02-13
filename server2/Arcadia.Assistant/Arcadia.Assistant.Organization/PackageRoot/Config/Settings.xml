@@ -6,11 +6,13 @@
   </Section>
   <!-- This is used for securing StateManager's replication traffic. -->
   <Section Name="ReplicatorSecurityConfig" />
-
-  <!-- Add your custom configuration sections and parameters here. -->
   
   <Section Name="Csp">
     <Parameter Name="ConnectionString" Value="" />
   </Section>
-  
+
+  <Section Name="Logging">
+    <Parameter Name="ApplicationInsightsKey" Value="" />
+  </Section>
+
 </Settings>

@@ -19,16 +19,16 @@
 
         private static readonly IReadOnlyDictionary<string, string[]> PendingStatusesByType = new Dictionary<string, string[]>
         {
-            { CalendarEventTypes.Dayoff, new [] { ChangeRequestStatus.Requested.ToString() } },
-            { CalendarEventTypes.Workout, new [] { ChangeRequestStatus.Requested.ToString() }  },
+            { CalendarEventTypes.Dayoff, new[] { ChangeRequestStatus.Requested.ToString() } },
+            { CalendarEventTypes.Workout, new[] { ChangeRequestStatus.Requested.ToString() } },
             { CalendarEventTypes.Vacation, VacationStatuses.Pending }
         };
 
         private static readonly IReadOnlyDictionary<string, string[]> ActualStatusesByType = new Dictionary<string, string[]>
         {
-            { CalendarEventTypes.Dayoff, new [] { ChangeRequestStatus.Requested.ToString(), ChangeRequestStatus.Approved.ToString() }  },
-            { CalendarEventTypes.Workout, new [] { ChangeRequestStatus.Requested.ToString(), ChangeRequestStatus.Approved.ToString() } },
-            { CalendarEventTypes.Sickleave, new [] { SickLeaveStatus.Requested.ToString(), SickLeaveStatus.Completed.ToString() } },
+            { CalendarEventTypes.Dayoff, new[] { ChangeRequestStatus.Requested.ToString(), ChangeRequestStatus.Approved.ToString() } },
+            { CalendarEventTypes.Workout, new[] { ChangeRequestStatus.Requested.ToString(), ChangeRequestStatus.Approved.ToString() } },
+            { CalendarEventTypes.Sickleave, new[] { SickLeaveStatus.Requested.ToString(), SickLeaveStatus.Completed.ToString() } },
             { CalendarEventTypes.Vacation, VacationStatuses.Actual }
         };
 

@@ -32,7 +32,7 @@
 
         private DatesPeriodModel GetDatesPeriodModel(WorkHoursChange change)
         {
-            return new DatesPeriodModel()
+            return new DatesPeriodModel
             {
                 StartDate = change.Date,
                 EndDate = change.Date,

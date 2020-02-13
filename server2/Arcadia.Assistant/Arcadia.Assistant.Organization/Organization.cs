@@ -1,23 +1,19 @@
 namespace Arcadia.Assistant.Organization
 {
+    using Autofac.Features.OwnedInstances;
+    using Contracts;
+
+    using Employees.Contracts;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.ServiceFabric.Services.Communication.Runtime;
+    using Microsoft.ServiceFabric.Services.Remoting.Runtime;
+    using Microsoft.ServiceFabric.Services.Runtime;
     using System;
     using System.Collections.Generic;
     using System.Fabric;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using Autofac.Features.OwnedInstances;
-
-    using Contracts;
-
-    using Employees.Contracts;
-
-    using Microsoft.Extensions.Logging;
-    using Microsoft.ServiceFabric.Data.Collections;
-    using Microsoft.ServiceFabric.Services.Communication.Runtime;
-    using Microsoft.ServiceFabric.Services.Remoting.Runtime;
-    using Microsoft.ServiceFabric.Services.Runtime;
 
     /// <summary>
     ///     An instance of this class is created for each service replica by the Service Fabric runtime.
@@ -26,13 +22,14 @@ namespace Arcadia.Assistant.Organization
     {
         private readonly ISupervisorSearch supervisorSearch;
         private readonly IOrganizationDepartments organizationDepartments;
-        private readonly ILogger logger = new LoggerFactory().CreateLogger<Organization>();
+        private readonly ILogger logger;
 
-        public Organization(StatefulServiceContext context, Func<Owned<OrganizationDepartmentsQuery>> allDepartmentsQuery, IEmployees employees)
+        public Organization(StatefulServiceContext context, Func<Owned<OrganizationDepartmentsQuery>> allDepartmentsQuery, IEmployees employees, ILogger logger)
             : base(context)
         {
             this.organizationDepartments = new CachedOrganizationDepartments(this.StateManager, allDepartmentsQuery, this.logger);
             this.supervisorSearch = new SupervisorSearch(employees, this.organizationDepartments);
+            this.logger = logger;
         }
 
         public async Task<DepartmentMetadata?> GetDepartmentAsync(DepartmentId departmentId, CancellationToken cancellationToken)
