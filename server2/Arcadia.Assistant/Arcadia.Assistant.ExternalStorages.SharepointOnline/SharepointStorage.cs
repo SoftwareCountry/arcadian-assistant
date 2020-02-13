@@ -90,8 +90,7 @@
 
             var existingListItem = listItems.First();
 
-            var deleteItemUrl = this.GetListItemsUrl(list, false);
-            deleteItemUrl += $"({existingListItem.Id})";
+            var deleteItemUrl = $"{this.GetListItemsUrl(list, false)}({existingListItem.Id})";
 
             var request = SharepointRequest
                 .Create(HttpMethod.Post, deleteItemUrl)

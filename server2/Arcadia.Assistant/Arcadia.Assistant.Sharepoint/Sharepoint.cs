@@ -31,7 +31,7 @@ namespace Arcadia.Assistant.Sharepoint
         private readonly ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings;
         private readonly IEmployees employees;
         private readonly Func<IExternalStorage> externalStorageProvider;
-        private readonly ILogger? logger;
+        private readonly ILogger logger;
         private readonly IOrganization organizations;
         private readonly ISharepointSynchronizationSettings serviceSettings;
         private readonly ISickLeaves sickLeaves;
