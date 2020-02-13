@@ -10,6 +10,7 @@
     <Parameter Name="Arcadia.Assistant.DeviceRegistry_MinReplicaSetSize" DefaultValue="3" />
     <Parameter Name="Arcadia.Assistant.DeviceRegistry_PartitionCount" DefaultValue="1" />
     <Parameter Name="Arcadia.Assistant.DeviceRegistry_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.AppCenterBuilds_InstanceCount" DefaultValue="1" />
     <Parameter Name="Arcadia.Assistant.AppCenterBuilds_DownloadBuildIntervalMinutes" DefaultValue="720" />
     <Parameter Name="Arcadia.Assistant.AppCenterBuilds_ApiToken" DefaultValue="" />
@@ -38,6 +39,12 @@
     <Parameter Name="Arcadia.Assistant.Organization_PartitionCount" DefaultValue="1" />
     <Parameter Name="Arcadia.Assistant.Organization_TargetReplicaSetSize" DefaultValue="3" />
     <Parameter Name="Arcadia.Assistant.ApplicationInsightsKey" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_ServerUrl" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_ClientId" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_ClientSecret" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_CalendarEventIdField" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_SynchronizationIntervalMinutes" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_DepartmentsCalendars" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_ASPNETCORE_ENVIRONMENT" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.Web_Port" DefaultValue="63601" />
@@ -98,6 +105,30 @@
     <ConfigOverrides>
       <ConfigOverride Name="Config">
         <Settings>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
+  </ServiceManifestImport>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.SharepointPkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Sharepoint">
+            <Parameter Name="ServerUrl" Value="[Arcadia.Assistant.Sharepoint_ServerUrl]" />
+            <Parameter Name="ClientId" Value="[Arcadia.Assistant.Sharepoint_ClientId]" />
+            <Parameter Name="ClientSecret" Value="[Arcadia.Assistant.Sharepoint_ClientSecret]" />
+            <Parameter Name="CalendarEventIdField" Value="[Arcadia.Assistant.Sharepoint_CalendarEventIdField]" />
+          </Section>
+          <Section Name="Service">
+            <Parameter Name="SynchronizationIntervalMinutes" Value="[Arcadia.Assistant.Sharepoint_SynchronizationIntervalMinutes]" />
+          </Section>
+          <Section Name="DepartmentsCalendars">
+            <Parameter Name="Value" Value="[Arcadia.Assistant.Sharepoint_DepartmentsCalendars]" />
+          </Section>
           <Section Name="Logging">
             <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
           </Section>
@@ -360,6 +391,11 @@
       <StatefulService ServiceTypeName="Arcadia.Assistant.DeviceRegistryType" TargetReplicaSetSize="[Arcadia.Assistant.DeviceRegistry_TargetReplicaSetSize]" MinReplicaSetSize="[Arcadia.Assistant.DeviceRegistry_MinReplicaSetSize]">
         <UniformInt64Partition PartitionCount="[Arcadia.Assistant.DeviceRegistry_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
       </StatefulService>
+    </Service>
+    <Service Name="Arcadia.Assistant.Sharepoint" ServicePackageActivationMode="ExclusiveProcess">
+      <StatelessService ServiceTypeName="Arcadia.Assistant.SharepointType" InstanceCount="[Arcadia.Assistant.Sharepoint_InstanceCount]">
+        <SingletonPartition />
+      </StatelessService>
     </Service>
     <Service Name="Arcadia.Assistant.AppCenterBuilds" ServicePackageActivationMode="ExclusiveProcess">
       <StatelessService ServiceTypeName="Arcadia.Assistant.AppCenterBuildsType" InstanceCount="[Arcadia.Assistant.AppCenterBuilds_InstanceCount]">

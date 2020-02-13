@@ -80,6 +80,16 @@ namespace Arcadia.Assistant.WorkHoursCredit
             return events;
         }
 
+        public async Task<Dictionary<EmployeeId, WorkHoursChange[]>> GetCalendarEventsByEmployeeMapAsync(EmployeeId[] employeeIds, CancellationToken cancellationToken)
+        {
+            using var ctx = this.dbFactory();
+            var events = await this.QueryCalendarEvents(ctx.Value.ChangeRequests, x => employeeIds.Any(id => id.Value == x.EmployeeId))
+                .ToArrayAsync(cancellationToken);
+
+            return events.GroupBy(x => x.EmployeeId)
+                .ToDictionary(x => x.Key, x => x.ToArray());
+        }
+
         public async Task<WorkHoursChange?> GetCalendarEventAsync(EmployeeId employeeId, Guid eventId, CancellationToken cancellationToken)
         {
             using var ctx = this.dbFactory();

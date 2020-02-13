@@ -38,6 +38,7 @@
     <ProjectReference Include="..\Arcadia.Assistant.MobileBuild\Arcadia.Assistant.MobileBuild.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Notifications\Arcadia.Assistant.Notifications.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.PendingActions\Arcadia.Assistant.PendingActions.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.Sharepoint\Arcadia.Assistant.Sharepoint.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.PushNotifications\Arcadia.Assistant.PushNotifications.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.SickLeaves\Arcadia.Assistant.SickLeaves.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.VacationsCredit\Arcadia.Assistant.VacationsCredit.csproj" />

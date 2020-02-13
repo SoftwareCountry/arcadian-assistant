@@ -7,6 +7,7 @@
     using System.Threading.Tasks;
 
     using Contracts.Models;
+
     using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Data;
     using Microsoft.ServiceFabric.Data.Collections;
@@ -70,7 +71,7 @@
             await employeeDeviceList.AddOrUpdateAsync(transaction, employeeId, registryValue, (k, o) => registryValue, OperationTimeout, cancellationToken);
             await deviceRegistrations.AddOrUpdateAsync(transaction, registryItem.DeviceId, deviceRegistrationInfo, (k, o) => deviceRegistrationInfo, OperationTimeout, cancellationToken);
 
-            this.logger.LogDebug($"New device (Id:{registryItem.DeviceId}) registered for employee ({employeeId.ToString()})");
+            this.logger.LogDebug($"New device (Id:{registryItem.DeviceId}) registered for employee ({employeeId})");
             await transaction.CommitAsync();
         }
 
@@ -121,7 +122,7 @@
                 await deviceRegistrations.TryRemoveAsync(transaction, deviceId, OperationTimeout, cancellationToken);
             }
 
-            this.logger.LogDebug($"Device (Id:{deviceId}) removed from registry for employee ({employeeId.ToString()})");
+            this.logger.LogDebug($"Device (Id:{deviceId}) removed from registry for employee ({employeeId})");
             await transaction.CommitAsync();
         }
 

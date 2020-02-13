@@ -27,9 +27,9 @@ namespace Arcadia.Assistant.PushNotifications
     public sealed class PushNotifications : StatelessService
     {
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly ILogger logger;
         private readonly Dictionary<string, string> notificationConfiguration;
         private readonly IPushSettings pushSettings;
-        private readonly ILogger logger;
 
         public PushNotifications(StatelessServiceContext context, IPushSettings pushSettings, IHttpClientFactory httpClientFactory, ILogger logger)
             : base(context)

@@ -1,19 +1,15 @@
 namespace Arcadia.Assistant.DeviceRegistry
 {
-    using System;
     using System.Collections.Generic;
     using System.Fabric;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
-    using Castle.Core.Internal;
-
     using Contracts;
     using Contracts.Models;
 
     using Microsoft.Extensions.Logging;
-    using Microsoft.ServiceFabric.Data.Collections;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
 
@@ -79,7 +75,7 @@ namespace Arcadia.Assistant.DeviceRegistry
         public async Task<IEnumerable<DeviceRegistryItem>> GetDeviceRegistryByEmployeeAndType(string employeeId, string deviceType, CancellationToken cancellationToken)
         {
             return (await new RegistryOperations(this.StateManager, this.logger)
-                .GetDeviceFromRegistryByEmployee(new EmployeeId(employeeId), cancellationToken))
+                    .GetDeviceFromRegistryByEmployee(new EmployeeId(employeeId), cancellationToken))
                 .Where(x => x.DeviceType == deviceType);
         }
 
