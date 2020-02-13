@@ -67,6 +67,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.MobileBui
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MobileBuilds", "MobileBuilds", "{13E39FC7-D22B-4521-B65A-48C62593821F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sharepoint", "Sharepoint", "{EEF565D4-4A3D-4784-AE0F-AF39C4A27E90}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.ExternalStorages.Abstractions", "Arcadia.Assistant.ExternalStorages.Abstractions\Arcadia.Assistant.ExternalStorages.Abstractions.csproj", "{9507586E-6D63-432E-99E2-59B73907ACA0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.ExternalStorages.SharepointOnline", "Arcadia.Assistant.ExternalStorages.SharepointOnline\Arcadia.Assistant.ExternalStorages.SharepointOnline.csproj", "{085366A3-3D08-45B5-9A24-DDF3E1EEB2FA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Sharepoint", "Arcadia.Assistant.Sharepoint\Arcadia.Assistant.Sharepoint.csproj", "{C5818540-DECF-409D-82CE-D34E72C34D7D}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Logging", "Arcadia.Assistant.Logging\Arcadia.Assistant.Logging.csproj", "{46AA315B-CF2D-4151-937A-D525D0BBF93A}"
 EndProject
 Global
@@ -197,6 +205,18 @@ Global
 		{46AA315B-CF2D-4151-937A-D525D0BBF93A}.Debug|x64.Build.0 = Debug|x64
 		{46AA315B-CF2D-4151-937A-D525D0BBF93A}.Release|x64.ActiveCfg = Release|Any CPU
 		{46AA315B-CF2D-4151-937A-D525D0BBF93A}.Release|x64.Build.0 = Release|Any CPU
+		{9507586E-6D63-432E-99E2-59B73907ACA0}.Debug|x64.ActiveCfg = Debug|x64
+		{9507586E-6D63-432E-99E2-59B73907ACA0}.Debug|x64.Build.0 = Debug|x64
+		{9507586E-6D63-432E-99E2-59B73907ACA0}.Release|x64.ActiveCfg = Release|Any CPU
+		{9507586E-6D63-432E-99E2-59B73907ACA0}.Release|x64.Build.0 = Release|Any CPU
+		{085366A3-3D08-45B5-9A24-DDF3E1EEB2FA}.Debug|x64.ActiveCfg = Debug|x64
+		{085366A3-3D08-45B5-9A24-DDF3E1EEB2FA}.Debug|x64.Build.0 = Debug|x64
+		{085366A3-3D08-45B5-9A24-DDF3E1EEB2FA}.Release|x64.ActiveCfg = Release|Any CPU
+		{085366A3-3D08-45B5-9A24-DDF3E1EEB2FA}.Release|x64.Build.0 = Release|Any CPU
+		{C5818540-DECF-409D-82CE-D34E72C34D7D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C5818540-DECF-409D-82CE-D34E72C34D7D}.Debug|x64.Build.0 = Debug|Any CPU
+		{C5818540-DECF-409D-82CE-D34E72C34D7D}.Release|x64.ActiveCfg = Release|Any CPU
+		{C5818540-DECF-409D-82CE-D34E72C34D7D}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -218,6 +238,10 @@ Global
 		{BA73D362-4E99-42F2-9966-E6692B0CBF7D} = {13E39FC7-D22B-4521-B65A-48C62593821F}
 		{BC44E3D2-B3B0-49F8-965E-25AAB4589BAA} = {13E39FC7-D22B-4521-B65A-48C62593821F}
 		{1C3C2A57-B9EE-45E6-8639-7295AFDEC518} = {13E39FC7-D22B-4521-B65A-48C62593821F}
+		{EEF565D4-4A3D-4784-AE0F-AF39C4A27E90} = {EC5FA305-0A2E-4985-A977-B9C6F2ADEFFF}
+		{9507586E-6D63-432E-99E2-59B73907ACA0} = {EEF565D4-4A3D-4784-AE0F-AF39C4A27E90}
+		{085366A3-3D08-45B5-9A24-DDF3E1EEB2FA} = {EEF565D4-4A3D-4784-AE0F-AF39C4A27E90}
+		{C5818540-DECF-409D-82CE-D34E72C34D7D} = {EEF565D4-4A3D-4784-AE0F-AF39C4A27E90}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C376673D-F593-42B1-8093-D1F667D586B1}
