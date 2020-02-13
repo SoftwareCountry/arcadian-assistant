@@ -1,12 +1,10 @@
-using System;
-using System.Diagnostics;
-using System.Fabric;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.ServiceFabric.Services.Runtime;
-
 namespace Arcadia.Assistant.BirthdaysFeed
 {
+    using System;
+    using System.Diagnostics;
+    using System.Fabric;
+    using System.Threading;
+
     using Autofac;
     using Autofac.Integration.ServiceFabric;
 
@@ -17,12 +15,11 @@ namespace Arcadia.Assistant.BirthdaysFeed
     using Logging;
 
     using Microsoft.Extensions.Logging;
-    using Microsoft.ServiceFabric.Actors.Client;
 
     internal static class Program
     {
         /// <summary>
-        /// This is the entry point of the service host process.
+        ///     This is the entry point of the service host process.
         /// </summary>
         private static void Main()
         {

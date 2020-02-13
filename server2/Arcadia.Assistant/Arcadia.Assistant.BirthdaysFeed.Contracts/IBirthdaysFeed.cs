@@ -5,8 +5,6 @@ using Microsoft.ServiceFabric.Services.Remoting.FabricTransport;
 
 namespace Arcadia.Assistant.BirthdaysFeed.Contracts
 {
-    using Microsoft.ServiceFabric.Services.Remoting;
-
     using UserFeeds.Contracts;
 
     public interface IBirthdaysFeed : IFeedService

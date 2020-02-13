@@ -1,27 +1,26 @@
-using System;
-using System.Diagnostics;
-using System.Fabric;
-using System.Threading;
-using System.Threading.Tasks;
-using Autofac;
-using Autofac.Integration.ServiceFabric;
-using Microsoft.Extensions.Logging;
-using Microsoft.ServiceFabric.Services.Runtime;
-
 namespace Arcadia.Assistant.UserFeeds
 {
+    using System;
+    using System.Diagnostics;
+    using System.Fabric;
+    using System.Threading;
+
     using AnniversaryFeed.Contracts;
+
+    using Autofac;
+    using Autofac.Integration.ServiceFabric;
 
     using BirthdaysFeed.Contracts;
 
     using Logging;
 
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
 
     internal static class Program
     {
         /// <summary>
-        /// This is the entry point of the service host process.
+        ///     This is the entry point of the service host process.
         /// </summary>
         private static void Main()
         {

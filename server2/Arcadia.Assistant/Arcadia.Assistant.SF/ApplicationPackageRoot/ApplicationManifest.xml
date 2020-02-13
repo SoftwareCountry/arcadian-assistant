@@ -6,6 +6,7 @@
     <Parameter Name="Arcadia.Assistant.UserFeeds_TargetReplicaSetSize" DefaultValue="3" />
     <Parameter Name="Arcadia.Assistant.AnniversaryFeed_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.BirthdaysFeed_InstanceCount" DefaultValue="-1" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.AppCenterBuilds_InstanceCount" DefaultValue="1" />
     <Parameter Name="Arcadia.Assistant.AppCenterBuilds_DownloadBuildIntervalMinutes" DefaultValue="720" />
     <Parameter Name="Arcadia.Assistant.AppCenterBuilds_ApiToken" DefaultValue="" />
@@ -34,6 +35,12 @@
     <Parameter Name="Arcadia.Assistant.Organization_PartitionCount" DefaultValue="1" />
     <Parameter Name="Arcadia.Assistant.Organization_TargetReplicaSetSize" DefaultValue="3" />
     <Parameter Name="Arcadia.Assistant.ApplicationInsightsKey" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_ServerUrl" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_ClientId" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_ClientSecret" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_CalendarEventIdField" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_SynchronizationIntervalMinutes" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_DepartmentsCalendars" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_ASPNETCORE_ENVIRONMENT" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.Web_Port" DefaultValue="63601" />
@@ -91,6 +98,30 @@
         <Settings>
           <Section Name="Csp">
             <Parameter Name="ConnectionString" Value="[Arcadia.Assistant.Csp_ConnectionString]" />
+          </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
+  </ServiceManifestImport>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.SharepointPkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Sharepoint">
+            <Parameter Name="ServerUrl" Value="[Arcadia.Assistant.Sharepoint_ServerUrl]" />
+            <Parameter Name="ClientId" Value="[Arcadia.Assistant.Sharepoint_ClientId]" />
+            <Parameter Name="ClientSecret" Value="[Arcadia.Assistant.Sharepoint_ClientSecret]" />
+            <Parameter Name="CalendarEventIdField" Value="[Arcadia.Assistant.Sharepoint_CalendarEventIdField]" />
+          </Section>
+          <Section Name="Service">
+            <Parameter Name="SynchronizationIntervalMinutes" Value="[Arcadia.Assistant.Sharepoint_SynchronizationIntervalMinutes]" />
+          </Section>
+          <Section Name="DepartmentsCalendars">
+            <Parameter Name="Value" Value="[Arcadia.Assistant.Sharepoint_DepartmentsCalendars]" />
           </Section>
           <Section Name="Logging">
             <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
@@ -352,6 +383,11 @@
     </Service>
     <Service Name="Arcadia.Assistant.BirthdaysFeed" ServicePackageActivationMode="ExclusiveProcess">
       <StatelessService ServiceTypeName="Arcadia.Assistant.BirthdaysFeedType" InstanceCount="[Arcadia.Assistant.BirthdaysFeed_InstanceCount]">
+        <SingletonPartition />
+      </StatelessService>
+    </Service>
+    <Service Name="Arcadia.Assistant.Sharepoint" ServicePackageActivationMode="ExclusiveProcess">
+      <StatelessService ServiceTypeName="Arcadia.Assistant.SharepointType" InstanceCount="[Arcadia.Assistant.Sharepoint_InstanceCount]">
         <SingletonPartition />
       </StatelessService>
     </Service>

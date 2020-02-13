@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -11,6 +10,7 @@
     public interface IFeedService : IService
     {
         string ServiceType { get; }
+
         Task<IEnumerable<FeedItem>> GetItems(DateTime startDate, DateTime endDate, CancellationToken cancellationToken);
     }
 }

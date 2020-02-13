@@ -20,11 +20,11 @@
             this.ApplicationInsightsKey = appKey;
         }
 
+        public string ApplicationInsightsKey { get; set; } = string.Empty;
+
         public static LoggerSettings FromInsightsKey(string applicationInsightsKey)
         {
             return new LoggerSettings(applicationInsightsKey);
         }
-
-        public string ApplicationInsightsKey { get; set; } = string.Empty;
     }
 }

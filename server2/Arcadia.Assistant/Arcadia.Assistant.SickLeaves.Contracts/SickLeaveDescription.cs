@@ -3,11 +3,16 @@
     using System;
     using System.Runtime.Serialization;
 
+    using Employees.Contracts;
+
     [DataContract]
     public class SickLeaveDescription
     {
         [DataMember]
         public int SickLeaveId { get; set; }
+
+        [DataMember]
+        public EmployeeId EmployeeId { get; set; }
 
         [DataMember]
         public DateTime StartDate { get; set; }
