@@ -28,18 +28,9 @@ namespace Arcadia.Assistant.Web.Models
         {
             this.MessageId = feedItem.Id;
             this.EmployeeId = employeeId;
-            this.Title = feedItem.Text;
-            this.Text = feedItem.Description;
+            this.Title = feedItem.Title;
+            this.Text = feedItem.Text;
             this.DatePosted = feedItem.Date;
-        }
-
-        public FeedMessage(string messageId, string employeeId, string title, string text, DateTime datePosted)
-        {
-            this.MessageId = messageId;
-            this.EmployeeId = employeeId;
-            this.Title = title;
-            this.Text = text;
-            this.DatePosted = datePosted;
         }
 
         private sealed class MessageIdEqualityComparer : IEqualityComparer<FeedMessage>

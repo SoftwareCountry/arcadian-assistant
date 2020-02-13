@@ -30,12 +30,14 @@ namespace Arcadia.Assistant.BirthdaysFeed
             try
             {
                 var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
+                var connectionString = configurationPackage.Settings.Sections["Csp"].Parameters["ConnectionString"].Value;
 
                 var builder = new ContainerBuilder();
 
                 builder.RegisterServiceFabricSupport();
-                builder.RegisterModule(new EmployeesModule());
                 builder.RegisterStatelessService<BirthdaysFeed>("Arcadia.Assistant.BirthdaysFeedType");
+                builder.RegisterModule(new CspModule(connectionString));
+                builder.RegisterModule(new EmployeesModule());
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using var container = builder.Build();

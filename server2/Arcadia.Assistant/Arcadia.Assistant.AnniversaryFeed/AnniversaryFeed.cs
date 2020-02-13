@@ -44,7 +44,8 @@ namespace Arcadia.Assistant.AnniversaryFeed
             {
                 return (await query.Value.Get()
                         .Where(x => x.IsWorking) // fired employes also
-                        .Where(x => x.HiringDate >= new DateTime(x.HiringDate.Year, startDate.Month, startDate.Day) && x.HiringDate <= new DateTime(x.HiringDate.Year, endDate.Month, endDate.Day))
+                        .Where(x => x.HiringDate >= new DateTime(x.HiringDate.Year, startDate.Month, startDate.Day) 
+                            && x.HiringDate <= new DateTime(x.HiringDate.Year, endDate.Month, endDate.Day))
                         .ToListAsync(cancellationToken))
                     .Select(ConvertFeedMessage).ToArray();
             }
@@ -63,14 +64,15 @@ namespace Arcadia.Assistant.AnniversaryFeed
 
         private FeedItem ConvertFeedMessage(Employee employee)
         {
+            var employeeid = employee.Id.ToString();
             var title = $"{employee.LastName} {employee.FirstName}".Trim();
             var date = DateTime.UtcNow;
-            var msg = $"Congratulations with Anniversary! {YearsServedAt(employee, date)} years served!";
+            var text = $"Congratulations with Anniversary! {YearsServedAt(employee, date)} years served!";
             return new FeedItem()
             {
-                Id = $"employee-anniversary-{employee.ToString()}-at-{date}",
-                Text = title,
-                Description = msg,
+                Id = $"employee-anniversary-{employeeid}-at-{date}",
+                Title = title,
+                Text = text,
                 Image = employee.Image,
                 Date = date
             };

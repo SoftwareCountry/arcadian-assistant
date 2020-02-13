@@ -10,8 +10,15 @@ using Microsoft.ServiceFabric.Services.Runtime;
 namespace Arcadia.Assistant.BirthdaysFeed
 {
     using Arcadia.Assistant.UserFeeds.Contracts;
+
+    using Autofac.Features.OwnedInstances;
+
     using Contracts;
 
+    using CSP;
+    using CSP.Model;
+
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -19,19 +26,30 @@ namespace Arcadia.Assistant.BirthdaysFeed
     /// </summary>
     public class BirthdaysFeed : StatelessService, IBirthdaysFeed
     {
+        private readonly Func<Owned<CspEmployeeQuery>> employeeQuery;
         private readonly ILogger logger;
 
-        public BirthdaysFeed(StatelessServiceContext context, ILogger logger)
+        public BirthdaysFeed(StatelessServiceContext context, Func<Owned<CspEmployeeQuery>> employeeQuery, ILogger logger)
             : base(context)
         {
+            this.employeeQuery = employeeQuery;
             this.logger = logger;
         }
 
         public string ServiceType => Constants.ServiceType;
 
-        public Task<IEnumerable<FeedItem>> GetItems(DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
+        public async Task<IEnumerable<FeedItem>> GetItems(DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            using (var query = this.employeeQuery())
+            {
+                return (await query.Value.Get()
+                        .Where(x => x.IsWorking && !x.IsDelete)
+                        .Where(x => x.Birthday.HasValue && !x.FiringDate.HasValue)
+                        .Where(x => x.Birthday.Value >= new DateTime(x.Birthday.Value.Year, startDate.Month, startDate.Day) 
+                            && x.Birthday.Value <= new DateTime(x.Birthday.Value.Year, endDate.Month, endDate.Day))
+                        .ToListAsync(cancellationToken))
+                    .Select(ConvertFeedMessage).ToArray();
+            }
         }
 
         /// <summary>
@@ -41,6 +59,23 @@ namespace Arcadia.Assistant.BirthdaysFeed
         protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
         {
             return new ServiceInstanceListener[0];
+        }
+
+        private FeedItem ConvertFeedMessage(Employee employee)
+        {
+            var employeeid = employee.Id.ToString();
+            var date = employee.Birthday.Value;
+            var pronoun = employee.Gender == "F" ? "her" : "his";
+            var title = $"{employee.LastName} {employee.FirstName}".Trim();
+            var text = $"{title} celebrates {pronoun} birthday on {date.ToString("MMMM dd")}!";
+            return new FeedItem()
+            {
+                Id = $"employee-birthday-{employeeid}-at-{date}",
+                Title = title,
+                Text = text,
+                Image = employee.Image,
+                Date = date
+            };
         }
     }
 }
