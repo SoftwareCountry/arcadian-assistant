@@ -20,7 +20,7 @@ namespace Arcadia.Assistant.DeviceRegistry.Contracts
 
         Task<IEnumerable<DeviceRegistryItem>> GetDeviceRegistryByEmployee(string employeeId, CancellationToken cancellationToken);
 
-        Task<Dictionary<string, IEnumerable<DeviceRegistryItem>>> GetDeviceRegistryByEmployeeList(IEnumerable<string> employeeIds, CancellationToken cancellationToken);
+        Task<Dictionary<string, IEnumerable<DeviceRegistryItem>>> GetDeviceRegistryByEmployeeList(IEnumerable<string> employeeId, CancellationToken cancellationToken);
 
         Task<IEnumerable<DeviceRegistryItem>> GetDeviceRegistryByEmployeeAndType(string employeeId, string deviceType, CancellationToken cancellationToken);
     }

@@ -26,17 +26,16 @@ namespace Arcadia.Assistant.DeviceRegistry
     {
         private const string DeviceRegistryKey = "device_tokens";
         private const string DeviceOwnersRegistryKey = "device_employee";
+        private const int OperationTimeoutMinutes = 1;
         private readonly ILogger logger;
-        private readonly int OperationTimeout = 5;
 
         public DeviceRegistry(StatefulServiceContext context, ILogger logger)
             : base(context)
         {
-            this.Timeout = TimeSpan.FromMinutes(this.OperationTimeout);
             this.logger = logger;
         }
 
-        private TimeSpan Timeout { get; }
+        private static TimeSpan OperationTimeout => TimeSpan.FromMinutes(OperationTimeoutMinutes);
 
         public async Task RegisterDevice(string employeeId, string deviceId, string deviceType, CancellationToken cancellationToken)
         {
@@ -56,7 +55,7 @@ namespace Arcadia.Assistant.DeviceRegistry
                 newDeviceItem
             };
 
-            var employeDeviceList = await employeeDeviceList.TryGetValueAsync(transaction, employeeIdentifier, this.Timeout, cancellationToken);
+            var employeDeviceList = await employeeDeviceList.TryGetValueAsync(transaction, employeeIdentifier, OperationTimeout, cancellationToken);
             if (employeDeviceList.HasValue)
             {
                 if (employeDeviceList.Value.Any(x => x.DeviceId == deviceId))
@@ -68,21 +67,21 @@ namespace Arcadia.Assistant.DeviceRegistry
                 registryValue.AddRange(employeDeviceList.Value);
             }
 
-            var deviceOwner = await deviceRegistrations.TryGetValueAsync(transaction, deviceId, this.Timeout, cancellationToken);
+            var deviceOwner = await deviceRegistrations.TryGetValueAsync(transaction, deviceId, OperationTimeout, cancellationToken);
             if (deviceOwner.HasValue && deviceOwner.Value.OwnerId != employeeIdentifier)
             {
                 // remove specified device id from old owner - the device can be associated with single employee only
-                var ownerDeviceList = await employeeDeviceList.TryGetValueAsync(transaction, deviceOwner.Value.OwnerId, this.Timeout, cancellationToken);
+                var ownerDeviceList = await employeeDeviceList.TryGetValueAsync(transaction, deviceOwner.Value.OwnerId, OperationTimeout, cancellationToken);
                 if (ownerDeviceList.HasValue && ownerDeviceList.Value.Any(x => x.DeviceId == deviceId))
                 {
                     var newOwnerDeviceList = ownerDeviceList.Value.Where(x => x.DeviceId != deviceId).ToList();
-                    await employeeDeviceList.AddOrUpdateAsync(transaction, deviceOwner.Value.OwnerId, newOwnerDeviceList, (k, o) => newOwnerDeviceList, this.Timeout, cancellationToken);
+                    await employeeDeviceList.AddOrUpdateAsync(transaction, deviceOwner.Value.OwnerId, newOwnerDeviceList, (k, o) => newOwnerDeviceList, OperationTimeout, cancellationToken);
                 }
             }
 
             var deviceRegistrationInfo = new DeviceRegistrationInfo(employeeIdentifier, deviceType);
-            await employeeDeviceList.AddOrUpdateAsync(transaction, employeeIdentifier, registryValue, (k, o) => registryValue, this.Timeout, cancellationToken);
-            await deviceRegistrations.AddOrUpdateAsync(transaction, deviceId, deviceRegistrationInfo, (k, o) => deviceRegistrationInfo, this.Timeout, cancellationToken);
+            await employeeDeviceList.AddOrUpdateAsync(transaction, employeeIdentifier, registryValue, (k, o) => registryValue, OperationTimeout, cancellationToken);
+            await deviceRegistrations.AddOrUpdateAsync(transaction, deviceId, deviceRegistrationInfo, (k, o) => deviceRegistrationInfo, OperationTimeout, cancellationToken);
 
             await transaction.CommitAsync();
         }
@@ -95,8 +94,8 @@ namespace Arcadia.Assistant.DeviceRegistry
             var employeeDeviceList = await this.StateManager.GetOrAddAsync<IReliableDictionary<EmployeeId, List<DeviceRegistryItem>>>(transaction, DeviceRegistryKey);
             var deviceRegistrations = await this.StateManager.GetOrAddAsync<IReliableDictionary<string, DeviceRegistrationInfo>>(transaction, DeviceOwnersRegistryKey);
 
-            var employeeDevices = await employeeDeviceList.TryGetValueAsync(transaction, employeeIdentifier, this.Timeout, cancellationToken);
-            var deviceRegistration = await deviceRegistrations.TryGetValueAsync(transaction, deviceId, this.Timeout, cancellationToken);
+            var employeeDevices = await employeeDeviceList.TryGetValueAsync(transaction, employeeIdentifier, OperationTimeout, cancellationToken);
+            var deviceRegistration = await deviceRegistrations.TryGetValueAsync(transaction, deviceId, OperationTimeout, cancellationToken);
             if (!employeeDevices.HasValue && !deviceRegistration.HasValue)
             {
                 // no one device records found
@@ -113,14 +112,14 @@ namespace Arcadia.Assistant.DeviceRegistry
                 }
                 else
                 {
-                    await employeeDeviceList.AddOrUpdateAsync(transaction, employeeIdentifier, newEmployeDevice, (k, o) => newEmployeDevice, this.Timeout, cancellationToken);
+                    await employeeDeviceList.AddOrUpdateAsync(transaction, employeeIdentifier, newEmployeDevice, (k, o) => newEmployeDevice, OperationTimeout, cancellationToken);
                 }
             }
 
             // remove device info
             if (deviceRegistration.HasValue)
             {
-                await deviceRegistrations.TryRemoveAsync(transaction, deviceId, this.Timeout, cancellationToken);
+                await deviceRegistrations.TryRemoveAsync(transaction, deviceId, OperationTimeout, cancellationToken);
             }
 
             await transaction.CommitAsync();
@@ -131,10 +130,10 @@ namespace Arcadia.Assistant.DeviceRegistry
             return await this.GetEmployeeDeviceRegistry(new EmployeeId(employeeId), cancellationToken);
         }
 
-        public async Task<Dictionary<string, IEnumerable<DeviceRegistryItem>>> GetDeviceRegistryByEmployeeList(IEnumerable<string> employeeIds, CancellationToken cancellationToken)
+        public async Task<Dictionary<string, IEnumerable<DeviceRegistryItem>>> GetDeviceRegistryByEmployeeList(IEnumerable<string> employeeId, CancellationToken cancellationToken)
         {
             var result = new Dictionary<string, IEnumerable<DeviceRegistryItem>>();
-            foreach (var id in employeeIds)
+            foreach (var id in employeeId)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -157,7 +156,7 @@ namespace Arcadia.Assistant.DeviceRegistry
         {
             using var transaction = this.StateManager.CreateTransaction();
             var employeeDeviceList = await this.StateManager.GetOrAddAsync<IReliableDictionary<EmployeeId, List<DeviceRegistryItem>>>(transaction, DeviceRegistryKey);
-            var result = await employeeDeviceList.TryGetValueAsync(transaction, employeeId, this.Timeout, cancellationToken);
+            var result = await employeeDeviceList.TryGetValueAsync(transaction, employeeId, OperationTimeout, cancellationToken);
             return result.HasValue
                 ? result.Value
                 : new List<DeviceRegistryItem>();

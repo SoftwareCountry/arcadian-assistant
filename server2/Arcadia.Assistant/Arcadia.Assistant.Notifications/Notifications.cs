@@ -70,9 +70,9 @@ namespace Arcadia.Assistant.Notifications
             };
         }
 
-        public async Task Send(IEnumerable<string> employeeIds, NotificationType notificationType, CalendarEventType eventType, NotificationMessage notificationMessage, CancellationToken cancellationToken)
+        public async Task Send(IEnumerable<string> employeeId, NotificationType notificationType, CalendarEventType eventType, NotificationMessage notificationMessage, CancellationToken cancellationToken)
         {
-            if (employeeIds.IsNullOrEmpty() || !this.notificationProvidersMap.ContainsKey(eventType))
+            if (employeeId.IsNullOrEmpty() || !this.notificationProvidersMap.ContainsKey(eventType))
             {
                 return;
             }
@@ -85,7 +85,7 @@ namespace Arcadia.Assistant.Notifications
                     case NotificationProviderType.Push:
                         if (this.notificationSettings.EnablePush)
                         {
-                            var tokens = await this.GetDeviceTokens(employeeIds, cancellationToken);
+                            var tokens = await this.GetDeviceTokens(employeeId, cancellationToken);
                             await this.SendPushNotification(tokens, notificationType, eventType, notificationMessage, cancellationToken);
                         }
 
