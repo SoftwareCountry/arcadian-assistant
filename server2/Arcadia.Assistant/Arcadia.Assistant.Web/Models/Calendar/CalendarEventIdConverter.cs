@@ -9,6 +9,19 @@
             return $"{calendarEventType}_{id}";
         }
 
+        public bool TryGetCalendarEventType(string dtoId, out string type)
+        {
+            type = string.Empty;
+            var parts = this.GetIdParts(dtoId);
+            if (parts != null)
+            {
+                type = parts.Value.Item1;
+                return true;
+            }
+
+            return false;
+        }
+
         public bool TryParseSickLeaveId(string dtoId, out int id)
         {
             id = 0;

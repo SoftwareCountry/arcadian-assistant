@@ -7,6 +7,7 @@
     using System.Threading.Tasks;
 
     using Authorization;
+    using Authorization.Requirements;
 
     using Employees.Contracts;
 
@@ -32,16 +33,19 @@
         private readonly ISickLeaves sickLeaves;
         private readonly IEmployees employees;
         private readonly IVacations vacations;
+        private readonly IAuthorizationService authorizationService;
         private readonly WorkHoursConverter workHoursConverter = new WorkHoursConverter();
         private readonly SickLeavesConverter sickLeavesConverter = new SickLeavesConverter();
         private readonly VacationsConverter vacationsConverter = new VacationsConverter();
+        private readonly CalendarEventIdConverter idConverter = new CalendarEventIdConverter();
 
-        public CalendarEventsController(IWorkHoursCredit workHoursCredit, ISickLeaves sickLeaves, IEmployees employees, IVacations vacations)
+        public CalendarEventsController(IWorkHoursCredit workHoursCredit, ISickLeaves sickLeaves, IEmployees employees, IVacations vacations, IAuthorizationService authorizationService)
         {
             this.workHoursCredit = workHoursCredit;
             this.sickLeaves = sickLeaves;
             this.employees = employees;
             this.vacations = vacations;
+            this.authorizationService = authorizationService;
         }
 
         [Route("")]
@@ -50,9 +54,15 @@
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<CalendarEventWithIdModel>>> GetAll(int employeeId, CancellationToken token)
         {
-            var workHoursEvents = await this.workHoursCredit.GetCalendarEventsAsync(new EmployeeId(employeeId), token);
-            var sickLeaveEvents = await this.sickLeaves.GetCalendarEventsAsync(new EmployeeId(employeeId), token);
-            var vacationEvents = await this.vacations.GetCalendarEventsAsync(new EmployeeId(employeeId), token);
+            var employee = new EmployeeId(employeeId);
+            if (!(await this.authorizationService.AuthorizeAsync(this.User, employee, new ReadCalendarEvents())).Succeeded)
+            {
+                return this.Forbid();
+            }
+
+            var workHoursEvents = await this.workHoursCredit.GetCalendarEventsAsync(employee, token);
+            var sickLeaveEvents = await this.sickLeaves.GetCalendarEventsAsync(employee, token);
+            var vacationEvents = await this.vacations.GetCalendarEventsAsync(employee, token);
             var allEvents = workHoursEvents
                 .Select(this.workHoursConverter.ToCalendarEventWithId)
                 .Union(sickLeaveEvents.Select(this.sickLeavesConverter.ToCalendarEventWithId))
@@ -69,8 +79,12 @@
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<CalendarEventModel>> Get(int employeeId, string eventId, CancellationToken token)
         {
-            var idConverter = new CalendarEventIdConverter();
-            if (idConverter.TryParseWorkHoursChangeId(eventId, out var changeId))
+            if (!(await this.authorizationService.AuthorizeAsync(this.User, employeeId, new ReadCalendarEvents())).Succeeded)
+            {
+                return this.Forbid();
+            }
+
+            if (this.idConverter.TryParseWorkHoursChangeId(eventId, out var changeId))
             {
                 var change = await this.workHoursCredit.GetCalendarEventAsync(new EmployeeId(employeeId), changeId, token);
                 if (change != null)
@@ -78,15 +92,15 @@
                     return this.workHoursConverter.ToCalendarEvent(change);
                 }
             }
-            else if (idConverter.TryParseSickLeaveId(eventId, out var sickLeaveId))
+            else if (this.idConverter.TryParseSickLeaveId(eventId, out var sickLeaveId))
             {
                 var sickLeave = await this.sickLeaves.GetCalendarEventAsync(new EmployeeId(employeeId), sickLeaveId, token);
                 if (sickLeave != null)
                 {
                     return this.sickLeavesConverter.ToCalendarEvent(sickLeave);
                 }
-            } 
-            else if (idConverter.TryParseVacationId(eventId, out var vacationId))
+            }
+            else if (this.idConverter.TryParseVacationId(eventId, out var vacationId))
             {
                 var vacation = await this.vacations.GetCalendarEventAsync(new EmployeeId(employeeId), vacationId, token);
                 if (vacation != null)
@@ -107,6 +121,11 @@
             if (!this.ModelState.IsValid)
             {
                 return this.BadRequest(this.ModelState);
+            }
+
+            if (!(await this.authorizationService.AuthorizeAsync(this.User, new EmployeeId(employeeId), new CreateCalendarEvents())).Succeeded)
+            {
+                return this.Forbid();
             }
 
             CalendarEventWithIdModel createdModel;
@@ -172,9 +191,9 @@
             }
         }
 
-        private async Task<IActionResult> UpdateWorkHoursRequest(EmployeeId employeeId, string stringEventId, CalendarEventModel model, EmployeeMetadata changedBy)
+        private async Task<IActionResult> UpdateWorkHoursRequest(EmployeeId employeeId, string dtoId, CalendarEventModel model, EmployeeMetadata changedBy)
         {
-            if (!Guid.TryParse(stringEventId, out var eventId))
+            if (!this.idConverter.TryParseWorkHoursChangeId(dtoId, out var eventId))
             {
                 return this.BadRequest("EventId is not guid");
             }
@@ -212,9 +231,9 @@
             return this.NoContent();
         }
 
-        private async Task<IActionResult> UpdateSickLeave(EmployeeId employeeId, string stringEventId, CalendarEventModel model, EmployeeMetadata changedBy)
+        private async Task<IActionResult> UpdateSickLeave(EmployeeId employeeId, string dtoId, CalendarEventModel model, EmployeeMetadata changedBy)
         {
-            if (!int.TryParse(stringEventId, out var eventId))
+            if (!this.idConverter.TryParseSickLeaveId(dtoId, out var eventId))
             {
                 return this.BadRequest("EventId is not int");
             }
@@ -250,9 +269,9 @@
             return this.NoContent();
         }
 
-        private async Task<IActionResult> UpdateVacation(EmployeeId employeeId, string stringEventId, CalendarEventModel model, EmployeeMetadata changedBy)
+        private async Task<IActionResult> UpdateVacation(EmployeeId employeeId, string dtoId, CalendarEventModel model, EmployeeMetadata changedBy)
         {
-            if (!int.TryParse(stringEventId, out var eventId))
+            if (!idConverter.TryParseVacationId(dtoId, out var eventId))
             {
                 return this.BadRequest("id is not an integer");
             }
