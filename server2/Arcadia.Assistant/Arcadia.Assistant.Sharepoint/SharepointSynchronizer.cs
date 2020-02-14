@@ -19,21 +19,15 @@
 
     using WorkHoursCredit.Contracts;
 
-    public sealed class SharepointSynchronizator
+    public sealed class SharepointSynchronizer
     {
-        #region variables
-
         private readonly ISickLeaves sickLeaves;
         private readonly IVacations vacations;
         private readonly IWorkHoursCredit workouts;
         private readonly ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings;
         private readonly ILogger logger;
 
-        #endregion
-
-        #region ctor
-
-        public SharepointSynchronizator(ISickLeaves sickLeaves, IVacations vacations, IWorkHoursCredit workouts, ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings, ILogger logger)
+        public SharepointSynchronizer(ISickLeaves sickLeaves, IVacations vacations, IWorkHoursCredit workouts, ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings, ILogger logger)
         {
             this.sickLeaves = sickLeaves;
             this.vacations = vacations;
@@ -41,10 +35,6 @@
             this.departmentsCalendarsSettings = departmentsCalendarsSettings;
             this.logger = logger;
         }
-
-        #endregion
-
-        #region public interface
 
         public async Task Synchronize(IEmployees employees, IEnumerable<string> departments, IExternalStorage storage, CancellationToken cancellationToken)
         {
@@ -88,10 +78,6 @@
             }
         }
 
-        #endregion
-
-        #region private
-
         private async Task<IEnumerable<StorageItem>> GetAllSharepointItemsForCalendar(IExternalStorage externalStorage, string calendar)
         {
             return await externalStorage.GetItems(calendar);
@@ -105,9 +91,6 @@
                 .Distinct();
         }
 
-        #endregion
-
-        #region internal class
 
         private class EmployeeVacationsSynchronization : SharepointItemSynchronization<VacationDescription>
         {
@@ -168,8 +151,5 @@
                 return item.EmployeeId;
             }
         }
-
-        #endregion
-
     }
 }

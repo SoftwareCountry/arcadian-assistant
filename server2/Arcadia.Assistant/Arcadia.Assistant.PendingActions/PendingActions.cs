@@ -28,10 +28,10 @@ namespace Arcadia.Assistant.PendingActions
     /// </summary>
     public class PendingActions : StatelessService, IPendingActions
     {
-        private IVacations vacations;
-        private IWorkHoursCredit workHoursCredit;
-        private IEmployees employees;
-        private IOrganization organization;
+        private readonly IVacations vacations;
+        private readonly IWorkHoursCredit workHoursCredit;
+        private readonly IEmployees employees;
+        private readonly IOrganization organization;
         private readonly ILogger logger;
 
         public PendingActions(StatelessServiceContext context, 
@@ -39,7 +39,7 @@ namespace Arcadia.Assistant.PendingActions
             IVacations vacations, 
             IWorkHoursCredit workHoursCredit, 
             IEmployees employees,
-            ILogger logger)
+            ILogger<PendingActions> logger)
             : base(context)
         {
             this.organization = organization;

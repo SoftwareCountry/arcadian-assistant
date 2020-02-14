@@ -46,7 +46,7 @@ namespace Arcadia.Assistant.VacationsCredit
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using var container = builder.Build();
-                logger = container.ResolveOptional<ILogger>();
+                logger = container.ResolveOptional<ILogger<VacationsCredit>>();
                 logger?.LogInformation($"Service type '{typeof(VacationsCredit).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
                 // Prevents this host process from terminating so services keep running.
                 Thread.Sleep(Timeout.Infinite);

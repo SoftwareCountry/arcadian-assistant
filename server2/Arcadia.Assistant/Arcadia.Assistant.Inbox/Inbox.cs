@@ -29,7 +29,7 @@ namespace Arcadia.Assistant.Inbox
         private readonly ImapConfiguration imapConfiguration;
         private readonly ILogger logger;
 
-        public Inbox(StatelessServiceContext context, ImapConfiguration imapConfiguration, ILogger logger)
+        public Inbox(StatelessServiceContext context, ImapConfiguration imapConfiguration, ILogger<Inbox> logger)
             : base(context)
         {
             this.imapConfiguration = imapConfiguration;
