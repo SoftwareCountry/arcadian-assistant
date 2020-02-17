@@ -60,6 +60,8 @@ namespace Arcadia.Assistant.PendingActions
 
         public async Task<PendingRequests> GetPendingRequestsAsync(EmployeeId employeeId, CancellationToken cancellationToken)
         {
+            this.logger.LogDebug("Loading pending request for {0}", employeeId);
+
             var departments = await this.organization.GetSupervisedDepartmentsAsync(employeeId, cancellationToken);
             var departmentIds = departments.Select(x => x.DepartmentId.Value.ToString()).ToArray();
             var supervisedEmployees = await this.employees.FindEmployeesAsync(EmployeesQuery.Create().ForDepartments(departmentIds), cancellationToken);
