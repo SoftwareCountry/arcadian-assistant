@@ -29,7 +29,7 @@ namespace Arcadia.Assistant.Permissions
         private readonly IOrganization organization;
         private readonly ILogger logger;
 
-        public Permissions(StatelessServiceContext context, IEmployees employees, IOrganization organization, ILogger logger)
+        public Permissions(StatelessServiceContext context, IEmployees employees, IOrganization organization, ILogger<Permissions> logger)
             : base(context)
         {
             this.employees = employees;

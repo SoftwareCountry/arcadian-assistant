@@ -24,7 +24,7 @@ namespace Arcadia.Assistant.Organization
         private readonly IOrganizationDepartments organizationDepartments;
         private readonly ILogger logger;
 
-        public Organization(StatefulServiceContext context, Func<Owned<OrganizationDepartmentsQuery>> allDepartmentsQuery, IEmployees employees, ILogger logger)
+        public Organization(StatefulServiceContext context, Func<Owned<OrganizationDepartmentsQuery>> allDepartmentsQuery, IEmployees employees, ILogger<Organization> logger)
             : base(context)
         {
             this.organizationDepartments = new CachedOrganizationDepartments(this.StateManager, allDepartmentsQuery, this.logger);

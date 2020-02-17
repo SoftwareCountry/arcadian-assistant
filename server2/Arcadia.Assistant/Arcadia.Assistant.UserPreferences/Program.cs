@@ -28,7 +28,7 @@ namespace Arcadia.Assistant.UserPreferences
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using var container = builder.Build();
-                logger = container.TryResolve<ILogger>(out ILogger val) ? val : null;
+                logger = container.ResolveOptional<ILogger<UserPreferencesStorage>>();
                 Thread.Sleep(Timeout.Infinite);
             }
             catch (Exception e)

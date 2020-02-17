@@ -31,7 +31,7 @@ namespace Arcadia.Assistant.Avatars.Manager
         private readonly IAvatars avatars;
         private readonly ILogger logger;
 
-        public Manager(StatelessServiceContext context, Func<Owned<CspEmployeeQuery>> employeeQuery, IAvatars avatars, ILogger logger)
+        public Manager(StatelessServiceContext context, Func<Owned<CspEmployeeQuery>> employeeQuery, IAvatars avatars, ILogger<Manager> logger)
             : base(context)
         {
             this.employeeQuery = employeeQuery;

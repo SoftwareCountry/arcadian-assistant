@@ -46,7 +46,7 @@ namespace Arcadia.Assistant.AppCenterBuilds
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using var container = builder.Build();
-                logger = container.TryResolve<ILogger>(out ILogger val) ? val : null;
+                logger = container.ResolveOptional<ILogger<AppCenterBuilds>>();
                 logger?.LogInformation($"Service type '{typeof(AppCenterBuilds).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
                 // Prevents this host process from terminating so services keep running.
                 Thread.Sleep(Timeout.Infinite);

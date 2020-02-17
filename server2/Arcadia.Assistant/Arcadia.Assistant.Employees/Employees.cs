@@ -31,7 +31,7 @@ namespace Arcadia.Assistant.Employees
         private readonly ILogger logger;
 
         private readonly Expression<Func<Employee, EmployeeMetadata>> mapToMetadata;
-        public Employees(StatelessServiceContext context, Func<Owned<CspEmployeeQuery>> cspEmployeeQuery, CspConfiguration cspConfiguration, ILogger logger)
+        public Employees(StatelessServiceContext context, Func<Owned<CspEmployeeQuery>> cspEmployeeQuery, CspConfiguration cspConfiguration, ILogger<Employees> logger)
             : base(context)
         {
             this.cspEmployeeQuery = cspEmployeeQuery;

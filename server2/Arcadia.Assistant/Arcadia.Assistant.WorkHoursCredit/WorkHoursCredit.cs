@@ -30,7 +30,7 @@ namespace Arcadia.Assistant.WorkHoursCredit
         private readonly Func<Owned<WorkHoursCreditContext>> dbFactory;
         private readonly ILogger logger;
 
-        public WorkHoursCredit(StatelessServiceContext context, Func<Owned<WorkHoursCreditContext>> dbFactory, ILogger logger)
+        public WorkHoursCredit(StatelessServiceContext context, Func<Owned<WorkHoursCreditContext>> dbFactory, ILogger<WorkHoursCredit> logger)
             : base(context)
         {
             this.dbFactory = dbFactory;
@@ -78,6 +78,16 @@ namespace Arcadia.Assistant.WorkHoursCredit
                 .ToArrayAsync(cancellationToken);
 
             return events;
+        }
+
+        public async Task<Dictionary<EmployeeId, WorkHoursChange[]>> GetCalendarEventsByEmployeeMapAsync(EmployeeId[] employeeIds, CancellationToken cancellationToken)
+        {
+            using var ctx = this.dbFactory();
+            var events = await this.QueryCalendarEvents(ctx.Value.ChangeRequests, x => employeeIds.Any(id => id.Value == x.EmployeeId))
+                .ToArrayAsync(cancellationToken);
+
+            return events.GroupBy(x => x.EmployeeId)
+                .ToDictionary(x => x.Key, x => x.ToArray());
         }
 
         public async Task<WorkHoursChange?> GetCalendarEventAsync(EmployeeId employeeId, Guid eventId, CancellationToken cancellationToken)

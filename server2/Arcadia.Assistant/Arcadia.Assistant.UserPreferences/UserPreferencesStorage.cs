@@ -29,7 +29,7 @@ namespace Arcadia.Assistant.UserPreferences
         /// <param name="actorService">The Microsoft.ServiceFabric.Actors.Runtime.ActorService that will host this actor instance.</param>
         /// <param name="actorId">The Microsoft.ServiceFabric.Actors.ActorId for this actor instance.</param>
         /// <param name="logger">Logger object</param>
-        public UserPreferencesStorage(ActorService actorService, ActorId actorId, ILogger logger)
+        public UserPreferencesStorage(ActorService actorService, ActorId actorId, ILogger<UserPreferencesStorage> logger)
             : base(actorService, actorId)
         {
             this.logger = logger;

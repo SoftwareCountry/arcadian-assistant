@@ -6,6 +6,7 @@ using Microsoft.ServiceFabric.Services.Remoting.FabricTransport;
 namespace Arcadia.Assistant.SickLeaves.Contracts
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -16,6 +17,8 @@ namespace Arcadia.Assistant.SickLeaves.Contracts
     public interface ISickLeaves : IService
     {
         Task<SickLeaveDescription[]> GetCalendarEventsAsync(EmployeeId employeeId, CancellationToken cancellationToken);
+
+        Task<Dictionary<EmployeeId, SickLeaveDescription[]>> GetCalendarEventsByEmployeeMapAsync(EmployeeId[] employeeIds, CancellationToken cancellationToken);
 
         Task<SickLeaveDescription?> GetCalendarEventAsync(EmployeeId employeeId, int eventId, CancellationToken cancellationToken);
 

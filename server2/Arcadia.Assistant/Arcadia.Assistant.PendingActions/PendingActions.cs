@@ -28,10 +28,10 @@ namespace Arcadia.Assistant.PendingActions
     /// </summary>
     public class PendingActions : StatelessService, IPendingActions
     {
-        private IVacations vacations;
-        private IWorkHoursCredit workHoursCredit;
-        private IEmployees employees;
-        private IOrganization organization;
+        private readonly IVacations vacations;
+        private readonly IWorkHoursCredit workHoursCredit;
+        private readonly IEmployees employees;
+        private readonly IOrganization organization;
         private readonly ILogger logger;
 
         public PendingActions(StatelessServiceContext context, 
@@ -39,7 +39,7 @@ namespace Arcadia.Assistant.PendingActions
             IVacations vacations, 
             IWorkHoursCredit workHoursCredit, 
             IEmployees employees,
-            ILogger logger)
+            ILogger<PendingActions> logger)
             : base(context)
         {
             this.organization = organization;
@@ -60,6 +60,8 @@ namespace Arcadia.Assistant.PendingActions
 
         public async Task<PendingRequests> GetPendingRequestsAsync(EmployeeId employeeId, CancellationToken cancellationToken)
         {
+            this.logger.LogDebug("Loading pending request for {0}", employeeId);
+
             var departments = await this.organization.GetSupervisedDepartmentsAsync(employeeId, cancellationToken);
             var departmentIds = departments.Select(x => x.DepartmentId.Value.ToString()).ToArray();
             var supervisedEmployees = await this.employees.FindEmployeesAsync(EmployeesQuery.Create().ForDepartments(departmentIds), cancellationToken);

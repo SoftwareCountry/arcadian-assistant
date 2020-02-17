@@ -39,7 +39,7 @@ namespace Arcadia.Assistant.SickLeaves
             Func<Owned<SickLeaveCreationStep>> creationStepsFactory, 
             Func<Owned<SickLeaveProlongationStep>> prolongationStepsFactory,
             Func<Owned<SickLeaveCancellationStep>> cancellationStepsFactory,
-            ILogger logger)
+            ILogger<SickLeaves> logger)
             : base(context)
         {
             this.dbFactory = dbFactory;
@@ -82,6 +82,18 @@ namespace Arcadia.Assistant.SickLeaves
                 .ToArrayAsync(cancellationToken);
 
             return sickLeaves;
+        }
+
+        public async Task<Dictionary<EmployeeId, SickLeaveDescription[]>> GetCalendarEventsByEmployeeMapAsync(EmployeeId[] employeeIds, CancellationToken cancellationToken)
+        {
+            using var db = this.dbFactory();
+            var sickLeaves = await db.Value
+                .SickLeaves
+                .Where(x => employeeIds.Any(id => x.EmployeeId == id.Value))
+                .Select(this.modelConverter.ToDescription)
+                .ToArrayAsync(cancellationToken);
+
+            return sickLeaves.GroupBy(x => x.EmployeeId).ToDictionary(x => x.Key, x => x.ToArray());
         }
 
         public async Task<SickLeaveDescription?> GetCalendarEventAsync(EmployeeId employeeId, int eventId, CancellationToken cancellationToken)
