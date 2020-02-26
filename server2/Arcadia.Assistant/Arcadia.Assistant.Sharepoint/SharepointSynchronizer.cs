@@ -19,11 +19,15 @@
 
     using WorkHoursCredit.Contracts;
 
-    public sealed class SharepointSynchronizator
+    public sealed class SharepointSynchronizer
     {
-        #region ctor
+        private readonly ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings;
+        private readonly ILogger logger;
+        private readonly ISickLeaves sickLeaves;
+        private readonly IVacations vacations;
+        private readonly IWorkHoursCredit workouts;
 
-        public SharepointSynchronizator(ISickLeaves sickLeaves, IVacations vacations, IWorkHoursCredit workouts, ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings, ILogger logger)
+        public SharepointSynchronizer(ISickLeaves sickLeaves, IVacations vacations, IWorkHoursCredit workouts, ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings, ILogger logger)
         {
             this.sickLeaves = sickLeaves;
             this.vacations = vacations;
@@ -31,10 +35,6 @@
             this.departmentsCalendarsSettings = departmentsCalendarsSettings;
             this.logger = logger;
         }
-
-        #endregion
-
-        #region public interface
 
         public async Task Synchronize(IEmployees employees, IEnumerable<string> departments, IExternalStorage storage, CancellationToken cancellationToken)
         {
@@ -78,20 +78,6 @@
             }
         }
 
-        #endregion
-
-        #region variables
-
-        private readonly ISickLeaves sickLeaves;
-        private readonly IVacations vacations;
-        private readonly IWorkHoursCredit workouts;
-        private readonly ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings;
-        private readonly ILogger logger;
-
-        #endregion
-
-        #region private
-
         private async Task<IEnumerable<StorageItem>> GetAllSharepointItemsForCalendar(IExternalStorage externalStorage, string calendar)
         {
             return await externalStorage.GetItems(calendar);
@@ -104,10 +90,6 @@
                 .Select(x => x.Calendar)
                 .Distinct();
         }
-
-        #endregion
-
-        #region internal class
 
         private class EmployeeVacationsSynchronization : SharepointItemSynchronization<VacationDescription>
         {
@@ -168,7 +150,5 @@
                 return item.EmployeeId;
             }
         }
-
-        #endregion
     }
 }

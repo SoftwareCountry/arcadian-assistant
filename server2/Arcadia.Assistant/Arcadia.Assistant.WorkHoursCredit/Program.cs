@@ -46,7 +46,7 @@ namespace Arcadia.Assistant.WorkHoursCredit
                 builder.Register(c => new WorkHoursCreditContext(c.Resolve<DbContextOptions<WorkHoursCreditContext>>())).AsSelf();
 
                 using var container = builder.Build();
-                logger = container.ResolveOptional<ILogger>();
+                logger = container.ResolveOptional<ILogger<WorkHoursCredit>>();
                 logger?.LogInformation($"Service type '{typeof(WorkHoursCredit).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
                 // Prevents this host process from terminating so services keep running.
                 Thread.Sleep(Timeout.Infinite);

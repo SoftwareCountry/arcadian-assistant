@@ -30,7 +30,7 @@ namespace Arcadia.Assistant.WorkHoursCredit
         private readonly Func<Owned<WorkHoursCreditContext>> dbFactory;
         private readonly ILogger logger;
 
-        public WorkHoursCredit(StatelessServiceContext context, Func<Owned<WorkHoursCreditContext>> dbFactory, ILogger logger)
+        public WorkHoursCredit(StatelessServiceContext context, Func<Owned<WorkHoursCreditContext>> dbFactory, ILogger<WorkHoursCredit> logger)
             : base(context)
         {
             this.dbFactory = dbFactory;

@@ -39,7 +39,7 @@ namespace Arcadia.Assistant.SickLeaves
             Func<Owned<SickLeaveCreationStep>> creationStepsFactory, 
             Func<Owned<SickLeaveProlongationStep>> prolongationStepsFactory,
             Func<Owned<SickLeaveCancellationStep>> cancellationStepsFactory,
-            ILogger logger)
+            ILogger<SickLeaves> logger)
             : base(context)
         {
             this.dbFactory = dbFactory;

@@ -48,7 +48,7 @@ namespace Arcadia.Assistant.Sharepoint
             Func<IExternalStorage> externalStorageProvider,
             ISharepointSynchronizationSettings serviceSettings,
             ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings,
-            ILogger logger)
+            ILogger<Sharepoint> logger)
             : base(context)
         {
             this.externalStorageProvider = externalStorageProvider;
@@ -86,11 +86,11 @@ namespace Arcadia.Assistant.Sharepoint
                 // request Sharepoint calendars
                 var externalStorage = this.externalStorageProvider();
                 var departments = await this.GetDepartmentsList(cancellationToken);
-                var synchronizator = new SharepointSynchronizator(this.sickLeaves, this.vacations, this.workouts, this.departmentsCalendarsSettings, this.logger);
+                var synchronizer = new SharepointSynchronizer(this.sickLeaves, this.vacations, this.workouts, this.departmentsCalendarsSettings, this.logger);
 
                 try
                 {
-                    await synchronizator.Synchronize(this.employees, departments, externalStorage, cancellationToken);
+                    await synchronizer.Synchronize(this.employees, departments, externalStorage, cancellationToken);
                 }
                 catch (Exception e)
                 {

@@ -39,7 +39,7 @@ namespace Arcadia.Assistant.Permissions
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using var container = builder.Build();
-                logger = container.ResolveOptional<ILogger>();
+                logger = container.ResolveOptional<ILogger<Permissions>>();
                 logger?.LogInformation($"Service type '{typeof(Permissions).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
                 // Prevents this host process from terminating so services keep running.
                 Thread.Sleep(Timeout.Infinite);

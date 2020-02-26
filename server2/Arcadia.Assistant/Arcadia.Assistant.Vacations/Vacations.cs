@@ -36,7 +36,7 @@ namespace Arcadia.Assistant.Vacations
             StatelessServiceContext context,
             Func<Owned<VacationsStorage>> storageFactory,
             VacationChangesWatcher changesWatcher,
-            ILogger logger)
+            ILogger<Vacations> logger)
             : base(context)
         {
             this.storageFactory = storageFactory;
