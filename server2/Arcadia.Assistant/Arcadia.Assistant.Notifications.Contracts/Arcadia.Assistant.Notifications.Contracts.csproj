@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Arcadia.Assistant.Employees.Contracts\Arcadia.Assistant.Employees.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.PushNotifications.Contracts\Arcadia.Assistant.PushNotifications.Contracts.csproj" />
   </ItemGroup>
 

@@ -4,6 +4,8 @@ namespace Arcadia.Assistant.PushNotifications.Contracts
     using System.Threading;
     using System.Threading.Tasks;
 
+    using DeviceRegistry.Contracts.Models;
+
     using Microsoft.ServiceFabric.Services.Remoting;
 
     using Models;
@@ -14,6 +16,6 @@ namespace Arcadia.Assistant.PushNotifications.Contracts
     /// </summary>
     public interface IPushNotifications : IService
     {
-        Task SendPushNotification(IEnumerable<DeviceToken> deviceTokens, PushNotificationContent notificationContent, CancellationToken cancellationToken);
+        Task SendPushNotification(IEnumerable<DeviceRegistryEntry> deviceTokens, PushNotificationContent notificationContent, CancellationToken cancellationToken);
     }
 }

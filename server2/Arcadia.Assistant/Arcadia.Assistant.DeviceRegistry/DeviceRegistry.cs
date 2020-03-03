@@ -9,11 +9,11 @@ namespace Arcadia.Assistant.DeviceRegistry
     using Contracts;
     using Contracts.Models;
 
+    using Employees.Contracts;
+
     using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
-
-    using Models;
 
     /// <summary>
     ///     An instance of this class is created for each service replica by the Service Fabric runtime.
@@ -28,68 +28,52 @@ namespace Arcadia.Assistant.DeviceRegistry
             this.logger = logger;
         }
 
-        public async Task RegisterDevice(string employeeId, string deviceId, string deviceType, CancellationToken cancellationToken)
+        public async Task RegisterDevice(EmployeeId employeeId, DeviceId deviceId, DeviceType deviceType, CancellationToken cancellationToken)
         {
-            var newDeviceItem = new DeviceRegistryItem
+            var newDeviceItem = new DeviceRegistryEntry
             {
                 DeviceId = deviceId,
                 DeviceType = deviceType
             };
-            var employeeIdentifier = new EmployeeId(employeeId);
 
             await new RegistryOperations(this.StateManager, this.logger)
-                .AddDeviceToRegistry(employeeIdentifier, newDeviceItem, cancellationToken);
+                .AddDeviceToRegistry(employeeId, newDeviceItem, cancellationToken);
         }
 
-        public async Task RemoveDevice(string employeeId, string deviceId, CancellationToken cancellationToken)
+        public async Task RemoveDevice(EmployeeId employeeId, DeviceId deviceId, CancellationToken cancellationToken)
         {
-            var employeeIdentifier = new EmployeeId(employeeId);
-
             await new RegistryOperations(this.StateManager, this.logger)
-                .RemoveDeviceFromRegistry(employeeIdentifier, deviceId, cancellationToken);
+                .RemoveDeviceFromRegistry(employeeId, deviceId, cancellationToken);
         }
 
-        public async Task<IEnumerable<DeviceRegistryItem>> GetDeviceRegistryByEmployee(string employeeId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<DeviceRegistryEntry>> GetDeviceRegistryByEmployee(EmployeeId employeeId, CancellationToken cancellationToken)
         {
             return await new RegistryOperations(this.StateManager, this.logger)
-                .GetDeviceFromRegistryByEmployee(new EmployeeId(employeeId), cancellationToken);
+                .GetDeviceFromRegistryByEmployee(employeeId, cancellationToken);
         }
 
-        public async Task<Dictionary<string, IEnumerable<DeviceRegistryItem>>> GetDeviceRegistryByEmployeeList(IEnumerable<string> employeeId, CancellationToken cancellationToken)
+        public async Task<Dictionary<EmployeeId, IEnumerable<DeviceRegistryEntry>>> GetDeviceRegistryByEmployeeList(IEnumerable<EmployeeId> employeeId, CancellationToken cancellationToken)
         {
-            var result = new Dictionary<string, IEnumerable<DeviceRegistryItem>>();
+            var result = new Dictionary<EmployeeId, IEnumerable<DeviceRegistryEntry>>();
             foreach (var id in employeeId)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    return new Dictionary<string, IEnumerable<DeviceRegistryItem>>();
+                    return new Dictionary<EmployeeId, IEnumerable<DeviceRegistryEntry>>();
                 }
 
                 result.Add(id, await new RegistryOperations(this.StateManager, this.logger)
-                    .GetDeviceFromRegistryByEmployee(new EmployeeId(id), cancellationToken));
+                    .GetDeviceFromRegistryByEmployee(id, cancellationToken));
             }
 
             return result;
         }
 
-        public async Task<IEnumerable<DeviceRegistryItem>> GetDeviceRegistryByEmployeeAndType(string employeeId, string deviceType, CancellationToken cancellationToken)
+        public async Task<IEnumerable<DeviceRegistryEntry>> GetDeviceRegistryByEmployeeAndType(EmployeeId employeeId, DeviceType deviceType, CancellationToken cancellationToken)
         {
             return (await new RegistryOperations(this.StateManager, this.logger)
-                    .GetDeviceFromRegistryByEmployee(new EmployeeId(employeeId), cancellationToken))
+                    .GetDeviceFromRegistryByEmployee(employeeId, cancellationToken))
                 .Where(x => x.DeviceType == deviceType);
-        }
-
-        /// <summary>
-        ///     Optional override to create listeners (e.g., HTTP, Service Remoting, WCF, etc.) for this service replica to handle
-        ///     client or user requests.
-        /// </summary>
-        /// <remarks>
-        ///     For more information on service communication, see https://aka.ms/servicefabricservicecommunication
-        /// </remarks>
-        /// <returns>A collection of listeners.</returns>
-        protected override IEnumerable<ServiceReplicaListener> CreateServiceReplicaListeners()
-        {
-            return new ServiceReplicaListener[0];
         }
     }
 }

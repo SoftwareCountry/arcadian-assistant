@@ -10,7 +10,7 @@
         public string DevicePushToken { get; set; } = string.Empty;
 
         [Required]
-        [EnumDataType(typeof(DeviceType))]
-        public DeviceType DeviceType { get; set; } = DeviceType.Android;
+        [EnumDataType(typeof(DeviceTypeEnum))]
+        public DeviceTypeEnum DeviceType { get; set; } = DeviceTypeEnum.Android;
     }
 }

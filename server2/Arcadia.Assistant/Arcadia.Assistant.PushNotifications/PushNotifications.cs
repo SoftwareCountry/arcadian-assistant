@@ -11,7 +11,10 @@ namespace Arcadia.Assistant.PushNotifications
 
     using Castle.Core.Internal;
 
+    using Contracts;
     using Contracts.Models;
+
+    using DeviceRegistry.Contracts.Models;
 
     using Interfaces;
 
@@ -24,7 +27,7 @@ namespace Arcadia.Assistant.PushNotifications
     /// <summary>
     ///     An instance of this class is created for each service instance by the Service Fabric runtime.
     /// </summary>
-    public sealed class PushNotifications : StatelessService
+    public sealed class PushNotifications : StatelessService, IPushNotifications
     {
         private readonly IHttpClientFactory httpClientFactory;
         private readonly ILogger logger;
@@ -45,16 +48,7 @@ namespace Arcadia.Assistant.PushNotifications
             };
         }
 
-        /// <summary>
-        ///     Optional override to create listeners (e.g., TCP, HTTP) for this service replica to handle client or user requests.
-        /// </summary>
-        /// <returns>A collection of listeners.</returns>
-        protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
-        {
-            return new ServiceInstanceListener[0];
-        }
-
-        public async Task SendPushNotification(IEnumerable<DeviceToken> deviceTokens, PushNotificationContent notificationContent, CancellationToken cancellationToken)
+        public async Task SendPushNotification(IEnumerable<DeviceRegistryEntry> deviceTokens, PushNotificationContent notificationContent, CancellationToken cancellationToken)
         {
             this.logger.LogDebug("Push notification message received");
 
@@ -73,7 +67,16 @@ namespace Arcadia.Assistant.PushNotifications
             }
         }
 
-        private async Task SendApplicationPushNotification(IEnumerable<DeviceToken> deviceTokens, PushNotificationContent notificationContent, string pushUrl)
+        /// <summary>
+        ///     Optional override to create listeners (e.g., TCP, HTTP) for this service replica to handle client or user requests.
+        /// </summary>
+        /// <returns>A collection of listeners.</returns>
+        protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
+        {
+            return new ServiceInstanceListener[0];
+        }
+
+        private async Task SendApplicationPushNotification(IEnumerable<DeviceRegistryEntry> deviceTokens, PushNotificationContent notificationContent, string pushUrl)
         {
             if (deviceTokens.IsNullOrEmpty())
             {
@@ -86,7 +89,7 @@ namespace Arcadia.Assistant.PushNotifications
                 Target = new PushNotificationTarget
                 {
                     DevicePushTokens = deviceTokens
-                        .Select(x => x.DeviceId)
+                        .Select(x => x.DeviceId.ToString())
                         .ToList()
                 }
             };

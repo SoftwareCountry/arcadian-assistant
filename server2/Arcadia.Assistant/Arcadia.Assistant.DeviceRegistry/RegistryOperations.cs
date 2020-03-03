@@ -8,11 +8,11 @@
 
     using Contracts.Models;
 
+    using Employees.Contracts;
+
     using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Data;
     using Microsoft.ServiceFabric.Data.Collections;
-
-    using Models;
 
     public class RegistryOperations
     {
@@ -31,28 +31,28 @@
 
         private static TimeSpan OperationTimeout => TimeSpan.FromMinutes(OperationTimeoutMinutes);
 
-        public async Task AddDeviceToRegistry(EmployeeId employeeId, DeviceRegistryItem registryItem, CancellationToken cancellationToken)
+        public async Task AddDeviceToRegistry(EmployeeId employeeId, DeviceRegistryEntry registryItem, CancellationToken cancellationToken)
         {
             using var transaction = this.stateManager.CreateTransaction();
-            var employeeDeviceList = await this.stateManager.GetOrAddAsync<IReliableDictionary<EmployeeId, List<DeviceRegistryItem>>>(transaction, DeviceRegistryKey);
-            var deviceRegistrations = await this.stateManager.GetOrAddAsync<IReliableDictionary<string, DeviceRegistrationInfo>>(transaction, DeviceOwnersRegistryKey);
+            var employeeDeviceList = await this.stateManager.GetOrAddAsync<IReliableDictionary<EmployeeId, List<DeviceRegistryEntry>>>(transaction, DeviceRegistryKey);
+            var deviceRegistrations = await this.stateManager.GetOrAddAsync<IReliableDictionary<DeviceId, DeviceRegistrationInfo>>(transaction, DeviceOwnersRegistryKey);
 
-            var registryValue = new List<DeviceRegistryItem>
+            var registryValue = new List<DeviceRegistryEntry>
             {
                 registryItem
             };
 
-            var employeDeviceList = await employeeDeviceList.TryGetValueAsync(transaction, employeeId, OperationTimeout, cancellationToken);
-            if (employeDeviceList.HasValue)
+            var deviceList = await employeeDeviceList.TryGetValueAsync(transaction, employeeId, OperationTimeout, cancellationToken);
+            if (deviceList.HasValue)
             {
-                if (employeDeviceList.Value.Any(x => x.DeviceId == registryItem.DeviceId))
+                if (deviceList.Value.Any(x => x.DeviceId == registryItem.DeviceId))
                 {
                     // Nothing to do - device registered
                     this.logger.LogDebug($"Requested device with id={registryItem.DeviceId} already registered for employee.");
                     return;
                 }
 
-                registryValue.AddRange(employeDeviceList.Value);
+                registryValue.AddRange(deviceList.Value);
             }
 
             var deviceOwner = await deviceRegistrations.TryGetValueAsync(transaction, registryItem.DeviceId, OperationTimeout, cancellationToken);
@@ -75,28 +75,28 @@
             await transaction.CommitAsync();
         }
 
-        public async Task<IEnumerable<DeviceRegistryItem>> GetDeviceFromRegistryByEmployee(EmployeeId employeeId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<DeviceRegistryEntry>> GetDeviceFromRegistryByEmployee(EmployeeId employeeId, CancellationToken cancellationToken)
         {
             using var transaction = this.stateManager.CreateTransaction();
-            var employeeDeviceList = await this.stateManager.GetOrAddAsync<IReliableDictionary<EmployeeId, List<DeviceRegistryItem>>>(transaction, DeviceRegistryKey);
+            var employeeDeviceList = await this.stateManager.GetOrAddAsync<IReliableDictionary<EmployeeId, List<DeviceRegistryEntry>>>(transaction, DeviceRegistryKey);
             var result = await employeeDeviceList.TryGetValueAsync(transaction, employeeId, OperationTimeout, cancellationToken);
             return result.HasValue
                 ? result.Value
-                : new List<DeviceRegistryItem>();
+                : new List<DeviceRegistryEntry>();
         }
 
-        public async Task RemoveDeviceFromRegistry(EmployeeId employeeId, string deviceId, CancellationToken cancellationToken)
+        public async Task RemoveDeviceFromRegistry(EmployeeId employeeId, DeviceId deviceId, CancellationToken cancellationToken)
         {
             using var transaction = this.stateManager.CreateTransaction();
-            var employeeDeviceList = await this.stateManager.GetOrAddAsync<IReliableDictionary<EmployeeId, List<DeviceRegistryItem>>>(transaction, DeviceRegistryKey);
-            var deviceRegistrations = await this.stateManager.GetOrAddAsync<IReliableDictionary<string, DeviceRegistrationInfo>>(transaction, DeviceOwnersRegistryKey);
+            var employeeDeviceList = await this.stateManager.GetOrAddAsync<IReliableDictionary<EmployeeId, List<DeviceRegistryEntry>>>(transaction, DeviceRegistryKey);
+            var deviceRegistrations = await this.stateManager.GetOrAddAsync<IReliableDictionary<DeviceId, DeviceRegistrationInfo>>(transaction, DeviceOwnersRegistryKey);
 
             var employeeDevices = await employeeDeviceList.TryGetValueAsync(transaction, employeeId, OperationTimeout, cancellationToken);
             var deviceRegistration = await deviceRegistrations.TryGetValueAsync(transaction, deviceId, OperationTimeout, cancellationToken);
             if (!employeeDevices.HasValue && !deviceRegistration.HasValue)
             {
                 // no one device records found
-                this.logger.LogDebug($"Employee have no device with id={deviceId})");
+                this.logger.LogDebug($"Employee has no device with id={deviceId})");
                 return;
             }
 
@@ -128,7 +128,7 @@
 
         private sealed class DeviceRegistrationInfo
         {
-            public DeviceRegistrationInfo(EmployeeId ownerId, string deviceType)
+            public DeviceRegistrationInfo(EmployeeId ownerId, DeviceType deviceType)
             {
                 this.OwnerId = ownerId;
                 this.DeviceType = deviceType;
@@ -136,7 +136,7 @@
 
             public EmployeeId OwnerId { get; }
 
-            public string DeviceType { get; }
+            public DeviceType DeviceType { get; }
         }
     }
 }

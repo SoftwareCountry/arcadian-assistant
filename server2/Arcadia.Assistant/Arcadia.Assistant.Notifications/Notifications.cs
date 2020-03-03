@@ -13,6 +13,9 @@ namespace Arcadia.Assistant.Notifications
     using Contracts.Models;
 
     using DeviceRegistry.Contracts;
+    using DeviceRegistry.Contracts.Models;
+
+    using Employees.Contracts;
 
     using Interfaces;
 
@@ -70,7 +73,7 @@ namespace Arcadia.Assistant.Notifications
             };
         }
 
-        public async Task Send(IEnumerable<string> employeeId, NotificationType notificationType, CalendarEventType eventType, NotificationMessage notificationMessage, CancellationToken cancellationToken)
+        public async Task Send(IEnumerable<EmployeeId> employeeId, NotificationType notificationType, CalendarEventType eventType, NotificationMessage notificationMessage, CancellationToken cancellationToken)
         {
             if (employeeId.IsNullOrEmpty() || !this.notificationProvidersMap.ContainsKey(eventType))
             {
@@ -94,7 +97,7 @@ namespace Arcadia.Assistant.Notifications
             }
         }
 
-        private async Task SendPushNotification(Dictionary<string, IEnumerable<DeviceToken>> deviceTokens, NotificationType notificationType, CalendarEventType eventType, NotificationMessage notificationMessage, CancellationToken cancellationToken)
+        private async Task SendPushNotification(Dictionary<EmployeeId, IEnumerable<DeviceRegistryEntry>> deviceTokens, NotificationType notificationType, CalendarEventType eventType, NotificationMessage notificationMessage, CancellationToken cancellationToken)
         {
             var notificationContent = this.CreatePushNotificationContent(notificationType, eventType, notificationMessage);
             foreach (var empl in deviceTokens.Keys)
@@ -103,14 +106,14 @@ namespace Arcadia.Assistant.Notifications
             }
         }
 
-        private async Task<Dictionary<string, IEnumerable<DeviceToken>>> GetDeviceTokens(IEnumerable<string> employeeIds, CancellationToken cancellationToken)
+        private async Task<Dictionary<EmployeeId, IEnumerable<DeviceRegistryEntry>>> GetDeviceTokens(IEnumerable<EmployeeId> employeeIds, CancellationToken cancellationToken)
         {
             var tokens = await this.deviceRegistry.GetDeviceRegistryByEmployeeList(employeeIds, cancellationToken);
             return tokens.Keys.SelectMany(k => tokens[k].Select(x =>
                     new
                     {
                         Key = k,
-                        Val = x.ToDeviceToken()
+                        Val = x
                     }))
                 .GroupBy(x => x.Key)
                 .ToDictionary(x => x.Key, x => x.Select(a => a.Val));

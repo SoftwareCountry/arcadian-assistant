@@ -46,9 +46,9 @@
             if (employee != null)
             {
                 await this.deviceRegistry.RegisterDevice(
-                    employee.EmployeeId.ToString(),
-                    deviceModel.DevicePushToken,
-                    deviceType,
+                    employee.EmployeeId,
+                    new DeviceId(deviceModel.DevicePushToken),
+                    new DeviceType(deviceType),
                     cancellationToken);
             }
 
@@ -65,8 +65,8 @@
             if (employee != null)
             {
                 await this.deviceRegistry.RemoveDevice(
-                    employee.EmployeeId.ToString(),
-                    devicePushToken,
+                    employee.EmployeeId,
+                    new DeviceId(devicePushToken),
                     cancellationToken);
             }
 

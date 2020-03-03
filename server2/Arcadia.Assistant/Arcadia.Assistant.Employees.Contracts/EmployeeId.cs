@@ -1,9 +1,11 @@
 ﻿namespace Arcadia.Assistant.Employees.Contracts
 {
+    using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.Serialization;
 
     [DataContract]
-    public struct EmployeeId
+    public struct EmployeeId : IComparable<EmployeeId>, IEquatable<EmployeeId>
     {
         [DataMember]
         public int Value { get; private set; }
@@ -13,14 +15,19 @@
             this.Value = value;
         }
 
-        public override string ToString()
+        public int CompareTo(EmployeeId other)
         {
-            return this.Value.ToString();
+            return this.Value.CompareTo(other.Value);
         }
 
         public bool Equals(EmployeeId other)
         {
             return this.Value == other.Value;
+        }
+
+        public override string ToString()
+        {
+            return this.Value.ToString();
         }
 
         public override bool Equals(object obj)

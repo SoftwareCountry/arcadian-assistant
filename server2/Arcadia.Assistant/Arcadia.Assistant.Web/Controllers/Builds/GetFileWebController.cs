@@ -14,10 +14,10 @@
     [ApiExplorerSettings(IgnoreApi = true)]
     public class GetFileWebController : Controller
     {
-        private readonly Dictionary<DeviceType, string> fileContentTypeByDeviceType = new Dictionary<DeviceType, string>
+        private readonly Dictionary<DeviceTypeEnum, string> fileContentTypeByDeviceType = new Dictionary<DeviceTypeEnum, string>
         {
-            [DeviceType.Android] = "application/vnd.android.package-archive",
-            [DeviceType.Ios] = "application/octet-stream"
+            [DeviceTypeEnum.Android] = "application/vnd.android.package-archive",
+            [DeviceTypeEnum.Ios] = "application/octet-stream"
         };
 
         private readonly ILogger logger;
@@ -35,17 +35,17 @@
         [HttpGet]
         public Task<IActionResult> GetAndroid(CancellationToken cancellationToken)
         {
-            return this.GetFile(DeviceType.Android, cancellationToken);
+            return this.GetFile(DeviceTypeEnum.Android, cancellationToken);
         }
 
         [Route("get/ios")]
         [HttpGet]
         public Task<IActionResult> GetIos(CancellationToken cancellationToken)
         {
-            return this.GetFile(DeviceType.Ios, cancellationToken);
+            return this.GetFile(DeviceTypeEnum.Ios, cancellationToken);
         }
 
-        private async Task<IActionResult> GetFile(DeviceType deviceType, CancellationToken cancellationToken)
+        private async Task<IActionResult> GetFile(DeviceTypeEnum deviceType, CancellationToken cancellationToken)
         {
             var buildApplicationType = deviceType.MobileBuildType();
             this.logger.LogInformation($"Request {buildApplicationType} mobile build.");
