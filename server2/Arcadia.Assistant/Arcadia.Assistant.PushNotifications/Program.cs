@@ -43,7 +43,7 @@ namespace Arcadia.Assistant.PushNotifications
                 builder.Populate(services);
 
                 using var container = builder.Build();
-                logger = container.ResolveOptional<ILogger>();
+                logger = container.ResolveOptional<ILogger<PushNotifications>>();
                 logger?.LogInformation($"Service type '{typeof(PushNotifications).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
                 Thread.Sleep(Timeout.Infinite);
             }
