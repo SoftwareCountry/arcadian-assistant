@@ -31,7 +31,7 @@ namespace Arcadia.Assistant.Notifications
     /// <summary>
     ///     An instance of this class is created for each service instance by the Service Fabric runtime.
     /// </summary>
-    public sealed class Notifications : StatelessService, INotifications
+    public class Notifications : StatelessService, INotifications
     {
         private readonly IDeviceRegistry deviceRegistry;
         private readonly ILogger logger;
@@ -45,7 +45,7 @@ namespace Arcadia.Assistant.Notifications
             INotificationSettings notificationSettings,
             IDeviceRegistry deviceRegistry,
             IPushNotifications pushNotifications,
-            ILogger logger)
+            ILogger<Notifications> logger)
             : base(context)
         {
             this.notificationSettings = notificationSettings;

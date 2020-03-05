@@ -18,11 +18,11 @@ namespace Arcadia.Assistant.DeviceRegistry
     /// <summary>
     ///     An instance of this class is created for each service replica by the Service Fabric runtime.
     /// </summary>
-    internal sealed class DeviceRegistry : StatefulService, IDeviceRegistry
+    public class DeviceRegistry : StatefulService, IDeviceRegistry
     {
         private readonly ILogger logger;
 
-        public DeviceRegistry(StatefulServiceContext context, ILogger logger)
+        public DeviceRegistry(StatefulServiceContext context, ILogger<DeviceRegistry> logger)
             : base(context)
         {
             this.logger = logger;

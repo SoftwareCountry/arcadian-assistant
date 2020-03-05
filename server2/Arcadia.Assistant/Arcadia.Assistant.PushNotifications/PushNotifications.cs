@@ -27,14 +27,14 @@ namespace Arcadia.Assistant.PushNotifications
     /// <summary>
     ///     An instance of this class is created for each service instance by the Service Fabric runtime.
     /// </summary>
-    public sealed class PushNotifications : StatelessService, IPushNotifications
+    public class PushNotifications : StatelessService, IPushNotifications
     {
         private readonly IHttpClientFactory httpClientFactory;
         private readonly ILogger logger;
         private readonly Dictionary<string, string> notificationConfiguration;
         private readonly IPushSettings pushSettings;
 
-        public PushNotifications(StatelessServiceContext context, IPushSettings pushSettings, IHttpClientFactory httpClientFactory, ILogger logger)
+        public PushNotifications(StatelessServiceContext context, IPushSettings pushSettings, IHttpClientFactory httpClientFactory, ILogger<PushNotifications> logger)
             : base(context)
         {
             this.pushSettings = pushSettings;
