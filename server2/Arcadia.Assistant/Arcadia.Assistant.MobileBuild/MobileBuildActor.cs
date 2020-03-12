@@ -62,7 +62,7 @@ namespace Arcadia.Assistant.MobileBuild
         /// </summary>
         protected override Task OnActivateAsync()
         {
-            this.logger.LogInformation("Actor activated.");
+            this.logger.LogInformation("Mobile builds actor {ActorId} activated.", this.GetActorId());
 
             // The StateManager is this actor's private state store.
             // Data stored in the StateManager will be replicated for high-availability for actors that use volatile or persisted state storage.

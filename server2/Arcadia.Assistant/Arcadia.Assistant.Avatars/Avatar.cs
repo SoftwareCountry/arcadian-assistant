@@ -51,7 +51,7 @@ namespace Arcadia.Assistant.Avatars
         /// </summary>
         protected override Task OnActivateAsync()
         {
-            logger.LogInformation("Actor activated.");
+            logger.LogInformation("Avatar actor {ActorId} activated.", this.GetActorId());
             return Task.CompletedTask;
         }
 
