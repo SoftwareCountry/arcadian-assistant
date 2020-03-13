@@ -10,6 +10,6 @@ namespace Arcadia.Assistant.Permissions.Contracts
 
     public interface IPermissions : IService
     {
-        Task<UserPermissionsCollection> GetPermissionsAsync(string identity, CancellationToken cancellationToken);
+        Task<UserPermissionsCollection> GetPermissionsAsync(UserIdentity identity, CancellationToken cancellationToken);
     }
 }

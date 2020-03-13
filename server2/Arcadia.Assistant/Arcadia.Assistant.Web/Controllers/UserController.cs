@@ -61,7 +61,7 @@
                 return this.NotFound();
             }
 
-            var allPermissions = await this.permissions.GetPermissionsAsync(this.User.Identity.Name, token);
+            var allPermissions = await this.permissions.GetPermissionsAsync(new UserIdentity(this.User.Identity.Name!), token);
             var employeePermissions = allPermissions.GetPermissions(objectEmployee);
             return new UserEmployeePermissionsModel(objectId.ToString(), employeePermissions);
         }

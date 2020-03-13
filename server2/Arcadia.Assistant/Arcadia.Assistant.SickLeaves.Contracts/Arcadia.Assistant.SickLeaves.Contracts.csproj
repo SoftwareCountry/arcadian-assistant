@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Arcadia.Assistant.Employees.Contracts\Arcadia.Assistant.Employees.Contracts.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.Permissions.Contracts\Arcadia.Assistant.Permissions.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

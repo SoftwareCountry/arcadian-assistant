@@ -30,7 +30,7 @@
             }
 
             
-            var allPermissions = await this.permissionsLoader.GetPermissionsAsync(context.User.Identity.Name, CancellationToken.None);
+            var allPermissions = await this.permissionsLoader.GetPermissionsAsync(new UserIdentity(context.User.Identity.Name), CancellationToken.None);
             var employee = await this.employees.FindEmployeeAsync(resource, CancellationToken.None);
             if (employee == null)
             {

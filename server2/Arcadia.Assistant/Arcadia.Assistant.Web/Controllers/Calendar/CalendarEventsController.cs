@@ -17,6 +17,8 @@
 
     using Models.Calendar;
 
+    using Permissions.Contracts;
+
     using SickLeaves.Contracts;
 
     using Vacations.Contracts;
@@ -140,7 +142,7 @@
                     createdModel = this.workHoursConverter.ToCalendarEventWithId(change);
                     break;
                 case CalendarEventTypes.Sickleave:
-                    var sickleave = await this.sickLeaves.CreateSickLeaveAsync(new EmployeeId(employeeId), model.Dates.StartDate, model.Dates.EndDate);
+                    var sickleave = await this.sickLeaves.CreateSickLeaveAsync(new EmployeeId(employeeId), model.Dates.StartDate, model.Dates.EndDate, new UserIdentity(this.User.Identity.Name));
                     createdModel = this.sickLeavesConverter.ToCalendarEventWithId(sickleave);
                     break;
                 case CalendarEventTypes.Vacation:
@@ -178,7 +180,7 @@
                     case CalendarEventTypes.Workout:
                         return await this.UpdateWorkHoursRequest(new EmployeeId(employeeId), eventId, model, changedBy);
                     case CalendarEventTypes.Sickleave:
-                        return await this.UpdateSickLeave(new EmployeeId(employeeId), eventId, model, changedBy);
+                        return await this.UpdateSickLeave(new EmployeeId(employeeId), eventId, model, new UserIdentity(this.User.Identity.Name!));
                     case CalendarEventTypes.Vacation:
                         return await this.UpdateVacation(new EmployeeId(employeeId), eventId, model, changedBy);
                     default:
@@ -231,7 +233,7 @@
             return this.NoContent();
         }
 
-        private async Task<IActionResult> UpdateSickLeave(EmployeeId employeeId, string dtoId, CalendarEventModel model, EmployeeMetadata changedBy)
+        private async Task<IActionResult> UpdateSickLeave(EmployeeId employeeId, string dtoId, CalendarEventModel model, UserIdentity changedBy)
         {
             if (!this.idConverter.TryParseSickLeaveId(dtoId, out var eventId))
             {
@@ -253,7 +255,7 @@
             {
                 if (model.Status == SickLeaveStatus.Cancelled.ToString())
                 {
-                    await this.sickLeaves.CancelSickLeaveAsync(employeeId, eventId, changedBy.EmployeeId);
+                    await this.sickLeaves.CancelSickLeaveAsync(employeeId, eventId, changedBy);
                 }
                 else
                 {
@@ -263,7 +265,7 @@
 
             if (model.Dates.EndDate != existingEvent.EndDate)
             {
-                await this.sickLeaves.ProlongSickLeaveAsync(employeeId, eventId, model.Dates.EndDate);
+                await this.sickLeaves.ProlongSickLeaveAsync(employeeId, eventId, model.Dates.EndDate, changedBy);
             }
 
             return this.NoContent();

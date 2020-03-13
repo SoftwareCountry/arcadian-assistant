@@ -62,7 +62,7 @@
                 return this.Forbid();
             }
 
-            var model = (await this.ProcessEmployeesAsync(identity, new[] { employee }, token)).FirstOrDefault();
+            var model = (await this.ProcessEmployeesAsync(new UserIdentity(identity), new[] { employee }, token)).FirstOrDefault();
             if (model == null)
             {
                 return this.NotFound();
@@ -105,12 +105,12 @@
 
             var employeesMetadata = await this.employees.FindEmployeesAsync(query, token);
 
-            var employeeModels = await this.ProcessEmployeesAsync(identity, employeesMetadata, token);
+            var employeeModels = await this.ProcessEmployeesAsync(new UserIdentity(identity), employeesMetadata, token);
 
             return employeeModels;
         }
 
-        private async Task<EmployeeModel[]> ProcessEmployeesAsync(string identity, IEnumerable<EmployeeMetadata> employeeMetadatas, CancellationToken cancellationToken)
+        private async Task<EmployeeModel[]> ProcessEmployeesAsync(UserIdentity identity, IEnumerable<EmployeeMetadata> employeeMetadatas, CancellationToken cancellationToken)
         {
             var allPermissions = await this.permissions.GetPermissionsAsync(identity, cancellationToken);
 

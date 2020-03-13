@@ -46,9 +46,9 @@ namespace Arcadia.Assistant.Permissions
             return this.CreateServiceRemotingInstanceListeners();
         }
 
-        public async Task<UserPermissionsCollection> GetPermissionsAsync(string identity, CancellationToken cancellationToken)
+        public async Task<UserPermissionsCollection> GetPermissionsAsync(UserIdentity identity, CancellationToken cancellationToken)
         {
-            var userEmployee = (await this.employees.FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(identity), cancellationToken)).FirstOrDefault();
+            var userEmployee = (await this.employees.FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(identity.Value), cancellationToken)).FirstOrDefault();
             var defaultEmployeePermission = EmployeePermissionsEntry.None;
             var permissionsForDepartments = new Dictionary<DepartmentId, EmployeePermissionsEntry>();
             var permissionsForEmployees = new Dictionary<EmployeeId, EmployeePermissionsEntry>();
