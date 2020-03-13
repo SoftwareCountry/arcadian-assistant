@@ -246,21 +246,9 @@
                 return this.NotFound();
             }
 
-            if (existingEvent.Status == SickLeaveStatus.Cancelled)
+            if (model.Status != existingEvent.Status.ToString() && model.Status == SickLeaveStatus.Cancelled.ToString())
             {
-                return this.BadRequest("Cannot change cancelled event");
-            }
-
-            if (model.Status != existingEvent.Status.ToString())
-            {
-                if (model.Status == SickLeaveStatus.Cancelled.ToString())
-                {
-                    await this.sickLeaves.CancelSickLeaveAsync(employeeId, eventId, changedBy);
-                }
-                else
-                {
-                    return this.BadRequest("Unsupported status transition");
-                }
+                await this.sickLeaves.CancelSickLeaveAsync(employeeId, eventId, changedBy);
             }
 
             if (model.Dates.EndDate != existingEvent.EndDate)
