@@ -43,6 +43,9 @@
     <Parameter Name="Arcadia.Assistant.Web_Security_AuthorizationUrl" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_Security_TokenUrl" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_Security_OpenIdConfigurationUrl" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Web_Security_BasicAuthentication_Realm" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Web_Security_BasicAuthentication_Login" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Web_Security_BasicAuthentication_Password" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_Links_HelpLink" DefaultValue="https://arcadiaspb.sharepoint.com/teams/ArcadiaAssistant/SitePages/Usage%20Guide.aspx" />
     <Parameter Name="Arcadia.Assistant.Web_Ssl_SslOffloading" DefaultValue="false" />
     <Parameter Name="AvatarActorService_PartitionCount" DefaultValue="10" />
@@ -291,11 +294,16 @@
     <ConfigOverrides>
       <ConfigOverride Name="Config">
         <Settings>
-          <Section Name="Security">
+          <Section Name="OpenId">
             <Parameter Name="ClientId" Value="[Arcadia.Assistant.Web_Security_ClientId]" />
             <Parameter Name="AuthorizationUrl" Value="[Arcadia.Assistant.Web_Security_AuthorizationUrl]" />
             <Parameter Name="TokenUrl" Value="[Arcadia.Assistant.Web_Security_TokenUrl]" />
             <Parameter Name="OpenIdConfigurationUrl" Value="[Arcadia.Assistant.Web_Security_OpenIdConfigurationUrl]" />
+          </Section>
+          <Section Name="BasicAuthentication">
+            <Parameter Name="Realm" Value="[Arcadia.Assistant.Web_Security_BasicAuthentication_Realm]" />
+            <Parameter Name="Login" Value="[Arcadia.Assistant.Web_Security_BasicAuthentication_Login]" />
+            <Parameter Name="Password" Value="[Arcadia.Assistant.Web_Security_BasicAuthentication_Password]" />
           </Section>
           <Section Name="Links">
             <Parameter Name="HelpLink" Value="[Arcadia.Assistant.Web_Links_HelpLink]" />

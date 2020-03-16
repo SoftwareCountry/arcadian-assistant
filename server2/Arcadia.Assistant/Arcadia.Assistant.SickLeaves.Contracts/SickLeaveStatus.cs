@@ -2,7 +2,7 @@
 {
     public enum SickLeaveStatus
     {
-        Requested,
+        Requested, //TODO: Rename to Active
         Cancelled,
         Completed
     }

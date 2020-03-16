@@ -66,12 +66,12 @@
             }
         }
 
-        public static bool operator ==(DatesPeriod left, DatesPeriod right)
+        public static bool operator ==(DatesPeriod? left, DatesPeriod? right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(DatesPeriod left, DatesPeriod right)
+        public static bool operator !=(DatesPeriod? left, DatesPeriod? right)
         {
             return !Equals(left, right);
         }

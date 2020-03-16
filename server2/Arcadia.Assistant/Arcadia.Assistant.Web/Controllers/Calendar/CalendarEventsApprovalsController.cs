@@ -4,6 +4,9 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Authorization;
+    using Authorization.Requirements;
+
     using Employees.Contracts;
 
     using Microsoft.AspNetCore.Authorization;
@@ -17,21 +20,23 @@
     using WorkHoursCredit.Contracts;
 
     [Route("/api/employees/{employeeId}/events/{eventId}/approvals")]
-    [Authorize]
+    [Authorize(Policies.UserIsEmployee)]
     [ApiController]
     public class CalendarEventsApprovalsController : Controller
     {
         private readonly IEmployees employees;
+        private readonly IAuthorizationService authorizationService;
 
         private readonly CalendarEventIdConverter idConverter = new CalendarEventIdConverter();
         private readonly IVacations vacations;
         private readonly IWorkHoursCredit workHoursCredit;
 
-        public CalendarEventsApprovalsController(IWorkHoursCredit workHoursCredit, IVacations vacations, IEmployees employees)
+        public CalendarEventsApprovalsController(IWorkHoursCredit workHoursCredit, IVacations vacations, IEmployees employees, IAuthorizationService authorizationService)
         {
             this.workHoursCredit = workHoursCredit;
             this.vacations = vacations;
             this.employees = employees;
+            this.authorizationService = authorizationService;
         }
 
         [HttpGet]
@@ -40,6 +45,11 @@
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<CalendarEventApprovalModel[]>> GetEventApprovals(int employeeId, string eventId, CancellationToken token)
         {
+            if (!(await this.authorizationService.AuthorizeAsync(this.User, new EmployeeId(employeeId), new ReadCalendarEvents())).Succeeded)
+            {
+                return this.Forbid();
+            }
+
             if (this.idConverter.TryParseWorkHoursChangeId(eventId, out var changeId))
             {
                 var approvals = await this.workHoursCredit.GetApprovalsAsync(new EmployeeId(employeeId), changeId, token);
@@ -72,6 +82,11 @@
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> ApproveEvent(int employeeId, string eventId)
         {
+            if (!(await this.authorizationService.AuthorizeAsync(this.User, new EmployeeId(employeeId), new ApprovePendingCalendarEvent())).Succeeded)
+            {
+                return this.Forbid();
+            }
+
             var approver = (await this.employees.FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(this.User.Identity), CancellationToken.None)).FirstOrDefault();
             if (approver == null)
             {

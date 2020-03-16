@@ -36,7 +36,8 @@
 
         private StorageItemJsonConvertor StorageItemJsonConvertor { get; }
 
-        public async Task<IEnumerable<StorageItem>> GetItems(string list, IEnumerable<ICondition>? conditions, CancellationToken cancellationToken)
+        public async Task<IEnumerable<StorageItem>> GetItems(
+            string list, IEnumerable<ICondition>? conditions, CancellationToken cancellationToken)
         {
             var listItems = await this.GetListItems(list, conditions, cancellationToken);
 
@@ -58,7 +59,10 @@
 
         public async Task UpdateItem(string list, StorageItem item, CancellationToken cancellationToken)
         {
-            var idConditions = new[] { new EqualCondition(x => x.Id, item.Id) };
+            var idConditions = new[]
+            {
+                new EqualCondition(x => x.Id, item.Id)
+            };
             var listItems = (await this.GetListItems(list, idConditions, cancellationToken)).ToArray();
 
             this.EnsureSingleItemReturned(listItems);
@@ -83,7 +87,10 @@
 
         public async Task DeleteItem(string list, string itemId, CancellationToken cancellationToken)
         {
-            var idConditions = new[] { new EqualCondition(x => x.Id, itemId) };
+            var idConditions = new[]
+            {
+                new EqualCondition(x => x.Id, itemId)
+            };
             var listItems = (await this.GetListItems(list, idConditions, cancellationToken)).ToArray();
 
             this.EnsureSingleItemReturned(listItems);
@@ -105,7 +112,7 @@
         {
         }
 
-        private async Task<IEnumerable<StorageItem>?> GetListItems(
+        private async Task<IEnumerable<StorageItem>> GetListItems(
             string list,
             IEnumerable<ICondition>? conditions,
             CancellationToken cancellationToken)
@@ -120,15 +127,19 @@
             }
 
             var request = SharepointRequest.Create(HttpMethod.Get, itemsUrl);
-            var response = await this.requestExecutor.ExecuteSharepointRequest<SharepointListItemsResponse>(request, cancellationToken);
-            return response.Value.Select(this.StorageItemJsonConvertor.JsonToStorageItem);
+            var response =
+                await this.requestExecutor.ExecuteSharepointRequest<SharepointListItemsResponse>(request,
+                    cancellationToken);
+            return response.Value.Select(this.StorageItemJsonConvertor.JsonToStorageItem).Where(x => x != null)
+                .Select(x => x!);
         }
 
         private async Task<string?> GetListItemType(string list, CancellationToken cancellationToken)
         {
             var listUrl = $"{this.GetListUrl(list)}?$select=ListItemEntityTypeFullName";
             var request = SharepointRequest.Create(HttpMethod.Get, listUrl);
-            var response = await this.requestExecutor.ExecuteSharepointRequest<SharepointListResponse>(request, cancellationToken);
+            var response =
+                await this.requestExecutor.ExecuteSharepointRequest<SharepointListResponse>(request, cancellationToken);
             return response.ListItemEntityTypeFullName;
         }
 
