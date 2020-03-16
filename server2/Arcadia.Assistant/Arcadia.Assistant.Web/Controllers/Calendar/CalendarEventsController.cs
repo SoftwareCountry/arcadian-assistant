@@ -142,7 +142,7 @@
                     createdModel = this.workHoursConverter.ToCalendarEventWithId(change);
                     break;
                 case CalendarEventTypes.Sickleave:
-                    var sickleave = await this.sickLeaves.CreateSickLeaveAsync(new EmployeeId(employeeId), model.Dates.StartDate, model.Dates.EndDate, new UserIdentity(this.User.Identity.Name));
+                    var sickleave = await this.sickLeaves.CreateSickLeaveAsync(new EmployeeId(employeeId), model.Dates.StartDate, model.Dates.EndDate, new UserIdentity(this.User.Identity.Name!));
                     createdModel = this.sickLeavesConverter.ToCalendarEventWithId(sickleave);
                     break;
                 case CalendarEventTypes.Vacation:
