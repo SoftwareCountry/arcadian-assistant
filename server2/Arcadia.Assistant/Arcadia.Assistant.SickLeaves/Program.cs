@@ -16,6 +16,8 @@ namespace Arcadia.Assistant.SickLeaves
     using Microsoft.ServiceFabric.Services.Remoting.Client;
     using Microsoft.ServiceFabric.Services.Runtime;
 
+    using Permissions.Contracts;
+
     internal static class Program
     {
         /// <summary>
@@ -42,6 +44,7 @@ namespace Arcadia.Assistant.SickLeaves
                 builder.RegisterType<SickLeaveCreationStep>().AsSelf();
                 builder.RegisterType<SickLeaveProlongationStep>().AsSelf();
                 builder.RegisterModule(new CspModule(connectionString));
+                builder.RegisterModule(new PermissionsModule());
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using var container = builder.Build();

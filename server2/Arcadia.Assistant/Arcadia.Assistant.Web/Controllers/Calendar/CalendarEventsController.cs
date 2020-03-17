@@ -6,6 +6,9 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Authorization;
+    using Authorization.Requirements;
+
     using Employees.Contracts;
 
     using Microsoft.AspNetCore.Authorization;
@@ -13,6 +16,8 @@
     using Microsoft.AspNetCore.Mvc;
 
     using Models.Calendar;
+
+    using Permissions.Contracts;
 
     using SickLeaves.Contracts;
 
@@ -22,24 +27,27 @@
 
     //TODO: fuck me, that code has to be split apart...
     [Route("/api/employees/{employeeId}/events/")]
-    [Authorize]
+    [Authorize(Policies.UserIsEmployee)]
     [ApiController]
     public class CalendarEventsController : Controller
     {
-        private readonly IEmployees employees;
-        private readonly ISickLeaves sickLeaves;
-        private readonly SickLeavesConverter sickLeavesConverter = new SickLeavesConverter();
-        private readonly IVacations vacations;
-        private readonly VacationsConverter vacationsConverter = new VacationsConverter();
-        private readonly WorkHoursConverter workHoursConverter = new WorkHoursConverter();
         private readonly IWorkHoursCredit workHoursCredit;
+        private readonly ISickLeaves sickLeaves;
+        private readonly IEmployees employees;
+        private readonly IVacations vacations;
+        private readonly IAuthorizationService authorizationService;
+        private readonly WorkHoursConverter workHoursConverter = new WorkHoursConverter();
+        private readonly SickLeavesConverter sickLeavesConverter = new SickLeavesConverter();
+        private readonly VacationsConverter vacationsConverter = new VacationsConverter();
+        private readonly CalendarEventIdConverter idConverter = new CalendarEventIdConverter();
 
-        public CalendarEventsController(IWorkHoursCredit workHoursCredit, ISickLeaves sickLeaves, IEmployees employees, IVacations vacations)
+        public CalendarEventsController(IWorkHoursCredit workHoursCredit, ISickLeaves sickLeaves, IEmployees employees, IVacations vacations, IAuthorizationService authorizationService)
         {
             this.workHoursCredit = workHoursCredit;
             this.sickLeaves = sickLeaves;
             this.employees = employees;
             this.vacations = vacations;
+            this.authorizationService = authorizationService;
         }
 
         [Route("")]
@@ -48,9 +56,15 @@
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<CalendarEventWithIdModel>>> GetAll(int employeeId, CancellationToken token)
         {
-            var workHoursEvents = await this.workHoursCredit.GetCalendarEventsAsync(new EmployeeId(employeeId), token);
-            var sickLeaveEvents = await this.sickLeaves.GetCalendarEventsAsync(new EmployeeId(employeeId), token);
-            var vacationEvents = await this.vacations.GetCalendarEventsAsync(new EmployeeId(employeeId), token);
+            var employee = new EmployeeId(employeeId);
+            if (!(await this.authorizationService.AuthorizeAsync(this.User, employee, new ReadCalendarEvents())).Succeeded)
+            {
+                return this.Forbid();
+            }
+
+            var workHoursEvents = await this.workHoursCredit.GetCalendarEventsAsync(employee, token);
+            var sickLeaveEvents = await this.sickLeaves.GetCalendarEventsAsync(employee, token);
+            var vacationEvents = await this.vacations.GetCalendarEventsAsync(employee, token);
             var allEvents = workHoursEvents
                 .Select(this.workHoursConverter.ToCalendarEventWithId)
                 .Union(sickLeaveEvents.Select(this.sickLeavesConverter.ToCalendarEventWithId))
@@ -60,14 +74,19 @@
             return allEvents;
         }
 
+
         [Route("{eventId}")]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<CalendarEventModel>> Get(int employeeId, string eventId, CancellationToken token)
         {
-            var idConverter = new CalendarEventIdConverter();
-            if (idConverter.TryParseWorkHoursChangeId(eventId, out var changeId))
+            if (!(await this.authorizationService.AuthorizeAsync(this.User, employeeId, new ReadCalendarEvents())).Succeeded)
+            {
+                return this.Forbid();
+            }
+
+            if (this.idConverter.TryParseWorkHoursChangeId(eventId, out var changeId))
             {
                 var change = await this.workHoursCredit.GetCalendarEventAsync(new EmployeeId(employeeId), changeId, token);
                 if (change != null)
@@ -75,7 +94,7 @@
                     return this.workHoursConverter.ToCalendarEvent(change);
                 }
             }
-            else if (idConverter.TryParseSickLeaveId(eventId, out var sickLeaveId))
+            else if (this.idConverter.TryParseSickLeaveId(eventId, out var sickLeaveId))
             {
                 var sickLeave = await this.sickLeaves.GetCalendarEventAsync(new EmployeeId(employeeId), sickLeaveId, token);
                 if (sickLeave != null)
@@ -83,7 +102,7 @@
                     return this.sickLeavesConverter.ToCalendarEvent(sickLeave);
                 }
             }
-            else if (idConverter.TryParseVacationId(eventId, out var vacationId))
+            else if (this.idConverter.TryParseVacationId(eventId, out var vacationId))
             {
                 var vacation = await this.vacations.GetCalendarEventAsync(new EmployeeId(employeeId), vacationId, token);
                 if (vacation != null)
@@ -106,6 +125,11 @@
                 return this.BadRequest(this.ModelState);
             }
 
+            if (!(await this.authorizationService.AuthorizeAsync(this.User, new EmployeeId(employeeId), new CreateCalendarEvents())).Succeeded)
+            {
+                return this.Forbid();
+            }
+
             CalendarEventWithIdModel createdModel;
 
             switch (model.Type)
@@ -118,7 +142,7 @@
                     createdModel = this.workHoursConverter.ToCalendarEventWithId(change);
                     break;
                 case CalendarEventTypes.Sickleave:
-                    var sickleave = await this.sickLeaves.CreateSickLeaveAsync(new EmployeeId(employeeId), model.Dates.StartDate, model.Dates.EndDate);
+                    var sickleave = await this.sickLeaves.CreateSickLeaveAsync(new EmployeeId(employeeId), model.Dates.StartDate, model.Dates.EndDate, new UserIdentity(this.User.Identity.Name!));
                     createdModel = this.sickLeavesConverter.ToCalendarEventWithId(sickleave);
                     break;
                 case CalendarEventTypes.Vacation:
@@ -156,7 +180,7 @@
                     case CalendarEventTypes.Workout:
                         return await this.UpdateWorkHoursRequest(new EmployeeId(employeeId), eventId, model, changedBy);
                     case CalendarEventTypes.Sickleave:
-                        return await this.UpdateSickLeave(new EmployeeId(employeeId), eventId, model, changedBy);
+                        return await this.UpdateSickLeave(new EmployeeId(employeeId), eventId, model, new UserIdentity(this.User.Identity.Name!));
                     case CalendarEventTypes.Vacation:
                         return await this.UpdateVacation(new EmployeeId(employeeId), eventId, model, changedBy);
                     default:
@@ -169,9 +193,9 @@
             }
         }
 
-        private async Task<IActionResult> UpdateWorkHoursRequest(EmployeeId employeeId, string stringEventId, CalendarEventModel model, EmployeeMetadata changedBy)
+        private async Task<IActionResult> UpdateWorkHoursRequest(EmployeeId employeeId, string dtoId, CalendarEventModel model, EmployeeMetadata changedBy)
         {
-            if (!Guid.TryParse(stringEventId, out var eventId))
+            if (!this.idConverter.TryParseWorkHoursChangeId(dtoId, out var eventId))
             {
                 return this.BadRequest("EventId is not guid");
             }
@@ -209,9 +233,9 @@
             return this.NoContent();
         }
 
-        private async Task<IActionResult> UpdateSickLeave(EmployeeId employeeId, string stringEventId, CalendarEventModel model, EmployeeMetadata changedBy)
+        private async Task<IActionResult> UpdateSickLeave(EmployeeId employeeId, string dtoId, CalendarEventModel model, UserIdentity changedBy)
         {
-            if (!int.TryParse(stringEventId, out var eventId))
+            if (!this.idConverter.TryParseSickLeaveId(dtoId, out var eventId))
             {
                 return this.BadRequest("EventId is not int");
             }
@@ -222,34 +246,22 @@
                 return this.NotFound();
             }
 
-            if (existingEvent.Status == SickLeaveStatus.Cancelled)
+            if (model.Status != existingEvent.Status.ToString() && model.Status == SickLeaveStatus.Cancelled.ToString())
             {
-                return this.BadRequest("Cannot change cancelled event");
-            }
-
-            if (model.Status != existingEvent.Status.ToString())
-            {
-                if (model.Status == SickLeaveStatus.Cancelled.ToString())
-                {
-                    await this.sickLeaves.CancelSickLeaveAsync(employeeId, eventId, changedBy.EmployeeId);
-                }
-                else
-                {
-                    return this.BadRequest("Unsupported status transition");
-                }
+                await this.sickLeaves.CancelSickLeaveAsync(employeeId, eventId, changedBy);
             }
 
             if (model.Dates.EndDate != existingEvent.EndDate)
             {
-                await this.sickLeaves.ProlongSickLeaveAsync(employeeId, eventId, model.Dates.EndDate);
+                await this.sickLeaves.ProlongSickLeaveAsync(employeeId, eventId, model.Dates.EndDate, changedBy);
             }
 
             return this.NoContent();
         }
 
-        private async Task<IActionResult> UpdateVacation(EmployeeId employeeId, string stringEventId, CalendarEventModel model, EmployeeMetadata changedBy)
+        private async Task<IActionResult> UpdateVacation(EmployeeId employeeId, string dtoId, CalendarEventModel model, EmployeeMetadata changedBy)
         {
-            if (!int.TryParse(stringEventId, out var eventId))
+            if (!idConverter.TryParseVacationId(dtoId, out var eventId))
             {
                 return this.BadRequest("id is not an integer");
             }
@@ -259,6 +271,7 @@
             {
                 return this.NotFound();
             }
+
 
             if (!Enum.TryParse<VacationStatus>(model.Status, out var newStatus))
             {

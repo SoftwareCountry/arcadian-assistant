@@ -3,6 +3,8 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Authorization;
+
     using Employees.Contracts;
 
     using Microsoft.AspNetCore.Authorization;
@@ -14,7 +16,7 @@
 
     [ApiController]
     [Route("api/pending-requests")]
-    [Authorize]
+    [Authorize(Policies.UserIsEmployee)]
     public class PendingRequestsController : Controller
     {
         private readonly IPendingActions pendingActions;

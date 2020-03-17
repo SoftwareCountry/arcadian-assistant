@@ -49,6 +49,11 @@
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<UserEmployeePermissionsModel>> GetPermissions(int objectEmployeeId, CancellationToken token)
         {
+            if (this.User.Identity.Name == null)
+            {
+                return this.Forbid();
+            }
+
             var objectId = new EmployeeId(objectEmployeeId);
             var objectEmployee = await this.employees.FindEmployeeAsync(objectId, token);
             if (objectEmployee == null)
@@ -56,12 +61,7 @@
                 return this.NotFound();
             }
 
-            if (this.User.Identity.Name == null)
-            {
-                return this.Forbid();
-            }
-
-            var allPermissions = await this.permissions.GetPermissionsAsync(this.User.Identity.Name, token);
+            var allPermissions = await this.permissions.GetPermissionsAsync(new UserIdentity(this.User.Identity.Name!), token);
             var employeePermissions = allPermissions.GetPermissions(objectEmployee);
             return new UserEmployeePermissionsModel(objectId.ToString(), employeePermissions);
         }

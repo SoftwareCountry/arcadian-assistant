@@ -21,6 +21,8 @@ namespace Arcadia.Assistant.SickLeaves
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
 
+    using Permissions.Contracts;
+
     /// <summary>
     ///     An instance of this class is created for each service instance by the Service Fabric runtime.
     /// </summary>
@@ -34,9 +36,10 @@ namespace Arcadia.Assistant.SickLeaves
         private readonly SickLeaveModelConverter modelConverter = new SickLeaveModelConverter();
         private readonly ILogger logger;
 
-        public SickLeaves(StatelessServiceContext context, 
+        public SickLeaves(
+            StatelessServiceContext context,
             Func<Owned<ArcadiaCspContext>> dbFactory,
-            Func<Owned<SickLeaveCreationStep>> creationStepsFactory, 
+            Func<Owned<SickLeaveCreationStep>> creationStepsFactory,
             Func<Owned<SickLeaveProlongationStep>> prolongationStepsFactory,
             Func<Owned<SickLeaveCancellationStep>> cancellationStepsFactory,
             ILogger<SickLeaves> logger)
@@ -72,58 +75,66 @@ namespace Arcadia.Assistant.SickLeaves
             }
         }
 
-        public async Task<SickLeaveDescription[]> GetCalendarEventsAsync(EmployeeId employeeId, CancellationToken cancellationToken)
+        public async Task<SickLeaveDescription[]> GetCalendarEventsAsync(
+            EmployeeId employeeId, CancellationToken cancellationToken)
         {
             using var db = this.dbFactory();
-            var sickLeaves = await db.Value
-                .SickLeaves
+            var sickLeaves = await this.GetSickLeaves(db.Value)
                 .Where(x => x.EmployeeId == employeeId.Value)
-                .Select(this.modelConverter.ToDescription)
                 .ToArrayAsync(cancellationToken);
 
-            return sickLeaves;
+            return sickLeaves.Select(this.modelConverter.GetDescription).ToArray();
         }
 
-        public async Task<Dictionary<EmployeeId, SickLeaveDescription[]>> GetCalendarEventsByEmployeeMapAsync(EmployeeId[] employeeIds, CancellationToken cancellationToken)
+        public async Task<Dictionary<EmployeeId, SickLeaveDescription[]>> GetCalendarEventsByEmployeeMapAsync(
+            EmployeeId[] employeeIds, CancellationToken cancellationToken)
         {
             using var db = this.dbFactory();
-            var sickLeaves = await db.Value
-                .SickLeaves
+            var sickLeaves = await this.GetSickLeaves(db.Value)
                 .Where(x => employeeIds.Any(id => x.EmployeeId == id.Value))
-                .Select(this.modelConverter.ToDescription)
                 .ToArrayAsync(cancellationToken);
 
-            return sickLeaves.GroupBy(x => x.EmployeeId).ToDictionary(x => x.Key, x => x.ToArray());
+            return sickLeaves
+                .Select(this.modelConverter.GetDescription)
+                .GroupBy(x => x.EmployeeId).ToDictionary(x => x.Key, x => x.ToArray());
         }
 
-        public async Task<SickLeaveDescription?> GetCalendarEventAsync(EmployeeId employeeId, int eventId, CancellationToken cancellationToken)
+        public async Task<SickLeaveDescription?> GetCalendarEventAsync(
+            EmployeeId employeeId, int eventId, CancellationToken cancellationToken)
         {
             using var db = this.dbFactory();
-            var sickLeave = await db.Value
-                .SickLeaves
+            var sickLeave = await this.GetSickLeaves(db.Value)
                 .Where(x => x.Id == eventId && x.EmployeeId == employeeId.Value)
-                .Select(this.modelConverter.ToDescription)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            return sickLeave;
+            return this.modelConverter.GetDescription(sickLeave);
         }
 
-        public async Task<SickLeaveDescription> CreateSickLeaveAsync(EmployeeId employeeId, DateTime startDate, DateTime endDate)
+        public async Task<SickLeaveDescription> CreateSickLeaveAsync(
+            EmployeeId employeeId, DateTime startDate, DateTime endDate, UserIdentity userIdentity)
         {
             using var step = this.creationStepsFactory();
-            return await step.Value.InvokeAsync(employeeId, startDate, endDate);
+            return await step.Value.InvokeAsync(employeeId, startDate, endDate, userIdentity);
         }
 
-        public async Task ProlongSickLeaveAsync(EmployeeId employeeId, int eventId, DateTime endDate)
+        public async Task ProlongSickLeaveAsync(
+            EmployeeId employeeId, int eventId, DateTime endDate, UserIdentity userIdentity)
         {
             using var step = this.prolongationStepsFactory();
-            await step.Value.InvokeAsync(employeeId, eventId, endDate);
+            await step.Value.InvokeAsync(employeeId, eventId, endDate, userIdentity);
         }
 
-        public async Task CancelSickLeaveAsync(EmployeeId employeeId, int eventId, EmployeeId cancelledBy)
+        public async Task CancelSickLeaveAsync(EmployeeId employeeId, int eventId, UserIdentity cancelledBy)
         {
             using var step = this.cancellationStepsFactory();
             await step.Value.InvokeAsync(employeeId, eventId, cancelledBy);
+        }
+
+        private IQueryable<SickLeave> GetSickLeaves(ArcadiaCspContext context)
+        {
+            return context.SickLeaves
+                .Include(x => x.SickLeaveCancellations)
+                .Include(x => x.SickLeaveCompletes);
         }
     }
 }
