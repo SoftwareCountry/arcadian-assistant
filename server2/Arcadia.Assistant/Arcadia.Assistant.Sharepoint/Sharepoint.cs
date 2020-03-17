@@ -15,6 +15,9 @@ namespace Arcadia.Assistant.Sharepoint
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
 
+    using Notifications.Contracts;
+    using Notifications.Contracts.Models;
+
     using Organization.Contracts;
 
     using SickLeaves.Contracts;
@@ -28,10 +31,12 @@ namespace Arcadia.Assistant.Sharepoint
     /// </summary>
     public class Sharepoint : StatelessService
     {
+        private const string ServiceName = "Calendar";
         private readonly ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings;
         private readonly IEmployees employees;
         private readonly Func<IExternalStorage> externalStorageProvider;
         private readonly ILogger logger;
+        private readonly INotifications notifications;
         private readonly IOrganization organizations;
         private readonly ISharepointSynchronizationSettings serviceSettings;
         private readonly ISickLeaves sickLeaves;
@@ -45,6 +50,7 @@ namespace Arcadia.Assistant.Sharepoint
             ISickLeaves sickLeaves,
             IEmployees employees,
             IOrganization organizations,
+            INotifications notifications,
             Func<IExternalStorage> externalStorageProvider,
             ISharepointSynchronizationSettings serviceSettings,
             ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings,
@@ -57,9 +63,24 @@ namespace Arcadia.Assistant.Sharepoint
             this.sickLeaves = sickLeaves;
             this.employees = employees;
             this.organizations = organizations;
+            this.notifications = notifications;
             this.serviceSettings = serviceSettings;
             this.departmentsCalendarsSettings = departmentsCalendarsSettings;
             this.logger = logger;
+            SharepointItemSynchronizationBase.SharepointItemSynchronizedEvent += this.SharepointItemSynchronizedEventHandler;
+        }
+
+        private void SharepointItemSynchronizedEventHandler(object sender, SharepointItemSynchronizationBase.SharepointSynchronizationArgs e)
+        {
+            this.notifications.Send(e.EmployeeIds,
+                new NotificationMessage
+                {
+                    ClientName = ServiceName,
+                    Subject = $"Calendar '{e.EventType.ToString()}' event.",
+                    ShortText = $"Calendar '{e.Calendar}' item '{e.Item.CalendarEventId}' event.",
+                    LongText = $"Calendar '{e.Calendar}' item '{e.Item.CalendarEventId}' event.{Environment.NewLine}Title: {e.Item.Title}{Environment.NewLine}Description: {e.Item.Description}"
+                },
+                CancellationToken.None);
         }
 
         /// <summary>

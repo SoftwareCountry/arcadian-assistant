@@ -13,22 +13,33 @@ namespace Arcadia.Assistant.AppCenterBuilds
 
     using MobileBuild.Contracts;
 
+    using Notifications.Contracts;
+
     /// <summary>
     ///     An instance of this class is created for each service instance by the Service Fabric runtime.
     /// </summary>
     public class AppCenterBuilds : StatelessService
     {
+        private const string ClientName = "AppCenterBuilds";
         private readonly IHttpClientFactory clientFactory;
         private readonly IDownloadApplicationSettings configuration;
         private readonly ILogger logger;
         private readonly IMobileBuildActorFactory mobileBuildFactory;
+        private readonly IAppCenterNotification notification;
 
-        public AppCenterBuilds(StatelessServiceContext context, IDownloadApplicationSettings configuration, IHttpClientFactory clientFactory, IMobileBuildActorFactory mobileBuildFactory, ILogger<AppCenterBuilds> logger)
+        public AppCenterBuilds(
+            StatelessServiceContext context,
+            IDownloadApplicationSettings configuration,
+            IHttpClientFactory clientFactory,
+            INotifications notification,
+            IMobileBuildActorFactory mobileBuildFactory,
+            ILogger<AppCenterBuilds> logger)
             : base(context)
         {
             this.configuration = configuration;
             this.clientFactory = clientFactory;
             this.mobileBuildFactory = mobileBuildFactory;
+            this.notification = new AppCenterNotification(ClientName, notification, logger);
             this.logger = logger;
         }
 
@@ -75,7 +86,7 @@ namespace Arcadia.Assistant.AppCenterBuilds
             {
                 var actor = this.mobileBuildFactory.MobileBuild(mobileType);
                 var updateHelper = new UpdateMobileBuildHelper(buildUrl, buildDownloadUrlTemplate, this.ApiToken);
-                await updateHelper.CheckAndUpdateMobileBuild(this.clientFactory, actor, cancellationToken, this.logger);
+                await updateHelper.CheckAndUpdateMobileBuild(this.clientFactory, actor, mobileType, this.notification, cancellationToken, this.logger);
             }
             catch (Exception ex)
             {

@@ -12,7 +12,6 @@ namespace Arcadia.Assistant.DeviceRegistry
     using Employees.Contracts;
 
     using Microsoft.Extensions.Logging;
-    using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
 
     /// <summary>

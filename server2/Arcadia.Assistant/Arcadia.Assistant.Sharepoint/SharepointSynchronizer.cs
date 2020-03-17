@@ -27,7 +27,12 @@
         private readonly IVacations vacations;
         private readonly IWorkHoursCredit workouts;
 
-        public SharepointSynchronizer(ISickLeaves sickLeaves, IVacations vacations, IWorkHoursCredit workouts, ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings, ILogger logger)
+        public SharepointSynchronizer(
+            ISickLeaves sickLeaves,
+            IVacations vacations,
+            IWorkHoursCredit workouts,
+            ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings,
+            ILogger logger)
         {
             this.sickLeaves = sickLeaves;
             this.vacations = vacations;

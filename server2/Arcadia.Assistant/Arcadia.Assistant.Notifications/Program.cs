@@ -15,11 +15,14 @@ namespace Arcadia.Assistant.Notifications
     using Logging;
 
     using Microsoft.Extensions.Logging;
+    using Microsoft.ServiceFabric.Actors.Client;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
 
     using Models;
 
     using PushNotifications.Contracts;
+
+    using UserPreferences.Contracts;
 
     internal static class Program
     {
@@ -35,9 +38,12 @@ namespace Arcadia.Assistant.Notifications
 
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
+                builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
+                builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
                 builder.Register(x => new NotificationSettings(configurationPackage.Settings.Sections["Notifications"])).As<INotificationSettings>().SingleInstance();
                 builder.RegisterStatelessService<Notifications>("Arcadia.Assistant.NotificationsType");
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
+                builder.RegisterModule<UsersPreferencesModule>();
                 builder.RegisterModule<DeviceRegistryModule>();
                 builder.RegisterModule<PushNotificationsModule>();
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
@@ -45,6 +51,7 @@ namespace Arcadia.Assistant.Notifications
                 using var container = builder.Build();
                 logger = container.ResolveOptional<ILogger<Notifications>>();
                 logger?.LogInformation($"Service type '{typeof(Notifications).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
+
                 Thread.Sleep(Timeout.Infinite);
             }
             catch (Exception e)

@@ -2,6 +2,14 @@
 {
     public class NotificationMessage
     {
-        public string Text { get; set; } = string.Empty;
+        public string ClientName { get; set; } = string.Empty;
+
+        public string Subject { get; set; } = string.Empty;
+
+        public string Object { get; set; } = string.Empty;
+
+        public string LongText { get; set; } = string.Empty;
+
+        public string ShortText { get; set; } = string.Empty;
     }
 }

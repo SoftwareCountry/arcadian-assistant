@@ -47,9 +47,7 @@ A security token for authentication to cluster management endpoints. Used for si
 .PARAMETER CopyPackageTimeoutSec
 Timeout in seconds for copying application package to image store.
 
-.PARAMETER PackageLocationURL
-
-.PARAMETER RemoteLocationShare
+.PARAMETER RemoteVMDeploy
 
 .EXAMPLE
 . Scripts\Deploy-FabricApplication.ps1 -ApplicationPackagePath 'pkg\Debug'
@@ -107,11 +105,8 @@ Param
     [int]
     $RegisterApplicationTypeTimeoutSec,
 
-    [String]
-    $PackageLocationURL,
-
-    [String]
-    $RemoteLocationShare
+    [Switch]
+    $RemoteVMDeploy
 )
 
 function Read-XmlElementAsHashtable
@@ -171,6 +166,12 @@ function Read-PublishProfile
 }
 
 $LocalFolder = (Split-Path $MyInvocation.MyCommand.Path)
+$deployFile = "$LocalFolder\deploy.json"
+$remoteLocationConfig = {}
+if (Test-Path $deployFile)
+{
+    $remoteLocationConfig = Get-Content -Raw -Path $deployFile | ConvertFrom-Json
+}
 
 if (!$PublishProfileFile)
 {
@@ -179,10 +180,32 @@ if (!$PublishProfileFile)
 
 if (!$ApplicationPackagePath)
 {
-    $ApplicationPackagePath = "$LocalFolder\..\pkg\Release"
+    if ($RemoteVMDeploy)
+    {
+	$package_cfg = $remoteLocationConfig.package_configuration
+	$ApplicationPackagePath = "$LocalFolder\..\pkg\$package_cfg"
+    }
+    else
+    {    
+	$ApplicationPackagePath = "$LocalFolder\..\pkg\Release"
+    }
+}
+else
+{
+    if ($RemoteVMDeploy)
+    {
+	$package_cfg = $remoteLocationConfig.package_configuration
+	$ApplicationPackagePath = "$ApplicationPackagePath\$package_cfg"
+    }
 }
 
 $ApplicationPackagePath = Resolve-Path $ApplicationPackagePath
+
+if (!(Test-Path $ApplicationPackagePath))
+{
+    $errMsg = "$ApplicationPackagePath is not found."
+    throw $errMsg
+}
 
 $publishProfile = Read-PublishProfile $PublishProfileFile
 
@@ -218,7 +241,7 @@ $PublishParameters = @{
     'ErrorAction' = 'Stop'
 }
 
-if ($RemoteLocationShare)
+if ($RemoteVMDeploy)
 {
 	$sfpkgFile = "sf_package.sfpkg"
 
@@ -229,16 +252,11 @@ if ($RemoteLocationShare)
 	    Get-PSDrive Y | Remove-PSDrive
 	}
 
-	$remoteLocationConfig = Get-Content -Raw -Path deploy.json | ConvertFrom-Json
+	$RemoteLocationShare = $remoteLocationConfig.remote_location_share
         $pass=$remoteLocationConfig.remote_location_pass|ConvertTo-SecureString -AsPlainText -Force
         $cred = New-Object System.Management.Automation.PsCredential($remoteLocationConfig.remote_location_user,$pass)
 	New-PSDrive -name Y -Root $RemoteLocationShare -Credential $cred -PSProvider filesystem
 
-	if (!(Test-Path $ApplicationPackagePath))
-    	{
-       	    $errMsg = "$ApplicationPackagePath is not found."
-            throw $errMsg
-    	}
 
 	$zipContentPath = "$ApplicationPackagePath\*"
 	$sourcePath = (Get-Item $ApplicationPackagePath).parent.FullName
@@ -260,6 +278,7 @@ if ($RemoteLocationShare)
 	Write-Host ("Copy manifest '" + $manifest + "' to '" + $destination + "'")
 	Copy-Item $manifest -destination $destination -Force
 
+	$PackageLocationURL = $remoteLocationConfig.package_location_url
 	$PublishParameters['ApplicationPathAsUrl'] = "$PackageLocationURL/$sfpkgFile"
 	$PublishParameters['ApplicationManifestPath'] = $manifest
 	Write-Host ("Apply application path URL as '" + $PublishParameters['ApplicationPathAsUrl'] + "'")
@@ -333,7 +352,7 @@ else
     $PublishParameters['OverwriteBehavior'] = $OverwriteBehavior
     $PublishParameters['SkipPackageValidation'] = $SkipPackageValidation
 
-    if ($RemoteLocationShare)
+    if ($RemoteVMDeploy)
     {
     	$script = "$PSScriptRoot\PublishCloud-NewServiceFabricApplication.ps1"
 	Write-Host ("Script: " + $script)

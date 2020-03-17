@@ -5,6 +5,7 @@
   <!-- Add your custom configuration sections and parameters here -->
   <Section Name="Notifications">
     <Parameter Name="EnablePush" Value="false" />
+    <Parameter Name="ClientNotificationProviders" Value="" />
   </Section>
   <Section Name="Logging">
     <Parameter Name="ApplicationInsightsKey" Value="" />

@@ -18,6 +18,8 @@ namespace Arcadia.Assistant.AppCenterBuilds
 
     using MobileBuild.Contracts;
 
+    using Notifications.Contracts;
+
     internal static class Program
     {
         /// <summary>
@@ -40,7 +42,8 @@ namespace Arcadia.Assistant.AppCenterBuilds
 
                 builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
-                builder.RegisterModule(new MobileBuildModule());
+                builder.RegisterModule<NotificationsModule>();
+                builder.RegisterModule<MobileBuildModule>();
                 builder.Populate(services);
 
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));

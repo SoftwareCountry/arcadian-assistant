@@ -2,8 +2,6 @@
 {
     public enum NotificationType
     {
-        CalendarEventAdd,
-        CalendarEventChange,
-        CalendarEventRemove
+        Push
     }
 }

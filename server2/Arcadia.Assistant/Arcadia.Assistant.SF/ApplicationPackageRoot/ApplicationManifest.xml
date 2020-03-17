@@ -3,6 +3,7 @@
   <Parameters>
     <Parameter Name="Arcadia.Assistant.Notifications_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.Notifications_EnablePush" DefaultValue="false" />
+    <Parameter Name="Arcadia.Assistant.Notifications_ClientNotificationProviders" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.PushNotifications_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.PushNotifications_ApiToken" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.PushNotifications_AndroidPushUrl" DefaultValue="" />
@@ -75,6 +76,7 @@
         <Settings>
           <Section Name="Notifications">
             <Parameter Name="EnablePush" Value="[Arcadia.Assistant.Notifications_EnablePush]" />
+            <Parameter Name="ClientNotificationProviders" Value="[Arcadia.Assistant.Notifications_ClientNotificationProviders]" />
           </Section>
           <Section Name="Logging">
             <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />

@@ -24,6 +24,8 @@ namespace Arcadia.Assistant.Sharepoint
 
     using Models;
 
+    using Notifications.Contracts;
+
     using Organization.Contracts;
 
     using SickLeaves.Contracts;
@@ -81,6 +83,7 @@ namespace Arcadia.Assistant.Sharepoint
                 builder.RegisterModule<WorkHoursCreditModule>();
                 builder.RegisterModule<SickLeavesModule>();
                 builder.RegisterModule<EmployeesModule>();
+                builder.RegisterModule<NotificationsModule>();
                 builder.RegisterModule<OrganizationModule>();
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
                 builder.Populate(services);

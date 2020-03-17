@@ -30,7 +30,7 @@
 
         #region public mehods
 
-        public async Task CheckAndUpdateMobileBuild(IHttpClientFactory httpClientFactory, IMobileBuildActor mobileBuildActor, CancellationToken cancellationToken, ILogger logStore)
+        public async Task CheckAndUpdateMobileBuild(IHttpClientFactory httpClientFactory, IMobileBuildActor mobileBuildActor, string deviceType, IAppCenterNotification notification, CancellationToken cancellationToken, ILogger logStore)
         {
             var currentMobileBuildVersion = await mobileBuildActor.GetMobileBuildVersionAsync(cancellationToken);
             var appCenterLatestBuild = await this.GetLatestBuild(httpClientFactory);
@@ -47,6 +47,7 @@
                 var data = await this.GetBuildData(downloadModel, httpClientFactory);
                 await mobileBuildActor.SetMobileBuildData(appCenterLastBuildVersion, data, cancellationToken);
                 logStore.LogInformation($"Mobile build {appCenterLastBuildVersion} updated from {downloadModel.Uri}");
+                await notification.Notify(appCenterLastBuildVersion, deviceType, cancellationToken);
             }
             else
             {
