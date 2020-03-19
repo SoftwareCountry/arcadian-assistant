@@ -40,7 +40,13 @@ namespace Arcadia.Assistant.Notifications
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
                 builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
-                builder.Register(x => new NotificationSettings(configurationPackage.Settings.Sections["Notifications"])).As<INotificationSettings>().SingleInstance();
+                builder.Register(x =>
+                    {
+                        var logger = x.Resolve<ILogger<NotificationSettings>>();
+                        return new NotificationSettings(configurationPackage.Settings.Sections["Notifications"],
+                            logger);
+                    }
+                ).As<INotificationSettings>().SingleInstance();
                 builder.RegisterStatelessService<Notifications>("Arcadia.Assistant.NotificationsType");
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
                 builder.RegisterModule<UsersPreferencesModule>();
@@ -50,7 +56,8 @@ namespace Arcadia.Assistant.Notifications
 
                 using var container = builder.Build();
                 logger = container.ResolveOptional<ILogger<Notifications>>();
-                logger?.LogInformation($"Service type '{typeof(Notifications).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
+                logger?.LogInformation("Service type '{ServiceName}' registered. Process: {ProcessId}.",
+                    typeof(Notifications).Name, Process.GetCurrentProcess().Id);
 
                 Thread.Sleep(Timeout.Infinite);
             }

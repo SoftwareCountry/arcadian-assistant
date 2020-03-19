@@ -5,6 +5,7 @@
 
     public interface IAppCenterNotification
     {
-        Task Notify(string buildVersion, string deviceType, CancellationToken cancellationToken);
+        Task Notify(
+            string notificationTemplate, string buildVersion, string deviceType, CancellationToken cancellationToken);
     }
 }

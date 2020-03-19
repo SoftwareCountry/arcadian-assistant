@@ -16,14 +16,18 @@ namespace Arcadia.Assistant.DeviceRegistry.Contracts
     /// </summary>
     public interface IDeviceRegistry : IService
     {
-        Task RegisterDevice(EmployeeId employeeId, DeviceId deviceId, DeviceType deviceType, CancellationToken cancellationToken);
+        Task RegisterDevice(
+            EmployeeId employeeId, DeviceId deviceId, DeviceType deviceType, CancellationToken cancellationToken);
 
         Task RemoveDevice(EmployeeId employeeId, DeviceId deviceId, CancellationToken cancellationToken);
 
-        Task<IEnumerable<DeviceRegistryEntry>> GetDeviceRegistryByEmployee(EmployeeId employeeId, CancellationToken cancellationToken);
+        Task<IEnumerable<DeviceRegistryEntry>> GetDeviceRegistryByEmployee(
+            EmployeeId employeeId, CancellationToken cancellationToken);
 
-        Task<Dictionary<EmployeeId, IEnumerable<DeviceRegistryEntry>>> GetDeviceRegistryByEmployeeList(IEnumerable<EmployeeId> employeeId, CancellationToken cancellationToken);
+        Task<Dictionary<EmployeeId, IEnumerable<DeviceRegistryEntry>>> GetDeviceRegistryByEmployeeList(
+            IEnumerable<EmployeeId> employeeId, CancellationToken cancellationToken);
 
-        Task<IEnumerable<DeviceRegistryEntry>> GetDeviceRegistryByEmployeeAndType(EmployeeId employeeId, DeviceType deviceType, CancellationToken cancellationToken);
+        Task<IEnumerable<DeviceRegistryEntry>> GetDeviceRegistryByEmployeeAndType(
+            EmployeeId employeeId, DeviceType deviceType, CancellationToken cancellationToken);
     }
 }

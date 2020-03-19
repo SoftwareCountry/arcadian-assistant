@@ -20,17 +20,21 @@
         private readonly string apiKey;
         private readonly string buildUrl;
         private readonly string downloadUrlTemplate;
+        private readonly ILogger logger;
 
-        public UpdateMobileBuildHelper(string buildUrl, string downloadUrlTemplate, string apiKey)
+        public UpdateMobileBuildHelper(string buildUrl, string downloadUrlTemplate, string apiKey, ILogger logger)
         {
             this.buildUrl = buildUrl;
             this.downloadUrlTemplate = downloadUrlTemplate;
             this.apiKey = apiKey;
+            this.logger = logger;
         }
 
         #region public mehods
 
-        public async Task CheckAndUpdateMobileBuild(IHttpClientFactory httpClientFactory, IMobileBuildActor mobileBuildActor, string deviceType, IAppCenterNotification notification, CancellationToken cancellationToken, ILogger logStore)
+        public async Task CheckAndUpdateMobileBuild(
+            IHttpClientFactory httpClientFactory, IMobileBuildActor mobileBuildActor, string deviceType,
+            IAppCenterNotification notification, CancellationToken cancellationToken)
         {
             var currentMobileBuildVersion = await mobileBuildActor.GetMobileBuildVersionAsync(cancellationToken);
             var appCenterLatestBuild = await this.GetLatestBuild(httpClientFactory);
@@ -46,13 +50,13 @@
                 var downloadModel = await this.GetBuildDownloadModel(appCenterLatestBuild, httpClientFactory);
                 var data = await this.GetBuildData(downloadModel, httpClientFactory);
                 await mobileBuildActor.SetMobileBuildData(appCenterLastBuildVersion, data, cancellationToken);
-                logStore.LogInformation($"Mobile build {appCenterLastBuildVersion} updated from {downloadModel.Uri}");
-                await notification.Notify(appCenterLastBuildVersion, deviceType, cancellationToken);
+                this.logger.LogInformation("Mobile build {BuildVersion} updated from {Uri}", appCenterLastBuildVersion,
+                    downloadModel.Uri);
+                await notification.Notify("NewMobileVersion", appCenterLastBuildVersion, deviceType, cancellationToken);
             }
             else
             {
-                // TO DO: Refactor for common logger using
-                logStore.LogInformation("The same version - nothing to do");
+                this.logger.LogInformation("The same version - nothing to do");
             }
         }
 
@@ -73,7 +77,8 @@
                 .FirstOrDefault();
         }
 
-        private async Task<AppCenterBuildDownloadModel> GetBuildDownloadModel(AppCenterBuildModel build, IHttpClientFactory httpClientFactory)
+        private async Task<AppCenterBuildDownloadModel> GetBuildDownloadModel(
+            AppCenterBuildModel build, IHttpClientFactory httpClientFactory)
         {
             var getBuildUrl = this.downloadUrlTemplate.Replace("{buildId}", build.Id.ToString());
 
@@ -87,7 +92,8 @@
             return downloadModel;
         }
 
-        private async Task<byte[]> GetBuildData(AppCenterBuildDownloadModel buildDownloadModel, IHttpClientFactory httpClientFactory)
+        private async Task<byte[]> GetBuildData(
+            AppCenterBuildDownloadModel buildDownloadModel, IHttpClientFactory httpClientFactory)
         {
             using var client = httpClientFactory.CreateClient();
             return await client.GetByteArrayAsync(buildDownloadModel.Uri);

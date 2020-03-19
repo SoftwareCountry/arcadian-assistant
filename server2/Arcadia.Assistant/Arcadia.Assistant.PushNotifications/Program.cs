@@ -36,7 +36,8 @@ namespace Arcadia.Assistant.PushNotifications
 
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
-                builder.Register(x => new PushSettings(configurationPackage.Settings.Sections["PushNotifications"])).As<IPushSettings>().SingleInstance();
+                builder.Register(x => new PushSettings(configurationPackage.Settings.Sections["PushNotifications"]))
+                    .As<IPushSettings>().SingleInstance();
                 builder.RegisterStatelessService<PushNotifications>("Arcadia.Assistant.PushNotificationsType");
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
@@ -44,7 +45,8 @@ namespace Arcadia.Assistant.PushNotifications
 
                 using var container = builder.Build();
                 logger = container.ResolveOptional<ILogger<PushNotifications>>();
-                logger?.LogInformation($"Service type '{typeof(PushNotifications).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
+                logger?.LogInformation("Service type '{ServiceName}' registered. Process: {ProcessId}.",
+                    typeof(PushNotifications).Name, Process.GetCurrentProcess().Id);
                 Thread.Sleep(Timeout.Infinite);
             }
             catch (Exception e)

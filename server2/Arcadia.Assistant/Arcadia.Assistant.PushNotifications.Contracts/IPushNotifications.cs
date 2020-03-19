@@ -16,6 +16,8 @@ namespace Arcadia.Assistant.PushNotifications.Contracts
     /// </summary>
     public interface IPushNotifications : IService
     {
-        Task SendPushNotification(IEnumerable<DeviceRegistryEntry> deviceTokens, PushNotificationContent notificationContent, CancellationToken cancellationToken);
+        Task SendPushNotification(
+            IReadOnlyCollection<DeviceRegistryEntry> deviceTokens, PushNotificationContent notificationContent,
+            IReadOnlyDictionary<string, string> parameters, CancellationToken cancellationToken);
     }
 }

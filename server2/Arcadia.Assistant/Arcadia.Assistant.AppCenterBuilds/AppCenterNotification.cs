@@ -13,27 +13,34 @@
 
     public class AppCenterNotification : IAppCenterNotification
     {
-        private readonly string clientName;
         private readonly ILogger logger;
         private readonly INotifications notifications;
 
-        public AppCenterNotification(string clientName, INotifications notifications, ILogger logger)
+        public AppCenterNotification(INotifications notifications, ILogger<AppCenterNotification> logger)
         {
-            this.clientName = clientName;
             this.notifications = notifications;
             this.logger = logger;
         }
 
-        async Task IAppCenterNotification.Notify(string buildVersion, string mobileType, CancellationToken cancellationToken)
+        async Task IAppCenterNotification.Notify(
+            string notificationTemplate, string buildVersion, string mobileType, CancellationToken cancellationToken)
         {
-            this.logger.LogDebug($"Send app center build notification about build version {buildVersion} for '{mobileType}' platform.");
+            this.logger.LogDebug(
+                "Send app center build notification about build version {BuildVersion} for '{MobileType}' platform.",
+                buildVersion, mobileType);
+
+            // TODO: Add employee list request
             await this.notifications.Send(new List<EmployeeId>(),
                 new NotificationMessage
                 {
-                    ClientName = this.clientName,
+                    NotificationTemplate = notificationTemplate,
                     Subject = "App center notification",
                     ShortText = $"New mobile build version {buildVersion} available",
-                    LongText = $"New mobile build version {buildVersion} available"
+                    LongText = $"New mobile build version {buildVersion} available",
+                    Parameters = new Dictionary<string, string>
+                    {
+                        { NotificationMessage.ParameterNames.DeviceType, mobileType }
+                    }
                 },
                 cancellationToken);
         }

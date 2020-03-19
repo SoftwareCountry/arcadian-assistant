@@ -2,12 +2,11 @@ namespace Arcadia.Assistant.Notifications
 {
     using System;
     using System.Collections.Generic;
+    using System.Dynamic;
     using System.Fabric;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using Castle.Core.Internal;
 
     using Contracts;
     using Contracts.Models;
@@ -37,7 +36,7 @@ namespace Arcadia.Assistant.Notifications
         private readonly IDeviceRegistry deviceRegistry;
         private readonly ILogger logger;
 
-        private readonly Dictionary<string, IEnumerable<NotificationType>> notificationProvidersMap;
+        private readonly IReadOnlyDictionary<string, IReadOnlyCollection<NotificationType>> notificationProvidersMap;
         private readonly INotificationSettings notificationSettings;
         private readonly IPushNotifications pushNotifications;
         private readonly IUsersPreferencesStorage userPreferences;
@@ -56,17 +55,25 @@ namespace Arcadia.Assistant.Notifications
             this.userPreferences = userPreferences;
             this.pushNotifications = pushNotifications;
             this.logger = logger;
-            this.notificationProvidersMap = this.notificationSettings.ClientNotificationProvidersMap;
+            this.notificationProvidersMap = this.notificationSettings.NotificationTemplateProvidersMap;
         }
 
-        public async Task Send(IEnumerable<EmployeeId> employeeId, NotificationMessage notificationMessage, CancellationToken cancellationToken)
+        private IReadOnlyCollection<NotificationType> AllNotificationTypes { get; } =
+            Enum.GetValues(typeof(NotificationType)).OfType<NotificationType>().ToList().AsReadOnly();
+
+        public async Task Send(
+            IReadOnlyCollection<EmployeeId> employeeIds, NotificationMessage notificationMessage,
+            CancellationToken cancellationToken)
         {
-            if (employeeId.IsNullOrEmpty())
+            if (!employeeIds.Any())
             {
                 return;
             }
 
-            var notificationProviders = this.notificationProvidersMap.TryGetValue(notificationMessage.ClientName, out var map) ? map : Enum.GetValues(typeof(NotificationType)).OfType<NotificationType>().ToList();
+            var notificationProviders =
+                this.notificationProvidersMap.TryGetValue(notificationMessage.NotificationTemplate, out var map)
+                    ? map
+                    : this.AllNotificationTypes;
             foreach (var providerType in notificationProviders)
             {
                 switch (providerType)
@@ -74,7 +81,7 @@ namespace Arcadia.Assistant.Notifications
                     case NotificationType.Push:
                         if (this.notificationSettings.EnablePush)
                         {
-                            var tokens = await this.GetDeviceTokens(employeeId, cancellationToken);
+                            var tokens = await this.GetDeviceTokens(employeeIds, cancellationToken);
                             await this.SendPushNotification(tokens, notificationMessage, cancellationToken);
                         }
 
@@ -83,33 +90,64 @@ namespace Arcadia.Assistant.Notifications
             }
         }
 
-        private async Task SendPushNotification(Dictionary<EmployeeId, IEnumerable<DeviceRegistryEntry>> deviceTokens, NotificationMessage notificationMessage, CancellationToken cancellationToken)
+        private async Task SendPushNotification(
+            IDictionary<EmployeeId, IReadOnlyCollection<DeviceRegistryEntry>> deviceTokens,
+            NotificationMessage notificationMessage, CancellationToken cancellationToken)
         {
+            // TODO: apply dynamic object for custom parameters
+            var parameters = notificationMessage.Parameters as Dictionary<string, string> ??
+                new Dictionary<string, string>();
+            dynamic customData = parameters.Aggregate(new ExpandoObject() as IDictionary<string, object>,
+                (a, p) =>
+                {
+                    a.Add(p.Key, p.Value);
+                    return a;
+                });
             var notificationContent = new PushNotificationContent
             {
                 Title = notificationMessage.Subject,
-                Body = notificationMessage.ShortText
+                Body = notificationMessage.ShortText,
+                CustomData = new
+                {
+                    customData.DeviceType,
+                    Type = notificationMessage
+                        .NotificationTemplate // TODO: calculate correct value or remove this property
+                }
             };
 
-            foreach (var employeeId in deviceTokens.Keys)
+            foreach (var deviceToken in deviceTokens.Values)
             {
-                await this.pushNotifications.SendPushNotification(deviceTokens[employeeId], notificationContent, cancellationToken);
+                await this.pushNotifications.SendPushNotification(deviceToken, notificationContent,
+                    notificationMessage.Parameters, cancellationToken);
             }
         }
 
-        private async Task<Tuple<EmployeeId, UserPreferences>> GetUserPreferences(EmployeeId id, CancellationToken cancellationToken)
+        private async Task<(EmployeeId, UserPreferences)> GetUserPreferences(
+            EmployeeId id, CancellationToken cancellationToken)
         {
-            var prefs = await this.userPreferences.ForEmployee(id).Get(cancellationToken);
-            return new Tuple<EmployeeId, UserPreferences>(id, prefs);
+            var preferences = await this.userPreferences.ForEmployee(id).Get(cancellationToken);
+            return (id, preferences);
         }
 
-        private async Task<Dictionary<EmployeeId, IEnumerable<DeviceRegistryEntry>>> GetDeviceTokens(IEnumerable<EmployeeId> employeeIds, CancellationToken cancellationToken)
+        private bool IsPushNotification(
+            IDictionary<EmployeeId, UserPreferences> userPreferencesDictionary, EmployeeId employeeId)
+        {
+            if (userPreferencesDictionary.TryGetValue(employeeId, out var pref))
+            {
+                return pref.PushNotifications;
+            }
+
+            return false;
+        }
+
+        private async Task<IDictionary<EmployeeId, IReadOnlyCollection<DeviceRegistryEntry>>> GetDeviceTokens(
+            IReadOnlyCollection<EmployeeId> employeeIds, CancellationToken cancellationToken)
         {
             var employeePreferences = (await Task.WhenAll(employeeIds
                     .Distinct()
                     .Select(x => this.GetUserPreferences(x, cancellationToken))))
                 .ToDictionary(x => x.Item1, x => x.Item2);
-            var activeEmployees = employeeIds.Where(x => employeePreferences.TryGetValue(x, out var pref) ? pref.PushNotifications : false);
+            var activeEmployees = employeeIds.Where(x => this.IsPushNotification(employeePreferences, x));
             var tokens = await this.deviceRegistry.GetDeviceRegistryByEmployeeList(activeEmployees, cancellationToken);
             return tokens.Keys.SelectMany(k => tokens[k].Select(x =>
                     new
@@ -118,7 +156,8 @@ namespace Arcadia.Assistant.Notifications
                         Val = x
                     }))
                 .GroupBy(x => x.Key)
-                .ToDictionary(x => x.Key, x => x.Select(a => a.Val));
+                .ToDictionary(x => x.Key,
+                    x => (IReadOnlyCollection<DeviceRegistryEntry>)x.Select(a => a.Val).ToList().AsReadOnly());
         }
 
         /// <summary>

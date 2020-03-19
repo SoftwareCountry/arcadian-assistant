@@ -38,10 +38,13 @@ namespace Arcadia.Assistant.AppCenterBuilds
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterStatelessService<AppCenterBuilds>("Arcadia.Assistant.AppCenterBuildsType");
-                builder.Register(x => new DownloadApplicationSettings(configurationPackage.Settings.Sections["DownloadApplication"])).As<IDownloadApplicationSettings>().SingleInstance();
+                builder.Register(x =>
+                        new DownloadApplicationSettings(configurationPackage.Settings.Sections["DownloadApplication"]))
+                    .As<IDownloadApplicationSettings>().SingleInstance();
 
                 builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
+                builder.RegisterType<AppCenterNotification>().As<IAppCenterNotification>();
                 builder.RegisterModule<NotificationsModule>();
                 builder.RegisterModule<MobileBuildModule>();
                 builder.Populate(services);
@@ -50,7 +53,8 @@ namespace Arcadia.Assistant.AppCenterBuilds
 
                 using var container = builder.Build();
                 logger = container.ResolveOptional<ILogger<AppCenterBuilds>>();
-                logger?.LogInformation($"Service type '{typeof(AppCenterBuilds).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
+                logger?.LogInformation("Service type '{ServiceName}' registered. Process: {ProcessId}.",
+                    typeof(AppCenterBuilds).Name, Process.GetCurrentProcess().Id);
                 // Prevents this host process from terminating so services keep running.
                 Thread.Sleep(Timeout.Infinite);
             }

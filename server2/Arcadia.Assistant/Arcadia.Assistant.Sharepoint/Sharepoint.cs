@@ -67,6 +67,7 @@ namespace Arcadia.Assistant.Sharepoint
             this.serviceSettings = serviceSettings;
             this.departmentsCalendarsSettings = departmentsCalendarsSettings;
             this.logger = logger;
+
             SharepointItemSynchronizationBase.SharepointItemSynchronizedEvent += this.SharepointItemSynchronizedEventHandler;
         }
 
@@ -75,7 +76,7 @@ namespace Arcadia.Assistant.Sharepoint
             this.notifications.Send(e.EmployeeIds,
                 new NotificationMessage
                 {
-                    ClientName = ServiceName,
+                    NotificationTemplate = e.EventType.ToString(),
                     Subject = $"Calendar '{e.EventType.ToString()}' event.",
                     ShortText = $"Calendar '{e.Calendar}' item '{e.Item.CalendarEventId}' event.",
                     LongText = $"Calendar '{e.Calendar}' item '{e.Item.CalendarEventId}' event.{Environment.NewLine}Title: {e.Item.Title}{Environment.NewLine}Description: {e.Item.Description}"

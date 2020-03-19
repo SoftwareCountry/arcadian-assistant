@@ -1,5 +1,6 @@
 namespace Arcadia.Assistant.PushNotifications
 {
+    using System;
     using System.Collections.Generic;
     using System.Fabric;
     using System.Linq;
@@ -8,8 +9,6 @@ namespace Arcadia.Assistant.PushNotifications
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
-
-    using Castle.Core.Internal;
 
     using Contracts;
     using Contracts.Models;
@@ -20,6 +19,7 @@ namespace Arcadia.Assistant.PushNotifications
 
     using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
+    using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
 
     using Models;
@@ -34,7 +34,9 @@ namespace Arcadia.Assistant.PushNotifications
         private readonly Dictionary<string, string> notificationConfiguration;
         private readonly IPushSettings pushSettings;
 
-        public PushNotifications(StatelessServiceContext context, IPushSettings pushSettings, IHttpClientFactory httpClientFactory, ILogger<PushNotifications> logger)
+        public PushNotifications(
+            StatelessServiceContext context, IPushSettings pushSettings, IHttpClientFactory httpClientFactory,
+            ILogger<PushNotifications> logger)
             : base(context)
         {
             this.pushSettings = pushSettings;
@@ -48,11 +50,13 @@ namespace Arcadia.Assistant.PushNotifications
             };
         }
 
-        public async Task SendPushNotification(IEnumerable<DeviceRegistryEntry> deviceTokens, PushNotificationContent notificationContent, CancellationToken cancellationToken)
+        public async Task SendPushNotification(
+            IReadOnlyCollection<DeviceRegistryEntry> deviceTokens, PushNotificationContent notificationContent,
+            IReadOnlyDictionary<string, string> parameters, CancellationToken cancellationToken)
         {
             this.logger.LogDebug("Push notification message received");
 
-            if (deviceTokens.IsNullOrEmpty())
+            if (!deviceTokens.Any())
             {
                 this.logger.LogDebug("Push notification message doesn't contain target devices and won't be sent");
                 return;
@@ -61,8 +65,18 @@ namespace Arcadia.Assistant.PushNotifications
             // send notifications for registered device types
             foreach (var key in this.notificationConfiguration.Keys)
             {
+                // TODO: temporary approach - just for demonstration
+                if (parameters.TryGetValue("DeviceType", out var deviceType) &&
+                    !deviceType.Equals(key, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    continue;
+                }
+
                 await this.SendApplicationPushNotification(
-                    deviceTokens.Where(x => x.DeviceType == key),
+                    deviceTokens.Where(x => x.DeviceType == key)
+                        .Select(x => x.DeviceId.ToString())
+                        .ToList()
+                        .AsReadOnly(),
                     notificationContent, this.notificationConfiguration[key]);
             }
         }
@@ -73,12 +87,13 @@ namespace Arcadia.Assistant.PushNotifications
         /// <returns>A collection of listeners.</returns>
         protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
         {
-            return new ServiceInstanceListener[0];
+            return this.CreateServiceRemotingInstanceListeners();
         }
 
-        private async Task SendApplicationPushNotification(IEnumerable<DeviceRegistryEntry> deviceTokens, PushNotificationContent notificationContent, string pushUrl)
+        private async Task SendApplicationPushNotification(
+            IReadOnlyCollection<string> deviceIds, PushNotificationContent notificationContent, string pushUrl)
         {
-            if (deviceTokens.IsNullOrEmpty())
+            if (!deviceIds.Any())
             {
                 return;
             }
@@ -88,14 +103,12 @@ namespace Arcadia.Assistant.PushNotifications
                 Content = notificationContent,
                 Target = new PushNotificationTarget
                 {
-                    DevicePushTokens = deviceTokens
-                        .Select(x => x.DeviceId.ToString())
-                        .ToList()
+                    DevicePushTokens = deviceIds
                 }
             };
 
             var jsonMessage = this.SerializeNotification(pushNotificationPayload);
-            this.logger.LogDebug($"Serialized notification message: {jsonMessage}");
+            this.logger.LogDebug("Serialized notification message: {JsonMessage}", jsonMessage);
 
             await this.SendPushNotificationRequest(pushUrl, jsonMessage);
         }
@@ -119,12 +132,14 @@ namespace Arcadia.Assistant.PushNotifications
 
             if (response.IsSuccessStatusCode)
             {
-                this.logger.LogDebug($"Push notification was successfully sent to {response.RequestMessage.RequestUri}");
+                this.logger.LogDebug("Push notification was successfully sent to '{RequestUri}'",
+                    response.RequestMessage.RequestUri);
             }
             else
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-                this.logger.LogWarning($"Push notification to {response.RequestMessage.RequestUri} failed: {responseContent}");
+                this.logger.LogWarning("Push notification to '{RequestUri}' failed: {ResponseContent}",
+                    response.RequestMessage.RequestUri, responseContent);
             }
         }
 

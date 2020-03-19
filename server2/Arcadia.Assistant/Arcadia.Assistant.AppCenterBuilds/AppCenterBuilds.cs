@@ -13,25 +13,22 @@ namespace Arcadia.Assistant.AppCenterBuilds
 
     using MobileBuild.Contracts;
 
-    using Notifications.Contracts;
-
     /// <summary>
     ///     An instance of this class is created for each service instance by the Service Fabric runtime.
     /// </summary>
     public class AppCenterBuilds : StatelessService
     {
-        private const string ClientName = "AppCenterBuilds";
+        private readonly IAppCenterNotification appCenterNotification;
         private readonly IHttpClientFactory clientFactory;
         private readonly IDownloadApplicationSettings configuration;
         private readonly ILogger logger;
         private readonly IMobileBuildActorFactory mobileBuildFactory;
-        private readonly IAppCenterNotification notification;
 
         public AppCenterBuilds(
             StatelessServiceContext context,
             IDownloadApplicationSettings configuration,
             IHttpClientFactory clientFactory,
-            INotifications notification,
+            IAppCenterNotification appCenterNotification,
             IMobileBuildActorFactory mobileBuildFactory,
             ILogger<AppCenterBuilds> logger)
             : base(context)
@@ -39,7 +36,7 @@ namespace Arcadia.Assistant.AppCenterBuilds
             this.configuration = configuration;
             this.clientFactory = clientFactory;
             this.mobileBuildFactory = mobileBuildFactory;
-            this.notification = new AppCenterNotification(ClientName, notification, logger);
+            this.appCenterNotification = appCenterNotification;
             this.logger = logger;
         }
 
@@ -71,22 +68,27 @@ namespace Arcadia.Assistant.AppCenterBuilds
                 this.logger.LogDebug("Request build version");
 
                 // for android
-                await this.UpdateMobileBuild(WellKnownBuildTypes.Android, this.configuration.AndroidGetBuildsUrl, this.configuration.AndroidGetBuildDownloadLinkTemplateUrl, cancellationToken);
+                await this.UpdateMobileBuild(WellKnownBuildTypes.Android, this.configuration.AndroidGetBuildsUrl,
+                    this.configuration.AndroidGetBuildDownloadLinkTemplateUrl, cancellationToken);
 
                 // for ios
-                await this.UpdateMobileBuild(WellKnownBuildTypes.Ios, this.configuration.IosGetBuildsUrl, this.configuration.IosGetBuildDownloadLinkTemplateUrl, cancellationToken);
+                await this.UpdateMobileBuild(WellKnownBuildTypes.Ios, this.configuration.IosGetBuildsUrl,
+                    this.configuration.IosGetBuildDownloadLinkTemplateUrl, cancellationToken);
 
                 await Task.Delay(TimeSpan.FromMinutes(this.DownloadBuildIntervalMinutes), cancellationToken);
             }
         }
 
-        private async Task UpdateMobileBuild(string mobileType, string buildUrl, string buildDownloadUrlTemplate, CancellationToken cancellationToken)
+        private async Task UpdateMobileBuild(
+            string mobileType, string buildUrl, string buildDownloadUrlTemplate, CancellationToken cancellationToken)
         {
             try
             {
                 var actor = this.mobileBuildFactory.MobileBuild(mobileType);
-                var updateHelper = new UpdateMobileBuildHelper(buildUrl, buildDownloadUrlTemplate, this.ApiToken);
-                await updateHelper.CheckAndUpdateMobileBuild(this.clientFactory, actor, mobileType, this.notification, cancellationToken, this.logger);
+                var updateHelper =
+                    new UpdateMobileBuildHelper(buildUrl, buildDownloadUrlTemplate, this.ApiToken, this.logger);
+                await updateHelper.CheckAndUpdateMobileBuild(this.clientFactory, actor, mobileType,
+                    this.appCenterNotification, cancellationToken);
             }
             catch (Exception ex)
             {

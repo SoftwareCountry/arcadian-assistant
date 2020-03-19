@@ -14,7 +14,8 @@
 
         public IMobileBuildActor MobileBuild(string type)
         {
-            var actor = this.actorProxyFactory.CreateActorProxy<IMobileBuildActor>(new ActorId($"file-{type}"), serviceName: "MobileBuildActorService");
+            var actor = this.actorProxyFactory.CreateActorProxy<IMobileBuildActor>(new ActorId($"file-{type}"),
+                serviceName: "MobileBuildActorService");
             return actor;
         }
     }

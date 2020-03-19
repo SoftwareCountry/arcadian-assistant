@@ -13,10 +13,16 @@
 
     using Interfaces;
 
+    using Microsoft.Extensions.Logging;
+
     public class NotificationSettings : INotificationSettings
     {
-        public NotificationSettings(ConfigurationSection configurationSection)
+        private readonly ILogger logger;
+
+        public NotificationSettings(ConfigurationSection configurationSection, ILogger<NotificationSettings> logger)
         {
+            this.logger = logger;
+
             if (bool.TryParse(configurationSection.Parameters["EnablePush"].Value, out var enable))
             {
                 this.EnablePush = enable;
@@ -26,23 +32,33 @@
             if (!string.IsNullOrEmpty(map))
             {
                 var parsedMap = this.LoadNotificationProvidersMap(map);
-                this.ClientNotificationProvidersMap = parsedMap
+                this.NotificationTemplateProvidersMap = parsedMap
                     .GroupBy(x => x.Item1)
                     .ToDictionary(x => x.Key,
-                        x => x.SelectMany(v => v.Item2).Distinct());
+                        x => (IReadOnlyCollection<NotificationType>)x
+                            .SelectMany(v => v.Item2)
+                            .Distinct()
+                            .ToList()
+                            .AsReadOnly());
             }
         }
 
         public bool EnablePush { get; }
 
-        public Dictionary<string, IEnumerable<NotificationType>> ClientNotificationProvidersMap { get; } = new Dictionary<string, IEnumerable<NotificationType>>();
-
-        private IEnumerable<Tuple<string, IEnumerable<NotificationType>>> LoadNotificationProvidersMap(string map)
+        public IReadOnlyDictionary<string, IReadOnlyCollection<NotificationType>> NotificationTemplateProvidersMap
         {
-            var result = new List<Tuple<string, IEnumerable<NotificationType>>>();
+            get;
+        }
+            = new Dictionary<string, IReadOnlyCollection<NotificationType>>();
+
+        private IEnumerable<(string, IEnumerable<NotificationType>)> LoadNotificationProvidersMap(string map)
+        {
+            var result = new List<(string, IEnumerable<NotificationType>)>();
             try
             {
-                using var reader = JsonReaderWriterFactory.CreateJsonReader(Encoding.UTF8.GetBytes(map), new XmlDictionaryReaderQuotas());
+                using var reader =
+                    JsonReaderWriterFactory.CreateJsonReader(Encoding.UTF8.GetBytes(map),
+                        new XmlDictionaryReaderQuotas());
                 var mapConfig = XElement.Load(reader);
                 foreach (var item in mapConfig.Elements())
                 {
@@ -52,28 +68,16 @@
                         .Distinct()
                         .Where(n => Enum.TryParse<NotificationType>(n, true, out var val))
                         .Select(n => Enum.Parse<NotificationType>(n, true));
-                    result.Add(new Tuple<string, IEnumerable<NotificationType>>(clientName, values.ToList()));
+                    result.Add((clientName, values.ToList()));
                 }
             }
             catch (Exception e)
             {
-                result = new List<Tuple<string, IEnumerable<NotificationType>>>();
+                this.logger.LogError(e, "");
+                result = new List<(string, IEnumerable<NotificationType>)>();
             }
 
             return result;
-        }
-
-        private class NotificationProviderMapSetting : Tuple<string, IEnumerable<string>>
-        {
-            public NotificationProviderMapSetting()
-                : base(string.Empty, new List<string>())
-            {
-            }
-
-            public NotificationProviderMapSetting(string clientName, IEnumerable<string> providers)
-                : base(clientName, providers)
-            {
-            }
         }
     }
 }

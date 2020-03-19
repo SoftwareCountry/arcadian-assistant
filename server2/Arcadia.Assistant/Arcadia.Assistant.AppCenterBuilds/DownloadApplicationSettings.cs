@@ -9,13 +9,16 @@
         public DownloadApplicationSettings(ConfigurationSection configurationSection)
         {
             this.ApiToken = configurationSection.Parameters["ApiToken"].Value;
-            this.DownloadBuildIntervalMinutes = int.TryParse(configurationSection.Parameters["DownloadBuildIntervalMinutes"].Value, out var interval)
-                ? interval
-                : DefaultDownloadBuildIntervalMinutes;
+            this.DownloadBuildIntervalMinutes =
+                int.TryParse(configurationSection.Parameters["DownloadBuildIntervalMinutes"].Value, out var interval)
+                    ? interval
+                    : DefaultDownloadBuildIntervalMinutes;
             this.AndroidGetBuildsUrl = configurationSection.Parameters["AndroidGetBuildsUrl"].Value;
-            this.AndroidGetBuildDownloadLinkTemplateUrl = configurationSection.Parameters["AndroidGetBuildDownloadLinkTemplateUrl"].Value;
+            this.AndroidGetBuildDownloadLinkTemplateUrl =
+                configurationSection.Parameters["AndroidGetBuildDownloadLinkTemplateUrl"].Value;
             this.IosGetBuildsUrl = configurationSection.Parameters["IosGetBuildsUrl"].Value;
-            this.IosGetBuildDownloadLinkTemplateUrl = configurationSection.Parameters["IosGetBuildDownloadLinkTemplateUrl"].Value;
+            this.IosGetBuildDownloadLinkTemplateUrl =
+                configurationSection.Parameters["IosGetBuildDownloadLinkTemplateUrl"].Value;
         }
 
         public int DownloadBuildIntervalMinutes { get; set; }

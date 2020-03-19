@@ -31,7 +31,7 @@ namespace Arcadia.Assistant.Inbox
 
                 using var container = builder.Build();
                 logger = container.ResolveOptional<ILogger<Inbox>>();
-                logger?.LogInformation($"Service type '{typeof(Inbox).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
+                logger?.LogInformation("Service type '{ServiceName}' registered. Process: {ProcessId}.", typeof(Inbox).Name, Process.GetCurrentProcess().Id);
                 Thread.Sleep(Timeout.Infinite);
             }
             catch (Exception e)

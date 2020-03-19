@@ -48,12 +48,12 @@
         private async Task<IActionResult> GetFile(DeviceTypeEnum deviceType, CancellationToken cancellationToken)
         {
             var buildApplicationType = deviceType.MobileBuildType();
-            this.logger.LogInformation($"Request {buildApplicationType} mobile build.");
+            this.logger.LogInformation("Request {MobileType} mobile build.", buildApplicationType);
             var downloadActor = this.mobileBuildActor.MobileBuild(buildApplicationType);
 
             var fileContentType = this.fileContentTypeByDeviceType[deviceType];
             var fileContent = await downloadActor.GetMobileBuildDataAsync(cancellationToken);
-            this.logger.LogInformation($"{buildApplicationType} mobile build file received.");
+            this.logger.LogInformation("{MobileType} mobile build file received.", buildApplicationType);
             return this.File(fileContent, fileContentType);
         }
     }

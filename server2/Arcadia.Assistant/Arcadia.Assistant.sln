@@ -91,7 +91,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.Notificat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.PushNotifications.Contracts", "Arcadia.Assistant.PushNotifications.Contracts\Arcadia.Assistant.PushNotifications.Contracts.csproj", "{0CF34F6D-7C13-4952-8F4A-C376F297712C}"
 EndProject
-
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -100,6 +99,7 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{80714C33-E9A0-4D12-A77F-A86574998240}.Debug|x64.ActiveCfg = Debug|x64
 		{80714C33-E9A0-4D12-A77F-A86574998240}.Debug|x64.Build.0 = Debug|x64
+		{80714C33-E9A0-4D12-A77F-A86574998240}.Debug|x64.Deploy.0 = Debug|x64
 		{80714C33-E9A0-4D12-A77F-A86574998240}.Release|x64.ActiveCfg = Release|x64
 		{80714C33-E9A0-4D12-A77F-A86574998240}.Release|x64.Build.0 = Release|x64
 		{7A1EA298-4475-4086-9952-6D35B5BEB944}.Debug|x64.ActiveCfg = Debug|Any CPU

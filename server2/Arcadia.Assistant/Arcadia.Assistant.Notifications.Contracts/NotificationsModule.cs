@@ -12,7 +12,8 @@
         {
             builder.Register(x => x
                 .Resolve<IServiceProxyFactory>()
-                .CreateServiceProxy<INotifications>(new Uri("fabric:/Arcadia.Assistant.SF/Arcadia.Assistant.Notifications")));
+                .CreateServiceProxy<INotifications>(
+                    new Uri("fabric:/Arcadia.Assistant.SF/Arcadia.Assistant.Notifications")));
         }
     }
 }

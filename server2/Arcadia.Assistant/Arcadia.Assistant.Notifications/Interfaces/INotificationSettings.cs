@@ -8,6 +8,6 @@
     {
         bool EnablePush { get; }
 
-        Dictionary<string, IEnumerable<NotificationType>> ClientNotificationProvidersMap { get; }
+        IReadOnlyDictionary<string, IReadOnlyCollection<NotificationType>> NotificationTemplateProvidersMap { get; }
     }
 }

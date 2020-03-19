@@ -8,6 +8,8 @@
 
     using Authorization;
 
+    using Configuration;
+
     using Employees.Contracts;
 
     using Microsoft.AspNetCore.Authorization;
@@ -31,17 +33,18 @@
         private readonly IEmployees employees;
         private readonly ILogger<EmployeesController> logger;
         private readonly IPermissions permissions;
-        private readonly bool sslOffloading = false; //TODO: configured
+        private readonly bool sslOffloading;
         private readonly IVacationsCredit vacationsCredit;
         private readonly IWorkHoursCredit workHoursCredit;
 
-        public EmployeesController(IEmployees employees, ILogger<EmployeesController> logger, IPermissions permissions, IWorkHoursCredit workHoursCredit, IVacationsCredit vacationsCredit)
+        public EmployeesController(IEmployees employees, ISslSettings sslSettings, ILogger<EmployeesController> logger, IPermissions permissions, IWorkHoursCredit workHoursCredit, IVacationsCredit vacationsCredit)
         {
             this.employees = employees;
             this.logger = logger;
             this.permissions = permissions;
             this.workHoursCredit = workHoursCredit;
             this.vacationsCredit = vacationsCredit;
+            this.sslOffloading = sslSettings.SslOffloading;
         }
 
         [Route("{employeeId}")]
@@ -166,7 +169,7 @@
                 }
                 catch (Exception e)
                 {
-                    this.logger.LogWarning(e, "Cannot generate PhotoUrl for {0}", employee.EmployeeId);
+                    this.logger.LogWarning(e, "Cannot generate PhotoUrl for {EmployeeId}", employee.EmployeeId);
                 }
             }
         }

@@ -16,6 +16,8 @@ namespace Arcadia.Assistant.Notifications.Contracts
     /// </summary>
     public interface INotifications : IService
     {
-        Task Send(IEnumerable<EmployeeId> employeeIds, NotificationMessage notificationMessage, CancellationToken cancellationToken);
+        Task Send(
+            IReadOnlyCollection<EmployeeId> employeeIds, NotificationMessage notificationMessage,
+            CancellationToken cancellationToken);
     }
 }

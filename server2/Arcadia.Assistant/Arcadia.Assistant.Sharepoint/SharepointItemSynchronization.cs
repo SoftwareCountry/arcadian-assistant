@@ -32,7 +32,7 @@
             });
         }
 
-        protected void SendEvent(string calendar, IEnumerable<EmployeeId> employeeIds, SharepointSynchronizationArgs.SynchronizationEventType eventType, StorageItem item)
+        protected void SendEvent(string calendar, IReadOnlyCollection<EmployeeId> employeeIds, SharepointSynchronizationArgs.SynchronizationEventType eventType, StorageItem item)
         {
             SharepointItemSynchronizedEvent?.Invoke(this, new SharepointSynchronizationArgs
             {
@@ -47,18 +47,18 @@
         {
             public enum SynchronizationEventType
             {
-                add,
-                update,
-                delete
+                Add,
+                Update,
+                Delete
             }
 
-            public string Calendar { get; set; }
+            public string Calendar { get; set; } = string.Empty;
 
-            public IEnumerable<EmployeeId> EmployeeIds { get; set; }
+            public IReadOnlyCollection<EmployeeId> EmployeeIds { get; set; } = new List<EmployeeId>().AsReadOnly();
 
             public SynchronizationEventType EventType { get; set; }
 
-            public StorageItem Item { get; set; }
+            public StorageItem Item { get; set; } = new StorageItem();
         }
     }
 
@@ -97,7 +97,8 @@
                         calendar,
                         item.Id.ToString(),
                         cancellationToken);
-                    this.SendEvent(calendar, departmentEmployees.Select(x => x.EmployeeId), SharepointSynchronizationArgs.SynchronizationEventType.delete, item);
+                    // TODO: blocked for event filtration
+                    // this.SendEvent(calendar, departmentEmployees.Select(x => x.EmployeeId), SharepointSynchronizationArgs.SynchronizationEventType.delete, item);
                 }
             }
             catch (Exception e)
@@ -135,7 +136,8 @@
                     calendar,
                     upsertItem,
                     cancellationToken);
-                this.SendEvent(calendar, employeeId, SharepointSynchronizationArgs.SynchronizationEventType.add, upsertItem);
+                // TODO: blocked for event filtration
+                // this.SendEvent(calendar, employeeId, SharepointSynchronizationArgs.SynchronizationEventType.add, upsertItem);
             }
             else
             {
@@ -146,7 +148,8 @@
                         calendar,
                         upsertItem,
                         cancellationToken);
-                    this.SendEvent(calendar, employeeId, SharepointSynchronizationArgs.SynchronizationEventType.update, upsertItem);
+                    // TODO: blocked for event filtration
+                    // this.SendEvent(calendar, employeeId, SharepointSynchronizationArgs.SynchronizationEventType.update, upsertItem);
                 }
             }
         }

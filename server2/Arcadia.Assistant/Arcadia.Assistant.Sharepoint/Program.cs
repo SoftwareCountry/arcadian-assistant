@@ -90,7 +90,7 @@ namespace Arcadia.Assistant.Sharepoint
 
                 using var container = builder.Build();
                 logger = container.ResolveOptional<ILogger<Sharepoint>>();
-                logger?.LogInformation($"Service type '{typeof(Sharepoint).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
+                logger?.LogInformation("Service type '{ServiceName}' registered. Process: {ProcessId}.", typeof(Sharepoint).Name, Process.GetCurrentProcess().Id);
                 // Prevents this host process from terminating so services keep running.
                 Thread.Sleep(Timeout.Infinite);
             }

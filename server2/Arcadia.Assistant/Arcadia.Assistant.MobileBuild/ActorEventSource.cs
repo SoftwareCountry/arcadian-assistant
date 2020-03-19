@@ -129,15 +129,21 @@ namespace Arcadia.Assistant.MobileBuild
                 message);
 #else
                 const int numArgs = 10;
-                fixed (char* pActorType = actorType, pActorId = actorId, pApplicationTypeName = applicationTypeName, pApplicationName = applicationName, pServiceTypeName = serviceTypeName, pServiceName = serviceName, pNodeName = nodeName, pMessage = message)
+                fixed (char* pActorType = actorType, pActorId = actorId, pApplicationTypeName =
+ applicationTypeName, pApplicationName = applicationName, pServiceTypeName = serviceTypeName, pServiceName =
+ serviceName, pNodeName = nodeName, pMessage = message)
                 {
                     EventData* eventData = stackalloc EventData[numArgs];
                     eventData[0] = new EventData { DataPointer = (IntPtr) pActorType, Size = SizeInBytes(actorType) };
                     eventData[1] = new EventData { DataPointer = (IntPtr) pActorId, Size = SizeInBytes(actorId) };
-                    eventData[2] = new EventData { DataPointer = (IntPtr) pApplicationTypeName, Size = SizeInBytes(applicationTypeName) };
-                    eventData[3] = new EventData { DataPointer = (IntPtr) pApplicationName, Size = SizeInBytes(applicationName) };
-                    eventData[4] = new EventData { DataPointer = (IntPtr) pServiceTypeName, Size = SizeInBytes(serviceTypeName) };
-                    eventData[5] = new EventData { DataPointer = (IntPtr) pServiceName, Size = SizeInBytes(serviceName) };
+                    eventData[2] = new EventData { DataPointer = (IntPtr) pApplicationTypeName, Size =
+ SizeInBytes(applicationTypeName) };
+                    eventData[3] = new EventData { DataPointer = (IntPtr) pApplicationName, Size =
+ SizeInBytes(applicationName) };
+                    eventData[4] = new EventData { DataPointer = (IntPtr) pServiceTypeName, Size =
+ SizeInBytes(serviceTypeName) };
+                    eventData[5] = new EventData { DataPointer = (IntPtr) pServiceName, Size =
+ SizeInBytes(serviceName) };
                     eventData[6] = new EventData { DataPointer = (IntPtr) (&partitionId), Size = sizeof(Guid) };
                     eventData[7] = new EventData { DataPointer = (IntPtr) (&replicaOrInstanceId), Size = sizeof(long) };
                     eventData[8] = new EventData { DataPointer = (IntPtr) pNodeName, Size = SizeInBytes(nodeName) };
@@ -150,7 +156,8 @@ namespace Arcadia.Assistant.MobileBuild
 
         private const int ActorHostInitializationFailedEventId = 3;
 
-        [Event(ActorHostInitializationFailedEventId, Level = EventLevel.Error, Message = "Actor host initialization failed", Keywords = Keywords.HostInitialization)]
+        [Event(ActorHostInitializationFailedEventId, Level = EventLevel.Error,
+            Message = "Actor host initialization failed", Keywords = Keywords.HostInitialization)]
         public void ActorHostInitializationFailed(string exception)
         {
             this.WriteEvent(ActorHostInitializationFailedEventId, exception);

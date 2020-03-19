@@ -12,7 +12,8 @@
         {
             builder.Register(x => x
                 .Resolve<IServiceProxyFactory>()
-                .CreateServiceProxy<IDeviceRegistry>(new Uri("fabric:/Arcadia.Assistant.SF/Arcadia.Assistant.DeviceRegistry")));
+                .CreateServiceProxy<IDeviceRegistry>(
+                    new Uri("fabric:/Arcadia.Assistant.SF/Arcadia.Assistant.DeviceRegistry")));
         }
     }
 }

@@ -27,7 +27,8 @@ namespace Arcadia.Assistant.DeviceRegistry
             this.logger = logger;
         }
 
-        public async Task RegisterDevice(EmployeeId employeeId, DeviceId deviceId, DeviceType deviceType, CancellationToken cancellationToken)
+        public async Task RegisterDevice(
+            EmployeeId employeeId, DeviceId deviceId, DeviceType deviceType, CancellationToken cancellationToken)
         {
             var newDeviceItem = new DeviceRegistryEntry
             {
@@ -45,13 +46,15 @@ namespace Arcadia.Assistant.DeviceRegistry
                 .RemoveDeviceFromRegistry(employeeId, deviceId, cancellationToken);
         }
 
-        public async Task<IEnumerable<DeviceRegistryEntry>> GetDeviceRegistryByEmployee(EmployeeId employeeId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<DeviceRegistryEntry>> GetDeviceRegistryByEmployee(
+            EmployeeId employeeId, CancellationToken cancellationToken)
         {
             return await new RegistryOperations(this.StateManager, this.logger)
                 .GetDeviceFromRegistryByEmployee(employeeId, cancellationToken);
         }
 
-        public async Task<Dictionary<EmployeeId, IEnumerable<DeviceRegistryEntry>>> GetDeviceRegistryByEmployeeList(IEnumerable<EmployeeId> employeeId, CancellationToken cancellationToken)
+        public async Task<Dictionary<EmployeeId, IEnumerable<DeviceRegistryEntry>>> GetDeviceRegistryByEmployeeList(
+            IEnumerable<EmployeeId> employeeId, CancellationToken cancellationToken)
         {
             var result = new Dictionary<EmployeeId, IEnumerable<DeviceRegistryEntry>>();
             foreach (var id in employeeId)
@@ -68,7 +71,8 @@ namespace Arcadia.Assistant.DeviceRegistry
             return result;
         }
 
-        public async Task<IEnumerable<DeviceRegistryEntry>> GetDeviceRegistryByEmployeeAndType(EmployeeId employeeId, DeviceType deviceType, CancellationToken cancellationToken)
+        public async Task<IEnumerable<DeviceRegistryEntry>> GetDeviceRegistryByEmployeeAndType(
+            EmployeeId employeeId, DeviceType deviceType, CancellationToken cancellationToken)
         {
             return (await new RegistryOperations(this.StateManager, this.logger)
                     .GetDeviceFromRegistryByEmployee(employeeId, cancellationToken))
