@@ -8,6 +8,8 @@
     {
         bool EnablePush { get; }
 
+        bool EnableEmail { get; }
+
         IReadOnlyDictionary<string, IReadOnlyCollection<NotificationType>> NotificationTemplateProvidersMap { get; }
     }
 }

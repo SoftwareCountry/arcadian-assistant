@@ -87,6 +87,16 @@ namespace Arcadia.Assistant.Notifications
                         }
 
                         break;
+
+                    case NotificationType.Email:
+                        if (this.notificationSettings.EnableEmail)
+                        {
+                            // TODO: implement email broadcasting
+                            //var recipients = await this.GetMailRecipients(employeeIds, cancellationToken);
+                            //await this.SendEmailNotification(tokens, notificationMessage, cancellationToken);
+                        }
+
+                        break;
                 }
             }
         }
@@ -135,6 +145,17 @@ namespace Arcadia.Assistant.Notifications
             if (userPreferencesDictionary.TryGetValue(employeeId, out var pref))
             {
                 return pref.PushNotifications;
+            }
+
+            return false;
+        }
+
+        private bool IsEmailNotification(
+            IDictionary<EmployeeId, UserPreferences> userPreferencesDictionary, EmployeeId employeeId)
+        {
+            if (userPreferencesDictionary.TryGetValue(employeeId, out var pref))
+            {
+                return pref.EmailNotifications;
             }
 
             return false;

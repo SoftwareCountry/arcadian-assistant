@@ -2,11 +2,12 @@
 
 <Settings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://schemas.microsoft.com/2011/01/fabric">
-  <!-- Add your custom configuration sections and parameters here -->
-  <Section Name="Notifications">
-    <Parameter Name="EnablePush" Value="false" />
-    <Parameter Name="EnableEmail" Value="false" />
-    <Parameter Name="ClientNotificationProviders" Value="" />
+  <Section Name="Smtp">
+    <Parameter Name="Host" Value="" />
+    <Parameter Name="Port" Value="" />
+    <Parameter Name="UserName" Value="" />
+    <Parameter Name="Password" Value="" />
+    <Parameter Name="UseTls" Value="false" />
   </Section>
   <Section Name="Logging">
     <Parameter Name="ApplicationInsightsKey" Value="" />

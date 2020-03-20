@@ -1,4 +1,4 @@
-namespace Arcadia.Assistant.Notifications
+namespace Arcadia.Assistant.EmailNotifications
 {
     using System;
     using System.Diagnostics;
@@ -8,23 +8,12 @@ namespace Arcadia.Assistant.Notifications
     using Autofac;
     using Autofac.Integration.ServiceFabric;
 
-    using DeviceRegistry.Contracts;
-
-    using EmailNotifications.Contracts;
-
-    using Interfaces;
-
     using Logging;
 
     using Microsoft.Extensions.Logging;
-    using Microsoft.ServiceFabric.Actors.Client;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
 
     using Models;
-
-    using PushNotifications.Contracts;
-
-    using UserPreferences.Contracts;
 
     internal static class Program
     {
@@ -40,28 +29,16 @@ namespace Arcadia.Assistant.Notifications
 
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
+                builder.RegisterStatelessService<EmailNotifications>("Arcadia.Assistant.EmailNotificationsType");
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
-                builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
-                builder.Register(x =>
-                    {
-                        var logger = x.Resolve<ILogger<NotificationSettings>>();
-                        return new NotificationSettings(configurationPackage.Settings.Sections["Notifications"],
-                            logger);
-                    }
-                ).As<INotificationSettings>().SingleInstance();
-                builder.RegisterStatelessService<Notifications>("Arcadia.Assistant.NotificationsType");
-                builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
-                builder.RegisterModule<UsersPreferencesModule>();
-                builder.RegisterModule<DeviceRegistryModule>();
-                builder.RegisterModule<PushNotificationsModule>();
-                builder.RegisterModule<EmailNotificationsModule>();
+                builder.Register(x => new SmtpSettings(configurationPackage.Settings.Sections["Smtp"])).AsSelf()
+                    .SingleInstance();
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using var container = builder.Build();
-                logger = container.ResolveOptional<ILogger<Notifications>>();
+                logger = container.ResolveOptional<ILogger<EmailNotifications>>();
                 logger?.LogInformation("Service type '{ServiceName}' registered. Process: {ProcessId}.",
-                    typeof(Notifications).Name, Process.GetCurrentProcess().Id);
-
+                    typeof(EmailNotifications).Name, Process.GetCurrentProcess().Id);
                 Thread.Sleep(Timeout.Infinite);
             }
             catch (Exception e)
