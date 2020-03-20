@@ -62,7 +62,8 @@ namespace Arcadia.Assistant.Notifications
             Enum.GetValues(typeof(NotificationType)).OfType<NotificationType>().ToList().AsReadOnly();
 
         public async Task Send(
-            IReadOnlyCollection<EmployeeId> employeeIds, NotificationMessage notificationMessage,
+            EmployeeId[] employeeIds,
+            NotificationMessage notificationMessage,
             CancellationToken cancellationToken)
         {
             if (!employeeIds.Any())
@@ -95,8 +96,7 @@ namespace Arcadia.Assistant.Notifications
             NotificationMessage notificationMessage, CancellationToken cancellationToken)
         {
             // TODO: apply dynamic object for custom parameters
-            var parameters = notificationMessage.Parameters as Dictionary<string, string> ??
-                new Dictionary<string, string>();
+            var parameters = notificationMessage.Parameters.ToDictionary(k => k.Key, v => v.Value);
             dynamic customData = parameters.Aggregate(new ExpandoObject() as IDictionary<string, object>,
                 (a, p) =>
                 {
@@ -117,8 +117,8 @@ namespace Arcadia.Assistant.Notifications
 
             foreach (var deviceToken in deviceTokens.Values)
             {
-                await this.pushNotifications.SendPushNotification(deviceToken, notificationContent,
-                    notificationMessage.Parameters, cancellationToken);
+                await this.pushNotifications.SendPushNotification(deviceToken.ToArray(), notificationContent,
+                    cancellationToken);
             }
         }
 

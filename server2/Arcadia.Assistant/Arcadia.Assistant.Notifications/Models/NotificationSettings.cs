@@ -73,7 +73,7 @@
             }
             catch (Exception e)
             {
-                this.logger.LogError(e, "");
+                this.logger.LogError(e, "Notification providers map parse error");
                 result = new List<(string, IEnumerable<NotificationType>)>();
             }
 

@@ -51,12 +51,16 @@ namespace Arcadia.Assistant.PushNotifications
         }
 
         public async Task SendPushNotification(
-            IReadOnlyCollection<DeviceRegistryEntry> deviceTokens, PushNotificationContent notificationContent,
-            IReadOnlyDictionary<string, string> parameters, CancellationToken cancellationToken)
+            DeviceRegistryEntry[] deviceTokens,
+            PushNotificationContent notificationContent,
+            CancellationToken cancellationToken)
         {
             this.logger.LogDebug("Push notification message received");
 
-            if (!deviceTokens.Any())
+            var deviceInfos = (IReadOnlyDictionary<string, IEnumerable<DeviceRegistryEntry>>)deviceTokens
+                .GroupBy(x => x.DeviceType)
+                .ToDictionary(x => x.Key.Value, x => x.Select(g => g));
+            if (!deviceInfos.Any())
             {
                 this.logger.LogDebug("Push notification message doesn't contain target devices and won't be sent");
                 return;
@@ -66,14 +70,15 @@ namespace Arcadia.Assistant.PushNotifications
             foreach (var key in this.notificationConfiguration.Keys)
             {
                 // TODO: temporary approach - just for demonstration
-                if (parameters.TryGetValue("DeviceType", out var deviceType) &&
-                    !deviceType.Equals(key, StringComparison.InvariantCultureIgnoreCase))
+                if (notificationContent.Parameters.TryGetValue("DeviceType", out var deviceType)
+                    && !deviceType.Equals(key, StringComparison.InvariantCultureIgnoreCase)
+                    || !deviceInfos.TryGetValue(key, out var entry))
                 {
                     continue;
                 }
 
                 await this.SendApplicationPushNotification(
-                    deviceTokens.Where(x => x.DeviceType == key)
+                    entry
                         .Select(x => x.DeviceId.ToString())
                         .ToList()
                         .AsReadOnly(),

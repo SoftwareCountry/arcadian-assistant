@@ -1,5 +1,6 @@
 ﻿namespace Arcadia.Assistant.AppCenterBuilds
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
@@ -29,20 +30,30 @@
                 "Send app center build notification about build version {BuildVersion} for '{MobileType}' platform.",
                 buildVersion, mobileType);
 
-            // TODO: Add employee list request
-            await this.notifications.Send(new List<EmployeeId>(),
-                new NotificationMessage
-                {
-                    NotificationTemplate = notificationTemplate,
-                    Subject = "App center notification",
-                    ShortText = $"New mobile build version {buildVersion} available",
-                    LongText = $"New mobile build version {buildVersion} available",
-                    Parameters = new Dictionary<string, string>
+            try
+            {
+                // TODO: Add employee array request
+                await this.notifications.Send(new EmployeeId[0],
+                    new NotificationMessage
                     {
-                        { NotificationMessage.ParameterNames.DeviceType, mobileType }
-                    }
-                },
-                cancellationToken);
+                        NotificationTemplate = notificationTemplate,
+                        Subject = "App center notification",
+                        ShortText = $"New mobile build version {buildVersion} available",
+                        LongText = $"New mobile build version {buildVersion} available",
+                        Parameters = new Dictionary<string, string>
+                        {
+                            { NotificationMessage.KnowParameterNames.DeviceType, mobileType }
+                        }
+                    },
+                    cancellationToken);
+            }
+            catch (Exception e)
+            {
+                this.logger.LogError(e,
+                    "Send mobile {DeviceType} with version {Version} '{Notification}' notification error", mobileType,
+                    buildVersion, notificationTemplate);
+                throw;
+            }
         }
     }
 }

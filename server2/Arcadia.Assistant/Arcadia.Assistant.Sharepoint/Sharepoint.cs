@@ -73,7 +73,7 @@ namespace Arcadia.Assistant.Sharepoint
 
         private void SharepointItemSynchronizedEventHandler(object sender, SharepointItemSynchronizationBase.SharepointSynchronizationArgs e)
         {
-            this.notifications.Send(e.EmployeeIds,
+            this.notifications.Send(e.EmployeeIds.ToArray(),
                 new NotificationMessage
                 {
                     NotificationTemplate = e.EventType.ToString(),

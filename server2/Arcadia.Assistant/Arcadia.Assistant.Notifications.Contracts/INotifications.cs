@@ -1,6 +1,5 @@
 namespace Arcadia.Assistant.Notifications.Contracts
 {
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -17,7 +16,8 @@ namespace Arcadia.Assistant.Notifications.Contracts
     public interface INotifications : IService
     {
         Task Send(
-            IReadOnlyCollection<EmployeeId> employeeIds, NotificationMessage notificationMessage,
+            EmployeeId[] employeeIds,
+            NotificationMessage notificationMessage,
             CancellationToken cancellationToken);
     }
 }
