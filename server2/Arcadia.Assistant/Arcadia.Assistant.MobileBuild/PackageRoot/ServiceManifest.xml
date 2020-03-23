@@ -10,7 +10,7 @@
             <ReplicatorConfigSection Name="MobileBuildActorServiceReplicatorConfig" />
             <ReplicatorSecurityConfigSection Name="MobileBuildActorServiceReplicatorSecurityConfig" />
             <StoreConfigSection Name="MobileBuildActorServiceLocalStoreConfig" />
-            <ServiceEndpointV2_1 Name="MobileBuildActorServiceEndpointV2_1" />
+            <ServiceEndpointV2 Name="MobileBuildActorServiceEndpointV2" />
           </GeneratedNames>
         </Extension>
       </Extensions>
@@ -26,8 +26,8 @@
   <ConfigPackage Name="Config" Version="1.0.0" />
   <Resources>
     <Endpoints>
-      <Endpoint Name="MobileBuildActorServiceEndpointV2_1" />
       <Endpoint Name="MobileBuildActorServiceReplicatorEndpoint" />
+      <Endpoint Name="MobileBuildActorServiceEndpointV2" />
     </Endpoints>
   </Resources>
   <!-- The content will be generated during build -->

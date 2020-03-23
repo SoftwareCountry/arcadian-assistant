@@ -9,6 +9,8 @@ namespace Arcadia.Assistant.AppCenterBuilds
     using Autofac.Extensions.DependencyInjection;
     using Autofac.Integration.ServiceFabric;
 
+    using Employees.Contracts;
+
     using Logging;
 
     using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +21,8 @@ namespace Arcadia.Assistant.AppCenterBuilds
     using MobileBuild.Contracts;
 
     using Notifications.Contracts;
+
+    using Organization.Contracts;
 
     internal static class Program
     {
@@ -45,6 +49,8 @@ namespace Arcadia.Assistant.AppCenterBuilds
                 builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
                 builder.RegisterType<AppCenterNotification>().As<IAppCenterNotification>();
+                builder.RegisterModule<OrganizationModule>();
+                builder.RegisterModule<EmployeesModule>();
                 builder.RegisterModule<NotificationsModule>();
                 builder.RegisterModule<MobileBuildModule>();
                 builder.Populate(services);

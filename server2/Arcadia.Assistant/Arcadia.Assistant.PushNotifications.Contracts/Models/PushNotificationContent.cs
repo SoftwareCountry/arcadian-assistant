@@ -5,6 +5,7 @@
 
     [DataContract]
     [KnownType(typeof(IReadOnlyDictionary<string, string>))]
+    [KnownType(typeof(ContentCustomData))]
     public class PushNotificationContent
     {
         [DataMember] public const string Name = "Arcadia Assistant API";

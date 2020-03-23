@@ -2,7 +2,6 @@ namespace Arcadia.Assistant.Notifications
 {
     using System;
     using System.Collections.Generic;
-    using System.Dynamic;
     using System.Fabric;
     using System.Linq;
     using System.Threading;
@@ -13,6 +12,9 @@ namespace Arcadia.Assistant.Notifications
 
     using DeviceRegistry.Contracts;
     using DeviceRegistry.Contracts.Models;
+
+    using EmailNotifications.Contracts;
+    using EmailNotifications.Contracts.Models;
 
     using Employees.Contracts;
 
@@ -34,6 +36,8 @@ namespace Arcadia.Assistant.Notifications
     public class Notifications : StatelessService, INotifications
     {
         private readonly IDeviceRegistry deviceRegistry;
+        private readonly IEmailNotifications emailNotifications;
+        private readonly IEmployees employees;
         private readonly ILogger logger;
 
         private readonly IReadOnlyDictionary<string, IReadOnlyCollection<NotificationType>> notificationProvidersMap;
@@ -44,16 +48,20 @@ namespace Arcadia.Assistant.Notifications
         public Notifications(
             StatelessServiceContext context,
             INotificationSettings notificationSettings,
+            IEmployees employees,
             IDeviceRegistry deviceRegistry,
             IUsersPreferencesStorage userPreferences,
             IPushNotifications pushNotifications,
+            IEmailNotifications emailNotifications,
             ILogger<Notifications> logger)
             : base(context)
         {
             this.notificationSettings = notificationSettings;
             this.deviceRegistry = deviceRegistry;
+            this.employees = employees;
             this.userPreferences = userPreferences;
             this.pushNotifications = pushNotifications;
+            this.emailNotifications = emailNotifications;
             this.logger = logger;
             this.notificationProvidersMap = this.notificationSettings.NotificationTemplateProvidersMap;
         }
@@ -83,7 +91,9 @@ namespace Arcadia.Assistant.Notifications
                         if (this.notificationSettings.EnablePush)
                         {
                             var tokens = await this.GetDeviceTokens(employeeIds, cancellationToken);
-                            await this.SendPushNotification(tokens, notificationMessage, cancellationToken);
+                            var customData = notificationMessage.CustomData as NotificationMessage.MessageCustomData;
+                            var deviceType = customData?.DeviceType ?? string.Empty;
+                            await this.SendPushNotification(tokens, deviceType, notificationMessage, cancellationToken);
                         }
 
                         break;
@@ -91,9 +101,11 @@ namespace Arcadia.Assistant.Notifications
                     case NotificationType.Email:
                         if (this.notificationSettings.EnableEmail)
                         {
-                            // TODO: implement email broadcasting
-                            //var recipients = await this.GetMailRecipients(employeeIds, cancellationToken);
-                            //await this.SendEmailNotification(tokens, notificationMessage, cancellationToken);
+                            var recipients = await this.GetMailRecipients(employeeIds, cancellationToken);
+                            var customData = notificationMessage.CustomData as NotificationMessage.MessageCustomData;
+                            var sender = customData?.Sender ?? string.Empty;
+                            await this.SendEmailNotification(recipients, sender, notificationMessage,
+                                cancellationToken);
                         }
 
                         break;
@@ -102,24 +114,19 @@ namespace Arcadia.Assistant.Notifications
         }
 
         private async Task SendPushNotification(
-            IDictionary<EmployeeId, IReadOnlyCollection<DeviceRegistryEntry>> deviceTokens,
-            NotificationMessage notificationMessage, CancellationToken cancellationToken)
+            IDictionary<EmployeeId,
+                IReadOnlyCollection<DeviceRegistryEntry>> deviceTokens,
+            string deviceType,
+            NotificationMessage notificationMessage,
+            CancellationToken cancellationToken)
         {
-            // TODO: apply dynamic object for custom parameters
-            var parameters = notificationMessage.Parameters.ToDictionary(k => k.Key, v => v.Value);
-            dynamic customData = parameters.Aggregate(new ExpandoObject() as IDictionary<string, object>,
-                (a, p) =>
-                {
-                    a.Add(p.Key, p.Value);
-                    return a;
-                });
             var notificationContent = new PushNotificationContent
             {
                 Title = notificationMessage.Subject,
                 Body = notificationMessage.ShortText,
                 CustomData = new
                 {
-                    customData.DeviceType,
+                    deviceType,
                     Type = notificationMessage
                         .NotificationTemplate // TODO: calculate correct value or remove this property
                 }
@@ -130,6 +137,23 @@ namespace Arcadia.Assistant.Notifications
                 await this.pushNotifications.SendPushNotification(deviceToken.ToArray(), notificationContent,
                     cancellationToken);
             }
+        }
+
+        private async Task SendEmailNotification(
+            IReadOnlyCollection<string> recipients,
+            string sender,
+            NotificationMessage notificationMessage,
+            CancellationToken cancellationToken)
+        {
+            var notificationContent = new EmailNotificationContent
+            {
+                Sender = sender,
+                Subject = notificationMessage.Subject,
+                Body = notificationMessage.LongText
+            };
+
+            await this.emailNotifications.SendEmailNotification(recipients.ToArray(), notificationContent,
+                cancellationToken);
         }
 
         private async Task<(EmployeeId, UserPreferences)> GetUserPreferences(
@@ -179,6 +203,21 @@ namespace Arcadia.Assistant.Notifications
                 .GroupBy(x => x.Key)
                 .ToDictionary(x => x.Key,
                     x => (IReadOnlyCollection<DeviceRegistryEntry>)x.Select(a => a.Val).ToList().AsReadOnly());
+        }
+
+        private async Task<IReadOnlyCollection<string>> GetMailRecipients(
+            IReadOnlyCollection<EmployeeId> employeeIds, CancellationToken cancellationToken)
+        {
+            var employeePreferences = (await Task.WhenAll(employeeIds
+                    .Distinct()
+                    .Select(x => this.GetUserPreferences(x, cancellationToken))))
+                .ToDictionary(x => x.Item1, x => x.Item2);
+            return (await Task.WhenAll(employeeIds
+                    .Where(x => this.IsEmailNotification(employeePreferences, x))
+                    .Select(x => this.employees.FindEmployeeAsync(x, cancellationToken))))
+                .Where(x => x != null)
+                .Select(x => x.Email)
+                .ToList();
         }
 
         /// <summary>

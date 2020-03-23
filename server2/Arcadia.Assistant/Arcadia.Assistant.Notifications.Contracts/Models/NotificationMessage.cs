@@ -1,11 +1,9 @@
 ﻿namespace Arcadia.Assistant.Notifications.Contracts.Models
 {
-    using System.Collections.Generic;
     using System.Runtime.Serialization;
 
     [DataContract]
-    [KnownType(typeof(IReadOnlyDictionary<string, string>))]
-    [KnownType(typeof(Dictionary<string, string>))]
+    [KnownType(typeof(MessageCustomData))]
     public class NotificationMessage
     {
         [DataMember]
@@ -21,12 +19,13 @@
         public string ShortText { get; set; } = string.Empty;
 
         [DataMember]
-        public IReadOnlyDictionary<string, string> Parameters { get; set; } =
-            new Dictionary<string, string>();
+        public object CustomData { get; set; } = string.Empty;
 
-        public static class KnowParameterNames
+        public class MessageCustomData
         {
-            public const string DeviceType = "DeviceType";
+            public string DeviceType { get; set; } = string.Empty;
+
+            public string Sender { get; set; } = string.Empty;
         }
     }
 }

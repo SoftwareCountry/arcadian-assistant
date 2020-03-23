@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -24,8 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Arcadia.Assistant.DeviceRegistry.Contracts\Arcadia.Assistant.DeviceRegistry.Contracts.csproj" />
-    <ProjectReference Include="..\Arcadia.Assistant.EmailNotifications.Contracts\Arcadia.Assistant.EmailNotifications.Contracts.csproj" />
+    <ProjectReference
+      Include="..\Arcadia.Assistant.DeviceRegistry.Contracts\Arcadia.Assistant.DeviceRegistry.Contracts.csproj" />
+    <ProjectReference
+      Include="..\Arcadia.Assistant.EmailNotifications.Contracts\Arcadia.Assistant.EmailNotifications.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Logging\Arcadia.Assistant.Logging.csproj" />
   </ItemGroup>
 

@@ -31,7 +31,6 @@ namespace Arcadia.Assistant.Sharepoint
     /// </summary>
     public class Sharepoint : StatelessService
     {
-        private const string ServiceName = "Calendar";
         private readonly ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings;
         private readonly IEmployees employees;
         private readonly Func<IExternalStorage> externalStorageProvider;

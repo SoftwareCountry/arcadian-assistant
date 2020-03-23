@@ -12,6 +12,8 @@ namespace Arcadia.Assistant.Notifications
 
     using EmailNotifications.Contracts;
 
+    using Employees.Contracts;
+
     using Interfaces;
 
     using Logging;
@@ -44,13 +46,14 @@ namespace Arcadia.Assistant.Notifications
                 builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
                 builder.Register(x =>
                     {
-                        var logger = x.Resolve<ILogger<NotificationSettings>>();
+                        var configLogger = x.Resolve<ILogger<NotificationSettings>>();
                         return new NotificationSettings(configurationPackage.Settings.Sections["Notifications"],
-                            logger);
+                            configLogger);
                     }
                 ).As<INotificationSettings>().SingleInstance();
                 builder.RegisterStatelessService<Notifications>("Arcadia.Assistant.NotificationsType");
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
+                builder.RegisterModule<EmployeesModule>();
                 builder.RegisterModule<UsersPreferencesModule>();
                 builder.RegisterModule<DeviceRegistryModule>();
                 builder.RegisterModule<PushNotificationsModule>();

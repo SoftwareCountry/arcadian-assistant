@@ -9,9 +9,9 @@
         public string Sender { get; set; } = string.Empty;
 
         [DataMember]
-        public string Subject { get; } = string.Empty;
+        public string Subject { get; set; } = string.Empty;
 
         [DataMember]
-        public string Body { get; } = string.Empty;
+        public string Body { get; set; } = string.Empty;
     }
 }

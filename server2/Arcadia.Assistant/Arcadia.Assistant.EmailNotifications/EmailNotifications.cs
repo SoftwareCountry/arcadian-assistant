@@ -53,7 +53,12 @@ namespace Arcadia.Assistant.EmailNotifications
                 this.smtpSettings.Port,
                 this.smtpSettings.UseTls ? SecureSocketOptions.StartTls : SecureSocketOptions.None,
                 cancellationToken);
-            await client.AuthenticateAsync(this.smtpSettings.UserName, this.smtpSettings.Password, cancellationToken);
+            if (!string.IsNullOrEmpty(this.smtpSettings.UserName))
+            {
+                await client.AuthenticateAsync(this.smtpSettings.UserName, this.smtpSettings.Password,
+                    cancellationToken);
+            }
+
             await client.SendAsync(emailMessage, cancellationToken);
             await client.DisconnectAsync(true, cancellationToken);
 
