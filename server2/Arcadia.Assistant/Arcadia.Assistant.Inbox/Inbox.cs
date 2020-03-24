@@ -85,7 +85,7 @@ namespace Arcadia.Assistant.Inbox
                         .ToList();
                 }
 
-                this.logger.LogDebug("Total messages loaded: {0}", messages.Count);
+                this.logger.LogDebug("Total messages loaded: {MessagesCount}", messages.Count);
 
                 var emails = this.ConvertMessages(client, messages);
 
