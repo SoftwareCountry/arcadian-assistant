@@ -1,6 +1,5 @@
 namespace Arcadia.Assistant.PushNotifications
 {
-    using System;
     using System.Collections.Generic;
     using System.Fabric;
     using System.Linq;
@@ -45,8 +44,8 @@ namespace Arcadia.Assistant.PushNotifications
 
             this.notificationConfiguration = new Dictionary<string, string>
             {
-                { WellKnownBuildTypes.Android, this.pushSettings.AndroidPushUrl },
-                { WellKnownBuildTypes.Ios, this.pushSettings.IosPushUrl }
+                { WellKnownDeviceTypes.Android, this.pushSettings.AndroidPushUrl },
+                { WellKnownDeviceTypes.Ios, this.pushSettings.IosPushUrl }
             };
         }
 
@@ -57,7 +56,7 @@ namespace Arcadia.Assistant.PushNotifications
         {
             this.logger.LogDebug("Push notification message received");
 
-            var deviceInfos = (IReadOnlyDictionary<string, IEnumerable<DeviceRegistryEntry>>)deviceTokens
+            var deviceInfos = deviceTokens
                 .GroupBy(x => x.DeviceType)
                 .ToDictionary(x => x.Key.Value, x => x.Select(g => g));
             if (!deviceInfos.Any())
@@ -69,20 +68,19 @@ namespace Arcadia.Assistant.PushNotifications
             // send notifications for registered device types
             foreach (var key in this.notificationConfiguration.Keys)
             {
-                // TODO: temporary approach - just for demonstration
-                if (notificationContent.Parameters.TryGetValue("DeviceType", out var deviceType)
-                    && !deviceType.Equals(key, StringComparison.InvariantCultureIgnoreCase)
-                    || !deviceInfos.TryGetValue(key, out var entry))
+                if (deviceInfos.TryGetValue(key, out var entry))
                 {
-                    continue;
+                    await this.SendApplicationPushNotification(
+                        entry
+                            .Select(x => x.DeviceId.ToString())
+                            .ToList()
+                            .AsReadOnly(),
+                        notificationContent, this.notificationConfiguration[key]);
                 }
-
-                await this.SendApplicationPushNotification(
-                    entry
-                        .Select(x => x.DeviceId.ToString())
-                        .ToList()
-                        .AsReadOnly(),
-                    notificationContent, this.notificationConfiguration[key]);
+                else
+                {
+                    this.logger.LogDebug("Device type {DeviceType} has no registrations for notifications", key);
+                }
             }
         }
 
@@ -100,6 +98,7 @@ namespace Arcadia.Assistant.PushNotifications
         {
             if (!deviceIds.Any())
             {
+                this.logger.LogWarning("Push notification decline: device tokens list is empty.");
                 return;
             }
 

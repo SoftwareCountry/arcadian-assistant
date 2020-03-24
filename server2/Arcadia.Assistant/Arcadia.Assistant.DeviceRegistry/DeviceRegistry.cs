@@ -46,37 +46,48 @@ namespace Arcadia.Assistant.DeviceRegistry
                 .RemoveDeviceFromRegistry(employeeId, deviceId, cancellationToken);
         }
 
-        public async Task<IEnumerable<DeviceRegistryEntry>> GetDeviceRegistryByEmployee(
-            EmployeeId employeeId, CancellationToken cancellationToken)
+        public async Task<Dictionary<EmployeeId, DeviceRegistryEntry[]>> GetDeviceRegistryByDeviceType(
+            DeviceType deviceType, CancellationToken cancellationToken)
         {
-            return await new RegistryOperations(this.StateManager, this.logger)
-                .GetDeviceFromRegistryByEmployee(employeeId, cancellationToken);
+            return (await new RegistryOperations(this.StateManager, this.logger)
+                    .GetDeviceFromRegistryByDeviceType(deviceType, cancellationToken))
+                .ToDictionary(x => x.Key, x => x.Value.ToArray());
         }
 
-        public async Task<Dictionary<EmployeeId, IEnumerable<DeviceRegistryEntry>>> GetDeviceRegistryByEmployeeList(
-            IEnumerable<EmployeeId> employeeId, CancellationToken cancellationToken)
+        public async Task<DeviceRegistryEntry[]> GetDeviceRegistryByEmployee(
+            EmployeeId employeeId, CancellationToken cancellationToken)
         {
-            var result = new Dictionary<EmployeeId, IEnumerable<DeviceRegistryEntry>>();
+            return (await new RegistryOperations(this.StateManager, this.logger)
+                    .GetDeviceFromRegistryByEmployee(employeeId, cancellationToken))
+                .ToArray();
+        }
+
+        public async Task<Dictionary<EmployeeId, DeviceRegistryEntry[]>> GetDeviceRegistryByEmployeeList(
+            EmployeeId[] employeeId, CancellationToken cancellationToken)
+        {
+            var result = new Dictionary<EmployeeId, DeviceRegistryEntry[]>();
             foreach (var id in employeeId)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    return new Dictionary<EmployeeId, IEnumerable<DeviceRegistryEntry>>();
+                    return new Dictionary<EmployeeId, DeviceRegistryEntry[]>();
                 }
 
-                result.Add(id, await new RegistryOperations(this.StateManager, this.logger)
-                    .GetDeviceFromRegistryByEmployee(id, cancellationToken));
+                result.Add(id, (await new RegistryOperations(this.StateManager, this.logger)
+                        .GetDeviceFromRegistryByEmployee(id, cancellationToken))
+                    .ToArray());
             }
 
             return result;
         }
 
-        public async Task<IEnumerable<DeviceRegistryEntry>> GetDeviceRegistryByEmployeeAndType(
+        public async Task<DeviceRegistryEntry[]> GetDeviceRegistryByEmployeeAndType(
             EmployeeId employeeId, DeviceType deviceType, CancellationToken cancellationToken)
         {
             return (await new RegistryOperations(this.StateManager, this.logger)
                     .GetDeviceFromRegistryByEmployee(employeeId, cancellationToken))
-                .Where(x => x.DeviceType == deviceType);
+                .Where(x => x.DeviceType == deviceType)
+                .ToArray();
         }
     }
 }

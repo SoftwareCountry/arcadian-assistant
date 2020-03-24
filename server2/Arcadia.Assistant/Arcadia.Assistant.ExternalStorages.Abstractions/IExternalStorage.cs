@@ -7,7 +7,8 @@
 
     public interface IExternalStorage : IDisposable
     {
-        Task<IEnumerable<StorageItem>> GetItems(string list, IEnumerable<ICondition>? conditions = null, CancellationToken cancellationToken = default);
+        Task<IEnumerable<StorageItem>> GetItems(
+            string list, IEnumerable<ICondition>? conditions = null, CancellationToken cancellationToken = default);
 
         Task<StorageItem> AddItem(string list, StorageItem item, CancellationToken cancellationToken = default);
 

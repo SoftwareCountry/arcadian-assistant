@@ -15,19 +15,24 @@
     using DeviceRegistry.Contracts;
     using Arcadia.Assistant.DeviceRegistry.Contracts.Models;
 
+    using Microsoft.Extensions.Logging;
+
     [Route("/api/push/device")]
     [Authorize]
     public class PushNotificationsController : Controller
     {
         private readonly IDeviceRegistry deviceRegistry;
         private readonly IEmployees employees;
+        private readonly ILogger logger;
 
         public PushNotificationsController(
             IDeviceRegistry deviceRegistry,
-            IEmployees employees)
+            IEmployees employees,
+            ILogger<PushNotificationsController> logger)
         {
             this.deviceRegistry = deviceRegistry;
             this.employees = employees;
+            this.logger = logger;
         }
 
         [HttpPost]
@@ -51,6 +56,10 @@
                     new DeviceType(deviceType),
                     cancellationToken);
             }
+            else
+            {
+                this.logger.LogWarning("{DeviceType} device (id:{DeviceId}) register declined: user not found.", deviceType, deviceModel.DevicePushToken);
+            }
 
             return this.Accepted();
         }
@@ -68,6 +77,10 @@
                     employee.EmployeeId,
                     new DeviceId(devicePushToken),
                     cancellationToken);
+            }
+            else
+            {
+                this.logger.LogWarning("Device (id:{DeviceId}) remove declined: user not found.");
             }
 
             return this.Accepted();

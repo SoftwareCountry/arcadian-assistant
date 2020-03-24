@@ -9,13 +9,9 @@
     using System.Xml;
     using System.Xml.Linq;
 
-    using Contracts.Models;
-
-    using Interfaces;
-
     using Microsoft.Extensions.Logging;
 
-    public class NotificationSettings : INotificationSettings
+    public class NotificationSettings
     {
         private readonly ILogger logger;
 

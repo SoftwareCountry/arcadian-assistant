@@ -9,7 +9,8 @@
         public SharepointDepartmentsCalendarsSettings(ConfigurationSection configurationSection)
         {
             var val = configurationSection.Parameters["Value"].Value;
-            this.DepartmentsCalendars = JsonSerializer.Deserialize<IEnumerable<SharepointDepartmentCalendarMapping>>(val);
+            this.DepartmentsCalendars =
+                JsonSerializer.Deserialize<IEnumerable<SharepointDepartmentCalendarMapping>>(val);
         }
 
         public IEnumerable<SharepointDepartmentCalendarMapping> DepartmentsCalendars { get; set; }
