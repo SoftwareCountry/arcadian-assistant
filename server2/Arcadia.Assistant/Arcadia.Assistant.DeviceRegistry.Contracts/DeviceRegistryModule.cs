@@ -4,6 +4,7 @@
 
     using Autofac;
 
+    using Microsoft.ServiceFabric.Services.Client;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
 
     public class DeviceRegistryModule : Module
@@ -13,7 +14,8 @@
             builder.Register(x => x
                 .Resolve<IServiceProxyFactory>()
                 .CreateServiceProxy<IDeviceRegistry>(
-                    new Uri("fabric:/Arcadia.Assistant.SF/Arcadia.Assistant.DeviceRegistry")));
+                    new Uri("fabric:/Arcadia.Assistant.SF/Arcadia.Assistant.DeviceRegistry"),
+                    new ServicePartitionKey(0)));
         }
     }
 }

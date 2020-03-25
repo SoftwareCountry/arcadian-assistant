@@ -31,6 +31,16 @@
 
         private static TimeSpan OperationTimeout => TimeSpan.FromMinutes(OperationTimeoutMinutes);
 
+        public async Task InitializeDictionary(CancellationToken cancellationToken)
+        {
+            using var transaction = this.stateManager.CreateTransaction();
+            await this.stateManager.GetOrAddAsync<IReliableDictionary<EmployeeId, List<DeviceRegistryEntry>>>(
+                transaction, DeviceRegistryKey);
+            await this.stateManager.GetOrAddAsync<IReliableDictionary<DeviceId, DeviceRegistrationInfo>>(
+                transaction, DeviceOwnersRegistryKey);
+            await transaction.CommitAsync();
+        }
+
         public async Task AddDeviceToRegistry(
             EmployeeId employeeId, DeviceRegistryEntry registryItem, CancellationToken cancellationToken)
         {
@@ -111,19 +121,23 @@
             var employeeDeviceList =
                 await this.stateManager.GetOrAddAsync<IReliableDictionary<EmployeeId, List<DeviceRegistryEntry>>>(
                     transaction, DeviceRegistryKey);
-            var employeeDeviceRegistryAsyncEnumerator =
-                (await employeeDeviceList.CreateEnumerableAsync(transaction))
-                .GetAsyncEnumerator();
 
             var result = new Dictionary<EmployeeId, IReadOnlyCollection<DeviceRegistryEntry>>();
-            while (await employeeDeviceRegistryAsyncEnumerator.MoveNextAsync(cancellationToken))
+            if (await employeeDeviceList.GetCountAsync(transaction) > 0)
             {
-                var entries = employeeDeviceRegistryAsyncEnumerator.Current.Value
-                    .Where(x => x.DeviceType == deviceType)
-                    .ToList();
-                if (entries.Any())
+                var employeeDeviceRegistryAsyncEnumerator =
+                    (await employeeDeviceList.CreateEnumerableAsync(transaction))
+                    .GetAsyncEnumerator();
+
+                while (await employeeDeviceRegistryAsyncEnumerator.MoveNextAsync(cancellationToken))
                 {
-                    result.Add(employeeDeviceRegistryAsyncEnumerator.Current.Key, entries);
+                    var entries = employeeDeviceRegistryAsyncEnumerator.Current.Value
+                        .Where(x => x.DeviceType == deviceType)
+                        .ToList();
+                    if (entries.Any())
+                    {
+                        result.Add(employeeDeviceRegistryAsyncEnumerator.Current.Key, entries);
+                    }
                 }
             }
 

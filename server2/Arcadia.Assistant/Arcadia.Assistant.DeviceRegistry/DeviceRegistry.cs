@@ -12,6 +12,8 @@ namespace Arcadia.Assistant.DeviceRegistry
     using Employees.Contracts;
 
     using Microsoft.Extensions.Logging;
+    using Microsoft.ServiceFabric.Services.Communication.Runtime;
+    using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
 
     /// <summary>
@@ -88,6 +90,17 @@ namespace Arcadia.Assistant.DeviceRegistry
                     .GetDeviceFromRegistryByEmployee(employeeId, cancellationToken))
                 .Where(x => x.DeviceType == deviceType)
                 .ToArray();
+        }
+
+        protected override async Task RunAsync(CancellationToken cancellationToken)
+        {
+            await new RegistryOperations(this.StateManager, this.logger)
+                .InitializeDictionary(cancellationToken);
+        }
+
+        protected override IEnumerable<ServiceReplicaListener> CreateServiceReplicaListeners()
+        {
+            return this.CreateServiceRemotingReplicaListeners();
         }
     }
 }
