@@ -25,7 +25,8 @@
             this.httpClient = httpClientFactory.CreateClient();
         }
 
-        public async Task<T> ExecuteSharepointRequest<T>(SharepointRequest request, CancellationToken cancellationToken = default)
+        public async Task<T> ExecuteSharepointRequest<T>(
+            SharepointRequest request, CancellationToken cancellationToken = default)
         {
             var response = await this.ExecuteSharepointRequest(request, cancellationToken);
 
@@ -38,12 +39,14 @@
             return JsonSerializer.Deserialize<T>(content);
         }
 
-        public async Task<HttpResponseMessage> ExecuteSharepointRequest(SharepointRequest request, CancellationToken cancellationToken = default)
+        public async Task<HttpResponseMessage> ExecuteSharepointRequest(
+            SharepointRequest request, CancellationToken cancellationToken = default)
         {
             // To cache access token for several Sharepoint requests in bounds of one request to storage
             if (this.accessToken == null)
             {
-                this.accessToken = await this.authTokenService.GetAccessToken(this.configuration.ServerUrl, cancellationToken);
+                this.accessToken =
+                    await this.authTokenService.GetAccessToken(this.configuration.ServerUrl, cancellationToken);
             }
 
             request = request

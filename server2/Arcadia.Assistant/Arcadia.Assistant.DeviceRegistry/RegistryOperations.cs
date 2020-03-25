@@ -31,6 +31,16 @@
 
         private static TimeSpan OperationTimeout => TimeSpan.FromMinutes(OperationTimeoutMinutes);
 
+        public async Task InitializeDictionary(CancellationToken cancellationToken)
+        {
+            using var transaction = this.stateManager.CreateTransaction();
+            await this.stateManager.GetOrAddAsync<IReliableDictionary<EmployeeId, List<DeviceRegistryEntry>>>(
+                transaction, DeviceRegistryKey);
+            await this.stateManager.GetOrAddAsync<IReliableDictionary<DeviceId, DeviceRegistrationInfo>>(
+                transaction, DeviceOwnersRegistryKey);
+            await transaction.CommitAsync();
+        }
+
         public async Task AddDeviceToRegistry(
             EmployeeId employeeId, DeviceRegistryEntry registryItem, CancellationToken cancellationToken)
         {
@@ -89,7 +99,7 @@
             await transaction.CommitAsync();
         }
 
-        public async Task<IEnumerable<DeviceRegistryEntry>> GetDeviceFromRegistryByEmployee(
+        public async Task<IReadOnlyCollection<DeviceRegistryEntry>> GetDeviceFromRegistryByEmployee(
             EmployeeId employeeId, CancellationToken cancellationToken)
         {
             using var transaction = this.stateManager.CreateTransaction();
@@ -101,6 +111,37 @@
             return result.HasValue
                 ? result.Value
                 : new List<DeviceRegistryEntry>();
+        }
+
+        public async Task<Dictionary<EmployeeId, IReadOnlyCollection<DeviceRegistryEntry>>>
+            GetDeviceFromRegistryByDeviceType(
+                DeviceType deviceType, CancellationToken cancellationToken)
+        {
+            using var transaction = this.stateManager.CreateTransaction();
+            var employeeDeviceList =
+                await this.stateManager.GetOrAddAsync<IReliableDictionary<EmployeeId, List<DeviceRegistryEntry>>>(
+                    transaction, DeviceRegistryKey);
+
+            var result = new Dictionary<EmployeeId, IReadOnlyCollection<DeviceRegistryEntry>>();
+            if (await employeeDeviceList.GetCountAsync(transaction) > 0)
+            {
+                var employeeDeviceRegistryAsyncEnumerator =
+                    (await employeeDeviceList.CreateEnumerableAsync(transaction))
+                    .GetAsyncEnumerator();
+
+                while (await employeeDeviceRegistryAsyncEnumerator.MoveNextAsync(cancellationToken))
+                {
+                    var entries = employeeDeviceRegistryAsyncEnumerator.Current.Value
+                        .Where(x => x.DeviceType == deviceType)
+                        .ToList();
+                    if (entries.Any())
+                    {
+                        result.Add(employeeDeviceRegistryAsyncEnumerator.Current.Key, entries);
+                    }
+                }
+            }
+
+            return result;
         }
 
         public async Task RemoveDeviceFromRegistry(

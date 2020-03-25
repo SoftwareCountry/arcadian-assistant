@@ -1,10 +1,8 @@
 ﻿namespace Arcadia.Assistant.PushNotifications.Contracts.Models
 {
-    using System.Collections.Generic;
     using System.Runtime.Serialization;
 
     [DataContract]
-    [KnownType(typeof(IReadOnlyDictionary<string, string>))]
     [KnownType(typeof(ContentCustomData))]
     public class PushNotificationContent
     {
@@ -15,9 +13,6 @@
 
         [DataMember]
         public string Body { get; set; } = string.Empty;
-
-        [IgnoreDataMember]
-        public IReadOnlyDictionary<string, string> Parameters { get; set; } = new Dictionary<string, string>();
 
         [DataMember(Name = "custom_data")]
         public object CustomData { get; set; } = string.Empty;

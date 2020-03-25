@@ -1,6 +1,6 @@
 ﻿namespace Arcadia.Assistant.PushNotifications
 {
-    public static class WellKnownBuildTypes
+    public static class WellKnownDeviceTypes
     {
         public const string Android = "Android";
 

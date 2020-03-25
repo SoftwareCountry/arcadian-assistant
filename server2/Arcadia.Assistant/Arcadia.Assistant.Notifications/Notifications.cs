@@ -18,12 +18,12 @@ namespace Arcadia.Assistant.Notifications
 
     using Employees.Contracts;
 
-    using Interfaces;
-
     using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
+
+    using Models;
 
     using PushNotifications.Contracts;
     using PushNotifications.Contracts.Models;
@@ -41,13 +41,13 @@ namespace Arcadia.Assistant.Notifications
         private readonly ILogger logger;
 
         private readonly IReadOnlyDictionary<string, IReadOnlyCollection<NotificationType>> notificationProvidersMap;
-        private readonly INotificationSettings notificationSettings;
+        private readonly NotificationSettings notificationSettings;
         private readonly IPushNotifications pushNotifications;
         private readonly IUsersPreferencesStorage userPreferences;
 
         public Notifications(
             StatelessServiceContext context,
-            INotificationSettings notificationSettings,
+            NotificationSettings notificationSettings,
             IEmployees employees,
             IDeviceRegistry deviceRegistry,
             IUsersPreferencesStorage userPreferences,
@@ -76,6 +76,7 @@ namespace Arcadia.Assistant.Notifications
         {
             if (!employeeIds.Any())
             {
+                this.logger.LogWarning("Notification declined: employees list is empty.");
                 return;
             }
 
@@ -91,9 +92,7 @@ namespace Arcadia.Assistant.Notifications
                         if (this.notificationSettings.EnablePush)
                         {
                             var tokens = await this.GetDeviceTokens(employeeIds, cancellationToken);
-                            var customData = notificationMessage.CustomData as NotificationMessage.MessageCustomData;
-                            var deviceType = customData?.DeviceType ?? string.Empty;
-                            await this.SendPushNotification(tokens, deviceType, notificationMessage, cancellationToken);
+                            await this.SendPushNotification(tokens, notificationMessage, cancellationToken);
                         }
 
                         break;
@@ -107,6 +106,10 @@ namespace Arcadia.Assistant.Notifications
                             await this.SendEmailNotification(recipients, sender, notificationMessage,
                                 cancellationToken);
                         }
+                        else
+                        {
+                            this.logger.LogDebug("Push notifications disabled");
+                        }
 
                         break;
                 }
@@ -116,7 +119,6 @@ namespace Arcadia.Assistant.Notifications
         private async Task SendPushNotification(
             IDictionary<EmployeeId,
                 IReadOnlyCollection<DeviceRegistryEntry>> deviceTokens,
-            string deviceType,
             NotificationMessage notificationMessage,
             CancellationToken cancellationToken)
         {
@@ -126,7 +128,6 @@ namespace Arcadia.Assistant.Notifications
                 Body = notificationMessage.ShortText,
                 CustomData = new
                 {
-                    deviceType,
                     Type = notificationMessage
                         .NotificationTemplate // TODO: calculate correct value or remove this property
                 }
@@ -137,6 +138,8 @@ namespace Arcadia.Assistant.Notifications
                 await this.pushNotifications.SendPushNotification(deviceToken.ToArray(), notificationContent,
                     cancellationToken);
             }
+
+            this.logger.LogDebug("Push notifications has been sent.");
         }
 
         private async Task SendEmailNotification(
@@ -193,7 +196,8 @@ namespace Arcadia.Assistant.Notifications
                     .Select(x => this.GetUserPreferences(x, cancellationToken))))
                 .ToDictionary(x => x.Item1, x => x.Item2);
             var activeEmployees = employeeIds.Where(x => this.IsPushNotification(employeePreferences, x));
-            var tokens = await this.deviceRegistry.GetDeviceRegistryByEmployeeList(activeEmployees, cancellationToken);
+            var tokens =
+                await this.deviceRegistry.GetDeviceRegistryByEmployeeList(activeEmployees.ToArray(), cancellationToken);
             return tokens.Keys.SelectMany(k => tokens[k].Select(x =>
                     new
                     {
@@ -227,22 +231,6 @@ namespace Arcadia.Assistant.Notifications
         protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
         {
             return this.CreateServiceRemotingInstanceListeners();
-        }
-
-        /// <summary>
-        ///     This is the main entry point for your service instance.
-        /// </summary>
-        /// <param name="cancellationToken">Canceled when Service Fabric needs to shut down this service instance.</param>
-        protected override async Task RunAsync(CancellationToken cancellationToken)
-        {
-            while (true)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                this.logger.LogInformation("Run notification iteration");
-
-                await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
-            }
         }
     }
 }

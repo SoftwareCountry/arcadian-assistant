@@ -15,9 +15,6 @@ namespace Arcadia.Assistant.Sharepoint
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
 
-    using Notifications.Contracts;
-    using Notifications.Contracts.Models;
-
     using Organization.Contracts;
 
     using SickLeaves.Contracts;
@@ -35,7 +32,6 @@ namespace Arcadia.Assistant.Sharepoint
         private readonly IEmployees employees;
         private readonly Func<IExternalStorage> externalStorageProvider;
         private readonly ILogger logger;
-        private readonly INotifications notifications;
         private readonly IOrganization organizations;
         private readonly ISharepointSynchronizationSettings serviceSettings;
         private readonly ISickLeaves sickLeaves;
@@ -49,7 +45,6 @@ namespace Arcadia.Assistant.Sharepoint
             ISickLeaves sickLeaves,
             IEmployees employees,
             IOrganization organizations,
-            INotifications notifications,
             Func<IExternalStorage> externalStorageProvider,
             ISharepointSynchronizationSettings serviceSettings,
             ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings,
@@ -62,25 +57,9 @@ namespace Arcadia.Assistant.Sharepoint
             this.sickLeaves = sickLeaves;
             this.employees = employees;
             this.organizations = organizations;
-            this.notifications = notifications;
             this.serviceSettings = serviceSettings;
             this.departmentsCalendarsSettings = departmentsCalendarsSettings;
             this.logger = logger;
-
-            SharepointItemSynchronizationBase.SharepointItemSynchronizedEvent += this.SharepointItemSynchronizedEventHandler;
-        }
-
-        private void SharepointItemSynchronizedEventHandler(object sender, SharepointItemSynchronizationBase.SharepointSynchronizationArgs e)
-        {
-            this.notifications.Send(e.EmployeeIds.ToArray(),
-                new NotificationMessage
-                {
-                    NotificationTemplate = e.EventType.ToString(),
-                    Subject = $"Calendar '{e.EventType.ToString()}' event.",
-                    ShortText = $"Calendar '{e.Calendar}' item '{e.Item.CalendarEventId}' event.",
-                    LongText = $"Calendar '{e.Calendar}' item '{e.Item.CalendarEventId}' event.{Environment.NewLine}Title: {e.Item.Title}{Environment.NewLine}Description: {e.Item.Description}"
-                },
-                CancellationToken.None);
         }
 
         /// <summary>
@@ -102,12 +81,11 @@ namespace Arcadia.Assistant.Sharepoint
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                //ServiceEventSource.Current.ServiceMessage(this.Context, "Working-{0}", ++iterations);
-
                 // request Sharepoint calendars
                 var externalStorage = this.externalStorageProvider();
                 var departments = await this.GetDepartmentsList(cancellationToken);
-                var synchronizer = new SharepointSynchronizer(this.sickLeaves, this.vacations, this.workouts, this.departmentsCalendarsSettings, this.logger);
+                var synchronizer = new SharepointSynchronizer(this.sickLeaves, this.vacations, this.workouts,
+                    this.departmentsCalendarsSettings, this.logger);
 
                 try
                 {
@@ -118,18 +96,21 @@ namespace Arcadia.Assistant.Sharepoint
                     this.logger.LogError(e, "Sharepoint items synchronization fail");
                 }
 
-                await Task.Delay(TimeSpan.FromMinutes(this.serviceSettings.SynchronizationIntervalMinutes), cancellationToken);
+                await Task.Delay(TimeSpan.FromMinutes(this.serviceSettings.SynchronizationIntervalMinutes),
+                    cancellationToken);
             }
         }
 
         private async Task<IEnumerable<string>> GetDepartmentsList(CancellationToken cancellationToken)
         {
-            if (this.departmentsCalendarsSettings.DepartmentsCalendars != null && this.departmentsCalendarsSettings.DepartmentsCalendars.Any())
+            if (this.departmentsCalendarsSettings.DepartmentsCalendars != null &&
+                this.departmentsCalendarsSettings.DepartmentsCalendars.Any())
             {
                 return this.departmentsCalendarsSettings.DepartmentsCalendars.Select(x => x.DepartmentId).Distinct();
             }
 
-            return (await this.organizations.GetDepartmentsAsync(cancellationToken)).Select(x => x.DepartmentId.Value.ToString());
+            return (await this.organizations.GetDepartmentsAsync(cancellationToken)).Select(x =>
+                x.DepartmentId.Value.ToString());
         }
     }
 }

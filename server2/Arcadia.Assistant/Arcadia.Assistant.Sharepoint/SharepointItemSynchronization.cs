@@ -14,59 +14,13 @@
 
     using Microsoft.Extensions.Logging;
 
-    public abstract class SharepointItemSynchronizationBase
-    {
-#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
-        public static event EventHandler<SharepointSynchronizationArgs> SharepointItemSynchronizedEvent;
-#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
-
-        protected void SendEvent(string calendar, EmployeeId employeeId, SharepointSynchronizationArgs.SynchronizationEventType eventType, StorageItem item)
-        {
-            SharepointItemSynchronizedEvent?.Invoke(this, new SharepointSynchronizationArgs
-            {
-                Calendar = calendar,
-                EmployeeIds = new List<EmployeeId>
-                    { employeeId },
-                EventType = eventType,
-                Item = item
-            });
-        }
-
-        protected void SendEvent(string calendar, IReadOnlyCollection<EmployeeId> employeeIds, SharepointSynchronizationArgs.SynchronizationEventType eventType, StorageItem item)
-        {
-            SharepointItemSynchronizedEvent?.Invoke(this, new SharepointSynchronizationArgs
-            {
-                Calendar = calendar,
-                EmployeeIds = employeeIds,
-                EventType = eventType,
-                Item = item
-            });
-        }
-
-        public sealed class SharepointSynchronizationArgs : EventArgs
-        {
-            public enum SynchronizationEventType
-            {
-                Add,
-                Update,
-                Delete
-            }
-
-            public string Calendar { get; set; } = string.Empty;
-
-            public IReadOnlyCollection<EmployeeId> EmployeeIds { get; set; } = new List<EmployeeId>().AsReadOnly();
-
-            public SynchronizationEventType EventType { get; set; }
-
-            public StorageItem Item { get; set; } = new StorageItem();
-        }
-    }
-
-    public abstract class SharepointItemSynchronization<T> : SharepointItemSynchronizationBase
+    public abstract class SharepointItemSynchronization<T>
     {
         protected readonly IExternalStorage ExternalStorage;
         protected readonly ILogger? Logger;
-        private readonly IEqualityComparer<StorageItem> sharepointStorageItemComparer = new SharepointStorageItemComparer();
+
+        private readonly IEqualityComparer<StorageItem> sharepointStorageItemComparer =
+            new SharepointStorageItemComparer();
 
         protected SharepointItemSynchronization(IExternalStorage externalStorage, ILogger? logger = null)
         {
@@ -76,7 +30,9 @@
 
         protected abstract string ItemEventType { get; }
 
-        public async Task SynchronizeItems(string calendar, EmployeeMetadata[] departmentEmployees, Dictionary<string, T> values, IEnumerable<StorageItem> storageItemsList, CancellationToken cancellationToken)
+        public async Task SynchronizeItems(
+            string calendar, EmployeeMetadata[] departmentEmployees, Dictionary<string, T> values,
+            IEnumerable<StorageItem> storageItemsList, CancellationToken cancellationToken)
         {
             try
             {
@@ -86,8 +42,10 @@
                 // insert or update items
                 foreach (var workHourEventId in values.Keys)
                 {
-                    var employeeMetadata = departmentEmployees.Single(x => x.EmployeeId == this.GetItemEmployeeId(values[workHourEventId]));
-                    await this.UpsertItem(workHourEventId, calendar, values[workHourEventId], employeeMetadata, this.ExternalStorage, cancellationToken);
+                    var employeeMetadata = departmentEmployees.Single(x =>
+                        x.EmployeeId == this.GetItemEmployeeId(values[workHourEventId]));
+                    await this.UpsertItem(workHourEventId, calendar, values[workHourEventId], employeeMetadata,
+                        this.ExternalStorage, cancellationToken);
                 }
 
                 // remove redundant items
@@ -97,8 +55,6 @@
                         calendar,
                         item.Id.ToString(),
                         cancellationToken);
-                    // TODO: blocked for event filtration
-                    // this.SendEvent(calendar, departmentEmployees.Select(x => x.EmployeeId), SharepointSynchronizationArgs.SynchronizationEventType.delete, item);
                 }
             }
             catch (Exception e)
@@ -111,14 +67,18 @@
 
         protected abstract EmployeeId GetItemEmployeeId(T item);
 
-        private async Task UpsertItem(string eventId, string calendar, T item, EmployeeMetadata employeeMetadata, IExternalStorage externalStorage, CancellationToken cancellationToken)
+        private async Task UpsertItem(
+            string eventId, string calendar, T item, EmployeeMetadata employeeMetadata,
+            IExternalStorage externalStorage, CancellationToken cancellationToken)
         {
             var datesPeriod = this.GetItemDatePeriod(item);
-            var upsertItem = this.CalendarEventToStorageItem(eventId, this.ItemEventType, datesPeriod, employeeMetadata);
-            await this.UpsertStorageItem(eventId, calendar, employeeMetadata.EmployeeId, datesPeriod, upsertItem, externalStorage, cancellationToken);
+            var upsertItem =
+                this.CalendarEventToStorageItem(eventId, this.ItemEventType, datesPeriod, employeeMetadata);
+            await this.UpsertStorageItem(eventId, calendar, upsertItem, externalStorage, cancellationToken);
         }
 
-        private async Task<StorageItem> GetSharepointItemForCalendarEvent(IExternalStorage externalStorage, string calendar, string eventId)
+        private async Task<StorageItem> GetSharepointItemForCalendarEvent(
+            IExternalStorage externalStorage, string calendar, string eventId)
         {
             var existingItems = await externalStorage.GetItems(
                 calendar,
@@ -126,7 +86,9 @@
             return existingItems.SingleOrDefault();
         }
 
-        private async Task UpsertStorageItem(string eventId, string calendar, EmployeeId employeeId, DatesPeriod datesPeriod, StorageItem upsertItem, IExternalStorage externalStorage, CancellationToken cancellationToken)
+        private async Task UpsertStorageItem(
+            string eventId, string calendar, StorageItem upsertItem, IExternalStorage externalStorage,
+            CancellationToken cancellationToken)
         {
             var storageItem = await this.GetSharepointItemForCalendarEvent(externalStorage, calendar, eventId);
 
@@ -136,8 +98,6 @@
                     calendar,
                     upsertItem,
                     cancellationToken);
-                // TODO: blocked for event filtration
-                // this.SendEvent(calendar, employeeId, SharepointSynchronizationArgs.SynchronizationEventType.add, upsertItem);
             }
             else
             {
@@ -148,16 +108,16 @@
                         calendar,
                         upsertItem,
                         cancellationToken);
-                    // TODO: blocked for event filtration
-                    // this.SendEvent(calendar, employeeId, SharepointSynchronizationArgs.SynchronizationEventType.update, upsertItem);
                 }
             }
         }
 
-        private StorageItem CalendarEventToStorageItem(string eventId, string calendarEventType, DatesPeriod period, EmployeeMetadata employeeMetadata)
+        private StorageItem CalendarEventToStorageItem(
+            string eventId, string calendarEventType, DatesPeriod period, EmployeeMetadata employeeMetadata)
         {
             var totalHours = period.FinishWorkingHour - period.StartWorkingHour;
-            var longEvent = calendarEventType == CalendarEventTypes.Vacation || calendarEventType == CalendarEventTypes.Sickleave;
+            var longEvent = calendarEventType == CalendarEventTypes.Vacation ||
+                calendarEventType == CalendarEventTypes.Sickleave;
             var title = longEvent
                 ? $"{employeeMetadata.Name} ({calendarEventType})"
                 : $"{employeeMetadata.Name} ({calendarEventType}: {totalHours} hours)";

@@ -37,7 +37,8 @@
             {
                 EqualCondition equalCondition => this.GetEqualCompileCondition(equalCondition),
 
-                _ => throw new ArgumentException($"Not supported condition type: {condition.GetType()}", nameof(condition)),
+                _ => throw new ArgumentException($"Not supported condition type: {condition.GetType()}",
+                    nameof(condition)),
             };
         }
 

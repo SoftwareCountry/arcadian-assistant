@@ -9,6 +9,8 @@ namespace Arcadia.Assistant.AppCenterBuilds
     using Autofac.Extensions.DependencyInjection;
     using Autofac.Integration.ServiceFabric;
 
+    using DeviceRegistry.Contracts;
+
     using Employees.Contracts;
 
     using Logging;
@@ -49,8 +51,9 @@ namespace Arcadia.Assistant.AppCenterBuilds
                 builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
                 builder.RegisterType<AppCenterNotification>().As<IAppCenterNotification>();
-                builder.RegisterModule<OrganizationModule>();
                 builder.RegisterModule<EmployeesModule>();
+                builder.RegisterModule<OrganizationModule>();
+                builder.RegisterModule<DeviceRegistryModule>();
                 builder.RegisterModule<NotificationsModule>();
                 builder.RegisterModule<MobileBuildModule>();
                 builder.Populate(services);

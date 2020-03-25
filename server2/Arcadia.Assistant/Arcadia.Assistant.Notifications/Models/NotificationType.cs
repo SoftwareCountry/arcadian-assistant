@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.Notifications.Contracts.Models
+﻿namespace Arcadia.Assistant.Notifications.Models
 {
     public enum NotificationType
     {

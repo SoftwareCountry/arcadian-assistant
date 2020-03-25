@@ -18,7 +18,8 @@
                 case MemberExpression member when member.Member.MemberType == MemberTypes.Property:
                     return member.Member.Name;
 
-                case UnaryExpression unary when unary.Operand is MemberExpression operand && operand.Member.MemberType == MemberTypes.Property:
+                case UnaryExpression unary when unary.Operand is MemberExpression operand &&
+                    operand.Member.MemberType == MemberTypes.Property:
                     return operand.Member.Name;
 
                 default:

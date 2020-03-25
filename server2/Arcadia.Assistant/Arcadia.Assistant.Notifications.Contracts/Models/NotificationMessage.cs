@@ -23,8 +23,6 @@
 
         public class MessageCustomData
         {
-            public string DeviceType { get; set; } = string.Empty;
-
             public string Sender { get; set; } = string.Empty;
         }
     }

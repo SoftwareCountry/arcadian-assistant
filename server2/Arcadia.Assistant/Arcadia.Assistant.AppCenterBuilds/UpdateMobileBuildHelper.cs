@@ -52,7 +52,7 @@
                 await mobileBuildActor.SetMobileBuildData(appCenterLastBuildVersion, data, cancellationToken);
                 this.logger.LogInformation("Mobile build {BuildVersion} updated from {Uri}", appCenterLastBuildVersion,
                     downloadModel.Uri);
-                await notification.Notify("NewMobileVersion", appCenterLastBuildVersion, deviceType, cancellationToken);
+                await notification.SendNewBuildNotification(appCenterLastBuildVersion, deviceType, cancellationToken);
             }
             else
             {
