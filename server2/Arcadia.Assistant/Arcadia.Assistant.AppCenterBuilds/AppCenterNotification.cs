@@ -82,11 +82,14 @@
             IReadOnlyCollection<EmployeeId> employeesByDeviceType, CancellationToken cancellationToken)
         {
             var departmentIds = await this.organization.GetDepartmentsAsync(cancellationToken);
-            return (await this.employees.FindEmployeesAsync(
+            var employeeIds = (await this.employees.FindEmployeesAsync(
                     EmployeesQuery.Create().ForDepartments(departmentIds.Select(x => x.DepartmentId.ToString())),
                     cancellationToken))
-                .Where(x => employeesByDeviceType.Any(e => e == x.EmployeeId))
                 .Select(x => x.EmployeeId)
+                .Distinct()
+                .ToList();
+            return employeesByDeviceType
+                .Where(x => employeeIds.Contains(x))
                 .ToArray();
         }
     }
