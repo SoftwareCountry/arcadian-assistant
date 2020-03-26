@@ -1,10 +1,8 @@
-﻿namespace Arcadia.Assistant.CSP
+﻿namespace Arcadia.Assistant.CSP.Contracts
 {
     using System.Linq;
 
-    using Arcadia.Assistant.CSP.Model;
-
-    using Microsoft.EntityFrameworkCore;
+    using Models;
 
     public class CspEmployeeQuery
     {
@@ -22,8 +20,8 @@
         public IQueryable<Employee> Get()
         {
             return this.ctx.Employees
-                .AsNoTracking()
-                .Where(x => x.FiringDate == null && !x.IsDelete && x.CompanyId == this.cspConfiguration.CompanyId || x.Id == ArcadyKhotinEmployeeId);
+                .Where(x => x.FiringDate == null && !x.IsDelete && x.CompanyId == this.cspConfiguration.CompanyId || x.Id == ArcadyKhotinEmployeeId)
+                .AsQueryable();
         }
     }
 }

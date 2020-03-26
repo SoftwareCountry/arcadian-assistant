@@ -7,13 +7,11 @@ namespace Arcadia.Assistant.Employees
     using System.Linq.Expressions;
     using System.Threading;
     using System.Threading.Tasks;
-
+    using Arcadia.Assistant.CSP.Contracts;
+    using Arcadia.Assistant.CSP.Contracts.Models;
     using Autofac.Features.OwnedInstances;
 
     using Contracts;
-
-    using CSP;
-    using CSP.Model;
 
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
@@ -46,10 +44,10 @@ namespace Arcadia.Assistant.Employees
                     LastName = x.LastName,
                     FirstName = x.FirstName,
                     BirthDate = x.Birthday,
-                    HireDate = x.HiringDate,
+                    //HireDate = x.HiringDate,
                     FireDate = x.FiringDate,
-                    MobilePhone = x.MobilePhone,
-                    RoomNumber = x.RoomNumber != null ? x.RoomNumber.Trim() : null,
+                    //MobilePhone = x.MobilePhone,
+                    //RoomNumber = x.RoomNumber != null ? x.RoomNumber.Trim() : null,
                     DepartmentId = x.DepartmentId != null ? new DepartmentId(x.DepartmentId.Value) : (DepartmentId?)null,
                     Position = x.Position.Title,
                 };

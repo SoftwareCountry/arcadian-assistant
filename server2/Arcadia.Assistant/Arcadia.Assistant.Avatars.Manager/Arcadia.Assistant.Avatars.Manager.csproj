@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Arcadia.Assistant.Avatars.Contracts\Arcadia.Assistant.Avatars.Contracts.csproj" />
-    <ProjectReference Include="..\Arcadia.Assistant.CSP\Arcadia.Assistant.CSP.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.CSP.Contracts\Arcadia.Assistant.CSP.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Logging\Arcadia.Assistant.Logging.csproj" />
   </ItemGroup>
 

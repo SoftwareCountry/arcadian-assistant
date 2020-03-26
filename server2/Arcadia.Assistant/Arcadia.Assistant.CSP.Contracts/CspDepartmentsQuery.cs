@@ -1,13 +1,8 @@
-﻿namespace Arcadia.Assistant.CSP
+﻿namespace Arcadia.Assistant.CSP.Contracts
 {
-    using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Linq.Expressions;
 
-    using Microsoft.EntityFrameworkCore;
-
-    using Model;
+    using Models;
 
     public class CspDepartmentsQuery
     {
@@ -32,8 +27,8 @@
             var organizationDepartments = this
                 .cspContext
                 .Departments
-                .AsNoTracking()
-                .Where(x => x.IsDelete != true && x.CompanyId == this.configuration.CompanyId);
+                .Where(x => x.IsDelete != true && x.CompanyId == this.configuration.CompanyId)
+                .AsQueryable();
 
             var chiefs = organizationDepartments
                 .Join(arcEmployees, d => d.ChiefId, e => e.Id, (d,e) => new { DepartmentId = d.Id, e.Id });
@@ -59,7 +54,7 @@
 
         public class DepartmentWithPeopleCount
         {
-            public Department Department { get; set; }
+            public Department Department { get; set; } = new Department();
 
             public int? ActualChiefId { get; set; }
 

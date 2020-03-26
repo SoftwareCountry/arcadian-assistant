@@ -11,11 +11,10 @@ namespace Arcadia.Assistant.Avatars.Manager
 
     using Contracts;
 
-    using CSP;
+    using CSP.Contracts;
 
     using Employees.Contracts;
 
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Actors;
     using Microsoft.ServiceFabric.Actors.Client;
@@ -64,7 +63,7 @@ namespace Arcadia.Assistant.Avatars.Manager
                 {
                     try
                     {
-                        var employees = await query.Value.Get().Select(x => new { x.Id, x.Image }).ToListAsync(cancellationToken);
+                        var employees = query.Value.Get().Select(x => new { x.Id, x.Image }).ToList();
 
                         foreach (var employee in employees)
                         {

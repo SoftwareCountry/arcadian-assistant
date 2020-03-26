@@ -12,7 +12,7 @@ namespace Arcadia.Assistant.Avatars.Manager
 
     using Contracts;
 
-    using CSP;
+    using CSP.Contracts;
 
     using Logging;
 

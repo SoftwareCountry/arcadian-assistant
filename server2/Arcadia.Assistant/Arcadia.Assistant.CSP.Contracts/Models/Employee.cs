@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Arcadia.Assistant.CSP.Model
+namespace Arcadia.Assistant.CSP.Contracts.Models
 {
-    [Table("Employee")]
     public partial class Employee
     {
         public Employee()
         {
+            /*
             CertificationData = new HashSet<CertificationDatum>();
             CompanyHistories = new HashSet<CompanyHistory>();
             DepartmentHistories = new HashSet<DepartmentHistory>();
-            Departments = new HashSet<Department>();
+            */
+            /*
             EmployeeCertificationHistories = new HashSet<EmployeeCertificationHistory>();
             EmployeeCertifications = new HashSet<EmployeeCertification>();
             EmployeeCspalerts = new HashSet<EmployeeCspalert>();
@@ -37,106 +36,76 @@ namespace Arcadia.Assistant.CSP.Model
             VacationReadies = new HashSet<VacationReady>();
             VisaHistories = new HashSet<VisaHistory>();
             Visas = new HashSet<Visa>();
+            */
         }
 
         public int Id { get; set; }
-        [Required]
-        [StringLength(20)]
         public string FirstName { get; set; }
-        [StringLength(20)]
         public string MiddleName { get; set; }
-        [Required]
-        [StringLength(20)]
         public string LastName { get; set; }
-        [Required]
-        [StringLength(20)]
         public string FirstNameRus { get; set; }
-        [StringLength(20)]
         public string MiddleNameRus { get; set; }
-        [Required]
-        [StringLength(20)]
         public string LastNameRus { get; set; }
-        [StringLength(40)]
         public string LoginName { get; set; }
-        [Column("SID")]
         public Guid? Sid { get; set; }
-        [Column(TypeName = "date")]
         public DateTime? Birthday { get; set; }
-        [StringLength(20)]
+        /*
         public string BusinessPhone { get; set; }
-        [StringLength(50)]
         public string HomePhone { get; set; }
-        [StringLength(200)]
+        */
         public string Email { get; set; }
         public int? DepartmentId { get; set; }
         public int? PositionId { get; set; }
-        [Column(TypeName = "date")]
+        /*
         public DateTime HiringDate { get; set; }
-        [Column(TypeName = "date")]
+        */
         public DateTime? FiringDate { get; set; }
+        /*
         public bool IsWorking { get; set; }
-        [StringLength(1000)]
         public string Description { get; set; }
         public bool IsPartTime { get; set; }
-        [Column(TypeName = "image")]
+        */
         public byte[] Image { get; set; }
+        
         public int? CompanyId { get; set; }
+        /*
         public bool IsInStaff { get; set; }
-        [StringLength(12)]
+        */
         public string IntrabaseId { get; set; }
-        [Required]
-        [StringLength(1)]
+        /*
         public string Gender { get; set; }
         public short ClockNumber { get; set; }
-        [StringLength(20)]
         public string RoomNumber { get; set; }
-        [StringLength(80)]
         public string BusinessCountry { get; set; }
-        [Column("BusinessZIP")]
-        [StringLength(6)]
         public string BusinessZip { get; set; }
-        [StringLength(100)]
         public string BusinessCity { get; set; }
-        [StringLength(255)]
         public string BusinessStreet { get; set; }
-        [StringLength(255)]
         public string BusinessStreet2 { get; set; }
-        [StringLength(255)]
         public string BusinessStreet3 { get; set; }
-        [StringLength(20)]
         public string BusinessPhone2 { get; set; }
-        [StringLength(80)]
         public string HomeCountry { get; set; }
-        [Column("HomeZIP")]
-        [StringLength(6)]
         public string HomeZip { get; set; }
-        [StringLength(100)]
         public string HomeCity { get; set; }
-        [StringLength(255)]
         public string HomeStreet { get; set; }
-        [StringLength(255)]
         public string HomeStreet2 { get; set; }
-        [StringLength(255)]
         public string HomeStreet3 { get; set; }
-        [StringLength(20)]
         public string MobilePhone { get; set; }
-        [Column(TypeName = "date")]
         public DateTime ProbationEnd { get; set; }
         public int WeekHours { get; set; }
         public int? PartTime { get; set; }
+        */
         public bool IsDelete { get; set; }
+        /*
         public bool IsInfOffice { get; set; }
         public bool IsPublishDeny { get; set; }
-
-        [ForeignKey("CompanyId")]
-        [InverseProperty("Employees")]
+        */
+        /*
         public virtual Company Company { get; set; }
-        [ForeignKey("DepartmentId")]
-        [InverseProperty("Employees")]
+        */
         public virtual Department Department { get; set; }
-        [ForeignKey("PositionId")]
-        [InverseProperty("Employees")]
+        
         public virtual EmployeePosition Position { get; set; }
+        /*
         [InverseProperty("IdNavigation")]
         public virtual VacationRemain VacationRemain { get; set; }
         [InverseProperty("CreatedByNavigation")]
@@ -145,8 +114,10 @@ namespace Arcadia.Assistant.CSP.Model
         public virtual ICollection<CompanyHistory> CompanyHistories { get; set; }
         [InverseProperty("ModifiedByNavigation")]
         public virtual ICollection<DepartmentHistory> DepartmentHistories { get; set; }
-        [InverseProperty("Chief")]
-        public virtual ICollection<Department> Departments { get; set; }
+        */
+        public virtual ICollection<Department> Departments { get; set; } = new HashSet<Department>();
+
+        /*
         [InverseProperty("EmployeeModifiedBy")]
         public virtual ICollection<EmployeeCertificationHistory> EmployeeCertificationHistories { get; set; }
         [InverseProperty("Employee")]
@@ -193,5 +164,6 @@ namespace Arcadia.Assistant.CSP.Model
         public virtual ICollection<VisaHistory> VisaHistories { get; set; }
         [InverseProperty("Employee")]
         public virtual ICollection<Visa> Visas { get; set; }
+        */
     }
 }

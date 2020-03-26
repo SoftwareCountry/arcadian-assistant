@@ -48,6 +48,7 @@
     <ProjectReference Include="..\Arcadia.Assistant.Permissions\Arcadia.Assistant.Permissions.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.UserPreferences\Arcadia.Assistant.UserPreferences.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Web\Arcadia.Assistant.Web.csproj" />
+    <ProjectReference Include="..\CSP\Arcadia.Assistant.CSP.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ApplicationParameters\Azure.xml" />

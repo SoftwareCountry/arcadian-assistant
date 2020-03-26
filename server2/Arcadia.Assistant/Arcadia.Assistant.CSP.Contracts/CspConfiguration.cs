@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.CSP
+﻿namespace Arcadia.Assistant.CSP.Contracts
 {
     public class CspConfiguration
     {
