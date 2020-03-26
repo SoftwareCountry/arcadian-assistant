@@ -1,5 +1,6 @@
 namespace Arcadia.Assistant.PushNotifications
 {
+    using System;
     using System.Collections.Generic;
     using System.Fabric;
     using System.Linq;
@@ -111,10 +112,17 @@ namespace Arcadia.Assistant.PushNotifications
                 }
             };
 
-            var jsonMessage = this.SerializeNotification(pushNotificationPayload);
-            this.logger.LogDebug("Serialized notification message: {JsonMessage}", jsonMessage);
+            try
+            {
+                var jsonMessage = this.SerializeNotification(pushNotificationPayload);
+                this.logger.LogDebug("Serialized notification message: {JsonMessage}", jsonMessage);
 
-            await this.SendPushNotificationRequest(pushUrl, jsonMessage);
+                await this.SendPushNotificationRequest(pushUrl, jsonMessage);
+            }
+            catch (Exception e)
+            {
+                this.logger.LogError(e, "Send push notification for {DeviceCount} devices.", deviceIds.Count);
+            }
         }
 
         private async Task SendPushNotificationRequest(

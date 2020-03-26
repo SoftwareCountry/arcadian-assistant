@@ -9,6 +9,9 @@
     <Parameter Name="Password" Value="" />
     <Parameter Name="UseTls" Value="false" />
   </Section>
+  <Section Name="EmailNotification">
+    <Parameter Name="ArcadiaAssistantFrom" Value="" />
+  </Section>
   <Section Name="Logging">
     <Parameter Name="ApplicationInsightsKey" Value="" />
   </Section>

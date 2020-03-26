@@ -94,21 +94,23 @@ namespace Arcadia.Assistant.Notifications
                             var tokens = await this.GetDeviceTokens(employeeIds, cancellationToken);
                             await this.SendPushNotification(tokens, notificationMessage, cancellationToken);
                         }
+                        else
+                        {
+                            this.logger.LogDebug("Push notifications disabled");
+                        }
 
                         break;
 
                     case NotificationType.Email:
                         if (this.notificationSettings.EnableEmail)
                         {
-                            var recipients = await this.GetMailRecipients(employeeIds, cancellationToken);
-                            var customData = notificationMessage.CustomData as NotificationMessage.MessageCustomData;
-                            var sender = customData?.Sender ?? string.Empty;
-                            await this.SendEmailNotification(recipients, sender, notificationMessage,
+                            var employeeEmailAddresses = await this.GetMailRecipients(employeeIds, cancellationToken);
+                            await this.SendEmailNotification(employeeEmailAddresses, notificationMessage,
                                 cancellationToken);
                         }
                         else
                         {
-                            this.logger.LogDebug("Push notifications disabled");
+                            this.logger.LogDebug("Email notifications disabled");
                         }
 
                         break;
@@ -118,7 +120,7 @@ namespace Arcadia.Assistant.Notifications
 
         private async Task SendPushNotification(
             IDictionary<EmployeeId,
-                IReadOnlyCollection<DeviceRegistryEntry>> deviceTokens,
+                IReadOnlyCollection<DeviceRegistryEntry>> deviceRegistrations,
             NotificationMessage notificationMessage,
             CancellationToken cancellationToken)
         {
@@ -133,30 +135,42 @@ namespace Arcadia.Assistant.Notifications
                 }
             };
 
-            foreach (var deviceToken in deviceTokens.Values)
+            try
             {
-                await this.pushNotifications.SendPushNotification(deviceToken.ToArray(), notificationContent,
+                var deviceTokens = deviceRegistrations.Values.SelectMany(x => x).Distinct();
+                await this.pushNotifications.SendPushNotification(deviceTokens.ToArray(), notificationContent,
                     cancellationToken);
-            }
 
-            this.logger.LogDebug("Push notifications has been sent.");
+                this.logger.LogDebug("Push notifications has been sent.");
+            }
+            catch (Exception e)
+            {
+                this.logger.LogError(e, "Sent push notifications error.");
+            }
         }
 
         private async Task SendEmailNotification(
-            IReadOnlyCollection<string> recipients,
-            string sender,
+            IReadOnlyCollection<string> emailAddresses,
             NotificationMessage notificationMessage,
             CancellationToken cancellationToken)
         {
             var notificationContent = new EmailNotificationContent
             {
-                Sender = sender,
                 Subject = notificationMessage.Subject,
                 Body = notificationMessage.LongText
             };
 
-            await this.emailNotifications.SendEmailNotification(recipients.ToArray(), notificationContent,
-                cancellationToken);
+            try
+            {
+                await this.emailNotifications.SendEmailNotification(emailAddresses.ToArray(), notificationContent,
+                    cancellationToken);
+
+                this.logger.LogDebug("Email notifications has been sent.");
+            }
+            catch (Exception e)
+            {
+                this.logger.LogError(e, "Send email notifications error.");
+            }
         }
 
         private async Task<(EmployeeId, UserPreferences)> GetUserPreferences(

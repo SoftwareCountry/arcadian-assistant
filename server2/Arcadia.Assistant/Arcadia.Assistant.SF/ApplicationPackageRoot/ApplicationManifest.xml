@@ -10,6 +10,7 @@
     <Parameter Name="Arcadia.Assistant.PushNotifications_ApiToken" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.PushNotifications_AndroidPushUrl" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.PushNotifications_IosPushUrl" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.EmailNotifications_ArcadiaAssistantFrom" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.EmailNotifications_Host" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.EmailNotifications_Port" DefaultValue="0" />
     <Parameter Name="Arcadia.Assistant.EmailNotifications_UserName" DefaultValue="" />
@@ -90,6 +91,9 @@
             <Parameter Name="UserName" Value="[Arcadia.Assistant.EmailNotifications_UserName]" />
             <Parameter Name="Password" Value="[Arcadia.Assistant.EmailNotifications_Password]" />
             <Parameter Name="UseTls" Value="[Arcadia.Assistant.EmailNotifications_UseTls]" />
+          </Section>
+          <Section Name="EmailNotification">
+            <Parameter Name="ArcadiaAssistantFrom" Value="[Arcadia.Assistant.EmailNotifications_ArcadiaAssistantFrom]" />
           </Section>
           <Section Name="Logging">
             <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />

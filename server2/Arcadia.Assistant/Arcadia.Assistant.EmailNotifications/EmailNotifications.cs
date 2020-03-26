@@ -1,5 +1,6 @@
 namespace Arcadia.Assistant.EmailNotifications
 {
+    using System;
     using System.Collections.Generic;
     using System.Fabric;
     using System.Linq;
@@ -28,26 +29,32 @@ namespace Arcadia.Assistant.EmailNotifications
     {
         private readonly ILogger logger;
         private readonly SmtpSettings smtpSettings;
+        private readonly EmailNotificationSettings emailNotificationSettings;
 
         public EmailNotifications(
             StatelessServiceContext context,
+            EmailNotificationSettings emailNotificationSettings,
             SmtpSettings smtpSettings,
             ILogger<EmailNotifications> logger)
             : base(context)
         {
             this.smtpSettings = smtpSettings;
+            this.emailNotificationSettings = emailNotificationSettings;
             this.logger = logger;
         }
 
         public async Task SendEmailNotification(
-            string[] recipients,
+            string[] emailAddresses,
             EmailNotificationContent notificationContent,
             CancellationToken cancellationToken)
         {
-            this.logger.LogDebug("Email notification message received");
+            if (!emailAddresses.Any())
+            {
+                this.logger.LogWarning("No one email addresses for email notification found.");
+                return;
+            }
 
             using var client = new SmtpClient();
-            var emailMessage = this.CreateMimeMessage(recipients, notificationContent);
             await client.ConnectAsync(
                 this.smtpSettings.Host,
                 this.smtpSettings.Port,
@@ -58,22 +65,44 @@ namespace Arcadia.Assistant.EmailNotifications
                 await client.AuthenticateAsync(this.smtpSettings.UserName, this.smtpSettings.Password,
                     cancellationToken);
             }
+            else
+            {
+                this.logger.LogInformation("Smtp client authentication skipped (user name is empty).");
+            }
 
-            await client.SendAsync(emailMessage, cancellationToken);
+            foreach (var emailAddress in emailAddresses)
+            {
+                await this.SendMessage(client, emailAddress, notificationContent, cancellationToken);
+            }
+
             await client.DisconnectAsync(true, cancellationToken);
 
-            this.logger.LogDebug("Email was successfully sent");
+            this.logger.LogDebug("Email for {EmailsCount} addresses was sent", emailAddresses.Length);
+        }
+
+        private async Task SendMessage(SmtpClient client, string emailAddress, EmailNotificationContent notificationContent, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var emailMessage = this.CreateMimeMessage(emailAddress, notificationContent);
+                await client.SendAsync(emailMessage, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                this.logger.LogError(e, "Email notification send to address '{EmailAddress}' error.", emailAddress);
+            }
         }
 
         private MimeMessage CreateMimeMessage(
-            IEnumerable<string> recipients, EmailNotificationContent notificationContent)
+            string emailAddress, 
+            EmailNotificationContent notificationContent)
         {
             var mimeMessage = new MimeMessage();
 
-            mimeMessage.From.Add(new MailboxAddress(notificationContent.Sender));
+            mimeMessage.From.Add(new MailboxAddress(this.emailNotificationSettings.ArcadiaAssistantFrom));
             mimeMessage.Subject = notificationContent.Subject;
             mimeMessage.Body = new TextPart("plain") { Text = notificationContent.Body };
-            mimeMessage.To.AddRange(recipients.Select(x => new MailboxAddress(x)));
+            mimeMessage.To.Add(new MailboxAddress(emailAddress));
 
             return mimeMessage;
         }

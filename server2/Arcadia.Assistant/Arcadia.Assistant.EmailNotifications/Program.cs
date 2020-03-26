@@ -31,6 +31,8 @@ namespace Arcadia.Assistant.EmailNotifications
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterStatelessService<EmailNotifications>("Arcadia.Assistant.EmailNotificationsType");
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
+                builder.Register(x => new EmailNotificationSettings(configurationPackage.Settings.Sections["EmailNotification"])).AsSelf()
+                    .SingleInstance();
                 builder.Register(x => new SmtpSettings(configurationPackage.Settings.Sections["Smtp"])).AsSelf()
                     .SingleInstance();
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
