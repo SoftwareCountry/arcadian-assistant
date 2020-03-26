@@ -80,18 +80,24 @@ namespace Arcadia.Assistant.Notifications
                 return;
             }
 
+            IDictionary<EmployeeId, UserPreferences>? userPreferences = null;
             var notificationProviders =
                 this.notificationProvidersMap.TryGetValue(notificationMessage.NotificationTemplate, out var map)
                     ? map
                     : this.AllNotificationTypes;
             foreach (var providerType in notificationProviders)
             {
+                if (userPreferences == null)
+                {
+                    userPreferences = await GetUserPreferences(employeeIds, cancellationToken);
+                }
+
                 switch (providerType)
                 {
                     case NotificationType.Push:
                         if (this.notificationSettings.EnablePush)
                         {
-                            var tokens = await this.GetDeviceTokens(employeeIds, cancellationToken);
+                            var tokens = await this.GetDeviceTokens(employeeIds, userPreferences, cancellationToken);
                             await this.SendPushNotification(tokens, notificationMessage, cancellationToken);
                         }
                         else
@@ -104,7 +110,7 @@ namespace Arcadia.Assistant.Notifications
                     case NotificationType.Email:
                         if (this.notificationSettings.EnableEmail)
                         {
-                            var employeeEmailAddresses = await this.GetMailRecipients(employeeIds, cancellationToken);
+                            var employeeEmailAddresses = await this.GetMailRecipients(employeeIds, userPreferences, cancellationToken);
                             await this.SendEmailNotification(employeeEmailAddresses, notificationMessage,
                                 cancellationToken);
                         }
@@ -120,7 +126,7 @@ namespace Arcadia.Assistant.Notifications
 
         private async Task SendPushNotification(
             IDictionary<EmployeeId,
-                IReadOnlyCollection<DeviceRegistryEntry>> deviceRegistrations,
+            IReadOnlyCollection<DeviceRegistryEntry>> deviceRegistrations,
             NotificationMessage notificationMessage,
             CancellationToken cancellationToken)
         {
@@ -173,11 +179,24 @@ namespace Arcadia.Assistant.Notifications
             }
         }
 
-        private async Task<(EmployeeId, UserPreferences)> GetUserPreferences(
-            EmployeeId id, CancellationToken cancellationToken)
+        private async Task<IDictionary<EmployeeId, UserPreferences>> GetUserPreferences(
+            EmployeeId[] ids, CancellationToken cancellationToken)
         {
-            var preferences = await this.userPreferences.ForEmployee(id).Get(cancellationToken);
-            return (id, preferences);
+            var result = new Dictionary<EmployeeId, UserPreferences>();
+            foreach (var id in ids.Distinct())
+            {
+                try
+                {
+                    var preferences = await this.userPreferences.ForEmployee(id).Get(cancellationToken);
+                    result.Add(id, preferences);
+                }
+                catch (Exception e)
+                {
+                    this.logger.LogError(e, "Load preferences for user id={EmployeeId} error.", id);
+                }
+            }
+
+            return result;
         }
 
         private bool IsPushNotification(
@@ -203,12 +222,10 @@ namespace Arcadia.Assistant.Notifications
         }
 
         private async Task<IDictionary<EmployeeId, IReadOnlyCollection<DeviceRegistryEntry>>> GetDeviceTokens(
-            IReadOnlyCollection<EmployeeId> employeeIds, CancellationToken cancellationToken)
+            IReadOnlyCollection<EmployeeId> employeeIds,
+            IDictionary<EmployeeId, UserPreferences> employeePreferences,
+            CancellationToken cancellationToken)
         {
-            var employeePreferences = (await Task.WhenAll(employeeIds
-                    .Distinct()
-                    .Select(x => this.GetUserPreferences(x, cancellationToken))))
-                .ToDictionary(x => x.Item1, x => x.Item2);
             var activeEmployees = employeeIds.Where(x => this.IsPushNotification(employeePreferences, x));
             var tokens =
                 await this.deviceRegistry.GetDeviceRegistryByEmployeeList(activeEmployees.ToArray(), cancellationToken);
@@ -224,18 +241,30 @@ namespace Arcadia.Assistant.Notifications
         }
 
         private async Task<IReadOnlyCollection<string>> GetMailRecipients(
-            IReadOnlyCollection<EmployeeId> employeeIds, CancellationToken cancellationToken)
+            IReadOnlyCollection<EmployeeId> employeeIds,
+            IDictionary<EmployeeId, UserPreferences> employeePreferences,
+            CancellationToken cancellationToken)
         {
-            var employeePreferences = (await Task.WhenAll(employeeIds
-                    .Distinct()
-                    .Select(x => this.GetUserPreferences(x, cancellationToken))))
-                .ToDictionary(x => x.Item1, x => x.Item2);
             return (await Task.WhenAll(employeeIds
                     .Where(x => this.IsEmailNotification(employeePreferences, x))
-                    .Select(x => this.employees.FindEmployeeAsync(x, cancellationToken))))
+                    .Select(x => this.FindEmployeeAsync(x, cancellationToken))))
                 .Where(x => x != null)
                 .Select(x => x.Email)
                 .ToList();
+        }
+
+        private async Task<EmployeeMetadata?> FindEmployeeAsync(EmployeeId employeeId, CancellationToken cancellationToken)
+        {
+            try
+            {
+                return await this.employees.FindEmployeeAsync(employeeId, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                this.logger.LogError(e, "Find employee with id={EmployeeId} error.", employeeId);
+            }
+
+            return null;
         }
 
         /// <summary>
