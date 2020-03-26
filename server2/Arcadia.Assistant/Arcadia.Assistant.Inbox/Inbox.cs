@@ -40,7 +40,7 @@ namespace Arcadia.Assistant.Inbox
         {
             this.logger.LogDebug("Loading inbox emails started");
 
-            this.logger.LogDebug("Inbox emails query: {0}", query);
+            this.logger.LogDebug("Inbox emails query: {Query}", query);
 
             using (var client = new ImapClient())
             {
