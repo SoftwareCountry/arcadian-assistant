@@ -27,9 +27,9 @@ namespace Arcadia.Assistant.EmailNotifications
     /// </summary>
     public class EmailNotifications : StatelessService, IEmailNotifications
     {
+        private readonly EmailNotificationSettings emailNotificationSettings;
         private readonly ILogger logger;
         private readonly SmtpSettings smtpSettings;
-        private readonly EmailNotificationSettings emailNotificationSettings;
 
         public EmailNotifications(
             StatelessServiceContext context,
@@ -80,7 +80,9 @@ namespace Arcadia.Assistant.EmailNotifications
             this.logger.LogDebug("Email for {EmailsCount} addresses was sent", emailAddresses.Length);
         }
 
-        private async Task SendMessage(SmtpClient client, string emailAddress, EmailNotificationContent notificationContent, CancellationToken cancellationToken)
+        private async Task SendMessage(
+            SmtpClient client, string emailAddress, EmailNotificationContent notificationContent,
+            CancellationToken cancellationToken)
         {
             try
             {
@@ -94,7 +96,7 @@ namespace Arcadia.Assistant.EmailNotifications
         }
 
         private MimeMessage CreateMimeMessage(
-            string emailAddress, 
+            string emailAddress,
             EmailNotificationContent notificationContent)
         {
             var mimeMessage = new MimeMessage();
