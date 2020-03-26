@@ -16,27 +16,19 @@
     using Notifications.Contracts;
     using Notifications.Contracts.Models;
 
-    using Organization.Contracts;
-
     public class AppCenterNotification : IAppCenterNotification
     {
         private readonly IDeviceRegistry deviceRegistry;
-        private readonly IEmployees employees;
         private readonly ILogger logger;
         private readonly INotifications notifications;
-        private readonly IOrganization organization;
 
         public AppCenterNotification(
             INotifications notifications,
             IDeviceRegistry deviceRegistry,
-            IEmployees employees,
-            IOrganization organization,
             ILogger<AppCenterNotification> logger)
         {
             this.notifications = notifications;
             this.deviceRegistry = deviceRegistry;
-            this.employees = employees;
-            this.organization = organization;
             this.logger = logger;
         }
 
@@ -49,9 +41,8 @@
 
             try
             {
-                var employeesByDeviceType = await this.GetEmployeesByDeviceType(mobileType, cancellationToken);
-                var employeesArray = await this.GetEmployees(employeesByDeviceType, cancellationToken);
-                await this.notifications.Send(employeesArray,
+                var employees = await this.GetEmployeesByDeviceType(mobileType, cancellationToken);
+                await this.notifications.Send(employees.ToArray(),
                     new NotificationMessage
                     {
                         NotificationTemplate = "NewBuildVersion",
@@ -76,21 +67,6 @@
             return (await this.deviceRegistry.GetDeviceRegistryByDeviceType(new DeviceType(mobileType),
                     cancellationToken))
                 .Keys;
-        }
-
-        private async Task<EmployeeId[]> GetEmployees(
-            IReadOnlyCollection<EmployeeId> employeesByDeviceType, CancellationToken cancellationToken)
-        {
-            var departmentIds = await this.organization.GetDepartmentsAsync(cancellationToken);
-            var employeeIds = (await this.employees.FindEmployeesAsync(
-                    EmployeesQuery.Create().ForDepartments(departmentIds.Select(x => x.DepartmentId.ToString())),
-                    cancellationToken))
-                .Select(x => x.EmployeeId)
-                .Distinct()
-                .ToList();
-            return employeesByDeviceType
-                .Where(x => employeeIds.Contains(x))
-                .ToArray();
         }
     }
 }
