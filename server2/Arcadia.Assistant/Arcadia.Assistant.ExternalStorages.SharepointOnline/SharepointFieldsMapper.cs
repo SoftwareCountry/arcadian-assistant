@@ -38,7 +38,8 @@
             CreateMapping(item => item.AllDayEvent, "fAllDayEvent")
         };
 
-        private static SharepointFieldMapping[] DefaultMappingWithCalendarEventId { get; } = DefaultMapping.Union(new[] { CalendarEventIdMapping }).ToArray();
+        private static SharepointFieldMapping[] DefaultMappingWithCalendarEventId { get; } =
+            DefaultMapping.Union(new[] { CalendarEventIdMapping }).ToArray();
 
         public string GetSharepointField(Expression<Func<StorageItem, object>> property)
         {
@@ -53,7 +54,8 @@
             return fieldName;
         }
 
-        public static SharepointFieldMapping CreateMapping(Expression<Func<StorageItem, object>> property, string fieldName)
+        public static SharepointFieldMapping CreateMapping(
+            Expression<Func<StorageItem, object>> property, string fieldName)
         {
             return new SharepointFieldMapping(property, fieldName);
         }

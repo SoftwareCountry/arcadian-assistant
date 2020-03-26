@@ -40,7 +40,7 @@ namespace Arcadia.Assistant.Inbox
         {
             this.logger.LogDebug("Loading inbox emails started");
 
-            this.logger.LogDebug($"Inbox emails query: {query}");
+            this.logger.LogDebug("Inbox emails query: {Query}", query);
 
             using (var client = new ImapClient())
             {
@@ -85,7 +85,7 @@ namespace Arcadia.Assistant.Inbox
                         .ToList();
                 }
 
-                this.logger.LogDebug($"Total messages loaded: {messages.Count}");
+                this.logger.LogDebug("Total messages loaded: {MessagesCount}", messages.Count);
 
                 var emails = this.ConvertMessages(client, messages);
 

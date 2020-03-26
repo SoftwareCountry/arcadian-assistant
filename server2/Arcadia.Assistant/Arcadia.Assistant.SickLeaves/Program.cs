@@ -49,7 +49,7 @@ namespace Arcadia.Assistant.SickLeaves
 
                 using var container = builder.Build();
                 logger = container.ResolveOptional<ILogger<SickLeaves>>();
-                logger?.LogInformation($"Service type '{typeof(SickLeaves).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
+                logger?.LogInformation("Service type '{ServiceName}' registered. Process: {ProcessId}.", typeof(SickLeaves).Name, Process.GetCurrentProcess().Id);
                 // Prevents this host process from terminating so services keep running.
                 Thread.Sleep(Timeout.Infinite);
             }

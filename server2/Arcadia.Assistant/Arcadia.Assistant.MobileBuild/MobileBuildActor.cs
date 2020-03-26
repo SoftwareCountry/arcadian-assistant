@@ -50,9 +50,10 @@ namespace Arcadia.Assistant.MobileBuild
 
         public async Task SetMobileBuildData(string version, byte[] data, CancellationToken cancellationToken)
         {
-            await this.StateManager.AddOrUpdateStateAsync(BuildVersionKey, version, (key, value) => version, cancellationToken);
+            await this.StateManager.AddOrUpdateStateAsync(BuildVersionKey, version, (key, value) => version,
+                cancellationToken);
             await this.StateManager.AddOrUpdateStateAsync(BuildDataKey, data, (key, value) => data, cancellationToken);
-            this.logger.LogDebug($"Store build data (length:{data?.Length}) for version {version}");
+            this.logger.LogDebug("Store build data (length:{DataLength}) for version {Version}", data?.Length, version);
             await this.StateManager.SaveStateAsync(cancellationToken);
         }
 

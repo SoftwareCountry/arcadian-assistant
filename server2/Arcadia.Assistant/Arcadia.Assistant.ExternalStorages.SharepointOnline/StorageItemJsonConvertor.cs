@@ -39,7 +39,8 @@
             var categoryField = this.FieldsMapper.GetSharepointField(si => si.Category);
             var allDayEvent = this.FieldsMapper.GetSharepointField(si => si.AllDayEvent);
             var calendarEventIdField = this.FieldsMapper.GetSharepointField(si => si.CalendarEventId);
-            return (idField, titleField, descriptionField, startDateField, endDateField, categoryField, allDayEvent, calendarEventIdField);
+            return (idField, titleField, descriptionField, startDateField, endDateField, categoryField, allDayEvent,
+                calendarEventIdField);
         }
 
         public string StorageItemToRequestJson(StorageItem item, string? listItemType)
@@ -76,8 +77,10 @@
                 Id = this.GetJsonInt(item, this.FieldsMapper.GetSharepointField(x => x.Id)),
                 Title = this.GetJsonString(item, this.FieldsMapper.GetSharepointField(x => x.Title)),
                 Description = this.GetJsonString(item, this.FieldsMapper.GetSharepointField(x => x.Description)),
-                StartDate = this.GetJsonDate(item, this.FieldsMapper.GetSharepointField(x => x.StartDate), DateTime.MinValue, allDayEvent),
-                EndDate = this.GetJsonDate(item, this.FieldsMapper.GetSharepointField(x => x.EndDate), DateTime.UtcNow, allDayEvent),
+                StartDate = this.GetJsonDate(item, this.FieldsMapper.GetSharepointField(x => x.StartDate),
+                    DateTime.MinValue, allDayEvent),
+                EndDate = this.GetJsonDate(item, this.FieldsMapper.GetSharepointField(x => x.EndDate), DateTime.UtcNow,
+                    allDayEvent),
                 Category = this.GetJsonString(item, this.FieldsMapper.GetSharepointField(x => x.Category)),
                 AllDayEvent = allDayEvent,
                 CalendarEventId = this.GetJsonString(item, this.FieldsMapper.GetSharepointField(x => x.CalendarEventId))
@@ -90,22 +93,33 @@
 
         private string GetJsonString(JsonElement item, string propName, string defaultValue = "")
         {
-            return item.TryGetProperty(propName, out var prop) && prop.ValueKind != JsonValueKind.Null ? prop.GetString() : defaultValue;
+            return item.TryGetProperty(propName, out var prop) && prop.ValueKind != JsonValueKind.Null
+                ? prop.GetString()
+                : defaultValue;
         }
 
         private int GetJsonInt(JsonElement item, string propName, int defaultValue = 0)
         {
-            return item.TryGetProperty(propName, out var prop) && prop.ValueKind != JsonValueKind.Null && prop.TryGetInt32(out var val) ? val : defaultValue;
+            return item.TryGetProperty(propName, out var prop) && prop.ValueKind != JsonValueKind.Null &&
+                prop.TryGetInt32(out var val)
+                    ? val
+                    : defaultValue;
         }
 
         private bool GetJsonBool(JsonElement item, string propName, bool defaultValue = false)
         {
-            return item.TryGetProperty(propName, out var prop) && prop.ValueKind != JsonValueKind.Null ? prop.GetBoolean() : defaultValue;
+            return item.TryGetProperty(propName, out var prop) && prop.ValueKind != JsonValueKind.Null
+                ? prop.GetBoolean()
+                : defaultValue;
         }
 
         private DateTime GetJsonDate(JsonElement item, string propName, DateTime defaultValue, bool dateOnly = false)
         {
-            var date = item.TryGetProperty(propName, out var prop) && prop.ValueKind != JsonValueKind.Null && prop.TryGetDateTime(out var val) ? val : defaultValue; ;
+            var date = item.TryGetProperty(propName, out var prop) && prop.ValueKind != JsonValueKind.Null &&
+                prop.TryGetDateTime(out var val)
+                    ? val
+                    : defaultValue;
+            ;
             return dateOnly ? date.Date : date;
         }
 

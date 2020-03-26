@@ -22,6 +22,6 @@
   -->
   <ClusterConnectionParameters ConnectionEndpoint="assistant.eastus.cloudapp.azure.com:19000" X509Credential="true" FindType="FindByThumbprint" FindValue="07D5AB2AE6F9C991C0C58BCBC4FF970DC1971481" ServerCertThumbprint="07D5AB2AE6F9C991C0C58BCBC4FF970DC1971481" StoreLocation="CurrentUser" StoreName="My" />
 
-<ApplicationParameterFile Path="..\ApplicationParameters\Cloud.xml" />
+<ApplicationParameterFile Path="..\ApplicationParameters\Azure.xml" />
   <CopyPackageParameters CompressPackage="true" />
 </PublishProfile>

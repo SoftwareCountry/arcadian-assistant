@@ -47,7 +47,7 @@ namespace Arcadia.Assistant.PendingActions
 
                 using var container = builder.Build();
                 logger = container.ResolveOptional<ILogger<PendingActions>>();
-                logger?.LogInformation($"Service type '{typeof(PendingActions).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
+                logger?.LogInformation("Service type '{ServiceName}' registered. Process: {ProcessId}.", typeof(PendingActions).Name, Process.GetCurrentProcess().Id);
                 // Prevents this host process from terminating so services keep running.
                 Thread.Sleep(Timeout.Infinite);
             }

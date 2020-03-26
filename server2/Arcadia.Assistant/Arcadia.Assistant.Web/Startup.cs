@@ -16,6 +16,8 @@
 
     using Configuration;
 
+    using DeviceRegistry.Contracts;
+
     using Employees.Contracts;
 
     using Logging;
@@ -137,6 +139,8 @@
                         policy.RequireAuthenticatedUser();
                     });
                 });
+
+            //services.AddAuthorization();
         }
 
         // ReSharper disable once UnusedMember.Global
@@ -160,6 +164,7 @@
             builder.RegisterModule(new SickLeavesModule());
             builder.RegisterModule(new PendingActionsModule());
             builder.RegisterModule(new MobileBuildModule());
+            builder.RegisterModule(new DeviceRegistryModule());
 
             builder.RegisterType<UserIsEmployeeHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
             builder.RegisterType<EmployeePermissionsHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();

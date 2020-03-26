@@ -8,9 +8,10 @@
 
         public SharepointSynchronizationSettings(ConfigurationSection configurationSection)
         {
-            this.SynchronizationIntervalMinutes = int.TryParse(configurationSection.Parameters["SynchronizationIntervalMinutes"].Value, out var interval) 
-                ? interval 
-                : this.DefaultSynchronizationIntervalMinutes;
+            this.SynchronizationIntervalMinutes =
+                int.TryParse(configurationSection.Parameters["SynchronizationIntervalMinutes"].Value, out var interval)
+                    ? interval
+                    : this.DefaultSynchronizationIntervalMinutes;
         }
 
         public int SynchronizationIntervalMinutes { get; }

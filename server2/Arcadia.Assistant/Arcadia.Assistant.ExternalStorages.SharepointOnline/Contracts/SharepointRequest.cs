@@ -1,8 +1,6 @@
 ﻿namespace Arcadia.Assistant.ExternalStorages.SharepointOnline.Contracts
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Text.Json;
@@ -125,11 +123,12 @@
         {
             if (!this.headersInternal.TryGetValue(name, out var headerValues))
             {
-                this.headersInternal.Add(name, new List<string>()
+                this.headersInternal.Add(name, new List<string>
                 {
                     value
                 });
-            } else if (!headerValues.Contains(value))
+            }
+            else if (!headerValues.Contains(value))
             {
                 this.headersInternal[name].Add(value);
             }

@@ -26,7 +26,8 @@
         private readonly ISharepointOnlineConfiguration configuration;
         private readonly HttpClient httpClient;
 
-        public SharepointAuthTokenService(ISharepointOnlineConfiguration configuration, IHttpClientFactory httpClientFactory)
+        public SharepointAuthTokenService(
+            ISharepointOnlineConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
             this.configuration = configuration;
             this.httpClient = httpClientFactory.CreateClient();

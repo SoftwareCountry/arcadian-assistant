@@ -20,10 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ApplicationPackageRoot\ApplicationManifest.xml" />
-    <None Include="ApplicationParameters\Cloud.xml" />
     <None Include="ApplicationParameters\Local.1Node.xml" />
     <None Include="ApplicationParameters\Local.5Node.xml" />
-    <None Include="PublishProfiles\Cloud.xml" />
     <None Include="PublishProfiles\Local.1Node.xml" />
     <None Include="PublishProfiles\Local.5Node.xml" />
     <None Include="PublishProfiles\Azure.xml" />
@@ -33,10 +31,13 @@
     <ProjectReference Include="..\Arcadia.Assistant.AppCenterBuilds\Arcadia.Assistant.AppCenterBuilds.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Avatars.Manager\Arcadia.Assistant.Avatars.Manager.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Avatars\Arcadia.Assistant.Avatars.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.DeviceRegistry\Arcadia.Assistant.DeviceRegistry.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Inbox\Arcadia.Assistant.Inbox.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.MobileBuild\Arcadia.Assistant.MobileBuild.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.Notifications\Arcadia.Assistant.Notifications.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.PendingActions\Arcadia.Assistant.PendingActions.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Sharepoint\Arcadia.Assistant.Sharepoint.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.PushNotifications\Arcadia.Assistant.PushNotifications.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.SickLeaves\Arcadia.Assistant.SickLeaves.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.VacationsCredit\Arcadia.Assistant.VacationsCredit.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Vacations\Arcadia.Assistant.Vacations.csproj" />
@@ -48,6 +49,7 @@
     <ProjectReference Include="..\Arcadia.Assistant.Web\Arcadia.Assistant.Web.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ApplicationParameters\Azure.xml" />
     <Content Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />

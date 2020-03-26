@@ -16,7 +16,11 @@
 
     public abstract class SharepointItemSynchronization<T>
     {
-        #region ctor
+        protected readonly IExternalStorage ExternalStorage;
+        protected readonly ILogger? Logger;
+
+        private readonly IEqualityComparer<StorageItem> sharepointStorageItemComparer =
+            new SharepointStorageItemComparer();
 
         protected SharepointItemSynchronization(IExternalStorage externalStorage, ILogger? logger = null)
         {
@@ -24,11 +28,11 @@
             this.Logger = logger;
         }
 
-        #endregion
+        protected abstract string ItemEventType { get; }
 
-        #region public interface
-
-        public async Task SynchronizeItems(string calendar, EmployeeMetadata[] departmentEmployees, Dictionary<string, T> values, IEnumerable<StorageItem> storageItemsList, CancellationToken cancellationToken)
+        public async Task SynchronizeItems(
+            string calendar, EmployeeMetadata[] departmentEmployees, Dictionary<string, T> values,
+            IEnumerable<StorageItem> storageItemsList, CancellationToken cancellationToken)
         {
             try
             {
@@ -38,8 +42,10 @@
                 // insert or update items
                 foreach (var workHourEventId in values.Keys)
                 {
-                    var employeeMetadata = departmentEmployees.Single(x => x.EmployeeId == this.GetItemEmployeeId(values[workHourEventId]));
-                    await this.UpsertItem(workHourEventId, calendar, values[workHourEventId], employeeMetadata, this.ExternalStorage, cancellationToken);
+                    var employeeMetadata = departmentEmployees.Single(x =>
+                        x.EmployeeId == this.GetItemEmployeeId(values[workHourEventId]));
+                    await this.UpsertItem(workHourEventId, calendar, values[workHourEventId], employeeMetadata,
+                        this.ExternalStorage, cancellationToken);
                 }
 
                 // remove redundant items
@@ -47,7 +53,8 @@
                 {
                     await this.ExternalStorage.DeleteItem(
                         calendar,
-                        item.Id.ToString());
+                        item.Id.ToString(),
+                        cancellationToken);
                 }
             }
             catch (Exception e)
@@ -56,36 +63,22 @@
             }
         }
 
-        #endregion
-
-        #region variables
-
-        private readonly IEqualityComparer<StorageItem> sharepointStorageItemComparer = new SharepointStorageItemComparer();
-        protected readonly IExternalStorage ExternalStorage;
-        protected readonly ILogger? Logger;
-
-        #endregion
-
-        #region virtual interface
-
-        protected abstract string ItemEventType { get; }
-
         protected abstract DatesPeriod GetItemDatePeriod(T item);
 
         protected abstract EmployeeId GetItemEmployeeId(T item);
 
-        #endregion
-
-        #region private
-
-        private async Task UpsertItem(string eventId, string calendar, T item, EmployeeMetadata employeeMetadata, IExternalStorage externalStorage, CancellationToken cancellationToken)
+        private async Task UpsertItem(
+            string eventId, string calendar, T item, EmployeeMetadata employeeMetadata,
+            IExternalStorage externalStorage, CancellationToken cancellationToken)
         {
             var datesPeriod = this.GetItemDatePeriod(item);
-            var upsertItem = this.CalendarEventToStorageItem(eventId, this.ItemEventType, datesPeriod, employeeMetadata);
-            await this.UpsertStorageItem(eventId, calendar, datesPeriod, upsertItem, externalStorage, cancellationToken);
+            var upsertItem =
+                this.CalendarEventToStorageItem(eventId, this.ItemEventType, datesPeriod, employeeMetadata);
+            await this.UpsertStorageItem(eventId, calendar, upsertItem, externalStorage, cancellationToken);
         }
 
-        private async Task<StorageItem> GetSharepointItemForCalendarEvent(IExternalStorage externalStorage, string calendar, string eventId)
+        private async Task<StorageItem> GetSharepointItemForCalendarEvent(
+            IExternalStorage externalStorage, string calendar, string eventId)
         {
             var existingItems = await externalStorage.GetItems(
                 calendar,
@@ -93,7 +86,9 @@
             return existingItems.SingleOrDefault();
         }
 
-        private async Task UpsertStorageItem(string eventId, string calendar, DatesPeriod datesPeriod, StorageItem upsertItem, IExternalStorage externalStorage, CancellationToken cancellationToken)
+        private async Task UpsertStorageItem(
+            string eventId, string calendar, StorageItem upsertItem, IExternalStorage externalStorage,
+            CancellationToken cancellationToken)
         {
             var storageItem = await this.GetSharepointItemForCalendarEvent(externalStorage, calendar, eventId);
 
@@ -117,10 +112,12 @@
             }
         }
 
-        private StorageItem CalendarEventToStorageItem(string eventId, string calendarEventType, DatesPeriod period, EmployeeMetadata employeeMetadata)
+        private StorageItem CalendarEventToStorageItem(
+            string eventId, string calendarEventType, DatesPeriod period, EmployeeMetadata employeeMetadata)
         {
             var totalHours = period.FinishWorkingHour - period.StartWorkingHour;
-            var longEvent = calendarEventType == CalendarEventTypes.Vacation || calendarEventType == CalendarEventTypes.Sickleave;
+            var longEvent = calendarEventType == CalendarEventTypes.Vacation ||
+                calendarEventType == CalendarEventTypes.Sickleave;
             var title = longEvent
                 ? $"{employeeMetadata.Name} ({calendarEventType})"
                 : $"{employeeMetadata.Name} ({calendarEventType}: {totalHours} hours)";
@@ -137,7 +134,5 @@
 
             return storageItem;
         }
-
-        #endregion
     }
 }

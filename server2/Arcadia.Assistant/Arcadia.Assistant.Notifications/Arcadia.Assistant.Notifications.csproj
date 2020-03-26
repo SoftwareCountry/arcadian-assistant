@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <IsServiceFabricServiceProject>True</IsServiceFabricServiceProject>
+    <ServerGarbageCollection>True</ServerGarbageCollection>
+    <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
+    <TargetLatestRuntimePatch>False</TargetLatestRuntimePatch>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="5.0.1" />
+    <PackageReference Include="Autofac.ServiceFabric" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.0.0" />
+    <PackageReference Include="Microsoft.ServiceFabric.Actors" Version="3.4.677" />
+    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="3.4.677" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Arcadia.Assistant.DeviceRegistry.Contracts\Arcadia.Assistant.DeviceRegistry.Contracts.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.Employees.Contracts\Arcadia.Assistant.Employees.Contracts.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.Logging\Arcadia.Assistant.Logging.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.Notifications.Contracts\Arcadia.Assistant.Notifications.Contracts.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.UserPreferences.Contracts\Arcadia.Assistant.UserPreferences.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

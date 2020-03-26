@@ -40,7 +40,7 @@ namespace Arcadia.Assistant.Employees
 
                 using var container = builder.Build();
                 logger = container.ResolveOptional<ILogger<Employees>>();
-                logger?.LogInformation($"Service type '{typeof(Employees).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
+                logger?.LogInformation("Service type '{ServiceName}' registered. Process: {ProcessId}.", typeof(Employees).Name, Process.GetCurrentProcess().Id);
                 // Prevents this host process from terminating so services keep running.
                 Thread.Sleep(Timeout.Infinite);
             }
