@@ -19,9 +19,14 @@
         {
             this.logger = logger;
 
-            if (bool.TryParse(configurationSection.Parameters["EnablePush"].Value, out var enable))
+            if (bool.TryParse(configurationSection.Parameters["EnablePush"].Value, out var enablePush))
             {
-                this.EnablePush = enable;
+                this.EnablePush = enablePush;
+            }
+
+            if (bool.TryParse(configurationSection.Parameters["EnableEmail"].Value, out var enableEmail))
+            {
+                this.EnableEmail = enableEmail;
             }
 
             var map = configurationSection.Parameters["ClientNotificationProviders"].Value;
@@ -40,6 +45,8 @@
         }
 
         public bool EnablePush { get; }
+
+        public bool EnableEmail { get; }
 
         public IReadOnlyDictionary<string, IReadOnlyCollection<NotificationType>> NotificationTemplateProvidersMap
         {

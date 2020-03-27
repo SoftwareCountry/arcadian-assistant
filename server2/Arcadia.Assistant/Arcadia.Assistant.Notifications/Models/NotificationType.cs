@@ -2,6 +2,7 @@
 {
     public enum NotificationType
     {
-        Push
+        Push,
+        Email
     }
 }
