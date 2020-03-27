@@ -10,11 +10,9 @@
 
     using Contracts;
 
-    using CSP;
+    using CSP.Contracts;
 
     using Employees.Contracts;
-
-    using Microsoft.EntityFrameworkCore;
 
     public class OrganizationDepartmentsQuery
     {
@@ -39,13 +37,13 @@
             this.cspConfiguration = cspConfiguration;
         }
 
-        public async Task<IReadOnlyList<DepartmentMetadata>> LoadAllAsync(CancellationToken cancellationToken)
+        public IReadOnlyList<DepartmentMetadata> LoadAll()
         {
             var departmentsQuery = this.cspDepartmentsQuery.Get();
 
-            var allDepartments = await departmentsQuery
+            var allDepartments = departmentsQuery
                 .Select(this.mapToDepartmentMetadata)
-                .ToListAsync(cancellationToken);
+                .ToList();
 
             var head = allDepartments.FirstOrDefault(x => x.IsHeadDepartment && x.Abbreviation == this.cspConfiguration.HeadDepartmentAbbreviation);
 

@@ -12,11 +12,11 @@
 
     using Contracts;
 
-    using CSP.Model;
+    using CSP.Contracts;
+    using CSP.Contracts.Models;
 
     using Employees.Contracts;
 
-    using Microsoft.EntityFrameworkCore;
 
     using VacationApproval = Contracts.VacationApproval;
 
@@ -29,28 +29,28 @@
             this.cspFactory = cspFactory;
         }
 
-        public async Task<VacationDescription[]> GetCalendarEvents(EmployeeId employeeId, CancellationToken cancellationToken)
+        public VacationDescription[] GetCalendarEvents(EmployeeId employeeId, CancellationToken cancellationToken)
         {
             using var csp = this.cspFactory();
-            return await csp.Value.Vacations
+            return csp.Value.Vacations
                 .Where(x => x.EmployeeId == employeeId.Value)
-                .Select(this.toDescription)
-                .ToArrayAsync(cancellationToken);
+                .Select(this.ToDescription)
+                .ToArray();
         }
 
-        public async Task<VacationDescription> GetCalendarEvent(EmployeeId employeeId, int eventId, CancellationToken cancellationToken)
+        public VacationDescription GetCalendarEvent(EmployeeId employeeId, int eventId, CancellationToken cancellationToken)
         {
             using var csp = this.cspFactory();
-            return await csp.Value.Vacations
+            return csp.Value.Vacations
                 .Where(x => x.EmployeeId == employeeId.Value && eventId == x.Id)
-                .Select(this.toDescription)
-                .FirstOrDefaultAsync(cancellationToken);
+                .Select(this.ToDescription)
+                .FirstOrDefault();
         }
 
-        public async Task<VacationDescription> CreateCalendarEvent(EmployeeId employeeId, DateTime startDate, DateTime endDate)
+        public VacationDescription CreateCalendarEvent(EmployeeId employeeId, DateTime startDate, DateTime endDate)
         {
             using var csp = this.cspFactory();
-            var model = new CSP.Model.Vacation
+            var model = new Vacation
             {
                 EmployeeId = employeeId.Value,
                 RaisedAt = DateTimeOffset.Now,
@@ -60,7 +60,7 @@
 
             csp.Value.Vacations.Add(model);
 
-            await csp.Value.SaveChangesAsync();
+            //await csp.Value.SaveChangesAsync();
 
             var newVacation = new VacationDescription
             {
@@ -74,24 +74,24 @@
         }
 
 
-        public async Task UpdateCalendarEvent(EmployeeId employeeId, int eventId, Action<CSP.Model.Vacation> updateFunc)
+        public async Task UpdateCalendarEvent(EmployeeId employeeId, int eventId, Action<Vacation> updateFunc)
         {
             using var csp = this.cspFactory();
-            var vacationInstance = await this.LoadVacationInstance(csp.Value, employeeId, eventId);
+            var vacationInstance = this.LoadVacationInstance(csp.Value, employeeId, eventId);
             updateFunc(vacationInstance);
-            await csp.Value.SaveChangesAsync();
+            //await csp.Value.SaveChangesAsync();
         }
 
-        private async Task<CSP.Model.Vacation> LoadVacationInstance(ArcadiaCspContext context, EmployeeId employeeId, int eventId)
+        private Vacation LoadVacationInstance(ArcadiaCspContext context, EmployeeId employeeId, int eventId)
         {
-            var model = await context
+            var model = context
                 .Vacations
-                .Include(x => x.VacationCancellations)
-                .Include(x => x.VacationApprovals)
-                .Include(x => x.VacationProcesses)
-                .Include(x => x.VacationReadies)
-                .AsTracking()
-                .FirstOrDefaultAsync(x => x.EmployeeId == employeeId.Value && x.Id == eventId);
+                //.Include(x => x.VacationCancellations)
+                //.Include(x => x.VacationApprovals)
+                //.Include(x => x.VacationProcesses)
+                //.Include(x => x.VacationReadies)
+                //.AsTracking()
+                .FirstOrDefault(x => x.EmployeeId == employeeId.Value && x.Id == eventId);
 
             if (model == null)
             {
@@ -101,22 +101,34 @@
             return model;
         }
 
-        private readonly Expression<Func<CSP.Model.Vacation, VacationDescription>> toDescription = x => new VacationDescription()
+        private VacationDescription ToDescription(Vacation x)
+        {
+            return new VacationDescription()
+            {
+                EmployeeId = new EmployeeId(x.EmployeeId),
+                StartDate = x.Start,
+                EndDate = x.End,
+                VacationId = x.Id,
+            };
+        }
+
+        private readonly Expression<Func<Vacation, VacationDescription>> toDescription = x => new VacationDescription()
         {
             EmployeeId = new EmployeeId(x.EmployeeId),
-            CancellationReason = x.VacationCancellations.Select(y => y.Reason).FirstOrDefault(),
+            //CancellationReason = x.VacationCancellations.Select(y => y.Reason).FirstOrDefault(),
             StartDate = x.Start,
             EndDate = x.End,
             VacationId = x.Id,
+            /*
             Approvals = x.VacationApprovals
                 .Where(v => v.Status == VacationApprovalStatus.Approved)
                 .Select(v => new VacationApproval(new EmployeeId(v.Id)) { IsFinal = v.IsFinal, Timestamp = v.TimeStamp })
                 .ToArray(),
-
-            IsRejected = x.VacationApprovals.Any(v => v.Status == VacationApprovalStatus.Rejected),
-            IsProcessed = x.VacationProcesses.Any(),
-            IsCancelled = x.VacationCancellations.Any(),
-            AccountingReady = x.VacationReadies.Any(),
+                */
+            //IsRejected = x.VacationApprovals.Any(v => v.Status == VacationApprovalStatus.Rejected),
+            //IsProcessed = x.VacationProcesses.Any(),
+            //IsCancelled = x.VacationCancellations.Any(),
+            //AccountingReady = x.VacationReadies.Any(),
 
             /*
             Status = x.VacationCancellations.Any() ? VacationStatus.Cancelled
@@ -127,16 +139,16 @@
                     : VacationStatus.Requested*/
         };
 
-        public async Task<Dictionary<EmployeeId, VacationDescription[]>> GetCalendarEvents(EmployeeId[] employeeIds, CancellationToken cancellationToken)
+        public Task<Dictionary<EmployeeId, VacationDescription[]>> GetCalendarEvents(EmployeeId[] employeeIds, CancellationToken cancellationToken)
         {
             using var csp = this.cspFactory();
-            var ids = employeeIds.Select(x => x.Value);
-            var pendingVacations = await csp.Value.Vacations
-                .Where(x => ids.Contains(x.EmployeeId))
-                .Select(this.toDescription)
-                .ToArrayAsync(cancellationToken);
+            var ids = employeeIds.Select(x => x.Value).ToList();
+            var list = csp.Value.Vacations.Where(x => ids.Contains(x.EmployeeId)).ToList();
+            var pendingVacations = list
+                .Select(this.ToDescription)
+                .ToArray();
 
-            return pendingVacations.GroupBy(x => x.EmployeeId).ToDictionary(x => x.Key, x => x.ToArray());
+            return Task.Run(() =>pendingVacations.GroupBy(x => x.EmployeeId).ToDictionary(x => x.Key, x => x.ToArray()));
         }
     }
 }

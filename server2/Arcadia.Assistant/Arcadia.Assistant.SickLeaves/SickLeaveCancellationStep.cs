@@ -7,11 +7,11 @@
 
     using Contracts;
 
-    using CSP.Model;
+    using CSP.Contracts;
+    using CSP.Contracts.Models;
 
     using Employees.Contracts;
 
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
     using Permissions.Contracts;
@@ -52,10 +52,10 @@
             }
 
             var existingEvent =
-                await this.database.SickLeaves
-                    .Include(x => x.SickLeaveCancellations)
-                    .Include(x => x.SickLeaveCompletes)
-                    .FirstOrDefaultAsync(x =>
+                this.database.SickLeaves
+                    //.Include(x => x.SickLeaveCancellations)
+                    //.Include(x => x.SickLeaveCompletes)
+                    .FirstOrDefault(x =>
                         x.Id == eventId && employeeId.Value == x.EmployeeId);
 
             if (existingEvent == null)
@@ -75,7 +75,7 @@
                 At = DateTimeOffset.Now, ById = cancelledById.Value.Value, SickLeaveId = existingEvent.Id
             });
 
-            await this.database.SaveChangesAsync();
+            //await this.database.SaveChanges();
         }
     }
 }

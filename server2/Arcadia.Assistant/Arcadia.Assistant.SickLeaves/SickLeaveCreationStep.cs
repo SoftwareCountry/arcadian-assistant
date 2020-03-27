@@ -6,7 +6,8 @@
 
     using Contracts;
 
-    using CSP.Model;
+    using CSP.Contracts;
+    using CSP.Contracts.Models;
 
     using Employees.Contracts;
 
@@ -39,7 +40,7 @@
                 throw new NotEnoughPermissionsException($"{creatorIdentity} has no permissions to create calendar events for {employeeId}");
             }
 
-            var newSickLeave = new CSP.Model.SickLeave()
+            var newSickLeave = new SickLeave()
             {
                 EmployeeId = employeeId.Value,
                 Start = startDate,
@@ -47,12 +48,12 @@
                 RaisedAt = DateTimeOffset.Now
             };
 
-            var sickLeave = this.context.SickLeaves.Add(newSickLeave);
-            await this.context.SaveChangesAsync();
+            this.context.SickLeaves.Add(newSickLeave);
+            //await this.context.SaveChangesAsync();
 
-            this.logger.LogInformation("Sick leave {SickLeave} created", sickLeave);
+            this.logger.LogInformation("Sick leave {SickLeave} created", newSickLeave);
 
-            return this.converter.GetDescription(sickLeave.Entity);
+            return this.converter.GetDescription(newSickLeave);
         }
     }
 }

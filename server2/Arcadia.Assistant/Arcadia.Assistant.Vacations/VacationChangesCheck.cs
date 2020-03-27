@@ -8,13 +8,13 @@
 
     using Autofac.Features.OwnedInstances;
 
-    using CSP.Model;
+    using CSP.Contracts;
+    using CSP.Contracts.Models;
 
     using Employees.Contracts;
 
-    using Microsoft.EntityFrameworkCore;
 
-    using VacationsDictionary = System.Collections.Generic.Dictionary<Employees.Contracts.EmployeeId, System.Collections.Generic.Dictionary<int, CSP.Model.Vacation>>;
+    using VacationsDictionary = System.Collections.Generic.Dictionary<Employees.Contracts.EmployeeId, System.Collections.Generic.Dictionary<int, CSP.Contracts.Models.Vacation>>;
 
     public class VacationChangesCheck
     {
@@ -32,13 +32,13 @@
             using (var db = this.dbFactory())
             {
 
-                var allVacations = await db.Value.Vacations
-                    .Include(x => x.VacationCancellations)
-                    .Include(x => x.VacationApprovals)
-                    .Include(x => x.VacationProcesses)
-                    .Include(x => x.VacationReadies)
-                    .AsNoTracking()
-                    .ToListAsync(cancellationToken);
+                var allVacations = db.Value.Vacations
+                    //.Include(x => x.VacationCancellations)
+                    //.Include(x => x.VacationApprovals)
+                    //.Include(x => x.VacationProcesses)
+                    //.Include(x => x.VacationReadies)
+                    //.AsNoTracking()
+                    .ToList();
 
                 databaseState = allVacations
                     .GroupBy(x => x.EmployeeId)

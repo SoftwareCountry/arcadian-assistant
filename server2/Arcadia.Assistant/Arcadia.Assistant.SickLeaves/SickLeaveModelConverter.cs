@@ -6,11 +6,13 @@
 
     using Contracts;
 
+    using CSP.Contracts.Models;
+
     using Employees.Contracts;
 
     public class SickLeaveModelConverter
     {
-        public SickLeaveDescription GetDescription(CSP.Model.SickLeave model)
+        public SickLeaveDescription GetDescription(SickLeave model)
         {
             return new SickLeaveDescription()
             {
@@ -22,7 +24,7 @@
             };
         }
 
-        public SickLeaveStatus GetStatus(CSP.Model.SickLeave model)
+        public SickLeaveStatus GetStatus(SickLeave model)
         {
             return model.SickLeaveCancellations.Select(x => new
                 {

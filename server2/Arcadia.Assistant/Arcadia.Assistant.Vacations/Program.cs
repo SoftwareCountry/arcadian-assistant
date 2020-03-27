@@ -8,11 +8,10 @@ namespace Arcadia.Assistant.Vacations
     using Autofac;
     using Autofac.Integration.ServiceFabric;
 
-    using CSP;
+    using CSP.Contracts;
 
     using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
-    using Microsoft.ServiceFabric.Services.Runtime;
 
     internal static class Program
     {

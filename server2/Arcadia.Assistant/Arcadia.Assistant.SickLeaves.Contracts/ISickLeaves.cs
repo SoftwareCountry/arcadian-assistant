@@ -18,11 +18,11 @@ namespace Arcadia.Assistant.SickLeaves.Contracts
 
     public interface ISickLeaves : IService
     {
-        Task<SickLeaveDescription[]> GetCalendarEventsAsync(EmployeeId employeeId, CancellationToken cancellationToken);
+        SickLeaveDescription[] GetCalendarEvents(EmployeeId employeeId);
 
-        Task<Dictionary<EmployeeId, SickLeaveDescription[]>> GetCalendarEventsByEmployeeMapAsync(EmployeeId[] employeeIds, CancellationToken cancellationToken);
+        Dictionary<EmployeeId, SickLeaveDescription[]> GetCalendarEventsByEmployeeMap(EmployeeId[] employeeIds);
 
-        Task<SickLeaveDescription?> GetCalendarEventAsync(EmployeeId employeeId, int eventId, CancellationToken cancellationToken);
+        SickLeaveDescription GetCalendarEvent(EmployeeId employeeId, int eventId);
 
         Task<SickLeaveDescription> CreateSickLeaveAsync(EmployeeId employeeId, DateTime startDate, DateTime endDate, UserIdentity userIdentity);
 

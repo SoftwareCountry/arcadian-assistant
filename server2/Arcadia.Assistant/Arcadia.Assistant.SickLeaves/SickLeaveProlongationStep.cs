@@ -7,11 +7,10 @@
 
     using Contracts;
 
-    using CSP.Model;
+    using CSP.Contracts;
 
     using Employees.Contracts;
 
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
     using Permissions.Contracts;
@@ -38,11 +37,10 @@
                 throw new NotEnoughPermissionsException($"{userIdentity} has no permissions to create calendar events for {employeeId}");
             }
             
-            var existingEvent = await this.database.SickLeaves
-                .AsTracking()
-                .Include(x => x.SickLeaveCancellations)
-                .Include(x => x.SickLeaveCompletes)
-                .FirstOrDefaultAsync(x => x.Id == eventId && x.EmployeeId == employeeId.Value);
+            var existingEvent = this.database.SickLeaves
+                //.Include(x => x.SickLeaveCancellations)
+                //.Include(x => x.SickLeaveCompletes)
+                .FirstOrDefault(x => x.Id == eventId && x.EmployeeId == employeeId.Value);
 
             if (existingEvent == null)
             {
@@ -60,7 +58,7 @@
             }
 
             existingEvent.End = endDate;
-            await this.database.SaveChangesAsync();
+            //await this.database.SaveChangesAsync();
         }
     }
 }

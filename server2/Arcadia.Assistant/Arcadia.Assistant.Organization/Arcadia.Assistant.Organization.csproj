@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Arcadia.Assistant.Avatars.Contracts\Arcadia.Assistant.Avatars.Contracts.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.CSP.Contracts\Arcadia.Assistant.CSP.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Employees.Contracts\Arcadia.Assistant.Employees.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Logging\Arcadia.Assistant.Logging.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Organization.Contracts\Arcadia.Assistant.Organization.Contracts.csproj" />

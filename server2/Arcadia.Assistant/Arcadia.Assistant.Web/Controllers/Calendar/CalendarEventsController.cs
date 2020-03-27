@@ -63,7 +63,7 @@
             }
 
             var workHoursEvents = await this.workHoursCredit.GetCalendarEventsAsync(employee, token);
-            var sickLeaveEvents = await this.sickLeaves.GetCalendarEventsAsync(employee, token);
+            var sickLeaveEvents = this.sickLeaves.GetCalendarEvents(employee);
             var vacationEvents = await this.vacations.GetCalendarEventsAsync(employee, token);
             var allEvents = workHoursEvents
                 .Select(this.workHoursConverter.ToCalendarEventWithId)
@@ -96,7 +96,7 @@
             }
             else if (this.idConverter.TryParseSickLeaveId(eventId, out var sickLeaveId))
             {
-                var sickLeave = await this.sickLeaves.GetCalendarEventAsync(new EmployeeId(employeeId), sickLeaveId, token);
+                var sickLeave = await Task.Run(() => this.sickLeaves.GetCalendarEvent(new EmployeeId(employeeId), sickLeaveId));
                 if (sickLeave != null)
                 {
                     return this.sickLeavesConverter.ToCalendarEvent(sickLeave);
@@ -240,7 +240,7 @@
                 return this.BadRequest("EventId is not int");
             }
 
-            var existingEvent = await this.sickLeaves.GetCalendarEventAsync(employeeId, eventId, CancellationToken.None);
+            var existingEvent = await Task.Run(() => this.sickLeaves.GetCalendarEvent(employeeId, eventId));
             if (existingEvent == null)
             {
                 return this.NotFound();

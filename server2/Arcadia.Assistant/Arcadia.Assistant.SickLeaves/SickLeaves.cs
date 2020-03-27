@@ -6,16 +6,15 @@ namespace Arcadia.Assistant.SickLeaves
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-
+    using Arcadia.Assistant.CSP.Contracts;
     using Autofac.Features.OwnedInstances;
 
     using Contracts;
 
-    using CSP.Model;
+    using CSP.Contracts.Models;
 
     using Employees.Contracts;
 
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
@@ -75,37 +74,36 @@ namespace Arcadia.Assistant.SickLeaves
             }
         }
 
-        public async Task<SickLeaveDescription[]> GetCalendarEventsAsync(
-            EmployeeId employeeId, CancellationToken cancellationToken)
+        public SickLeaveDescription[] GetCalendarEvents(
+            EmployeeId employeeId)
         {
             using var db = this.dbFactory();
-            var sickLeaves = await this.GetSickLeaves(db.Value)
+            var sickLeaves = this.GetSickLeaves(db.Value)
                 .Where(x => x.EmployeeId == employeeId.Value)
-                .ToArrayAsync(cancellationToken);
+                .ToArray();
 
             return sickLeaves.Select(this.modelConverter.GetDescription).ToArray();
         }
 
-        public async Task<Dictionary<EmployeeId, SickLeaveDescription[]>> GetCalendarEventsByEmployeeMapAsync(
-            EmployeeId[] employeeIds, CancellationToken cancellationToken)
+        public Dictionary<EmployeeId, SickLeaveDescription[]> GetCalendarEventsByEmployeeMap(
+            EmployeeId[] employeeIds)
         {
             using var db = this.dbFactory();
-            var sickLeaves = await this.GetSickLeaves(db.Value)
+            var sickLeaves = this.GetSickLeaves(db.Value)
                 .Where(x => employeeIds.Any(id => x.EmployeeId == id.Value))
-                .ToArrayAsync(cancellationToken);
+                .ToArray();
 
             return sickLeaves
                 .Select(this.modelConverter.GetDescription)
                 .GroupBy(x => x.EmployeeId).ToDictionary(x => x.Key, x => x.ToArray());
         }
 
-        public async Task<SickLeaveDescription?> GetCalendarEventAsync(
-            EmployeeId employeeId, int eventId, CancellationToken cancellationToken)
+        public SickLeaveDescription GetCalendarEvent(
+            EmployeeId employeeId, int eventId)
         {
             using var db = this.dbFactory();
-            var sickLeave = await this.GetSickLeaves(db.Value)
-                .Where(x => x.Id == eventId && x.EmployeeId == employeeId.Value)
-                .FirstOrDefaultAsync(cancellationToken);
+            var sickLeave = this.GetSickLeaves(db.Value)
+                .FirstOrDefault(x => x.Id == eventId && x.EmployeeId == employeeId.Value);
 
             return this.modelConverter.GetDescription(sickLeave);
         }
@@ -132,9 +130,12 @@ namespace Arcadia.Assistant.SickLeaves
 
         private IQueryable<SickLeave> GetSickLeaves(ArcadiaCspContext context)
         {
+            return new List<SickLeave>().AsQueryable();
+            /*
             return context.SickLeaves
                 .Include(x => x.SickLeaveCancellations)
                 .Include(x => x.SickLeaveCompletes);
+                */
         }
     }
 }

@@ -75,7 +75,9 @@ namespace Arcadia.Assistant.CSP.Contracts.Models
         /*
         public string Gender { get; set; }
         public short ClockNumber { get; set; }
+        */
         public string RoomNumber { get; set; }
+        /*
         public string BusinessCountry { get; set; }
         public string BusinessZip { get; set; }
         public string BusinessCity { get; set; }

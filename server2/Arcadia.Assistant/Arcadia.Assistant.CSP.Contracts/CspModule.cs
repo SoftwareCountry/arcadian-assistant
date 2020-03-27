@@ -3,12 +3,13 @@
     using System;
 
     using Autofac;
+    using Autofac.Core;
 
     using Microsoft.ServiceFabric.Services.Remoting.Client;
 
-    public class CSPModule : Module
+    public class CspModule : Module
     {
-        public CSPModule(string connectionString)
+        public CspModule(string connectionString)
         {
 
         }

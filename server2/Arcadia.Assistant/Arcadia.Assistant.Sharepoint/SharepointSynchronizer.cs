@@ -62,7 +62,7 @@
                 var employeeWorkoutsTask =
                     this.workouts.GetCalendarEventsByEmployeeMapAsync(employeeIds, cancellationToken);
                 var employeeSickLeavesTask =
-                    this.sickLeaves.GetCalendarEventsByEmployeeMapAsync(employeeIds, cancellationToken);
+                    Task.Run(() => this.sickLeaves.GetCalendarEventsByEmployeeMap(employeeIds));
                 await Task.WhenAll(employeeVacationsTask, employeeWorkoutsTask, employeeSickLeavesTask);
 
                 var employeeVacationValues = employeeVacationsTask.Result.Values.SelectMany(x => x)

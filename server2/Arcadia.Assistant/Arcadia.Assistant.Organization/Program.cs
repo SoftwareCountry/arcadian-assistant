@@ -8,7 +8,7 @@ namespace Arcadia.Assistant.Organization
     using Autofac;
     using Autofac.Integration.ServiceFabric;
 
-    using CSP;
+    using CSP.Contracts;
 
     using Employees.Contracts;
 

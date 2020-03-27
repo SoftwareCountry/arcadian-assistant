@@ -13,8 +13,12 @@ namespace Arcadia.Assistant.CSP.Contracts
 
         }
 
-        public IEnumerable<Employee> Employees { get; set; } = new List<Employee>();
+        public List<Employee> Employees { get; set; } = new List<Employee>();
 
-        public IEnumerable<Department> Departments { get; set; } = new List<Department>();
+        public List<Department> Departments { get; set; } = new List<Department>();
+
+        public List<SickLeave> SickLeaves { get; set; } = new List<SickLeave>();
+
+        public List<Vacation> Vacations { get; set; } = new List<Vacation>();
     }
 }

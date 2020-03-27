@@ -6,16 +6,14 @@ namespace Arcadia.Assistant.Vacations
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-
+    using Arcadia.Assistant.CSP.Contracts.Models;
     using Autofac.Features.OwnedInstances;
 
     using Contracts;
 
-    using CSP.Model;
 
     using Employees.Contracts;
 
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
@@ -47,7 +45,7 @@ namespace Arcadia.Assistant.Vacations
         public async Task<VacationDescription[]> GetCalendarEventsAsync(EmployeeId employeeId, CancellationToken cancellationToken)
         {
             using var storage = this.storageFactory();
-            return await storage.Value.GetCalendarEvents(employeeId, cancellationToken);
+            return await Task.Run(() => storage.Value.GetCalendarEvents(employeeId, cancellationToken));
         }
 
         public async Task<Dictionary<EmployeeId, VacationDescription[]>> GetCalendarEventsByEmployeeAsync(EmployeeId[] employeeIds, CancellationToken cancellationToken)
@@ -59,13 +57,13 @@ namespace Arcadia.Assistant.Vacations
         public async Task<VacationDescription?> GetCalendarEventAsync(EmployeeId employeeId, int eventId, CancellationToken cancellationToken)
         {
             using var storage = this.storageFactory();
-            return await storage.Value.GetCalendarEvent(employeeId, eventId, cancellationToken);
+            return await Task.Run(() => storage.Value.GetCalendarEvent(employeeId, eventId, cancellationToken));
         }
 
         public async Task<VacationDescription> RequestVacationAsync(EmployeeId employeeId, DateTime startDate, DateTime endDate)
         {
             using var storage = this.storageFactory();
-            var description = await storage.Value.CreateCalendarEvent(employeeId, startDate, endDate);
+            var description = await Task.Run(() => storage.Value.CreateCalendarEvent(employeeId, startDate, endDate));
             this.changesWatcher.ForceRefresh();
             return description;
         }
@@ -92,6 +90,7 @@ namespace Arcadia.Assistant.Vacations
             void Update(Vacation oldValue)
             {
                 //var status = new StatusConverter().GetStatus(oldValue);
+                /*
                 oldValue.VacationCancellations.Add(
                     new VacationCancellation()
                     {
@@ -99,6 +98,7 @@ namespace Arcadia.Assistant.Vacations
                         CancelledById = cancelledBy.Value,
                         Reason = cancellationReason
                     });
+                    */
             }
 
             await this.UpdateCalendarEvent(employeeId, eventId, Update);
@@ -109,6 +109,7 @@ namespace Arcadia.Assistant.Vacations
             void Update(Vacation oldValue)
             {
                 //var status = new StatusConverter().GetStatus(oldValue);
+                /*
                 oldValue.VacationApprovals.Add(
                     new CSP.Model.VacationApproval()
                     {
@@ -117,6 +118,7 @@ namespace Arcadia.Assistant.Vacations
                         TimeStamp = DateTimeOffset.Now,
                         Status = VacationApprovalStatus.Approved
                     });
+                    */
             }
 
             await this.UpdateCalendarEvent(employeeId, eventId, Update);
@@ -127,6 +129,7 @@ namespace Arcadia.Assistant.Vacations
             void Update(Vacation oldValue)
             {
                 //var status = new StatusConverter().GetStatus(oldValue);
+                /*
                 oldValue.VacationApprovals.Add(
                     new CSP.Model.VacationApproval()
                     {
@@ -135,6 +138,7 @@ namespace Arcadia.Assistant.Vacations
                         TimeStamp = DateTimeOffset.Now,
                         Status = VacationApprovalStatus.Rejected
                     });
+                    */
             }
 
             await this.UpdateCalendarEvent(employeeId, eventId, Update);
