@@ -15,9 +15,11 @@
                     return ValidationResult.Success;
                 case CalendarEventModel model:
                     var validTypes = string.Join(", ", statuses.AllForType(model.Type));
-                    return new ValidationResult($"Calendar event status `{value}` is not recognized. Must be one of the {validTypes}");
+                    return new ValidationResult(
+                        $"Calendar event status `{value}` is not recognized. Must be one of the {validTypes}");
                 default:
-                    return new ValidationResult($"Attribute usage error: ValidationContext must be applied to {typeof(CalendarEventModel)}");
+                    return new ValidationResult(
+                        $"Attribute usage error: ValidationContext must be applied to {typeof(CalendarEventModel)}");
             }
         }
     }

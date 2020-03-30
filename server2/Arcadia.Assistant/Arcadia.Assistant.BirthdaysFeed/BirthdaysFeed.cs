@@ -17,6 +17,7 @@ namespace Arcadia.Assistant.BirthdaysFeed
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
+    using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
 
     using UserFeeds.Contracts;
@@ -29,7 +30,8 @@ namespace Arcadia.Assistant.BirthdaysFeed
         private readonly Func<Owned<CspEmployeeQuery>> employeeQuery;
         private readonly ILogger logger;
 
-        public BirthdaysFeed(StatelessServiceContext context, Func<Owned<CspEmployeeQuery>> employeeQuery, ILogger logger)
+        public BirthdaysFeed(
+            StatelessServiceContext context, Func<Owned<CspEmployeeQuery>> employeeQuery, ILogger<BirthdaysFeed> logger)
             : base(context)
         {
             this.employeeQuery = employeeQuery;
@@ -38,18 +40,19 @@ namespace Arcadia.Assistant.BirthdaysFeed
 
         public string ServiceType => Constants.ServiceType;
 
-        public async Task<IEnumerable<FeedItem>> GetItems(DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
+        public async Task<FeedItem[]> GetItems(
+            DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
         {
-            using (var query = this.employeeQuery())
-            {
-                return (await query.Value.Get()
-                        .Where(x => x.IsWorking && !x.IsDelete)
-                        .Where(x => x.Birthday.HasValue && !x.FiringDate.HasValue)
-                        .Where(x => x.Birthday.Value >= new DateTime(x.Birthday.Value.Year, startDate.Month, startDate.Day)
-                            && x.Birthday.Value <= new DateTime(x.Birthday.Value.Year, endDate.Month, endDate.Day))
-                        .ToListAsync(cancellationToken))
-                    .Select(this.ConvertFeedMessage).ToArray();
-            }
+            using var query = this.employeeQuery();
+            return (await query.Value.Get()
+                    .Where(x => x.IsWorking && !x.IsDelete &&
+                        x.Birthday.HasValue && !x.FiringDate.HasValue &&
+                        x.Birthday.Value >=
+                        new DateTime(x.Birthday.Value.Year, startDate.Month, startDate.Day)
+                        && x.Birthday.Value <= new DateTime(x.Birthday.Value.Year, endDate.Month, endDate.Day))
+                    .ToListAsync(cancellationToken))
+                .Select(this.ConvertFeedMessage)
+                .ToArray();
         }
 
         /// <summary>
@@ -58,19 +61,19 @@ namespace Arcadia.Assistant.BirthdaysFeed
         /// <returns>A collection of listeners.</returns>
         protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
         {
-            return new ServiceInstanceListener[0];
+            return this.CreateServiceRemotingInstanceListeners();
         }
 
         private FeedItem ConvertFeedMessage(Employee employee)
         {
-            var employeeid = employee.Id.ToString();
-            var date = employee.Birthday.Value;
+            var employeeId = employee.Id.ToString();
+            var date = employee.Birthday.HasValue ? employee.Birthday.Value : DateTime.MinValue;
             var pronoun = employee.Gender == "F" ? "her" : "his";
             var title = $"{employee.LastName} {employee.FirstName}".Trim();
-            var text = $"{title} celebrates {pronoun} birthday on {date.ToString("MMMM dd")}!";
+            var text = $"{title} celebrates {pronoun} birthday on {date:MMMM dd)}!";
             return new FeedItem
             {
-                Id = $"employee-birthday-{employeeid}-at-{date}",
+                Id = $"employee-birthday-{employeeId}-at-{date}",
                 Title = title,
                 Text = text,
                 Image = employee.Image,

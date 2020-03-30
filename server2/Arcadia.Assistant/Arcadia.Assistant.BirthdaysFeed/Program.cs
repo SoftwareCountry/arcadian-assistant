@@ -27,7 +27,8 @@ namespace Arcadia.Assistant.BirthdaysFeed
             try
             {
                 var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
-                var connectionString = configurationPackage.Settings.Sections["Csp"].Parameters["ConnectionString"].Value;
+                var connectionString =
+                    configurationPackage.Settings.Sections["Csp"].Parameters["ConnectionString"].Value;
 
                 var builder = new ContainerBuilder();
 
@@ -39,7 +40,8 @@ namespace Arcadia.Assistant.BirthdaysFeed
 
                 using var container = builder.Build();
                 logger = container.ResolveOptional<ILogger>();
-                logger?.LogInformation($"Service type '{typeof(BirthdaysFeed).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
+                logger?.LogInformation("Service type '{ServiceName}' registered. Process: {ProcessId}.",
+                    typeof(BirthdaysFeed).Name, Process.GetCurrentProcess().Id);
                 // Prevents this host process from terminating so services keep running.
                 Thread.Sleep(Timeout.Infinite);
             }

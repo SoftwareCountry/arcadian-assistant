@@ -1,10 +1,11 @@
-﻿namespace Arcadia.Assistant.UserFeeds
+﻿namespace Arcadia.Assistant.UserFeeds.Models
 {
-    using Contracts;
+    using Contracts.Interfaces;
+    using Contracts.Models;
 
     public class Feed : IFeed
     {
-        public string Type { get; set; } = string.Empty;
+        public FeedId Id { get; set; } = new FeedId(string.Empty);
 
         public string Name { get; set; } = string.Empty;
 

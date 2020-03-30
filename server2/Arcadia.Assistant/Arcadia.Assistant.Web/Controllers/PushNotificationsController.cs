@@ -1,21 +1,21 @@
 ﻿namespace Arcadia.Assistant.Web.Controllers
 {
+    using System.Linq;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+
+    using DeviceRegistry.Contracts;
+    using DeviceRegistry.Contracts.Models;
+
+    using Employees.Contracts;
 
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
 
     using Models;
-    using System.Security.Claims;
-    using Employees.Contracts;
-    using System.Linq;
-
-    using DeviceRegistry.Contracts;
-    using Arcadia.Assistant.DeviceRegistry.Contracts.Models;
-
-    using Microsoft.Extensions.Logging;
 
     [Route("/api/push/device")]
     [Authorize]
@@ -38,7 +38,8 @@
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> RegisterDevice([FromBody] PushNotificationDeviceModel deviceModel, CancellationToken cancellationToken)
+        public async Task<IActionResult> RegisterDevice(
+            [FromBody] PushNotificationDeviceModel deviceModel, CancellationToken cancellationToken)
         {
             if (!this.ModelState.IsValid)
             {
@@ -58,7 +59,8 @@
             }
             else
             {
-                this.logger.LogWarning("{DeviceType} device (id:{DeviceId}) register declined: user not found.", deviceType, deviceModel.DevicePushToken);
+                this.logger.LogWarning("{DeviceType} device (id:{DeviceId}) register declined: user not found.",
+                    deviceType, deviceModel.DevicePushToken);
             }
 
             return this.Accepted();
@@ -86,7 +88,8 @@
             return this.Accepted();
         }
 
-        private async Task<EmployeeMetadata?> FindOrDefaultAsync(ClaimsPrincipal user, CancellationToken cancellationToken)
+        private async Task<EmployeeMetadata?> FindOrDefaultAsync(
+            ClaimsPrincipal user, CancellationToken cancellationToken)
         {
             if (!user.Identity.IsAuthenticated)
             {

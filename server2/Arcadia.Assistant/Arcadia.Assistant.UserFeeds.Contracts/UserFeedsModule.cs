@@ -4,6 +4,8 @@
 
     using Autofac;
 
+    using Interfaces;
+
     using Microsoft.ServiceFabric.Services.Remoting.Client;
 
     public class UserFeedsModule : Module

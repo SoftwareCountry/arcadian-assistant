@@ -14,11 +14,12 @@
     [ApiExplorerSettings(IgnoreApi = true)]
     public class GetFileWebController : Controller
     {
-        private readonly Dictionary<DeviceTypeEnum, string> fileContentTypeByDeviceType = new Dictionary<DeviceTypeEnum, string>
-        {
-            [DeviceTypeEnum.Android] = "application/vnd.android.package-archive",
-            [DeviceTypeEnum.Ios] = "application/octet-stream"
-        };
+        private readonly Dictionary<DeviceTypeEnum, string> fileContentTypeByDeviceType =
+            new Dictionary<DeviceTypeEnum, string>
+            {
+                [DeviceTypeEnum.Android] = "application/vnd.android.package-archive",
+                [DeviceTypeEnum.Ios] = "application/octet-stream"
+            };
 
         private readonly ILogger logger;
         private readonly IMobileBuildActorFactory mobileBuildActor;

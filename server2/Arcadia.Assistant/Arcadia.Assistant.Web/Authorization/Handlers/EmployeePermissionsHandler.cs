@@ -3,18 +3,18 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    using Arcadia.Assistant.Web.Authorization.Requirements;
-
     using Employees.Contracts;
 
     using Microsoft.AspNetCore.Authorization;
 
     using Permissions.Contracts;
 
+    using Requirements;
+
     public class EmployeePermissionsHandler : AuthorizationHandler<EmployeePermissionsRequirement, EmployeeId>
     {
-        private readonly IPermissions permissionsLoader;
         private readonly IEmployees employees;
+        private readonly IPermissions permissionsLoader;
 
         public EmployeePermissionsHandler(IPermissions permissionsLoader, IEmployees employees)
         {
@@ -22,15 +22,17 @@
             this.employees = employees;
         }
 
-        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, EmployeePermissionsRequirement requirement, EmployeeId resource)
+        protected override async Task HandleRequirementAsync(
+            AuthorizationHandlerContext context, EmployeePermissionsRequirement requirement, EmployeeId resource)
         {
             if (context.User.Identity.Name == null)
             {
                 return;
             }
 
-            
-            var allPermissions = await this.permissionsLoader.GetPermissionsAsync(new UserIdentity(context.User.Identity.Name), CancellationToken.None);
+            var allPermissions =
+                await this.permissionsLoader.GetPermissionsAsync(new UserIdentity(context.User.Identity.Name),
+                    CancellationToken.None);
             var employee = await this.employees.FindEmployeeAsync(resource, CancellationToken.None);
             if (employee == null)
             {

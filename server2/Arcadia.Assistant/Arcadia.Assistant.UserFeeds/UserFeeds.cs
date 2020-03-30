@@ -12,12 +12,21 @@ namespace Arcadia.Assistant.UserFeeds
     using BirthdaysFeed.Contracts;
 
     using Contracts;
+    using Contracts.Interfaces;
+    using Contracts.Models;
 
+    using Employees.Contracts;
+
+    using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Data.Collections;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
+    using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
 
-    using Constants = AnniversaryFeed.Contracts.Constants;
+    using Models;
+
+    using AnniversaryConstants = AnniversaryFeed.Contracts.Constants;
+    using BirthdaysConstants = BirthdaysFeed.Contracts.Constants;
 
     /// <summary>
     ///     An instance of this class is created for each service replica by the Service Fabric runtime.
@@ -26,64 +35,83 @@ namespace Arcadia.Assistant.UserFeeds
     {
         private const string UserFeedsCollectionKey = "user_feeds";
 
-        private readonly Dictionary<string, IFeedService> userFeedsMap;
+        private readonly ILogger logger;
+        private readonly Dictionary<FeedId, IFeedService> userFeedsMap;
 
         public UserFeeds(
             StatefulServiceContext context,
             IAnniversaryFeed anniversaryFeed,
-            IBirthdaysFeed birthdayFeed)
+            IBirthdaysFeed birthdayFeed,
+            ILogger<UserFeeds> logger)
             : base(context)
         {
-            this.userFeedsMap = new Dictionary<string, IFeedService>
+            this.logger = logger;
+            this.userFeedsMap = new Dictionary<FeedId, IFeedService>
             {
-                { Constants.ServiceType, anniversaryFeed },
-                { BirthdaysFeed.Contracts.Constants.ServiceType, birthdayFeed }
+                { new FeedId(AnniversaryConstants.ServiceType), anniversaryFeed },
+                { new FeedId(BirthdaysConstants.ServiceType), birthdayFeed }
             };
         }
 
         private TimeSpan Timeout => TimeSpan.FromMinutes(1);
 
-        public async Task<IEnumerable<IFeed>> GetUserFeedList(string employeeId, CancellationToken cancellationToken)
+        public async Task<IFeed[]> GetUserFeedList(EmployeeId employeeId, CancellationToken cancellationToken)
         {
             using var transaction = this.StateManager.CreateTransaction();
-            var userFeedsStore = await this.StateManager.GetOrAddAsync<IReliableDictionary<string, IEnumerable<IFeed>>>(transaction, UserFeedsCollectionKey, this.Timeout);
-            var userFeeds = await userFeedsStore.TryGetValueAsync(transaction, employeeId, this.Timeout, cancellationToken);
+            var userFeedsStore =
+                await this.StateManager.GetOrAddAsync<IReliableDictionary<EmployeeId, List<Feed>>>(transaction,
+                    UserFeedsCollectionKey, this.Timeout);
+            var userFeeds =
+                await userFeedsStore.TryGetValueAsync(transaction, employeeId, this.Timeout, cancellationToken);
             var userFeedsCollection = userFeeds.HasValue ? userFeeds.Value : this.CreateUserFeedsCollection(employeeId);
             if (!userFeeds.HasValue)
             {
-                await userFeedsStore.TryUpdateAsync(transaction, employeeId, userFeedsCollection, userFeedsCollection, this.Timeout, cancellationToken);
+                await userFeedsStore.TryUpdateAsync(transaction, employeeId, userFeedsCollection, userFeedsCollection,
+                    this.Timeout, cancellationToken);
             }
 
-            return userFeedsCollection;
+            return userFeedsCollection
+                .Cast<IFeed>()
+                .ToArray();
         }
 
-        public async Task<IEnumerable<FeedItem>> GetUserFeeds(string employeeId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
+        public async Task<FeedItem[]> GetUserFeeds(
+            EmployeeId employeeId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
         {
             var result = new List<FeedItem>();
             using var transaction = this.StateManager.CreateTransaction();
-            var userFeedsStore = await this.StateManager.GetOrAddAsync<IReliableDictionary<string, IEnumerable<IFeed>>>(transaction, UserFeedsCollectionKey, this.Timeout);
-            var userFeeds = await userFeedsStore.TryGetValueAsync(transaction, employeeId, this.Timeout, cancellationToken);
+            var userFeedsStore =
+                await this.StateManager.GetOrAddAsync<IReliableDictionary<EmployeeId, List<Feed>>>(transaction,
+                    UserFeedsCollectionKey, this.Timeout);
+            var userFeeds =
+                await userFeedsStore.TryGetValueAsync(transaction, employeeId, this.Timeout, cancellationToken);
             var userFeedsCollection = userFeeds.HasValue ? userFeeds.Value : this.CreateUserFeedsCollection(employeeId);
             foreach (var feed in userFeedsCollection)
             {
-                if (feed.Subscribed && this.userFeedsMap.TryGetValue(feed.Type, out var service))
+                if (feed.Subscribed && this.userFeedsMap.TryGetValue(feed.Id, out var service))
                 {
                     var items = await service.GetItems(startDate, endDate, cancellationToken);
                     result.AddRange(items);
                 }
             }
 
-            return result.OrderByDescending(x => x.Date);
+            return result
+                .OrderByDescending(x => x.Date)
+                .ToArray();
         }
 
-        public async Task Subscribe(string employeeId, IEnumerable<string> feedIds, CancellationToken cancellationToken)
+        public async Task Subscribe(EmployeeId employeeId, FeedId[] feedIds, CancellationToken cancellationToken)
         {
             using var transaction = this.StateManager.CreateTransaction();
-            var userFeedsStore = await this.StateManager.GetOrAddAsync<IReliableDictionary<string, IEnumerable<IFeed>>>(transaction, UserFeedsCollectionKey, this.Timeout);
-            var userFeeds = await userFeedsStore.TryGetValueAsync(transaction, employeeId, this.Timeout, cancellationToken);
+            var userFeedsStore =
+                await this.StateManager.GetOrAddAsync<IReliableDictionary<EmployeeId, List<Feed>>>(transaction,
+                    UserFeedsCollectionKey, this.Timeout);
+            var userFeeds =
+                await userFeedsStore.TryGetValueAsync(transaction, employeeId, this.Timeout, cancellationToken);
             var userFeedsCollection = userFeeds.HasValue ? userFeeds.Value : this.CreateUserFeedsCollection(employeeId);
-            userFeedsCollection.ToList().ForEach(f => f.Subscribed = feedIds.Any(i => f.Type == i));
-            await userFeedsStore.TryUpdateAsync(transaction, employeeId, userFeedsCollection, userFeedsCollection, this.Timeout, cancellationToken);
+            userFeedsCollection.ToList().ForEach(f => f.Subscribed = feedIds.Any(i => f.Id == i));
+            await userFeedsStore.TryUpdateAsync(transaction, employeeId, userFeedsCollection, userFeedsCollection,
+                this.Timeout, cancellationToken);
         }
 
         /// <summary>
@@ -96,7 +124,7 @@ namespace Arcadia.Assistant.UserFeeds
         /// <returns>A collection of listeners.</returns>
         protected override IEnumerable<ServiceReplicaListener> CreateServiceReplicaListeners()
         {
-            return new ServiceReplicaListener[0];
+            return this.CreateServiceRemotingReplicaListeners();
         }
 
         /// <summary>
@@ -106,20 +134,22 @@ namespace Arcadia.Assistant.UserFeeds
         /// <param name="cancellationToken">Canceled when Service Fabric needs to shut down this service replica.</param>
         protected override async Task RunAsync(CancellationToken cancellationToken)
         {
-            await this.StateManager.GetOrAddAsync<IReliableDictionary<string, IEnumerable<IFeed>>>(UserFeedsCollectionKey);
+            await this.StateManager.GetOrAddAsync<IReliableDictionary<EmployeeId, List<Feed>>>(
+                UserFeedsCollectionKey);
         }
 
-        private IEnumerable<IFeed> CreateUserFeedsCollection(string employeeId)
+        private List<Feed> CreateUserFeedsCollection(EmployeeId employeeId)
         {
             var availableFeeds = this.GetUserAvailableFeedTypes(employeeId);
             return availableFeeds.Select(x => new Feed
-            {
-                Type = x,
-                Name = $"{x} feed"
-            });
+                {
+                    Id = x,
+                    Name = $"{x} feed"
+                })
+                .ToList();
         }
 
-        private IEnumerable<string> GetUserAvailableFeedTypes(string employeeId)
+        private IReadOnlyCollection<FeedId> GetUserAvailableFeedTypes(EmployeeId employeeId)
         {
             return this.userFeedsMap.Keys;
         }

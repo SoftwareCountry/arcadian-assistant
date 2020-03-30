@@ -6,11 +6,11 @@
 
     public class EmployeePermissionsRequirement : IAuthorizationRequirement
     {
-        public EmployeePermissionsEntry RequiredPermissions { get; private set; }
-
         public EmployeePermissionsRequirement(EmployeePermissionsEntry requiredPermissions)
         {
             this.RequiredPermissions = requiredPermissions;
         }
+
+        public EmployeePermissionsEntry RequiredPermissions { get; }
     }
 }

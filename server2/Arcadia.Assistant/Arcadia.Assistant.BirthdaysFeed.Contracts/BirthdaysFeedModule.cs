@@ -12,7 +12,8 @@
         {
             builder.Register(x => x
                 .Resolve<IServiceProxyFactory>()
-                .CreateServiceProxy<IBirthdaysFeed>(new Uri("fabric:/Arcadia.Assistant.SF/Arcadia.Assistant.BirthdaysFeed")));
+                .CreateServiceProxy<IBirthdaysFeed>(
+                    new Uri("fabric:/Arcadia.Assistant.SF/Arcadia.Assistant.BirthdaysFeed")));
         }
     }
 }

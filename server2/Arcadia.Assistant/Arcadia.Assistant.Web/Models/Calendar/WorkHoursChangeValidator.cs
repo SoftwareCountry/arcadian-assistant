@@ -8,14 +8,16 @@
         {
             switch (validationContext.ObjectInstance)
             {
-                case CalendarEventModel model when model.Type != CalendarEventTypes.Dayoff && model.Type != CalendarEventTypes.Workout:
+                case CalendarEventModel model
+                    when model.Type != CalendarEventTypes.Dayoff && model.Type != CalendarEventTypes.Workout:
                     return ValidationResult.Success;
                 case CalendarEventModel model when model.Dates.StartDate != model.Dates.EndDate:
                     return new ValidationResult("Model dates must match");
                 case CalendarEventModel _:
                     return ValidationResult.Success;
                 default:
-                    return new ValidationResult($"Attribute usage error: ValidationContext must be applied to {typeof(CalendarEventModel)}");
+                    return new ValidationResult(
+                        $"Attribute usage error: ValidationContext must be applied to {typeof(CalendarEventModel)}");
             }
         }
     }

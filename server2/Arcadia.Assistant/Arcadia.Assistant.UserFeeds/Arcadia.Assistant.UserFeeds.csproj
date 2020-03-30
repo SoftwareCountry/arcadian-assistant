@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Arcadia.Assistant.AnniversaryFeed.Contracts\Arcadia.Assistant.AnniversaryFeed.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.BirthdaysFeed.Contracts\Arcadia.Assistant.BirthdaysFeed.Contracts.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.Employees.Contracts\Arcadia.Assistant.Employees.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Logging\Arcadia.Assistant.Logging.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.UserFeeds.Contracts\Arcadia.Assistant.UserFeeds.Contracts.csproj" />
   </ItemGroup>

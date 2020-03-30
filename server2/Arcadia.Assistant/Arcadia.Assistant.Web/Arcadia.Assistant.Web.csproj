@@ -30,18 +30,26 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Arcadia.Assistant.Avatars.Contracts\Arcadia.Assistant.Avatars.Contracts.csproj" />
-    <ProjectReference Include="..\Arcadia.Assistant.DeviceRegistry.Contracts\Arcadia.Assistant.DeviceRegistry.Contracts.csproj" />
+    <ProjectReference
+      Include="..\Arcadia.Assistant.DeviceRegistry.Contracts\Arcadia.Assistant.DeviceRegistry.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Employees.Contracts\Arcadia.Assistant.Employees.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Logging\Arcadia.Assistant.Logging.csproj" />
-    <ProjectReference Include="..\Arcadia.Assistant.MobileBuild.Contracts\Arcadia.Assistant.MobileBuild.Contracts.csproj" />
-    <ProjectReference Include="..\Arcadia.Assistant.Organization.Contracts\Arcadia.Assistant.Organization.Contracts.csproj" />
-    <ProjectReference Include="..\Arcadia.Assistant.PendingActions.Contracts\Arcadia.Assistant.PendingActions.Contracts.csproj" />
-    <ProjectReference Include="..\Arcadia.Assistant.Permissions.Contracts\Arcadia.Assistant.Permissions.Contracts.csproj" />
+    <ProjectReference
+      Include="..\Arcadia.Assistant.MobileBuild.Contracts\Arcadia.Assistant.MobileBuild.Contracts.csproj" />
+    <ProjectReference
+      Include="..\Arcadia.Assistant.Organization.Contracts\Arcadia.Assistant.Organization.Contracts.csproj" />
+    <ProjectReference
+      Include="..\Arcadia.Assistant.PendingActions.Contracts\Arcadia.Assistant.PendingActions.Contracts.csproj" />
+    <ProjectReference
+      Include="..\Arcadia.Assistant.Permissions.Contracts\Arcadia.Assistant.Permissions.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.UserFeeds.Contracts\Arcadia.Assistant.UserFeeds.Contracts.csproj" />
-    <ProjectReference Include="..\Arcadia.Assistant.UserPreferences.Contracts\Arcadia.Assistant.UserPreferences.Contracts.csproj" />
+    <ProjectReference
+      Include="..\Arcadia.Assistant.UserPreferences.Contracts\Arcadia.Assistant.UserPreferences.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Vacations.Contracts\Arcadia.Assistant.Vacations.Contracts.csproj" />
-    <ProjectReference Include="..\Arcadia.Assistant.VacationsCredit.Contracts\Arcadia.Assistant.VacationsCredit.Contracts.csproj" />
-    <ProjectReference Include="..\Arcadia.Assistant.WorkHoursCredit.Contracts\Arcadia.Assistant.WorkHoursCredit.Contracts.csproj" />
+    <ProjectReference
+      Include="..\Arcadia.Assistant.VacationsCredit.Contracts\Arcadia.Assistant.VacationsCredit.Contracts.csproj" />
+    <ProjectReference
+      Include="..\Arcadia.Assistant.WorkHoursCredit.Contracts\Arcadia.Assistant.WorkHoursCredit.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.SickLeaves.Contracts\Arcadia.Assistant.SickLeaves.Contracts.csproj" />
   </ItemGroup>
 

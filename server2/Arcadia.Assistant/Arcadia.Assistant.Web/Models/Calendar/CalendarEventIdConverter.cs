@@ -26,14 +26,15 @@
         {
             id = 0;
             var parts = this.GetIdParts(dtoId);
-            return parts != null && parts.Value.Item1 == CalendarEventTypes.Sickleave && int.TryParse(parts.Value.Item2, out id);
+            return parts != null && parts.Value.Item1 == CalendarEventTypes.Sickleave &&
+                int.TryParse(parts.Value.Item2, out id);
         }
 
         public bool TryParseWorkHoursChangeId(string dtoId, out Guid id)
         {
             id = default;
             var parts = this.GetIdParts(dtoId);
-            return parts != null 
+            return parts != null
                 && (parts.Value.Item1 == CalendarEventTypes.Dayoff || parts.Value.Item1 == CalendarEventTypes.Workout)
                 && Guid.TryParse(parts.Value.Item2, out id);
         }
@@ -41,8 +42,9 @@
         public bool TryParseVacationId(string dtoId, out int id)
         {
             id = default;
-            var parts = GetIdParts(dtoId);
-            return parts != null && parts.Value.Item1 == CalendarEventTypes.Vacation && int.TryParse(parts.Value.Item2, out id);
+            var parts = this.GetIdParts(dtoId);
+            return parts != null && parts.Value.Item1 == CalendarEventTypes.Vacation &&
+                int.TryParse(parts.Value.Item2, out id);
         }
 
         private (string, string)? GetIdParts(string dtoId)
@@ -52,10 +54,8 @@
             {
                 return null;
             }
-            else
-            {
-                return (parts[0], parts[1]);
-            }
+
+            return (parts[0], parts[1]);
         }
     }
 }
