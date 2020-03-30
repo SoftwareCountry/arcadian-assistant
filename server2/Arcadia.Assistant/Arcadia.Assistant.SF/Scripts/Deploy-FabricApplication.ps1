@@ -47,6 +47,8 @@ A security token for authentication to cluster management endpoints. Used for si
 .PARAMETER CopyPackageTimeoutSec
 Timeout in seconds for copying application package to image store.
 
+.PARAMETER RemoteVMDeploy
+
 .EXAMPLE
 . Scripts\Deploy-FabricApplication.ps1 -ApplicationPackagePath 'pkg\Debug'
 
@@ -101,7 +103,10 @@ Param
     $CopyPackageTimeoutSec,
 
     [int]
-    $RegisterApplicationTypeTimeoutSec
+    $RegisterApplicationTypeTimeoutSec,
+
+    [Switch]
+    $RemoteVMDeploy
 )
 
 function Read-XmlElementAsHashtable
@@ -161,6 +166,12 @@ function Read-PublishProfile
 }
 
 $LocalFolder = (Split-Path $MyInvocation.MyCommand.Path)
+$deployFile = "$LocalFolder\deploy.json"
+$remoteLocationConfig = {}
+if (Test-Path $deployFile)
+{
+    $remoteLocationConfig = Get-Content -Raw -Path $deployFile | ConvertFrom-Json
+}
 
 if (!$PublishProfileFile)
 {
@@ -169,10 +180,32 @@ if (!$PublishProfileFile)
 
 if (!$ApplicationPackagePath)
 {
-    $ApplicationPackagePath = "$LocalFolder\..\pkg\Release"
+    if ($RemoteVMDeploy)
+    {
+	$package_cfg = $remoteLocationConfig.package_configuration
+	$ApplicationPackagePath = "$LocalFolder\..\pkg\$package_cfg"
+    }
+    else
+    {    
+	$ApplicationPackagePath = "$LocalFolder\..\pkg\Release"
+    }
+}
+else
+{
+    if ($RemoteVMDeploy)
+    {
+	$package_cfg = $remoteLocationConfig.package_configuration
+	$ApplicationPackagePath = "$ApplicationPackagePath\$package_cfg"
+    }
 }
 
 $ApplicationPackagePath = Resolve-Path $ApplicationPackagePath
+
+if (!(Test-Path $ApplicationPackagePath))
+{
+    $errMsg = "$ApplicationPackagePath is not found."
+    throw $errMsg
+}
 
 $publishProfile = Read-PublishProfile $PublishProfileFile
 
@@ -202,10 +235,60 @@ Import-Module "$ModuleFolderPath\ServiceFabricSDK.psm1"
 $IsUpgrade = ($publishProfile.UpgradeDeployment -and $publishProfile.UpgradeDeployment.Enabled -and $OverrideUpgradeBehavior -ne 'VetoUpgrade') -or $OverrideUpgradeBehavior -eq 'ForceUpgrade'
 
 $PublishParameters = @{
-    'ApplicationPackagePath' = $ApplicationPackagePath
     'ApplicationParameterFilePath' = $publishProfile.ApplicationParameterFile
     'ApplicationParameter' = $ApplicationParameter
+    'CopyPackageTimeoutSec' = 7200
     'ErrorAction' = 'Stop'
+}
+
+if ($RemoteVMDeploy)
+{
+	$sfpkgFile = "sf_package.sfpkg"
+
+	Write-Host "Use remote location"
+
+	if (Test-Path Y:)
+	{
+	    Get-PSDrive Y | Remove-PSDrive
+	}
+
+	$RemoteLocationShare = $remoteLocationConfig.remote_location_share
+        $pass=$remoteLocationConfig.remote_location_pass|ConvertTo-SecureString -AsPlainText -Force
+        $cred = New-Object System.Management.Automation.PsCredential($remoteLocationConfig.remote_location_user,$pass)
+	New-PSDrive -name Y -Root $RemoteLocationShare -Credential $cred -PSProvider filesystem
+
+
+	$zipContentPath = "$ApplicationPackagePath\*"
+	$sourcePath = (Get-Item $ApplicationPackagePath).parent.FullName
+
+	$archive = "$sourcePath\$sfpkgFile.zip"
+	$manifest = "$ApplicationPackagePath\ApplicationManifest.xml"
+
+	Write-Host ("Compress package to file '" + $archive + "'")
+        Compress-Archive -Path $zipContentPath -DestinationPath $archive -Force
+
+	Remove-Item Y:\*.sfpkg -Force
+	Remove-Item Y:\*.xml -Force
+
+	$destination = "Y:\$sfpkgFile"
+	Write-Host ("Copy package '" + $archive + "' to '" + $destination + "'")
+	Copy-Item $archive -destination $destination -Force
+
+	$destination = "Y:\ApplicationManifest.xml"
+	Write-Host ("Copy manifest '" + $manifest + "' to '" + $destination + "'")
+	Copy-Item $manifest -destination $destination -Force
+
+	$PackageLocationURL = $remoteLocationConfig.package_location_url
+	$PublishParameters['ApplicationPathAsUrl'] = "$PackageLocationURL/$sfpkgFile"
+	$PublishParameters['ApplicationManifestPath'] = $manifest
+	Write-Host ("Apply application path URL as '" + $PublishParameters['ApplicationPathAsUrl'] + "'")
+
+	Get-PSDrive Y | Remove-PSDrive
+}
+else
+{
+    Write-Host 'Set ApplicationPackagePath as ' + $ApplicationPackagePath
+    $PublishParameters['ApplicationPackagePath'] = $ApplicationPackagePath
 }
 
 if ($publishProfile.CopyPackageParameters.CopyPackageTimeoutSec)
@@ -268,6 +351,17 @@ else
     $PublishParameters['Action'] = $Action
     $PublishParameters['OverwriteBehavior'] = $OverwriteBehavior
     $PublishParameters['SkipPackageValidation'] = $SkipPackageValidation
-    
-    Publish-NewServiceFabricApplication @PublishParameters
+
+    if ($RemoteVMDeploy)
+    {
+    	$script = "$PSScriptRoot\PublishCloud-NewServiceFabricApplication.ps1"
+	Write-Host ("Script: " + $script)
+
+	. "$script"
+	Publish-NewServiceFabricApplicationByUrl @PublishParameters
+    }
+    else
+    {
+    	Publish-NewServiceFabricApplication @PublishParameters
+    }
 }

@@ -9,6 +9,19 @@
             return $"{calendarEventType}_{id}";
         }
 
+        public bool TryGetCalendarEventType(string dtoId, out string type)
+        {
+            type = string.Empty;
+            var parts = this.GetIdParts(dtoId);
+            if (parts != null)
+            {
+                type = parts.Value.Item1;
+                return true;
+            }
+
+            return false;
+        }
+
         public bool TryParseSickLeaveId(string dtoId, out int id)
         {
             id = 0;
@@ -20,15 +33,15 @@
         {
             id = default;
             var parts = this.GetIdParts(dtoId);
-            return parts != null
+            return parts != null 
                 && (parts.Value.Item1 == CalendarEventTypes.Dayoff || parts.Value.Item1 == CalendarEventTypes.Workout)
                 && Guid.TryParse(parts.Value.Item2, out id);
         }
 
         public bool TryParseVacationId(string dtoId, out int id)
         {
-            id = 0;
-            var parts = this.GetIdParts(dtoId);
+            id = default;
+            var parts = GetIdParts(dtoId);
             return parts != null && parts.Value.Item1 == CalendarEventTypes.Vacation && int.TryParse(parts.Value.Item2, out id);
         }
 
@@ -39,8 +52,10 @@
             {
                 return null;
             }
-
-            return (parts[0], parts[1]);
+            else
+            {
+                return (parts[0], parts[1]);
+            }
         }
     }
 }

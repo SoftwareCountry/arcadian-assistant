@@ -6,6 +6,10 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Authorization;
+
+    using Configuration;
+
     using Employees.Contracts;
 
     using Microsoft.AspNetCore.Authorization;
@@ -22,24 +26,25 @@
     using WorkHoursCredit.Contracts;
 
     [Route("api/employees")]
-    [Authorize]
+    [Authorize(Policies.UserIsEmployee)]
     [ApiController]
     public class EmployeesController : Controller
     {
         private readonly IEmployees employees;
         private readonly ILogger<EmployeesController> logger;
         private readonly IPermissions permissions;
-        private readonly bool sslOffloading = false; //TODO: configured
+        private readonly bool sslOffloading;
         private readonly IVacationsCredit vacationsCredit;
         private readonly IWorkHoursCredit workHoursCredit;
 
-        public EmployeesController(IEmployees employees, ILogger<EmployeesController> logger, IPermissions permissions, IWorkHoursCredit workHoursCredit, IVacationsCredit vacationsCredit)
+        public EmployeesController(IEmployees employees, ISslSettings sslSettings, ILogger<EmployeesController> logger, IPermissions permissions, IWorkHoursCredit workHoursCredit, IVacationsCredit vacationsCredit)
         {
             this.employees = employees;
             this.logger = logger;
             this.permissions = permissions;
             this.workHoursCredit = workHoursCredit;
             this.vacationsCredit = vacationsCredit;
+            this.sslOffloading = sslSettings.SslOffloading;
         }
 
         [Route("{employeeId}")]
@@ -60,7 +65,7 @@
                 return this.Forbid();
             }
 
-            var model = (await this.ProcessEmployeesAsync(identity, new[] { employee }, token)).FirstOrDefault();
+            var model = (await this.ProcessEmployeesAsync(new UserIdentity(identity), new[] { employee }, token)).FirstOrDefault();
             if (model == null)
             {
                 return this.NotFound();
@@ -74,25 +79,41 @@
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<EmployeeModel[]>> FilterEmployees(
-            [FromQuery] string departmentId,
-            [FromQuery] string roomNumber,
-            [FromQuery] string name,
+            [FromQuery] string? departmentId,
+            [FromQuery] string? roomNumber,
+            [FromQuery] string? name,
             CancellationToken token)
         {
-            var query = EmployeesQuery.Create().ForDepartment(departmentId).ForRoom(roomNumber).WithNameFilter(name);
-            var employeesMetadata = await this.employees.FindEmployeesAsync(query, token);
             var identity = this.User.Identity.Name;
             if (identity == null)
             {
                 return this.Forbid();
             }
 
-            var employeeModels = await this.ProcessEmployeesAsync(identity, employeesMetadata, token);
+            var query = EmployeesQuery.Create();
+            if (departmentId != null)
+            {
+                query = query.ForDepartment(departmentId);
+            }
+
+            if (roomNumber != null)
+            {
+                query = query.ForRoom(roomNumber);
+            }
+
+            if (name != null)
+            {
+                query = query.WithNameFilter(name);
+            }
+
+            var employeesMetadata = await this.employees.FindEmployeesAsync(query, token);
+
+            var employeeModels = await this.ProcessEmployeesAsync(new UserIdentity(identity), employeesMetadata, token);
 
             return employeeModels;
         }
 
-        private async Task<EmployeeModel[]> ProcessEmployeesAsync(string identity, IEnumerable<EmployeeMetadata> employeeMetadatas, CancellationToken cancellationToken)
+        private async Task<EmployeeModel[]> ProcessEmployeesAsync(UserIdentity identity, IEnumerable<EmployeeMetadata> employeeMetadatas, CancellationToken cancellationToken)
         {
             var allPermissions = await this.permissions.GetPermissionsAsync(identity, cancellationToken);
 
@@ -148,7 +169,7 @@
                 }
                 catch (Exception e)
                 {
-                    this.logger.LogWarning(e, "Cannot generate PhotoUrl for {0}", employee.EmployeeId);
+                    this.logger.LogWarning(e, "Cannot generate PhotoUrl for {EmployeeId}", employee.EmployeeId);
                 }
             }
         }

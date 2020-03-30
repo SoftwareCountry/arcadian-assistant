@@ -29,7 +29,7 @@ namespace Arcadia.Assistant.Permissions
         private readonly IOrganization organization;
         private readonly ILogger logger;
 
-        public Permissions(StatelessServiceContext context, IEmployees employees, IOrganization organization, ILogger logger)
+        public Permissions(StatelessServiceContext context, IEmployees employees, IOrganization organization, ILogger<Permissions> logger)
             : base(context)
         {
             this.employees = employees;
@@ -46,9 +46,9 @@ namespace Arcadia.Assistant.Permissions
             return this.CreateServiceRemotingInstanceListeners();
         }
 
-        public async Task<UserPermissionsCollection> GetPermissionsAsync(string identity, CancellationToken cancellationToken)
+        public async Task<UserPermissionsCollection> GetPermissionsAsync(UserIdentity identity, CancellationToken cancellationToken)
         {
-            var userEmployee = (await this.employees.FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(identity), cancellationToken)).FirstOrDefault();
+            var userEmployee = (await this.employees.FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(identity.Value), cancellationToken)).FirstOrDefault();
             var defaultEmployeePermission = EmployeePermissionsEntry.None;
             var permissionsForDepartments = new Dictionary<DepartmentId, EmployeePermissionsEntry>();
             var permissionsForEmployees = new Dictionary<EmployeeId, EmployeePermissionsEntry>();
@@ -56,7 +56,7 @@ namespace Arcadia.Assistant.Permissions
             if (userEmployee != null)
             {
                 defaultEmployeePermission = ExistingEmployeeDefaultPermission;
-                BulkBumpPermissions(new [] { userEmployee.EmployeeId }, SelfPermissions, permissionsForEmployees);
+                BulkBumpPermissions(new[] { userEmployee.EmployeeId }, SelfPermissions, permissionsForEmployees);
 
                 if (userEmployee.DepartmentId.HasValue)
                 {

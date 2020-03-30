@@ -97,18 +97,23 @@ namespace Arcadia.Assistant.Sharepoint
                 string message)
         {
 #if !UNSAFE
-            this.WriteEvent(ServiceMessageEventId, serviceName, serviceTypeName, replicaOrInstanceId, partitionId, applicationName, applicationTypeName, nodeName, message);
+            this.WriteEvent(ServiceMessageEventId, serviceName, serviceTypeName, replicaOrInstanceId, partitionId,
+                applicationName, applicationTypeName, nodeName, message);
 #else
             const int numArgs = 8;
-            fixed (char* pServiceName = serviceName, pServiceTypeName = serviceTypeName, pApplicationName = applicationName, pApplicationTypeName = applicationTypeName, pNodeName = nodeName, pMessage = message)
+            fixed (char* pServiceName = serviceName, pServiceTypeName = serviceTypeName, pApplicationName =
+ applicationName, pApplicationTypeName = applicationTypeName, pNodeName = nodeName, pMessage = message)
             {
                 EventData* eventData = stackalloc EventData[numArgs];
                 eventData[0] = new EventData { DataPointer = (IntPtr) pServiceName, Size = SizeInBytes(serviceName) };
-                eventData[1] = new EventData { DataPointer = (IntPtr) pServiceTypeName, Size = SizeInBytes(serviceTypeName) };
+                eventData[1] = new EventData { DataPointer = (IntPtr) pServiceTypeName, Size =
+ SizeInBytes(serviceTypeName) };
                 eventData[2] = new EventData { DataPointer = (IntPtr) (&replicaOrInstanceId), Size = sizeof(long) };
                 eventData[3] = new EventData { DataPointer = (IntPtr) (&partitionId), Size = sizeof(Guid) };
-                eventData[4] = new EventData { DataPointer = (IntPtr) pApplicationName, Size = SizeInBytes(applicationName) };
-                eventData[5] = new EventData { DataPointer = (IntPtr) pApplicationTypeName, Size = SizeInBytes(applicationTypeName) };
+                eventData[4] = new EventData { DataPointer = (IntPtr) pApplicationName, Size =
+ SizeInBytes(applicationName) };
+                eventData[5] = new EventData { DataPointer = (IntPtr) pApplicationTypeName, Size =
+ SizeInBytes(applicationTypeName) };
                 eventData[6] = new EventData { DataPointer = (IntPtr) pNodeName, Size = SizeInBytes(nodeName) };
                 eventData[7] = new EventData { DataPointer = (IntPtr) pMessage, Size = SizeInBytes(message) };
 
@@ -119,7 +124,9 @@ namespace Arcadia.Assistant.Sharepoint
 
         private const int ServiceTypeRegisteredEventId = 3;
 
-        [Event(ServiceTypeRegisteredEventId, Level = EventLevel.Informational, Message = "Service host process {0} registered service type {1}", Keywords = Keywords.ServiceInitialization)]
+        [Event(ServiceTypeRegisteredEventId, Level = EventLevel.Informational,
+            Message = "Service host process {0} registered service type {1}",
+            Keywords = Keywords.ServiceInitialization)]
         public void ServiceTypeRegistered(int hostProcessId, string serviceType)
         {
             this.WriteEvent(ServiceTypeRegisteredEventId, hostProcessId, serviceType);
@@ -127,7 +134,8 @@ namespace Arcadia.Assistant.Sharepoint
 
         private const int ServiceHostInitializationFailedEventId = 4;
 
-        [Event(ServiceHostInitializationFailedEventId, Level = EventLevel.Error, Message = "Service host initialization failed", Keywords = Keywords.ServiceInitialization)]
+        [Event(ServiceHostInitializationFailedEventId, Level = EventLevel.Error,
+            Message = "Service host initialization failed", Keywords = Keywords.ServiceInitialization)]
         public void ServiceHostInitializationFailed(string exception)
         {
             this.WriteEvent(ServiceHostInitializationFailedEventId, exception);
@@ -138,7 +146,8 @@ namespace Arcadia.Assistant.Sharepoint
         // and other statistics.
         private const int ServiceRequestStartEventId = 5;
 
-        [Event(ServiceRequestStartEventId, Level = EventLevel.Informational, Message = "Service request '{0}' started", Keywords = Keywords.Requests)]
+        [Event(ServiceRequestStartEventId, Level = EventLevel.Informational, Message = "Service request '{0}' started",
+            Keywords = Keywords.Requests)]
         public void ServiceRequestStart(string requestTypeName)
         {
             this.WriteEvent(ServiceRequestStartEventId, requestTypeName);
@@ -146,7 +155,8 @@ namespace Arcadia.Assistant.Sharepoint
 
         private const int ServiceRequestStopEventId = 6;
 
-        [Event(ServiceRequestStopEventId, Level = EventLevel.Informational, Message = "Service request '{0}' finished", Keywords = Keywords.Requests)]
+        [Event(ServiceRequestStopEventId, Level = EventLevel.Informational, Message = "Service request '{0}' finished",
+            Keywords = Keywords.Requests)]
         public void ServiceRequestStop(string requestTypeName, string exception = "")
         {
             this.WriteEvent(ServiceRequestStopEventId, requestTypeName, exception);

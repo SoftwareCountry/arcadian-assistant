@@ -26,7 +26,7 @@ namespace Arcadia.Assistant.VacationsCredit
 
         private Dictionary<string, double> EmailToVacationDaysCount { get; set; } = new Dictionary<string, double>();
 
-        public VacationsCredit(StatelessServiceContext context, InboxConfiguration configuration, Func<Owned<IVacationsDaysLoader>> loaderFactory, ILogger logger)
+        public VacationsCredit(StatelessServiceContext context, InboxConfiguration configuration, Func<Owned<IVacationsDaysLoader>> loaderFactory, ILogger<VacationsCredit> logger)
             : base(context)
         {
             this.configuration = configuration;

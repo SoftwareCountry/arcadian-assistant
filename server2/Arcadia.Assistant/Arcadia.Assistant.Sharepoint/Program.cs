@@ -44,16 +44,24 @@ namespace Arcadia.Assistant.Sharepoint
             {
                 var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
                 var sharepointSection = configurationPackage.Settings.Sections["Sharepoint"];
-                var calendarEventIdField = sharepointSection.Parameters.TryGetValue("CalendarEventIdField", out var val) ? val.Value : null;
+                var calendarEventIdField = sharepointSection.Parameters.TryGetValue("CalendarEventIdField", out var val)
+                    ? val.Value
+                    : null;
 
                 var services = new ServiceCollection();
                 services.AddHttpClient();
 
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
-                builder.Register(x => new SharepointOnlineConfiguration(sharepointSection)).As<ISharepointOnlineConfiguration>().SingleInstance();
-                builder.Register(x => new SharepointSynchronizationSettings(configurationPackage.Settings.Sections["Service"])).As<ISharepointSynchronizationSettings>().SingleInstance();
-                builder.Register(x => new SharepointDepartmentsCalendarsSettings(configurationPackage.Settings.Sections["DepartmentsCalendars"])).As<ISharepointDepartmentsCalendarsSettings>().SingleInstance();
+                builder.Register(x => new SharepointOnlineConfiguration(sharepointSection))
+                    .As<ISharepointOnlineConfiguration>().SingleInstance();
+                builder.Register(x =>
+                        new SharepointSynchronizationSettings(configurationPackage.Settings.Sections["Service"]))
+                    .As<ISharepointSynchronizationSettings>().SingleInstance();
+                builder.Register(x =>
+                        new SharepointDepartmentsCalendarsSettings(
+                            configurationPackage.Settings.Sections["DepartmentsCalendars"]))
+                    .As<ISharepointDepartmentsCalendarsSettings>().SingleInstance();
                 builder
                     .Register(ctx =>
                     {
@@ -86,8 +94,9 @@ namespace Arcadia.Assistant.Sharepoint
                 builder.Populate(services);
 
                 using var container = builder.Build();
-                logger = container.ResolveOptional<ILogger>();
-                logger?.LogInformation($"Service type '{typeof(Sharepoint).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
+                logger = container.ResolveOptional<ILogger<Sharepoint>>();
+                logger?.LogInformation("Service type '{ServiceName}' registered. Process: {ProcessId}.",
+                    typeof(Sharepoint).Name, Process.GetCurrentProcess().Id);
                 // Prevents this host process from terminating so services keep running.
                 Thread.Sleep(Timeout.Infinite);
             }

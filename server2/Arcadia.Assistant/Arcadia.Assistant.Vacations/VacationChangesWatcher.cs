@@ -1,26 +1,25 @@
 ﻿namespace Arcadia.Assistant.Vacations
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
 
     using Autofac.Features.OwnedInstances;
 
-    using Contracts;
-
-    using Employees.Contracts;
+    using Microsoft.Extensions.Logging;
 
     public class VacationChangesWatcher : IDisposable
     {
         private readonly ManualResetEventSlim mres = new ManualResetEventSlim(false);
         private readonly Func<Owned<VacationChangesCheck>> vacationChangesCheckFactory;
         private readonly Settings settings;
+        private readonly ILogger<VacationChangesWatcher> logger;
 
-        public VacationChangesWatcher(Func<Owned<VacationChangesCheck>> vacationChangesCheckFactory, Settings settings)
+        public VacationChangesWatcher(Func<Owned<VacationChangesCheck>> vacationChangesCheckFactory, Settings settings, ILogger<VacationChangesWatcher> logger)
         {
             this.vacationChangesCheckFactory = vacationChangesCheckFactory;
             this.settings = settings;
+            this.logger = logger;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -33,9 +32,12 @@
                     {
                         await this.Refresh(cancellationToken).ConfigureAwait(false);
                     }
+                    catch (OperationCanceledException)
+                    {
+                    }
                     catch (Exception e)
                     {
-                        //TODO: log error
+                        this.logger.LogError(e, "Error while listening to vacation changes");
                     }
 
                     this.mres.Wait(this.settings.ChangesCheckInterval, cancellationToken);

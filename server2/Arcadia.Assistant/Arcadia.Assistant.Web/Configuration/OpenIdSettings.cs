@@ -2,7 +2,7 @@
 {
     using System.ComponentModel.DataAnnotations;
 
-    public class SecuritySettings
+    public class OpenIdSettings
     {
         [Required]
         public string? ClientId { get; set; }

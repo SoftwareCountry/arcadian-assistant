@@ -48,8 +48,8 @@ namespace Arcadia.Assistant.Avatars.Manager
                 builder.RegisterStatelessService<Manager>("Arcadia.Assistant.Avatars.ManagerType");
 
                 using var container = builder.Build();
-                logger = container.ResolveOptional<ILogger>();
-                logger?.LogInformation($"Service type '{typeof(Manager).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
+                logger = container.ResolveOptional<ILogger<Manager>>();
+                logger?.LogInformation("Service type '{ServiceName}' registered. Process: {ProcessId}.", typeof(Manager).Name, Process.GetCurrentProcess().Id);
                 // Prevents this host process from terminating so services keep running.
                 Thread.Sleep(Timeout.Infinite);
             }

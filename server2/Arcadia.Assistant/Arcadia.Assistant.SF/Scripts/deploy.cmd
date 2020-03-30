@@ -1,0 +1,2 @@
+@set @command=". '%cd%\Deploy-FabricApplication.ps1' -PublishProfileFile '%cd%\..\PublishProfiles\Cloud.xml' -DeployOnly:$false -ApplicationParameter:@{} -UnregisterUnusedApplicationVersionsAfterUpgrade $false -OverrideUpgradeBehavior 'None' -OverwriteBehavior 'SameAppTypeAndVersion' -SkipPackageValidation:$false -RemoteVMDeploy:$true -ErrorAction Stop"
+@powershell -NonInteractive -NoProfile -ExecutionPolicy Bypass -Command %@command%

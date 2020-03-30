@@ -50,9 +50,10 @@ namespace Arcadia.Assistant.MobileBuild
 
         public async Task SetMobileBuildData(string version, byte[] data, CancellationToken cancellationToken)
         {
-            await this.StateManager.AddOrUpdateStateAsync(BuildVersionKey, version, (key, value) => version, cancellationToken);
+            await this.StateManager.AddOrUpdateStateAsync(BuildVersionKey, version, (key, value) => version,
+                cancellationToken);
             await this.StateManager.AddOrUpdateStateAsync(BuildDataKey, data, (key, value) => data, cancellationToken);
-            this.logger.LogDebug($"Store build data (length:{data?.Length}) for version {version}");
+            this.logger.LogDebug("Store build data (length:{DataLength}) for version {Version}", data?.Length, version);
             await this.StateManager.SaveStateAsync(cancellationToken);
         }
 
@@ -62,7 +63,7 @@ namespace Arcadia.Assistant.MobileBuild
         /// </summary>
         protected override Task OnActivateAsync()
         {
-            this.logger.LogInformation("Actor activated.");
+            this.logger.LogInformation("Mobile builds actor {ActorId} activated.", this.GetActorId());
 
             // The StateManager is this actor's private state store.
             // Data stored in the StateManager will be replicated for high-availability for actors that use volatile or persisted state storage.

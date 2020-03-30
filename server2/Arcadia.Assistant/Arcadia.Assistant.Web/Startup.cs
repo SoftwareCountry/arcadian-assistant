@@ -4,17 +4,26 @@
     using System.Fabric;
     using System.Text.Json.Serialization;
 
+    using Authentication;
+
+    using Authorization;
+    using Authorization.Handlers;
+    using Authorization.Requirements;
+
     using Autofac;
 
     using Avatars.Contracts;
 
     using Configuration;
 
+    using DeviceRegistry.Contracts;
+
     using Employees.Contracts;
 
     using Logging;
 
     using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
@@ -48,6 +57,8 @@
     using VacationsCredit.Contracts;
 
     using WorkHoursCredit.Contracts;
+
+    using ZNetCS.AspNetCore.Authentication.Basic;
 
     public class Startup
     {
@@ -83,7 +94,7 @@
 
             services.AddOpenApiDocument((document, x) =>
             {
-                var settings = x.GetService<AppSettings>().Config.Security;
+                var settings = x.GetService<AppSettings>().Config.OpenId;
                 document.AddSecurity("bearer", new List<string>(), new OpenApiSecurityScheme
                 {
                     Type = OpenApiSecuritySchemeType.OAuth2,
@@ -109,10 +120,29 @@
                 })
                 .AddJwtBearer(jwtOptions =>
                 {
-                    jwtOptions.Audience = this.AppSettings.Config.Security.ClientId;
-                    jwtOptions.MetadataAddress = this.AppSettings.Config.Security.OpenIdConfigurationUrl;
+                    jwtOptions.Audience = this.AppSettings.Config.OpenId.ClientId;
+                    jwtOptions.MetadataAddress = this.AppSettings.Config.OpenId.OpenIdConfigurationUrl;
                     jwtOptions.Events = new JwtBearerEvents();
+                })
+                .AddBasicAuthentication(basicOptions =>
+                {
+                    basicOptions.Realm = this.AppSettings.Config.BasicAuthentication.Realm;
+                    basicOptions.EventsType = typeof(ServiceUserAuthenticationEvents);
                 });
+
+            services
+                .AddAuthorization(options =>
+                {
+                    options.AddPolicy(Policies.UserIsEmployee, policy => policy.Requirements.Add(new UserIsEmployeeRequirement()));
+
+                    options.AddPolicy(Policies.ServiceEndpoint, policy =>
+                    {
+                        policy.AddAuthenticationSchemes(BasicAuthenticationDefaults.AuthenticationScheme, JwtBearerDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                    });
+                });
+
+            //services.AddAuthorization();
         }
 
         // ReSharper disable once UnusedMember.Global
@@ -121,8 +151,10 @@
             builder.RegisterInstance(this.AppSettings);
             builder.RegisterInstance<IHelpSettings>(this.AppSettings.Config.Links);
             builder.RegisterInstance<ISslSettings>(this.AppSettings.Config.Ssl);
+            builder.RegisterInstance<IBasicAuthenticationSettings>(this.AppSettings.Config.BasicAuthentication);
             builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
             builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
+            builder.RegisterType<ServiceUserAuthenticationEvents>();
             builder.RegisterModule(new OrganizationModule());
             builder.RegisterModule(new EmployeesModule());
             builder.RegisterModule(new PermissionsModule());
@@ -134,7 +166,11 @@
             builder.RegisterModule(new SickLeavesModule());
             builder.RegisterModule(new PendingActionsModule());
             builder.RegisterModule(new MobileBuildModule());
+            builder.RegisterModule(new DeviceRegistryModule());
             builder.RegisterModule(new UserFeedsModule());
+
+            builder.RegisterType<UserIsEmployeeHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
+            builder.RegisterType<EmployeePermissionsHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
             builder.RegisterServiceLogging(new LoggerSettings(this.AppSettings.Config.Logging.ApplicationInsightsKey), this.serviceContext);
         }
 
@@ -159,7 +195,7 @@
             {
                 settings.OAuth2Client = new OAuth2ClientSettings
                 {
-                    ClientId = appSettings.Config.Security.ClientId
+                    ClientId = appSettings.Config.OpenId.ClientId
                 };
             });
 

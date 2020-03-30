@@ -32,7 +32,7 @@
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var version = await this.mobileBuildActor.MobileBuild(DeviceType.Ios.MobileBuildType()).GetMobileBuildVersionAsync(CancellationToken.None);
+            var version = await this.mobileBuildActor.MobileBuild(DeviceTypeEnum.Ios.MobileBuildType()).GetMobileBuildVersionAsync(CancellationToken.None);
             return this.View(new HomeViewModel
             {
                 ManifestLink = this.GetAbsoluteUrl("GetIosManifest", "DownloadIosWeb"),

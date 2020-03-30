@@ -39,7 +39,7 @@ namespace Arcadia.Assistant.Avatars
         /// <param name="actorService">The Microsoft.ServiceFabric.Actors.Runtime.ActorService that will host this actor instance.</param>
         /// <param name="actorId">The Microsoft.ServiceFabric.Actors.ActorId for this actor instance.</param>
         /// <param name="logger">Logger object</param>
-        public Avatar(ActorService actorService, ActorId actorId, ILogger logger)
+        public Avatar(ActorService actorService, ActorId actorId, ILogger<Avatar> logger)
             : base(actorService, actorId)
         {
             this.logger = logger;
@@ -51,7 +51,7 @@ namespace Arcadia.Assistant.Avatars
         /// </summary>
         protected override Task OnActivateAsync()
         {
-            logger.LogInformation("Actor activated.");
+            logger.LogInformation("Avatar actor {ActorId} activated.", this.GetActorId());
             return Task.CompletedTask;
         }
 

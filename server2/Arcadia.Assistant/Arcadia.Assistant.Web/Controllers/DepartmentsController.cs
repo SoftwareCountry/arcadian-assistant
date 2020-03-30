@@ -4,8 +4,11 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Authorization;
+
     using Employees.Contracts;
 
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
@@ -15,6 +18,7 @@
 
     [Route("/api/departments")]
     [ApiController]
+    [Authorize(Policies.UserIsEmployee)]
     public class DepartmentsController : Controller
     {
         private readonly IOrganization organization;

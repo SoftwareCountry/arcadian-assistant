@@ -9,6 +9,7 @@
     {
         Task<T> ExecuteSharepointRequest<T>(SharepointRequest request, CancellationToken cancellationToken = default);
 
-        Task<HttpResponseMessage> ExecuteSharepointRequest(SharepointRequest request, CancellationToken cancellationToken = default);
+        Task<HttpResponseMessage> ExecuteSharepointRequest(
+            SharepointRequest request, CancellationToken cancellationToken = default);
     }
 }

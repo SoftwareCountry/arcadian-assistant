@@ -6,6 +6,24 @@
     <Parameter Name="Arcadia.Assistant.UserFeeds_TargetReplicaSetSize" DefaultValue="3" />
     <Parameter Name="Arcadia.Assistant.AnniversaryFeed_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.BirthdaysFeed_InstanceCount" DefaultValue="-1" />
+    <Parameter Name="Arcadia.Assistant.EmailNotifications_InstanceCount" DefaultValue="-1" />
+    <Parameter Name="Arcadia.Assistant.Notifications_InstanceCount" DefaultValue="-1" />
+    <Parameter Name="Arcadia.Assistant.Notifications_EnablePush" DefaultValue="false" />
+    <Parameter Name="Arcadia.Assistant.Notifications_EnableEmail" DefaultValue="false" />
+    <Parameter Name="Arcadia.Assistant.Notifications_ClientNotificationProviders" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.PushNotifications_InstanceCount" DefaultValue="-1" />
+    <Parameter Name="Arcadia.Assistant.PushNotifications_ApiToken" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.PushNotifications_AndroidPushUrl" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.PushNotifications_IosPushUrl" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.EmailNotifications_ArcadiaAssistantFrom" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.EmailNotifications_Host" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.EmailNotifications_Port" DefaultValue="0" />
+    <Parameter Name="Arcadia.Assistant.EmailNotifications_UserName" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.EmailNotifications_Password" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.EmailNotifications_UseTls" DefaultValue="false" />
+    <Parameter Name="Arcadia.Assistant.DeviceRegistry_MinReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="Arcadia.Assistant.DeviceRegistry_PartitionCount" DefaultValue="1" />
+    <Parameter Name="Arcadia.Assistant.DeviceRegistry_TargetReplicaSetSize" DefaultValue="3" />
     <Parameter Name="Arcadia.Assistant.Sharepoint_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.AppCenterBuilds_InstanceCount" DefaultValue="1" />
     <Parameter Name="Arcadia.Assistant.AppCenterBuilds_DownloadBuildIntervalMinutes" DefaultValue="720" />
@@ -39,8 +57,8 @@
     <Parameter Name="Arcadia.Assistant.Sharepoint_ClientId" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Sharepoint_ClientSecret" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Sharepoint_CalendarEventIdField" DefaultValue="" />
-    <Parameter Name="Arcadia.Assistant.Sharepoint_SynchronizationIntervalMinutes" DefaultValue="" />
-    <Parameter Name="Arcadia.Assistant.Sharepoint_DepartmentsCalendars" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_SynchronizationIntervalMinutes" DefaultValue="10" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_DepartmentsCalendars" DefaultValue="[]" />
     <Parameter Name="Arcadia.Assistant.Web_ASPNETCORE_ENVIRONMENT" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.Web_Port" DefaultValue="63601" />
@@ -48,6 +66,9 @@
     <Parameter Name="Arcadia.Assistant.Web_Security_AuthorizationUrl" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_Security_TokenUrl" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_Security_OpenIdConfigurationUrl" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Web_Security_BasicAuthentication_Realm" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Web_Security_BasicAuthentication_Login" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Web_Security_BasicAuthentication_Password" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_Links_HelpLink" DefaultValue="https://arcadiaspb.sharepoint.com/teams/ArcadiaAssistant/SitePages/Usage%20Guide.aspx" />
     <Parameter Name="Arcadia.Assistant.Web_Ssl_SslOffloading" DefaultValue="false" />
     <Parameter Name="AvatarActorService_PartitionCount" DefaultValue="10" />
@@ -99,6 +120,74 @@
           <Section Name="Csp">
             <Parameter Name="ConnectionString" Value="[Arcadia.Assistant.Csp_ConnectionString]" />
           </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
+  </ServiceManifestImport>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.EmailNotificationsPkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Smtp">
+            <Parameter Name="Host" Value="[Arcadia.Assistant.EmailNotifications_Host]" />
+            <Parameter Name="Port" Value="[Arcadia.Assistant.EmailNotifications_Port]" />
+            <Parameter Name="UserName" Value="[Arcadia.Assistant.EmailNotifications_UserName]" />
+            <Parameter Name="Password" Value="[Arcadia.Assistant.EmailNotifications_Password]" />
+            <Parameter Name="UseTls" Value="[Arcadia.Assistant.EmailNotifications_UseTls]" />
+          </Section>
+          <Section Name="EmailNotification">
+            <Parameter Name="ArcadiaAssistantFrom" Value="[Arcadia.Assistant.EmailNotifications_ArcadiaAssistantFrom]" />
+          </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
+  </ServiceManifestImport>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.NotificationsPkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Notifications">
+            <Parameter Name="EnablePush" Value="[Arcadia.Assistant.Notifications_EnablePush]" />
+            <Parameter Name="EnableEmail" Value="[Arcadia.Assistant.Notifications_EnableEmail]" />
+            <Parameter Name="ClientNotificationProviders" Value="[Arcadia.Assistant.Notifications_ClientNotificationProviders]" />
+          </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
+  </ServiceManifestImport>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.PushNotificationsPkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="PushNotifications">
+            <Parameter Name="ApiToken" Value="[Arcadia.Assistant.PushNotifications_ApiToken]" />
+            <Parameter Name="AndroidPushUrl" Value="[Arcadia.Assistant.PushNotifications_AndroidPushUrl]" />
+            <Parameter Name="IosPushUrl" Value="[Arcadia.Assistant.PushNotifications_IosPushUrl]" />
+          </Section>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
+  </ServiceManifestImport>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.DeviceRegistryPkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
           <Section Name="Logging">
             <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
           </Section>
@@ -338,11 +427,16 @@
     <ConfigOverrides>
       <ConfigOverride Name="Config">
         <Settings>
-          <Section Name="Security">
+          <Section Name="OpenId">
             <Parameter Name="ClientId" Value="[Arcadia.Assistant.Web_Security_ClientId]" />
             <Parameter Name="AuthorizationUrl" Value="[Arcadia.Assistant.Web_Security_AuthorizationUrl]" />
             <Parameter Name="TokenUrl" Value="[Arcadia.Assistant.Web_Security_TokenUrl]" />
             <Parameter Name="OpenIdConfigurationUrl" Value="[Arcadia.Assistant.Web_Security_OpenIdConfigurationUrl]" />
+          </Section>
+          <Section Name="BasicAuthentication">
+            <Parameter Name="Realm" Value="[Arcadia.Assistant.Web_Security_BasicAuthentication_Realm]" />
+            <Parameter Name="Login" Value="[Arcadia.Assistant.Web_Security_BasicAuthentication_Login]" />
+            <Parameter Name="Password" Value="[Arcadia.Assistant.Web_Security_BasicAuthentication_Password]" />
           </Section>
           <Section Name="Links">
             <Parameter Name="HelpLink" Value="[Arcadia.Assistant.Web_Links_HelpLink]" />
@@ -385,6 +479,26 @@
       <StatelessService ServiceTypeName="Arcadia.Assistant.BirthdaysFeedType" InstanceCount="[Arcadia.Assistant.BirthdaysFeed_InstanceCount]">
         <SingletonPartition />
       </StatelessService>
+    </Service>
+    <Service Name="Arcadia.Assistant.EmailNotifications" ServicePackageActivationMode="ExclusiveProcess">
+      <StatelessService ServiceTypeName="Arcadia.Assistant.EmailNotificationsType" InstanceCount="[Arcadia.Assistant.EmailNotifications_InstanceCount]">
+        <SingletonPartition />
+      </StatelessService>
+    </Service>
+    <Service Name="Arcadia.Assistant.Notifications" ServicePackageActivationMode="ExclusiveProcess">
+      <StatelessService ServiceTypeName="Arcadia.Assistant.NotificationsType" InstanceCount="[Arcadia.Assistant.Notifications_InstanceCount]">
+        <SingletonPartition />
+      </StatelessService>
+    </Service>
+    <Service Name="Arcadia.Assistant.PushNotifications" ServicePackageActivationMode="ExclusiveProcess">
+      <StatelessService ServiceTypeName="Arcadia.Assistant.PushNotificationsType" InstanceCount="[Arcadia.Assistant.PushNotifications_InstanceCount]">
+        <SingletonPartition />
+      </StatelessService>
+    </Service>
+    <Service Name="Arcadia.Assistant.DeviceRegistry" ServicePackageActivationMode="ExclusiveProcess">
+      <StatefulService ServiceTypeName="Arcadia.Assistant.DeviceRegistryType" TargetReplicaSetSize="[Arcadia.Assistant.DeviceRegistry_TargetReplicaSetSize]" MinReplicaSetSize="[Arcadia.Assistant.DeviceRegistry_MinReplicaSetSize]">
+        <UniformInt64Partition PartitionCount="[Arcadia.Assistant.DeviceRegistry_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+      </StatefulService>
     </Service>
     <Service Name="Arcadia.Assistant.Sharepoint" ServicePackageActivationMode="ExclusiveProcess">
       <StatelessService ServiceTypeName="Arcadia.Assistant.SharepointType" InstanceCount="[Arcadia.Assistant.Sharepoint_InstanceCount]">

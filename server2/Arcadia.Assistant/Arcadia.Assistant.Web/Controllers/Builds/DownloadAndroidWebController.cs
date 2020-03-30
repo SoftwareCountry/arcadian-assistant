@@ -27,7 +27,7 @@
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var version = await this.mobileBuildActor.MobileBuild(DeviceType.Android.MobileBuildType()).GetMobileBuildVersionAsync(CancellationToken.None);
+            var version = await this.mobileBuildActor.MobileBuild(DeviceTypeEnum.Android.MobileBuildType()).GetMobileBuildVersionAsync(CancellationToken.None);
             return this.View(new HomeViewModel
             {
                 HelpLink = this.helpSettings.HelpLink,

@@ -17,20 +17,20 @@
             var userAgent = this.Request.Headers[HeaderNames.UserAgent];
             var deviceType = this.GetDeviceTypeByUserAgent(userAgent);
 
-            return deviceType == DeviceType.Android
+            return deviceType == DeviceTypeEnum.Android
                 ? this.RedirectToAction("Index", "DownloadAndroidWeb")
                 : this.RedirectToAction("Index", "DownloadIosWeb");
         }
 
-        private DeviceType GetDeviceTypeByUserAgent(string userAgent)
+        private DeviceTypeEnum GetDeviceTypeByUserAgent(string userAgent)
         {
             var androidUserAgent = userAgent?.IndexOf("android", StringComparison.InvariantCultureIgnoreCase) ?? -1;
             if (androidUserAgent != -1)
             {
-                return DeviceType.Android;
+                return DeviceTypeEnum.Android;
             }
 
-            return DeviceType.Ios;
+            return DeviceTypeEnum.Ios;
         }
     }
 }

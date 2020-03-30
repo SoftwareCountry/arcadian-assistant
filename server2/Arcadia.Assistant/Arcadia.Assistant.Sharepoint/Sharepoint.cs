@@ -48,7 +48,7 @@ namespace Arcadia.Assistant.Sharepoint
             Func<IExternalStorage> externalStorageProvider,
             ISharepointSynchronizationSettings serviceSettings,
             ISharepointDepartmentsCalendarsSettings departmentsCalendarsSettings,
-            ILogger logger)
+            ILogger<Sharepoint> logger)
             : base(context)
         {
             this.externalStorageProvider = externalStorageProvider;
@@ -81,34 +81,36 @@ namespace Arcadia.Assistant.Sharepoint
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                //ServiceEventSource.Current.ServiceMessage(this.Context, "Working-{0}", ++iterations);
-
                 // request Sharepoint calendars
                 var externalStorage = this.externalStorageProvider();
                 var departments = await this.GetDepartmentsList(cancellationToken);
-                var synchronizator = new SharepointSynchronizator(this.sickLeaves, this.vacations, this.workouts, this.departmentsCalendarsSettings, this.logger);
+                var synchronizer = new SharepointSynchronizer(this.sickLeaves, this.vacations, this.workouts,
+                    this.departmentsCalendarsSettings, this.logger);
 
                 try
                 {
-                    await synchronizator.Synchronize(this.employees, departments, externalStorage, cancellationToken);
+                    await synchronizer.Synchronize(this.employees, departments, externalStorage, cancellationToken);
                 }
                 catch (Exception e)
                 {
                     this.logger.LogError(e, "Sharepoint items synchronization fail");
                 }
 
-                await Task.Delay(TimeSpan.FromMinutes(this.serviceSettings.SynchronizationIntervalMinutes), cancellationToken);
+                await Task.Delay(TimeSpan.FromMinutes(this.serviceSettings.SynchronizationIntervalMinutes),
+                    cancellationToken);
             }
         }
 
         private async Task<IEnumerable<string>> GetDepartmentsList(CancellationToken cancellationToken)
         {
-            if (this.departmentsCalendarsSettings.DepartmentsCalendars != null && this.departmentsCalendarsSettings.DepartmentsCalendars.Any())
+            if (this.departmentsCalendarsSettings.DepartmentsCalendars != null &&
+                this.departmentsCalendarsSettings.DepartmentsCalendars.Any())
             {
                 return this.departmentsCalendarsSettings.DepartmentsCalendars.Select(x => x.DepartmentId).Distinct();
             }
 
-            return (await this.organizations.GetDepartmentsAsync(cancellationToken)).Select(x => x.DepartmentId.Value.ToString());
+            return (await this.organizations.GetDepartmentsAsync(cancellationToken)).Select(x =>
+                x.DepartmentId.Value.ToString());
         }
     }
 }

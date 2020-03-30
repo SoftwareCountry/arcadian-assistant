@@ -9,6 +9,8 @@ namespace Arcadia.Assistant.AppCenterBuilds
     using Autofac.Extensions.DependencyInjection;
     using Autofac.Integration.ServiceFabric;
 
+    using DeviceRegistry.Contracts;
+
     using Logging;
 
     using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +19,8 @@ namespace Arcadia.Assistant.AppCenterBuilds
     using Microsoft.ServiceFabric.Services.Remoting.Client;
 
     using MobileBuild.Contracts;
+
+    using Notifications.Contracts;
 
     internal static class Program
     {
@@ -36,18 +40,24 @@ namespace Arcadia.Assistant.AppCenterBuilds
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterStatelessService<AppCenterBuilds>("Arcadia.Assistant.AppCenterBuildsType");
-                builder.Register(x => new DownloadApplicationSettings(configurationPackage.Settings.Sections["DownloadApplication"])).As<IDownloadApplicationSettings>().SingleInstance();
+                builder.Register(x =>
+                        new DownloadApplicationSettings(configurationPackage.Settings.Sections["DownloadApplication"]))
+                    .As<IDownloadApplicationSettings>().SingleInstance();
 
                 builder.RegisterInstance<IActorProxyFactory>(new ActorProxyFactory());
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
-                builder.RegisterModule(new MobileBuildModule());
+                builder.RegisterType<AppCenterNotification>().As<IAppCenterNotification>();
+                builder.RegisterModule<DeviceRegistryModule>();
+                builder.RegisterModule<NotificationsModule>();
+                builder.RegisterModule<MobileBuildModule>();
                 builder.Populate(services);
 
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using var container = builder.Build();
-                logger = container.ResolveOptional<ILogger>();
-                logger?.LogInformation($"Service type '{typeof(AppCenterBuilds).Name}' registered. Process: {Process.GetCurrentProcess().Id}.");
+                logger = container.ResolveOptional<ILogger<AppCenterBuilds>>();
+                logger?.LogInformation("Service type '{ServiceName}' registered. Process: {ProcessId}.",
+                    typeof(AppCenterBuilds).Name, Process.GetCurrentProcess().Id);
                 // Prevents this host process from terminating so services keep running.
                 Thread.Sleep(Timeout.Infinite);
             }
