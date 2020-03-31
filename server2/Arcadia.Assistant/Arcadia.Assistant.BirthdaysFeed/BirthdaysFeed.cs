@@ -72,7 +72,7 @@ namespace Arcadia.Assistant.BirthdaysFeed
         private FeedItem ConvertFeedMessage(Employee employee)
         {
             var employeeId = employee.Id.ToString();
-            var date = Convert.ToDateTime(employee.Birthday!);
+            var date = employee.Birthday.GetValueOrDefault();
             var pronoun = employee.Gender == "F" ? "her" : "his";
             var title = $"{employee.LastName} {employee.FirstName}".Trim();
             var text = $"{title} celebrates {pronoun} birthday on {date:MMMM dd)}!";
