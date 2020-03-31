@@ -64,10 +64,15 @@ namespace Arcadia.Assistant.BirthdaysFeed
             return this.CreateServiceRemotingInstanceListeners();
         }
 
+        /// <summary>
+        ///     Linq selector method to convert Employee information to FeedItem
+        /// </summary>
+        /// <param name="employee">Employee metadata object</param>
+        /// <remarks>Ensure the employee birthday is not null</remarks>
         private FeedItem ConvertFeedMessage(Employee employee)
         {
             var employeeId = employee.Id.ToString();
-            var date = employee.Birthday.HasValue ? employee.Birthday.Value : DateTime.MinValue;
+            var date = Convert.ToDateTime(employee.Birthday!);
             var pronoun = employee.Gender == "F" ? "her" : "his";
             var title = $"{employee.LastName} {employee.FirstName}".Trim();
             var text = $"{title} celebrates {pronoun} birthday on {date:MMMM dd)}!";
