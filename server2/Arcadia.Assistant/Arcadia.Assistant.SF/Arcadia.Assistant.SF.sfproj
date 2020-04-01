@@ -31,7 +31,6 @@
     <ProjectReference Include="..\Arcadia.Assistant.AppCenterBuilds\Arcadia.Assistant.AppCenterBuilds.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Avatars.Manager\Arcadia.Assistant.Avatars.Manager.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Avatars\Arcadia.Assistant.Avatars.csproj" />
-    <ProjectReference Include="..\Arcadia.Assistant.CSP\Arcadia.Assistant.CSP.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.DeviceRegistry\Arcadia.Assistant.DeviceRegistry.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.EmailNotifications\Arcadia.Assistant.EmailNotifications.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Inbox\Arcadia.Assistant.Inbox.csproj" />

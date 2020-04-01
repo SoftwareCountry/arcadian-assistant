@@ -1,82 +1,65 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Arcadia.Assistant.CSP.Contracts.Models
+﻿namespace Arcadia.Assistant.CSP.Models
 {
-    public partial class Employee
-    {
-        public Employee()
-        {
-            /*
-            CertificationData = new HashSet<CertificationDatum>();
-            CompanyHistories = new HashSet<CompanyHistory>();
-            DepartmentHistories = new HashSet<DepartmentHistory>();
-            */
-            /*
-            EmployeeCertificationHistories = new HashSet<EmployeeCertificationHistory>();
-            EmployeeCertifications = new HashSet<EmployeeCertification>();
-            EmployeeCspalerts = new HashSet<EmployeeCspalert>();
-            EmployeeHistoryEmployees = new HashSet<EmployeeHistory>();
-            EmployeeHistoryModifiedByNavigations = new HashSet<EmployeeHistory>();
-            EmployeePositionHistories = new HashSet<EmployeePositionHistory>();
-            EmployeeRoles = new HashSet<EmployeeRole>();
-            EmployeeTeams = new HashSet<EmployeeTeam>();
-            ForeignPassportHistories = new HashSet<ForeignPassportHistory>();
-            ForeignPassports = new HashSet<ForeignPassport>();
-            SickLeaveCancellations = new HashSet<SickLeaveCancellation>();
-            SickLeaveCompletes = new HashSet<SickLeaveComplete>();
-            SickLeaves = new HashSet<SickLeave>();
-            TeamHistories = new HashSet<TeamHistory>();
-            Teams = new HashSet<Team>();
-            VacationApprovals = new HashSet<VacationApproval>();
-            VacationCancellations = new HashSet<VacationCancellation>();
-            VacationEmployeeId1Navigations = new HashSet<Vacation>();
-            VacationEmployees = new HashSet<Vacation>();
-            VacationProcesses = new HashSet<VacationProcess>();
-            VacationReadies = new HashSet<VacationReady>();
-            VisaHistories = new HashSet<VisaHistory>();
-            Visas = new HashSet<Visa>();
-            */
-        }
+    using System;
+    using System.Collections.Generic;
 
+    public class Employee
+    {
         public int Id { get; set; }
+
         public string FirstName { get; set; }
+
         public string MiddleName { get; set; }
+
         public string LastName { get; set; }
+
         public string FirstNameRus { get; set; }
+
         public string MiddleNameRus { get; set; }
+
         public string LastNameRus { get; set; }
+
         public string LoginName { get; set; }
+
         public Guid? Sid { get; set; }
+
         public DateTime? Birthday { get; set; }
+
         /*
         public string BusinessPhone { get; set; }
         public string HomePhone { get; set; }
         */
         public string Email { get; set; }
+
         public int? DepartmentId { get; set; }
+
         public int? PositionId { get; set; }
+
         /*
         public DateTime HiringDate { get; set; }
         */
         public DateTime? FiringDate { get; set; }
+
         /*
         public bool IsWorking { get; set; }
         public string Description { get; set; }
         public bool IsPartTime { get; set; }
         */
         public byte[] Image { get; set; }
-        
+
         public int? CompanyId { get; set; }
+
         /*
         public bool IsInStaff { get; set; }
         */
         public string IntrabaseId { get; set; }
+
         /*
         public string Gender { get; set; }
         public short ClockNumber { get; set; }
         */
         public string RoomNumber { get; set; }
+
         /*
         public string BusinessCountry { get; set; }
         public string BusinessZip { get; set; }
@@ -97,6 +80,7 @@ namespace Arcadia.Assistant.CSP.Contracts.Models
         public int? PartTime { get; set; }
         */
         public bool IsDelete { get; set; }
+
         /*
         public bool IsInfOffice { get; set; }
         public bool IsPublishDeny { get; set; }
@@ -105,8 +89,9 @@ namespace Arcadia.Assistant.CSP.Contracts.Models
         public virtual Company Company { get; set; }
         */
         public virtual Department Department { get; set; }
-        
+
         public virtual EmployeePosition Position { get; set; }
+
         /*
         [InverseProperty("IdNavigation")]
         public virtual VacationRemain VacationRemain { get; set; }

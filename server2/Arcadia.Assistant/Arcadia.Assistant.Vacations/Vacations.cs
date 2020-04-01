@@ -3,14 +3,13 @@ namespace Arcadia.Assistant.Vacations
     using System;
     using System.Collections.Generic;
     using System.Fabric;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Arcadia.Assistant.CSP.Contracts.Models;
     using Autofac.Features.OwnedInstances;
 
     using Contracts;
 
+    using CSP.Models;
 
     using Employees.Contracts;
 
@@ -163,11 +162,14 @@ namespace Arcadia.Assistant.Vacations
             await this.changesWatcher.StartAsync(cancellationToken);
         }
 
-        private async Task UpdateCalendarEvent(EmployeeId employeeId, int eventId, Action<Vacation> updateFunc)
+        private Task UpdateCalendarEvent(EmployeeId employeeId, int eventId, Action<Vacation> updateFunc)
         {
-            using var storage = this.storageFactory();
-            await storage.Value.UpdateCalendarEvent(employeeId, eventId, updateFunc);
-            this.changesWatcher.ForceRefresh();
+            return Task.Run(() =>
+            {
+                using var storage = this.storageFactory();
+                storage.Value.UpdateCalendarEvent(employeeId, eventId, updateFunc);
+                this.changesWatcher.ForceRefresh();
+            });
         }
     }
 }

@@ -3,10 +3,18 @@ using System.Diagnostics;
 using System.Fabric;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
+using Autofac.Integration.ServiceFabric;
+using Microsoft.Extensions.Logging;
 using Microsoft.ServiceFabric.Services.Runtime;
 
 namespace CSP
 {
+    using Arcadia.Assistant.CSP.Contracts;
+    using Arcadia.Assistant.Logging;
+
+    using Microsoft.ServiceFabric.Services.Remoting.Client;
+
     internal static class Program
     {
         /// <summary>
@@ -14,26 +22,33 @@ namespace CSP
         /// </summary>
         private static void Main()
         {
+            ILogger? logger = null;
             try
             {
-                // The ServiceManifest.XML file defines one or more service type names.
-                // Registering a service maps a service type name to a .NET type.
-                // When Service Fabric creates an instance of this service type,
-                // an instance of the class is created in this host process.
+                var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
+                var connectionString =
+                    "Endpoint=sb://arcadia-cspdb-dev.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=My3KYmJOIIgqo9fBP9DYxbqiNfIsAKI7AlrZWfQz38I=";
 
-                ServiceRuntime.RegisterServiceAsync("CSPType",
-                    context => new CSP(context)).GetAwaiter().GetResult();
+                var builder = new ContainerBuilder();
+                builder.RegisterServiceFabricSupport();
+                builder.RegisterStatelessService<CSP>("Arcadia.Assistant.CSPType");
+                builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
+                builder.Register(x => new ArcadiaCspContext(connectionString)).AsSelf()
+                    .SingleInstance();
+                builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
-                ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(CSP).Name);
-
-                // Prevents this host process from terminating so services keep running.
+                using var container = builder.Build();
+                logger = container.ResolveOptional<ILogger<CSP>>();
+                logger?.LogInformation("Service type '{ServiceName}' registered. Process: {ProcessId}.",
+                    typeof(CSP).Name, Process.GetCurrentProcess().Id);
                 Thread.Sleep(Timeout.Infinite);
             }
             catch (Exception e)
             {
                 ServiceEventSource.Current.ServiceHostInitializationFailed(e.ToString());
+                logger?.LogCritical(e, e.Message);
                 throw;
-            }
+                }
         }
     }
 }

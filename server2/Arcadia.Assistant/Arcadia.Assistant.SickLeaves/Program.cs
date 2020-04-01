@@ -9,7 +9,6 @@ namespace Arcadia.Assistant.SickLeaves
     using Autofac.Integration.ServiceFabric;
 
     using CSP;
-    using CSP.Contracts;
 
     using Logging;
 

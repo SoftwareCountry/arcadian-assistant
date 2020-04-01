@@ -7,7 +7,7 @@
 
     using Contracts;
 
-    using CSP.Contracts;
+    using CSP;
 
     using Employees.Contracts;
 

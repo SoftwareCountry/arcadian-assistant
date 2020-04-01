@@ -93,9 +93,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.EmailNoti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.EmailNotifications.Contracts", "Arcadia.Assistant.EmailNotifications.Contracts\Arcadia.Assistant.EmailNotifications.Contracts.csproj", "{2C90A76E-0F68-48BC-B09A-E0BF1A5AA047}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.CSP", "Arcadia.Assistant.CSP\Arcadia.Assistant.CSP.csproj", "{DC7623D6-62D4-41EE-AD49-A28AB31B1EA5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.CSP.Contracts", "Arcadia.Assistant.CSP.Contracts\Arcadia.Assistant.CSP.Contracts.csproj", "{98D2B45D-62C0-472D-8799-31F062D03FDB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.CSP", "Arcadia.Assistant.CSP.Contracts\Arcadia.Assistant.CSP.csproj", "{98D2B45D-62C0-472D-8799-31F062D03FDB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -424,14 +422,6 @@ Global
 		{2C90A76E-0F68-48BC-B09A-E0BF1A5AA047}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2C90A76E-0F68-48BC-B09A-E0BF1A5AA047}.Release|x64.ActiveCfg = Release|Any CPU
 		{2C90A76E-0F68-48BC-B09A-E0BF1A5AA047}.Release|x64.Build.0 = Release|Any CPU
-		{DC7623D6-62D4-41EE-AD49-A28AB31B1EA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DC7623D6-62D4-41EE-AD49-A28AB31B1EA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DC7623D6-62D4-41EE-AD49-A28AB31B1EA5}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{DC7623D6-62D4-41EE-AD49-A28AB31B1EA5}.Debug|x64.Build.0 = Debug|Any CPU
-		{DC7623D6-62D4-41EE-AD49-A28AB31B1EA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DC7623D6-62D4-41EE-AD49-A28AB31B1EA5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DC7623D6-62D4-41EE-AD49-A28AB31B1EA5}.Release|x64.ActiveCfg = Release|Any CPU
-		{DC7623D6-62D4-41EE-AD49-A28AB31B1EA5}.Release|x64.Build.0 = Release|Any CPU
 		{98D2B45D-62C0-472D-8799-31F062D03FDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{98D2B45D-62C0-472D-8799-31F062D03FDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98D2B45D-62C0-472D-8799-31F062D03FDB}.Debug|x64.ActiveCfg = Debug|Any CPU

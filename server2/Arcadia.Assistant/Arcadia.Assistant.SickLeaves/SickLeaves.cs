@@ -11,7 +11,8 @@ namespace Arcadia.Assistant.SickLeaves
 
     using Contracts;
 
-    using CSP.Contracts.Models;
+    using CSP;
+    using CSP.Models;
 
     using Employees.Contracts;
 

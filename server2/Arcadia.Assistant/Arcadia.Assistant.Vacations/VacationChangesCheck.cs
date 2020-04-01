@@ -8,13 +8,13 @@
 
     using Autofac.Features.OwnedInstances;
 
-    using CSP.Contracts;
-    using CSP.Contracts.Models;
+    using CSP;
+    using CSP.Models;
 
     using Employees.Contracts;
 
 
-    using VacationsDictionary = System.Collections.Generic.Dictionary<Employees.Contracts.EmployeeId, System.Collections.Generic.Dictionary<int, CSP.Contracts.Models.Vacation>>;
+    using VacationsDictionary = System.Collections.Generic.Dictionary<Employees.Contracts.EmployeeId, System.Collections.Generic.Dictionary<int, CSP.Models.Vacation>>;
 
     public class VacationChangesCheck
     {

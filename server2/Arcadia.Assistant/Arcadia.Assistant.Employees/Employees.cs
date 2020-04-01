@@ -7,11 +7,13 @@ namespace Arcadia.Assistant.Employees
     using System.Linq.Expressions;
     using System.Threading;
     using System.Threading.Tasks;
-    using Arcadia.Assistant.CSP.Contracts;
-    using Arcadia.Assistant.CSP.Contracts.Models;
     using Autofac.Features.OwnedInstances;
 
     using Contracts;
+
+    using CSP;
+    using CSP.Contracts;
+    using CSP.Models;
 
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
@@ -66,7 +68,7 @@ namespace Arcadia.Assistant.Employees
         public async Task<EmployeeMetadata?> FindEmployeeAsync(EmployeeId employeeId, CancellationToken cancellationToken)
         {
             using var query = this.cspEmployeeQuery();
-            var employee = await query.Value.Get().Where(x => x.Id == employeeId.Value).Select(this.mapToMetadata).FirstOrDefaultAsync(cancellationToken);
+            var employee = await (await query.Value.Get()).Where(x => x.Id == employeeId.Value).Select(this.mapToMetadata).FirstOrDefaultAsync(cancellationToken);
 
             return employee;
         }
@@ -74,7 +76,7 @@ namespace Arcadia.Assistant.Employees
         public async Task<EmployeeMetadata[]> FindEmployeesAsync(EmployeesQuery employeesQuery, CancellationToken cancellationToken)
         {
             using var db = this.cspEmployeeQuery();
-            var query = db.Value.Get();
+            var query = await db.Value.Get();
 
             if (employeesQuery.RoomNumber != null)
             {

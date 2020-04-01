@@ -6,7 +6,7 @@
 
     using Contracts;
 
-    using CSP.Contracts.Models;
+    using CSP.Models;
 
     using Employees.Contracts;
 

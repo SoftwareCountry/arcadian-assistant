@@ -1,15 +1,16 @@
 ﻿namespace Arcadia.Assistant.CSP.Contracts
 {
     using System.Linq;
+    using System.Threading.Tasks;
 
     using Models;
 
     public class CspEmployeeQuery
     {
         private const int ArcadyKhotinEmployeeId = 145;
+        private readonly CspConfiguration cspConfiguration;
 
         private readonly ArcadiaCspContext ctx;
-        private readonly CspConfiguration cspConfiguration;
 
         public CspEmployeeQuery(ArcadiaCspContext ctx, CspConfiguration cspConfiguration)
         {
@@ -17,10 +18,12 @@
             this.cspConfiguration = cspConfiguration;
         }
 
-        public IQueryable<Employee> Get()
+        public async Task<IQueryable<Employee>> Get()
         {
-            return this.ctx.Employees
-                .Where(x => x.FiringDate == null && !x.IsDelete && x.CompanyId == this.cspConfiguration.CompanyId || x.Id == ArcadyKhotinEmployeeId)
+            var employees = await this.ctx.GetEmployeesAsync();
+            return employees
+                .Where(x => x.FiringDate == null && !x.IsDelete && x.CompanyId == this.cspConfiguration.CompanyId ||
+                    x.Id == ArcadyKhotinEmployeeId)
                 .AsQueryable();
         }
     }

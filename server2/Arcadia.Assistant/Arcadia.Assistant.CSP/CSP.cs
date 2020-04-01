@@ -9,14 +9,20 @@ using Microsoft.ServiceFabric.Services.Runtime;
 
 namespace CSP
 {
+    using Arcadia.Assistant.CSP.Contracts;
+
     /// <summary>
     /// An instance of this class is created for each service instance by the Service Fabric runtime.
     /// </summary>
-    internal sealed class CSP : StatelessService
+    public class CSP : StatelessService
     {
-        public CSP(StatelessServiceContext context)
+        private readonly ArcadiaCspContext cspContext;
+
+        public CSP(StatelessServiceContext context, ArcadiaCspContext cspContext)
             : base(context)
-        { }
+        {
+            this.cspContext = cspContext;
+        }
 
         /// <summary>
         /// Optional override to create listeners (e.g., TCP, HTTP) for this service replica to handle client or user requests.

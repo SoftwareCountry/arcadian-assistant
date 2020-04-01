@@ -1,6 +1,9 @@
-﻿namespace Arcadia.Assistant.CSP.Contracts
+﻿namespace Arcadia.Assistant.CSP
 {
     using System.Linq;
+    using System.Threading.Tasks;
+
+    using Contracts;
 
     using Models;
 
@@ -15,9 +18,9 @@
             this.cspContext = cspContext;
         }
 
-        public IQueryable<DepartmentWithPeopleCount> Get()
+        public async Task<IQueryable<DepartmentWithPeopleCount>> Get()
         {
-            var arcEmployees = new CspEmployeeQuery(this.cspContext, this.configuration).Get();
+            var arcEmployees = await new CspEmployeeQuery(this.cspContext, this.configuration).Get();
 
             var employeeByDepCounts = arcEmployees
                 .Where(x => x.DepartmentId != null)
@@ -31,18 +34,18 @@
                 .AsQueryable();
 
             var chiefs = organizationDepartments
-                .Join(arcEmployees, d => d.ChiefId, e => e.Id, (d,e) => new { DepartmentId = d.Id, e.Id });
+                .Join(arcEmployees, d => d.ChiefId, e => e.Id, (d, e) => new { DepartmentId = d.Id, e.Id });
 
             var allDepartments = organizationDepartments
-                .GroupJoin(employeeByDepCounts, d => d.Id, e => e.DepartmentId, (d, e) => 
-                    new DepartmentWithPeopleCount()
+                .GroupJoin(employeeByDepCounts, d => d.Id, e => e.DepartmentId, (d, e) =>
+                    new DepartmentWithPeopleCount
                     {
                         ActualChiefId = d.ChiefId,
                         Department = d,
                         PeopleCount = e.Select(x => x.EmployeesCount).DefaultIfEmpty(0).First()
                     })
                 .GroupJoin(chiefs, d => d.Department.Id, e => e.DepartmentId, (d, e) =>
-                    new DepartmentWithPeopleCount()
+                    new DepartmentWithPeopleCount
                     {
                         ActualChiefId = e.Select(x => (int?)x.Id).DefaultIfEmpty(null).First(),
                         Department = d.Department,

@@ -10,7 +10,7 @@
 
     using Contracts;
 
-    using CSP.Contracts;
+    using CSP;
 
     using Employees.Contracts;
 
@@ -37,9 +37,9 @@
             this.cspConfiguration = cspConfiguration;
         }
 
-        public IReadOnlyList<DepartmentMetadata> LoadAll()
+        public async Task<IReadOnlyList<DepartmentMetadata>> LoadAll()
         {
-            var departmentsQuery = this.cspDepartmentsQuery.Get();
+            var departmentsQuery = await this.cspDepartmentsQuery.Get();
 
             var allDepartments = departmentsQuery
                 .Select(this.mapToDepartmentMetadata)

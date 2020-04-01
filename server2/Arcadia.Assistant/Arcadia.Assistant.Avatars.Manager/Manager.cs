@@ -11,6 +11,7 @@ namespace Arcadia.Assistant.Avatars.Manager
 
     using Contracts;
 
+    using CSP;
     using CSP.Contracts;
 
     using Employees.Contracts;
@@ -63,7 +64,7 @@ namespace Arcadia.Assistant.Avatars.Manager
                 {
                     try
                     {
-                        var employees = query.Value.Get().Select(x => new { x.Id, x.Image }).ToList();
+                        var employees = (await query.Value.Get()).Select(x => new { x.Id, x.Image }).ToList();
 
                         foreach (var employee in employees)
                         {

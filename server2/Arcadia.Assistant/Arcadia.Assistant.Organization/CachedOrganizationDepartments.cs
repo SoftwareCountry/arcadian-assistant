@@ -48,7 +48,7 @@
             }
 
             using var departmentsQuery = this.allDepartmentsQuery();
-            var loadedDepartments = departmentsQuery.Value.LoadAll().ToArray();
+            var loadedDepartments = (await departmentsQuery.Value.LoadAll()).ToArray();
             await dictionary.SetAsync(tx, StoredKey, new OrganizationDepartmentsReliableState() { Data = loadedDepartments, Timestamp = DateTimeOffset.Now });
             await tx.CommitAsync();
             return loadedDepartments;

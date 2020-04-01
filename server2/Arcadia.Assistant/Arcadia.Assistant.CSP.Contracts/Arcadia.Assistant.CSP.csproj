@@ -8,7 +8,12 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac" Version="4.9.4" />
+    <PackageReference Include="CspdbConnector.AzureBus" Version="1.5.0" />
+    <PackageReference Include="CspdbConnector.Contracts" Version="1.5.0" />
+    <PackageReference Include="MassTransit" Version="6.2.3" />
+    <PackageReference Include="MassTransit.Autofac" Version="6.2.3" />
     <PackageReference Include="Microsoft.ServiceFabric.Services.Remoting" Version="3.4.677" />
+    <PackageReference Include="TTSutils" Version="1.2.0" />
   </ItemGroup>
 
 </Project>

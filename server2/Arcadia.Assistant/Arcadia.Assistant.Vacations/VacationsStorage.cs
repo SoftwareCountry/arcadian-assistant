@@ -12,8 +12,8 @@
 
     using Contracts;
 
-    using CSP.Contracts;
-    using CSP.Contracts.Models;
+    using CSP;
+    using CSP.Models;
 
     using Employees.Contracts;
 
@@ -74,7 +74,7 @@
         }
 
 
-        public async Task UpdateCalendarEvent(EmployeeId employeeId, int eventId, Action<Vacation> updateFunc)
+        public void UpdateCalendarEvent(EmployeeId employeeId, int eventId, Action<Vacation> updateFunc)
         {
             using var csp = this.cspFactory();
             var vacationInstance = this.LoadVacationInstance(csp.Value, employeeId, eventId);
