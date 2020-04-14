@@ -15,18 +15,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="5.0.1" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.3" />
     <PackageReference Include="Autofac.ServiceFabric" Version="2.2.0" />
-    <PackageReference Include="CspdbConnector.AzureBus" Version="1.4.1" />
-    <PackageReference Include="CspdbConnector.Contracts" Version="1.4.1" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="3.0.0" />
     <PackageReference Include="Microsoft.ServiceFabric.Actors" Version="3.4.677" />
     <PackageReference Include="Microsoft.ServiceFabric.Services" Version="3.4.677" />
-    <PackageReference Include="TTSutils" Version="1.2.0" />
+    <PackageReference Include="Microsoft.ServiceFabric.Services.Remoting" Version="3.4.677" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Arcadia.Assistant.CSP.Contracts\Arcadia.Assistant.CSP.Contracts.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.CSP.WebApi.Contracts\Arcadia.Assistant.CSP.WebApi.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Logging\Arcadia.Assistant.Logging.csproj" />
   </ItemGroup>
 

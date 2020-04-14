@@ -1,12 +1,8 @@
 ﻿namespace Arcadia.Assistant.SickLeaves
 {
-    using System;
-    using System.Linq;
-    using System.Linq.Expressions;
-
     using Contracts;
 
-    using CSP.Models;
+    using CSP.WebApi.Contracts.Models;
 
     using Employees.Contracts;
 
@@ -26,17 +22,19 @@
 
         public SickLeaveStatus GetStatus(SickLeave model)
         {
-            return model.SickLeaveCancellations.Select(x => new
-                {
-                    DateTime = x.At, Status = SickLeaveStatus.Cancelled
-                }).Union(model.SickLeaveCompletes.Select(x => new
-                {
-                    DateTime = x.At, Status = SickLeaveStatus.Completed
-                }))
-                .OrderByDescending(x => x.DateTime)
-                .FirstOrDefault()
-                ?.Status ?? SickLeaveStatus.Requested;
-
+            return SickLeaveStatus.Requested;
+            /*
+                        return model.SickLeaveCancellations.Select(x => new
+                            {
+                                DateTime = x.At, Status = SickLeaveStatus.Cancelled
+                            }).Union(model.SickLeaveCompletes.Select(x => new
+                            {
+                                DateTime = x.At, Status = SickLeaveStatus.Completed
+                            }))
+                            .OrderByDescending(x => x.DateTime)
+                            .FirstOrDefault()
+                            ?.Status ?? SickLeaveStatus.Requested;
+            */
         }
     }
 }

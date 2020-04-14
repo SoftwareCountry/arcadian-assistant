@@ -4,16 +4,11 @@ namespace Arcadia.Assistant.Employees
     using System.Collections.Generic;
     using System.Fabric;
     using System.Linq;
-    using System.Linq.Expressions;
     using System.Threading;
     using System.Threading.Tasks;
-    using Autofac.Features.OwnedInstances;
-
+    using Arcadia.Assistant.CSP.WebApi.Contracts;
+    using Arcadia.Assistant.CSP.WebApi.Contracts.Models;
     using Contracts;
-
-    using CSP;
-    using CSP.Contracts;
-    using CSP.Models;
 
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
@@ -26,18 +21,19 @@ namespace Arcadia.Assistant.Employees
     /// </summary>
     public class Employees : StatelessService, IEmployees
     {
-        private readonly Func<Owned<CspEmployeeQuery>> cspEmployeeQuery;
-        private readonly CspConfiguration cspConfiguration;
+        //private readonly Func<Owned<CspEmployeeQuery>> cspEmployeeQuery;
+        //private readonly CspConfiguration cspConfiguration;
+        private readonly ICspApi cspApi;
         private readonly ILogger logger;
 
-        private readonly Expression<Func<Employee, EmployeeMetadata>> mapToMetadata;
-        public Employees(StatelessServiceContext context, Func<Owned<CspEmployeeQuery>> cspEmployeeQuery, CspConfiguration cspConfiguration, ILogger<Employees> logger)
+        //private readonly Expression<Func<Employee, EmployeeMetadata>> mapToMetadata;
+        public Employees(StatelessServiceContext context, ICspApi cspApi/*, CspConfiguration cspConfiguration*/, ILogger<Employees> logger)
             : base(context)
         {
-            this.cspEmployeeQuery = cspEmployeeQuery;
-            this.cspConfiguration = cspConfiguration;
+            this.cspApi = cspApi;
+            //this.cspConfiguration = cspConfiguration;
             this.logger = logger;
-
+            /*
             this.mapToMetadata = x =>
                 new EmployeeMetadata(
                     new EmployeeId(x.Id),
@@ -46,20 +42,37 @@ namespace Arcadia.Assistant.Employees
                     LastName = x.LastName,
                     FirstName = x.FirstName,
                     BirthDate = x.Birthday,
-                    //HireDate = x.HiringDate,
+                    HireDate = x.HiringDate,
                     FireDate = x.FiringDate,
-                    //MobilePhone = x.MobilePhone,
-                    //RoomNumber = x.RoomNumber != null ? x.RoomNumber.Trim() : null,
+                    MobilePhone = x.MobilePhone,
+                    RoomNumber = x.RoomNumber != null ? x.RoomNumber.Trim() : null,
                     DepartmentId = x.DepartmentId != null ? new DepartmentId(x.DepartmentId.Value) : (DepartmentId?)null,
-                    Position = x.Position.Title,
+                    Position = x.Position,
                 };
+                */
         }
 
-        /// <summary>
-        ///     Optional override to create listeners (e.g., TCP, HTTP) for this service replica to handle client or user requests.
-        /// </summary>
-        /// <returns>A collection of listeners.</returns>
-        protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
+        private EmployeeMetadata MapToMetadata(Employee x)
+        {
+            return new EmployeeMetadata(new EmployeeId(x.Id), x.Email)
+            {
+                LastName = x.LastName,
+                FirstName = x.FirstName,
+                BirthDate = x.Birthday,
+                HireDate = x.HiringDate,
+                FireDate = x.FiringDate,
+                MobilePhone = x.MobilePhone,
+                RoomNumber = x.RoomNumber.Trim(),// != null ? x.RoomNumber.Trim() : null,
+                DepartmentId = x.DepartmentId != null ? new DepartmentId(x.DepartmentId.Value) : (DepartmentId?)null,
+                Position = x.Position,
+            };
+        }
+
+    /// <summary>
+    ///     Optional override to create listeners (e.g., TCP, HTTP) for this service replica to handle client or user requests.
+    /// </summary>
+    /// <returns>A collection of listeners.</returns>
+    protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
         {
             return this.CreateServiceRemotingInstanceListeners();
         }
@@ -67,16 +80,20 @@ namespace Arcadia.Assistant.Employees
 
         public async Task<EmployeeMetadata?> FindEmployeeAsync(EmployeeId employeeId, CancellationToken cancellationToken)
         {
-            using var query = this.cspEmployeeQuery();
-            var employee = await (await query.Value.Get()).Where(x => x.Id == employeeId.Value).Select(this.mapToMetadata).FirstOrDefaultAsync(cancellationToken);
-
-            return employee;
+            //using var query = this.cspEmployeeQuery();
+            var query = this.cspApi;
+            var employees = await query.GetEmployees(cancellationToken);
+            return employees
+                .Where(x => x.Id == employeeId.Value)
+                .Select(this.MapToMetadata)
+                .FirstOrDefault();
         }
 
         public async Task<EmployeeMetadata[]> FindEmployeesAsync(EmployeesQuery employeesQuery, CancellationToken cancellationToken)
         {
-            using var db = this.cspEmployeeQuery();
-            var query = await db.Value.Get();
+            //using var db = this.cspEmployeeQuery();
+            //var query = await db.Value.Get();
+            var query = await this.cspApi.GetEmployees(cancellationToken) as IEnumerable<Employee>;
 
             if (employeesQuery.RoomNumber != null)
             {
@@ -111,14 +128,12 @@ namespace Arcadia.Assistant.Employees
                 }                    
             }
 
-            var employees = await query.Select(this.mapToMetadata).ToArrayAsync(cancellationToken);
-
-            return employees;
+            return query.Select(this.MapToMetadata).ToArray();
         }
 
         private string? ExtractLoginName(string email)
         {
-            var domain = "@" + this.cspConfiguration.UserIdentityDomain;
+            var domain = "@" + "arcadia.spb.ru";//this.cspConfiguration.UserIdentityDomain;
 
             if (email.EndsWith(domain, StringComparison.OrdinalIgnoreCase))
             {

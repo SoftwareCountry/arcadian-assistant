@@ -5,10 +5,6 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    using Contracts;
-
-    using CSP;
-
     using Employees.Contracts;
 
     using Microsoft.Extensions.Logging;
@@ -17,13 +13,13 @@
 
     public class SickLeaveProlongationStep
     {
-        private readonly ArcadiaCspContext database;
+        //private readonly ArcadiaCspContext database;
         private readonly PermissionsEntryQuery permissionsQuery;
         private readonly ILogger<SickLeaveProlongationStep> logger;
 
-        public SickLeaveProlongationStep(ArcadiaCspContext database, PermissionsEntryQuery permissionsQuery, ILogger<SickLeaveProlongationStep> logger)
+        public SickLeaveProlongationStep(/*ArcadiaCspContext database,*/ PermissionsEntryQuery permissionsQuery, ILogger<SickLeaveProlongationStep> logger)
         {
-            this.database = database;
+            //this.database = database;
             this.permissionsQuery = permissionsQuery;
             this.logger = logger;
         }
@@ -36,7 +32,7 @@
                 this.logger.LogError("{User} has no permissions to prolong calendar events for id {EmployeeId}", userIdentity, employeeId);
                 throw new NotEnoughPermissionsException($"{userIdentity} has no permissions to create calendar events for {employeeId}");
             }
-            
+            /*
             var existingEvent = this.database.SickLeaves
                 //.Include(x => x.SickLeaveCancellations)
                 //.Include(x => x.SickLeaveCompletes)
@@ -58,6 +54,7 @@
             }
 
             existingEvent.End = endDate;
+            */
             //await this.database.SaveChangesAsync();
         }
     }

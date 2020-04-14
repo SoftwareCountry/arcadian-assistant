@@ -5,10 +5,6 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    using Contracts;
-
-    using CSP;
-    using CSP.Models;
 
     using Employees.Contracts;
 
@@ -18,14 +14,14 @@
 
     public class SickLeaveCancellationStep
     {
-        private readonly ArcadiaCspContext database;
+        //private readonly ArcadiaCspContext database;
         private readonly PermissionsEntryQuery permissionsQuery;
         private readonly ILogger<SickLeaveCreationStep> logger;
 
         public SickLeaveCancellationStep(
-            ArcadiaCspContext database, PermissionsEntryQuery permissionsQuery, ILogger<SickLeaveCreationStep> logger)
+            /*ArcadiaCspContext database,*/ PermissionsEntryQuery permissionsQuery, ILogger<SickLeaveCreationStep> logger)
         {
-            this.database = database;
+            //this.database = database;
             this.permissionsQuery = permissionsQuery;
             this.logger = logger;
         }
@@ -50,7 +46,7 @@
             {
                 throw new InvalidOperationException($"Can't setup cancelledBy, employee not found for {cancelledBy}");
             }
-
+            /*
             var existingEvent =
                 this.database.SickLeaves
                     //.Include(x => x.SickLeaveCancellations)
@@ -74,7 +70,7 @@
             {
                 At = DateTimeOffset.Now, ById = cancelledById.Value.Value, SickLeaveId = existingEvent.Id
             });
-
+            */
             //await this.database.SaveChanges();
         }
     }

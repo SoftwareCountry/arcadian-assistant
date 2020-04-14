@@ -5,11 +5,12 @@ namespace Arcadia.Assistant.Vacations
     using System.Fabric;
     using System.Threading;
     using System.Threading.Tasks;
+    using Arcadia.Assistant.CSP.WebApi.Contracts.Models;
     using Autofac.Features.OwnedInstances;
 
     using Contracts;
 
-    using CSP.Models;
+    //using CSP.Models;
 
     using Employees.Contracts;
 

@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.CSP.Models
+﻿namespace Arcadia.Assistant.CSP.WebApi.Contracts.Models
 {
     using System.Collections.Generic;
 
@@ -14,9 +14,8 @@
 
         public int? ChiefId { get; set; }
 
-        /*
         public bool IsProduction { get; set; }
-        */
+        
         public string IntrabaseId { get; set; }
 
         public string Name { get; set; }

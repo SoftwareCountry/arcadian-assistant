@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.CSP.Models
+﻿namespace Arcadia.Assistant.CSP.WebApi.Contracts.Models
 {
     using System;
     using System.Collections.Generic;
@@ -17,10 +17,12 @@
 
         public virtual Employee Employee { get; set; }
 
+        /*
         public virtual ICollection<SickLeaveCancellation> SickLeaveCancellations { get; set; } =
             new HashSet<SickLeaveCancellation>();
 
         public virtual ICollection<SickLeaveComplete> SickLeaveCompletes { get; set; } =
             new HashSet<SickLeaveComplete>();
+            */
     }
 }

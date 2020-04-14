@@ -12,8 +12,7 @@
 
     using Contracts;
 
-    using CSP;
-    using CSP.Models;
+    using CSP.WebApi.Contracts.Models;
 
     using Employees.Contracts;
 
@@ -22,33 +21,40 @@
 
     public class VacationsStorage
     {
-        private readonly Func<Owned<ArcadiaCspContext>> cspFactory;
+        //private readonly Func<Owned<ArcadiaCspContext>> cspFactory;
 
-        public VacationsStorage(Func<Owned<ArcadiaCspContext>> cspFactory)
+        public VacationsStorage(/*Func<Owned<ArcadiaCspContext>> cspFactory*/)
         {
-            this.cspFactory = cspFactory;
+            //this.cspFactory = cspFactory;
         }
 
         public VacationDescription[] GetCalendarEvents(EmployeeId employeeId, CancellationToken cancellationToken)
         {
+            /*
             using var csp = this.cspFactory();
             return csp.Value.Vacations
                 .Where(x => x.EmployeeId == employeeId.Value)
                 .Select(this.ToDescription)
                 .ToArray();
+                */
+            return new VacationDescription[0];
         }
 
         public VacationDescription GetCalendarEvent(EmployeeId employeeId, int eventId, CancellationToken cancellationToken)
         {
+            /*
             using var csp = this.cspFactory();
             return csp.Value.Vacations
                 .Where(x => x.EmployeeId == employeeId.Value && eventId == x.Id)
                 .Select(this.ToDescription)
                 .FirstOrDefault();
+                */
+            return new VacationDescription();
         }
 
         public VacationDescription CreateCalendarEvent(EmployeeId employeeId, DateTime startDate, DateTime endDate)
         {
+            /*
             using var csp = this.cspFactory();
             var model = new Vacation
             {
@@ -61,13 +67,13 @@
             csp.Value.Vacations.Add(model);
 
             //await csp.Value.SaveChangesAsync();
-
+            */
             var newVacation = new VacationDescription
             {
                 EmployeeId = employeeId,
-                StartDate = model.Start,
-                EndDate = model.End,
-                VacationId = model.Id
+                //StartDate = model.Start,
+                //EndDate = model.End,
+                //VacationId = model.Id
             };
 
             return newVacation;
@@ -76,15 +82,17 @@
 
         public void UpdateCalendarEvent(EmployeeId employeeId, int eventId, Action<Vacation> updateFunc)
         {
+            /*
             using var csp = this.cspFactory();
             var vacationInstance = this.LoadVacationInstance(csp.Value, employeeId, eventId);
             updateFunc(vacationInstance);
             //await csp.Value.SaveChangesAsync();
+            */
         }
 
-        private Vacation LoadVacationInstance(ArcadiaCspContext context, EmployeeId employeeId, int eventId)
+        private Vacation LoadVacationInstance(/*ArcadiaCspContext context,*/ EmployeeId employeeId, int eventId)
         {
-            var model = context
+            var model = new Vacation(); /*context
                 .Vacations
                 //.Include(x => x.VacationCancellations)
                 //.Include(x => x.VacationApprovals)
@@ -92,7 +100,7 @@
                 //.Include(x => x.VacationReadies)
                 //.AsTracking()
                 .FirstOrDefault(x => x.EmployeeId == employeeId.Value && x.Id == eventId);
-
+*/
             if (model == null)
             {
                 throw new ArgumentException($"Event {eventId} not found for {employeeId}", nameof(eventId));
@@ -141,12 +149,15 @@
 
         public Task<Dictionary<EmployeeId, VacationDescription[]>> GetCalendarEvents(EmployeeId[] employeeIds, CancellationToken cancellationToken)
         {
+            /*
             using var csp = this.cspFactory();
             var ids = employeeIds.Select(x => x.Value).ToList();
             var list = csp.Value.Vacations.Where(x => ids.Contains(x.EmployeeId)).ToList();
             var pendingVacations = list
                 .Select(this.ToDescription)
                 .ToArray();
+                */
+            var pendingVacations = new VacationDescription[0];
 
             return Task.Run(() =>pendingVacations.GroupBy(x => x.EmployeeId).ToDictionary(x => x.Key, x => x.ToArray()));
         }

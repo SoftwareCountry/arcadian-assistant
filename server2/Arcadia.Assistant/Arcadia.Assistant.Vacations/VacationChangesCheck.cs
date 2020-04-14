@@ -6,29 +6,24 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    using Autofac.Features.OwnedInstances;
+    using CSP.WebApi.Contracts.Models;
 
-    using CSP;
-    using CSP.Models;
-
-    using Employees.Contracts;
-
-
-    using VacationsDictionary = System.Collections.Generic.Dictionary<Employees.Contracts.EmployeeId, System.Collections.Generic.Dictionary<int, CSP.Models.Vacation>>;
+    using VacationsDictionary = System.Collections.Generic.Dictionary<Employees.Contracts.EmployeeId, System.Collections.Generic.Dictionary<int, CSP.WebApi.Contracts.Models.Vacation>>;
 
     public class VacationChangesCheck
     {
-        private readonly Func<Owned<ArcadiaCspContext>> dbFactory;
+        //private readonly Func<Owned<ArcadiaCspContext>> dbFactory;
         private VacationsDictionary? vacations;
 
-        public VacationChangesCheck(Func<Owned<ArcadiaCspContext>> dbFactory)
+        public VacationChangesCheck(/*Func<Owned<ArcadiaCspContext>> dbFactory*/)
         {
-            this.dbFactory = dbFactory;
+            //this.dbFactory = dbFactory;
         }
 
         public async Task PerformAsync(CancellationToken cancellationToken)
         {
-            VacationsDictionary databaseState;
+            VacationsDictionary databaseState = new VacationsDictionary();
+            /*
             using (var db = this.dbFactory())
             {
 
@@ -44,7 +39,7 @@
                     .GroupBy(x => x.EmployeeId)
                     .ToDictionary(x => new EmployeeId(x.Key), x => x.ToDictionary(y => y.Id));
             }
-
+            */
             if (this.vacations == null)
             {
                 //Initial run, just assign values

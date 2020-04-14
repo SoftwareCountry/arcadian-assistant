@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.ServiceFabric.Services.Runtime;
 
-namespace CSP
+namespace Arcadia.Assistant.CSP.WebApi
 {
-    [EventSource(Name = "MyCompany-Arcadia.Assistant.SF-CSP")]
+    [EventSource(Name = "MyCompany-Arcadia.Assistant.SF-Arcadia.Assistant.CSP.WebApi")]
 internal sealed class ServiceEventSource : EventSource
 {
     public static readonly ServiceEventSource Current = new ServiceEventSource();

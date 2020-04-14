@@ -8,7 +8,7 @@ namespace Arcadia.Assistant.Vacations
     using Autofac;
     using Autofac.Integration.ServiceFabric;
 
-    using CSP;
+    using CSP.WebApi.Contracts;
 
     using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
@@ -40,7 +40,7 @@ namespace Arcadia.Assistant.Vacations
                 builder.RegisterType<VacationsStorage>().SingleInstance();
                 builder.RegisterType<VacationChangesWatcher>().SingleInstance();
                 builder.RegisterType<VacationChangesCheck>().SingleInstance();
-                builder.RegisterModule(new CspModule(connectionString));
+                builder.RegisterModule(new CspApiModule());
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using var container = builder.Build();

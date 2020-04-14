@@ -4,11 +4,10 @@ namespace Arcadia.Assistant.Organization
     using System.Diagnostics;
     using System.Fabric;
     using System.Threading;
+    using Arcadia.Assistant.CSP.WebApi.Contracts;
     using Arcadia.Assistant.Logging;
     using Autofac;
     using Autofac.Integration.ServiceFabric;
-
-    using CSP;
 
     using Employees.Contracts;
 
@@ -36,10 +35,10 @@ namespace Arcadia.Assistant.Organization
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterStatefulService<Organization>("Arcadia.Assistant.OrganizationType");
-                builder.RegisterModule(new CspModule(connectionString));
                 builder.RegisterType<OrganizationDepartmentsQuery>();
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
                 builder.RegisterModule(new EmployeesModule());
+                builder.RegisterModule(new CspApiModule());
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using var container = builder.Build();

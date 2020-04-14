@@ -1,4 +1,4 @@
-﻿namespace Arcadia.Assistant.CSP.Models
+﻿namespace Arcadia.Assistant.CSP.WebApi.Contracts.Models
 {
     using System;
 

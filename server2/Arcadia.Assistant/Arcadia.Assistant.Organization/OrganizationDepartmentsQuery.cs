@@ -10,39 +10,44 @@
 
     using Contracts;
 
-    using CSP;
+    using CSP.WebApi.Contracts;
+    using CSP.WebApi.Contracts.Models;
 
     using Employees.Contracts;
 
     public class OrganizationDepartmentsQuery
     {
         private readonly CspConfiguration cspConfiguration;
-        private readonly CspDepartmentsQuery cspDepartmentsQuery;
+        //private readonly CspDepartmentsQuery cspDepartmentsQuery;
+        private readonly ICspApi csp;
 
-        private readonly Expression<Func<CspDepartmentsQuery.DepartmentWithPeopleCount, DepartmentMetadata>> mapToDepartmentMetadata = x => new DepartmentMetadata(
-            new DepartmentId(x.Department.Id),
-            x.Department.Name,
-            x.Department.Abbreviation,
-            x.Department.ParentDepartmentId == null || x.Department.ParentDepartmentId == x.Department.Id 
-                ? (DepartmentId?)null 
-                : new DepartmentId(x.Department.ParentDepartmentId.Value))
+        private DepartmentMetadata MapToDepartmentMetadata(DepartmentWithPeopleCount x)
         {
-            ChiefId = x.ActualChiefId == null ? (EmployeeId?)(null) : new EmployeeId(x.ActualChiefId.Value),
-            PeopleCount = x.PeopleCount
-        };
+            return new DepartmentMetadata(
+                new DepartmentId(x.Department.Id),
+                x.Department.Name,
+                x.Department.Abbreviation,
+                x.Department.ParentDepartmentId == null || x.Department.ParentDepartmentId == x.Department.Id
+                    ? (DepartmentId?)null
+                    : new DepartmentId(x.Department.ParentDepartmentId.Value))
+            {
+                ChiefId = x.ActualChiefId == null ? (EmployeeId?)(null) : new EmployeeId(x.ActualChiefId.Value),
+                PeopleCount = x.PeopleCount
+            };
+        }
 
-        public OrganizationDepartmentsQuery(CspDepartmentsQuery cspDepartmentsQuery, CspConfiguration cspConfiguration)
+        public OrganizationDepartmentsQuery(ICspApi csp, CspConfiguration cspConfiguration)
         {
-            this.cspDepartmentsQuery = cspDepartmentsQuery;
+            this.csp = csp;
             this.cspConfiguration = cspConfiguration;
         }
 
         public async Task<IReadOnlyList<DepartmentMetadata>> LoadAll()
         {
-            var departmentsQuery = await this.cspDepartmentsQuery.Get();
+            var departmentsQuery = await this.csp.GetDepartmentWithPeople(CancellationToken.None);
 
             var allDepartments = departmentsQuery
-                .Select(this.mapToDepartmentMetadata)
+                .Select(this.MapToDepartmentMetadata)
                 .ToList();
 
             var head = allDepartments.FirstOrDefault(x => x.IsHeadDepartment && x.Abbreviation == this.cspConfiguration.HeadDepartmentAbbreviation);

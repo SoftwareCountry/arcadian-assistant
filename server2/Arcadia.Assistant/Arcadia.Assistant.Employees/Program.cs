@@ -8,12 +8,12 @@ namespace Arcadia.Assistant.Employees
     using Autofac;
     using Autofac.Integration.ServiceFabric;
 
-    using CSP;
-    using CSP;
+    using CSP.WebApi.Contracts;
 
     using Logging;
 
     using Microsoft.Extensions.Logging;
+    using Microsoft.ServiceFabric.Services.Remoting.Client;
 
     internal static class Program
     {
@@ -31,12 +31,13 @@ namespace Arcadia.Assistant.Employees
                 // an instance of the class is created in this host process.
 
                 var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
-                var connectionString = configurationPackage.Settings.Sections["Csp"].Parameters["ConnectionString"].Value;
+                //var connectionString = configurationPackage.Settings.Sections["Csp"].Parameters["ConnectionString"].Value;
 
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
+                builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
                 builder.RegisterStatelessService<Employees>("Arcadia.Assistant.EmployeesType");
-                builder.RegisterModule(new CspModule(connectionString));
+                builder.RegisterModule(new CspApiModule());
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 
                 using var container = builder.Build();

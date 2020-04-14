@@ -6,9 +6,6 @@
 
     using Contracts;
 
-    using CSP;
-    using CSP.Models;
-
     using Employees.Contracts;
 
     using Microsoft.Extensions.Logging;
@@ -17,14 +14,14 @@
 
     public class SickLeaveCreationStep
     {
-        private readonly ArcadiaCspContext context;
+        //private readonly ArcadiaCspContext context;
         private readonly PermissionsEntryQuery permissionsQuery;
         private readonly ILogger<SickLeaveCreationStep> logger;
         private readonly SickLeaveModelConverter converter = new SickLeaveModelConverter();
 
-        public SickLeaveCreationStep(ArcadiaCspContext context, PermissionsEntryQuery permissionsQuery, ILogger<SickLeaveCreationStep> logger)
+        public SickLeaveCreationStep(/*ArcadiaCspContext context,*/ PermissionsEntryQuery permissionsQuery, ILogger<SickLeaveCreationStep> logger)
         {
-            this.context = context;
+            //this.context = context;
             this.permissionsQuery = permissionsQuery;
             this.logger = logger;
         }
@@ -39,7 +36,7 @@
                 this.logger.LogError("{User} has no permissions to create calendar events for id {EmployeeId}", creatorIdentity, employeeId);
                 throw new NotEnoughPermissionsException($"{creatorIdentity} has no permissions to create calendar events for {employeeId}");
             }
-
+            /*
             var newSickLeave = new SickLeave()
             {
                 EmployeeId = employeeId.Value,
@@ -49,11 +46,13 @@
             };
 
             this.context.SickLeaves.Add(newSickLeave);
-            //await this.context.SaveChangesAsync();
+            
+            await this.context.SaveChangesAsync();
 
             this.logger.LogInformation("Sick leave {SickLeave} created", newSickLeave);
+            */
 
-            return this.converter.GetDescription(newSickLeave);
+            return new SickLeaveDescription();//this.converter.GetDescription(newSickLeave);
         }
     }
 }

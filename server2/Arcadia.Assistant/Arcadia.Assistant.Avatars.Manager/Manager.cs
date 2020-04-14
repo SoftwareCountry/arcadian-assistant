@@ -11,8 +11,7 @@ namespace Arcadia.Assistant.Avatars.Manager
 
     using Contracts;
 
-    using CSP;
-    using CSP.Contracts;
+    using CSP.WebApi.Contracts;
 
     using Employees.Contracts;
 
@@ -27,14 +26,15 @@ namespace Arcadia.Assistant.Avatars.Manager
     /// </summary>
     public class Manager : StatelessService
     {
-        private readonly Func<Owned<CspEmployeeQuery>> employeeQuery;
+        //private readonly Func<Owned<CspEmployeeQuery>> employeeQuery;
+        private readonly ICspApi csp;
         private readonly IAvatars avatars;
         private readonly ILogger logger;
 
-        public Manager(StatelessServiceContext context, Func<Owned<CspEmployeeQuery>> employeeQuery, IAvatars avatars, ILogger<Manager> logger)
+        public Manager(StatelessServiceContext context, ICspApi csp, IAvatars avatars, ILogger<Manager> logger)
             : base(context)
         {
-            this.employeeQuery = employeeQuery;
+            this.csp = csp;
             this.avatars = avatars;
             this.logger = logger;
         }
@@ -60,23 +60,20 @@ namespace Arcadia.Assistant.Avatars.Manager
 
                 this.logger.LogInformation("Start updating avatars...");
 
-                using (var query = this.employeeQuery())
+                try
                 {
-                    try
-                    {
-                        var employees = (await query.Value.Get()).Select(x => new { x.Id, x.Image }).ToList();
+                    var employees = (await this.csp.GetEmployees(cancellationToken)).Select(x => new { x.Id, x.Image }).ToList();
 
-                        foreach (var employee in employees)
-                        {
-                            cancellationToken.ThrowIfCancellationRequested();
-                            var actor = this.avatars.Get(new EmployeeId(employee.Id));
-                            await actor.SetSource(employee.Image);
-                        }
-                    }
-                    catch (Exception e)
+                    foreach (var employee in employees)
                     {
-                        this.logger.LogError(e, e.Message);
+                        cancellationToken.ThrowIfCancellationRequested();
+                        var actor = this.avatars.Get(new EmployeeId(employee.Id));
+                        await actor.SetSource(employee.Image);
                     }
+                }
+                catch (Exception e)
+                {
+                    this.logger.LogError(e, e.Message);
                 }
 
                 await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);

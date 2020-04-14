@@ -6,13 +6,11 @@ namespace Arcadia.Assistant.SickLeaves
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Arcadia.Assistant.CSP.Contracts;
     using Autofac.Features.OwnedInstances;
 
     using Contracts;
 
-    using CSP;
-    using CSP.Models;
+    using CSP.WebApi.Contracts.Models;
 
     using Employees.Contracts;
 
@@ -28,7 +26,7 @@ namespace Arcadia.Assistant.SickLeaves
     /// </summary>
     public class SickLeaves : StatelessService, ISickLeaves
     {
-        private readonly Func<Owned<ArcadiaCspContext>> dbFactory;
+        //private readonly Func<Owned<ArcadiaCspContext>> dbFactory;
         private readonly Func<Owned<SickLeaveCreationStep>> creationStepsFactory;
         private readonly Func<Owned<SickLeaveProlongationStep>> prolongationStepsFactory;
         private readonly Func<Owned<SickLeaveCancellationStep>> cancellationStepsFactory;
@@ -38,14 +36,14 @@ namespace Arcadia.Assistant.SickLeaves
 
         public SickLeaves(
             StatelessServiceContext context,
-            Func<Owned<ArcadiaCspContext>> dbFactory,
+            //Func<Owned<ArcadiaCspContext>> dbFactory,
             Func<Owned<SickLeaveCreationStep>> creationStepsFactory,
             Func<Owned<SickLeaveProlongationStep>> prolongationStepsFactory,
             Func<Owned<SickLeaveCancellationStep>> cancellationStepsFactory,
             ILogger<SickLeaves> logger)
             : base(context)
         {
-            this.dbFactory = dbFactory;
+            //this.dbFactory = dbFactory;
             this.creationStepsFactory = creationStepsFactory;
             this.prolongationStepsFactory = prolongationStepsFactory;
             this.cancellationStepsFactory = cancellationStepsFactory;
@@ -78,17 +76,21 @@ namespace Arcadia.Assistant.SickLeaves
         public SickLeaveDescription[] GetCalendarEvents(
             EmployeeId employeeId)
         {
+            /*
             using var db = this.dbFactory();
             var sickLeaves = this.GetSickLeaves(db.Value)
                 .Where(x => x.EmployeeId == employeeId.Value)
                 .ToArray();
 
             return sickLeaves.Select(this.modelConverter.GetDescription).ToArray();
+            */
+            return new SickLeaveDescription[0];
         }
 
         public Dictionary<EmployeeId, SickLeaveDescription[]> GetCalendarEventsByEmployeeMap(
             EmployeeId[] employeeIds)
         {
+            /*
             using var db = this.dbFactory();
             var sickLeaves = this.GetSickLeaves(db.Value)
                 .Where(x => employeeIds.Any(id => x.EmployeeId == id.Value))
@@ -97,16 +99,21 @@ namespace Arcadia.Assistant.SickLeaves
             return sickLeaves
                 .Select(this.modelConverter.GetDescription)
                 .GroupBy(x => x.EmployeeId).ToDictionary(x => x.Key, x => x.ToArray());
+                */
+            return new Dictionary<EmployeeId, SickLeaveDescription[]>();
         }
 
         public SickLeaveDescription GetCalendarEvent(
             EmployeeId employeeId, int eventId)
         {
+            /*
             using var db = this.dbFactory();
             var sickLeave = this.GetSickLeaves(db.Value)
                 .FirstOrDefault(x => x.Id == eventId && x.EmployeeId == employeeId.Value);
 
             return this.modelConverter.GetDescription(sickLeave);
+            */
+            return new SickLeaveDescription();
         }
 
         public async Task<SickLeaveDescription> CreateSickLeaveAsync(
@@ -128,8 +135,7 @@ namespace Arcadia.Assistant.SickLeaves
             using var step = this.cancellationStepsFactory();
             await step.Value.InvokeAsync(employeeId, eventId, cancelledBy);
         }
-
-        private IQueryable<SickLeave> GetSickLeaves(ArcadiaCspContext context)
+        private IQueryable<SickLeave> GetSickLeaves(/*ArcadiaCspContext context*/)
         {
             return new List<SickLeave>().AsQueryable();
             /*

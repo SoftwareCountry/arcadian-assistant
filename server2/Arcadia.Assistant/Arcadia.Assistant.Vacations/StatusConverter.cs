@@ -4,7 +4,7 @@
 
     using Contracts;
 
-    using CSP.Models;
+    using CSP.WebApi.Contracts.Models;
 
     public class StatusConverter
     {
