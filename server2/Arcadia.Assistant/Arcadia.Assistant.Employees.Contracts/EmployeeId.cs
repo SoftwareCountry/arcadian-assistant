@@ -11,8 +11,6 @@
         [DataMember]
         public int Value { get; private set; }
 
-        public string ValueString => this.Value.ToString();
-
         public EmployeeId(int value)
         {
             this.Value = value;

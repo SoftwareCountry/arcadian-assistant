@@ -51,7 +51,7 @@
             var sharedFeeds =
                 await this.userFeeds.GetUserFeeds(employee.EmployeeId, fromDate ?? today, toDate ?? today,
                     cancellationToken);
-            var messages = sharedFeeds.Select(x => new FeedMessage(employee.EmployeeId.ValueString, x))
+            var messages = sharedFeeds.Select(x => new FeedMessage(employee.EmployeeId.Value.ToString(), x))
                 .Distinct(FeedMessage.MessageIdComparer)
                 .OrderByDescending(x => x.DatePosted);
 
@@ -76,7 +76,7 @@
             {
                 Type = x.Id.Value,
                 Name = x.Name,
-                Subscribed = x.Subscribed
+                Subscribed = x.FeedSubscription
             });
             return this.Ok(result);
         }

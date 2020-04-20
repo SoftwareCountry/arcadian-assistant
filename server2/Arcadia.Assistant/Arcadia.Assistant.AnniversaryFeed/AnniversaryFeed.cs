@@ -74,7 +74,7 @@ namespace Arcadia.Assistant.AnniversaryFeed
                 Id = $"employee-anniversary-{employeeId}-at-{date}",
                 Title = title,
                 Text = text,
-                Image = employee.Image,
+                //Image = employee.Image, TODO: image removed to Avatar service
                 Date = date
             };
         }

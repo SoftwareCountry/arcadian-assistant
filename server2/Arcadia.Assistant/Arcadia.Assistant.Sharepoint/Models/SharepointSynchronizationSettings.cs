@@ -11,7 +11,7 @@
             this.SynchronizationIntervalMinutes =
                 int.TryParse(configurationSection.Parameters["SynchronizationIntervalMinutes"].Value, out var interval)
                     ? interval
-                : this.DefaultSynchronizationIntervalMinutes;
+                    : this.DefaultSynchronizationIntervalMinutes;
         }
 
         public int SynchronizationIntervalMinutes { get; }

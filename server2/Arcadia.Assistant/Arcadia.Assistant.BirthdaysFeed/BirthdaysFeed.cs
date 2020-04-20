@@ -81,7 +81,7 @@ namespace Arcadia.Assistant.BirthdaysFeed
                 Id = $"employee-birthday-{employeeId}-at-{date}",
                 Title = title,
                 Text = text,
-                Image = employee.Image,
+                //Image = employee.Image, TODO: image removed to Avatar service
                 Date = date
             };
         }

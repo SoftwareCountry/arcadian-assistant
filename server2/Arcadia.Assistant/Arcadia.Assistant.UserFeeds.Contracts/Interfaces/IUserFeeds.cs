@@ -19,7 +19,7 @@ namespace Arcadia.Assistant.UserFeeds.Contracts.Interfaces
 
     public interface IUserFeeds : IService
     {
-        Task<IFeed[]> GetUserFeedList(EmployeeId employeeId, CancellationToken cancellationToken);
+        Task<Feed[]> GetUserFeedList(EmployeeId employeeId, CancellationToken cancellationToken);
 
         Task Subscribe(EmployeeId employeeId, FeedId[] feedIds, CancellationToken cancellationToken);
 

@@ -23,11 +23,6 @@ namespace Arcadia.Assistant.UserFeeds
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
 
-    using Models;
-
-    using AnniversaryConstants = AnniversaryFeed.Contracts.Constants;
-    using BirthdaysConstants = BirthdaysFeed.Contracts.Constants;
-
     /// <summary>
     ///     An instance of this class is created for each service replica by the Service Fabric runtime.
     /// </summary>
@@ -46,16 +41,15 @@ namespace Arcadia.Assistant.UserFeeds
             : base(context)
         {
             this.logger = logger;
-            this.userFeedsMap = new Dictionary<FeedId, IFeedService>
+            this.userFeedsMap = new List<IFeedService>
             {
-                { new FeedId(AnniversaryConstants.ServiceType), anniversaryFeed },
-                { new FeedId(BirthdaysConstants.ServiceType), birthdayFeed }
-            };
+                anniversaryFeed, birthdayFeed
+            }.ToDictionary(x => new FeedId(x.ServiceType), x => x);
         }
 
         private TimeSpan Timeout => TimeSpan.FromMinutes(1);
 
-        public async Task<IFeed[]> GetUserFeedList(EmployeeId employeeId, CancellationToken cancellationToken)
+        public async Task<Feed[]> GetUserFeedList(EmployeeId employeeId, CancellationToken cancellationToken)
         {
             using var transaction = this.StateManager.CreateTransaction();
             var userFeedsStore =
@@ -71,7 +65,6 @@ namespace Arcadia.Assistant.UserFeeds
             }
 
             return userFeedsCollection
-                .Cast<IFeed>()
                 .ToArray();
         }
 
@@ -88,7 +81,7 @@ namespace Arcadia.Assistant.UserFeeds
             var userFeedsCollection = userFeeds.HasValue ? userFeeds.Value : this.CreateUserFeedsCollection(employeeId);
             foreach (var feed in userFeedsCollection)
             {
-                if (feed.Subscribed && this.userFeedsMap.TryGetValue(feed.Id, out var service))
+                if (feed.FeedSubscription && this.userFeedsMap.TryGetValue(feed.Id, out var service))
                 {
                     var items = await service.GetItems(startDate, endDate, cancellationToken);
                     result.AddRange(items);
@@ -109,7 +102,7 @@ namespace Arcadia.Assistant.UserFeeds
             var userFeeds =
                 await userFeedsStore.TryGetValueAsync(transaction, employeeId, this.Timeout, cancellationToken);
             var userFeedsCollection = userFeeds.HasValue ? userFeeds.Value : this.CreateUserFeedsCollection(employeeId);
-            userFeedsCollection.ToList().ForEach(f => f.Subscribed = feedIds.Any(i => f.Id == i));
+            userFeedsCollection.ToList().ForEach(f => f.FeedSubscription = feedIds.Any(i => f.Id == i));
             await userFeedsStore.TryUpdateAsync(transaction, employeeId, userFeedsCollection, userFeedsCollection,
                 this.Timeout, cancellationToken);
         }
