@@ -89,7 +89,7 @@ namespace Arcadia.Assistant.Notifications
             {
                 if (userPreferences == null)
                 {
-                    userPreferences = await GetUserPreferences(employeeIds, cancellationToken);
+                    userPreferences = await this.GetUserPreferences(employeeIds, cancellationToken);
                 }
 
                 switch (providerType)
@@ -110,7 +110,8 @@ namespace Arcadia.Assistant.Notifications
                     case NotificationType.Email:
                         if (this.notificationSettings.EnableEmail)
                         {
-                            var employeeEmailAddresses = await this.GetMailRecipients(employeeIds, userPreferences, cancellationToken);
+                            var employeeEmailAddresses =
+                                await this.GetMailRecipients(employeeIds, userPreferences, cancellationToken);
                             await this.SendEmailNotification(employeeEmailAddresses, notificationMessage,
                                 cancellationToken);
                         }
@@ -126,7 +127,7 @@ namespace Arcadia.Assistant.Notifications
 
         private async Task SendPushNotification(
             IDictionary<EmployeeId,
-            IReadOnlyCollection<DeviceRegistryEntry>> deviceRegistrations,
+                IReadOnlyCollection<DeviceRegistryEntry>> deviceRegistrations,
             NotificationMessage notificationMessage,
             CancellationToken cancellationToken)
         {
@@ -253,7 +254,8 @@ namespace Arcadia.Assistant.Notifications
                 .ToList();
         }
 
-        private async Task<EmployeeMetadata?> FindEmployeeAsync(EmployeeId employeeId, CancellationToken cancellationToken)
+        private async Task<EmployeeMetadata?> FindEmployeeAsync(
+            EmployeeId employeeId, CancellationToken cancellationToken)
         {
             try
             {

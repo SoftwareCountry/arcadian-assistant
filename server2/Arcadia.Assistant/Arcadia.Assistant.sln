@@ -93,7 +93,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.PushNotif
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.EmailNotifications", "Arcadia.Assistant.EmailNotifications\Arcadia.Assistant.EmailNotifications.csproj", "{10A09CC0-AE25-412A-B507-4297FEB6B507}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.EmailNotifications.Contracts", "Arcadia.Assistant.EmailNotifications.Contracts\Arcadia.Assistant.EmailNotifications.Contracts.csproj", "{2C90A76E-0F68-48BC-B09A-E0BF1A5AA047}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcadia.Assistant.EmailNotifications.Contracts", "Arcadia.Assistant.EmailNotifications.Contracts\Arcadia.Assistant.EmailNotifications.Contracts.csproj", "{2C90A76E-0F68-48BC-B09A-E0BF1A5AA047}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arcadia.Assistant.NotificationTemplates", "Arcadia.Assistant.NotificationTemplates\Arcadia.Assistant.NotificationTemplates.csproj", "{29ADDEA9-28A4-4871-A3E2-72F9CE172DF4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -266,6 +268,10 @@ Global
 		{2C90A76E-0F68-48BC-B09A-E0BF1A5AA047}.Debug|x64.Build.0 = Debug|Any CPU
 		{2C90A76E-0F68-48BC-B09A-E0BF1A5AA047}.Release|x64.ActiveCfg = Release|Any CPU
 		{2C90A76E-0F68-48BC-B09A-E0BF1A5AA047}.Release|x64.Build.0 = Release|Any CPU
+		{29ADDEA9-28A4-4871-A3E2-72F9CE172DF4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{29ADDEA9-28A4-4871-A3E2-72F9CE172DF4}.Debug|x64.Build.0 = Debug|Any CPU
+		{29ADDEA9-28A4-4871-A3E2-72F9CE172DF4}.Release|x64.ActiveCfg = Release|Any CPU
+		{29ADDEA9-28A4-4871-A3E2-72F9CE172DF4}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -299,6 +305,7 @@ Global
 		{0CF34F6D-7C13-4952-8F4A-C376F297712C} = {AF82271D-2D95-4E64-8B1B-50B5147B08A4}
 		{10A09CC0-AE25-412A-B507-4297FEB6B507} = {AF82271D-2D95-4E64-8B1B-50B5147B08A4}
 		{2C90A76E-0F68-48BC-B09A-E0BF1A5AA047} = {AF82271D-2D95-4E64-8B1B-50B5147B08A4}
+		{29ADDEA9-28A4-4871-A3E2-72F9CE172DF4} = {AF82271D-2D95-4E64-8B1B-50B5147B08A4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C376673D-F593-42B1-8093-D1F667D586B1}

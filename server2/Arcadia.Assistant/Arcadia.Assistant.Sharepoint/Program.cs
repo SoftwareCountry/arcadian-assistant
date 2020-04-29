@@ -6,6 +6,8 @@ namespace Arcadia.Assistant.Sharepoint
     using System.Linq;
     using System.Threading;
 
+    using Assistant.NotificationTemplates;
+
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Autofac.Integration.ServiceFabric;
@@ -78,7 +80,7 @@ namespace Arcadia.Assistant.Sharepoint
                         return new SharepointFieldsMapper(mapping.ToArray());
                     })
                     .As<ISharepointFieldsMapper>();
-
+                
                 builder.RegisterType<SharepointRequestExecutor>().As<ISharepointRequestExecutor>();
                 builder.RegisterType<SharepointAuthTokenService>().As<ISharepointAuthTokenService>();
                 builder.RegisterType<SharepointConditionsCompiler>().As<ISharepointConditionsCompiler>();
@@ -90,6 +92,7 @@ namespace Arcadia.Assistant.Sharepoint
                 builder.RegisterModule<SickLeavesModule>();
                 builder.RegisterModule<EmployeesModule>();
                 builder.RegisterModule<OrganizationModule>();
+                builder.RegisterNotificationTemplates(configurationPackage.Settings);
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
                 builder.Populate(services);
 
