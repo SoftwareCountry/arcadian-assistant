@@ -22,7 +22,8 @@
             this.employees = employees;
         }
 
-        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, UserIsEmployeeRequirement requirement)
+        protected override async Task HandleRequirementAsync(
+            AuthorizationHandlerContext context, UserIsEmployeeRequirement requirement)
         {
             //this.logger.Trace($"User is employee authorization check started for user {context.User.Identity.Name}");
 
@@ -32,7 +33,9 @@
                 return;
             }
 
-            var employee = (await this.employees.FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(email), CancellationToken.None))
+            var employee =
+                (await this.employees.FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(email),
+                    CancellationToken.None))
                 .FirstOrDefault();
             //this.logger.Trace($"Employee is loaded from the database for user {context.User.Identity.Name}");
 

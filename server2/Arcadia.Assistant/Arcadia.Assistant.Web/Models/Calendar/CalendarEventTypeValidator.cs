@@ -12,7 +12,8 @@
                     return ValidationResult.Success;
                 case string type:
                     var validTypes = string.Join(", ", CalendarEventTypes.All);
-                    return new ValidationResult($"Calendar event type `{type}` is not recognized. Must be one of the ${validTypes}");
+                    return new ValidationResult(
+                        $"Calendar event type `{type}` is not recognized. Must be one of the ${validTypes}");
                 default:
                     return new ValidationResult("Type must be string");
             }

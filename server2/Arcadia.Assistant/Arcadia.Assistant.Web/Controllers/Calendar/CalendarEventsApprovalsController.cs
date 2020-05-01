@@ -24,14 +24,16 @@
     [ApiController]
     public class CalendarEventsApprovalsController : Controller
     {
-        private readonly IEmployees employees;
         private readonly IAuthorizationService authorizationService;
+        private readonly IEmployees employees;
 
         private readonly CalendarEventIdConverter idConverter = new CalendarEventIdConverter();
         private readonly IVacations vacations;
         private readonly IWorkHoursCredit workHoursCredit;
 
-        public CalendarEventsApprovalsController(IWorkHoursCredit workHoursCredit, IVacations vacations, IEmployees employees, IAuthorizationService authorizationService)
+        public CalendarEventsApprovalsController(
+            IWorkHoursCredit workHoursCredit, IVacations vacations, IEmployees employees,
+            IAuthorizationService authorizationService)
         {
             this.workHoursCredit = workHoursCredit;
             this.vacations = vacations;
@@ -43,33 +45,39 @@
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<CalendarEventApprovalModel[]>> GetEventApprovals(int employeeId, string eventId, CancellationToken token)
+        public async Task<ActionResult<CalendarEventApprovalModel[]>> GetEventApprovals(
+            int employeeId, string eventId, CancellationToken token)
         {
-            if (!(await this.authorizationService.AuthorizeAsync(this.User, new EmployeeId(employeeId), new ReadCalendarEvents())).Succeeded)
+            if (!(await this.authorizationService.AuthorizeAsync(this.User, new EmployeeId(employeeId),
+                new ReadCalendarEvents())).Succeeded)
             {
                 return this.Forbid();
             }
 
             if (this.idConverter.TryParseWorkHoursChangeId(eventId, out var changeId))
             {
-                var approvals = await this.workHoursCredit.GetApprovalsAsync(new EmployeeId(employeeId), changeId, token);
+                var approvals =
+                    await this.workHoursCredit.GetApprovalsAsync(new EmployeeId(employeeId), changeId, token);
                 if (approvals == null)
                 {
                     return this.NotFound();
                 }
 
-                return approvals.Select(x => new CalendarEventApprovalModel(x.ApproverId.ToString(), x.Timestamp)).ToArray();
+                return approvals.Select(x => new CalendarEventApprovalModel(x.ApproverId.ToString(), x.Timestamp))
+                    .ToArray();
             }
 
             if (this.idConverter.TryParseVacationId(eventId, out var vacationId))
             {
-                var vacation = await this.vacations.GetCalendarEventAsync(new EmployeeId(employeeId), vacationId, token);
+                var vacation =
+                    await this.vacations.GetCalendarEventAsync(new EmployeeId(employeeId), vacationId, token);
                 if (vacation == null)
                 {
                     return this.NotFound();
                 }
 
-                return vacation.Approvals.Select(x => new CalendarEventApprovalModel(x.ApproverId.ToString(), x.Timestamp)).ToArray();
+                return vacation.Approvals
+                    .Select(x => new CalendarEventApprovalModel(x.ApproverId.ToString(), x.Timestamp)).ToArray();
             }
 
             return this.NotFound();
@@ -82,12 +90,15 @@
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> ApproveEvent(int employeeId, string eventId)
         {
-            if (!(await this.authorizationService.AuthorizeAsync(this.User, new EmployeeId(employeeId), new ApprovePendingCalendarEvent())).Succeeded)
+            if (!(await this.authorizationService.AuthorizeAsync(this.User, new EmployeeId(employeeId),
+                new ApprovePendingCalendarEvent())).Succeeded)
             {
                 return this.Forbid();
             }
 
-            var approver = (await this.employees.FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(this.User.Identity), CancellationToken.None)).FirstOrDefault();
+            var approver =
+                (await this.employees.FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(this.User.Identity),
+                    CancellationToken.None)).FirstOrDefault();
             if (approver == null)
             {
                 return this.Forbid();
@@ -95,17 +106,20 @@
 
             if (this.idConverter.TryParseWorkHoursChangeId(eventId, out var changeId))
             {
-                var existingEvent = await this.workHoursCredit.GetCalendarEventAsync(new EmployeeId(employeeId), changeId, CancellationToken.None);
+                var existingEvent = await this.workHoursCredit.GetCalendarEventAsync(new EmployeeId(employeeId),
+                    changeId, CancellationToken.None);
                 if (existingEvent == null)
                 {
                     return this.NotFound();
                 }
 
-                await this.workHoursCredit.ApproveRequestAsync(new EmployeeId(employeeId), changeId, approver.EmployeeId);
+                await this.workHoursCredit.ApproveRequestAsync(new EmployeeId(employeeId), changeId,
+                    approver.EmployeeId);
             }
             else if (this.idConverter.TryParseVacationId(eventId, out var vacationId))
             {
-                var existingEvent = await this.vacations.GetCalendarEventAsync(new EmployeeId(employeeId), vacationId, CancellationToken.None);
+                var existingEvent = await this.vacations.GetCalendarEventAsync(new EmployeeId(employeeId), vacationId,
+                    CancellationToken.None);
                 if (existingEvent == null)
                 {
                     return this.NotFound();

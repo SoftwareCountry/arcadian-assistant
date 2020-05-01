@@ -32,7 +32,9 @@
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<UserModel>> GetCurrentUser(CancellationToken cancellationToken)
         {
-            var userEmployees = await this.employees.FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(this.User.Identity), cancellationToken);
+            var userEmployees =
+                await this.employees.FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(this.User.Identity),
+                    cancellationToken);
             var employee = userEmployees.SingleOrDefault();
             if (employee == null)
             {
@@ -47,7 +49,8 @@
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<UserEmployeePermissionsModel>> GetPermissions(int objectEmployeeId, CancellationToken token)
+        public async Task<ActionResult<UserEmployeePermissionsModel>> GetPermissions(
+            int objectEmployeeId, CancellationToken token)
         {
             if (this.User.Identity.Name == null)
             {
@@ -61,7 +64,8 @@
                 return this.NotFound();
             }
 
-            var allPermissions = await this.permissions.GetPermissionsAsync(new UserIdentity(this.User.Identity.Name!), token);
+            var allPermissions =
+                await this.permissions.GetPermissionsAsync(new UserIdentity(this.User.Identity.Name!), token);
             var employeePermissions = allPermissions.GetPermissions(objectEmployee);
             return new UserEmployeePermissionsModel(objectId.ToString(), employeePermissions);
         }

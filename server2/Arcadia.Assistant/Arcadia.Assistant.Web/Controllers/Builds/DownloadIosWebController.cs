@@ -21,7 +21,8 @@
         private readonly IMobileBuildActorFactory mobileBuildActor;
         private readonly bool sslOffloading;
 
-        public DownloadIosWebController(ISslSettings sslSettings, IHelpSettings helpSettings, IMobileBuildActorFactory mobileBuildActor)
+        public DownloadIosWebController(
+            ISslSettings sslSettings, IHelpSettings helpSettings, IMobileBuildActorFactory mobileBuildActor)
         {
             this.sslOffloading = sslSettings.SslOffloading;
             this.helpLink = helpSettings.HelpLink;
@@ -32,7 +33,8 @@
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var version = await this.mobileBuildActor.MobileBuild(DeviceTypeEnum.Ios.MobileBuildType()).GetMobileBuildVersionAsync(CancellationToken.None);
+            var version = await this.mobileBuildActor.MobileBuild(DeviceTypeEnum.Ios.MobileBuildType())
+                .GetMobileBuildVersionAsync(CancellationToken.None);
             return this.View(new HomeViewModel
             {
                 ManifestLink = this.GetAbsoluteUrl("GetIosManifest", "DownloadIosWeb"),

@@ -37,7 +37,9 @@
         private readonly IVacationsCredit vacationsCredit;
         private readonly IWorkHoursCredit workHoursCredit;
 
-        public EmployeesController(IEmployees employees, ISslSettings sslSettings, ILogger<EmployeesController> logger, IPermissions permissions, IWorkHoursCredit workHoursCredit, IVacationsCredit vacationsCredit)
+        public EmployeesController(
+            IEmployees employees, ISslSettings sslSettings, ILogger<EmployeesController> logger,
+            IPermissions permissions, IWorkHoursCredit workHoursCredit, IVacationsCredit vacationsCredit)
         {
             this.employees = employees;
             this.logger = logger;
@@ -65,7 +67,8 @@
                 return this.Forbid();
             }
 
-            var model = (await this.ProcessEmployeesAsync(new UserIdentity(identity), new[] { employee }, token)).FirstOrDefault();
+            var model = (await this.ProcessEmployeesAsync(new UserIdentity(identity), new[] { employee }, token))
+                .FirstOrDefault();
             if (model == null)
             {
                 return this.NotFound();
@@ -113,7 +116,8 @@
             return employeeModels;
         }
 
-        private async Task<EmployeeModel[]> ProcessEmployeesAsync(UserIdentity identity, IEnumerable<EmployeeMetadata> employeeMetadatas, CancellationToken cancellationToken)
+        private async Task<EmployeeModel[]> ProcessEmployeesAsync(
+            UserIdentity identity, IEnumerable<EmployeeMetadata> employeeMetadatas, CancellationToken cancellationToken)
         {
             var allPermissions = await this.permissions.GetPermissionsAsync(identity, cancellationToken);
 
@@ -123,7 +127,8 @@
 
             var hoursTask = this.workHoursCredit.GetAvailableHoursAsync(
                 readableEmployees
-                    .Where(x => allPermissions.GetPermissions(x).HasFlag(EmployeePermissionsEntry.ReadEmployeeDayoffsCounter))
+                    .Where(x => allPermissions.GetPermissions(x)
+                        .HasFlag(EmployeePermissionsEntry.ReadEmployeeDayoffsCounter))
                     .Select(x => x.EmployeeId)
                     .ToArray(),
                 cancellationToken);
@@ -141,7 +146,8 @@
 
                     if (employeePermissions.HasFlag(EmployeePermissionsEntry.ReadEmployeeVacationsCounter))
                     {
-                        employee.VacationDaysLeft = await this.vacationsCredit.GetVacationDaysLeftAsync(employee.Email, cancellationToken);
+                        employee.VacationDaysLeft =
+                            await this.vacationsCredit.GetVacationDaysLeftAsync(employee.Email, cancellationToken);
                     }
 
                     if ((await hoursTask).TryGetValue(x.EmployeeId, out var value))
@@ -165,7 +171,8 @@
                 try
                 {
                     var protocol = this.sslOffloading ? "https" : this.Request.Scheme;
-                    employee.PhotoUrl = this.Url.Action(nameof(EmployeePhotoController.GetImage), "EmployeePhoto", new { employeeId = employee.EmployeeId }, protocol);
+                    employee.PhotoUrl = this.Url.Action(nameof(EmployeePhotoController.GetImage), "EmployeePhoto",
+                        new { employeeId = employee.EmployeeId }, protocol);
                 }
                 catch (Exception e)
                 {

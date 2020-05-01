@@ -48,6 +48,8 @@
 
     using SickLeaves.Contracts;
 
+    using UserFeeds.Contracts;
+
     using UserPreferences.Contracts;
 
     using Vacations.Contracts;
@@ -131,11 +133,13 @@
             services
                 .AddAuthorization(options =>
                 {
-                    options.AddPolicy(Policies.UserIsEmployee, policy => policy.Requirements.Add(new UserIsEmployeeRequirement()));
+                    options.AddPolicy(Policies.UserIsEmployee,
+                        policy => policy.Requirements.Add(new UserIsEmployeeRequirement()));
 
                     options.AddPolicy(Policies.ServiceEndpoint, policy =>
                     {
-                        policy.AddAuthenticationSchemes(BasicAuthenticationDefaults.AuthenticationScheme, JwtBearerDefaults.AuthenticationScheme);
+                        policy.AddAuthenticationSchemes(BasicAuthenticationDefaults.AuthenticationScheme,
+                            JwtBearerDefaults.AuthenticationScheme);
                         policy.RequireAuthenticatedUser();
                     });
                 });
@@ -165,10 +169,12 @@
             builder.RegisterModule(new PendingActionsModule());
             builder.RegisterModule(new MobileBuildModule());
             builder.RegisterModule(new DeviceRegistryModule());
+            builder.RegisterModule(new UserFeedsModule());
 
             builder.RegisterType<UserIsEmployeeHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
             builder.RegisterType<EmployeePermissionsHandler>().As<IAuthorizationHandler>().InstancePerLifetimeScope();
-            builder.RegisterServiceLogging(new LoggerSettings(this.AppSettings.Config.Logging.ApplicationInsightsKey), this.serviceContext);
+            builder.RegisterServiceLogging(new LoggerSettings(this.AppSettings.Config.Logging.ApplicationInsightsKey),
+                this.serviceContext);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -44,7 +44,8 @@
                 return this.NotFound();
             }
 
-            var userPreferences = await this.usersPreferencesStorage.ForEmployee(employee.EmployeeId).Get(cancellationToken);
+            var userPreferences =
+                await this.usersPreferencesStorage.ForEmployee(employee.EmployeeId).Get(cancellationToken);
             var model = new UserPreferencesModel
             {
                 EmailNotifications = userPreferences.EmailNotifications,
@@ -58,7 +59,8 @@
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<UserPreferencesModel>> SaveUserPreferences(UserPreferencesModel userPreferencesModel)
+        public async Task<ActionResult<UserPreferencesModel>> SaveUserPreferences(
+            UserPreferencesModel userPreferencesModel)
         {
             if (!this.ModelState.IsValid)
             {
@@ -66,7 +68,9 @@
             }
 
             var employee = (await this.employees
-                .FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(this.User.Identity), CancellationToken.None)).FirstOrDefault();
+                    .FindEmployeesAsync(EmployeesQuery.Create().WithIdentity(this.User.Identity),
+                        CancellationToken.None))
+                .FirstOrDefault();
 
             if (employee == null)
             {

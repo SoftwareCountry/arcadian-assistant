@@ -28,7 +28,8 @@
 
         [HttpGet]
         [Route("")]
-        public async Task<ActionResult<CalendarEventsWithIdByEmployeeModel>> GetPendingRequests(CancellationToken cancellationToken)
+        public async Task<ActionResult<CalendarEventsWithIdByEmployeeModel>> GetPendingRequests(
+            CancellationToken cancellationToken)
         {
             var id = new EmployeeId(144);
 

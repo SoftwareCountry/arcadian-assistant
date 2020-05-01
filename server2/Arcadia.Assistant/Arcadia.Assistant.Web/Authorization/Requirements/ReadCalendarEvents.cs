@@ -5,7 +5,7 @@
     public class ReadCalendarEvents : EmployeePermissionsRequirement
     {
         public ReadCalendarEvents()
-            :base(EmployeePermissionsEntry.ReadEmployeeCalendarEvents)
+            : base(EmployeePermissionsEntry.ReadEmployeeCalendarEvents)
         {
         }
     }

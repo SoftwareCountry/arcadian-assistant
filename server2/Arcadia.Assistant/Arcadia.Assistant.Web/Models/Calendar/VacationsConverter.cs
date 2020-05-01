@@ -8,13 +8,15 @@
 
         public CalendarEventModel ToCalendarEvent(VacationDescription vacation)
         {
-            return new CalendarEventModel(CalendarEventTypes.Vacation, this.ToDatesPeriod(vacation), vacation.Status.ToString());
+            return new CalendarEventModel(CalendarEventTypes.Vacation, this.ToDatesPeriod(vacation),
+                vacation.Status.ToString());
         }
 
         public CalendarEventWithIdModel ToCalendarEventWithId(VacationDescription vacation)
         {
             var dtoId = this.idConverter.ToDtoId(CalendarEventTypes.Vacation, vacation.VacationId);
-            return new CalendarEventWithIdModel(dtoId, CalendarEventTypes.Vacation, this.ToDatesPeriod(vacation), vacation.Status.ToString());
+            return new CalendarEventWithIdModel(dtoId, CalendarEventTypes.Vacation, this.ToDatesPeriod(vacation),
+                vacation.Status.ToString());
         }
 
         private DatesPeriodModel ToDatesPeriod(VacationDescription vacationDescription)

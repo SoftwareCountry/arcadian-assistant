@@ -1,6 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="Arcadia.Assistant.SFType" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Parameters>
+    <Parameter Name="Arcadia.Assistant.UserFeeds_MinReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="Arcadia.Assistant.UserFeeds_PartitionCount" DefaultValue="1" />
+    <Parameter Name="Arcadia.Assistant.UserFeeds_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="Arcadia.Assistant.AnniversaryFeed_InstanceCount" DefaultValue="-1" />
+    <Parameter Name="Arcadia.Assistant.BirthdaysFeed_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.EmailNotifications_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.Notifications_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.Notifications_EnablePush" DefaultValue="false" />
@@ -52,7 +57,7 @@
     <Parameter Name="Arcadia.Assistant.Sharepoint_ClientId" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Sharepoint_ClientSecret" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Sharepoint_CalendarEventIdField" DefaultValue="" />
-    <Parameter Name="Arcadia.Assistant.Sharepoint_SynchronizationIntervalMinutes" DefaultValue="1" />
+    <Parameter Name="Arcadia.Assistant.Sharepoint_SynchronizationIntervalMinutes" DefaultValue="10" />
     <Parameter Name="Arcadia.Assistant.Sharepoint_DepartmentsCalendars" DefaultValue="[]" />
     <Parameter Name="Arcadia.Assistant.Web_ASPNETCORE_ENVIRONMENT" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Web_InstanceCount" DefaultValue="-1" />
@@ -80,6 +85,42 @@
   <!-- Import the ServiceManifest from the ServicePackage. The ServiceManifestName and ServiceManifestVersion 
        should match the Name and Version attributes of the ServiceManifest element defined in the 
        ServiceManifest.xml file. -->
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.UserFeedsPkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
+  </ServiceManifestImport>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.AnniversaryFeedPkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
+  </ServiceManifestImport>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.BirthdaysFeedPkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="Logging">
+            <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
+  </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="Arcadia.Assistant.EmailNotificationsPkg" ServiceManifestVersion="1.0.0" />
     <ConfigOverrides>
@@ -418,6 +459,21 @@
          ServiceFabric PowerShell module.
          
          The attribute ServiceTypeName below must match the name defined in the imported ServiceManifest.xml file. -->
+    <Service Name="Arcadia.Assistant.UserFeeds" ServicePackageActivationMode="ExclusiveProcess">
+      <StatefulService ServiceTypeName="Arcadia.Assistant.UserFeedsType" TargetReplicaSetSize="[Arcadia.Assistant.UserFeeds_TargetReplicaSetSize]" MinReplicaSetSize="[Arcadia.Assistant.UserFeeds_MinReplicaSetSize]">
+        <UniformInt64Partition PartitionCount="[Arcadia.Assistant.UserFeeds_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+      </StatefulService>
+    </Service>
+    <Service Name="Arcadia.Assistant.AnniversaryFeed" ServicePackageActivationMode="ExclusiveProcess">
+      <StatelessService ServiceTypeName="Arcadia.Assistant.AnniversaryFeedType" InstanceCount="[Arcadia.Assistant.AnniversaryFeed_InstanceCount]">
+        <SingletonPartition />
+      </StatelessService>
+    </Service>
+    <Service Name="Arcadia.Assistant.BirthdaysFeed" ServicePackageActivationMode="ExclusiveProcess">
+      <StatelessService ServiceTypeName="Arcadia.Assistant.BirthdaysFeedType" InstanceCount="[Arcadia.Assistant.BirthdaysFeed_InstanceCount]">
+        <SingletonPartition />
+      </StatelessService>
+    </Service>
     <Service Name="Arcadia.Assistant.EmailNotifications" ServicePackageActivationMode="ExclusiveProcess">
       <StatelessService ServiceTypeName="Arcadia.Assistant.EmailNotificationsType" InstanceCount="[Arcadia.Assistant.EmailNotifications_InstanceCount]">
         <SingletonPartition />
