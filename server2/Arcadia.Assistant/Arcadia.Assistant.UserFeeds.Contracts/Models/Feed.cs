@@ -6,6 +6,6 @@
 
         public string Name { get; set; } = string.Empty;
 
-        public bool FeedSubscription { get; set; } = true;
+        public bool IsSubscribed { get; set; } = true;
     }
 }

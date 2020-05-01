@@ -8,7 +8,7 @@ namespace Arcadia.Assistant.AnniversaryFeed
     using Autofac;
     using Autofac.Integration.ServiceFabric;
 
-    using CSP;
+    using Avatars.Contracts;
 
     using Employees.Contracts;
 
@@ -27,14 +27,12 @@ namespace Arcadia.Assistant.AnniversaryFeed
             try
             {
                 var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
-                var connectionString =
-                    configurationPackage.Settings.Sections["Csp"].Parameters["ConnectionString"].Value;
 
                 var builder = new ContainerBuilder();
 
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterStatelessService<AnniversaryFeed>("Arcadia.Assistant.AnniversaryFeedType");
-                builder.RegisterModule(new CspModule(connectionString));
+                builder.RegisterModule(new AvatarsModule());
                 builder.RegisterModule(new EmployeesModule());
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
 

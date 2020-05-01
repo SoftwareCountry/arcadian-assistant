@@ -3,39 +3,40 @@ namespace Arcadia.Assistant.AnniversaryFeed
     using System;
     using System.Collections.Generic;
     using System.Fabric;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
-    using Autofac.Features.OwnedInstances;
+    using Avatars.Contracts;
 
     using Contracts;
 
-    using CSP;
-    using CSP.Model;
+    using Employees.Contracts;
 
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
 
-    using UserFeeds.Contracts;
+    using UserFeeds.Contracts.Models;
 
     /// <summary>
     ///     An instance of this class is created for each service instance by the Service Fabric runtime.
     /// </summary>
     public class AnniversaryFeed : StatelessService, IAnniversaryFeed
     {
-        private readonly Func<Owned<CspEmployeeQuery>> employeeQuery;
+        private readonly IAvatars avatarsService;
+        private readonly IEmployees employeeService;
         private readonly ILogger logger;
 
         public AnniversaryFeed(
-            StatelessServiceContext context, Func<Owned<CspEmployeeQuery>> employeeQuery,
+            StatelessServiceContext context,
+            IEmployees employeeService,
+            IAvatars avatarsService,
             ILogger<AnniversaryFeed> logger)
             : base(context)
         {
-            this.employeeQuery = employeeQuery;
+            this.employeeService = employeeService;
+            this.avatarsService = avatarsService;
             this.logger = logger;
         }
 
@@ -44,14 +45,19 @@ namespace Arcadia.Assistant.AnniversaryFeed
         public async Task<FeedItem[]> GetItems(
             DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
         {
-            using var query = this.employeeQuery();
-            return (await query.Value.Get()
-                    .Where(x => x.IsWorking) // fired employes also
-                    .Where(x => x.HiringDate >= new DateTime(x.HiringDate.Year, startDate.Month, startDate.Day)
-                        && x.HiringDate <= new DateTime(x.HiringDate.Year, endDate.Month, endDate.Day))
-                    .ToListAsync(cancellationToken))
-                .Select(this.ConvertFeedMessage)
-                .ToArray();
+            var employeesList =
+                await this.employeeService.FindEmployeesAsync(
+                    EmployeesQuery.Create().WithHireDateRange(startDate, endDate),
+                    cancellationToken);
+            this.logger.LogDebug("Received {ItemsCount} employees.", employeesList.Length);
+
+            var result = new FeedItem[employeesList.Length];
+            for (var idx = 0; idx < employeesList.Length; idx++)
+            {
+                result[idx] = await this.ConvertFeedMessage(employeesList[idx], cancellationToken);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -63,9 +69,9 @@ namespace Arcadia.Assistant.AnniversaryFeed
             return this.CreateServiceRemotingInstanceListeners();
         }
 
-        private FeedItem ConvertFeedMessage(Employee employee)
+        private async Task<FeedItem> ConvertFeedMessage(EmployeeMetadata employee, CancellationToken cancellationToken)
         {
-            var employeeId = employee.Id.ToString();
+            var employeeId = employee.EmployeeId.ToString();
             var title = $"{employee.LastName} {employee.FirstName}".Trim();
             var date = DateTime.UtcNow;
             var text = $"Congratulations with Anniversary! {this.YearsServedAt(employee, date)} years served!";
@@ -74,24 +80,24 @@ namespace Arcadia.Assistant.AnniversaryFeed
                 Id = $"employee-anniversary-{employeeId}-at-{date}",
                 Title = title,
                 Text = text,
-                //Image = employee.Image, TODO: image removed to Avatar service
+                Image = (await this.avatarsService.Get(employee.EmployeeId).GetPhoto(cancellationToken))?.Bytes,
                 Date = date
             };
         }
 
-        public int? YearsServedAt(Employee employee, DateTime date)
+        public int? YearsServedAt(EmployeeMetadata employee, DateTime date)
         {
             DateTime toDate;
-            if (employee.FiringDate == null)
+            if (employee.FireDate == null)
             {
                 toDate = date;
             }
             else
             {
-                toDate = date > employee.FiringDate ? employee.FiringDate.Value : date;
+                toDate = date > employee.FireDate ? employee.FireDate.Value : date;
             }
 
-            return CalculateYearsFromDate(employee.HiringDate, toDate);
+            return CalculateYearsFromDate(employee.HireDate, toDate);
         }
 
         private static int? CalculateYearsFromDate(DateTime? fromDate, DateTime? toDate = null)

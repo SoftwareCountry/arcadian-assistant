@@ -11,7 +11,6 @@ namespace Arcadia.Assistant.UserFeeds
 
     using BirthdaysFeed.Contracts;
 
-    using Contracts;
     using Contracts.Interfaces;
     using Contracts.Models;
 
@@ -81,7 +80,7 @@ namespace Arcadia.Assistant.UserFeeds
             var userFeedsCollection = userFeeds.HasValue ? userFeeds.Value : this.CreateUserFeedsCollection(employeeId);
             foreach (var feed in userFeedsCollection)
             {
-                if (feed.FeedSubscription && this.userFeedsMap.TryGetValue(feed.Id, out var service))
+                if (feed.IsSubscribed && this.userFeedsMap.TryGetValue(feed.Id, out var service))
                 {
                     var items = await service.GetItems(startDate, endDate, cancellationToken);
                     result.AddRange(items);
@@ -102,7 +101,7 @@ namespace Arcadia.Assistant.UserFeeds
             var userFeeds =
                 await userFeedsStore.TryGetValueAsync(transaction, employeeId, this.Timeout, cancellationToken);
             var userFeedsCollection = userFeeds.HasValue ? userFeeds.Value : this.CreateUserFeedsCollection(employeeId);
-            userFeedsCollection.ToList().ForEach(f => f.FeedSubscription = feedIds.Any(i => f.Id == i));
+            userFeedsCollection.ToList().ForEach(f => f.IsSubscribed = feedIds.Any(i => f.Id == i));
             await userFeedsStore.TryUpdateAsync(transaction, employeeId, userFeedsCollection, userFeedsCollection,
                 this.Timeout, cancellationToken);
         }

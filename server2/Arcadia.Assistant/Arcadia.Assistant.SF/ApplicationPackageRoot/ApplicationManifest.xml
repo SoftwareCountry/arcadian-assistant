@@ -102,9 +102,6 @@
     <ConfigOverrides>
       <ConfigOverride Name="Config">
         <Settings>
-          <Section Name="Csp">
-            <Parameter Name="ConnectionString" Value="[Arcadia.Assistant.Csp_ConnectionString]" />
-          </Section>
           <Section Name="Logging">
             <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
           </Section>
@@ -117,9 +114,6 @@
     <ConfigOverrides>
       <ConfigOverride Name="Config">
         <Settings>
-          <Section Name="Csp">
-            <Parameter Name="ConnectionString" Value="[Arcadia.Assistant.Csp_ConnectionString]" />
-          </Section>
           <Section Name="Logging">
             <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
           </Section>

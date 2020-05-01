@@ -1,12 +1,10 @@
-﻿namespace Arcadia.Assistant.UserFeeds.Contracts
+﻿namespace Arcadia.Assistant.UserFeeds.Contracts.Models
 {
     using System;
 
     public class FeedItem
     {
         public string Id { get; set; } = string.Empty;
-
-        public string FeedType { get; set; } = string.Empty;
 
         public string Title { get; set; } = string.Empty;
 

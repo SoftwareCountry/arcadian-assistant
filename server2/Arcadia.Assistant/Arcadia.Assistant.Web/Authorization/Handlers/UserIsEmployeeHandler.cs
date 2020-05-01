@@ -43,6 +43,10 @@
             {
                 context.Succeed(requirement);
             }
+            else
+            {
+                // this.logger.Trace($"Employee not found in the database for the user with identity {context.User.Identity.Name}");
+            }
         }
     }
 }

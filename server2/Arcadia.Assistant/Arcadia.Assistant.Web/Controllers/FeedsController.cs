@@ -76,7 +76,7 @@
             {
                 Type = x.Id.Value,
                 Name = x.Name,
-                Subscribed = x.FeedSubscription
+                Subscribed = x.IsSubscribed
             });
             return this.Ok(result);
         }

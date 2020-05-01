@@ -9,7 +9,7 @@ namespace Arcadia.Assistant.BirthdaysFeed.Contracts
 {
     using Microsoft.ServiceFabric.Services.Remoting;
 
-    using UserFeeds.Contracts;
+    using UserFeeds.Contracts.Interfaces;
 
     public interface IBirthdaysFeed : IFeedService, IService
     {

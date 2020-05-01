@@ -25,6 +25,18 @@
         [DataMember]
         public string? NameFilter { get; private set; }
 
+        [DataMember]
+        public bool IncludeFired { get; private set; }
+
+        [DataMember]
+        public bool? IsWorkedOption { get; private set; }
+
+        [DataMember]
+        public (DateTime, DateTime)? HireDateRange { get; private set; }
+
+        [DataMember]
+        public (DateTime, DateTime)? BirthdayRange { get; private set; }
+
         public static EmployeesQuery Create()
         {
             return new EmployeesQuery();
@@ -33,7 +45,7 @@
         public EmployeesQuery ForDepartment(string departmentId)
         {
             var obj = this.Clone();
-            obj.DepartmentIds = new [] { departmentId };
+            obj.DepartmentIds = new[] { departmentId };
             return obj;
         }
 
@@ -65,6 +77,23 @@
             return obj;
         }
 
+        public EmployeesQuery WithHireDateRange(DateTime rangeStartDate, DateTime rangeEndDate)
+        {
+            var obj = this.Clone();
+            obj.HireDateRange = (rangeStartDate, rangeEndDate);
+            obj.IncludeFired = true;
+            obj.IsWorkedOption = true;
+            return obj;
+        }
+
+        public EmployeesQuery WithBirthdayRange(DateTime rangeStartDate, DateTime rangeEndDate)
+        {
+            var obj = this.Clone();
+            obj.BirthdayRange = (rangeStartDate, rangeEndDate);
+            obj.IsWorkedOption = true;
+            return obj;
+        }
+
         public EmployeesQuery WithIdentity(IIdentity identity)
         {
             var obj = this.Clone();
@@ -90,8 +119,10 @@
             newObj.DepartmentIds = this.DepartmentIds;
             newObj.EmployeeId = this.EmployeeId;
             newObj.RoomNumber = this.RoomNumber;
-            //newObj.BirthDate = this.BirthDate;
-            //newObj.HireDate = this.HireDate;
+            newObj.HireDateRange = this.HireDateRange;
+            newObj.BirthdayRange = this.BirthdayRange;
+            newObj.IncludeFired = this.IncludeFired;
+            newObj.IsWorkedOption = this.IsWorkedOption;
             newObj.Identity = this.Identity;
             newObj.NameFilter = this.NameFilter;
 

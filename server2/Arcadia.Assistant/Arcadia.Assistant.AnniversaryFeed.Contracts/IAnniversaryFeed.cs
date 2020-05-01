@@ -9,7 +9,7 @@ namespace Arcadia.Assistant.AnniversaryFeed.Contracts
 {
     using Microsoft.ServiceFabric.Services.Remoting;
 
-    using UserFeeds.Contracts;
+    using UserFeeds.Contracts.Interfaces;
 
     public interface IAnniversaryFeed : IFeedService, IService
     {

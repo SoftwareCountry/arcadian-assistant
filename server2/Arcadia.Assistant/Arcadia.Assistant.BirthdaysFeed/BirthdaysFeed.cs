@@ -3,38 +3,40 @@ namespace Arcadia.Assistant.BirthdaysFeed
     using System;
     using System.Collections.Generic;
     using System.Fabric;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
-    using Autofac.Features.OwnedInstances;
+    using Avatars.Contracts;
 
     using Contracts;
 
-    using CSP;
-    using CSP.Model;
+    using Employees.Contracts;
 
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
 
-    using UserFeeds.Contracts;
+    using UserFeeds.Contracts.Models;
 
     /// <summary>
     ///     An instance of this class is created for each service instance by the Service Fabric runtime.
     /// </summary>
     public class BirthdaysFeed : StatelessService, IBirthdaysFeed
     {
-        private readonly Func<Owned<CspEmployeeQuery>> employeeQuery;
+        private readonly IAvatars avatarsService;
+        private readonly IEmployees employeeService;
         private readonly ILogger logger;
 
         public BirthdaysFeed(
-            StatelessServiceContext context, Func<Owned<CspEmployeeQuery>> employeeQuery, ILogger<BirthdaysFeed> logger)
+            StatelessServiceContext context,
+            IEmployees employeeService,
+            IAvatars avatarsService,
+            ILogger<BirthdaysFeed> logger)
             : base(context)
         {
-            this.employeeQuery = employeeQuery;
+            this.employeeService = employeeService;
+            this.avatarsService = avatarsService;
             this.logger = logger;
         }
 
@@ -43,16 +45,17 @@ namespace Arcadia.Assistant.BirthdaysFeed
         public async Task<FeedItem[]> GetItems(
             DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
         {
-            using var query = this.employeeQuery();
-            return (await query.Value.Get()
-                    .Where(x => x.IsWorking && !x.IsDelete &&
-                        x.Birthday.HasValue && !x.FiringDate.HasValue &&
-                        x.Birthday.Value >=
-                        new DateTime(x.Birthday.Value.Year, startDate.Month, startDate.Day)
-                        && x.Birthday.Value <= new DateTime(x.Birthday.Value.Year, endDate.Month, endDate.Day))
-                    .ToListAsync(cancellationToken))
-                .Select(this.ConvertFeedMessage)
-                .ToArray();
+            var employeesList = await this.employeeService.FindEmployeesAsync(
+                EmployeesQuery.Create().WithBirthdayRange(startDate, endDate), cancellationToken);
+            this.logger.LogDebug("Received {ItemsCount} employees.", employeesList.Length);
+
+            var result = new FeedItem[employeesList.Length];
+            for (var idx = 0; idx < employeesList.Length; idx++)
+            {
+                result[idx] = await this.ConvertFeedMessage(employeesList[idx], cancellationToken);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -69,11 +72,11 @@ namespace Arcadia.Assistant.BirthdaysFeed
         /// </summary>
         /// <param name="employee">Employee metadata object</param>
         /// <remarks>Ensure the employee birthday is not null</remarks>
-        private FeedItem ConvertFeedMessage(Employee employee)
+        private async Task<FeedItem> ConvertFeedMessage(EmployeeMetadata employee, CancellationToken cancellationToken)
         {
-            var employeeId = employee.Id.ToString();
-            var date = employee.Birthday.GetValueOrDefault();
-            var pronoun = employee.Gender == "F" ? "her" : "his";
+            var employeeId = employee.EmployeeId.ToString();
+            var date = employee.BirthDate.GetValueOrDefault();
+            var pronoun = employee.Sex == Sex.Female ? "her" : "his";
             var title = $"{employee.LastName} {employee.FirstName}".Trim();
             var text = $"{title} celebrates {pronoun} birthday on {date:MMMM dd)}!";
             return new FeedItem
@@ -81,7 +84,7 @@ namespace Arcadia.Assistant.BirthdaysFeed
                 Id = $"employee-birthday-{employeeId}-at-{date}",
                 Title = title,
                 Text = text,
-                //Image = employee.Image, TODO: image removed to Avatar service
+                Image = (await this.avatarsService.Get(employee.EmployeeId).GetPhoto(cancellationToken))?.Bytes,
                 Date = date
             };
         }

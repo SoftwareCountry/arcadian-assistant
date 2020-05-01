@@ -19,11 +19,14 @@
             this.cspConfiguration = cspConfiguration;
         }
 
-        public IQueryable<Employee> Get()
+        public IQueryable<Employee> Get(bool includeFired = false)
         {
-            return this.ctx.Employees
-                .AsNoTracking()
-                .Where(x => x.FiringDate == null && !x.IsDelete && x.CompanyId == this.cspConfiguration.CompanyId || x.Id == ArcadyKhotinEmployeeId);
+            var query = this.ctx.Employees
+                .AsNoTracking();
+
+            return includeFired
+                ? query.Where(x => !x.IsDelete && x.CompanyId == this.cspConfiguration.CompanyId || x.Id == ArcadyKhotinEmployeeId)
+                : query.Where(x => x.FiringDate == null && !x.IsDelete && x.CompanyId == this.cspConfiguration.CompanyId || x.Id == ArcadyKhotinEmployeeId);
         }
     }
 }

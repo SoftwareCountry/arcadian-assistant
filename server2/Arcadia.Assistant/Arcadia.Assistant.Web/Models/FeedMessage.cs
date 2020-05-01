@@ -5,6 +5,7 @@
     using System.Runtime.Serialization;
 
     using UserFeeds.Contracts;
+    using UserFeeds.Contracts.Models;
 
     [DataContract]
     public class FeedMessage
