@@ -23,7 +23,6 @@ namespace Arcadia.Assistant.SickLeaves
     using Microsoft.ServiceFabric.Services.Runtime;
 
     using Notifications;
-    using Notifications.Contracts;
 
     using NotificationTemplates.Configuration;
 

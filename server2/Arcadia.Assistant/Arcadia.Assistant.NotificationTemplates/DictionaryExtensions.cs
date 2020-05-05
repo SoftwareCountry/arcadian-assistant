@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Arcadia.Assistant.NotificationTemplates
+﻿namespace Arcadia.Assistant.NotificationTemplates
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using System.Runtime.Serialization;
@@ -35,13 +32,14 @@ namespace Arcadia.Assistant.NotificationTemplates
                 foreach (var member in obj.GetType().GetMembers())
                 {
                     if (member.CustomAttributes.Any(x =>
-                        x.GetType().GetNestedTypes().Any(t => t == typeof(DataMemberAttribute)))
+                            x.GetType().GetNestedTypes().Any(t => t == typeof(DataMemberAttribute)))
                         && !target.Keys.Contains(member.Name))
                     {
                         if (member.MemberType == MemberTypes.Field)
                         {
                             target.Add(member.Name, ((FieldInfo)member).GetValue(obj).ToString());
-                        } else if (member.MemberType == MemberTypes.Property)
+                        }
+                        else if (member.MemberType == MemberTypes.Property)
                         {
                             target.Add(member.Name, ((PropertyInfo)member).GetValue(obj).ToString());
                         }

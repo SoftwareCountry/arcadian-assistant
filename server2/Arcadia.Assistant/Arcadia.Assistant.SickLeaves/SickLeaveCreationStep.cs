@@ -17,11 +17,12 @@
     public class SickLeaveCreationStep
     {
         private readonly ArcadiaCspContext context;
-        private readonly PermissionsEntryQuery permissionsQuery;
-        private readonly ILogger<SickLeaveCreationStep> logger;
         private readonly SickLeaveModelConverter converter = new SickLeaveModelConverter();
+        private readonly ILogger<SickLeaveCreationStep> logger;
+        private readonly PermissionsEntryQuery permissionsQuery;
 
-        public SickLeaveCreationStep(ArcadiaCspContext context, PermissionsEntryQuery permissionsQuery, ILogger<SickLeaveCreationStep> logger)
+        public SickLeaveCreationStep(
+            ArcadiaCspContext context, PermissionsEntryQuery permissionsQuery, ILogger<SickLeaveCreationStep> logger)
         {
             this.context = context;
             this.permissionsQuery = permissionsQuery;
@@ -29,17 +30,22 @@
         }
 
         /// <exception cref="NotEnoughPermissionsException"></exception>
-        public async Task<SickLeaveDescription> InvokeAsync(EmployeeId employeeId, DateTime startDate, DateTime endDate, UserIdentity creatorIdentity)
+        public async Task<SickLeaveDescription> InvokeAsync(
+            EmployeeId employeeId, DateTime startDate, DateTime endDate, UserIdentity creatorIdentity)
         {
-            using var scope = this.logger.BeginScope("New sick leave creation for {EmployeeId}, {StartDate} - {EndDate}", employeeId, startDate, endDate);
-            var (_, entry) = await this.permissionsQuery.ExecuteAsync(creatorIdentity, employeeId, CancellationToken.None);
+            using var scope = this.logger.BeginScope(
+                "New sick leave creation for {EmployeeId}, {StartDate} - {EndDate}", employeeId, startDate, endDate);
+            var (_, entry) =
+                await this.permissionsQuery.ExecuteAsync(creatorIdentity, employeeId, CancellationToken.None);
             if (!entry.HasFlag(EmployeePermissionsEntry.CreateCalendarEvents))
             {
-                this.logger.LogError("{User} has no permissions to create calendar events for id {EmployeeId}", creatorIdentity, employeeId);
-                throw new NotEnoughPermissionsException($"{creatorIdentity} has no permissions to create calendar events for {employeeId}");
+                this.logger.LogError("{User} has no permissions to create calendar events for id {EmployeeId}",
+                    creatorIdentity, employeeId);
+                throw new NotEnoughPermissionsException(
+                    $"{creatorIdentity} has no permissions to create calendar events for {employeeId}");
             }
 
-            var newSickLeave = new CSP.Model.SickLeave()
+            var newSickLeave = new SickLeave
             {
                 EmployeeId = employeeId.Value,
                 Start = startDate,

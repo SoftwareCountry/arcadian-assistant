@@ -6,8 +6,6 @@ namespace Arcadia.Assistant.Sharepoint
     using System.Linq;
     using System.Threading;
 
-    using Assistant.NotificationTemplates;
-
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Autofac.Integration.ServiceFabric;

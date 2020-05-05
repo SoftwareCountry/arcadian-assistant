@@ -1,28 +1,28 @@
 ﻿namespace Arcadia.Assistant.SickLeaves
 {
-    using System;
     using System.Linq;
-    using System.Linq.Expressions;
 
     using Contracts;
+
+    using CSP.Model;
 
     using Employees.Contracts;
 
     public class SickLeaveModelConverter
     {
-        public SickLeaveDescription GetDescription(CSP.Model.SickLeave model)
+        public SickLeaveDescription GetDescription(SickLeave model)
         {
-            return new SickLeaveDescription()
+            return new SickLeaveDescription
             {
                 SickLeaveId = model.Id,
                 EmployeeId = new EmployeeId(model.EmployeeId),
                 StartDate = model.Start,
                 EndDate = model.End,
-                Status = GetStatus(model),
+                Status = this.GetStatus(model)
             };
         }
 
-        public SickLeaveStatus GetStatus(CSP.Model.SickLeave model)
+        public SickLeaveStatus GetStatus(SickLeave model)
         {
             return model.SickLeaveCancellations.Select(x => new
                 {
@@ -34,7 +34,6 @@
                 .OrderByDescending(x => x.DateTime)
                 .FirstOrDefault()
                 ?.Status ?? SickLeaveStatus.Requested;
-
         }
     }
 }

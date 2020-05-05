@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Arcadia.Assistant.SickLeaves
+﻿namespace Arcadia.Assistant.SickLeaves
 {
     internal static class SickLeaveNotificationTemplate
     {

@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-
-namespace Arcadia.Assistant.NotificationTemplates
+﻿namespace Arcadia.Assistant.NotificationTemplates
 {
+    using System;
+    using System.Collections.Generic;
     using System.Linq;
+    using System.Text.RegularExpressions;
 
     public class TemplateExpressionParser
     {
-        private readonly Regex ifBlockRegex = new Regex("(?<startIfGroup>{if:(?<startIfToken>.*?)}).*?(?<endIfGroup>{endif:(?<endIfToken>.*?)})");
+        private readonly Regex ifBlockRegex =
+            new Regex("(?<startIfGroup>{if:(?<startIfToken>.*?)}).*?(?<endIfGroup>{endif:(?<endIfToken>.*?)})");
 
         public string? Parse(string? template, IDictionary<string, string>? context)
         {
@@ -18,7 +18,7 @@ namespace Arcadia.Assistant.NotificationTemplates
             }
 
             Match ifBlockMatch;
-            while ((ifBlockMatch = ifBlockRegex.Match(template)).Success)
+            while ((ifBlockMatch = this.ifBlockRegex.Match(template)).Success)
             {
                 var startIfToken = ifBlockMatch.Groups["startIfToken"];
                 var endIfToken = ifBlockMatch.Groups["endIfToken"];
