@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Arcadia.Assistant.NotificationTemplates.Interfaces.Base
+namespace Arcadia.Assistant.NotificationTemplates.Configuration
 {
     public interface INotificationConfiguration
     {

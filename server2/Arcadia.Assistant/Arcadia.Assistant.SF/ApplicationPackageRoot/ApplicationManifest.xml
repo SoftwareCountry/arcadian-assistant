@@ -30,6 +30,18 @@
     <Parameter Name="Arcadia.Assistant.PendingActions_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.Vacations_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.SickLeaves_InstanceCount" DefaultValue="-1" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveCreated_Subject" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveCreated_Title" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveCreated_ShortBodyTemplate" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveCreated_LongBodyTemplate" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveProlonged_Subject" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveProlonged_Title" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveProlonged_ShortBodyTemplate" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveProlonged_LongBodyTemplate" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveCancelled_Subject" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveCancelled_Title" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveCancelled_ShortBodyTemplate" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveCancelled_LongBodyTemplate" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Inbox_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.Imap_Host" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Imap_Port" DefaultValue="" />
@@ -241,6 +253,24 @@
           </Section>
           <Section Name="Logging">
             <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+          <Section Name="SickLeaveCreated">
+            <Parameter Name="Subject" Value="[Arcadia.Assistant.SickLeaves_SickLeaveCreated_Subject]" />
+            <Parameter Name="Title" Value="[Arcadia.Assistant.SickLeaves_SickLeaveCreated_Title]" />
+            <Parameter Name="ShortBodyTemplate" Value="[Arcadia.Assistant.SickLeaves_SickLeaveCreated_ShortBodyTemplate]" />
+            <Parameter Name="LongBodyTemplate" Value="[Arcadia.Assistant.SickLeaves_SickLeaveCreated_LongBodyTemplate]" />
+          </Section>
+          <Section Name="SickLeaveProlonged">
+            <Parameter Name="Subject" Value="[Arcadia.Assistant.SickLeaves_SickLeaveProlonged_Subject]" />
+            <Parameter Name="Title" Value="[Arcadia.Assistant.SickLeaves_SickLeaveProlonged_Title]" />
+            <Parameter Name="ShortBodyTemplate" Value="[Arcadia.Assistant.SickLeaves_SickLeaveProlonged_ShortBodyTemplate]" />
+            <Parameter Name="LongBodyTemplate" Value="[Arcadia.Assistant.SickLeaves_SickLeaveProlonged_LongBodyTemplate]" />
+          </Section>
+          <Section Name="SickLeaveCancelled">
+            <Parameter Name="Subject" Value="[Arcadia.Assistant.SickLeaves_SickLeaveCancelled_Subject]" />
+            <Parameter Name="Title" Value="[Arcadia.Assistant.SickLeaves_SickLeaveCancelled_Title]" />
+            <Parameter Name="ShortBodyTemplate" Value="[Arcadia.Assistant.SickLeaves_SickLeaveCancelled_ShortBodyTemplate]" />
+            <Parameter Name="LongBodyTemplate" Value="[Arcadia.Assistant.SickLeaves_SickLeaveCancelled_LongBodyTemplate]" />
           </Section>
         </Settings>
       </ConfigOverride>

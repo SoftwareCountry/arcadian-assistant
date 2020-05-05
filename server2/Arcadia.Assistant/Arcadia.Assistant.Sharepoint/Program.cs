@@ -92,7 +92,6 @@ namespace Arcadia.Assistant.Sharepoint
                 builder.RegisterModule<SickLeavesModule>();
                 builder.RegisterModule<EmployeesModule>();
                 builder.RegisterModule<OrganizationModule>();
-                builder.RegisterNotificationTemplates(configurationPackage.Settings);
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
                 builder.Populate(services);
 

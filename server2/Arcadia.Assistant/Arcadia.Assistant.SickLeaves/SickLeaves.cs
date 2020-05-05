@@ -6,8 +6,10 @@ namespace Arcadia.Assistant.SickLeaves
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-
+    using Arcadia.Assistant.Notifications.Contracts.Models;
     using Autofac.Features.OwnedInstances;
+
+    using Configuration;
 
     using Contracts;
 
@@ -21,6 +23,10 @@ namespace Arcadia.Assistant.SickLeaves
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
     using Microsoft.ServiceFabric.Services.Runtime;
 
+    using Notifications;
+
+    using NotificationTemplates;
+
     using Permissions.Contracts;
 
     /// <summary>
@@ -33,6 +39,10 @@ namespace Arcadia.Assistant.SickLeaves
         private readonly Func<Owned<SickLeaveProlongationStep>> prolongationStepsFactory;
         private readonly Func<Owned<SickLeaveCancellationStep>> cancellationStepsFactory;
 
+        private readonly ISickLeaveCreateNotificationConfiguration sickLeaveCreateNotificationConfiguration;
+        private readonly ISickLeaveProlongNotificationConfiguration sickLeaveProlongNotificationConfiguration;
+        private readonly ISickLeaveCancelNotificationConfiguration sickLeaveCancelNotificationConfiguration;
+        private readonly SickLeaveChangeNotification notification;
         private readonly SickLeaveModelConverter modelConverter = new SickLeaveModelConverter();
         private readonly ILogger logger;
 
@@ -42,6 +52,10 @@ namespace Arcadia.Assistant.SickLeaves
             Func<Owned<SickLeaveCreationStep>> creationStepsFactory,
             Func<Owned<SickLeaveProlongationStep>> prolongationStepsFactory,
             Func<Owned<SickLeaveCancellationStep>> cancellationStepsFactory,
+            ISickLeaveCreateNotificationConfiguration sickLeaveCreateNotificationConfiguration,
+            ISickLeaveProlongNotificationConfiguration sickLeaveProlongNotificationConfiguration,
+            ISickLeaveCancelNotificationConfiguration sickLeaveCancelNotificationConfiguration,
+            SickLeaveChangeNotification notification,
             ILogger<SickLeaves> logger)
             : base(context)
         {
@@ -49,6 +63,10 @@ namespace Arcadia.Assistant.SickLeaves
             this.creationStepsFactory = creationStepsFactory;
             this.prolongationStepsFactory = prolongationStepsFactory;
             this.cancellationStepsFactory = cancellationStepsFactory;
+            this.sickLeaveCreateNotificationConfiguration = sickLeaveCreateNotificationConfiguration;
+            this.sickLeaveProlongNotificationConfiguration = sickLeaveProlongNotificationConfiguration;
+            this.sickLeaveCancelNotificationConfiguration = sickLeaveCancelNotificationConfiguration;
+            this.notification = notification;
             this.logger = logger;
         }
 
@@ -71,7 +89,7 @@ namespace Arcadia.Assistant.SickLeaves
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 //TODO: Sharepoint sync
-                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
+                await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
             }
         }
 
@@ -114,7 +132,15 @@ namespace Arcadia.Assistant.SickLeaves
             EmployeeId employeeId, DateTime startDate, DateTime endDate, UserIdentity userIdentity)
         {
             using var step = this.creationStepsFactory();
-            return await step.Value.InvokeAsync(employeeId, startDate, endDate, userIdentity);
+            var eventContext = await step.Value.InvokeAsync(employeeId, startDate, endDate, userIdentity);
+
+            await this.notification.SendNotification(
+                eventContext.SickLeaveId,
+                employeeId,
+                SickLeaveNotificationTemplate.SickLeaveCreated,
+                sickLeaveCreateNotificationConfiguration,
+                CancellationToken.None);
+            return eventContext;
         }
 
         public async Task ProlongSickLeaveAsync(
@@ -122,12 +148,26 @@ namespace Arcadia.Assistant.SickLeaves
         {
             using var step = this.prolongationStepsFactory();
             await step.Value.InvokeAsync(employeeId, eventId, endDate, userIdentity);
+
+            await this.notification.SendNotification(
+                eventId,
+                employeeId,
+                SickLeaveNotificationTemplate.SickLeaveProlonged,
+                this.sickLeaveProlongNotificationConfiguration,
+                CancellationToken.None);
         }
 
         public async Task CancelSickLeaveAsync(EmployeeId employeeId, int eventId, UserIdentity cancelledBy)
         {
             using var step = this.cancellationStepsFactory();
             await step.Value.InvokeAsync(employeeId, eventId, cancelledBy);
+
+            await this.notification.SendNotification(
+                eventId,
+                employeeId,
+                SickLeaveNotificationTemplate.SickLeaveCancelled,
+                this.sickLeaveCancelNotificationConfiguration,
+                CancellationToken.None);
         }
 
         private IQueryable<SickLeave> GetSickLeaves(ArcadiaCspContext context)

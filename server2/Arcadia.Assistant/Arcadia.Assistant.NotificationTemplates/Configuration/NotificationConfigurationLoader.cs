@@ -2,9 +2,6 @@
 {
     using System.Fabric.Description;
 
-    using Interfaces;
-    using Interfaces.Base;
-
     public static class NotificationConfigurationLoader
     {
         public static T Load<T>(ConfigurationSection section) where T : INotificationConfiguration
@@ -13,13 +10,7 @@
             return (T)result;
         }
 
-        internal class NotificationConfiguration :
-            ISickLeaveCreatedConfiguration,
-            ISickLeaveProlongedConfiguration,
-            IEventAssignedToApproverConfiguration,
-            IEventStatusChangedConfiguration,
-            IEventUserGrantedApprovalConfiguration,
-            ISickLeaveCancelledConfiguration
+        internal class NotificationConfiguration : INotificationConfiguration
         {
             public NotificationConfiguration(ConfigurationSection section)
             {

@@ -7,4 +7,22 @@
   <Section Name="Logging">
     <Parameter Name="ApplicationInsightsKey" Value="" />
   </Section>
+  <Section Name="SickLeaveCreated">
+    <Parameter Name="Subject" Value="" />
+    <Parameter Name="Title" Value="" />
+    <Parameter Name="ShortBodyTemplate" Value="" />
+    <Parameter Name="LongBodyTemplate" Value="" />
+  </Section>
+  <Section Name="SickLeaveProlonged">
+    <Parameter Name="Subject" Value="" />
+    <Parameter Name="Title" Value="" />
+    <Parameter Name="ShortBodyTemplate" Value="" />
+    <Parameter Name="LongBodyTemplate" Value="" />
+  </Section>
+  <Section Name="SickLeaveCancelled">
+    <Parameter Name="Subject" Value="" />
+    <Parameter Name="Title" Value="" />
+    <Parameter Name="ShortBodyTemplate" Value="" />
+    <Parameter Name="LongBodyTemplate" Value="" />
+  </Section>
 </Settings>
