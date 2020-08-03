@@ -20,7 +20,6 @@ namespace Arcadia.Assistant.SickLeaves
 
     using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
-    using Microsoft.ServiceFabric.Services.Runtime;
 
     using Notifications;
 
@@ -46,7 +45,8 @@ namespace Arcadia.Assistant.SickLeaves
                 // an instance of the class is created in this host process.
 
                 var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
-                var connectionString = configurationPackage.Settings.Sections["Csp"].Parameters["ConnectionString"].Value;
+                var connectionString =
+                    configurationPackage.Settings.Sections["Csp"].Parameters["ConnectionString"].Value;
 
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
@@ -76,7 +76,8 @@ namespace Arcadia.Assistant.SickLeaves
 
                 using var container = builder.Build();
                 logger = container.ResolveOptional<ILogger<SickLeaves>>();
-                logger?.LogInformation("Service type '{ServiceName}' registered. Process: {ProcessId}.", typeof(SickLeaves).Name, Process.GetCurrentProcess().Id);
+                logger?.LogInformation("Service type '{ServiceName}' registered. Process: {ProcessId}.",
+                    typeof(SickLeaves).Name, Process.GetCurrentProcess().Id);
                 // Prevents this host process from terminating so services keep running.
                 Thread.Sleep(Timeout.Infinite);
             }

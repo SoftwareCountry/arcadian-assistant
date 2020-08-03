@@ -4,7 +4,9 @@ namespace Arcadia.Assistant.WorkHoursCredit
     using System.Diagnostics;
     using System.Fabric;
     using System.Threading;
-
+    using Arcadia.Assistant.Employees.Contracts;
+    using Arcadia.Assistant.NotificationTemplates.Configuration;
+    using Arcadia.Assistant.WorkHoursCredit.Notification;
     using Autofac;
     using Autofac.Integration.ServiceFabric;
 
@@ -43,6 +45,20 @@ namespace Arcadia.Assistant.WorkHoursCredit
                     return opt.Options;
                 }).SingleInstance();
 
+                builder.RegisterModule<EmployeesModule>();
+                builder.Register(x =>
+                    NotificationConfigurationLoader.Load<IWorkHoursCreditCreateNotificationConfiguration>(
+                        configurationPackage.Settings.Sections[WorkHoursCreditNotificationTemplate.WorkHoursCreditCreated]));
+                builder.Register(x =>
+                    NotificationConfigurationLoader.Load<IWorkHoursCreditApproveNotificationConfiguration>(
+                        configurationPackage.Settings.Sections[WorkHoursCreditNotificationTemplate.WorkHoursCreditApproved]));
+                builder.Register(x =>
+                    NotificationConfigurationLoader.Load<IWorkHoursCreditApproveRequireNotificationConfiguration>(
+                        configurationPackage.Settings.Sections[WorkHoursCreditNotificationTemplate.WorkHoursCreditApproveRequire]));
+                builder.Register(x =>
+                    NotificationConfigurationLoader.Load<IWorkHoursCreditCancelNotificationConfiguration>(
+                        configurationPackage.Settings.Sections[WorkHoursCreditNotificationTemplate.WorkHoursCreditCancelled]));
+                builder.RegisterType<WorkHoursCreditNotification>().SingleInstance().AsSelf();
                 builder.Register(c => new WorkHoursCreditContext(c.Resolve<DbContextOptions<WorkHoursCreditContext>>())).AsSelf();
 
                 using var container = builder.Build();

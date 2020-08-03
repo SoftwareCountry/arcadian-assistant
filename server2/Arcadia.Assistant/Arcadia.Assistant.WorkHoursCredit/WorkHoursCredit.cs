@@ -7,7 +7,7 @@ namespace Arcadia.Assistant.WorkHoursCredit
     using System.Linq.Expressions;
     using System.Threading;
     using System.Threading.Tasks;
-
+    using Arcadia.Assistant.WorkHoursCredit.Notification;
     using Autofac.Features.OwnedInstances;
 
     using Contracts;
@@ -28,12 +28,17 @@ namespace Arcadia.Assistant.WorkHoursCredit
     public class WorkHoursCredit : StatelessService, IWorkHoursCredit
     {
         private readonly Func<Owned<WorkHoursCreditContext>> dbFactory;
+        private readonly WorkHoursCreditNotification notification;
         private readonly ILogger logger;
 
-        public WorkHoursCredit(StatelessServiceContext context, Func<Owned<WorkHoursCreditContext>> dbFactory, ILogger<WorkHoursCredit> logger)
+        public WorkHoursCredit(StatelessServiceContext context, 
+            Func<Owned<WorkHoursCreditContext>> dbFactory, 
+            WorkHoursCreditNotification notification,
+            ILogger<WorkHoursCredit> logger)
             : base(context)
         {
             this.dbFactory = dbFactory;
+            this.notification = notification;
             this.logger = logger;
         }
 
@@ -146,6 +151,20 @@ namespace Arcadia.Assistant.WorkHoursCredit
             ctx.Value.ChangeRequests.Add(entity);
             await ctx.Value.SaveChangesAsync();
 
+            await this.notification.SendCreateWorkHoursCreditNotification(
+                employeeId, 
+                changeType, 
+                date, 
+                dayPart,
+                CancellationToken.None);
+
+            await this.notification.SendApproveRequireWorkHoursCreditNotification(
+                employeeId,
+                changeType,
+                date,
+                dayPart,
+                CancellationToken.None);
+
             return new WorkHoursChange()
             {
                 ChangeId = entity.ChangeRequestId,
@@ -185,6 +204,12 @@ namespace Arcadia.Assistant.WorkHoursCredit
 
             ctx.Value.Approvals.Add(entity);
             await ctx.Value.SaveChangesAsync();
+
+            await notification.SendApproveWorkHoursCreditNotification(
+                employeeId,
+                approvedBy,
+                requestId,
+                CancellationToken.None);
         }
 
         public async Task RejectRequestAsync(EmployeeId employeeId, Guid requestId, string? rejectionReason, EmployeeId rejectedBy)
@@ -201,6 +226,13 @@ namespace Arcadia.Assistant.WorkHoursCredit
 
             ctx.Value.Rejections.Add(entity);
             await ctx.Value.SaveChangesAsync();
+
+            await notification.SendRejectWorkHoursCreditNotification(
+                employeeId,
+                rejectedBy,
+                requestId,
+                rejectionReason,
+                CancellationToken.None);
         }
 
         public async Task CancelRequestAsync(EmployeeId employeeId, Guid requestId, string? rejectionReason, EmployeeId cancelledBy)
@@ -217,6 +249,13 @@ namespace Arcadia.Assistant.WorkHoursCredit
 
             ctx.Value.Cancellations.Add(entity);
             await ctx.Value.SaveChangesAsync();
+
+            await notification.SendRejectWorkHoursCreditNotification(
+                employeeId,
+                cancelledBy,
+                requestId,
+                rejectionReason,
+                CancellationToken.None);
         }
 
         /// <summary>

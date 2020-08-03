@@ -7,6 +7,18 @@
   <Section Name="Service">
     <Parameter Name="UpdateIntervalMinutes" Value="5"/>
   </Section>
+  <Section Name="VacationsStatusChanged">
+    <Parameter Name="Subject" Value="" />
+    <Parameter Name="Title" Value="" />
+    <Parameter Name="ShortBodyTemplate" Value="" />
+    <Parameter Name="LongBodyTemplate" Value="" />
+  </Section>
+  <Section Name="VacationsApproveRequire">
+    <Parameter Name="Subject" Value="" />
+    <Parameter Name="Title" Value="" />
+    <Parameter Name="ShortBodyTemplate" Value="" />
+    <Parameter Name="LongBodyTemplate" Value="" />
+  </Section>
   <Section Name="Logging">
     <Parameter Name="ApplicationInsightsKey" Value="" />
   </Section>

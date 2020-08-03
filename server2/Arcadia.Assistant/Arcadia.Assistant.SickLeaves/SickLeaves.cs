@@ -6,7 +6,7 @@ namespace Arcadia.Assistant.SickLeaves
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Arcadia.Assistant.Notifications.Contracts.Models;
+
     using Autofac.Features.OwnedInstances;
 
     using Configuration;
@@ -25,8 +25,6 @@ namespace Arcadia.Assistant.SickLeaves
 
     using Notifications;
 
-    using NotificationTemplates;
-
     using Permissions.Contracts;
 
     /// <summary>
@@ -34,17 +32,17 @@ namespace Arcadia.Assistant.SickLeaves
     /// </summary>
     public class SickLeaves : StatelessService, ISickLeaves
     {
-        private readonly Func<Owned<ArcadiaCspContext>> dbFactory;
-        private readonly Func<Owned<SickLeaveCreationStep>> creationStepsFactory;
-        private readonly Func<Owned<SickLeaveProlongationStep>> prolongationStepsFactory;
         private readonly Func<Owned<SickLeaveCancellationStep>> cancellationStepsFactory;
+        private readonly Func<Owned<SickLeaveCreationStep>> creationStepsFactory;
+        private readonly Func<Owned<ArcadiaCspContext>> dbFactory;
+        private readonly ILogger logger;
+        private readonly SickLeaveModelConverter modelConverter = new SickLeaveModelConverter();
+        private readonly SickLeaveChangeNotification notification;
+        private readonly Func<Owned<SickLeaveProlongationStep>> prolongationStepsFactory;
+        private readonly ISickLeaveCancelNotificationConfiguration sickLeaveCancelNotificationConfiguration;
 
         private readonly ISickLeaveCreateNotificationConfiguration sickLeaveCreateNotificationConfiguration;
         private readonly ISickLeaveProlongNotificationConfiguration sickLeaveProlongNotificationConfiguration;
-        private readonly ISickLeaveCancelNotificationConfiguration sickLeaveCancelNotificationConfiguration;
-        private readonly SickLeaveChangeNotification notification;
-        private readonly SickLeaveModelConverter modelConverter = new SickLeaveModelConverter();
-        private readonly ILogger logger;
 
         public SickLeaves(
             StatelessServiceContext context,
@@ -68,29 +66,6 @@ namespace Arcadia.Assistant.SickLeaves
             this.sickLeaveCancelNotificationConfiguration = sickLeaveCancelNotificationConfiguration;
             this.notification = notification;
             this.logger = logger;
-        }
-
-        /// <summary>
-        ///     Optional override to create listeners (e.g., TCP, HTTP) for this service replica to handle client or user requests.
-        /// </summary>
-        /// <returns>A collection of listeners.</returns>
-        protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
-        {
-            return this.CreateServiceRemotingInstanceListeners();
-        }
-
-        /// <summary>
-        ///     This is the main entry point for your service instance.
-        /// </summary>
-        /// <param name="cancellationToken">Canceled when Service Fabric needs to shut down this service instance.</param>
-        protected override async Task RunAsync(CancellationToken cancellationToken)
-        {
-            while (true)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                //TODO: Sharepoint sync
-                await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
-            }
         }
 
         public async Task<SickLeaveDescription[]> GetCalendarEventsAsync(
@@ -137,8 +112,7 @@ namespace Arcadia.Assistant.SickLeaves
             await this.notification.SendNotification(
                 eventContext.SickLeaveId,
                 employeeId,
-                SickLeaveNotificationTemplate.SickLeaveCreated,
-                sickLeaveCreateNotificationConfiguration,
+                SickLeaveNotificationTemplate.SickLeaveCreated, this.sickLeaveCreateNotificationConfiguration,
                 CancellationToken.None);
             return eventContext;
         }
@@ -168,6 +142,29 @@ namespace Arcadia.Assistant.SickLeaves
                 SickLeaveNotificationTemplate.SickLeaveCancelled,
                 this.sickLeaveCancelNotificationConfiguration,
                 CancellationToken.None);
+        }
+
+        /// <summary>
+        ///     Optional override to create listeners (e.g., TCP, HTTP) for this service replica to handle client or user requests.
+        /// </summary>
+        /// <returns>A collection of listeners.</returns>
+        protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
+        {
+            return this.CreateServiceRemotingInstanceListeners();
+        }
+
+        /// <summary>
+        ///     This is the main entry point for your service instance.
+        /// </summary>
+        /// <param name="cancellationToken">Canceled when Service Fabric needs to shut down this service instance.</param>
+        protected override async Task RunAsync(CancellationToken cancellationToken)
+        {
+            while (true)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                //TODO: Sharepoint sync
+                await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
+            }
         }
 
         private IQueryable<SickLeave> GetSickLeaves(ArcadiaCspContext context)

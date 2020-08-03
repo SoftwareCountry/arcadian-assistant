@@ -6,7 +6,7 @@ namespace Arcadia.Assistant.Vacations
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-
+    using Arcadia.Assistant.Vacations.Notification;
     using Autofac.Features.OwnedInstances;
 
     using Contracts;
@@ -28,6 +28,7 @@ namespace Arcadia.Assistant.Vacations
     {
         private readonly Func<Owned<VacationsStorage>> storageFactory;
         private readonly VacationChangesWatcher changesWatcher;
+        private readonly VacationsNotification vacationsNotification;
         private readonly ILogger logger;
 
         //private VacationsStorage storage = new VacationsStorage();
@@ -36,11 +37,13 @@ namespace Arcadia.Assistant.Vacations
             StatelessServiceContext context,
             Func<Owned<VacationsStorage>> storageFactory,
             VacationChangesWatcher changesWatcher,
+            VacationsNotification vacationsNotification,
             ILogger<Vacations> logger)
             : base(context)
         {
             this.storageFactory = storageFactory;
             this.changesWatcher = changesWatcher;
+            this.vacationsNotification = vacationsNotification;
             this.logger = logger;
         }
 
@@ -67,6 +70,11 @@ namespace Arcadia.Assistant.Vacations
             using var storage = this.storageFactory();
             var description = await storage.Value.CreateCalendarEvent(employeeId, startDate, endDate);
             this.changesWatcher.ForceRefresh();
+
+            await this.vacationsNotification.SendVacationCreateNotification(employeeId, CancellationToken.None);
+
+            await this.vacationsNotification.SendVacationApproveRequireNotification(employeeId, startDate, endDate, CancellationToken.None);
+
             return description;
         }
 
@@ -102,6 +110,8 @@ namespace Arcadia.Assistant.Vacations
             }
 
             await this.UpdateCalendarEvent(employeeId, eventId, Update);
+
+            await this.vacationsNotification.SendVacationCancelNotification(employeeId, cancellationReason, CancellationToken.None);
         }
 
         public async Task ApproveVacationAsync(EmployeeId employeeId, int eventId, EmployeeId approvedBy)
@@ -120,6 +130,8 @@ namespace Arcadia.Assistant.Vacations
             }
 
             await this.UpdateCalendarEvent(employeeId, eventId, Update);
+
+            await this.vacationsNotification.SendVacationApproveNotification(employeeId, true, CancellationToken.None);
         }
 
         public async Task RejectVacationAsync(EmployeeId employeeId, int eventId, EmployeeId rejectedBy)
@@ -138,6 +150,8 @@ namespace Arcadia.Assistant.Vacations
             }
 
             await this.UpdateCalendarEvent(employeeId, eventId, Update);
+
+            await this.vacationsNotification.SendVacationApproveNotification(employeeId, false, CancellationToken.None);
         }
 
         /// <summary>

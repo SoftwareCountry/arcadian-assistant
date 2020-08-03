@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Arcadia.Assistant.SickLeaves.Notifications
+﻿namespace Arcadia.Assistant.SickLeaves.Notifications
 {
+    using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -13,6 +11,7 @@ namespace Arcadia.Assistant.SickLeaves.Notifications
     using CSP.Model;
 
     using Employees.Contracts;
+
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
@@ -24,10 +23,10 @@ namespace Arcadia.Assistant.SickLeaves.Notifications
     public abstract class SickLeaveChangeNotification
     {
         private readonly ArcadiaCspContext database;
-        private readonly INotifications notificationService;
         private readonly IEmployees employeeService;
-        private readonly IOrganization organizationService;
         private readonly ILogger logger;
+        private readonly INotifications notificationService;
+        private readonly IOrganization organizationService;
 
         protected SickLeaveChangeNotification(
             ArcadiaCspContext database,
@@ -51,8 +50,8 @@ namespace Arcadia.Assistant.SickLeaves.Notifications
             INotificationConfiguration notificationConfiguration,
             CancellationToken cancellationToken)
         {
-            var (owner, manager) = await GetNotificationEmployeesData(ownerEmployeeId, cancellationToken);
-            var sickLeave = await GetSickLeaveData(eventId, ownerEmployeeId, cancellationToken);
+            var (owner, manager) = await this.GetNotificationEmployeesData(ownerEmployeeId, cancellationToken);
+            var sickLeave = await this.GetSickLeaveData(eventId, ownerEmployeeId, cancellationToken);
             var contextData = this.GetNotificationContext(owner, sickLeave);
             var context = new NotificationDataPresenter(notificationConfiguration, contextData);
             var recipients = new List<EmployeeId> { ownerEmployeeId };
@@ -61,23 +60,25 @@ namespace Arcadia.Assistant.SickLeaves.Notifications
                 recipients.Add(manager.EmployeeId);
             }
 
-            await SendSickLeaveStatusNotification(
+            await this.SendSickLeaveStatusNotification(
                 notificationTemplate,
                 context,
                 recipients.ToArray(),
                 cancellationToken);
         }
 
-        private async Task<SickLeave> GetSickLeaveData(EventId eventId, EmployeeId ownerEmployeeId, CancellationToken cancellationToken)
+        private async Task<SickLeave> GetSickLeaveData(
+            EventId eventId, EmployeeId ownerEmployeeId, CancellationToken cancellationToken)
         {
             return await this.database
                 .SickLeaves
-                .FirstOrDefaultAsync(x => x.Id == eventId 
-                        && x.EmployeeId == ownerEmployeeId.Value, 
+                .FirstOrDefaultAsync(x => x.Id == eventId
+                        && x.EmployeeId == ownerEmployeeId.Value,
                     cancellationToken);
         }
 
-        private async Task<(EmployeeMetadata, EmployeeMetadata?)> GetNotificationEmployeesData(EmployeeId ownerEmployeeId, CancellationToken cancellationToken)
+        private async Task<(EmployeeMetadata, EmployeeMetadata?)> GetNotificationEmployeesData(
+            EmployeeId ownerEmployeeId, CancellationToken cancellationToken)
         {
             var owner = await this.employeeService.FindEmployeeAsync(ownerEmployeeId, cancellationToken);
             if (owner == null)
@@ -86,7 +87,9 @@ namespace Arcadia.Assistant.SickLeaves.Notifications
                 throw new ArgumentException("Owner employee missed in database.");
             }
 
-            var department = owner.DepartmentId == null ? null : await this.organizationService.GetDepartmentAsync(owner.DepartmentId.Value, cancellationToken);
+            var department = owner.DepartmentId == null
+                ? null
+                : await this.organizationService.GetDepartmentAsync(owner.DepartmentId.Value, cancellationToken);
             var isEmployeeChief = department?.ChiefId == ownerEmployeeId;
             var isHeadDepartment = department?.IsHeadDepartment ?? false;
             var parentDepartment = department?.ParentDepartmentId == null
@@ -95,13 +98,14 @@ namespace Arcadia.Assistant.SickLeaves.Notifications
                     CancellationToken.None);
 
             var managerEmployeeId = isEmployeeChief ? parentDepartment?.ChiefId : department?.ChiefId;
-            if ((isHeadDepartment && isEmployeeChief)
+            if (isHeadDepartment && isEmployeeChief
                 || managerEmployeeId == null)
             {
                 return (owner!, null);
             }
 
-            var manager = await this.employeeService.FindEmployeeAsync(managerEmployeeId.GetValueOrDefault(), cancellationToken);
+            var manager =
+                await this.employeeService.FindEmployeeAsync(managerEmployeeId.GetValueOrDefault(), cancellationToken);
             return (owner!, manager);
         }
 

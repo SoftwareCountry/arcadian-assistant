@@ -4,7 +4,10 @@ namespace Arcadia.Assistant.Vacations
     using System.Diagnostics;
     using System.Fabric;
     using System.Threading;
+    using Arcadia.Assistant.Employees.Contracts;
     using Arcadia.Assistant.Logging;
+    using Arcadia.Assistant.NotificationTemplates.Configuration;
+    using Arcadia.Assistant.Vacations.Notification;
     using Autofac;
     using Autofac.Integration.ServiceFabric;
 
@@ -12,7 +15,6 @@ namespace Arcadia.Assistant.Vacations
 
     using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
-    using Microsoft.ServiceFabric.Services.Runtime;
 
     internal static class Program
     {
@@ -41,8 +43,16 @@ namespace Arcadia.Assistant.Vacations
                 builder.RegisterType<VacationsStorage>().SingleInstance();
                 builder.RegisterType<VacationChangesWatcher>().SingleInstance();
                 builder.RegisterType<VacationChangesCheck>().SingleInstance();
+                builder.RegisterModule<EmployeesModule>();
                 builder.RegisterModule(new CspModule(connectionString));
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
+                builder.Register(x =>
+                    NotificationConfigurationLoader.Load<IVacationsStatusChangeNotificationConfiguration>(
+                        configurationPackage.Settings.Sections[VacationsNotificationTemplate.VacationsStatusChanged]));
+                builder.Register(x =>
+                    NotificationConfigurationLoader.Load<IVacationsApproveRequireNotificationConfiguration>(
+                        configurationPackage.Settings.Sections[VacationsNotificationTemplate.VacationsApproveRequire]));
+                builder.RegisterType<VacationsNotification>().SingleInstance().AsSelf();
 
                 using var container = builder.Build();
                 logger = container.ResolveOptional<ILogger<Vacations>>();

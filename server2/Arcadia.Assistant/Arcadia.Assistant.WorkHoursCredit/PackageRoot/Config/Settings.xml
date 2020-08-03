@@ -4,4 +4,28 @@
   <Section Name="Logging">
     <Parameter Name="ApplicationInsightsKey" Value="" />
   </Section>
+  <Section Name="WorkHoursCreditCreated">
+    <Parameter Name="Subject" Value="" />
+    <Parameter Name="Title" Value="" />
+    <Parameter Name="ShortBodyTemplate" Value="" />
+    <Parameter Name="LongBodyTemplate" Value="" />
+  </Section>
+  <Section Name="WorkHoursCreditApproveRequire">
+    <Parameter Name="Subject" Value="" />
+    <Parameter Name="Title" Value="" />
+    <Parameter Name="ShortBodyTemplate" Value="" />
+    <Parameter Name="LongBodyTemplate" Value="" />
+  </Section>
+  <Section Name="WorkHoursCreditApproved">
+    <Parameter Name="Subject" Value="" />
+    <Parameter Name="Title" Value="" />
+    <Parameter Name="ShortBodyTemplate" Value="" />
+    <Parameter Name="LongBodyTemplate" Value="" />
+  </Section>
+  <Section Name="WorkHoursCreditCancelled">
+    <Parameter Name="Subject" Value="" />
+    <Parameter Name="Title" Value="" />
+    <Parameter Name="ShortBodyTemplate" Value="" />
+    <Parameter Name="LongBodyTemplate" Value="" />
+  </Section>
 </Settings>
