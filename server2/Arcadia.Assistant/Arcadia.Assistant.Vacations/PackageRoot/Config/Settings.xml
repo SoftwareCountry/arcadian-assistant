@@ -7,6 +7,9 @@
   <Section Name="Service">
     <Parameter Name="UpdateIntervalMinutes" Value="5"/>
   </Section>
+  <!-- 
+    Notification template tags: employee, employeeId, startDate, endDate, status
+  -->
   <Section Name="VacationsStatusChanged">
     <Parameter Name="Subject" Value="" />
     <Parameter Name="Title" Value="" />

@@ -7,6 +7,7 @@ namespace Arcadia.Assistant.Vacations
     using Arcadia.Assistant.Employees.Contracts;
     using Arcadia.Assistant.Logging;
     using Arcadia.Assistant.NotificationTemplates.Configuration;
+    using Arcadia.Assistant.Organization.Contracts;
     using Arcadia.Assistant.Vacations.Notification;
     using Autofac;
     using Autofac.Integration.ServiceFabric;
@@ -44,6 +45,7 @@ namespace Arcadia.Assistant.Vacations
                 builder.RegisterType<VacationChangesWatcher>().SingleInstance();
                 builder.RegisterType<VacationChangesCheck>().SingleInstance();
                 builder.RegisterModule<EmployeesModule>();
+                builder.RegisterModule<OrganizationModule>();
                 builder.RegisterModule(new CspModule(connectionString));
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
                 builder.Register(x =>

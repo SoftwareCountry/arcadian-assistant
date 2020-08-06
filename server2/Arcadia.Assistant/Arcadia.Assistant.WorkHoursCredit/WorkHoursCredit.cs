@@ -207,7 +207,6 @@ namespace Arcadia.Assistant.WorkHoursCredit
 
             await notification.SendApproveWorkHoursCreditNotification(
                 employeeId,
-                approvedBy,
                 requestId,
                 CancellationToken.None);
         }
@@ -229,7 +228,6 @@ namespace Arcadia.Assistant.WorkHoursCredit
 
             await notification.SendRejectWorkHoursCreditNotification(
                 employeeId,
-                rejectedBy,
                 requestId,
                 rejectionReason,
                 CancellationToken.None);
@@ -250,7 +248,7 @@ namespace Arcadia.Assistant.WorkHoursCredit
             ctx.Value.Cancellations.Add(entity);
             await ctx.Value.SaveChangesAsync();
 
-            await notification.SendRejectWorkHoursCreditNotification(
+            await notification.SendCancelWorkHoursCreditNotification(
                 employeeId,
                 cancelledBy,
                 requestId,

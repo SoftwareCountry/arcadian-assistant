@@ -3,7 +3,6 @@ namespace Arcadia.Assistant.Vacations
     using System;
     using System.Collections.Generic;
     using System.Fabric;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Arcadia.Assistant.Vacations.Notification;
@@ -15,7 +14,6 @@ namespace Arcadia.Assistant.Vacations
 
     using Employees.Contracts;
 
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Communication.Runtime;
     using Microsoft.ServiceFabric.Services.Remoting.Runtime;
@@ -71,9 +69,9 @@ namespace Arcadia.Assistant.Vacations
             var description = await storage.Value.CreateCalendarEvent(employeeId, startDate, endDate);
             this.changesWatcher.ForceRefresh();
 
-            await this.vacationsNotification.SendVacationCreateNotification(employeeId, CancellationToken.None);
+            await this.vacationsNotification.SendVacationCreateNotification(employeeId, description, CancellationToken.None);
 
-            await this.vacationsNotification.SendVacationApproveRequireNotification(employeeId, startDate, endDate, CancellationToken.None);
+            await this.vacationsNotification.SendVacationApproveRequireNotification(employeeId, description, CancellationToken.None);
 
             return description;
         }
@@ -111,7 +109,7 @@ namespace Arcadia.Assistant.Vacations
 
             await this.UpdateCalendarEvent(employeeId, eventId, Update);
 
-            await this.vacationsNotification.SendVacationCancelNotification(employeeId, cancellationReason, CancellationToken.None);
+            await this.vacationsNotification.SendVacationCancelNotification(employeeId, cancelledBy, cancellationReason, eventId, CancellationToken.None);
         }
 
         public async Task ApproveVacationAsync(EmployeeId employeeId, int eventId, EmployeeId approvedBy)
@@ -131,7 +129,7 @@ namespace Arcadia.Assistant.Vacations
 
             await this.UpdateCalendarEvent(employeeId, eventId, Update);
 
-            await this.vacationsNotification.SendVacationApproveNotification(employeeId, true, CancellationToken.None);
+            await this.vacationsNotification.SendVacationApproveNotification(employeeId, true, eventId, CancellationToken.None);
         }
 
         public async Task RejectVacationAsync(EmployeeId employeeId, int eventId, EmployeeId rejectedBy)
@@ -151,7 +149,7 @@ namespace Arcadia.Assistant.Vacations
 
             await this.UpdateCalendarEvent(employeeId, eventId, Update);
 
-            await this.vacationsNotification.SendVacationApproveNotification(employeeId, false, CancellationToken.None);
+            await this.vacationsNotification.SendVacationApproveNotification(employeeId, false, eventId, CancellationToken.None);
         }
 
         /// <summary>

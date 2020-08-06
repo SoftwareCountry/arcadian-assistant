@@ -22,6 +22,7 @@
     <ProjectReference Include="..\Arcadia.Assistant.Logging\Arcadia.Assistant.Logging.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Notifications.Contracts\Arcadia.Assistant.Notifications.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.NotificationTemplates\Arcadia.Assistant.NotificationTemplates.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.Organization.Contracts\Arcadia.Assistant.Organization.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Vacations.Contracts\Arcadia.Assistant.Vacations.Contracts.csproj" />
   </ItemGroup>
 

@@ -7,6 +7,9 @@
   <Section Name="Logging">
     <Parameter Name="ApplicationInsightsKey" Value="" />
   </Section>
+  <!-- 
+     Notification template tags: employee, employeeId, startDate, endDate
+  -->
   <Section Name="SickLeaveCreated">
     <Parameter Name="Subject" Value="" />
     <Parameter Name="Title" Value="" />

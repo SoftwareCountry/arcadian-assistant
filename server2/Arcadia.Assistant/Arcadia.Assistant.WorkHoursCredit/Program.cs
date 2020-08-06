@@ -6,6 +6,7 @@ namespace Arcadia.Assistant.WorkHoursCredit
     using System.Threading;
     using Arcadia.Assistant.Employees.Contracts;
     using Arcadia.Assistant.NotificationTemplates.Configuration;
+    using Arcadia.Assistant.Organization.Contracts;
     using Arcadia.Assistant.WorkHoursCredit.Notification;
     using Autofac;
     using Autofac.Integration.ServiceFabric;
@@ -46,6 +47,7 @@ namespace Arcadia.Assistant.WorkHoursCredit
                 }).SingleInstance();
 
                 builder.RegisterModule<EmployeesModule>();
+                builder.RegisterModule<OrganizationModule>();
                 builder.Register(x =>
                     NotificationConfigurationLoader.Load<IWorkHoursCreditCreateNotificationConfiguration>(
                         configurationPackage.Settings.Sections[WorkHoursCreditNotificationTemplate.WorkHoursCreditCreated]));
