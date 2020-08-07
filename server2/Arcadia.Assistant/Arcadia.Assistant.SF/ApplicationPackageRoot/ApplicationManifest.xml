@@ -29,7 +29,27 @@
     <Parameter Name="Arcadia.Assistant.AppCenterBuilds_IosGetBuildDownloadLinkTemplateUrl" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.PendingActions_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.Vacations_InstanceCount" DefaultValue="-1" />
+    <Parameter Name="Arcadia.Assistant.Vacations_VacationsStatusChanged_Subject" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Vacations_VacationsStatusChanged_Title" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Vacations_VacationsStatusChanged_ShortBodyTemplate" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Vacations_VacationsStatusChanged_LongBodyTemplate" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Vacations_VacationsApproveRequire_Subject" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Vacations_VacationsApproveRequire_Title" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Vacations_VacationsApproveRequire_ShortBodyTemplate" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.Vacations_VacationsApproveRequire_LongBodyTemplate" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.SickLeaves_InstanceCount" DefaultValue="-1" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveCreated_Subject" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveCreated_Title" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveCreated_ShortBodyTemplate" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveCreated_LongBodyTemplate" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveProlonged_Subject" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveProlonged_Title" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveProlonged_ShortBodyTemplate" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveProlonged_LongBodyTemplate" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveCancelled_Subject" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveCancelled_Title" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveCancelled_ShortBodyTemplate" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.SickLeaves_SickLeaveCancelled_LongBodyTemplate" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Inbox_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.Imap_Host" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Imap_Port" DefaultValue="" />
@@ -41,6 +61,22 @@
     <Parameter Name="Arcadia.Assistant.VacationsCredit_RefreshIntervalMinutes" DefaultValue="10" />
     <Parameter Name="Arcadia.Assistant.VacationsCredit_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.WorkHoursCredit_InstanceCount" DefaultValue="-1" />
+    <Parameter Name="Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditCreated_Subject" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditCreated_Title" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditCreated_ShortBodyTemplate" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditCreated_LongBodyTemplate" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditApproveRequire_Subject" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditApproveRequire_Title" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditApproveRequire_ShortBodyTemplate" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditApproveRequire_LongBodyTemplate" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditApproved_Subject" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditApproved_Title" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditApproved_ShortBodyTemplate" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditApproved_LongBodyTemplate" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditCancelled_Subject" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditCancelled_Title" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditCancelled_ShortBodyTemplate" DefaultValue="" />
+    <Parameter Name="Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditCancelled_LongBodyTemplate" DefaultValue="" />
     <Parameter Name="Arcadia.Assistant.Permissions_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.Employees_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Arcadia.Assistant.Avatars.Manager_InstanceCount" DefaultValue="-1" />
@@ -224,6 +260,18 @@
           <Section Name="Csp">
             <Parameter Name="ConnectionString" Value="[Arcadia.Assistant.Csp_ConnectionString]" />
           </Section>
+          <Section Name="VacationsStatusChanged">
+            <Parameter Name="Subject" Value="[Arcadia.Assistant.Vacations_VacationsStatusChanged_Subject]" />
+            <Parameter Name="Title" Value="[Arcadia.Assistant.Vacations_VacationsStatusChanged_Title]" />
+            <Parameter Name="ShortBodyTemplate" Value="[Arcadia.Assistant.Vacations_VacationsStatusChanged_ShortBodyTemplate]" />
+            <Parameter Name="LongBodyTemplate" Value="[Arcadia.Assistant.Vacations_VacationsStatusChanged_LongBodyTemplate]" />
+          </Section>
+          <Section Name="VacationsApproveRequire">
+            <Parameter Name="Subject" Value="[Arcadia.Assistant.Vacations_VacationsApproveRequire_Subject]" />
+            <Parameter Name="Title" Value="[Arcadia.Assistant.Vacations_VacationsApproveRequire_Title]" />
+            <Parameter Name="ShortBodyTemplate" Value="[Arcadia.Assistant.Vacations_VacationsApproveRequire_ShortBodyTemplate]" />
+            <Parameter Name="LongBodyTemplate" Value="[Arcadia.Assistant.Vacations_VacationsApproveRequire_LongBodyTemplate]" />
+          </Section>
           <Section Name="Logging">
             <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
           </Section>
@@ -241,6 +289,24 @@
           </Section>
           <Section Name="Logging">
             <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+          <Section Name="SickLeaveCreated">
+            <Parameter Name="Subject" Value="[Arcadia.Assistant.SickLeaves_SickLeaveCreated_Subject]" />
+            <Parameter Name="Title" Value="[Arcadia.Assistant.SickLeaves_SickLeaveCreated_Title]" />
+            <Parameter Name="ShortBodyTemplate" Value="[Arcadia.Assistant.SickLeaves_SickLeaveCreated_ShortBodyTemplate]" />
+            <Parameter Name="LongBodyTemplate" Value="[Arcadia.Assistant.SickLeaves_SickLeaveCreated_LongBodyTemplate]" />
+          </Section>
+          <Section Name="SickLeaveProlonged">
+            <Parameter Name="Subject" Value="[Arcadia.Assistant.SickLeaves_SickLeaveProlonged_Subject]" />
+            <Parameter Name="Title" Value="[Arcadia.Assistant.SickLeaves_SickLeaveProlonged_Title]" />
+            <Parameter Name="ShortBodyTemplate" Value="[Arcadia.Assistant.SickLeaves_SickLeaveProlonged_ShortBodyTemplate]" />
+            <Parameter Name="LongBodyTemplate" Value="[Arcadia.Assistant.SickLeaves_SickLeaveProlonged_LongBodyTemplate]" />
+          </Section>
+          <Section Name="SickLeaveCancelled">
+            <Parameter Name="Subject" Value="[Arcadia.Assistant.SickLeaves_SickLeaveCancelled_Subject]" />
+            <Parameter Name="Title" Value="[Arcadia.Assistant.SickLeaves_SickLeaveCancelled_Title]" />
+            <Parameter Name="ShortBodyTemplate" Value="[Arcadia.Assistant.SickLeaves_SickLeaveCancelled_ShortBodyTemplate]" />
+            <Parameter Name="LongBodyTemplate" Value="[Arcadia.Assistant.SickLeaves_SickLeaveCancelled_LongBodyTemplate]" />
           </Section>
         </Settings>
       </ConfigOverride>
@@ -289,6 +355,30 @@
         <Settings>
           <Section Name="Logging">
             <Parameter Name="ApplicationInsightsKey" Value="[Arcadia.Assistant.ApplicationInsightsKey]" />
+          </Section>
+          <Section Name="WorkHoursCreditCreated">
+            <Parameter Name="Subject" Value="[Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditCreated_Subject]" />
+            <Parameter Name="Title" Value="[Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditCreated_Title]" />
+            <Parameter Name="ShortBodyTemplate" Value="[Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditCreated_ShortBodyTemplate]" />
+            <Parameter Name="LongBodyTemplate" Value="[Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditCreated_LongBodyTemplate]" />
+          </Section>
+          <Section Name="WorkHoursCreditApproveRequire">
+            <Parameter Name="Subject" Value="[Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditApproveRequire_Subject]" />
+            <Parameter Name="Title" Value="[Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditApproveRequire_Title]" />
+            <Parameter Name="ShortBodyTemplate" Value="[Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditApproveRequired_ShortBodyTemplate]" />
+            <Parameter Name="LongBodyTemplate" Value="[Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditApproveRequire_LongBodyTemplate]" />
+          </Section>
+          <Section Name="WorkHoursCreditApproved">
+            <Parameter Name="Subject" Value="[Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditApproved_Subject]" />
+            <Parameter Name="Title" Value="[Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditApproved_Title]" />
+            <Parameter Name="ShortBodyTemplate" Value="[Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditApproved_ShortBodyTemplate]" />
+            <Parameter Name="LongBodyTemplate" Value="[Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditApproved_LongBodyTemplate]" />
+          </Section>
+          <Section Name="WorkHoursCreditCancelled">
+            <Parameter Name="Subject" Value="[Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditCancelled_Subject]" />
+            <Parameter Name="Title" Value="[Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditCancelled_Title]" />
+            <Parameter Name="ShortBodyTemplate" Value="[Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditCancelled_ShortBodyTemplate]" />
+            <Parameter Name="LongBodyTemplate" Value="[Arcadia.Assistant.WorkHoursCredit_WorkHoursCreditCancelled_LongBodyTemplate]" />
           </Section>
         </Settings>
       </ConfigOverride>

@@ -4,15 +4,24 @@ namespace Arcadia.Assistant.Vacations
     using System.Diagnostics;
     using System.Fabric;
     using System.Threading;
-    using Arcadia.Assistant.Logging;
+
     using Autofac;
     using Autofac.Integration.ServiceFabric;
 
     using CSP;
 
+    using Employees.Contracts;
+
+    using Logging;
+
     using Microsoft.Extensions.Logging;
     using Microsoft.ServiceFabric.Services.Remoting.Client;
-    using Microsoft.ServiceFabric.Services.Runtime;
+
+    using Notification;
+
+    using NotificationTemplates.Configuration;
+
+    using Organization.Contracts;
 
     internal static class Program
     {
@@ -30,23 +39,36 @@ namespace Arcadia.Assistant.Vacations
                 // an instance of the class is created in this host process.
 
                 var configurationPackage = FabricRuntime.GetActivationContext().GetConfigurationPackageObject("Config");
-                var connectionString = configurationPackage.Settings.Sections["Csp"].Parameters["ConnectionString"].Value;
-                var updateInterval = TimeSpan.FromMinutes(double.Parse(configurationPackage.Settings.Sections["Service"].Parameters["UpdateIntervalMinutes"].Value));
+                var connectionString =
+                    configurationPackage.Settings.Sections["Csp"].Parameters["ConnectionString"].Value;
+                var updateInterval = TimeSpan.FromMinutes(double.Parse(configurationPackage.Settings.Sections["Service"]
+                    .Parameters["UpdateIntervalMinutes"].Value));
 
                 var builder = new ContainerBuilder();
                 builder.RegisterServiceFabricSupport();
                 builder.RegisterStatelessService<Vacations>("Arcadia.Assistant.VacationsType");
                 builder.RegisterInstance<IServiceProxyFactory>(new ServiceProxyFactory());
-                builder.Register(x => new Settings() { ChangesCheckInterval = updateInterval }).SingleInstance();
+                builder.Register(x => new Settings
+                    { ChangesCheckInterval = updateInterval }).SingleInstance();
                 builder.RegisterType<VacationsStorage>().SingleInstance();
                 builder.RegisterType<VacationChangesWatcher>().SingleInstance();
                 builder.RegisterType<VacationChangesCheck>().SingleInstance();
+                builder.RegisterModule<EmployeesModule>();
+                builder.RegisterModule<OrganizationModule>();
                 builder.RegisterModule(new CspModule(connectionString));
                 builder.RegisterServiceLogging(new LoggerSettings(configurationPackage.Settings.Sections["Logging"]));
+                builder.Register(x =>
+                    NotificationConfigurationLoader.Load<IVacationsStatusChangeNotificationConfiguration>(
+                        configurationPackage.Settings.Sections[VacationsNotificationTemplate.VacationsStatusChanged]));
+                builder.Register(x =>
+                    NotificationConfigurationLoader.Load<IVacationsApproveRequireNotificationConfiguration>(
+                        configurationPackage.Settings.Sections[VacationsNotificationTemplate.VacationsApproveRequire]));
+                builder.RegisterType<VacationsNotification>().SingleInstance().AsSelf();
 
                 using var container = builder.Build();
                 logger = container.ResolveOptional<ILogger<Vacations>>();
-                logger?.LogInformation("Service type '{ServiceName}' registered. Process: {ProcessId}.", typeof(Vacations).Name, Process.GetCurrentProcess().Id);
+                logger?.LogInformation("Service type '{ServiceName}' registered. Process: {ProcessId}.",
+                    typeof(Vacations).Name, Process.GetCurrentProcess().Id);
                 // Prevents this host process from terminating so services keep running.
                 Thread.Sleep(Timeout.Infinite);
             }

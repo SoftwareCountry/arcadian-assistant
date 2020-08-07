@@ -78,7 +78,7 @@ namespace Arcadia.Assistant.Sharepoint
                         return new SharepointFieldsMapper(mapping.ToArray());
                     })
                     .As<ISharepointFieldsMapper>();
-
+                
                 builder.RegisterType<SharepointRequestExecutor>().As<ISharepointRequestExecutor>();
                 builder.RegisterType<SharepointAuthTokenService>().As<ISharepointAuthTokenService>();
                 builder.RegisterType<SharepointConditionsCompiler>().As<ISharepointConditionsCompiler>();

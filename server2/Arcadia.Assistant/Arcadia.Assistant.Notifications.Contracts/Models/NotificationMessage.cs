@@ -9,6 +9,9 @@
         public string NotificationTemplate { get; set; } = string.Empty;
 
         [DataMember]
+        public string Title { get; set; } = string.Empty;
+
+        [DataMember]
         public string Subject { get; set; } = string.Empty;
 
         [DataMember]

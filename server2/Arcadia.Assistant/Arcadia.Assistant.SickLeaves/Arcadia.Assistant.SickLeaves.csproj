@@ -20,6 +20,9 @@
     <ProjectReference Include="..\Arcadia.Assistant.CSP\Arcadia.Assistant.CSP.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Employees.Contracts\Arcadia.Assistant.Employees.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Logging\Arcadia.Assistant.Logging.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.Notifications.Contracts\Arcadia.Assistant.Notifications.Contracts.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.NotificationTemplates\Arcadia.Assistant.NotificationTemplates.csproj" />
+    <ProjectReference Include="..\Arcadia.Assistant.Organization.Contracts\Arcadia.Assistant.Organization.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.Permissions.Contracts\Arcadia.Assistant.Permissions.Contracts.csproj" />
     <ProjectReference Include="..\Arcadia.Assistant.SickLeaves.Contracts\Arcadia.Assistant.SickLeaves.Contracts.csproj" />
   </ItemGroup>

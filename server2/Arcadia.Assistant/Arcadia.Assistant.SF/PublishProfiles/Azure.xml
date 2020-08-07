@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+
 <PublishProfile xmlns="http://schemas.microsoft.com/2015/05/fabrictools">
   <!-- ClusterConnectionParameters allows you to specify the PowerShell parameters to use when connecting to the Service Fabric cluster.
        Valid parameters are any that are accepted by the Connect-ServiceFabricCluster cmdlet.
@@ -20,8 +21,11 @@
                                     AzureActiveDirectory="true"
                                     ServerCertThumbprint="0123456789012345678901234567890123456789" />
   -->
-  <ClusterConnectionParameters ConnectionEndpoint="assistant.eastus.cloudapp.azure.com:19000" X509Credential="true" FindType="FindByThumbprint" FindValue="07D5AB2AE6F9C991C0C58BCBC4FF970DC1971481" ServerCertThumbprint="07D5AB2AE6F9C991C0C58BCBC4FF970DC1971481" StoreLocation="CurrentUser" StoreName="My" />
+  <ClusterConnectionParameters ConnectionEndpoint="assistant.eastus.cloudapp.azure.com:19000" X509Credential="true"
+                               FindType="FindByThumbprint" FindValue="07D5AB2AE6F9C991C0C58BCBC4FF970DC1971481"
+                               ServerCertThumbprint="07D5AB2AE6F9C991C0C58BCBC4FF970DC1971481"
+                               StoreLocation="CurrentUser" StoreName="My" />
 
-<ApplicationParameterFile Path="..\ApplicationParameters\Azure.xml" />
+  <ApplicationParameterFile Path="..\ApplicationParameters\Azure.xml" />
   <CopyPackageParameters CompressPackage="true" />
 </PublishProfile>

@@ -1,7 +1,6 @@
 ﻿namespace Arcadia.Assistant.SickLeaves
 {
     using System;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -19,8 +18,8 @@
     public class SickLeaveCancellationStep
     {
         private readonly ArcadiaCspContext database;
-        private readonly PermissionsEntryQuery permissionsQuery;
         private readonly ILogger<SickLeaveCreationStep> logger;
+        private readonly PermissionsEntryQuery permissionsQuery;
 
         public SickLeaveCancellationStep(
             ArcadiaCspContext database, PermissionsEntryQuery permissionsQuery, ILogger<SickLeaveCreationStep> logger)
@@ -70,7 +69,7 @@
                 throw new ArgumentException($"Couldn't cancel {eventId} as its already complete / cancelled");
             }
 
-            existingEvent.SickLeaveCancellations.Add(new SickLeaveCancellation()
+            existingEvent.SickLeaveCancellations.Add(new SickLeaveCancellation
             {
                 At = DateTimeOffset.Now, ById = cancelledById.Value.Value, SickLeaveId = existingEvent.Id
             });

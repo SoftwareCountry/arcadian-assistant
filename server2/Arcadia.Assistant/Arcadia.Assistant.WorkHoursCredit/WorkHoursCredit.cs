@@ -22,6 +22,8 @@ namespace Arcadia.Assistant.WorkHoursCredit
 
     using Model;
 
+    using Notification;
+
     /// <summary>
     ///     An instance of this class is created for each service instance by the Service Fabric runtime.
     /// </summary>
@@ -29,15 +31,22 @@ namespace Arcadia.Assistant.WorkHoursCredit
     {
         private readonly Func<Owned<WorkHoursCreditContext>> dbFactory;
         private readonly ILogger logger;
+        private readonly WorkHoursCreditNotification notification;
 
-        public WorkHoursCredit(StatelessServiceContext context, Func<Owned<WorkHoursCreditContext>> dbFactory, ILogger<WorkHoursCredit> logger)
+        public WorkHoursCredit(
+            StatelessServiceContext context,
+            Func<Owned<WorkHoursCreditContext>> dbFactory,
+            WorkHoursCreditNotification notification,
+            ILogger<WorkHoursCredit> logger)
             : base(context)
         {
             this.dbFactory = dbFactory;
+            this.notification = notification;
             this.logger = logger;
         }
 
-        public async Task<Dictionary<EmployeeId, int>> GetAvailableHoursAsync(EmployeeId[] employeeIds, CancellationToken cancellationToken)
+        public async Task<Dictionary<EmployeeId, int>> GetAvailableHoursAsync(
+            EmployeeId[] employeeIds, CancellationToken cancellationToken)
         {
             if (employeeIds.Length == 0)
             {
@@ -71,7 +80,8 @@ namespace Arcadia.Assistant.WorkHoursCredit
             return hours;
         }
 
-        public async Task<WorkHoursChange[]> GetCalendarEventsAsync(EmployeeId employeeId, CancellationToken cancellationToken)
+        public async Task<WorkHoursChange[]> GetCalendarEventsAsync(
+            EmployeeId employeeId, CancellationToken cancellationToken)
         {
             using var ctx = this.dbFactory();
             var events = await this.QueryCalendarEvents(ctx.Value.ChangeRequests, x => x.EmployeeId == employeeId.Value)
@@ -80,28 +90,32 @@ namespace Arcadia.Assistant.WorkHoursCredit
             return events;
         }
 
-        public async Task<Dictionary<EmployeeId, WorkHoursChange[]>> GetCalendarEventsByEmployeeMapAsync(EmployeeId[] employeeIds, CancellationToken cancellationToken)
+        public async Task<Dictionary<EmployeeId, WorkHoursChange[]>> GetCalendarEventsByEmployeeMapAsync(
+            EmployeeId[] employeeIds, CancellationToken cancellationToken)
         {
             using var ctx = this.dbFactory();
-            var events = await this.QueryCalendarEvents(ctx.Value.ChangeRequests, x => employeeIds.Any(id => id.Value == x.EmployeeId))
+            var events = await this.QueryCalendarEvents(ctx.Value.ChangeRequests,
+                    x => employeeIds.Any(id => id.Value == x.EmployeeId))
                 .ToArrayAsync(cancellationToken);
 
             return events.GroupBy(x => x.EmployeeId)
                 .ToDictionary(x => x.Key, x => x.ToArray());
         }
 
-        public async Task<WorkHoursChange?> GetCalendarEventAsync(EmployeeId employeeId, Guid eventId, CancellationToken cancellationToken)
+        public async Task<WorkHoursChange?> GetCalendarEventAsync(
+            EmployeeId employeeId, Guid eventId, CancellationToken cancellationToken)
         {
             using var ctx = this.dbFactory();
             var calendarEvent = await this.QueryCalendarEvents(
-                    ctx.Value.ChangeRequests, 
+                    ctx.Value.ChangeRequests,
                     x => x.EmployeeId == employeeId.Value && x.ChangeRequestId == eventId)
                 .FirstOrDefaultAsync(cancellationToken);
 
             return calendarEvent;
         }
 
-        public async Task<Dictionary<EmployeeId, WorkHoursChange[]>> GetActiveRequestsAsync(EmployeeId[] employeeIds, CancellationToken cancellationToken)
+        public async Task<Dictionary<EmployeeId, WorkHoursChange[]>> GetActiveRequestsAsync(
+            EmployeeId[] employeeIds, CancellationToken cancellationToken)
         {
             if (employeeIds.Length == 0)
             {
@@ -130,7 +144,8 @@ namespace Arcadia.Assistant.WorkHoursCredit
             return groupedEvents;
         }
 
-        public async Task<WorkHoursChange> RequestChangeAsync(EmployeeId employeeId, WorkHoursChangeType changeType, DateTime date, DayPart dayPart)
+        public async Task<WorkHoursChange> RequestChangeAsync(
+            EmployeeId employeeId, WorkHoursChangeType changeType, DateTime date, DayPart dayPart)
         {
             using var ctx = this.dbFactory();
             var entity = new ChangeRequest
@@ -146,7 +161,21 @@ namespace Arcadia.Assistant.WorkHoursCredit
             ctx.Value.ChangeRequests.Add(entity);
             await ctx.Value.SaveChangesAsync();
 
-            return new WorkHoursChange()
+            await this.notification.SendCreateWorkHoursCreditNotification(
+                employeeId,
+                changeType,
+                date,
+                dayPart,
+                CancellationToken.None);
+
+            await this.notification.SendApproveRequireWorkHoursCreditNotification(
+                employeeId,
+                changeType,
+                date,
+                dayPart,
+                CancellationToken.None);
+
+            return new WorkHoursChange
             {
                 ChangeId = entity.ChangeRequestId,
                 ChangeType = changeType,
@@ -156,7 +185,8 @@ namespace Arcadia.Assistant.WorkHoursCredit
             };
         }
 
-        public async Task<ChangeRequestApproval[]> GetApprovalsAsync(EmployeeId employeeId, Guid eventId, CancellationToken cancellationToken)
+        public async Task<ChangeRequestApproval[]> GetApprovalsAsync(
+            EmployeeId employeeId, Guid eventId, CancellationToken cancellationToken)
         {
             using var ctx = this.dbFactory();
             var approvals = await ctx.Value
@@ -164,7 +194,8 @@ namespace Arcadia.Assistant.WorkHoursCredit
                 .Where(x => x.EmployeeId == employeeId.Value && x.ChangeRequestId == eventId)
                 .Select(x => x
                     .Approvals
-                    .Select(y => new ChangeRequestApproval() { ApproverId = new EmployeeId(y.ChangedByEmployeeId), Timestamp = y.Timestamp })
+                    .Select(y => new ChangeRequestApproval
+                        { ApproverId = new EmployeeId(y.ChangedByEmployeeId), Timestamp = y.Timestamp })
                     .ToArray()
                 )
                 .FirstOrDefaultAsync(cancellationToken);
@@ -185,9 +216,15 @@ namespace Arcadia.Assistant.WorkHoursCredit
 
             ctx.Value.Approvals.Add(entity);
             await ctx.Value.SaveChangesAsync();
+
+            await this.notification.SendApproveWorkHoursCreditNotification(
+                employeeId,
+                requestId,
+                CancellationToken.None);
         }
 
-        public async Task RejectRequestAsync(EmployeeId employeeId, Guid requestId, string? rejectionReason, EmployeeId rejectedBy)
+        public async Task RejectRequestAsync(
+            EmployeeId employeeId, Guid requestId, string? rejectionReason, EmployeeId rejectedBy)
         {
             using var ctx = this.dbFactory();
             var entity = new Rejection
@@ -201,12 +238,19 @@ namespace Arcadia.Assistant.WorkHoursCredit
 
             ctx.Value.Rejections.Add(entity);
             await ctx.Value.SaveChangesAsync();
+
+            await this.notification.SendRejectWorkHoursCreditNotification(
+                employeeId,
+                requestId,
+                rejectionReason,
+                CancellationToken.None);
         }
 
-        public async Task CancelRequestAsync(EmployeeId employeeId, Guid requestId, string? rejectionReason, EmployeeId cancelledBy)
+        public async Task CancelRequestAsync(
+            EmployeeId employeeId, Guid requestId, string? rejectionReason, EmployeeId cancelledBy)
         {
             using var ctx = this.dbFactory();
-            var entity = new Cancellation()
+            var entity = new Cancellation
             {
                 EmployeeId = employeeId.Value,
                 ChangeRequestId = requestId,
@@ -217,6 +261,13 @@ namespace Arcadia.Assistant.WorkHoursCredit
 
             ctx.Value.Cancellations.Add(entity);
             await ctx.Value.SaveChangesAsync();
+
+            await this.notification.SendCancelWorkHoursCreditNotification(
+                employeeId,
+                cancelledBy,
+                requestId,
+                rejectionReason,
+                CancellationToken.None);
         }
 
         /// <summary>
@@ -228,7 +279,8 @@ namespace Arcadia.Assistant.WorkHoursCredit
             return this.CreateServiceRemotingInstanceListeners();
         }
 
-        private IQueryable<WorkHoursChange> QueryCalendarEvents(IQueryable<ChangeRequest> changeRequests, Expression<Func<ChangeRequest, bool>> predicate)
+        private IQueryable<WorkHoursChange> QueryCalendarEvents(
+            IQueryable<ChangeRequest> changeRequests, Expression<Func<ChangeRequest, bool>> predicate)
         {
             var events = changeRequests
                 .AsNoTracking()
