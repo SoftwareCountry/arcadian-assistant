@@ -10,16 +10,23 @@
 
     public class VacationChangesWatcher : IDisposable
     {
-        private readonly ManualResetEventSlim mres = new ManualResetEventSlim(false);
-        private readonly Func<Owned<VacationChangesCheck>> vacationChangesCheckFactory;
-        private readonly Settings settings;
         private readonly ILogger<VacationChangesWatcher> logger;
+        private readonly ManualResetEventSlim mres = new ManualResetEventSlim(false);
+        private readonly Settings settings;
+        private readonly Func<Owned<VacationChangesCheck>> vacationChangesCheckFactory;
 
-        public VacationChangesWatcher(Func<Owned<VacationChangesCheck>> vacationChangesCheckFactory, Settings settings, ILogger<VacationChangesWatcher> logger)
+        public VacationChangesWatcher(
+            Func<Owned<VacationChangesCheck>> vacationChangesCheckFactory, Settings settings,
+            ILogger<VacationChangesWatcher> logger)
         {
             this.vacationChangesCheckFactory = vacationChangesCheckFactory;
             this.settings = settings;
             this.logger = logger;
+        }
+
+        public void Dispose()
+        {
+            this.mres.Dispose();
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -52,11 +59,6 @@
         public void ForceRefresh()
         {
             this.mres.Set();
-        }
-
-        public void Dispose()
-        {
-            this.mres.Dispose();
         }
 
         private async Task Refresh(CancellationToken cancellationToken)

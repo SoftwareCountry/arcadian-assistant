@@ -1,7 +1,7 @@
-﻿using Arcadia.Assistant.NotificationTemplates.Configuration;
-
-namespace Arcadia.Assistant.Vacations.Notification
+﻿namespace Arcadia.Assistant.Vacations.Notification
 {
+    using NotificationTemplates.Configuration;
+
     public interface IVacationsStatusChangeNotificationConfiguration : INotificationConfiguration
     {
     }

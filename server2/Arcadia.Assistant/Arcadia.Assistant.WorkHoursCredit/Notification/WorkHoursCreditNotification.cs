@@ -11,27 +11,34 @@ namespace Arcadia.Assistant.WorkHoursCredit.Notification
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using Arcadia.Assistant.Employees.Contracts;
-    using Arcadia.Assistant.Notifications.Contracts.Models;
-    using Arcadia.Assistant.NotificationTemplates;
-    using Arcadia.Assistant.NotificationTemplates.Configuration;
-    using Arcadia.Assistant.Organization.Contracts;
-    using Arcadia.Assistant.WorkHoursCredit.Contracts;
-    using Arcadia.Assistant.WorkHoursCredit.Model;
+
     using Autofac.Features.OwnedInstances;
+
+    using Contracts;
+
+    using Employees.Contracts;
+
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
+    using Model;
+
     using Notifications.Contracts;
+    using Notifications.Contracts.Models;
+
+    using NotificationTemplates;
+    using NotificationTemplates.Configuration;
+
+    using Organization.Contracts;
 
     public class WorkHoursCreditNotification
     {
-        private readonly ILogger logger;
         private readonly Func<Owned<WorkHoursCreditContext>> dbFactory;
         private readonly IEmployees employeeService;
-        private readonly IOrganization organizationService;
+        private readonly ILogger logger;
         private readonly Dictionary<string, INotificationConfiguration> notificationConfigurations;
         private readonly INotifications notifications;
+        private readonly IOrganization organizationService;
 
         public WorkHoursCreditNotification(
             Func<Owned<WorkHoursCreditContext>> dbFactory,
@@ -50,22 +57,35 @@ namespace Arcadia.Assistant.WorkHoursCredit.Notification
             this.organizationService = organizationService;
             this.notificationConfigurations = new Dictionary<string, INotificationConfiguration>
             {
-                { WorkHoursCreditNotificationTemplate.WorkHoursCreditCreated, workHoursCreditCreateNotificationConfiguration },
-                { WorkHoursCreditNotificationTemplate.WorkHoursCreditApproveRequire, workHoursCreditApproveRequireNotification },
-                { WorkHoursCreditNotificationTemplate.WorkHoursCreditApproved, workHoursCreditApproveNotificationConfiguration },
-                { WorkHoursCreditNotificationTemplate.WorkHoursCreditCancelled, workHoursCreditCancelNotificationConfiguration },
+                {
+                    WorkHoursCreditNotificationTemplate.WorkHoursCreditCreated,
+                    workHoursCreditCreateNotificationConfiguration
+                },
+                {
+                    WorkHoursCreditNotificationTemplate.WorkHoursCreditApproveRequire,
+                    workHoursCreditApproveRequireNotification
+                },
+                {
+                    WorkHoursCreditNotificationTemplate.WorkHoursCreditApproved,
+                    workHoursCreditApproveNotificationConfiguration
+                },
+                {
+                    WorkHoursCreditNotificationTemplate.WorkHoursCreditCancelled,
+                    workHoursCreditCancelNotificationConfiguration
+                }
             };
             this.logger = logger;
         }
 
         public async Task SendCreateWorkHoursCreditNotification(
-            EmployeeId employeeId, WorkHoursChangeType changeType, DateTime date, DayPart dayPart, CancellationToken cancellationToken)
+            EmployeeId employeeId, WorkHoursChangeType changeType, DateTime date, DayPart dayPart,
+            CancellationToken cancellationToken)
         {
             this.logger.LogDebug(
                 "Send work hours credits new request {Type} notification (employee id={EmployeeId}.",
                 changeType, employeeId);
 
-            var employee = await GetEmployeeMetadataAsync(employeeId, cancellationToken);
+            var employee = await this.GetEmployeeMetadataAsync(employeeId, cancellationToken);
             if (employee == null)
             {
                 this.logger.LogError("Can't find employee for new request notification.");
@@ -74,11 +94,12 @@ namespace Arcadia.Assistant.WorkHoursCredit.Notification
 
             try
             {
-                var context = GetNotificationContext(employee!, changeType, date, dayPart);
-                await this.notifications.Send(new EmployeeId[] { employeeId },
-                    CreateNotificationMessage(
+                var context = this.GetNotificationContext(employee!, changeType, date, dayPart);
+                await this.notifications.Send(new[] { employeeId }, this.CreateNotificationMessage(
                         WorkHoursCreditNotificationTemplate.WorkHoursCreditCreated,
-                        new NotificationDataPresenter(this.notificationConfigurations[WorkHoursCreditNotificationTemplate.WorkHoursCreditCreated], context)),
+                        new NotificationDataPresenter(
+                            this.notificationConfigurations[WorkHoursCreditNotificationTemplate.WorkHoursCreditCreated],
+                            context)),
                     cancellationToken);
             }
             catch (Exception e)
@@ -89,7 +110,9 @@ namespace Arcadia.Assistant.WorkHoursCredit.Notification
             }
         }
 
-        public async Task SendApproveRequireWorkHoursCreditNotification(EmployeeId employeeId, WorkHoursChangeType changeType, DateTime date, DayPart dayPart, CancellationToken cancellationToken)
+        public async Task SendApproveRequireWorkHoursCreditNotification(
+            EmployeeId employeeId, WorkHoursChangeType changeType, DateTime date, DayPart dayPart,
+            CancellationToken cancellationToken)
         {
             var owner = await this.GetEmployeeMetadataAsync(employeeId, cancellationToken);
             if (owner == null)
@@ -107,11 +130,12 @@ namespace Arcadia.Assistant.WorkHoursCredit.Notification
 
             try
             {
-                var context = GetNotificationContext(manager, changeType, date, dayPart);
-                await this.notifications.Send(new EmployeeId[] { manager.EmployeeId },
-                    CreateNotificationMessage(
+                var context = this.GetNotificationContext(manager, changeType, date, dayPart);
+                await this.notifications.Send(new[] { manager.EmployeeId }, this.CreateNotificationMessage(
                         WorkHoursCreditNotificationTemplate.WorkHoursCreditApproveRequire,
-                        new NotificationDataPresenter(this.notificationConfigurations[WorkHoursCreditNotificationTemplate.WorkHoursCreditApproveRequire], context)),
+                        new NotificationDataPresenter(
+                            this.notificationConfigurations[
+                                WorkHoursCreditNotificationTemplate.WorkHoursCreditApproveRequire], context)),
                     cancellationToken);
             }
             catch (Exception e)
@@ -122,7 +146,8 @@ namespace Arcadia.Assistant.WorkHoursCredit.Notification
             }
         }
 
-        public async Task SendApproveWorkHoursCreditNotification(EmployeeId employeeId, Guid requestId, CancellationToken cancellationToken)
+        public async Task SendApproveWorkHoursCreditNotification(
+            EmployeeId employeeId, Guid requestId, CancellationToken cancellationToken)
         {
             var owner = await this.GetEmployeeMetadataAsync(employeeId, cancellationToken);
             if (owner == null)
@@ -131,16 +156,17 @@ namespace Arcadia.Assistant.WorkHoursCredit.Notification
                 throw new ArgumentException("Employee missed in database.");
             }
 
-            await SendStatusChangedNotification(
+            await this.SendStatusChangedNotification(
                 owner,
-                new EmployeeId[] { employeeId },
+                new[] { employeeId },
                 WorkHoursCreditNotificationTemplate.WorkHoursCreditApproved,
                 "Approved",
                 requestId,
                 cancellationToken);
         }
 
-        public async Task SendRejectWorkHoursCreditNotification(EmployeeId employeeId, Guid requestId, string? rejectReason, CancellationToken cancellationToken)
+        public async Task SendRejectWorkHoursCreditNotification(
+            EmployeeId employeeId, Guid requestId, string? rejectReason, CancellationToken cancellationToken)
         {
             var owner = await this.GetEmployeeMetadataAsync(employeeId, cancellationToken);
             if (owner == null)
@@ -149,15 +175,17 @@ namespace Arcadia.Assistant.WorkHoursCredit.Notification
                 throw new ArgumentException("Employee missed in database.");
             }
 
-            await SendStatusChangedNotification(owner,
-                new EmployeeId[] { employeeId },
+            await this.SendStatusChangedNotification(owner,
+                new[] { employeeId },
                 WorkHoursCreditNotificationTemplate.WorkHoursCreditApproved,
-                "Rejected", 
+                "Rejected",
                 requestId,
                 cancellationToken);
         }
 
-        public async Task SendCancelWorkHoursCreditNotification(EmployeeId employeeId, EmployeeId cancellerId, Guid requestId, string? cancellationReason, CancellationToken cancellationToken)
+        public async Task SendCancelWorkHoursCreditNotification(
+            EmployeeId employeeId, EmployeeId cancellerId, Guid requestId, string? cancellationReason,
+            CancellationToken cancellationToken)
         {
             var owner = await this.GetEmployeeMetadataAsync(employeeId, cancellationToken);
             if (owner == null)
@@ -172,8 +200,8 @@ namespace Arcadia.Assistant.WorkHoursCredit.Notification
             {
                 recipients.Add(manager.EmployeeId);
             }
-                
-            await SendStatusChangedNotification(owner,
+
+            await this.SendStatusChangedNotification(owner,
                 recipients.ToArray(),
                 WorkHoursCreditNotificationTemplate.WorkHoursCreditCancelled,
                 "Cancelled",
@@ -181,18 +209,20 @@ namespace Arcadia.Assistant.WorkHoursCredit.Notification
                 cancellationToken);
         }
 
-        private async Task SendStatusChangedNotification(EmployeeMetadata owner, EmployeeId[] recipients, string template, string status, Guid requestId, CancellationToken cancellationToken)
+        private async Task SendStatusChangedNotification(
+            EmployeeMetadata owner, EmployeeId[] recipients, string template, string status, Guid requestId,
+            CancellationToken cancellationToken)
         {
             using var ctx = this.dbFactory();
-            var request = await ctx.Value.ChangeRequests.FirstAsync(x => x.ChangeRequestId == requestId, cancellationToken);
-            var context = GetNotificationContext(owner, request);
+            var request =
+                await ctx.Value.ChangeRequests.FirstAsync(x => x.ChangeRequestId == requestId, cancellationToken);
+            var context = this.GetNotificationContext(owner, request);
             context.Add("status", status);
             var dataPresenter = new NotificationDataPresenter(this.notificationConfigurations[template], context);
 
             try
             {
-                await this.notifications.Send(recipients,
-                    CreateNotificationMessage(
+                await this.notifications.Send(recipients, this.CreateNotificationMessage(
                         template,
                         dataPresenter),
                     cancellationToken);
@@ -205,7 +235,8 @@ namespace Arcadia.Assistant.WorkHoursCredit.Notification
             }
         }
 
-        private NotificationMessage CreateNotificationMessage(string notificationTemplate, NotificationDataPresenter notificationContext)
+        private NotificationMessage CreateNotificationMessage(
+            string notificationTemplate, NotificationDataPresenter notificationContext)
         {
             return new NotificationMessage
             {
@@ -217,12 +248,16 @@ namespace Arcadia.Assistant.WorkHoursCredit.Notification
             };
         }
 
-        private async Task<EmployeeMetadata?> GetEmployeeMetadataAsync(EmployeeId? employeeId, CancellationToken cancellationToken)
+        private async Task<EmployeeMetadata?> GetEmployeeMetadataAsync(
+            EmployeeId? employeeId, CancellationToken cancellationToken)
         {
-            return employeeId == null ? null : await this.employeeService.FindEmployeeAsync(employeeId.Value, cancellationToken);
+            return employeeId == null
+                ? null
+                : await this.employeeService.FindEmployeeAsync(employeeId.Value, cancellationToken);
         }
 
-        private async Task<EmployeeMetadata?> GetEmployeeManagerMetadataAsync(EmployeeMetadata owner, CancellationToken cancellationToken)
+        private async Task<EmployeeMetadata?> GetEmployeeManagerMetadataAsync(
+            EmployeeMetadata owner, CancellationToken cancellationToken)
         {
             var department = owner.DepartmentId == null
                 ? null
@@ -241,10 +276,11 @@ namespace Arcadia.Assistant.WorkHoursCredit.Notification
                 return null;
             }
 
-            return await GetEmployeeMetadataAsync(managerEmployeeId.GetValueOrDefault(), cancellationToken);
+            return await this.GetEmployeeMetadataAsync(managerEmployeeId.GetValueOrDefault(), cancellationToken);
         }
 
-        private Dictionary<string, string> GetNotificationContext(EmployeeMetadata ownerEmployee, WorkHoursChangeType type, DateTime date, DayPart dayPart)
+        private Dictionary<string, string> GetNotificationContext(
+            EmployeeMetadata ownerEmployee, WorkHoursChangeType type, DateTime date, DayPart dayPart)
         {
             return new Dictionary<string, string>
             {
@@ -258,7 +294,7 @@ namespace Arcadia.Assistant.WorkHoursCredit.Notification
 
         private Dictionary<string, string> GetNotificationContext(EmployeeMetadata ownerEmployee, ChangeRequest request)
         {
-            var context = GetNotificationContext(ownerEmployee, request.ChangeType, request.Date, request.DayPart);
+            var context = this.GetNotificationContext(ownerEmployee, request.ChangeType, request.Date, request.DayPart);
             return context;
         }
     }

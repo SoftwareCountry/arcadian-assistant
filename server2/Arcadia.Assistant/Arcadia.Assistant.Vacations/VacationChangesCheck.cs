@@ -14,7 +14,9 @@
 
     using Microsoft.EntityFrameworkCore;
 
-    using VacationsDictionary = System.Collections.Generic.Dictionary<Employees.Contracts.EmployeeId, System.Collections.Generic.Dictionary<int, CSP.Model.Vacation>>;
+    using VacationsDictionary =
+        System.Collections.Generic.Dictionary<Employees.Contracts.EmployeeId,
+            System.Collections.Generic.Dictionary<int, CSP.Model.Vacation>>;
 
     public class VacationChangesCheck
     {
@@ -31,7 +33,6 @@
             VacationsDictionary databaseState;
             using (var db = this.dbFactory())
             {
-
                 var allVacations = await db.Value.Vacations
                     .Include(x => x.VacationCancellations)
                     .Include(x => x.VacationApprovals)

@@ -11,25 +11,31 @@ namespace Arcadia.Assistant.Vacations.Notification
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using Arcadia.Assistant.Employees.Contracts;
-    using Arcadia.Assistant.Notifications.Contracts.Models;
-    using Arcadia.Assistant.NotificationTemplates;
-    using Arcadia.Assistant.NotificationTemplates.Configuration;
-    using Arcadia.Assistant.Organization.Contracts;
-    using Arcadia.Assistant.Vacations.Contracts;
+
     using Autofac.Features.OwnedInstances;
+
+    using Contracts;
+
+    using Employees.Contracts;
+
     using Microsoft.Extensions.Logging;
 
     using Notifications.Contracts;
+    using Notifications.Contracts.Models;
+
+    using NotificationTemplates;
+    using NotificationTemplates.Configuration;
+
+    using Organization.Contracts;
 
     public class VacationsNotification
     {
-        private readonly ILogger logger;
-        private readonly Func<Owned<VacationsStorage>> storageFactory;
         private readonly IEmployees employeeService;
-        private readonly IOrganization organizationService;
+        private readonly ILogger logger;
         private readonly Dictionary<string, INotificationConfiguration> notificationConfigurations;
         private readonly INotifications notifications;
+        private readonly IOrganization organizationService;
+        private readonly Func<Owned<VacationsStorage>> storageFactory;
 
         public VacationsNotification(
             Func<Owned<VacationsStorage>> storageFactory,
@@ -47,12 +53,16 @@ namespace Arcadia.Assistant.Vacations.Notification
             this.notificationConfigurations = new Dictionary<string, INotificationConfiguration>
             {
                 { VacationsNotificationTemplate.VacationsStatusChanged, vacationsCreateNotificationConfiguration },
-                { VacationsNotificationTemplate.VacationsApproveRequire, vacationsApproveRequireNotificationConfiguration }
+                {
+                    VacationsNotificationTemplate.VacationsApproveRequire,
+                    vacationsApproveRequireNotificationConfiguration
+                }
             };
             this.logger = logger;
         }
 
-        public async Task SendVacationCreateNotification(EmployeeId employeeId, VacationDescription vacationDescription, CancellationToken cancellationToken)
+        public async Task SendVacationCreateNotification(
+            EmployeeId employeeId, VacationDescription vacationDescription, CancellationToken cancellationToken)
         {
             this.logger.LogDebug(
                 "Send new employee (id={EmployeeId}) vacation request notification for dates {StartDate}-{EndDate}.",
@@ -67,15 +77,16 @@ namespace Arcadia.Assistant.Vacations.Notification
             }
 
             await this.SendStatusChangedNotification(
-                owner!, 
-                employeeId, 
-                VacationsNotificationTemplate.VacationsStatusChanged, 
-                status, 
-                vacationDescription, 
+                owner!,
+                employeeId,
+                VacationsNotificationTemplate.VacationsStatusChanged,
+                status,
+                vacationDescription,
                 cancellationToken);
         }
 
-        public async Task SendVacationApproveRequireNotification(EmployeeId employeeId, VacationDescription vacationDescription, CancellationToken cancellationToken)
+        public async Task SendVacationApproveRequireNotification(
+            EmployeeId employeeId, VacationDescription vacationDescription, CancellationToken cancellationToken)
         {
             this.logger.LogDebug(
                 "Send employee (id={EmployeeId}) vacation manager approve request notification for dates {StartDate}-{EndDate}.",
@@ -96,22 +107,23 @@ namespace Arcadia.Assistant.Vacations.Notification
             }
 
             await this.SendStatusChangedNotification(
-                owner!, 
-                manager.EmployeeId, 
-                VacationsNotificationTemplate.VacationsApproveRequire, 
-                string.Empty, 
-                vacationDescription, 
+                owner!,
+                manager.EmployeeId,
+                VacationsNotificationTemplate.VacationsApproveRequire,
+                string.Empty,
+                vacationDescription,
                 cancellationToken);
         }
 
-        public async Task SendVacationApproveNotification(EmployeeId employeeId, bool approve, int eventId, CancellationToken cancellationToken)
+        public async Task SendVacationApproveNotification(
+            EmployeeId employeeId, bool approve, int eventId, CancellationToken cancellationToken)
         {
             this.logger.LogDebug(
                 "Send employee (id={EmployeeId}) vacation (id={EventId}) {Action} notification.",
                 employeeId, eventId, approve ? "Approve" : "Reject");
 
-            var vacation = await GetVacationDescriptionAsync(employeeId, eventId, cancellationToken);
-            var status = approve ?  "Approved" : "Rejected";
+            var vacation = await this.GetVacationDescriptionAsync(employeeId, eventId, cancellationToken);
+            var status = approve ? "Approved" : "Rejected";
             var owner = await this.GetEmployeeMetadataAsync(employeeId, cancellationToken);
             if (owner == null)
             {
@@ -128,13 +140,15 @@ namespace Arcadia.Assistant.Vacations.Notification
                 cancellationToken);
         }
 
-        public async Task SendVacationCancelNotification(EmployeeId employeeId, EmployeeId cancellerId, string reason, int eventId, CancellationToken cancellationToken)
+        public async Task SendVacationCancelNotification(
+            EmployeeId employeeId, EmployeeId cancellerId, string reason, int eventId,
+            CancellationToken cancellationToken)
         {
             this.logger.LogDebug(
                 "Send employee (id={EmployeeId}) vacation (id={EventId}) Cancel notification.",
                 employeeId, eventId);
 
-            var vacation = await GetVacationDescriptionAsync(employeeId, eventId, cancellationToken);
+            var vacation = await this.GetVacationDescriptionAsync(employeeId, eventId, cancellationToken);
             var status = "Cancelled";
             var owner = await this.GetEmployeeMetadataAsync(employeeId, cancellationToken);
             if (owner == null)
@@ -159,20 +173,24 @@ namespace Arcadia.Assistant.Vacations.Notification
                 cancellationToken);
         }
 
-        private async Task SendStatusChangedNotification(EmployeeMetadata owner, EmployeeId recipient, string template, string status, VacationDescription vacation, CancellationToken cancellationToken)
+        private async Task SendStatusChangedNotification(
+            EmployeeMetadata owner, EmployeeId recipient, string template, string status, VacationDescription vacation,
+            CancellationToken cancellationToken)
         {
-            await SendStatusChangedNotification(owner, new EmployeeId[] { recipient }, template, status, vacation, cancellationToken);
+            await this.SendStatusChangedNotification(owner, new[] { recipient }, template, status, vacation,
+                cancellationToken);
         }
 
-        private async Task SendStatusChangedNotification(EmployeeMetadata owner, EmployeeId[] recipients, string template, string status, VacationDescription vacation, CancellationToken cancellationToken)
+        private async Task SendStatusChangedNotification(
+            EmployeeMetadata owner, EmployeeId[] recipients, string template, string status,
+            VacationDescription vacation, CancellationToken cancellationToken)
         {
-            var context = GetNotificationContext(owner, status, vacation.StartDate, vacation.EndDate);
+            var context = this.GetNotificationContext(owner, status, vacation.StartDate, vacation.EndDate);
             var dataPresenter = new NotificationDataPresenter(this.notificationConfigurations[template], context);
 
             try
             {
-                await this.notifications.Send(recipients,
-                    CreateNotificationMessage(
+                await this.notifications.Send(recipients, this.CreateNotificationMessage(
                         template,
                         dataPresenter),
                     cancellationToken);
@@ -185,7 +203,8 @@ namespace Arcadia.Assistant.Vacations.Notification
             }
         }
 
-        private NotificationMessage CreateNotificationMessage(string notificationTemplate, NotificationDataPresenter notificationContext)
+        private NotificationMessage CreateNotificationMessage(
+            string notificationTemplate, NotificationDataPresenter notificationContext)
         {
             return new NotificationMessage
             {
@@ -197,18 +216,23 @@ namespace Arcadia.Assistant.Vacations.Notification
             };
         }
 
-        private async Task<VacationDescription> GetVacationDescriptionAsync(EmployeeId employeeId, int eventId, CancellationToken cancellationToken)
+        private async Task<VacationDescription> GetVacationDescriptionAsync(
+            EmployeeId employeeId, int eventId, CancellationToken cancellationToken)
         {
             using var storage = this.storageFactory();
             return await storage.Value.GetCalendarEvent(employeeId, eventId, cancellationToken);
         }
 
-        private async Task<EmployeeMetadata?> GetEmployeeMetadataAsync(EmployeeId? employeeId, CancellationToken cancellationToken)
+        private async Task<EmployeeMetadata?> GetEmployeeMetadataAsync(
+            EmployeeId? employeeId, CancellationToken cancellationToken)
         {
-            return employeeId == null ? null : await this.employeeService.FindEmployeeAsync(employeeId.Value, cancellationToken);
+            return employeeId == null
+                ? null
+                : await this.employeeService.FindEmployeeAsync(employeeId.Value, cancellationToken);
         }
 
-        private async Task<EmployeeMetadata?> GetEmployeeManagerMetadataAsync(EmployeeMetadata owner, CancellationToken cancellationToken)
+        private async Task<EmployeeMetadata?> GetEmployeeManagerMetadataAsync(
+            EmployeeMetadata owner, CancellationToken cancellationToken)
         {
             var department = owner.DepartmentId == null
                 ? null
@@ -227,10 +251,11 @@ namespace Arcadia.Assistant.Vacations.Notification
                 return null;
             }
 
-            return await GetEmployeeMetadataAsync(managerEmployeeId.GetValueOrDefault(), cancellationToken);
+            return await this.GetEmployeeMetadataAsync(managerEmployeeId.GetValueOrDefault(), cancellationToken);
         }
 
-        private Dictionary<string, string> GetNotificationContext(EmployeeMetadata ownerEmployee, string status, DateTime startDate, DateTime endDate)
+        private Dictionary<string, string> GetNotificationContext(
+            EmployeeMetadata ownerEmployee, string status, DateTime startDate, DateTime endDate)
         {
             return new Dictionary<string, string>
             {
@@ -238,7 +263,7 @@ namespace Arcadia.Assistant.Vacations.Notification
                 ["employeeId"] = ownerEmployee.EmployeeId.ToString(),
                 ["startDate"] = startDate.ToString("dd/MM/yyyy"),
                 ["endDate"] = endDate.ToString("dd/MM/yyyy"),
-                ["status"] = status,
+                ["status"] = status
             };
         }
     }

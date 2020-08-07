@@ -17,7 +17,6 @@
         [Required]
         public int EmployeeId { get; set; }
 
-
         [Required]
         public Guid ChangeRequestId { get; set; }
 

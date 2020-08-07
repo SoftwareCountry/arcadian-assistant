@@ -133,7 +133,9 @@ namespace Arcadia.Assistant.Notifications
         {
             var notificationContent = new PushNotificationContent
             {
-                Title = string.IsNullOrWhiteSpace(notificationMessage.Title) ? notificationMessage.Subject : notificationMessage.Title,
+                Title = string.IsNullOrWhiteSpace(notificationMessage.Title)
+                    ? notificationMessage.Subject
+                    : notificationMessage.Title,
                 Body = notificationMessage.ShortText,
                 CustomData = new
                 {
@@ -163,7 +165,9 @@ namespace Arcadia.Assistant.Notifications
         {
             var notificationContent = new EmailNotificationContent
             {
-                Subject = string.IsNullOrWhiteSpace(notificationMessage.Subject) ? notificationMessage.Title : notificationMessage.Subject,
+                Subject = string.IsNullOrWhiteSpace(notificationMessage.Subject)
+                    ? notificationMessage.Title
+                    : notificationMessage.Subject,
                 Body = notificationMessage.LongText
             };
 

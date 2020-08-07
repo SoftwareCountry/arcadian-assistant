@@ -8,14 +8,6 @@
 
     public class WorkHoursCreditContext : DbContext
     {
-        public DbSet<ChangeRequest> ChangeRequests { get; set; }
-
-        public DbSet<Approval> Approvals { get; set; }
-
-        public DbSet<Cancellation> Cancellations { get; set; }
-
-        public DbSet<Rejection> Rejections { get; set; }
-
 #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         public WorkHoursCreditContext()
 #pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
@@ -27,6 +19,14 @@
 #pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         {
         }
+
+        public DbSet<ChangeRequest> ChangeRequests { get; set; }
+
+        public DbSet<Approval> Approvals { get; set; }
+
+        public DbSet<Cancellation> Cancellations { get; set; }
+
+        public DbSet<Rejection> Rejections { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -52,11 +52,9 @@
                 .Entity<Approval>()
                 .HasIndex(x => new { x.EmployeeId, x.ChangeRequestId });
 
-
             modelBuilder
                 .Entity<Cancellation>()
                 .HasIndex(x => new { x.EmployeeId, x.ChangeRequestId });
-
 
             modelBuilder
                 .Entity<Rejection>()

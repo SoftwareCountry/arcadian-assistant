@@ -4,9 +4,11 @@
 
     using Contracts;
 
+    using CSP.Model;
+
     public class StatusConverter
     {
-        public VacationStatus GetStatus(CSP.Model.Vacation vacation)
+        public VacationStatus GetStatus(Vacation vacation)
         {
             return vacation.VacationCancellations.Any() ? VacationStatus.Cancelled
                 : vacation.VacationApprovals.Any(v => v.Status == 1) ? VacationStatus.Rejected
