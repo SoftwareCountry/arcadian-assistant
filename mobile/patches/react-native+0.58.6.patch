@@ -1,0 +1,25 @@
+diff --git a/node_modules/react-native/React/Base/RCTModuleMethod.mm b/node_modules/react-native/React/Base/RCTModuleMethod.mm
+index e9a3657..d228667 100644
+--- a/node_modules/react-native/React/Base/RCTModuleMethod.mm
++++ b/node_modules/react-native/React/Base/RCTModuleMethod.mm
+@@ -91,6 +91,7 @@ static BOOL RCTParseSelectorPart(const char **input, NSMutableString *selector)
+ static BOOL RCTParseUnused(const char **input)
+ {
+   return RCTReadString(input, "__unused") ||
++         RCTReadString(input, "__attribute__((__unused__))") ||
+          RCTReadString(input, "__attribute__((unused))");
+ }
+ 
+diff --git a/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm b/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm
+index 645c13b..e1dd9e3 100644
+--- a/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm
++++ b/node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm
+@@ -697,7 +697,7 @@ - (void)registerExtraLazyModules
+ #endif
+ }
+ 
+-- (NSArray<RCTModuleData *> *)_initializeModules:(NSArray<id<RCTBridgeModule>> *)modules
++- (NSArray<RCTModuleData *> *)_initializeModules:(NSArray<Class> *)modules
+                                withDispatchGroup:(dispatch_group_t)dispatchGroup
+                                 lazilyDiscovered:(BOOL)lazilyDiscovered
+ {

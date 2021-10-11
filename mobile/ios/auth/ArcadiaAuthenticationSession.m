@@ -7,6 +7,22 @@
 
 NSInteger const CANCELLATION_ERROR_CODE = 1;
 NSString* const CANCELLATION_SUBCODE = @"error_subcode=cancel";
+NSString* const CUSTOM_SCHEME = @"arcadia-assistant";
+
+//============================================================================
+@interface ArcadiaAuthenticationSession (ASWebAuthenticationPresentationContextProviding) <ASWebAuthenticationPresentationContextProviding>
+@end
+
+//============================================================================
+@implementation ArcadiaAuthenticationSession (ASWebAuthenticationPresentationContextProviding)
+
+//----------------------------------------------------------------------------
+- (nonnull ASPresentationAnchor) presentationAnchorForWebAuthenticationSession:(nonnull ASWebAuthenticationSession*) session
+{
+    return UIApplication.sharedApplication.keyWindow;
+}
+
+@end
 
 //============================================================================
 @implementation ArcadiaAuthenticationSession
@@ -31,12 +47,16 @@ RCT_REMAP_METHOD(getSafariData,
     if (@available(iOS 12.0, *))
     {
         self.asWebAuthSession = [[ASWebAuthenticationSession alloc] initWithURL:siteURL
-            callbackURLScheme:callbackURL
-            completionHandler:^(NSURL* callbackURL, NSError* error)
-            {
-                [self processResponseWithUrl:callbackURL error:error
-                    resolver:resolve rejecter:reject];
-            }];
+                                                              callbackURLScheme:CUSTOM_SCHEME
+                                                              completionHandler:^(NSURL* callbackURL, NSError* error)
+        {
+            [self processResponseWithUrl:callbackURL error:error
+                              resolver:resolve rejecter:reject];
+        }];
+      
+        if (@available(iOS 13.0, *)) {
+            self.asWebAuthSession.presentationContextProvider = self;
+        }
     }
     else if (@available(iOS 11.0, *))
     {
