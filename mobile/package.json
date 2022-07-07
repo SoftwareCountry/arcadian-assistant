@@ -34,7 +34,7 @@
     "appcenter-push": "^1.10.0",
     "babel-plugin-transform-inline-environment-variables": "^0.4.3",
     "immutable": "^4.0.0-rc.12",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "moment-business": "^3.0.1",
     "react": "16.8.6",
     "react-native": "^0.58.6",
