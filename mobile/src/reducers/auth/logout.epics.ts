@@ -4,14 +4,13 @@ import { from, of, empty } from 'rxjs';
 import { ActionsObservable, StateObservable } from 'redux-observable';
 import { StartLogoutProcess, AuthActionType, userLoggedOut } from './auth.action';
 import { DependenciesContainer, AppState } from '../app.reducer';
-import { notificationsUnregister } from '../../notifications/notification.epics';
 
 //----------------------------------------------------------------------------
 export const startLogoutProcessEpic$ = (action$: ActionsObservable<StartLogoutProcess>, state$: StateObservable<AppState>, dep: DependenciesContainer) =>
     action$.ofType(AuthActionType.startLogoutProcess).pipe(
         map(x => {
             const logoutCallback = async () => {
-                await logout(dep, state$.value.notifications.installId);
+                await logout(dep);
                 return true;
             };
 
@@ -38,14 +37,7 @@ export const startLogoutProcessEpic$ = (action$: ActionsObservable<StartLogoutPr
 
 
 //----------------------------------------------------------------------------
-async function logout(dependencies: DependenciesContainer, installId?: string) {
-    if (installId) {
-        try {
-            await notificationsUnregister(dependencies, installId);
-        } catch (e) {
-            console.warn('Error while sending unregister request', e);
-        }
-    }
+async function logout(dependencies: DependenciesContainer) {
     try {
         await dependencies.oauthProcess.logout();
         await dependencies.storage.setPin(null);
